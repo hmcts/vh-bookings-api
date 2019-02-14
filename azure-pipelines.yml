@@ -20,7 +20,7 @@ pr:
 - master
 
 jobs:
-- template: jobs/webapi.yml@azureDevOpsTemplates # Template reference
+- template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
   parameters:
     sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
     solutionType: $(solutionType)
