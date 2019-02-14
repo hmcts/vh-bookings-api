@@ -4,8 +4,9 @@ variables:
   sonarCloudPrepareExtraProperties: |  
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
   vhAzureKeyVault: 'https://vh-hearings-api-ci.vault.azure.net/' # Used during integration tests
-  keyVaultName: vhcoreinfrapreview # Used to get secrets for integration tests
+  keyVaultName: vhcoreinfrahtpreview # Used to get secrets for integration tests
   secretsFilter: 'vh-hearings-api-AppID,vh-hearings-api-Key' # filters out secrets returned from key vault
+  coverletCoverageExclusions: '\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\"'
 
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:

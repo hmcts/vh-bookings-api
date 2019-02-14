@@ -40,7 +40,7 @@ namespace Bookings.API
             services.AddCors();
             
             services.AddDbContextPool<BookingsDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("VhListings")));
+                options.UseSqlServer(Configuration.GetConnectionString("VhBookings")));
         }
         
         private void RegisterSettings(IServiceCollection services)
@@ -66,7 +66,7 @@ namespace Bookings.API
             {
                 options.Authority = securitySettings.Authority;
                 options.TokenValidationParameters.ValidateLifetime = true;
-                options.Audience = securitySettings.VhListingsApiResourceId;
+                options.Audience = securitySettings.VhBookingsApiResourceId;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
             });
 

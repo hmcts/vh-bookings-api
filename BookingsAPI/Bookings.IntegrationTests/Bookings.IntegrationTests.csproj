@@ -6,9 +6,6 @@
     <Compile Remove="Controllers\bin\**" />
     <EmbeddedResource Remove="Controllers\bin\**" />
     <None Remove="Controllers\bin\**" />
-    <None Update="appsettings.ci.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.5.1" />

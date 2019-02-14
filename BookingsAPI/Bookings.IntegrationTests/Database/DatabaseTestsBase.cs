@@ -19,7 +19,7 @@ namespace Bookings.IntegrationTests.Database
         public void OneTimeSetup()
         {
             _databaseConnectionString = new ConfigurationBuilder().AddUserSecrets<Startup>().Build()
-                .GetConnectionString("VhListings");
+                .GetConnectionString("VhBookings");
 
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();

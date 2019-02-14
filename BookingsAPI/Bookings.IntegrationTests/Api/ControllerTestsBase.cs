@@ -36,7 +36,7 @@ namespace Bookings.IntegrationTests.Controllers
 
             var configuration = new ConfigurationBuilder().AddUserSecrets<Startup>().Build(); 
             
-            _dbString = configuration.GetConnectionString("VhListings");
+            _dbString = configuration.GetConnectionString("VhBookings");
             
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
@@ -61,7 +61,7 @@ namespace Bookings.IntegrationTests.Controllers
             
             _bearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
-                azureAdConfiguration.VhListingsApiResourceId);
+                azureAdConfiguration.VhBookingsApiResourceId);
         }
 
         protected async Task<HttpResponseMessage> SendGetRequestAsync(string uri)

@@ -182,15 +182,16 @@ namespace Bookings.API.Controllers
                     break;
                 case "Representative":
                 {
-                    var rep = new Representative(person, hearingRole, caseRole);
-                    rep.SolicitorsReference = requestParticipant.SolicitorsReference;
-                    rep.Representee = requestParticipant.Representee;
+                    var rep = new Representative(person, hearingRole, caseRole)
+                    {
+                        SolicitorsReference = requestParticipant.SolicitorsReference,
+                        Representee = requestParticipant.Representee
+                    };
                     participant = rep;
                     break;
                 }
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(hearingRole.UserRole.Name),
-                        "Roles not recognised for participant");
+                    throw new ArgumentException($"Role {hearingRole.UserRole.Name} not recognised");
             }
 
             participant.DisplayName = requestParticipant.DisplayName;

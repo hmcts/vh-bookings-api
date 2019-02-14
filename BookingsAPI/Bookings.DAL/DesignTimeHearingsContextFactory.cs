@@ -13,7 +13,7 @@ namespace Bookings.DAL
                 .AddUserSecrets("d76b6eb8-f1a2-4a51-9b8f-21e1b6b81e4f")
                 .Build();
             var builder = new DbContextOptionsBuilder<BookingsDbContext>();
-            builder.UseSqlServer(config.GetConnectionString("VhListings"));
+            builder.UseSqlServer(config.GetConnectionString("VhBookings"));
             var context = new BookingsDbContext(builder.Options);
             return context;
         }
