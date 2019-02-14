@@ -14,6 +14,7 @@ resources:
   - repository: azureDevOpsTemplates
     type: github
     name: hmcts/azure-devops-templates
+    ref: refs/heads/dotnet-restore # ref name to use, defaults to 'refs/heads/master'
     endpoint: 'GitHub connection 1'
 
 trigger:
