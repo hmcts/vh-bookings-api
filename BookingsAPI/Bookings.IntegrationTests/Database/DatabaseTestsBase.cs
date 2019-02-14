@@ -1,6 +1,6 @@
 ﻿using Bookings.API;
 using Bookings.DAL;
-using Bookings.IntegrationTests.Hooks;
+using Bookings.IntegrationTests.Helper;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

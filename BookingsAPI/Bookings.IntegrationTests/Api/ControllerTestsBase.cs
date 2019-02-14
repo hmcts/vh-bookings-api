@@ -12,7 +12,7 @@ using Testing.Common.Configuration;
 using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.DAL;
-using Bookings.IntegrationTests.Hooks;
+using Bookings.IntegrationTests.Helper;
 
 namespace Bookings.IntegrationTests.Controllers
 {
