@@ -1,0 +1,5 @@
+/Users/shaedparkar/Repos/vh-hearing-ref-api/Infrastructure/bin/Debug/azuredeploy.parameters.json
+/Users/shaedparkar/Repos/vh-hearing-ref-api/Infrastructure/bin/Debug/azuredeploy.json
+/Users/shaedparkar/Repos/vh-hearing-ref-api/Infrastructure/bin/Debug/Deploy-AzureResourceGroup.ps1
+/Users/shaedparkar/Repos/vh-hearing-ref-api/Infrastructure/bin/Debug/README.md
+/Users/shaedparkar/Repos/vh-hearing-ref-api/Infrastructure/obj/Debug/Infrastructure.deployproj.CoreCompileInputs.cache
