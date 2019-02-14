@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "VhListings": "Server=(LocalDb)\\MSSQLLocalDB;Database=Hearing;Trusted_Connection=True;"
+  }
+}

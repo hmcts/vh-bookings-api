@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Faker.NETCore" Version="1.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
+    <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="NBuilder" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bookings.Api.Contract\Bookings.Api.Contract.csproj" />
+    <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Moq, Version=4.9.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920">
+      <HintPath>..\..\..\..\.nuget\packages\moq\4.9.0\lib\netstandard1.3\Moq.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Builders\Api\Request\CaseRequestBuilder.cs" />
+    <Compile Remove="Builders\Api\Request\ConferenceRequestBuilder.cs" />
+    <Compile Remove="Builders\Api\Request\HearingRequestBuilder.cs" />
+    <Compile Remove="Builders\Api\Request\ParticipantRequestBuilder.cs" />
+    <Compile Remove="Builders\Api\Request\UpdateHearingRequestBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Builders\Api\Request" />
+  </ItemGroup>
+</Project>
