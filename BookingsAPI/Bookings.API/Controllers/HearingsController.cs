@@ -165,10 +165,12 @@ namespace Bookings.API.Controllers
         private Participant MapParticipantRequestToParticipant(ParticipantRequest requestParticipant, CaseType caseType)
         {
             var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username);
-            person.MiddleNames = requestParticipant.MiddleNames;
-            person.ContactEmail = requestParticipant.ContactEmail;
-            person.TelephoneNumber = requestParticipant.TelephoneNumber;
+                requestParticipant.Username)
+            {
+                MiddleNames = requestParticipant.MiddleNames,
+                ContactEmail = requestParticipant.ContactEmail,
+                TelephoneNumber = requestParticipant.TelephoneNumber
+            };
 
             var caseRole = caseType.CaseRoles.SingleOrDefault(x => x.Name == requestParticipant.CaseRoleName);
             var hearingRole = caseRole.HearingRoles.SingleOrDefault(x => x.Name == requestParticipant.HearingRoleName);
