@@ -53,24 +53,6 @@ namespace Bookings.Domain
         public virtual IList<Participant> Participants { get; set; }
         protected virtual IList<HearingCase> HearingCases { get; set; } = new List<HearingCase>();
 
-        public void UpdateStatus(Person person, HearingStatus newStatus)
-        {
-            // TODO: review the state change
-//            var hearingStateMachine = new HearingStateMachine();
-//            var participant = Participants.Single(x => x.Person.Username == person.Username);
-            
-//            var statusChangedEvent = new StatusChangedEvent(Status, newStatus, participant.HearingRole);
-
-//            if (!DoesParticipantExist(person) || !hearingStateMachine.ValidateStatusChange(statusChangedEvent))
-//            {
-//                throw new DomainRuleException("HearingStatus", $"Cannot change the status from {Status} to {newStatus}");
-//            }
-
-            Status = newStatus;
-
-            UpdatedDate = DateTime.UtcNow;
-        }
-
         public virtual void AddCase(string number, string name, bool isLeadCase)
         {
             var caseExists = Cases.SingleOrDefault(x => x.Number == number && x.Name == name);
@@ -98,9 +80,9 @@ namespace Bookings.Domain
 
         public void AddParticipant(Participant participant)
         {
-            if (DoesParticipantExist(participant.Person))
+            if (DoesParticipantExist(participant))
             {
-                throw new DomainRuleException("Participant", "Participant already exists on the hearing");
+                throw new DomainRuleException(nameof(participant), "Participant already exists in the hearing");
             }
             
             Participants.Add(participant);
@@ -108,9 +90,9 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void RemoveParticipant(Person person)
+        public void RemoveParticipant(Participant participant)
         {
-            if (!DoesParticipantExist(person))
+            if (!DoesParticipantExist(participant))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
             }
@@ -120,7 +102,7 @@ namespace Bookings.Domain
                 throw new DomainRuleException("Participant", "A hearing must have at least one participant");
             }
 
-            var existingParticipant = Participants.Single(x => x.Person.Username == person.Username);
+            var existingParticipant = Participants.Single(x => x.Person.Username == participant.Person.Username);
             Participants.Remove(existingParticipant);
         }
 
@@ -141,35 +123,15 @@ namespace Bookings.Domain
             HearingType = hearingType;
         }
 
-        public bool PersonExists(Person person)
-        {
-            return Participants.Any(x => x.Person.Username == person.Username);
-        }
-
         
         public virtual IList<Participant> GetParticipants()
         {
             return Participants;
         }
 
-        public virtual Participant GetParticipantByUsername(string username)
-        {
-            return Participants.SingleOrDefault(x => x.Person.Username == username);
-        }
-
-        public virtual Participant GetParticipant(Guid participantId)
-        {
-            return Participants.SingleOrDefault(x => x.Person.Id == participantId);
-        }
-
         public IList<Case> GetCases()
         {
             return HearingCases.Select(x => x.Case).ToList();
-        }
-
-        public HearingStatus GetHearingStatus()
-        {
-            return Status;
         }
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration)
@@ -200,9 +162,9 @@ namespace Bookings.Domain
             ScheduledDuration = scheduledDuration;
         }
 
-        private bool DoesParticipantExist(Person person)
+        private bool DoesParticipantExist(Participant participant)
         {
-            return Participants.Any(x => x.Person.Username == person.Username);
+            return Participants.Any(x => x.Person.Username == participant.Person.Username);
         }
 
         public void AddParticipants(IEnumerable<Participant> participants)

@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
+using Bookings.IntegrationTests.Controllers;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 
-namespace Bookings.IntegrationTests.Controllers.HearingsControllerTests
+namespace Bookings.IntegrationTests.Api.HearingsControllerTests
 {
     public class UpdateHearingDetailsTests : ControllerTestsBase
     {

@@ -9,6 +9,7 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
+using Bookings.IntegrationTests.Controllers;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 
-namespace Bookings.IntegrationTests.Controllers.HearingsControllerTests
+namespace Bookings.IntegrationTests.Api.HearingsControllerTests
 {
     public class BookNewHearingTests : ControllerTestsBase
     {
