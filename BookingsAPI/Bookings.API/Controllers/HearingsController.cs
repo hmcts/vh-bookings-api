@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
@@ -41,7 +42,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public IActionResult GetHearingDetailsById(Guid hearingId)
+        public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
             {
@@ -50,7 +51,7 @@ namespace Bookings.API.Controllers
             }
             
             var query = new GetHearingByIdQuery(hearingId);
-            var videoHearing = _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
             {
@@ -114,7 +115,7 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "BookNewHearing")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.Created)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public IActionResult BookNewHearing(BookNewHearingRequest request)
+        public async Task<IActionResult> BookNewHearing(BookNewHearingRequest request)
         {
             var result = new BookNewHearingRequestValidation().Validate(request);
             if (!result.IsValid)
@@ -124,7 +125,7 @@ namespace Bookings.API.Controllers
             }
             
             var query = new GetCaseTypeQuery(request.CaseTypeName);
-            var caseType = _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
             
             if (caseType == null)
             {
@@ -139,7 +140,7 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
             
-            var venue = GetVenue(request.HearingVenueName);
+            var venue = await GetVenue(request.HearingVenueName);
             if (venue == null)
             {
                 ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
@@ -156,7 +157,7 @@ namespace Bookings.API.Controllers
             videoHearing.AddParticipants(participants);
             
             var command = new SaveVideoHearingCommand(videoHearing);
-            _commandHandler.Handle(command);
+            await _commandHandler.Handle(command);
             
             var response = MapHearingToDetailResponseModel(videoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
@@ -211,7 +212,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.Accepted)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public IActionResult UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
+        public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
             if (hearingId == Guid.Empty)
             {
@@ -227,14 +228,14 @@ namespace Bookings.API.Controllers
             }
             
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
-            var videoHearing = _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             if (videoHearing == null)
             {
                 return NotFound();
             }
 
-            var venue = GetVenue(request.HearingVenueName);
+            var venue = await GetVenue(request.HearingVenueName);
             if (venue == null)
             {
                 ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
@@ -243,17 +244,17 @@ namespace Bookings.API.Controllers
 
             var command =
                 new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue);
-            _commandHandler.Handle(command);
+            await _commandHandler.Handle(command);
             
             var response = MapHearingToDetailResponseModel(videoHearing);
             
             return AcceptedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
-        private HearingVenue GetVenue(string venueName)
+        private async Task<HearingVenue> GetVenue(string venueName)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
-            var hearingVenues = _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
+            var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
     }

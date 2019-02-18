@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Queries;
 using FluentAssertions;
@@ -18,9 +19,9 @@ namespace Bookings.IntegrationTests.Database.Queries
         
         
         [Test]
-        public void should_return_list_of_hearing_venues()
+        public async Task should_return_list_of_hearing_venues()
         {
-            var venues = _handler.Handle(new GetHearingVenuesQuery());
+            var venues = await _handler.Handle(new GetHearingVenuesQuery());
             venues.Should().NotBeEmpty();
         }
     }

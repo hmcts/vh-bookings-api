@@ -1,12 +1,18 @@
 # Set variables once
 variables:
-  solutionType: dotNetCore # angularDotNetCore, dotNetCore
-  sonarCloudPrepareExtraProperties: |  
+  apiDirectory: 'BookingsAPI/Bookings.API'
+  sonarCloudPrepareExtraProperties: |
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-  vhAzureKeyVault: 'https://vh-hearings-api-ci.vault.azure.net/' # Used during integration tests
-  keyVaultName: vhcoreinfrahtpreview # Used to get secrets for integration tests
-  secretsFilter: 'vh-hearings-api-AppID,vh-hearings-api-Key' # filters out secrets returned from key vault
-  coverletCoverageExclusions: '\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\"'
+    sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,Migrations/**,SeedData/**,DesignTimeHearingsContextFactory.cs,Ddd/ValueObject.cs,Ddd/Enumeration.cs,Testing.Common/**"
+    sonar.cpd.exclusions="**/SeedData.cs,Migrations/**"
+  coverletCoverageExclusions: '"\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\""'
+  integrationTestsAppSettingsTransform: '
+    "AzureAd/Authority":"$(AzureAd-Authority)",
+    "AzureAd/VhBookingsApiResourceId":"$(AzureAd-VhBookingsApiResourceId)",
+    "ConnectionStrings/VhBookings":"$(ConnectionStrings-VhBookings)",
+    "Testing/TestClientId":"$(Testing-TestClientId)",
+    "Testing/TestClientSecret":"$(Testing-TestClientSecret)"
+    '
 
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:
@@ -23,9 +29,10 @@ pr:
 - master
 
 jobs:
-- template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
+  
+- template: jobs/webapi.yml@azureDevOpsTemplates # Template reference
   parameters:
     sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
-    KeyVaultName: $(KeyVaultName)
-    SecretsFilter: $(SecretsFilter)
-    solutionType: $(solutionType)
+    integrationTestsAppSettingsTransform: $(integrationTestsAppSettingsTransform)
+    coverletCoverageExclusions: $(coverletCoverageExclusions)
+    apiDirectory: $(apiDirectory)

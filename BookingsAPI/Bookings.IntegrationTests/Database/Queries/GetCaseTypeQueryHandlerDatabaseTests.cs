@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Queries;
 using Bookings.Domain.RefData;
@@ -19,41 +20,41 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public void should_have_user_roles_for_civil_money_claims_claimant()
+        public async Task should_have_user_roles_for_civil_money_claims_claimant()
         {
             var caseTypeName = "Civil Money Claims";
             var caseRoleName = "Claimant";
-            var caseType = _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
 
         [Test]
-        public void should_have_user_roles_for_civil_money_claims_defendant()
+        public async Task should_have_user_roles_for_civil_money_claims_defendant()
         {
             var caseTypeName = "Civil Money Claims";
             var caseRoleName = "Defendant";
-            var caseType = _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
 
         [Test]
-        public void should_have_user_roles_for_financial_remedy_applicant()
+        public async Task should_have_user_roles_for_financial_remedy_applicant()
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Applicant";
-            var caseType = _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
 
         [Test]
-        public void should_have_user_roles_for_financial_remedy_respondent()
+        public async Task should_have_user_roles_for_financial_remedy_respondent()
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Respondent";
-            var caseType = _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
