@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 
-namespace Bookings.IntegrationTests.Controllers.HearingsControllerTests
+namespace Bookings.IntegrationTests.Api.HearingsControllerTests
 {
     public class UpdateHearingDetailsTests : ControllerTestsBase
     {
