@@ -32,13 +32,14 @@ namespace Bookings.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
-            var newVenue = _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery()).Last();
+            var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
+            var newVenue = allVenues.Last();
             var newDuration = seededHearing.ScheduledDuration + 10;
             var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
 
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, newVenue));
             
-            var returnedVideoHearing = _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
             returnedVideoHearing.HearingVenue.Name.Should().Be(newVenue.Name);
             returnedVideoHearing.ScheduledDuration.Should().Be(newDuration);

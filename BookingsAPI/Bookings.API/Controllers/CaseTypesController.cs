@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
-using Bookings.Domain;
 using Bookings.Domain.RefData;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,7 +31,7 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "GetCaseRolesForCaseType")]
         [ProducesResponseType(typeof(List<CaseRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public IActionResult GetCaseRolesForCaseType(string caseTypeName)
+        public async Task<IActionResult> GetCaseRolesForCaseType(string caseTypeName)
         {
             if (string.IsNullOrWhiteSpace(caseTypeName))
             {
@@ -41,7 +40,7 @@ namespace Bookings.API.Controllers
             }
             
             var query = new GetCaseTypeQuery(caseTypeName);
-            var caseType = _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
 
             if (caseType == null)
             {
@@ -66,7 +65,7 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "GetHearingRolesForCaseRole")]
         [ProducesResponseType(typeof(List<HearingRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public IActionResult GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
+        public async Task<IActionResult> GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
         {
             if (string.IsNullOrWhiteSpace(caseTypeName))
             {
@@ -81,7 +80,7 @@ namespace Bookings.API.Controllers
             }
             
             var query = new GetCaseTypeQuery(caseTypeName);
-            var caseType = _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
 
             if (caseType == null)
             {

@@ -1,4 +1,6 @@
-﻿namespace Bookings.DAL.Queries
+﻿using System.Threading.Tasks;
+
+namespace Bookings.DAL.Queries
 {
     public class QueryHandler : IQueryHandler
     {
@@ -9,10 +11,10 @@
             _queryHandlerFactory = queryHandlerFactory;
         }
 
-        public TResult Handle<TQuery, TResult>(TQuery query) where TQuery : IQuery where TResult : class
+        public async Task<TResult> Handle<TQuery, TResult>(TQuery query) where TQuery : IQuery where TResult : class
         {
             var handler = _queryHandlerFactory.Create<TQuery, TResult>(query);
-            return handler.Handle(query);
+            return await handler.Handle(query);
         }
     }
 }

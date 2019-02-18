@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Threading.Tasks;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,14 +23,14 @@ namespace Bookings.DAL.Queries
             _context = context;
         }
 
-        public CaseType Handle(GetCaseTypeQuery query)
+        public async Task<CaseType> Handle(GetCaseTypeQuery query)
         {
-        return _context.CaseTypes
+        return await _context.CaseTypes
                 .Include(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)
                 .ThenInclude(x => x.UserRole)
                 .Include(x => x.HearingTypes)
-                .SingleOrDefault(x => x.Name == query.CaseTypeName);
+                .SingleOrDefaultAsync(x => x.Name == query.CaseTypeName);
         }
     }
 }

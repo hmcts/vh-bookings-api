@@ -51,7 +51,7 @@ namespace Bookings.IntegrationTests.Api
             var configRoot = configRootBuilder.Build();
             
             _dbString = configRoot.GetConnectionString("VhBookings");
-
+            
             var azureAdConfigurationOptions = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
             var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
             
