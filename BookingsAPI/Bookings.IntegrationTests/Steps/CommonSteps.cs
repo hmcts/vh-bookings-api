@@ -38,10 +38,10 @@ namespace Bookings.IntegrationTests.Steps
         }
 
         [Then(@"the response should have the status (.*) and success status (.*)")]
-        public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool IsSuccess)
+        public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
             _apiTestContext.ResponseMessage.StatusCode.Should().Be(statusCode);
-            _apiTestContext.ResponseMessage.IsSuccessStatusCode.Should().Be(IsSuccess);
+            _apiTestContext.ResponseMessage.IsSuccessStatusCode.Should().Be(isSuccess);
             TestContext.WriteLine($"Status Code: {_apiTestContext.ResponseMessage.StatusCode}");
         }
     }
