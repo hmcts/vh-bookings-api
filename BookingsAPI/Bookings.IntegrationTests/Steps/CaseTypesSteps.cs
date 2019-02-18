@@ -16,7 +16,6 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class CaseTypesSteps : ControllerTestsBase
     {
-
         private readonly ApiTestContext _apiTestContext;
         private readonly CaseTypesEndpoints _endpoints = new ApiUriFactory().CaseTypesEndpoints;
 

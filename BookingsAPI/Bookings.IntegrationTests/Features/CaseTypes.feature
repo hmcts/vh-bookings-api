@@ -6,26 +6,26 @@ Feature: CaseTypes
 Scenario: Get case roles for a case type
 	Given I have a valid get case roles for a case type request
 	When I send the request to the endpoint
-	Then the response should have the status OK
+	Then the response should have the status OK and success status True
 	And a list of case roles should be retrieved
 
 Scenario: Get case roles for a case type with nonexistent case type
 	Given I have a nonexistent case type in a get case roles for a case type request
 	When I send the request to the endpoint
-	Then the response should have the status NotFound
+	Then the response should have the status NotFound and success status False
 
 Scenario: Get hearing roles for a case role of a case type
 	Given I have a valid get hearing roles for a case role of a case type request
 	When I send the request to the endpoint
-	Then the response should have the status OK
+	Then the response should have the status OK and success status True
 	And a list of hearing roles should be retrieved
 
 Scenario: Get hearing roles for a case role of a case type with nonexistent case type
 	Given I have a nonexistentCaseType in a get hearing roles for a case role of a case type request
 	When I send the request to the endpoint
-	Then the response should have the status NotFound
+	Then the response should have the status NotFound and success status False
 
 Scenario: Get hearing roles for a case role of a case type with nonexistent role name
 	Given I have a nonexistentRoleName in a get hearing roles for a case role of a case type request
 	When I send the request to the endpoint
-	Then the response should have the status NotFound
+	Then the response should have the status NotFound and success status False
