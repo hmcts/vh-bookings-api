@@ -55,6 +55,7 @@ namespace Bookings.IntegrationTests.Api
             
             var azureAdConfigurationOptions = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
             var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
+            
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
             var testSettings = testSettingsOptions.Value;
             
