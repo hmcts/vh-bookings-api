@@ -3,7 +3,7 @@ variables:
   solutionType: dotNetCore # angularDotNetCore, dotNetCore
   sonarCloudPrepareExtraProperties: |  
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-  coverletCoverageExclusions: '\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\"'
+  coverletCoverageExclusions: ''
   integrationTestsAppSettingsTransform: '
     "AzureAd/Authority":"$(AzureAd-Authority)",
     "AzureAd/VhBookingsApiResourceId":"$(AzureAd-VhBookingsApiResourceId)",
