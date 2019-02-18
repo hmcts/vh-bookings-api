@@ -28,9 +28,12 @@ namespace Bookings.IntegrationTests.Hooks
             apiTestContext.Server = new TestServer(webHostBuilder);
             GetClientAccessTokenForApi(apiTestContext);
 
-            var configuration = new ConfigurationBuilder().AddUserSecrets<Startup>().Build(); 
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .AddUserSecrets<Startup>().Build(); 
             
-            apiTestContext.DbString = configuration.GetConnectionString("VhListings");
+            apiTestContext.DbString = configuration.GetConnectionString("VhBookings");
             
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
