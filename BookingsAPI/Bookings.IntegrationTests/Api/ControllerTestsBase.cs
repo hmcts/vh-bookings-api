@@ -1,6 +1,10 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Bookings.API;
+using Bookings.Common.Configuration;
 using Bookings.Common.Security;
+using Bookings.DAL;
+using Bookings.IntegrationTests.Hooks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -9,12 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using Testing.Common.Configuration;
-using Bookings.API;
-using Bookings.Common.Configuration;
-using Bookings.DAL;
-using Bookings.IntegrationTests.Hooks;
 
-namespace Bookings.IntegrationTests.Controllers
+namespace Bookings.IntegrationTests.Api
 {
     public abstract class ControllerTestsBase
     {
