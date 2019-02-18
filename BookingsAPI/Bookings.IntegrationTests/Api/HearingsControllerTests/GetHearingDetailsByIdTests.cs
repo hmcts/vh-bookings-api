@@ -24,7 +24,7 @@ namespace Bookings.IntegrationTests.Controllers.HearingsControllerTests
         {
             var hearingId = Guid.Empty;
             var uri = _endpoints.GetHearingDetailsById(hearingId);
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -35,7 +35,7 @@ namespace Bookings.IntegrationTests.Controllers.HearingsControllerTests
         {
             var hearingId = Guid.Parse("87C2A1DD-F9A3-1111-1111-03C026BAE678");
             var uri = _endpoints.GetHearingDetailsById(hearingId);
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -48,7 +48,7 @@ namespace Bookings.IntegrationTests.Controllers.HearingsControllerTests
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var uri = _endpoints.GetHearingDetailsById(_newHearingId);
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();

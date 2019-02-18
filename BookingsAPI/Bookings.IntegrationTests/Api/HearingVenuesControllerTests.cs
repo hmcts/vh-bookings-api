@@ -15,7 +15,7 @@ namespace Bookings.IntegrationTests.Controllers
         public async Task should_get_venues_ok_status()
         {
             var uri = _endpoints.GetVenues;
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();

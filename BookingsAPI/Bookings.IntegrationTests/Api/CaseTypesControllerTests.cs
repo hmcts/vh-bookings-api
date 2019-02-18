@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
+using Bookings.IntegrationTests.Controllers;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 
-namespace Bookings.IntegrationTests.Controllers
+namespace Bookings.IntegrationTests.Api
 {
     public class CaseTypesControllerTests : ControllerTestsBase
     {
@@ -16,7 +17,7 @@ namespace Bookings.IntegrationTests.Controllers
         public async Task should_get_case_roles_for_case_type_ok_status()
         {
             var uri = _endpoints.GetCaseRolesForCaseType("Civil Money Claims");
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
@@ -29,7 +30,7 @@ namespace Bookings.IntegrationTests.Controllers
         public async Task should_get_case_roles_for_case_type_not_found_status()
         {
             var uri = _endpoints.GetCaseRolesForCaseType("Not Exist");
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -39,12 +40,11 @@ namespace Bookings.IntegrationTests.Controllers
         public async Task should_get_hearing_roles_for_case_role_ok_status()
         {
             var uri = _endpoints.GetHearingRolesForCaseRole("Civil Money Claims", "Claimant");
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
-
             model.Should().NotBeEmpty();
         }
         
@@ -52,7 +52,7 @@ namespace Bookings.IntegrationTests.Controllers
         public async Task should_get_hearing_roles_for_case_role_not_found_status()
         {
             var uri = _endpoints.GetHearingRolesForCaseRole("Civil Money Claims", "Not Exist");
-            var response = await SendGetRequestAsync(uri);
+            var response = await SendGetRequest(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);

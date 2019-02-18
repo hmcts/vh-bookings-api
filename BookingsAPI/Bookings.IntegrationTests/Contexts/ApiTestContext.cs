@@ -15,6 +15,8 @@ namespace Bookings.IntegrationTests.Contexts
         public string DbString { get; set; }
         public string BearerToken { get; set; }
         public string Uri { get; set; }
+        public HttpMethod HttpMethod { get; set; }
+        public StringContent StringContent { get; set; }
         public HttpContent HttpContent { get; set; }
         public Guid NewHearingId { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
