@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.IntegrationTests.Api;
 using Bookings.IntegrationTests.Contexts;
-using Bookings.IntegrationTests.Helper;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
@@ -23,35 +21,17 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext = apiTestContext;
         }
 
-        [Given(@"I have a (.*) get case roles for a case type request")]
-        [Given(@"I have a (.*) case type in a get case roles for a case type request")]
-        public void GivenIHaveAGetCaseRolesForACaseTypeRequest(Scenario scenario)
+        [Given(@"I have a get case roles for a case type of '(.*)' request")]
+        public void GivenIHaveAGetCaseRolesForACaseTypeRequest(string caseType)
         {
-            string caseType;
-            switch (scenario)
-            {
-                case Scenario.Valid: caseType = "Civil Money Claims"; break;
-                case Scenario.Nonexistent: caseType = "Does not exist"; break;               
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
             _apiTestContext.Uri = _endpoints.GetCaseRolesForCaseType(caseType);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
 
-        [Given(@"I have a (.*) get hearing roles for a case role of a case type request")]
-        [Given(@"I have a (.*) in a get hearing roles for a case role of a case type request")]
-        public void GivenIHaveAGetHearingRolesForCaseRoleOfCaseTypeRequest(Scenario scenario)
-        {
-            var caseType = "Civil Money Claims";
-            var roleName = "Claimant";
-            switch (scenario)
-            {
-                case Scenario.Valid: caseType = "Civil Money Claims"; break;
-                case Scenario.NonexistentCaseType: caseType = "Does not exist"; break;
-                case Scenario.NonexistentRoleName: roleName = "Does not exist"; break;
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
-            _apiTestContext.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, roleName);
+        [Given(@"I have a get hearing roles for a case role of '(.*)' and case type of '(.*)' request")]
+        public void GivenIHaveAGetHearingRolesForCaseRoleOfCaseTypeRequest(string caseType, string caseRoleName)
+        {          
+            _apiTestContext.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
 
