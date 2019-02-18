@@ -2,8 +2,8 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Bookings.IntegrationTests.Api;
 using Bookings.IntegrationTests.Contexts;
-using Bookings.IntegrationTests.Controllers;
 using FluentAssertions;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
