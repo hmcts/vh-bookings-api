@@ -5,11 +5,11 @@ variables:
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
   coverletCoverageExclusions: '\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\"'
   integrationTestsAppSettingsTransform: '
-  "AzureAd/Authority":"$(AzureAd-Authority)",
-   "AzureAd/VhBookingsApiResourceId":"$(AzureAd-VhBookingsApiResourceId)",
-   "ConnectionStrings/VhBookings":"$(ConnectionStrings-VhBookings)",
-   "Testing/TestClientId":"$(Testing-TestClientId)",
-   "Testing/TestClientSecret":"$(Testing-TestClientSecret)"
+    "AzureAd/Authority":"$(AzureAd-Authority)",
+    "AzureAd/VhBookingsApiResourceId":"$(AzureAd-VhBookingsApiResourceId)",
+    "ConnectionStrings/VhBookings":"$(ConnectionStrings-VhBookings)",
+    "Testing/TestClientId":"$(Testing-TestClientId)",
+    "Testing/TestClientSecret":"$(Testing-TestClientSecret)"
     '
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:
@@ -26,6 +26,12 @@ pr:
 - master
 
 jobs:
+
+- powershell: |
+    Write-output $(integrationTestsAppSettingsTransform)
+  displayName: 'Print all variables'
+
+
 - template: jobs/webapi.yml@azureDevOpsTemplates # Template reference
   parameters:
     sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
