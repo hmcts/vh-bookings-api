@@ -1,9 +1,9 @@
 # Set variables once
 variables:
-  solutionType: dotNetCore # angularDotNetCore, dotNetCore
+  apiDirectory: 'BookingsAPI/Bookings.API'
   sonarCloudPrepareExtraProperties: |  
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-  coverletCoverageExclusions: ''
+  coverletCoverageExclusions: '"\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\""'
   integrationTestsAppSettingsTransform: '
     "AzureAd/Authority":"$(AzureAd-Authority)",
     "AzureAd/VhBookingsApiResourceId":"$(AzureAd-VhBookingsApiResourceId)",
@@ -11,6 +11,7 @@ variables:
     "Testing/TestClientId":"$(Testing-TestClientId)",
     "Testing/TestClientSecret":"$(Testing-TestClientSecret)"
     '
+
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:
   repositories:
@@ -30,6 +31,6 @@ jobs:
 - template: jobs/webapi.yml@azureDevOpsTemplates # Template reference
   parameters:
     sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
-    solutionType: $(solutionType)
     integrationTestsAppSettingsTransform: $(integrationTestsAppSettingsTransform)
     coverletCoverageExclusions: $(coverletCoverageExclusions)
+    apiDirectory: $(apiDirectory)
