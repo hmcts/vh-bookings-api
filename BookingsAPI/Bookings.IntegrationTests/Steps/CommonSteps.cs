@@ -28,11 +28,11 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.ResponseMessage = new HttpResponseMessage();
             switch (_apiTestContext.HttpMethod.Method)
             {
-                case "GET": _apiTestContext.ResponseMessage = await SendGetRequest(_apiTestContext); break;
-                case "POST": _apiTestContext.ResponseMessage = SendPostRequestAsync(_apiTestContext.Uri, _apiTestContext.HttpContent).Result; break;
-                case "PATCH": _apiTestContext.ResponseMessage = SendPatchRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent).Result; break;
-                case "PUT": _apiTestContext.ResponseMessage = SendPutRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent).Result; break;
-                case "DELETE": _apiTestContext.ResponseMessage = SendDeleteRequestAsync(_apiTestContext.Uri).Result; break;
+                case "GET": _apiTestContext.ResponseMessage = await SendGetRequestAsync(_apiTestContext); break;
+                case "POST": _apiTestContext.ResponseMessage = await SendPostRequestAsync(_apiTestContext.Uri, _apiTestContext.HttpContent); break;
+                case "PATCH": _apiTestContext.ResponseMessage = await SendPatchRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent); break;
+                case "PUT": _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent); break;
+                case "DELETE": _apiTestContext.ResponseMessage = await SendDeleteRequestAsync(_apiTestContext.Uri); break;
                 default: throw new ArgumentOutOfRangeException(_apiTestContext.HttpMethod.ToString(), _apiTestContext.HttpMethod.ToString(), null);
             }
         }

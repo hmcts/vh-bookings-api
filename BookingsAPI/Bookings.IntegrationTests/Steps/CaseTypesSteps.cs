@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.IntegrationTests.Api;
@@ -26,15 +27,13 @@ namespace Bookings.IntegrationTests.Steps
 
         [Given(@"I have a (.*) get case roles for a case type request")]
         [Given(@"I have a (.*) case type in a get case roles for a case type request")]
-        [Given(@"I have an (.*) get case roles for a case type request")]
         public void GivenIHaveAGetCaseRolesForACaseTypeRequest(Scenario scenario)
         {
             string caseType;
             switch (scenario)
             {
                 case Scenario.Valid: caseType = "Civil Money Claims"; break;
-                case Scenario.Nonexistent: caseType = "Does not exist"; break;
-                case Scenario.Invalid: caseType = null; break;
+                case Scenario.Nonexistent: caseType = "Does not exist"; break;               
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
             _apiTestContext.Uri = _endpoints.GetCaseRolesForCaseType(caseType);
@@ -43,22 +42,15 @@ namespace Bookings.IntegrationTests.Steps
 
         [Given(@"I have a (.*) get hearing roles for a case role of a case type request")]
         [Given(@"I have a (.*) in a get hearing roles for a case role of a case type request")]
-        [Given(@"I have an (.*) get hearing roles for a case role of a case type request")]
         public void GivenIHaveAGetHearingRolesForCaseRoleOfCaseTypeRequest(Scenario scenario)
         {
             var caseType = "Civil Money Claims";
-            var roleName = "Professional";
+            var roleName = "Claimant";
             switch (scenario)
             {
                 case Scenario.Valid: caseType = "Civil Money Claims"; break;
                 case Scenario.NonexistentCaseType: caseType = "Does not exist"; break;
                 case Scenario.NonexistentRoleName: roleName = "Does not exist"; break;
-                case Scenario.Invalid:
-                {
-                    caseType = null;
-                    roleName = null;
-                    break;
-                }
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
             _apiTestContext.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, roleName);
@@ -72,6 +64,7 @@ namespace Bookings.IntegrationTests.Steps
             var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
             model.Should().NotBeEmpty();
+            model[0].Name.IsNotNullOrEmpty();
         }
     }
 }

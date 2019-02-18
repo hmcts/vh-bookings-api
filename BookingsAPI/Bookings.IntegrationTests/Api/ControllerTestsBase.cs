@@ -4,7 +4,6 @@ using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
 using Bookings.DAL;
-using Bookings.IntegrationTests.Hooks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -13,9 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using Testing.Common.Configuration;
-using Bookings.API;
-using Bookings.Common.Configuration;
-using Bookings.DAL;
 using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 
@@ -67,7 +63,7 @@ namespace Bookings.IntegrationTests.Api
                 azureAdConfiguration.VhBookingsApiResourceId);
         }
 
-        protected async Task<HttpResponseMessage> SendGetRequest(string uri)
+        protected async Task<HttpResponseMessage> SendGetRequestAsync(string uri)
         {
             using (var client = _server.CreateClient())
             {
@@ -76,11 +72,11 @@ namespace Bookings.IntegrationTests.Api
             }
         }
 
-        protected async Task<HttpResponseMessage> SendGetRequest(ApiTestContext apiTestContext)
+        protected async Task<HttpResponseMessage> SendGetRequestAsync(ApiTestContext apiTestContext)
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
                 return await client.GetAsync(apiTestContext.Uri);
             }
         }

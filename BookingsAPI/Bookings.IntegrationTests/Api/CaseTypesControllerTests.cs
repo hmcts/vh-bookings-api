@@ -16,7 +16,7 @@ namespace Bookings.IntegrationTests.Api
         public async Task should_get_case_roles_for_case_type_ok_status()
         {
             var uri = _endpoints.GetCaseRolesForCaseType("Civil Money Claims");
-            var response = await SendGetRequest(uri);
+            var response = await SendGetRequestAsync(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
@@ -29,7 +29,7 @@ namespace Bookings.IntegrationTests.Api
         public async Task should_get_case_roles_for_case_type_not_found_status()
         {
             var uri = _endpoints.GetCaseRolesForCaseType("Not Exist");
-            var response = await SendGetRequest(uri);
+            var response = await SendGetRequestAsync(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -39,7 +39,7 @@ namespace Bookings.IntegrationTests.Api
         public async Task should_get_hearing_roles_for_case_role_ok_status()
         {
             var uri = _endpoints.GetHearingRolesForCaseRole("Civil Money Claims", "Claimant");
-            var response = await SendGetRequest(uri);
+            var response = await SendGetRequestAsync(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
@@ -51,7 +51,7 @@ namespace Bookings.IntegrationTests.Api
         public async Task should_get_hearing_roles_for_case_role_not_found_status()
         {
             var uri = _endpoints.GetHearingRolesForCaseRole("Civil Money Claims", "Not Exist");
-            var response = await SendGetRequest(uri);
+            var response = await SendGetRequestAsync(uri);
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
