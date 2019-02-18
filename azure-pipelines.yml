@@ -1,8 +1,10 @@
 # Set variables once
 variables:
   apiDirectory: 'BookingsAPI/Bookings.API'
-  sonarCloudPrepareExtraProperties: |  
+  sonarCloudPrepareExtraProperties: |
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
+    sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,Migrations/**,SeedData/**,DesignTimeHearingsContextFactory.cs,Ddd/ValueObject.cs,Ddd/Enumeration.cs,Testing.Common/**"
+    sonar.cpd.exclusions="**/SeedData.cs,Migrations/**"
   coverletCoverageExclusions: '"\"[Bookings.*Tests?]*,[Bookings.DAL.Migrations]*,[Bookings.DAL.Mappings]*,[Bookings.DAL.SeedData]*,[Bookings.DAL]BookingsDbContext\""'
   integrationTestsAppSettingsTransform: '
     "AzureAd/Authority":"$(AzureAd-Authority)",
