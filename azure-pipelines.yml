@@ -31,3 +31,5 @@ jobs:
   parameters:
     sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
     solutionType: $(solutionType)
+    integrationTestsAppSettingsTransform: $(integrationTestsAppSettingsTransform)
+    coverletCoverageExclusions: $(coverletCoverageExclusions)
