@@ -25,6 +25,8 @@ trigger:
 pr:
 - master
 
+jobs:
+  
 - template: jobs/webapi.yml@azureDevOpsTemplates # Template reference
   parameters:
     sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
