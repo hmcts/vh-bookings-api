@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Bookings.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Queries
 {
@@ -17,9 +19,9 @@ namespace Bookings.DAL.Queries
             _context = context;
         }
 
-        public List<HearingVenue> Handle(GetHearingVenuesQuery query)
+        public async Task<List<HearingVenue>> Handle(GetHearingVenuesQuery query)
         {
-            return _context.Venues.ToList();
+            return await _context.Venues.ToListAsync();
         }
     }
 }

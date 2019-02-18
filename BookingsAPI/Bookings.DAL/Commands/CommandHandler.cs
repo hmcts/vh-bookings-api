@@ -1,4 +1,6 @@
-﻿namespace Bookings.DAL.Commands
+﻿using System.Threading.Tasks;
+
+namespace Bookings.DAL.Commands
 {
     public class CommandHandler : ICommandHandler
     {
@@ -9,10 +11,10 @@
             _queryHandlerFactory = queryHandlerFactory;
         }
 
-        public void Handle<TCommand>(TCommand command) where TCommand : ICommand
+        public async Task Handle<TCommand>(TCommand command) where TCommand : ICommand
         {
             var handler = _queryHandlerFactory.Create(command);
-            handler.Handle(command);
+            await handler.Handle(command);
         }
     }
 }

@@ -1,12 +1,14 @@
-﻿namespace Bookings.DAL.Queries
+﻿using System.Threading.Tasks;
+
+namespace Bookings.DAL.Queries
 {
     public interface IQueryHandler
     {
-        TResult Handle<TQuery, TResult>(TQuery query) where TQuery:IQuery where TResult: class;
+        Task<TResult> Handle<TQuery, TResult>(TQuery query) where TQuery:IQuery where TResult: class;
     }
 
-    public interface IQueryHandler<in TQuery, out TResult> where TQuery: IQuery where TResult : class 
+    public interface IQueryHandler<in TQuery, TResult> where TQuery: IQuery where TResult : class 
     {
-        TResult Handle(TQuery query);
+        Task<TResult> Handle(TQuery query);
     }
 }
