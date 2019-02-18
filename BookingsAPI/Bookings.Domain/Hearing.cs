@@ -169,7 +169,7 @@ namespace Bookings.Domain
 
         public void AddParticipants(IEnumerable<Participant> participants)
         {
-            participants.ToList().ForEach(x => Participants.Add(x));
+            participants.ToList().ForEach(AddParticipant);
         }
 
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,

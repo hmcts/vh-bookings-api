@@ -43,7 +43,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         {
             var hearing = new VideoHearingBuilder().Build();
             var currentCount = hearing.GetParticipants().Count;
-            while (currentCount > 2)
+            while (currentCount > 1)
             {
                 var part = hearing.GetParticipants().First();
                 hearing.RemoveParticipant(part);
@@ -51,7 +51,6 @@ namespace Bookings.UnitTests.Domain.Hearing
             }
 
             var participant = hearing.GetParticipants().First();
-            hearing.RemoveParticipant(participant);
             Action action = () => hearing.RemoveParticipant(participant);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Any(x => x.Message == "A hearing must have at least one participant").Should().BeTrue();

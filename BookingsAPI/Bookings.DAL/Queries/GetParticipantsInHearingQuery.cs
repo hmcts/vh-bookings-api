@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Bookings.DAL.Exceptions;
 using Bookings.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,15 +27,19 @@ namespace Bookings.DAL.Queries
             _context = context;
         }
 
-        public List<Participant> Handle(GetParticipantsInHearingQuery query)
+        public async Task<List<Participant>> Handle(GetParticipantsInHearingQuery query)
         {
-            return _context.VideoHearings
-                .Include(x => x.Participants).ThenInclude(x => x.HearingRole)
+            var hearing = await _context.VideoHearings
+                .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x=> x.Address)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x=> x.Organisation)
-                .SingleOrDefault(x => x.Id == query.HearingId)?
-                .GetParticipants().ToList();
+                .SingleOrDefaultAsync(x => x.Id == query.HearingId);
+            if (hearing == null)
+            {
+                throw new HearingNotFoundException(query.HearingId);
+            }    
+            return hearing.GetParticipants().ToList();
         }
     }
 }

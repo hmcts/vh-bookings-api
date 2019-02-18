@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
-using Bookings.IntegrationTests.Controllers;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;

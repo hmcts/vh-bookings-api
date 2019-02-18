@@ -25,10 +25,6 @@
     <Compile Remove="Builders\Api\Request\CaseRequestBuilder.cs" />
     <Compile Remove="Builders\Api\Request\ConferenceRequestBuilder.cs" />
     <Compile Remove="Builders\Api\Request\HearingRequestBuilder.cs" />
-    <Compile Remove="Builders\Api\Request\ParticipantRequestBuilder.cs" />
     <Compile Remove="Builders\Api\Request\UpdateHearingRequestBuilder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Builders\Api\Request" />
   </ItemGroup>
 </Project>

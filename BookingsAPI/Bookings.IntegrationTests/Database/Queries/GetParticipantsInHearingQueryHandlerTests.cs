@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetParticipantsInHearingQueryHandler(context);
+            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -27,7 +29,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
-            var participants = _handler.Handle(new GetParticipantsInHearingQuery(_newHearingId));
+            var participants = await _handler.Handle(new GetParticipantsInHearingQuery(_newHearingId));
             participants.Count.Should().Be(seededHearing.GetParticipants().Count);
 
             foreach (var participant in participants)
@@ -50,8 +52,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public void should_not_get_participants_in_hearing_that_does_not_exist()
         {
-            var participants = _handler.Handle(new GetParticipantsInHearingQuery(Guid.Empty));
-            participants.Should().BeNullOrEmpty();
+            Assert.ThrowsAsync<HearingNotFoundException>(() => _handler.Handle(new GetParticipantsInHearingQuery(Guid.Empty)));
         }
 
         [TearDown]

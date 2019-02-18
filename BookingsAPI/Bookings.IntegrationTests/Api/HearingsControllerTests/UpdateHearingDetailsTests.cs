@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
-using Bookings.IntegrationTests.Controllers;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -124,7 +123,7 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             
             response.IsSuccessStatusCode.Should().BeTrue();
-            response.StatusCode.Should().Be(HttpStatusCode.Accepted);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
             
             var json = await response.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);

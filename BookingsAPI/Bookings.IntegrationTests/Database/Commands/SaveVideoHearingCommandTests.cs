@@ -27,6 +27,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _queryHandler = new GetHearingByIdQueryHandler(context);
             _commandHandler = new SaveVideoHearingCommandHandler(context);
+            _newHearingId = Guid.Empty;
         }
 
         [Test]
