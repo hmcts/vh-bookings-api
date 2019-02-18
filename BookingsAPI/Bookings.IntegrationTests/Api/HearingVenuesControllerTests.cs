@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 
-namespace Bookings.IntegrationTests.Controllers
+namespace Bookings.IntegrationTests.Api
 {
     public class HearingVenuesControllerTests : ControllerTestsBase
     {

@@ -71,7 +71,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             videoHearing.Id.Should().NotBeEmpty();
             _newHearingId = videoHearing.Id;
             
-            var returnedVideoHearing = _queryHandler.Handle(new GetHearingByIdQuery(videoHearing.Id));
+            var returnedVideoHearing = await  _queryHandler.Handle(new GetHearingByIdQuery(videoHearing.Id));
 
             returnedVideoHearing.Should().NotBeNull();
             

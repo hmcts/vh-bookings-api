@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
@@ -29,10 +30,10 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "GetHearingVenues")]
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public IActionResult GetHearingVenues()
+        public async Task<IActionResult> GetHearingVenues()
         {
             var query = new GetHearingVenuesQuery();
-            var hearingVenues = _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query);
+            var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query);
 
             var response = hearingVenues.Select(x => new HearingVenueResponse()
             {

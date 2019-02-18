@@ -18,8 +18,13 @@ namespace Bookings.IntegrationTests.Database
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            _databaseConnectionString = new ConfigurationBuilder().AddUserSecrets<Startup>().Build()
-                .GetConnectionString("VhBookings");
+            var configRootBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .AddUserSecrets<Startup>();
+            
+            var configRoot = configRootBuilder.Build();
+            _databaseConnectionString = configRoot.GetConnectionString("VhBookings");
 
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();

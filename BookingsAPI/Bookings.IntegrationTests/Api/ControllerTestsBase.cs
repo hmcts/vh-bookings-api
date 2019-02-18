@@ -1,6 +1,10 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Bookings.API;
+using Bookings.Common.Configuration;
 using Bookings.Common.Security;
+using Bookings.DAL;
+using Bookings.IntegrationTests.Hooks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -15,7 +19,7 @@ using Bookings.DAL;
 using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 
-namespace Bookings.IntegrationTests.Controllers
+namespace Bookings.IntegrationTests.Api
 {
     public abstract class ControllerTestsBase
     {
@@ -34,10 +38,6 @@ namespace Bookings.IntegrationTests.Controllers
                 .UseStartup<Startup>();
             _server = new TestServer(webHostBuilder);
             GetClientAccessTokenForApi();
-
-            var configuration = new ConfigurationBuilder().AddUserSecrets<Startup>().Build(); 
-            
-            _dbString = configuration.GetConnectionString("VhBookings");
             
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
@@ -54,7 +54,9 @@ namespace Bookings.IntegrationTests.Controllers
                 .AddUserSecrets<Startup>();
             
             var configRoot = configRootBuilder.Build();
-
+            
+            _dbString = configRoot.GetConnectionString("VhBookings");
+            
             var azureAdConfigurationOptions = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
             var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
