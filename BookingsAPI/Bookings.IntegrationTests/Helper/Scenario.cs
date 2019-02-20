@@ -4,8 +4,7 @@
     {
         Valid,
         Invalid,
-        Nonexistent,
-        NonexistentCaseType,
-        NonexistentRoleName        
+        Negative,
+        Nonexistent               
     }
 }

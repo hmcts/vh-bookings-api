@@ -3,6 +3,7 @@ using Bookings.Common.Configuration;
 using Bookings.Common.Security;
 using Bookings.DAL;
 using Bookings.IntegrationTests.Contexts;
+using Bookings.IntegrationTests.Helper;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -39,8 +40,9 @@ namespace Bookings.IntegrationTests.Hooks
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(apiTestContext.DbString);
             apiTestContext.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
+            apiTestContext.Hooks = new VideoHearingHooks(apiTestContext.BookingsDbContextOptions);
         }
-        
+
         private static void GetClientAccessTokenForApi(ApiTestContext apiTestContext)
         {
             var configRootBuilder = new ConfigurationBuilder()

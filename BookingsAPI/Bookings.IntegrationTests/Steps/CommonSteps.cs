@@ -29,9 +29,9 @@ namespace Bookings.IntegrationTests.Steps
             switch (_apiTestContext.HttpMethod.Method)
             {
                 case "GET": _apiTestContext.ResponseMessage = await SendGetRequestAsync(_apiTestContext); break;
-                case "POST": _apiTestContext.ResponseMessage = await SendPostRequestAsync(_apiTestContext.Uri, _apiTestContext.HttpContent); break;
+                case "POST": _apiTestContext.ResponseMessage = await SendPostRequestAsync(_apiTestContext); break;
                 case "PATCH": _apiTestContext.ResponseMessage = await SendPatchRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent); break;
-                case "PUT": _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent); break;
+                case "PUT": _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext); break;
                 case "DELETE": _apiTestContext.ResponseMessage = await SendDeleteRequestAsync(_apiTestContext.Uri); break;
                 default: throw new ArgumentOutOfRangeException(_apiTestContext.HttpMethod.ToString(), _apiTestContext.HttpMethod.ToString(), null);
             }
@@ -43,6 +43,14 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.ResponseMessage.StatusCode.Should().Be(statusCode);
             _apiTestContext.ResponseMessage.IsSuccessStatusCode.Should().Be(isSuccess);
             TestContext.WriteLine($"Status Code: {_apiTestContext.ResponseMessage.StatusCode}");
+        }
+
+        [Then(@"the response message should read '(.*)'")]
+        [Then(@"the error response message should contain '(.*)'")]
+        [Then(@"the error response message should also contain '(.*)'")]
+        public void ThenTheResponseShouldContain(string errorMessage)
+        {
+            _apiTestContext.ResponseMessage.Content.ReadAsStringAsync().Result.Should().Contain(errorMessage);
         }
     }
 }

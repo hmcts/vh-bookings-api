@@ -91,6 +91,15 @@ namespace Bookings.IntegrationTests.Api
             }
         }
 
+        protected async Task<HttpResponseMessage> SendPostRequestAsync(ApiTestContext apiTestContext)
+        {
+            using (var client = apiTestContext.Server.CreateClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.PostAsync(apiTestContext.Uri, apiTestContext.HttpContent);
+            }
+        }
+
         protected async Task<HttpResponseMessage> SendPatchRequestAsync(string uri, StringContent httpContent)
         {
             using (var client = _server.CreateClient())
@@ -106,6 +115,15 @@ namespace Bookings.IntegrationTests.Api
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
                 return await client.PutAsync(uri, httpContent);
+            }
+        }
+
+        protected async Task<HttpResponseMessage> SendPutRequestAsync(ApiTestContext apiTestContext)
+        {
+            using (var client = apiTestContext.Server.CreateClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.PutAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
 
