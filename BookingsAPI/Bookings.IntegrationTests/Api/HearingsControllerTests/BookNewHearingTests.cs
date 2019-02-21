@@ -222,7 +222,7 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             response2.IsSuccessStatusCode.Should().BeTrue();
             response2.StatusCode.Should().Be(HttpStatusCode.Created);
             
-            var secondJson = await response.Content.ReadAsStringAsync();
+            var secondJson = await response2.Content.ReadAsStringAsync();
             var secondModel = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(secondJson);
 
             secondModel.Should().NotBeNull();
