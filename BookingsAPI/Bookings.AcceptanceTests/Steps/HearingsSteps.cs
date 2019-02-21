@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using NUnit.Framework;
 using TechTalk.SpecFlow;
+using Testing.Common.Configuration;
 
 namespace Bookings.AcceptanceTests.Steps
 {
@@ -21,13 +19,14 @@ namespace Bookings.AcceptanceTests.Steps
         [Given("I have entered (.*) into the calculator")]
         public void GivenIHaveEnteredSomethingIntoTheCalculator(int number)
         {
+            var testSettings = new BookingsConfigLoader().ReadTestSettings();
+            TestContext.WriteLine($"Test Client ID: {testSettings.TestClientId}");
             //TODO: implement arrange (precondition) logic
             // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata 
             // To use the multiline text or the table argument of the scenario,
             // additional string/Table parameters can be defined on the step definition
             // method. 
 
-            context.Pending();
         }
 
         [When("I press add")]
@@ -35,7 +34,6 @@ namespace Bookings.AcceptanceTests.Steps
         {
             //TODO: implement act (action) logic
 
-            context.Pending();
         }
 
         [Then("the result should be (.*) on the screen")]
@@ -43,7 +41,6 @@ namespace Bookings.AcceptanceTests.Steps
         {
             //TODO: implement assert (verification) logic
 
-            context.Pending();
         }
     }
 }

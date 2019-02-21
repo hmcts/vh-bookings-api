@@ -4,14 +4,15 @@ using Microsoft.Extensions.Options;
 
 namespace Testing.Common.Configuration
 {
-    public class ConfigurationLoader
+    public class BookingsConfigLoader
     {
         private readonly IConfigurationRoot _configRoot;
 
-        public ConfigurationLoader()
+        public BookingsConfigLoader()
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
                 .AddUserSecrets("d76b6eb8-f1a2-4a51-9b8f-21e1b6b81e4f");
             _configRoot = configRootBuilder.Build();
         }
