@@ -14,7 +14,7 @@ namespace Bookings.API.Validations
         /// </remarks>
         public static bool IsValidEmail(this string email)
         {
-            if (String.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(email))
                 return false;
 
             try
