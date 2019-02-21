@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -29,6 +29,10 @@
     <PackageReference Include="SpecFlow" Version="3.0.169-beta" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.0.169-beta" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.0.169-beta" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bookings.Api.Contract\Bookings.Api.Contract.csproj" />
   </ItemGroup>
 
 </Project>
