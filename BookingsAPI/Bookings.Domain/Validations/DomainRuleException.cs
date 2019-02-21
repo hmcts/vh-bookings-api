@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Bookings.Domain.Validations
 {
+    // ReSharper disable once S3925
     public class DomainRuleException : Exception
     {
         public DomainRuleException(ValidationFailures validationFailures)

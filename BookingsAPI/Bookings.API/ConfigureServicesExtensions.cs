@@ -6,7 +6,6 @@ using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Bookings.Common.Security;
 using Bookings.Api.Contract.Requests;
-using Bookings.API.DomainFactory;
 using Bookings.API.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
@@ -55,7 +54,6 @@ namespace Bookings.API
             
             services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
             
-            services.AddScoped<IChecklistFactory, ChecklistFactory>();
             services.AddScoped<ITokenProvider, AzureTokenProvider>();
 
             services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
