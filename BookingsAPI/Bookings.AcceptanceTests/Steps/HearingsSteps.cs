@@ -19,8 +19,6 @@ namespace Bookings.AcceptanceTests.Steps
         [Given("I have entered (.*) into the calculator")]
         public void GivenIHaveEnteredSomethingIntoTheCalculator(int number)
         {
-            var testSettings = new BookingsConfigLoader().ReadTestSettings();
-            TestContext.WriteLine($"Test Client ID: {testSettings.TestClientId}");
             //TODO: implement arrange (precondition) logic
             // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata 
             // To use the multiline text or the table argument of the scenario,
