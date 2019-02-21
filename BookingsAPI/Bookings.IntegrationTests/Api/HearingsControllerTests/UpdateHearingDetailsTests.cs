@@ -123,7 +123,7 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             
             response.IsSuccessStatusCode.Should().BeTrue();
-            response.StatusCode.Should().Be(HttpStatusCode.Accepted);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
             
             var json = await response.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);

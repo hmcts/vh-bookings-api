@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Bookings.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
 {
@@ -24,6 +25,20 @@ namespace Bookings.DAL.Commands
 
         public async Task Handle(SaveVideoHearingCommand command)
         {
+            var participants = command.VideoHearing.GetParticipants();
+            foreach (var participant in participants)
+            {
+                var existingPerson = await _context.Persons
+                    .Include(x => x.Address)
+                    .Include(x => x.Organisation)
+                    .SingleOrDefaultAsync(x => x.Username == participant.Person.Username);
+
+                if (existingPerson != null)
+                {
+                    participant.UpdatePersonDetails(existingPerson);
+                }
+            }
+            
             _context.VideoHearings.Add(command.VideoHearing);
             await _context.SaveChangesAsync();
         }

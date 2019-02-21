@@ -9,11 +9,13 @@ namespace Testing.Common.Builders.Api
             HearingVenueEndpoints = new HearingVenueEndpoints();
             CaseTypesEndpoints = new CaseTypesEndpoints();
             HearingsEndpoints = new HearingsEndpoints();
+            ParticipantsEndpoints = new ParticipantsEndpoints();
         }
         
         public HearingVenueEndpoints HearingVenueEndpoints { get; set; }
         public CaseTypesEndpoints CaseTypesEndpoints { get; set; }
         public HearingsEndpoints HearingsEndpoints { get; set; }
+        public ParticipantsEndpoints ParticipantsEndpoints { get; set; }
     }
 
     public class HearingVenueEndpoints
@@ -35,5 +37,19 @@ namespace Testing.Common.Builders.Api
         public string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
         public string BookNewHearing() => $"{ApiRoot}";
         public string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+    }
+
+    public class ParticipantsEndpoints
+    {
+        private string ApiRoot => "hearings";
+        public string GetAllParticipantsInHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
+
+        public string GetParticipantInHearing(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}";
+        
+        public string AddParticipantsToHearing(Guid hearingId) =>  $"{ApiRoot}/{hearingId}/participants";
+
+        public string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}";
     }
 }

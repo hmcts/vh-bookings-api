@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
+using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -49,7 +49,7 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             var query = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
@@ -72,7 +72,7 @@ namespace Bookings.API.Controllers
                     IsLeadCase = x.IsLeadCase
                 })
                 .ToList();
-            
+
             var participants = videoHearing.GetParticipants()
                 .Select(x => new ParticipantResponse
                 {
@@ -90,8 +90,8 @@ namespace Bookings.API.Controllers
                     TelephoneNumber = x.Person.TelephoneNumber
                 })
                 .ToList();
-            
-            
+
+
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,
@@ -123,10 +123,10 @@ namespace Bookings.API.Controllers
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return BadRequest(ModelState);
             }
-            
+
             var query = new GetCaseTypeQuery(request.CaseTypeName);
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
-            
+
             if (caseType == null)
             {
                 ModelState.AddModelError(nameof(request.CaseTypeName), "Case type does not exist");
@@ -139,7 +139,7 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(request.HearingTypeName), "Hearing type does not exist");
                 return BadRequest(ModelState);
             }
-            
+
             var venue = await GetVenue(request.HearingVenueName);
             if (venue == null)
             {
@@ -153,51 +153,17 @@ namespace Bookings.API.Controllers
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             videoHearing.AddCases(cases);
 
-            var participants = request.Participants.Select(x => MapParticipantRequestToParticipant(x, caseType)).ToList();
+            var mapper = new ParticipantRequestToDomainMap();
+            var participants = request.Participants.Select(x => mapper.MapRequestToDomain(x, caseType)).ToList();
             videoHearing.AddParticipants(participants);
-            
+
             var command = new SaveVideoHearingCommand(videoHearing);
             await _commandHandler.Handle(command);
-            
+
             var response = MapHearingToDetailResponseModel(videoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
-        private Participant MapParticipantRequestToParticipant(ParticipantRequest requestParticipant, CaseType caseType)
-        {
-            var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username);
-            person.MiddleNames = requestParticipant.MiddleNames;
-            person.ContactEmail = requestParticipant.ContactEmail;
-            person.TelephoneNumber = requestParticipant.TelephoneNumber;
-
-            var caseRole = caseType.CaseRoles.SingleOrDefault(x => x.Name == requestParticipant.CaseRoleName);
-            var hearingRole = caseRole.HearingRoles.SingleOrDefault(x => x.Name == requestParticipant.HearingRoleName);
-
-            Participant participant;
-            switch (hearingRole.UserRole.Name)
-            {
-                case "Individual":
-                    var individual = new Individual(person, hearingRole, caseRole);
-                    participant = individual;
-                    break;
-                case "Representative":
-                {
-                    var rep = new Representative(person, hearingRole, caseRole)
-                    {
-                        SolicitorsReference = requestParticipant.SolicitorsReference,
-                        Representee = requestParticipant.Representee
-                    };
-                    participant = rep;
-                    break;
-                }
-                default:
-                    throw new ArgumentException($"Role {hearingRole.UserRole.Name} not recognised");
-            }
-
-            participant.DisplayName = requestParticipant.DisplayName;
-            return participant;
-        }
 
         /// <summary>
         /// Update the details of a hearing such as venue, time and duration
@@ -207,7 +173,7 @@ namespace Bookings.API.Controllers
         /// <returns>Details of updated hearing</returns>
         [HttpPut("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateHearingDetails")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
@@ -217,14 +183,14 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             var result = new UpdateHearingRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return BadRequest(ModelState);
             }
-            
+
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
@@ -243,16 +209,17 @@ namespace Bookings.API.Controllers
             var command =
                 new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue);
             await _commandHandler.Handle(command);
-            
+
             var response = MapHearingToDetailResponseModel(videoHearing);
-            
-            return AcceptedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
+
+            return Ok(response);
         }
 
         private async Task<HearingVenue> GetVenue(string venueName)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
-            var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
+            var hearingVenues =
+                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
     }

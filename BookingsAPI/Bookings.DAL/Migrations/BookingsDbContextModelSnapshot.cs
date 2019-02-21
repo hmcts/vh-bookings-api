@@ -16,7 +16,7 @@ namespace Bookings.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -52,54 +52,6 @@ namespace Bookings.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Case");
-                });
-
-            modelBuilder.Entity("Bookings.Domain.ChecklistAnswer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Answer");
-
-                    b.Property<int>("ChecklistQuestionId");
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("Notes");
-
-                    b.Property<Guid>("ParticipantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChecklistQuestionId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.HasIndex("ParticipantId", "ChecklistQuestionId")
-                        .IsUnique();
-
-                    b.ToTable("ChecklistAnswer");
-                });
-
-            modelBuilder.Entity("Bookings.Domain.ChecklistQuestion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Key")
-                        .IsRequired();
-
-                    b.Property<int>("Role")
-                        .HasColumnName("RoleId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Role", "Key")
-                        .IsUnique();
-
-                    b.ToTable("ChecklistQuestion");
                 });
 
             modelBuilder.Entity("Bookings.Domain.Hearing", b =>
@@ -362,18 +314,12 @@ namespace Bookings.DAL.Migrations
                 {
                     b.HasBaseType("Bookings.Domain.Hearing");
 
-
-                    b.ToTable("VideoHearing");
-
                     b.HasDiscriminator().HasValue(1);
                 });
 
             modelBuilder.Entity("Bookings.Domain.Participants.Individual", b =>
                 {
                     b.HasBaseType("Bookings.Domain.Participants.Participant");
-
-
-                    b.ToTable("Individual");
 
                     b.HasDiscriminator().HasValue("Individual");
                 });
@@ -386,22 +332,7 @@ namespace Bookings.DAL.Migrations
 
                     b.Property<string>("SolicitorsReference");
 
-                    b.ToTable("Representative");
-
                     b.HasDiscriminator().HasValue("Representative");
-                });
-
-            modelBuilder.Entity("Bookings.Domain.ChecklistAnswer", b =>
-                {
-                    b.HasOne("Bookings.Domain.ChecklistQuestion", "Question")
-                        .WithMany()
-                        .HasForeignKey("ChecklistQuestionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Bookings.Domain.Participants.Participant")
-                        .WithMany("ChecklistAnswers")
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Bookings.Domain.Hearing", b =>

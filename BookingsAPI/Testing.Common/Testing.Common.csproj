@@ -16,19 +16,4 @@
     <ProjectReference Include="..\Bookings.Api.Contract\Bookings.Api.Contract.csproj" />
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Moq, Version=4.9.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920">
-      <HintPath>..\..\..\..\.nuget\packages\moq\4.9.0\lib\netstandard1.3\Moq.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Builders\Api\Request\CaseRequestBuilder.cs" />
-    <Compile Remove="Builders\Api\Request\ConferenceRequestBuilder.cs" />
-    <Compile Remove="Builders\Api\Request\HearingRequestBuilder.cs" />
-    <Compile Remove="Builders\Api\Request\ParticipantRequestBuilder.cs" />
-    <Compile Remove="Builders\Api\Request\UpdateHearingRequestBuilder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Builders\Api\Request" />
-  </ItemGroup>
 </Project>
