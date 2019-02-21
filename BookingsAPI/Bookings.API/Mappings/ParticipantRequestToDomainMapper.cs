@@ -7,9 +7,9 @@ using Bookings.Domain.Validations;
 
 namespace Bookings.API.Mappings
 {
-    public class ParticipantRequestToDomainMap
+    public class ParticipantRequestToDomainMapper
     {
-        public Participant MapRequestToDomain(ParticipantRequest requestParticipant, CaseType caseType)
+        public Participant MapRequestToParticipant(ParticipantRequest requestParticipant, CaseType caseType)
         {
             var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
                 requestParticipant.Username)
