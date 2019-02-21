@@ -28,8 +28,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPersonByUsername(string username)
-        {
-            
+        {            
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
@@ -53,7 +52,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(PersonResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPersonByContactEmail([FromQuery]string contactEmail)
+        public async Task<IActionResult> GetPersonByContactEmail(string contactEmail)
         {
             if (!contactEmail.IsValidEmail())
             {
