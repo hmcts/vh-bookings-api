@@ -28,11 +28,12 @@ namespace Bookings.IntegrationTests.Helper
             var caseTypeName = "Civil Money Claims";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
-            var claimantCaseRoles = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var defendantCaseRoles = caseType.CaseRoles.First(x => x.Name == "Defendant");
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
+            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == "Defendant");
 
-            var claimantLipHearingRole = claimantCaseRoles.HearingRoles.First(x => x.Name == "Claimant LIP");
-            var defendantSolicitorHearingRole = defendantCaseRoles.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Claimant LIP");
+            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
 
             var hearingTypeName = "Application to Set Judgment Aside";
             var hearingType = caseType.HearingTypes.First(x => x.Name == hearingTypeName);
@@ -41,13 +42,19 @@ namespace Bookings.IntegrationTests.Helper
 
             var person1 = new PersonBuilder(true).Build();
             var claimantLipParticipant = new Builder(BuilderSettings).CreateNew<Individual>().WithFactory(() =>
-                new Individual(person1, claimantLipHearingRole, claimantCaseRoles)
+                new Individual(person1, claimantLipHearingRole, claimantCaseRole)
             ).Build();
 
             var person2 = new PersonBuilder(true).Build();
             var defendantSolicitorParticipant = new Builder(BuilderSettings).CreateNew<Representative>().WithFactory(
                 () =>
-                    new Representative(person2, defendantSolicitorHearingRole, defendantCaseRoles)
+                    new Representative(person2, defendantSolicitorHearingRole, defendantCaseRole)
+            ).Build();
+            
+            var person3 = new PersonBuilder(true).Build();
+            var claimantSolicitorParticipant = new Builder(BuilderSettings).CreateNew<Representative>().WithFactory(
+                () =>
+                    new Representative(person3, claimantSolicitorHearingRole, claimantCaseRole)
             ).Build();
 
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
@@ -56,7 +63,7 @@ namespace Bookings.IntegrationTests.Helper
             {
                 CreatedBy = "test@integration.com"
             };
-            videoHearing.AddParticipants(new Participant[] {claimantLipParticipant, defendantSolicitorParticipant});
+            videoHearing.AddParticipants(new Participant[] {claimantLipParticipant, claimantSolicitorParticipant, defendantSolicitorParticipant});
 
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
@@ -90,7 +97,7 @@ namespace Bookings.IntegrationTests.Helper
         {
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
-                var hearing = db.VideoHearings.Find(hearingId);
+                var hearing = await db.VideoHearings.FindAsync(hearingId);
                 db.Remove(hearing);
                 await db.SaveChangesAsync();
             }

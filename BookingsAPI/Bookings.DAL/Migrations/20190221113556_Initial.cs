@@ -52,25 +52,11 @@ namespace Bookings.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChecklistQuestion",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<int>(nullable: false),
-                    Key = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChecklistQuestion", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "HearingVenue",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false)
+                    Name = table.Column<string>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -318,61 +304,10 @@ namespace Bookings.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "ChecklistAnswer",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Answer = table.Column<string>(nullable: true),
-                    Notes = table.Column<string>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    ChecklistQuestionId = table.Column<int>(nullable: false),
-                    ParticipantId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChecklistAnswer", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChecklistAnswer_ChecklistQuestion_ChecklistQuestionId",
-                        column: x => x.ChecklistQuestionId,
-                        principalTable: "ChecklistQuestion",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ChecklistAnswer_Participant_ParticipantId",
-                        column: x => x.ParticipantId,
-                        principalTable: "Participant",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_CaseRole_CaseTypeId",
                 table: "CaseRole",
                 column: "CaseTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChecklistAnswer_ChecklistQuestionId",
-                table: "ChecklistAnswer",
-                column: "ChecklistQuestionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChecklistAnswer_ParticipantId",
-                table: "ChecklistAnswer",
-                column: "ParticipantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChecklistAnswer_ParticipantId_ChecklistQuestionId",
-                table: "ChecklistAnswer",
-                columns: new[] { "ParticipantId", "ChecklistQuestionId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChecklistQuestion_RoleId_Key",
-                table: "ChecklistQuestion",
-                columns: new[] { "RoleId", "Key" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Hearing_CaseTypeId",
@@ -464,13 +399,7 @@ namespace Bookings.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ChecklistAnswer");
-
-            migrationBuilder.DropTable(
                 name: "HearingCase");
-
-            migrationBuilder.DropTable(
-                name: "ChecklistQuestion");
 
             migrationBuilder.DropTable(
                 name: "Participant");

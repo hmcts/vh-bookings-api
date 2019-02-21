@@ -61,7 +61,7 @@ Scenario: Hearing not created with an invalid venue name
 Scenario: Update a hearing
 	Given I have a valid update hearing request
 	When I send the request to the endpoint
-	Then the response should have the status Accepted and success status True
+	Then the response should have the status OK and success status True
 	And hearing details should be updated
 
 Scenario: Hearing not updated with an invalid request

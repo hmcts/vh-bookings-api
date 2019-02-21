@@ -23,6 +23,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
             _getHearingVenuesQueryHandler = new GetHearingVenuesQueryHandler(context);
             _commandHandler = new UpdateHearingCommandHandler(context);
+            _newHearingId = Guid.Empty;
         }
         
         [Test]
@@ -44,6 +45,16 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.HearingVenue.Name.Should().Be(newVenue.Name);
             returnedVideoHearing.ScheduledDuration.Should().Be(newDuration);
             returnedVideoHearing.ScheduledDateTime.Should().Be(newDateTime);
+        }
+        
+        [TearDown]
+        public async Task TearDown()
+        {
+            if (_newHearingId != Guid.Empty)
+            {
+                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
+                await Hooks.RemoveVideoHearing(_newHearingId);
+            }
         }
     }
 }

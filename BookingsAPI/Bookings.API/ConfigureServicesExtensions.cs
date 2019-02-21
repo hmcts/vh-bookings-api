@@ -6,14 +6,11 @@ using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Bookings.Common.Security;
 using Bookings.Api.Contract.Requests;
-using Bookings.API.DomainFactory;
-using Bookings.API.DomainServices;
 using Bookings.API.Swagger;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Bookings.Common;
-using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
 
@@ -57,8 +54,6 @@ namespace Bookings.API
             
             services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
             
-            services.AddScoped<IHearingService, HearingService>();
-            services.AddScoped<IChecklistFactory, ChecklistFactory>();
             services.AddScoped<ITokenProvider, AzureTokenProvider>();
 
             services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();

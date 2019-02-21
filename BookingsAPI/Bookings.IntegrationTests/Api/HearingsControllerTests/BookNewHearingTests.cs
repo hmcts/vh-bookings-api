@@ -22,11 +22,13 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
     {
         private readonly HearingsEndpoints _endpoints = new ApiUriFactory().HearingsEndpoints;
         private Guid _newHearingId;
+        private Guid _secondHearingId;
 
         [SetUp]
         public void Setup()
         {
             _newHearingId = Guid.Empty;
+            _secondHearingId = Guid.Empty;
         }
         
         [Test]
@@ -186,6 +188,54 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             hearingFromDb.Should().NotBeNull();
         }
 
+        [Test]
+        public async Task should_use_existing_persons_when_booking_into_a_new_hearing()
+        {
+            int personCountBefore;
+            int personCountAfter;
+            
+            var request = BuildRequest();
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var httpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            
+            var uri = _endpoints.BookNewHearing();
+            var response = await SendPostRequestAsync(uri, httpContent);
+            TestContext.WriteLine($"Status Code: {response.StatusCode}");
+            
+            response.IsSuccessStatusCode.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            
+            var json = await response.Content.ReadAsStringAsync();
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+
+            model.Should().NotBeNull();
+            _newHearingId = model.Id;
+            
+            using (var db = new BookingsDbContext(BookingsDbContextOptions))
+            {
+                personCountBefore = await db.Persons.CountAsync();
+            }
+            
+            var response2 = await SendPostRequestAsync(uri, httpContent);
+            TestContext.WriteLine($"Status Code: {response2.StatusCode}");
+            
+            response2.IsSuccessStatusCode.Should().BeTrue();
+            response2.StatusCode.Should().Be(HttpStatusCode.Created);
+            
+            var secondJson = await response2.Content.ReadAsStringAsync();
+            var secondModel = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(secondJson);
+
+            secondModel.Should().NotBeNull();
+            _secondHearingId = secondModel.Id;
+            
+            using (var db = new BookingsDbContext(BookingsDbContextOptions))
+            {
+                personCountAfter = await db.Persons.CountAsync();
+            }
+
+            personCountAfter.Should().Be(personCountBefore);
+        }
+
         [TearDown]
         public async Task TearDown()
         {
@@ -193,6 +243,12 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             {
                 TestContext.WriteLine($"Removing test hearing {_newHearingId}");
                 await Hooks.RemoveVideoHearing(_newHearingId);
+            }
+            
+            if (_secondHearingId != Guid.Empty)
+            {
+                TestContext.WriteLine($"Removing test hearing {_secondHearingId}");
+                await Hooks.RemoveVideoHearing(_secondHearingId);
             }
         }
         

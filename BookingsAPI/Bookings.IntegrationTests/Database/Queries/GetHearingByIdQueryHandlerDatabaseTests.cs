@@ -19,6 +19,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetHearingByIdQueryHandler(context);
+            _newHearingId = Guid.Empty;
         }
         
         [Test]
@@ -37,8 +38,8 @@ namespace Bookings.IntegrationTests.Database.Queries
             
             var participants = hearing.GetParticipants();
             participants.Any().Should().BeTrue();
-            participants.Single(x => x.GetType() == typeof(Individual)).Should().NotBeNull();
-            participants.Single(x => x.GetType() == typeof(Representative)).Should().NotBeNull();
+            participants.Any(x => x.GetType() == typeof(Individual)).Should().BeTrue();
+            participants.Any(x => x.GetType() == typeof(Representative)).Should().BeTrue();
 
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);
