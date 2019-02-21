@@ -6,6 +6,7 @@ using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
+using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
@@ -77,7 +78,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_not_add_existing_participant_to_video_hearing()
+        public async Task should_not_add_existing_participant_to_the_same_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -90,6 +91,60 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
                 new AddParticipantsToVideoHearingCommand(_newHearingId, participants)));
+        }
+
+        [Test]
+        public async Task should_use_existing_person_when_adding_to_video_hearing()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededPerson = await SeedPerson();
+            
+            var personCountBefore = await GetNumberOfPersonsInDb();
+            
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            
+            var caseTypeName = "Civil Money Claims";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
+            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+
+            var claimantSolicitorParticipant = Builder<Representative>.CreateNew().WithFactory(() =>
+                new Representative(seededPerson, claimantSolicitorHearingRole, claimantCaseRole)
+            ).Build();
+
+            var participants = new List<Participant>()
+            {
+                claimantSolicitorParticipant
+            };
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+
+            var personCountAfter = await GetNumberOfPersonsInDb();
+
+            personCountAfter.Should().Be(personCountBefore);
+
+        }
+
+        private async Task<int> GetNumberOfPersonsInDb()
+        {
+            using (var db = new BookingsDbContext(BookingsDbContextOptions))
+            {
+                return await db.Persons.CountAsync();
+            }
+        }
+
+        private async Task<Person> SeedPerson()
+        {
+            var newPerson = new PersonBuilder(true).Build();
+            using (var db = new BookingsDbContext(BookingsDbContextOptions))
+            {
+                await db.Persons.AddAsync(newPerson);
+                await db.SaveChangesAsync();
+            }
+
+            return newPerson;
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)

@@ -184,7 +184,7 @@ namespace Bookings.Domain
           
             if (hearingVenue == null || hearingVenue.Id <=0)
             {
-                _validationFailures.AddFailure("Court", "Court must have a valid value");
+                _validationFailures.AddFailure("HearingVenue", "Court must have a valid value");
             }
             if (hearingType == null || hearingType.Id <= 0)
             {

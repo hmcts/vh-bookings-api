@@ -38,6 +38,19 @@ namespace Bookings.DAL.Commands
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
+
+            foreach (var participant in command.Participants)
+            {
+                var existingPerson = await _context.Persons
+                    .Include(x => x.Address)
+                    .Include(x => x.Organisation)
+                    .SingleOrDefaultAsync(x => x.Username == participant.Person.Username);
+
+                if (existingPerson != null)
+                {
+                    participant.UpdatePersonDetails(existingPerson);
+                }
+            }
             
             hearing.AddParticipants(command.Participants);
             await _context.SaveChangesAsync();
