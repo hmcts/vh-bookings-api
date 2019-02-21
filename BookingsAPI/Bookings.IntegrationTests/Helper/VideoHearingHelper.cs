@@ -9,7 +9,7 @@ using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.IntegrationTests.Hooks
+namespace Bookings.IntegrationTests.Helper
 {
     public class VideoHearingHooks
     {
