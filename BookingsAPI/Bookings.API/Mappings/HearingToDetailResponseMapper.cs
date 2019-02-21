@@ -4,19 +4,19 @@ using Bookings.Domain;
 
 namespace Bookings.API.Mappings
 {
-    public class HearingToDetailResponseMap
+    public class HearingToDetailResponseMapper
     {
-        public HearingDetailsResponse MapDomainToResponse(Hearing videoHearing)
+        public HearingDetailsResponse MapHearingToDetailedResponse(Hearing videoHearing)
         {
-            var caseMapper = new CaseToResponseMap();
-            var participantMapper = new ParticipantToResponseMap();
+            var caseMapper = new CaseToResponseMapper();
+            var participantMapper = new ParticipantToResponseMapper();
             
             var cases = videoHearing.GetCases()
-                .Select(x => caseMapper.MapDomainToResponse(x))
+                .Select(x => caseMapper.MapCaseToResponse(x))
                 .ToList();
 
             var participants = videoHearing.GetParticipants()
-                .Select(x => participantMapper.MapDomainToResponse(x))
+                .Select(x => participantMapper.MapParticipantToResponse(x))
                 .ToList();
 
             var response = new HearingDetailsResponse
