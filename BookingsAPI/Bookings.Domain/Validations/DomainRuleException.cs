@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Bookings.Domain.Validations
 {
-    // ReSharper disable once S3925
+#pragma warning disable S3925 // "ISerializable" should be implemented correctly
     public class DomainRuleException : Exception
     {
         public DomainRuleException(ValidationFailures validationFailures)
