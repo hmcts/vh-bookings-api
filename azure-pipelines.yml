@@ -13,6 +13,7 @@ variables:
     "Testing/TestClientId":"$(Testing-TestClientId)",
     "Testing/TestClientSecret":"$(Testing-TestClientSecret)"
     '
+  dalWorkingDirectory: 'BookingsAPI/Bookings.DAL'
 
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:
@@ -36,3 +37,4 @@ jobs:
     integrationTestsAppSettingsTransform: $(integrationTestsAppSettingsTransform)
     coverletCoverageExclusions: $(coverletCoverageExclusions)
     apiDirectory: $(apiDirectory)
+    dalWorkingDirectory: $(dalWorkingDirectory)
