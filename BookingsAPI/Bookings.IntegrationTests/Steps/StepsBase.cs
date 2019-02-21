@@ -4,6 +4,8 @@ using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
 using Bookings.DAL;
+using Bookings.IntegrationTests.Contexts;
+using Bookings.IntegrationTests.Helper;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -12,11 +14,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using Testing.Common.Configuration;
-using Bookings.IntegrationTests.Helper;
 
-namespace Bookings.IntegrationTests.Api
+namespace Bookings.IntegrationTests.Steps
 {
-    public abstract class ControllerTestsBase
+    public abstract class StepsBase
     {
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
         protected VideoHearingHooks Hooks { get; set; }
@@ -33,78 +34,78 @@ namespace Bookings.IntegrationTests.Api
                 .UseStartup<Startup>();
             _server = new TestServer(webHostBuilder);
             GetClientAccessTokenForApi();
-            
+
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(_dbString);
             BookingsDbContextOptions = dbContextOptionsBuilder.Options;
             Hooks = new VideoHearingHooks(BookingsDbContextOptions);
         }
-        
+
         private void GetClientAccessTokenForApi()
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
                 .AddUserSecrets<Startup>();
-            
+
             var configRoot = configRootBuilder.Build();
-            
+
             _dbString = configRoot.GetConnectionString("VhBookings");
-            
+
             var azureAdConfigurationOptions = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
             var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
-            
+
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
             var testSettings = testSettingsOptions.Value;
-            
+
             _bearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 azureAdConfiguration.VhBookingsApiResourceId);
         }
 
-        protected async Task<HttpResponseMessage> SendGetRequestAsync(string uri)
+        protected async Task<HttpResponseMessage> SendGetRequestAsync(ApiTestContext apiTestContext)
         {
-            using (var client = _server.CreateClient())
+            using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
-                return await client.GetAsync(uri);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.GetAsync(apiTestContext.Uri);
             }
         }
 
-        protected async Task<HttpResponseMessage> SendPostRequestAsync(string uri, HttpContent httpContent)
+        protected async Task<HttpResponseMessage> SendPatchRequestAsync(ApiTestContext apiTestContext)
         {
-            using (var client = _server.CreateClient())
+            using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
-                return await client.PostAsync(uri, httpContent);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.PatchAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
 
-        protected async Task<HttpResponseMessage> SendPatchRequestAsync(string uri, StringContent httpContent)
+        protected async Task<HttpResponseMessage> SendPostRequestAsync(ApiTestContext apiTestContext)
         {
-            using (var client = _server.CreateClient())
+            using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
-                return await client.PatchAsync(uri, httpContent);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.PostAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
 
-        protected async Task<HttpResponseMessage> SendPutRequestAsync(string uri, StringContent httpContent)
+        protected async Task<HttpResponseMessage> SendPutRequestAsync(ApiTestContext apiTestContext)
         {
-            using (var client = _server.CreateClient())
+            using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
-                return await client.PutAsync(uri, httpContent);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.PutAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
 
-        protected async Task<HttpResponseMessage> SendDeleteRequestAsync(string uri)
+        protected async Task<HttpResponseMessage> SendDeleteRequestAsync(ApiTestContext apiTestContext)
         {
             using (var client = _server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
-                return await client.DeleteAsync(uri);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                return await client.DeleteAsync(apiTestContext.Uri);
             }
         }
 

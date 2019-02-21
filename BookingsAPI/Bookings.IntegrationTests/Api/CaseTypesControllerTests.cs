@@ -44,7 +44,6 @@ namespace Bookings.IntegrationTests.Api
             response.IsSuccessStatusCode.Should().BeTrue();
             var json = await response.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
-
             model.Should().NotBeEmpty();
         }
         
