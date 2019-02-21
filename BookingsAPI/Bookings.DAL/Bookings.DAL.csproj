@@ -12,7 +12,7 @@
     <PackageReference Include="SonarAnalyzer.CSharp" Version="7.11.0.8083" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="settings-config.json">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
