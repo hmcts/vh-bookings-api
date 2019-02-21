@@ -3,9 +3,9 @@ using Bookings.Domain;
 
 namespace Bookings.API.Mappings
 {
-    public class CaseToResponseMap
+    public class CaseToResponseMapper
     {
-        public CaseResponse MapDomainToResponse(Case @case)
+        public CaseResponse MapCaseToResponse(Case @case)
         {
             return new CaseResponse
             {

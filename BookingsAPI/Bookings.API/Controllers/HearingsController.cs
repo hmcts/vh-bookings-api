@@ -58,52 +58,9 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            var response = MapHearingToDetailResponseModel(videoHearing);
+            var hearingMapper = new HearingToDetailResponseMapper();
+            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
             return Ok(response);
-        }
-
-        private HearingDetailsResponse MapHearingToDetailResponseModel(Hearing videoHearing)
-        {
-            var cases = videoHearing.GetCases()
-                .Select(x => new CaseResponse
-                {
-                    Name = x.Name,
-                    Number = x.Number,
-                    IsLeadCase = x.IsLeadCase
-                })
-                .ToList();
-
-            var participants = videoHearing.GetParticipants()
-                .Select(x => new ParticipantResponse
-                {
-                    Id = x.Id,
-                    DisplayName = x.DisplayName,
-                    CaseRoleName = x.CaseRole.Name,
-                    HearingRoleName = x.HearingRole.Name,
-                    UserRoleName = x.HearingRole.UserRole.Name,
-                    Title = x.Person.Title,
-                    FirstName = x.Person.FirstName,
-                    LastName = x.Person.LastName,
-                    MiddleNames = x.Person.MiddleNames,
-                    Username = x.Person.Username,
-                    ContactEmail = x.Person.ContactEmail,
-                    TelephoneNumber = x.Person.TelephoneNumber
-                })
-                .ToList();
-
-
-            var response = new HearingDetailsResponse
-            {
-                Id = videoHearing.Id,
-                ScheduledDuration = videoHearing.ScheduledDuration,
-                ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType.Name,
-                CaseTypeName = videoHearing.CaseType.Name,
-                HearingVenueName = videoHearing.HearingVenueName,
-                Cases = cases,
-                Participants = participants
-            };
-            return response;
         }
 
         /// <summary>
@@ -153,14 +110,15 @@ namespace Bookings.API.Controllers
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             videoHearing.AddCases(cases);
 
-            var mapper = new ParticipantRequestToDomainMap();
-            var participants = request.Participants.Select(x => mapper.MapRequestToDomain(x, caseType)).ToList();
+            var mapper = new ParticipantRequestToDomainMapper();
+            var participants = request.Participants.Select(x => mapper.MapRequestToParticipant(x, caseType)).ToList();
             videoHearing.AddParticipants(participants);
 
             var command = new SaveVideoHearingCommand(videoHearing);
             await _commandHandler.Handle(command);
 
-            var response = MapHearingToDetailResponseModel(videoHearing);
+            var hearingMapper = new HearingToDetailResponseMapper();
+            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
@@ -210,7 +168,8 @@ namespace Bookings.API.Controllers
                 new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue);
             await _commandHandler.Handle(command);
 
-            var response = MapHearingToDetailResponseModel(videoHearing);
+            var hearingMapper = new HearingToDetailResponseMapper();
+            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
 
             return Ok(response);
         }

@@ -55,8 +55,8 @@ namespace Bookings.API.Controllers
             {
                 var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
 
-                var mapper = new ParticipantToResponseMap();
-                var response = participants.Select(x => mapper.MapDomainToResponse(x)).ToList();
+                var mapper = new ParticipantToResponseMapper();
+                var response = participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
 
                 return Ok(response);
             }
@@ -103,8 +103,8 @@ namespace Bookings.API.Controllers
                     return NotFound();
                 }
 
-                var mapper = new ParticipantToResponseMap();
-                var response = mapper.MapDomainToResponse(participant);
+                var mapper = new ParticipantToResponseMapper();
+                var response = mapper.MapParticipantToResponse(participant);
 
                 return Ok(response);
             }
@@ -148,8 +148,8 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            var mapper = new ParticipantRequestToDomainMap();
-            var participants = request.Participants.Select(x => mapper.MapRequestToDomain(x, videoHearing.CaseType)).ToList();
+            var mapper = new ParticipantRequestToDomainMapper();
+            var participants = request.Participants.Select(x => mapper.MapRequestToParticipant(x, videoHearing.CaseType)).ToList();
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants);
             await _commandHandler.Handle(command);
             

@@ -3,9 +3,9 @@ using Bookings.Domain.Participants;
 
 namespace Bookings.API.Mappings
 {
-    public class ParticipantToResponseMap
+    public class ParticipantToResponseMapper
     {
-        public ParticipantResponse MapDomainToResponse(Participant participant)
+        public ParticipantResponse MapParticipantToResponse(Participant participant)
         {
             return new ParticipantResponse
             {
