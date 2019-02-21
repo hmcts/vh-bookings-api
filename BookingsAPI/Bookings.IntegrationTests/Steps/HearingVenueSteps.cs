@@ -11,7 +11,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class HearingVenueSteps : ControllerTestsBase
+    public sealed class HearingVenueSteps : StepsBase
     {
         private readonly ApiTestContext _apiTestContext;
         private readonly HearingVenueEndpoints _endpoints = new ApiUriFactory().HearingVenueEndpoints;

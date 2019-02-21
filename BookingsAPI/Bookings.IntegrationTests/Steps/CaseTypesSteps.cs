@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
-using Bookings.IntegrationTests.Api;
 using Bookings.IntegrationTests.Contexts;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -11,7 +10,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class CaseTypesSteps : ControllerTestsBase
+    public sealed class CaseTypesSteps : StepsBase
     {
         private readonly ApiTestContext _apiTestContext;
         private readonly CaseTypesEndpoints _endpoints = new ApiUriFactory().CaseTypesEndpoints;

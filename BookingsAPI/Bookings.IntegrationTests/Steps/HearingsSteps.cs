@@ -21,7 +21,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class HearingsSteps : ControllerTestsBase
+    public sealed class HearingsSteps : StepsBase
     {
         private readonly ApiTestContext _apiTestContext;
         private readonly HearingsEndpoints _endpoints = new ApiUriFactory().HearingsEndpoints;

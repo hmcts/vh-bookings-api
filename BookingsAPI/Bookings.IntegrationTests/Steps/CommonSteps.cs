@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Bookings.IntegrationTests.Api;
 using Bookings.IntegrationTests.Contexts;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,7 +10,7 @@ using TechTalk.SpecFlow;
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class CommonSteps : ControllerTestsBase
+    public sealed class CommonSteps : StepsBase
     {
         private readonly ScenarioContext context;
         private readonly ApiTestContext _apiTestContext;
@@ -30,9 +29,9 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case "GET": _apiTestContext.ResponseMessage = await SendGetRequestAsync(_apiTestContext); break;
                 case "POST": _apiTestContext.ResponseMessage = await SendPostRequestAsync(_apiTestContext); break;
-                case "PATCH": _apiTestContext.ResponseMessage = await SendPatchRequestAsync(_apiTestContext.Uri, _apiTestContext.StringContent); break;
+                case "PATCH": _apiTestContext.ResponseMessage = await SendPatchRequestAsync(_apiTestContext); break;
                 case "PUT": _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext); break;
-                case "DELETE": _apiTestContext.ResponseMessage = await SendDeleteRequestAsync(_apiTestContext.Uri); break;
+                case "DELETE": _apiTestContext.ResponseMessage = await SendDeleteRequestAsync(_apiTestContext); break;
                 default: throw new ArgumentOutOfRangeException(_apiTestContext.HttpMethod.ToString(), _apiTestContext.HttpMethod.ToString(), null);
             }
         }
