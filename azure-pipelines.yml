@@ -40,3 +40,4 @@ jobs:
     coverletCoverageExclusions: $(coverletCoverageExclusions)
     apiDirectory: $(apiDirectory)
     dalWorkingDirectory: $(dalWorkingDirectory)
+    keyVaultName: $(keyVaultName)
