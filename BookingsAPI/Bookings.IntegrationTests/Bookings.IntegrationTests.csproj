@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="7.11.0.8083" />
     <PackageReference Include="SpecFlow" Version="3.0.150-beta" />
     <PackageReference Include="SpecFlow.NUnit" Version="3.0.150-beta" />
