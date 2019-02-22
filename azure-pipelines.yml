@@ -41,3 +41,4 @@ jobs:
     apiDirectory: $(apiDirectory)
     dalWorkingDirectory: $(dalWorkingDirectory)
     keyVaultName: $(keyVaultName)
+    secretsFilter: $(secretsFilter)
