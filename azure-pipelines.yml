@@ -2,7 +2,7 @@
 variables:
   solutionType: DotNetCore # angularDotNetCore, dotNetCore, angular
   apiDirectory: 'BookingsAPI/Bookings.API'
-  sonarCloudPrepareExtraProperties: |
+  sonarCloudExtraProperties: |
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
     sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,Migrations/**,SeedData/**,DesignTimeHearingsContextFactory.cs,**/BookingsDbContext.cs,Ddd/ValueObject.cs,Ddd/Enumeration.cs,Testing.Common/**,Bookings.Common/**,AuthResponsesOperationFilter.cs"
     sonar.cpd.exclusions="**/Program.cs,**/Startup.cs,Bookings.DAL/Mappings/**,Migrations/**,SeedData/**,DesignTimeHearingsContextFactory.cs,Ddd/Entity.cs,Ddd/ValueObject.cs,Ddd/Enumeration.cs,Testing.Common/**,Bookings.API/ConfigureServicesExtensions.cs,Bookings.API/Extensions/**,Bookings.API/Swagger/**,Bookings.Common/**"
@@ -35,7 +35,7 @@ jobs:
   
 - template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
   parameters:
-    sonarCloudExtraProperties: $(sonarCloudPrepareExtraProperties)
+    sonarCloudExtraProperties: $(sonarCloudExtraProperties)
     integrationTestsAppSettingsTransform: $(integrationTestsAppSettingsTransform)
     coverletCoverageExclusions: $(coverletCoverageExclusions)
     apiDirectory: $(apiDirectory)
