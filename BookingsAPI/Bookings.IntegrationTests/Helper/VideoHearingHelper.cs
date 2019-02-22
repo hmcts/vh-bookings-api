@@ -11,12 +11,12 @@ using Testing.Common.Builders.Domain;
 
 namespace Bookings.IntegrationTests.Helper
 {
-    public class VideoHearingHooks
+    public class TestDataManager
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private BuilderSettings BuilderSettings { get; set; }
 
-        public VideoHearingHooks(DbContextOptions<BookingsDbContext> dbContextOptions)
+        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
         {
             _dbContextOptions = dbContextOptions;
             

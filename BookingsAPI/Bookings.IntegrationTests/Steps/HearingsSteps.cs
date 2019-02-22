@@ -41,7 +41,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                 {
-                    var seededHearing = await _apiTestContext.Hooks.SeedVideoHearing();
+                    var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                     TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     _hearingId = seededHearing.Id;
                     break;
@@ -114,7 +114,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have an (.*) update hearing request")]
         public async Task GivenIHaveAUpdateHearingRequest(Scenario scenario)
         {
-            var seededHearing = await _apiTestContext.Hooks.SeedVideoHearing();
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _hearingId = seededHearing.Id;
             _apiTestContext.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
             if (scenario == Scenario.Invalid)
@@ -129,7 +129,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a update hearing request with an invalid (.*)")]
         public async Task GivenIHaveAUpdateHearingRequestWithANonexistentHearingId(string invalidType)
         {
-            var seededHearing = await _apiTestContext.Hooks.SeedVideoHearing();
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _hearingId = invalidType.Equals("hearing id") ? Guid.Empty : seededHearing.Id;
             _apiTestContext.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
             if (invalidType.Equals("venue"))

@@ -10,12 +10,14 @@ namespace Testing.Common.Builders.Api
             CaseTypesEndpoints = new CaseTypesEndpoints();
             HearingsEndpoints = new HearingsEndpoints();
             ParticipantsEndpoints = new ParticipantsEndpoints();
+            PersonEndpoints = new PersonEndpoints();
         }
         
         public HearingVenueEndpoints HearingVenueEndpoints { get; set; }
         public CaseTypesEndpoints CaseTypesEndpoints { get; set; }
         public HearingsEndpoints HearingsEndpoints { get; set; }
         public ParticipantsEndpoints ParticipantsEndpoints { get; set; }
+        public PersonEndpoints PersonEndpoints { get; set; }
     }
 
     public class HearingVenueEndpoints
@@ -51,5 +53,13 @@ namespace Testing.Common.Builders.Api
 
         public string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
+    }
+
+    public class PersonEndpoints
+    {
+        private string ApiRoot => "persons";
+        public string GetPersonByUsername(string username) => $"{ApiRoot}/username/{username}";
+        public string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
+
     }
 }

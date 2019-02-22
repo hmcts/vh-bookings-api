@@ -33,12 +33,6 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetCaseRolesForCaseType(string caseTypeName)
         {
-            if (string.IsNullOrWhiteSpace(caseTypeName))
-            {
-                ModelState.AddModelError(nameof(caseTypeName), $"Please provide a valid {nameof(caseTypeName)}");
-                return BadRequest(ModelState);
-            }
-            
             var query = new GetCaseTypeQuery(caseTypeName);
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
 
@@ -66,19 +60,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(List<HearingRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
-        {
-            if (string.IsNullOrWhiteSpace(caseTypeName))
-            {
-                ModelState.AddModelError(nameof(caseTypeName), $"Please provide a valid {nameof(caseTypeName)}");
-                return BadRequest(ModelState);
-            }
-            
-            if (string.IsNullOrWhiteSpace(caseRoleName))
-            {
-                ModelState.AddModelError(nameof(caseRoleName), $"Please provide a valid {nameof(caseRoleName)}");
-                return BadRequest(ModelState);
-            }
-            
+        {            
             var query = new GetCaseTypeQuery(caseTypeName);
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
 

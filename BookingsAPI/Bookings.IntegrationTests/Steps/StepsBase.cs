@@ -20,7 +20,7 @@ namespace Bookings.IntegrationTests.Steps
     public abstract class StepsBase
     {
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
-        protected VideoHearingHooks Hooks { get; set; }
+        protected TestDataManager Hooks { get; set; }
         private TestServer _server;
         private string _dbString;
         private string _bearerToken;
@@ -39,7 +39,7 @@ namespace Bookings.IntegrationTests.Steps
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(_dbString);
             BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            Hooks = new VideoHearingHooks(BookingsDbContextOptions);
+            Hooks = new TestDataManager(BookingsDbContextOptions);
         }
 
         private void GetClientAccessTokenForApi()
