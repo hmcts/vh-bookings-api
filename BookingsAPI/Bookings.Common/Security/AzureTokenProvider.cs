@@ -30,7 +30,7 @@ namespace Bookings.Common.Security
         {
             AuthenticationResult result;
             var credential = new ClientCredential(clientId, clientSecret);
-            var authContext = new AuthenticationContext($"{_securitySettings.Authority}");
+            var authContext = new AuthenticationContext($"{_securitySettings.Authority}{_securitySettings.TenantId}");
 
             try
             {

@@ -64,7 +64,7 @@ namespace Bookings.API
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.Authority = securitySettings.Authority;
+                options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
                 options.TokenValidationParameters.ValidateLifetime = true;
                 options.Audience = securitySettings.VhBookingsApiResourceId;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
