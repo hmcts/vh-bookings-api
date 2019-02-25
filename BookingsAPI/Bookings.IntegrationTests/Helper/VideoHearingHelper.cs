@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
+using Bookings.DAL.Queries;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
@@ -41,21 +41,8 @@ namespace Bookings.IntegrationTests.Helper
             var venues = new RefDataBuilder().HearingVenues;
 
             var person1 = new PersonBuilder(true).Build();
-            var claimantLipParticipant = new Builder(BuilderSettings).CreateNew<Individual>().WithFactory(() =>
-                new Individual(person1, claimantLipHearingRole, claimantCaseRole)
-            ).Build();
-
             var person2 = new PersonBuilder(true).Build();
-            var defendantSolicitorParticipant = new Builder(BuilderSettings).CreateNew<Representative>().WithFactory(
-                () =>
-                    new Representative(person2, defendantSolicitorHearingRole, defendantCaseRole)
-            ).Build();
-            
             var person3 = new PersonBuilder(true).Build();
-            var claimantSolicitorParticipant = new Builder(BuilderSettings).CreateNew<Representative>().WithFactory(
-                () =>
-                    new Representative(person3, claimantSolicitorHearingRole, claimantCaseRole)
-            ).Build();
 
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
@@ -63,8 +50,16 @@ namespace Bookings.IntegrationTests.Helper
             {
                 CreatedBy = "test@integration.com"
             };
-            videoHearing.AddParticipants(new Participant[] {claimantLipParticipant, claimantSolicitorParticipant, defendantSolicitorParticipant});
+            
+            videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+                $"{person1.FirstName} {person1.LastName}");
 
+            videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
+                $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
+            
+            videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
+                $"{person3.FirstName} {person3.LastName}", string.Empty, string.Empty);
+            
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
 
@@ -74,7 +69,8 @@ namespace Bookings.IntegrationTests.Helper
                 await db.SaveChangesAsync();
             }
 
-            return videoHearing;
+            return await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+                new GetHearingByIdQuery(videoHearing.Id)); 
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 
@@ -35,27 +34,18 @@ namespace Testing.Common.Builders.Domain
             var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP");
             
             var person1 = new PersonBuilder(true).Build();
-            var claimantLipParticipant = Builder<Individual>.CreateNew().WithFactory(() => 
-                new Individual(person1, claimantLipHearingRole, claimantCaseRole)
-            ).Build();
-            
             var person2 = new PersonBuilder(true).Build();
-            var defendantSolicitorParticipant = Builder<Representative>.CreateNew().WithFactory(() => 
-                new Representative(person2, defendantSolicitorHearingRole, defendantCaseRole)
-            ).Build();
-            
             var person3 = new PersonBuilder(true).Build();
-            var defendantLipParticipant = Builder<Representative>.CreateNew().WithFactory(() => 
-                new Representative(person3, defendantLipHearingRole, defendantCaseRole)
-            ).Build();
             
-            _videoHearing.AddParticipants(new Participant[]{claimantLipParticipant, defendantLipParticipant, defendantSolicitorParticipant});
-        }
+            _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+                $"{person1.FirstName} {person1.LastName}");
 
-        public VideoHearingBuilder WithParticipant(Participant participant)
-        {
-            _videoHearing.AddParticipant(participant);
-            return this;
+            _videoHearing.AddIndividual(person3, defendantLipHearingRole, defendantCaseRole,
+                $"{person3.FirstName} {person3.LastName}");
+            
+            _videoHearing.AddSolicitor(person2, defendantSolicitorHearingRole, defendantCaseRole,
+                $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
+            
         }
         
         public VideoHearing Build() => _videoHearing;
