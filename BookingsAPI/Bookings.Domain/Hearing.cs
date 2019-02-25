@@ -130,19 +130,6 @@ namespace Bookings.Domain
         {
             return Participants.Select(x => x.Person).ToList();
         }
-
-        public void UpdateCaseType(CaseType caseType, HearingType hearingType)
-        {
-            if(caseType == null) throw new DomainRuleException(nameof(CaseType), "CaseType cannot be null");
-            if(hearingType == null) throw new DomainRuleException(nameof(HearingType), "HearingType cannot be null");
-            
-            CaseTypeId = caseType.Id;
-            CaseType = caseType;
-
-            HearingTypeId = hearingType.Id;
-            HearingType = hearingType;
-        }
-
         
         public virtual IList<Participant> GetParticipants()
         {

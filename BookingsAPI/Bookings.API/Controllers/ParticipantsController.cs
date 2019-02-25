@@ -151,7 +151,7 @@ namespace Bookings.API.Controllers
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
             var participants = request.Participants
-                .Select(x => mapper.MapRequestToParticipant(x, videoHearing.CaseType)).ToList();
+                .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants);
             await _commandHandler.Handle(command);
 

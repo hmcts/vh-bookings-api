@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
-using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

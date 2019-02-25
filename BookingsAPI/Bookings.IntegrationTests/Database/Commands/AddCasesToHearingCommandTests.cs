@@ -46,7 +46,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_add_participants_to_video_hearing()
+        public async Task should_add_cases_to_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");

@@ -34,18 +34,5 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
 
-        public void UpdatePerson(Person person)
-        {
-            PersonId = Person.Id;
-            Person = person;
-            UpdatedDate = DateTime.UtcNow;
-        }
-        
-        public void UpdateDisplayName(string displayName)
-        {
-            if (string.IsNullOrEmpty(displayName)) return;
-            DisplayName = displayName;
-            UpdatedDate = DateTime.UtcNow;
-        }
     }
 }

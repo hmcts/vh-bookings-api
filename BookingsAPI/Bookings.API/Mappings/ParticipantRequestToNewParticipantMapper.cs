@@ -6,9 +6,13 @@ using Bookings.Domain.RefData;
 
 namespace Bookings.API.Mappings
 {
+    /// <summary>
+    /// This class is used to map a participant request object to the NewParticipant model
+    /// used by the AddParticipantsToVideoHearingCommand.
+    /// </summary>
     public class ParticipantRequestToNewParticipantMapper
     {
-        public NewParticipant MapRequestToParticipant(ParticipantRequest requestParticipant, CaseType caseType)
+        public NewParticipant MapRequestToNewParticipant(ParticipantRequest requestParticipant, CaseType caseType)
         {
             var caseRole = caseType.CaseRoles.SingleOrDefault(x => x.Name == requestParticipant.CaseRoleName);
             var hearingRole = caseRole?.HearingRoles.SingleOrDefault(x => x.Name == requestParticipant.HearingRoleName);
