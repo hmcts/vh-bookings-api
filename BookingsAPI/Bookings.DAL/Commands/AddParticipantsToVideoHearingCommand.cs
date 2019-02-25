@@ -2,20 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bookings.DAL.Exceptions;
+using Bookings.Domain;
 using Bookings.Domain.Participants;
+using Bookings.Domain.RefData;
+using Bookings.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
 {
+
+    public class NewParticipant
+    {
+        public Person Person { get; set; }
+        public CaseRole CaseRole { get; set; }
+        public HearingRole HearingRole { get; set; }
+        public string SolicitorsReference { get; set; }
+        public string Representee { get; set; }
+        public string DisplayName { get; set; }
+    }
+    
     public class AddParticipantsToVideoHearingCommand : ICommand
     {
-        public AddParticipantsToVideoHearingCommand(Guid hearingId, List<Participant> participants)
+        public AddParticipantsToVideoHearingCommand(Guid hearingId, List<NewParticipant> participants)
         {
             HearingId = hearingId;
             Participants = participants;
         }
 
-        public List<Participant> Participants { get; set; }
+        public List<NewParticipant> Participants { get; set; }
         public Guid HearingId { get; set; }
     }
     
@@ -39,20 +53,34 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
-            foreach (var participant in command.Participants)
+            // for each participant
+            // check for existing person
+            // add new individual/solicitor
+
+            var participants = command.Participants;
+            foreach (var participantToAdd in participants)
             {
                 var existingPerson = await _context.Persons
-                    .Include(x => x.Address)
-                    .Include(x => x.Organisation)
-                    .SingleOrDefaultAsync(x => x.Username == participant.Person.Username);
-
-                if (existingPerson != null)
+                    .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username);
+                
+                switch (participantToAdd.HearingRole.UserRole.Name)
                 {
-                    participant.UpdatePersonDetails(existingPerson);
+                    case "Individual":
+                        hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        break;
+                    case "Representative":
+                    {
+                        hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            participantToAdd.CaseRole, participantToAdd.DisplayName,
+                            participantToAdd.SolicitorsReference, participantToAdd.Representee);
+                        break;
+                    }
+                    default:
+                        throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
+                            $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
                 }
             }
-            
-            hearing.AddParticipants(command.Participants);
             await _context.SaveChangesAsync();
         }
     }

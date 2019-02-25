@@ -28,7 +28,6 @@ namespace Bookings.DAL.Queries
         {
             return await _context.VideoHearings
                 .Include(x => x.Participants).ThenInclude(x => x.Person)
-//                .Include("Participants.Person")
                 .Include("HearingCases.Case")
                 .Include(x => x.CaseType)
                 .ThenInclude(x => x.CaseRoles)
