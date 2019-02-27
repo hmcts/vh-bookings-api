@@ -78,21 +78,41 @@ namespace Bookings.Domain
             }
         }
 
-        public void AddParticipant(Participant participant)
+        public void AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExist(participant))
+            if (DoesParticipantExist(person.Username))
             {
-                throw new DomainRuleException(nameof(participant), "Participant already exists in the hearing");
+                throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
             }
-            
+
+            Participant participant = new Individual(person, hearingRole, caseRole);
+            participant.DisplayName = displayName;
             Participants.Add(participant);
-            
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public void AddSolicitor(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
+            string solicitorsReference, string representee)
+        {
+            if (DoesParticipantExist(person.Username))
+            {
+                throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
+            }
+
+            Participant participant = new Representative(person, hearingRole, caseRole)
+            {
+                SolicitorsReference = solicitorsReference,
+                Representee = representee
+            };
+
+            participant.DisplayName = displayName;
+            Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
 
         public void RemoveParticipant(Participant participant)
         {
-            if (!DoesParticipantExist(participant))
+            if (!DoesParticipantExist(participant.Person.Username))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
             }
@@ -110,19 +130,6 @@ namespace Bookings.Domain
         {
             return Participants.Select(x => x.Person).ToList();
         }
-
-        public void UpdateCaseType(CaseType caseType, HearingType hearingType)
-        {
-            if(caseType == null) throw new DomainRuleException(nameof(CaseType), "CaseType cannot be null");
-            if(hearingType == null) throw new DomainRuleException(nameof(HearingType), "HearingType cannot be null");
-            
-            CaseTypeId = caseType.Id;
-            CaseType = caseType;
-
-            HearingTypeId = hearingType.Id;
-            HearingType = hearingType;
-        }
-
         
         public virtual IList<Participant> GetParticipants()
         {
@@ -162,14 +169,9 @@ namespace Bookings.Domain
             ScheduledDuration = scheduledDuration;
         }
 
-        private bool DoesParticipantExist(Participant participant)
+        private bool DoesParticipantExist(string username)
         {
-            return Participants.Any(x => x.Person.Username == participant.Person.Username);
-        }
-
-        public void AddParticipants(IEnumerable<Participant> participants)
-        {
-            participants.ToList().ForEach(AddParticipant);
+            return Participants.Any(x => x.Person.Username == username);
         }
 
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,

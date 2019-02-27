@@ -13,7 +13,7 @@ namespace Bookings.IntegrationTests.Database
         private string _databaseConnectionString;
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
         protected readonly BuilderSettings BuilderSettings = new BuilderSettings();
-        protected VideoHearingHooks Hooks { get; private set; }
+        protected TestDataManager Hooks { get; private set; }
         
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -31,7 +31,7 @@ namespace Bookings.IntegrationTests.Database
             dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
             BookingsDbContextOptions = dbContextOptionsBuilder.Options;
             
-            Hooks = new VideoHearingHooks(BookingsDbContextOptions);
+            Hooks = new TestDataManager(BookingsDbContextOptions);
             
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.Database.Migrate();

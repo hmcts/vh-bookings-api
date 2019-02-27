@@ -10,7 +10,6 @@ using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -39,7 +38,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var hearingId = Guid.NewGuid();
 
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
-                new AddParticipantsToVideoHearingCommand(hearingId, new List<Participant>())));
+                new AddParticipantsToVideoHearingCommand(hearingId, new List<NewParticipant>())));
         }
 
 
@@ -59,13 +58,18 @@ namespace Bookings.IntegrationTests.Database.Commands
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
 
             var newPerson = new PersonBuilder(true).Build();
-            var claimantSolicitorParticipant = Builder<Representative>.CreateNew().WithFactory(() =>
-                new Representative(newPerson, claimantSolicitorHearingRole, claimantCaseRole)
-            ).Build();
-
-            var participants = new List<Participant>()
+            var newParticipant = new NewParticipant()
             {
-                claimantSolicitorParticipant
+                Person = newPerson,
+                CaseRole = claimantCaseRole,
+                HearingRole = claimantSolicitorHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                SolicitorsReference = string.Empty,
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
             };
 
             await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
@@ -83,10 +87,21 @@ namespace Bookings.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
+            var representative = (Representative) seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
 
-            var participants = new List<Participant>()
+            var newParticipant = new NewParticipant()
             {
-                seededHearing.GetParticipants().First()
+                Person = representative.Person,
+                CaseRole = representative.CaseRole,
+                HearingRole = representative.HearingRole,
+                DisplayName = representative.DisplayName,
+                SolicitorsReference = representative.SolicitorsReference,
+                Representee = representative.Representee
+            };
+            
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
             };
 
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
@@ -109,14 +124,20 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
-
-            var claimantSolicitorParticipant = Builder<Representative>.CreateNew().WithFactory(() =>
-                new Representative(seededPerson, claimantSolicitorHearingRole, claimantCaseRole)
-            ).Build();
-
-            var participants = new List<Participant>()
+            
+            var newParticipant = new NewParticipant()
             {
-                claimantSolicitorParticipant
+                Person = seededPerson,
+                CaseRole = claimantCaseRole,
+                HearingRole = claimantSolicitorHearingRole,
+                DisplayName = $"{seededPerson.FirstName} {seededPerson.LastName}",
+                SolicitorsReference = string.Empty,
+                Representee = string.Empty
+            };
+
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
             };
 
             await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));

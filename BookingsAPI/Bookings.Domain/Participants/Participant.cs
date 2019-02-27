@@ -18,7 +18,6 @@ namespace Bookings.Domain.Participants
             PersonId = person.Id;
             HearingRoleId = hearingRole.Id;
             CaseRoleId = caseRole.Id;
-
         }
 
         public string DisplayName { get; set; }
@@ -35,17 +34,5 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
 
-        public void UpdatePersonDetails(Person person)
-        {
-            PersonId = Person.Id;
-            Person = person;
-        }
-        
-        public void UpdateDisplayName(string displayName)
-        {
-            if (string.IsNullOrEmpty(displayName)) return;
-            DisplayName = displayName;
-            UpdatedDate = DateTime.UtcNow;
-        }
     }
 }

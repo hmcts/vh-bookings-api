@@ -12,7 +12,7 @@ namespace Bookings.IntegrationTests.Contexts
     public class ApiTestContext
     {
         public DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
-        public VideoHearingHooks Hooks { get; set; }
+        public TestDataManager TestDataManager { get; set; }
         public TestServer Server { get; set; }
         public string DbString { get; set; }
         public string BearerToken { get; set; }

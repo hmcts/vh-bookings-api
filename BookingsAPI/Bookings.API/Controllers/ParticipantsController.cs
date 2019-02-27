@@ -113,7 +113,7 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
         }
-        
+
         /// <summary>
         /// Add participant(s) to a hearing
         /// </summary>
@@ -125,21 +125,22 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId, [FromBody] AddParticipantsToHearingRequest request)
+        public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
+            [FromBody] AddParticipantsToHearingRequest request)
         {
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             var result = new AddParticipantsToHearingRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return BadRequest(ModelState);
             }
-            
+
             var query = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
@@ -148,14 +149,15 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            var mapper = new ParticipantRequestToDomainMapper();
-            var participants = request.Participants.Select(x => mapper.MapRequestToParticipant(x, videoHearing.CaseType)).ToList();
+            var mapper = new ParticipantRequestToNewParticipantMapper();
+            var participants = request.Participants
+                .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants);
             await _commandHandler.Handle(command);
-            
+
             return NoContent();
         }
-        
+
         /// <summary>
         /// Remove a participant from a hearing
         /// </summary>

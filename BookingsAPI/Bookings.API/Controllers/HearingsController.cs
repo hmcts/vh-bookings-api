@@ -104,21 +104,29 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var videoHearing = new VideoHearing(caseType, hearingType, request.ScheduledDateTime,
-                request.ScheduledDuration, venue);
+            var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
+                request.ScheduledDateTime, request.ScheduledDuration, venue);
+            await _commandHandler.Handle(createVideoHearingCommand);
 
+            var videoHearingId = createVideoHearingCommand.NewHearingId;
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            videoHearing.AddCases(cases);
+            var addCasesToHearingCommand = new AddCasesToHearingCommand(videoHearingId, cases);
+            await _commandHandler.Handle(addCasesToHearingCommand);
 
-            var mapper = new ParticipantRequestToDomainMapper();
-            var participants = request.Participants.Select(x => mapper.MapRequestToParticipant(x, caseType)).ToList();
-            videoHearing.AddParticipants(participants);
+            var mapper = new ParticipantRequestToNewParticipantMapper();
+            var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
 
-            var command = new SaveVideoHearingCommand(videoHearing);
-            await _commandHandler.Handle(command);
+            var addParticipantsToVideoHearingCommand =
+                new AddParticipantsToVideoHearingCommand(videoHearingId, newParticipants);
+            await _commandHandler.Handle(addParticipantsToVideoHearingCommand);
+
+            var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
+            var queriedVideoHearing =
+                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
 
             var hearingMapper = new HearingToDetailResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
+            var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
