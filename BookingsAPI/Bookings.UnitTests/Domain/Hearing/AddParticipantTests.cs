@@ -3,7 +3,6 @@ using System.Linq;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -20,12 +19,9 @@ namespace Bookings.UnitTests.Domain.Hearing
             var claimantSolicitorHearingRole = new HearingRole(2, "Solicitor");
 
             var newPerson = new PersonBuilder(true).Build();
-            var claimantSolicitorParticipant = Builder<Representative>.CreateNew().WithFactory(() =>
-                new Representative(newPerson, claimantSolicitorHearingRole, claimantCaseRole)
-            ).Build();
-
             var beforeAddCount = hearing.GetParticipants().Count;
-            hearing.AddParticipant(claimantSolicitorParticipant);
+            hearing.AddSolicitor(newPerson, claimantSolicitorHearingRole, claimantCaseRole, "Display Name",
+                string.Empty, string.Empty);
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
@@ -35,10 +31,12 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void should_not_add_existing_participant_to_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
-            var participant = hearing.GetParticipants().First();
+            var representative = (Representative) hearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
             var beforeAddCount = hearing.GetParticipants().Count;
 
-            Action action = () => hearing.AddParticipant(participant);
+            Action action = () => hearing.AddSolicitor(representative.Person, representative.HearingRole,
+                representative.CaseRole, representative.DisplayName, representative.SolicitorsReference,
+                representative.Representee);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Any(x => x.Message == "Participant already exists in the hearing").Should().BeTrue();
             
