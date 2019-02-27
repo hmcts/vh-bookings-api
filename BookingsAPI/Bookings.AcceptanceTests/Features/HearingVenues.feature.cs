@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Bookings.IntegrationTests.Features
+namespace Bookings.AcceptanceTests.Features
 {
     using TechTalk.SpecFlow;
     
