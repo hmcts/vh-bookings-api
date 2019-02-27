@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using RestSharp;
+﻿using RestSharp;
 using Testing.Common.Builders.Api;
 
 namespace Bookings.AcceptanceTests.Contexts
@@ -9,10 +8,11 @@ namespace Bookings.AcceptanceTests.Contexts
         public RestRequest Request { get; set; }
         public IRestResponse Response { get; set; }
         public string BearerToken { get; set; }
+        public string BaseUrl { get; set; }
 
         public RestClient Client()
         {
-            var client = new RestClient(ConfigurationManager.AppSettings["BaseUrl"]);
+            var client = new RestClient(BaseUrl);
             client.AddDefaultHeader("Accept", "application/json");
             client.AddDefaultHeader("Authorization", $"Bearer {BearerToken}");
             return client;

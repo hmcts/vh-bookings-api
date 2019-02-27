@@ -13,12 +13,10 @@ namespace Bookings.AcceptanceTests.Steps
     {
         private readonly AcTestContext _acTestContext;
         private readonly HearingVenueEndpoints _endpoints = new ApiUriFactory().HearingVenueEndpoints;
-        private readonly JsonDeserializer _deserializer;
 
         public HearingVenuesSteps(AcTestContext acTestContext)
         {
             _acTestContext = acTestContext;
-            _deserializer = new JsonDeserializer();
         }
 
         [Given(@"I have a get all hearing venues available for booking request")]
@@ -32,7 +30,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var json = _acTestContext.Response.Content;
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(json);
-            model.Should().NotBeNull();
+            model.Should().NotBeNullOrEmpty();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Bookings.AcceptanceTests.Contexts;
+using Bookings.AcceptanceTests.Helpers;
 using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
@@ -19,11 +20,6 @@ namespace Bookings.AcceptanceTests.Steps
         [BeforeTestRun]
         public static void OneTimeSetup(AcTestContext testContext)
         {
-            testContext.BearerToken = GetClientAccessTokenForApi();
-        }
-
-        private static string GetClientAccessTokenForApi()
-        {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
@@ -35,11 +31,15 @@ namespace Bookings.AcceptanceTests.Steps
             var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
 
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
-            var testSettings = testSettingsOptions.Value;
+            var testSettings = testSettingsOptions.Value;           
 
-            return new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
+            testContext.BearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 azureAdConfiguration.VhBookingsApiResourceId);
+
+            var apiTestsOptions = Options.Create(configRoot.GetSection("AcceptanceTestSettings").Get<AcceptanceTestConfiguration>());
+            var apiTestSettings = apiTestsOptions.Value;
+            testContext.BaseUrl = apiTestSettings.BookingsApiBaseUrl;
         }
 
         [AfterTestRun]
