@@ -18,6 +18,7 @@ namespace Bookings.API
         {
             return WebHost.CreateDefaultBuilder(args)
                 .UseKestrel(x => x.AddServerHeader = false)
+                .UseApplicationInsights()
                 .UseStartup<Startup>();
         }
     }
