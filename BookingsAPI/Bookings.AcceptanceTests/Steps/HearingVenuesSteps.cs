@@ -2,7 +2,6 @@
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
-using RestSharp.Serialization.Json;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 

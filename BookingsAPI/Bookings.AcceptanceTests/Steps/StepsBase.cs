@@ -27,17 +27,19 @@ namespace Bookings.AcceptanceTests.Steps
 
             var configRoot = configRootBuilder.Build();
 
-            var azureAdConfigurationOptions = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
+            var azureAdConfigurationOptions =
+                Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
             var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
 
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
-            var testSettings = testSettingsOptions.Value;           
+            var testSettings = testSettingsOptions.Value;
 
             testContext.BearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 azureAdConfiguration.VhBookingsApiResourceId);
 
-            var apiTestsOptions = Options.Create(configRoot.GetSection("AcceptanceTestSettings").Get<AcceptanceTestConfiguration>());
+            var apiTestsOptions =
+                Options.Create(configRoot.GetSection("AcceptanceTestSettings").Get<AcceptanceTestConfiguration>());
             var apiTestSettings = apiTestsOptions.Value;
             testContext.BaseUrl = apiTestSettings.BookingsApiBaseUrl;
         }

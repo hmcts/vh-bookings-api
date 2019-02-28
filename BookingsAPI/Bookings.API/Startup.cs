@@ -68,6 +68,7 @@ namespace Bookings.API
                 options.TokenValidationParameters.ValidateLifetime = true;
                 options.Audience = securitySettings.VhBookingsApiResourceId;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                options.RequireHttpsMetadata = true;
             });
 
             serviceCollection.AddAuthorization();
