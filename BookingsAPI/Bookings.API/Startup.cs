@@ -35,8 +35,6 @@ namespace Bookings.API
             RegisterAuth(services);
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
-            
             services.AddCors();
             
             services.AddDbContextPool<BookingsDbContext>(options =>
