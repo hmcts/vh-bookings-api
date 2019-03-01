@@ -1,11 +1,16 @@
-﻿using Bookings.AcceptanceTests.Contexts;
+﻿using System.Collections.Generic;
+using System.Net;
+using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Helpers;
 using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 using TechTalk.SpecFlow;
+using Testing.Common.Builders.Api;
 using Testing.Common.Configuration;
 
 namespace Bookings.AcceptanceTests.Steps
@@ -42,10 +47,15 @@ namespace Bookings.AcceptanceTests.Steps
             testContext.BaseUrl = apiTestSettings.BookingsApiBaseUrl;
         }
 
-        [AfterTestRun]
-        public static void TearDown()
+        [AfterScenario]
+        public static void TearDown(AcTestContext testContext)
         {
-            // Method will be used to cleanup data from tests that require data setup
+            if (testContext.HearingId != null)
+            {
+                //testContext.Request = testContext.Delete(_endpoints.DeleteHearing(testContext.HearingId));
+                //testContext.Response = testContext.Client().Execute(testContext.Request);
+                //testContext.Response.Should().Be(HttpStatusCode.OK);
+            }
         }
     }
 }

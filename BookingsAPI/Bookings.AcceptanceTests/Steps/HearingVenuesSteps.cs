@@ -2,7 +2,6 @@
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
-using RestSharp.Serialization.Json;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -28,8 +27,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"hearing venues should be retrieved")]
         public void ThenHearingVenuesShouldBeRetrieved()
         {
-            var json = _acTestContext.Response.Content;
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(json);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(_acTestContext.Json);
             model.Should().NotBeNullOrEmpty();
         }
     }
