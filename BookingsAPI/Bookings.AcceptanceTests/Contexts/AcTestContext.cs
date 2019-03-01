@@ -30,7 +30,8 @@ namespace Bookings.AcceptanceTests.Contexts
         public RestRequest Post(string path, object requestBody)
         {
             var request = new RestRequest(path, Method.POST);
-            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody), ParameterType.RequestBody);
+            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
+                ParameterType.RequestBody);
             return request;
         }
 
@@ -39,14 +40,16 @@ namespace Bookings.AcceptanceTests.Contexts
         public RestRequest Put(string path, object requestBody)
         {
             var request = new RestRequest(path, Method.PUT);
-            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody), ParameterType.RequestBody);
+            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
+                ParameterType.RequestBody);
             return request;
         }
 
         public RestRequest Patch(string path, object requestBody = null)
         {
             var request = new RestRequest(path, Method.PATCH);
-            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody), ParameterType.RequestBody);
+            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
+                ParameterType.RequestBody);
             return request;
         }
     }
