@@ -1,21 +1,18 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
+using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace Bookings.IntegrationTests.Database.Commands
 {
     public class RemoveHearingCommandTests : DatabaseTestsBase
     {
         private RemoveHearingCommandHandler _commandHandler;
+        private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private Guid _newHearingId;
 
         [SetUp]
@@ -23,6 +20,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveHearingCommandHandler(context);
+            _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
             _newHearingId = Guid.Empty;
         }
 
@@ -45,36 +43,20 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_throw_exception_when_participant_does_not_exist()
-        {
-            var seededHearing = await Hooks.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
-
-            var newPerson = new PersonBuilder(true).Build();
-            var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
-            Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
-                new RemoveHearingCommand(seededHearing.Id, participant)));
-        }
-
-        [Test]
         public async Task should_remove_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
-            var beforeCount = seededHearing.GetParticipants().Count;
-
-            var participant = seededHearing.GetParticipants().First();
-            await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant));
+            await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));
 
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
-            var afterCount = returnedVideoHearing.GetParticipants().Count;
+            returnedVideoHearing.Should().BeNull();
 
-            afterCount.Should().BeLessThan(beforeCount);
+            _newHearingId = Guid.Empty;
         }
     }
 }

@@ -4,7 +4,7 @@ Feature: Hearing Venues
 	As an api service
 	I want to be able to retrieve hearing venue data
 
-Scenario: Get all hearing venues available for booking
+Scenario: Get all hearing venues
 	Given I have a get all hearing venues available for booking request
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
