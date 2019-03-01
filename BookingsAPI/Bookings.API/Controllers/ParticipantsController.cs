@@ -33,7 +33,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        /// Get a participants in a hearing
+        /// Get participants in a hearing
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <returns>List of participants</returns>

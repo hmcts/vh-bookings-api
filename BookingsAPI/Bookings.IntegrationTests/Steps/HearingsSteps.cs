@@ -8,7 +8,6 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
-using Bookings.IntegrationTests.Api;
 using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 using FizzWare.NBuilder;
