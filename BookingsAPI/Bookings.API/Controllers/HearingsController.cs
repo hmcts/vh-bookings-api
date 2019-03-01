@@ -182,6 +182,11 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Remove an existing hearing
+        /// </summary>
+        /// <param name="hearingId">The hearing id</param>
+        /// <returns></returns>
         [HttpDelete("{hearingId}")]
         [SwaggerOperation(OperationId = "RemoveHearing")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
