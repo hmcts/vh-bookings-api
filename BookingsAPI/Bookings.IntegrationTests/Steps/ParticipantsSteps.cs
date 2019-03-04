@@ -100,6 +100,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.OldHearingId = _apiTestContext.NewHearingId;
             _apiTestContext.NewHearingId = seededHearing.Id;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            seededHearing.Participants.Count.Should().Be(3);
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
         }
 
@@ -273,7 +274,8 @@ namespace Bookings.IntegrationTests.Steps
                     .Single(x => x.Id == _apiTestContext.NewHearingId);
             }
             if (state.Equals("added"))
-            {    
+            {
+                hearingFromDb.Participants.Count.Should().BeGreaterThan(3);
                 foreach (var participantRequest in _apiTestContext.Participants)
                 {
                     hearingFromDb.GetParticipants().Any(x => x.Person.Username == participantRequest.Username).Should()

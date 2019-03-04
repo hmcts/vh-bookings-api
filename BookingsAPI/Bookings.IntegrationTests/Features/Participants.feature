@@ -38,6 +38,7 @@ Scenario: Existing participant added to a new hearing
 	Given I have an add participant to a hearing request with a valid hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
+	And the participant should be added
 	When I send the same request but with a new hearing id
 	Then the response should have the status NoContent and success status True
 	And the participant should be added
