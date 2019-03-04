@@ -102,7 +102,7 @@ namespace Bookings.IntegrationTests.Steps
 
         protected async Task<HttpResponseMessage> SendDeleteRequestAsync(ApiTestContext apiTestContext)
         {
-            using (var client = _server.CreateClient())
+            using (var client = apiTestContext.Server.CreateClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
                 return await client.DeleteAsync(apiTestContext.Uri);
