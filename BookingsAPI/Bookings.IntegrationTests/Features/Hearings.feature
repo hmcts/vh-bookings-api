@@ -88,3 +88,14 @@ Scenario: Hearing not updated with an invalid venue
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 	And the response message should read 'Hearing venue does not exist'
+
+Scenario: Delete a hearing
+	Given I have a valid remove hearing request
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+	And the hearing should be removed
+
+Scenario: Hearing not deleted with an invalid hearing id
+	Given I have remove hearing request with an nonexistent hearing id 
+	When I send the request to the endpoint
+	Then the response should have the status NotFound and success status False

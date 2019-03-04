@@ -19,7 +19,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         private RemoveParticipantFromHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private Guid _newHearingId;
-        
+
         [SetUp]
         public void Setup()
         {
@@ -28,7 +28,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
             _newHearingId = Guid.Empty;
         }
-        
+
         [TearDown]
         public async Task TearDown()
         {
@@ -38,7 +38,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 await Hooks.RemoveVideoHearing(_newHearingId);
             }
         }
-        
+
         [Test]
         public void should_throw_exception_when_hearing_does_not_exist()
         {
@@ -49,7 +49,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(hearingId, participant)));
         }
-        
+
         [Test]
         public async Task should_throw_exception_when_participant_does_not_exist()
         {
@@ -62,7 +62,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(seededHearing.Id, participant)));
         }
-        
+
         [Test]
         public async Task should_remove_participant_from_hearing()
         {
@@ -71,18 +71,16 @@ namespace Bookings.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetParticipants().Count;
-            
+
             var participant = seededHearing.GetParticipants().First();
             await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant));
-            
-            
+
+
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var afterCount = returnedVideoHearing.GetParticipants().Count;
-            
+
             afterCount.Should().BeLessThan(beforeCount);
         }
-        
-        
     }
 }
