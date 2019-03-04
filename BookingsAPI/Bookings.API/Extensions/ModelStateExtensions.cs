@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using FluentValidation.Results;
+using Bookings.Domain.Validations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ValidationFailure = FluentValidation.Results.ValidationFailure;
 
 namespace Bookings.API.Extensions
 {
@@ -12,6 +13,11 @@ namespace Bookings.API.Extensions
             {
                 modelState.AddModelError(failure.PropertyName, failure.ErrorMessage);
             }
+        }
+        
+        public static void AddDomainRuleErrors(this ModelStateDictionary modelState, ValidationFailures validationFailures)
+        {
+            validationFailures.ForEach(x => modelState.AddModelError(x.Name, x.Message));
         }
     }
 }

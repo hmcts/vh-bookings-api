@@ -14,13 +14,13 @@ using Testing.Common.Builders.Api;
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public class PersonSteps : StepsBase
+    public class Personsteps : StepsBase
     {
         private readonly ApiTestContext _apiTestContext;
         private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
         private string _username;
         
-        public PersonSteps(ApiTestContext apiTestContext)
+        public Personsteps(ApiTestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
             _username = string.Empty;
@@ -44,7 +44,7 @@ namespace Bookings.IntegrationTests.Steps
                     _username = Internet.Email();
                     break;
                 case Scenario.Invalid:
-                    _username = "blfdshnon";
+                    _username = "invalid username";
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
@@ -52,8 +52,8 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
         
-        [Given(@"I have a get person by username request with a (.*) contact email")]
-        [Given(@"I have a get person by username request with an (.*) contact email")]
+        [Given(@"I have a get person by contact email request with a (.*) contact email")]
+        [Given(@"I have a get person by contact email request with an (.*) contact email")]
         public async Task GivenIHaveAGetPersonByContactEmailRequest(Scenario scenario)
         {
             switch (scenario)
@@ -70,7 +70,7 @@ namespace Bookings.IntegrationTests.Steps
                     _username = Internet.Email();
                     break;
                 case Scenario.Invalid:
-                    _username = "blfdshnon";
+                    _username = "invalid contact email";
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
@@ -83,8 +83,15 @@ namespace Bookings.IntegrationTests.Steps
         {
             var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
-
             model.Should().NotBeNull();
+            model.Id.Should().NotBeEmpty();
+            model.ContactEmail.Should().NotBeNullOrEmpty();
+            model.FirstName.Should().NotBeNullOrEmpty();
+            model.LastName.Should().NotBeNullOrEmpty();
+            model.MiddleNames.Should().NotBeNullOrEmpty();
+            model.TelephoneNumber.Should().NotBeNullOrEmpty();
+            model.Title.Should().NotBeNullOrEmpty();
+            model.Username.Should().NotBeNullOrEmpty();
         }
 
     }

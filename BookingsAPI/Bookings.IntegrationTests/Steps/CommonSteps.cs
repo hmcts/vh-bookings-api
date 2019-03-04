@@ -22,6 +22,7 @@ namespace Bookings.IntegrationTests.Steps
         }
 
         [When(@"I send the request to the endpoint")]
+        [When(@"I send the same request twice")]
         public async Task WhenISendTheRequestToTheEndpoint()
         {
             _apiTestContext.ResponseMessage = new HttpResponseMessage();
