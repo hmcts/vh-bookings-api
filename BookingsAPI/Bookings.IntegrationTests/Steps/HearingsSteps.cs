@@ -138,6 +138,24 @@ namespace Bookings.IntegrationTests.Steps
             UpdateTheHearingRequest();
         }
 
+        [Given(@"I have a valid remove hearing request")]
+        public async Task GivenIHaveAValidRemoveHearingRequest()
+        {           
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _hearingId = seededHearing.Id;
+            _apiTestContext.Uri = _endpoints.RemoveHearing(_hearingId);
+            _apiTestContext.HttpMethod = HttpMethod.Delete;
+        }
+
+        [Given(@"I have remove hearing request with an nonexistent hearing id")]
+        public void GivenIHaveRemoveHearingRequestWithAnNonexistentHearingId()
+        {
+            _hearingId = Guid.NewGuid();
+            _apiTestContext.Uri = _endpoints.RemoveHearing(_hearingId);
+            _apiTestContext.HttpMethod = HttpMethod.Delete;
+        }
+    
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
@@ -188,6 +206,17 @@ namespace Bookings.IntegrationTests.Steps
             model.ScheduledDuration.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDuration);
             model.HearingVenueName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingVenueName);
             model.ScheduledDateTime.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDateTime);
+        }
+
+        [Then(@"the hearing should be removed")]
+        public void ThenTheHearingShouldBeRemoved()
+        {
+            Hearing hearingFromDb;
+            using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
+            {
+                hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
+            }
+            hearingFromDb.Should().BeNull();
         }
 
         [TearDown]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Models;
 using Bookings.Api.Contract.Responses;
@@ -38,6 +39,12 @@ namespace Bookings.AcceptanceTests.Steps
             var updateHearingRequest = UpdateHearingRequest.BuildRequest();
             _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingRequest);
         }
+
+        [Given(@"I have a remove hearing request with a valid hearing id")]
+        public void GivenIHaveARemoveHearingRequestWithAValidHearingId()
+        {
+            _acTestContext.Request = _acTestContext.Delete(_endpoints.RemoveHearing(_acTestContext.HearingId));
+        }       
 
         [Then(@"hearing details should be retrieved")]
         public void ThenAHearingDetailsShouldBeRetrieved()
@@ -80,6 +87,14 @@ namespace Bookings.AcceptanceTests.Steps
             model.ScheduledDuration.Should().Be(100);
             model.ScheduledDateTime.Should().Be(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));
             model.HearingVenueName.Should().Be("Manchester Civil and Family Justice Centre");
-        }       
+        }
+
+        [Then(@"the hearing no longer exists")]
+        public void ThenTheHearingNoLongerExists()
+        {
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingDetailsById(_acTestContext.HearingId));
+            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
+            _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
     }
 }
