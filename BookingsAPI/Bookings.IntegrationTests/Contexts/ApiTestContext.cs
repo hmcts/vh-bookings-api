@@ -23,6 +23,7 @@ namespace Bookings.IntegrationTests.Contexts
         public StringContent StringContent { get; set; }
         public HttpContent HttpContent { get; set; }
         public Guid NewHearingId { get; set; }
+        public Guid OldHearingId { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
         public List<ParticipantRequest> Participants { get; set; }
         public Participant Participant { get; set; }

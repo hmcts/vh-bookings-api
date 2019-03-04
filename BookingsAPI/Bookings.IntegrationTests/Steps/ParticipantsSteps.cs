@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
+using Bookings.DAL.Commands;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.IntegrationTests.Contexts;
@@ -90,6 +91,16 @@ namespace Bookings.IntegrationTests.Steps
             }
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Put;
+        }
+
+        [When(@"I send the same request but with a new hearing id")]
+        public async Task WhenISendTheSameRequestButWithANewHearingId()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.OldHearingId = _apiTestContext.NewHearingId;
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
         }
 
         [Given(@"I have an add participants in a hearing request with an invalid participant")]
@@ -292,6 +303,11 @@ namespace Bookings.IntegrationTests.Steps
             {
                 TestContext.WriteLine($"Removing test hearing {_apiTestContext.NewHearingId}");
                 await Hooks.RemoveVideoHearing(_apiTestContext.NewHearingId);
+            }
+            if (_apiTestContext.OldHearingId != Guid.Empty)
+            {
+                TestContext.WriteLine($"Removing test hearing {_apiTestContext.OldHearingId}");
+                await Hooks.RemoveVideoHearing(_apiTestContext.OldHearingId);
             }
         }
     }
