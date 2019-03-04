@@ -49,6 +49,15 @@ namespace Bookings.AcceptanceTests.Steps
             testContext.BaseUrl = apiTestSettings.BookingsApiBaseUrl;
         }
 
+        [BeforeTestRun]
+        public static void CheckHealth(AcTestContext testContext)
+        {
+            var endpoint = new ApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.HealthCheck);
+            testContext.Response = testContext.Client().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
         [AfterScenario]
         public static void TearDown(AcTestContext testContext)
         {
