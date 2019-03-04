@@ -182,11 +182,19 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
-            var query = new GetParticipantsInHearingQuery(hearingId);
-            var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
-            var participant = participants.FirstOrDefault(x => x.Id == participantId);
 
+            List<Participant> participants;
+            var query = new GetParticipantsInHearingQuery(hearingId);
+            try
+            {
+                participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+            
+            var participant = participants.FirstOrDefault(x => x.Id == participantId);
             if (participant == null)
             {
                 return NotFound();
