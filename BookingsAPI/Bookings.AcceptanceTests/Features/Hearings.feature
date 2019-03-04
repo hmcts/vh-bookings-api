@@ -23,3 +23,10 @@ Scenario: Update a hearing
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And hearing details should be updated
+
+Scenario: Delete a hearing
+	Given I have a hearing
+	And I have a remove hearing request with a valid hearing id
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+	And the hearing no longer exists

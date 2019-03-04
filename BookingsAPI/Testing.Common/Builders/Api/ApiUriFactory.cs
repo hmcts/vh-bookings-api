@@ -39,6 +39,7 @@ namespace Testing.Common.Builders.Api
         public string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
         public string BookNewHearing() => $"{ApiRoot}";
         public string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+        public string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
     }
 
     public class ParticipantsEndpoints
