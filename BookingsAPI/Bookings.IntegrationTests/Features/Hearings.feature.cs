@@ -32,8 +32,8 @@ namespace Bookings.IntegrationTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Hearings", "\tIn order to manage hearings\n\tAs an api service\n\tI want to be able to create, upd" +
-                    "ate and retrieve hearings data", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Hearings", "\tIn order to manage hearings\r\n\tAs an api service\r\n\tI want to be able to create, u" +
+                    "pdate and retrieve hearings data", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-3622"});
             testRunner.OnFeatureStart(featureInfo);
         }
@@ -350,6 +350,44 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 90
  testRunner.And("the response message should read \'Hearing venue does not exist\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Delete a hearing")]
+        public virtual void DeleteAHearing()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete a hearing", null, ((string[])(null)));
+#line 92
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 93
+ testRunner.Given("I have a valid remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 94
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 95
+ testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 96
+ testRunner.And("the hearing should be removed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Hearing not deleted with an invalid hearing id")]
+        public virtual void HearingNotDeletedWithAnInvalidHearingId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not deleted with an invalid hearing id", null, ((string[])(null)));
+#line 98
+ this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 99
+ testRunner.Given("I have remove hearing request with an nonexistent hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 100
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 101
+ testRunner.Then("the response should have the status NotFound and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

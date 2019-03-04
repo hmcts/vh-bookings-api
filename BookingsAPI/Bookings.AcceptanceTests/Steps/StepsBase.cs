@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Helpers;
 using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Swagger;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 using Testing.Common.Configuration;
@@ -52,12 +49,10 @@ namespace Bookings.AcceptanceTests.Steps
         [AfterScenario]
         public static void TearDown(AcTestContext testContext)
         {
-            if (testContext.HearingId != null)
-            {
-                //testContext.Request = testContext.Delete(_endpoints.DeleteHearing(testContext.HearingId));
-                //testContext.Response = testContext.Client().Execute(testContext.Request);
-                //testContext.Response.Should().Be(HttpStatusCode.OK);
-            }
+            if (testContext.HearingId == Guid.Empty) return;
+            var endpoint = new ApiUriFactory().HearingsEndpoints.RemoveHearing(testContext.HearingId);
+            testContext.Request = testContext.Delete(endpoint);  
+            testContext.Response = testContext.Client().Execute(testContext.Request);
         }
     }
 }
