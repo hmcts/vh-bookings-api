@@ -137,7 +137,7 @@ namespace Bookings.IntegrationTests.Features
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 24
-    testRunner.Given("I have a get person by username request with a valid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Given("I have a get person by contact email request with a valid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 25
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 26
@@ -157,7 +157,7 @@ namespace Bookings.IntegrationTests.Features
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 30
-    testRunner.Given("I have a get person by username request with an invalid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Given("I have a get person by contact email request with an invalid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 31
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 32
@@ -175,7 +175,7 @@ namespace Bookings.IntegrationTests.Features
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 35
-    testRunner.Given("I have a get person by username request with a nonexistent contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Given("I have a get person by contact email request with a nonexistent contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 36
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 37
