@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Helpers;
@@ -52,7 +53,7 @@ namespace Bookings.AcceptanceTests.Steps
         [AfterScenario]
         public static void TearDown(AcTestContext testContext)
         {
-            if (testContext.HearingId != null)
+            if (testContext.HearingId != Guid.Empty)
             {
                 //testContext.Request = testContext.Delete(_endpoints.DeleteHearing(testContext.HearingId));
                 //testContext.Response = testContext.Client().Execute(testContext.Request);
