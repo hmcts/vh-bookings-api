@@ -11,6 +11,7 @@ namespace Testing.Common.Builders.Api
             HearingsEndpoints = new HearingsEndpoints();
             ParticipantsEndpoints = new ParticipantsEndpoints();
             PersonEndpoints = new PersonEndpoints();
+            HealthCheckEndpoints = new HealthCheckEndpoints();
         }
         
         public HearingVenueEndpoints HearingVenueEndpoints { get; set; }
@@ -18,6 +19,7 @@ namespace Testing.Common.Builders.Api
         public HearingsEndpoints HearingsEndpoints { get; set; }
         public ParticipantsEndpoints ParticipantsEndpoints { get; set; }
         public PersonEndpoints PersonEndpoints { get; set; }
+        public HealthCheckEndpoints HealthCheckEndpoints { get; set; }
     }
 
     public class HearingVenueEndpoints
@@ -25,7 +27,13 @@ namespace Testing.Common.Builders.Api
         private string ApiRoot => "hearingvenues";
         public string GetVenues => $"{ApiRoot}";
     }
-    
+
+    public class HealthCheckEndpoints
+    {
+        private string ApiRoot => "healthCheck";
+        public string HealthCheck => $"{ApiRoot}/health";
+    }
+
     public class CaseTypesEndpoints
     {
         private string ApiRoot => "casetypes";

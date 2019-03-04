@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Helpers;
 using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
@@ -44,6 +46,15 @@ namespace Bookings.AcceptanceTests.Steps
                 Options.Create(configRoot.GetSection("AcceptanceTestSettings").Get<AcceptanceTestConfiguration>());
             var apiTestSettings = apiTestsOptions.Value;
             testContext.BaseUrl = apiTestSettings.BookingsApiBaseUrl;
+        }
+
+        [BeforeTestRun]
+        public static void CheckHealth(AcTestContext testContext)
+        {
+            var endpoint = new ApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.HealthCheck);
+            testContext.Response = testContext.Client().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [AfterScenario]
