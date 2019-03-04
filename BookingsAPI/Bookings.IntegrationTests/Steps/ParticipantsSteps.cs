@@ -102,6 +102,7 @@ namespace Bookings.IntegrationTests.Steps
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             seededHearing.Participants.Count.Should().Be(3);
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
+            _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext);
         }
 
         [Given(@"I have an add participants in a hearing request with an invalid participant")]
