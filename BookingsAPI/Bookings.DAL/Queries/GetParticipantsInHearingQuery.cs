@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL.Exceptions;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 

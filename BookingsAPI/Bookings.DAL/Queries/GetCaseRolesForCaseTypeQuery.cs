@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 

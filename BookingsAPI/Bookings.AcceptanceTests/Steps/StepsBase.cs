@@ -1,11 +1,15 @@
-﻿using Bookings.AcceptanceTests.Contexts;
+﻿using System;
+using System.Net;
+using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Helpers;
 using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
+using Testing.Common.Builders.Api;
 using Testing.Common.Configuration;
 
 namespace Bookings.AcceptanceTests.Steps
@@ -44,10 +48,22 @@ namespace Bookings.AcceptanceTests.Steps
             testContext.BaseUrl = apiTestSettings.BookingsApiBaseUrl;
         }
 
-        [AfterTestRun]
-        public static void TearDown()
+        [BeforeTestRun]
+        public static void CheckHealth(AcTestContext testContext)
         {
-            // Method will be used to cleanup data from tests that require data setup
+            var endpoint = new ApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.HealthCheck);
+            testContext.Response = testContext.Client().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [AfterScenario]
+        public static void TearDown(AcTestContext testContext)
+        {
+            if (testContext.HearingId == Guid.Empty) return;
+            var endpoint = new ApiUriFactory().HearingsEndpoints.RemoveHearing(testContext.HearingId);
+            testContext.Request = testContext.Delete(endpoint);  
+            testContext.Response = testContext.Client().Execute(testContext.Request);
         }
     }
 }

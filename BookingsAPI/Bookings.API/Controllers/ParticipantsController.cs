@@ -9,10 +9,13 @@ using Bookings.API.Extensions;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
+using Bookings.Domain.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -33,7 +36,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        /// Get a participants in a hearing
+        /// Get participants in a hearing
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <returns>List of participants</returns>
@@ -153,7 +156,16 @@ namespace Bookings.API.Controllers
             var participants = request.Participants
                 .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants);
-            await _commandHandler.Handle(command);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+            }
+            catch (DomainRuleException e)
+            {
+                ModelState.AddDomainRuleErrors(e.ValidationFailures);
+                return BadRequest(ModelState);
+            }
 
             return NoContent();
         }
@@ -182,11 +194,19 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
-            var query = new GetParticipantsInHearingQuery(hearingId);
-            var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
-            var participant = participants.FirstOrDefault(x => x.Id == participantId);
 
+            List<Participant> participants;
+            var query = new GetParticipantsInHearingQuery(hearingId);
+            try
+            {
+                participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+            
+            var participant = participants.FirstOrDefault(x => x.Id == participantId);
             if (participant == null)
             {
                 return NotFound();
