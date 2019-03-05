@@ -12,7 +12,9 @@ using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Bookings.Common;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
 
 namespace Bookings.API
 {

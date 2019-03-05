@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bookings.DAL.Queries
+namespace Bookings.DAL.Queries.Core
 {
     public class QueryHandlerFactory : IQueryHandlerFactory
     {

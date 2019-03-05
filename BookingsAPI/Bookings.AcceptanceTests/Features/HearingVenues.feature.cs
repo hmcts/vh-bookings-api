@@ -73,10 +73,10 @@ namespace Bookings.AcceptanceTests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Get all hearing venues available for booking")]
-        public virtual void GetAllHearingVenuesAvailableForBooking()
+        [NUnit.Framework.DescriptionAttribute("Get all hearing venues")]
+        public virtual void GetAllHearingVenues()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get all hearing venues available for booking", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get all hearing venues", null, ((string[])(null)));
 #line 7
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();

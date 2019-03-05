@@ -9,7 +9,9 @@ using Bookings.API.Extensions;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
 using Microsoft.AspNetCore.Mvc;
@@ -182,6 +184,39 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Remove an existing hearing
+        /// </summary>
+        /// <param name="hearingId">The hearing id</param>
+        /// <returns></returns>
+        [HttpDelete("{hearingId}")]
+        [SwaggerOperation(OperationId = "RemoveHearing")]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> RemoveHearing(Guid hearingId)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+            
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+            
+            var command =
+                new RemoveHearingCommand(hearingId);
+            await _commandHandler.Handle(command);
+
+            return NoContent();
+        }
+        
         private async Task<HearingVenue> GetVenue(string venueName)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
 using Bookings.Domain.Participants;
 using Microsoft.EntityFrameworkCore;

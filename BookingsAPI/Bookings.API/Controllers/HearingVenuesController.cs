@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

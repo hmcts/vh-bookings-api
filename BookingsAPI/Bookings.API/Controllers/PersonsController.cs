@@ -4,6 +4,7 @@ using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,6 +23,11 @@ namespace Bookings.API.Controllers
             _queryHandler = queryHandler;
         }
 
+        /// <summary>
+        /// Get a person by username
+        /// </summary>
+        /// <param name="username">The username of the person</param>
+        /// <returns>Person</returns>
         [HttpGet("username/{username}", Name = "GetPersonByUsername")]
         [SwaggerOperation(OperationId = "GetPersonByUsername")]
         [ProducesResponseType(typeof(PersonResponse), (int) HttpStatusCode.OK)]
@@ -46,7 +52,12 @@ namespace Bookings.API.Controllers
             var response = mapper.MapPersonToResponse(person);
             return Ok(response);
         }
-        
+
+        /// <summary>
+        /// Get a person by contact email
+        /// </summary>
+        /// <param name="contactEmail">The contact email of the person</param>
+        /// <returns>Person</returns>
         [HttpGet("contactEmail/{contactEmail}", Name = "GetPersonByContactEmail")]
         [SwaggerOperation(OperationId = "GetPersonByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int) HttpStatusCode.OK)]

@@ -65,7 +65,7 @@ namespace Bookings.IntegrationTests.Helper
 
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
-                db.VideoHearings.Add(videoHearing);
+                await db.VideoHearings.AddAsync(videoHearing);
                 await db.SaveChangesAsync();
             }
 
