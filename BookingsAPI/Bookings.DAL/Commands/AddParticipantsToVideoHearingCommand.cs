@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
 using Bookings.Domain;
 using Bookings.Domain.RefData;

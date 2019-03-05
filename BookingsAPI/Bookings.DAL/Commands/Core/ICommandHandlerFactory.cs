@@ -1,5 +1,5 @@
 ﻿
-namespace Bookings.DAL.Commands
+namespace Bookings.DAL.Commands.Core
 {
     public interface ICommandHandlerFactory
     {

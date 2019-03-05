@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.DAL.Queries.Core;
 
 namespace Bookings.API.Controllers
 {

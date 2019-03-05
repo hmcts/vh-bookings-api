@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Microsoft.EntityFrameworkCore;
 
