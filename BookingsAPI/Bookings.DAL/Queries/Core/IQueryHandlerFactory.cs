@@ -1,4 +1,4 @@
-﻿namespace Bookings.DAL.Queries
+﻿namespace Bookings.DAL.Queries.Core
 {
     public interface IQueryHandlerFactory
     {

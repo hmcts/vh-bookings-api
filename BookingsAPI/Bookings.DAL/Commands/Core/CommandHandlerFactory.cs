@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bookings.DAL.Commands
+namespace Bookings.DAL.Commands.Core
 {
     public class CommandHandlerFactory : ICommandHandlerFactory
     {
