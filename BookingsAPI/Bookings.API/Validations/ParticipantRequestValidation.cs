@@ -6,8 +6,8 @@ namespace Bookings.API.Validations
     public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
     {
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
-        public static readonly string NoCaseRoleNameErrorMessage = "Display name is required";
-        public static readonly string NoHearingRoleNameErrorMessage = "Display name is required";
+        public static readonly string NoCaseRoleNameErrorMessage = "Case role is required";
+        public static readonly string NoHearingRoleNameErrorMessage = "Hearing role is required";
         public static readonly string NoTitleErrorMessage = "Title is required";
         public static readonly string NoFirstNameErrorMessage = "First name is required";
         public static readonly string NoLastNameErrorMessage = "Last name is required";
