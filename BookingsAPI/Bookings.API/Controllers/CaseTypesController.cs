@@ -24,7 +24,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        ///     Get available case types that hearings can be booked for
+        ///     Get available case types
         /// </summary>
         /// <returns>A list of available case types</returns>
         [HttpGet]

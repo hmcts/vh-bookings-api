@@ -20,6 +20,13 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext = apiTestContext;
         }
 
+        [Given(@"I have a get available case types request")]
+        public void GivenIHaveAGetAvailableCaseTypesRequest()
+        {
+            _apiTestContext.Uri = _endpoints.GetCaseTypes();
+            _apiTestContext.HttpMethod = HttpMethod.Get;
+        }
+
         [Given(@"I have a get case roles for a case type of '(.*)' request")]
         public void GivenIHaveAGetCaseRolesForACaseTypeRequest(string caseType)
         {
@@ -32,6 +39,24 @@ namespace Bookings.IntegrationTests.Steps
         {          
             _apiTestContext.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName);
             _apiTestContext.HttpMethod = HttpMethod.Get;
+        }
+
+        [Then(@"a list of case types should be retrieved")]
+        public async Task ThenAListOfCaseTypesShouldBeRetrieved()
+        {
+            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
+            model.Should().NotBeEmpty();
+            foreach (var caseType in model)
+            {
+                caseType.Name.Should().NotBeNullOrEmpty();
+                caseType.Id.Should().BeGreaterThan(0);
+                foreach (var hearingType in caseType.HearingTypes)
+                {
+                    hearingType.Id.Should().BeGreaterThan(0);
+                    hearingType.Name.Should().NotBeNullOrEmpty();
+                }
+            }
         }
 
         [Then(@"a list of case roles should be retrieved")]
