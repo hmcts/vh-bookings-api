@@ -24,6 +24,33 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
+        ///     Get available case types that hearings can be booked for
+        /// </summary>
+        /// <returns>A list of available case types</returns>
+        [HttpGet]
+        [SwaggerOperation(OperationId = "GetCaseTypes")]
+        [ProducesResponseType(typeof(List<CaseTypeResponse>), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> GetCaseTypes()
+        {
+            var query = new GetAllCaseTypesQuery();
+            var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
+
+            var response = caseTypes.Select(caseType => new CaseTypeResponse
+                {
+                    Id = caseType.Id,
+                    Name = caseType.Name,
+                    HearingTypes = caseType.HearingTypes.Select(hearingType => new HearingTypeResponse
+                    {
+                        Id = hearingType.Id,
+                        Name = hearingType.Name
+                    }).ToList()
+                }
+            );
+
+            return Ok(response);
+        } 
+        
+        /// <summary>
         /// Get case roles for a case type
         /// </summary>
         /// <param name="caseTypeName"></param>
