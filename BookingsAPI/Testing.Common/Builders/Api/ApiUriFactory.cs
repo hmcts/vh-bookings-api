@@ -39,6 +39,8 @@ namespace Testing.Common.Builders.Api
         private string ApiRoot => "casetypes";
         public string GetCaseRolesForCaseType(string caseTypeName) => $"{ApiRoot}/{caseTypeName}/caseroles";
         public string GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName) => $"{ApiRoot}/{caseTypeName}/caseroles/{caseRoleName}/hearingroles";
+
+        public string GetCaseTypes() => $"{ApiRoot}/";
     }
 
     public class HearingsEndpoints

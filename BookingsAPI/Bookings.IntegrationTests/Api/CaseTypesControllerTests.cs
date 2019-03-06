@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
@@ -55,6 +56,20 @@ namespace Bookings.IntegrationTests.Api
             TestContext.WriteLine($"Status Code: {response.StatusCode}");
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task should_get_case_and_hearing_types()
+        {
+            var uri = _endpoints.GetCaseTypes();
+            var response = await SendGetRequestAsync(uri);
+            TestContext.WriteLine($"Status Code: {response.StatusCode}");
+            response.IsSuccessStatusCode.Should().BeTrue();
+            var json = await response.Content.ReadAsStringAsync();
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
+            model.Count.Should().BePositive();
+            model.First().HearingTypes.Count.Should().BePositive();
+
         }
     }
 }
