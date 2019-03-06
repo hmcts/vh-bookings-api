@@ -12,12 +12,10 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class CommonSteps : StepsBase
     {
-        private readonly ScenarioContext context;
         private readonly ApiTestContext _apiTestContext;
 
-        public CommonSteps(ScenarioContext injectedContext, ApiTestContext apiTestContext)
+        public CommonSteps(ApiTestContext apiTestContext)
         {
-            context = injectedContext;
             _apiTestContext = apiTestContext;
         }
 

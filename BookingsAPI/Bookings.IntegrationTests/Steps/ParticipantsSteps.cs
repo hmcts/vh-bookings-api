@@ -7,16 +7,11 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
-using Bookings.DAL.Commands;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
-using Faker;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
@@ -297,21 +292,6 @@ namespace Bookings.IntegrationTests.Steps
             {
                 Participants = new List<ParticipantRequest> { newParticipant }
             };
-        }
-
-        [TearDown]
-        public async Task TearDown()
-        {
-            if (_apiTestContext.NewHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_apiTestContext.NewHearingId}");
-                await Hooks.RemoveVideoHearing(_apiTestContext.NewHearingId);
-            }
-            if (_apiTestContext.OldHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_apiTestContext.OldHearingId}");
-                await Hooks.RemoveVideoHearing(_apiTestContext.OldHearingId);
-            }
         }
     }
 }

@@ -219,16 +219,6 @@ namespace Bookings.IntegrationTests.Steps
             hearingFromDb.Should().BeNull();
         }
 
-        [TearDown]
-        public async Task TearDown()
-        {
-            if (_hearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_hearingId}");
-                await Hooks.RemoveVideoHearing(_hearingId);
-            }
-        }
-
         private static BookNewHearingRequest BuildRequest()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(4).All()

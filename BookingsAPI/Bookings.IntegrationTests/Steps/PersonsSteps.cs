@@ -14,13 +14,13 @@ using Testing.Common.Builders.Api;
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public class Personsteps : StepsBase
+    public class PersonSteps : StepsBase
     {
         private readonly ApiTestContext _apiTestContext;
         private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
         private string _username;
         
-        public Personsteps(ApiTestContext apiTestContext)
+        public PersonSteps(ApiTestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
             _username = string.Empty;
