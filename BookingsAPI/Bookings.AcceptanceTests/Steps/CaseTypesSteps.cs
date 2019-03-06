@@ -18,6 +18,12 @@ namespace Bookings.AcceptanceTests.Steps
             _acTestContext = acTestContext;
         }
 
+        [Given(@"I have a get available case types request")]
+        public void GivenIHaveAGetAvailableCaseTypesRequest()
+        {
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetCaseTypes());
+        }
+
         [Given(@"I have a get case roles for a case type of '(.*)' request")]
         public void GivenIHaveAGetAllHearingVenuesAvailableForBookingRequest(string caseType)
         {
@@ -28,6 +34,23 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAGetHearingRolesForCaseRoleOfCaseTypeRequest(string caseType, string caseRoleName)
         {
             _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName));
+        }
+
+        [Then(@"a list of case types should be retrieved")]
+        public void ThenAListOfCaseTypesShouldBeRetrieved()
+        {
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(_acTestContext.Json);
+            model.Should().NotBeEmpty();
+            foreach (var caseType in model)
+            {
+                caseType.Name.Should().NotBeNullOrEmpty();
+                caseType.Id.Should().BeGreaterThan(0);
+                foreach (var hearingType in caseType.HearingTypes)
+                {
+                    hearingType.Id.Should().BeGreaterThan(0);
+                    hearingType.Name.Should().NotBeNullOrEmpty();
+                }
+            }
         }
 
         [Then(@"a list of case roles should be retrieved")]
