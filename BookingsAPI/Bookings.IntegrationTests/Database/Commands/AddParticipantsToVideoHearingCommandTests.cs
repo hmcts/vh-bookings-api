@@ -107,6 +107,34 @@ namespace Bookings.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
                 new AddParticipantsToVideoHearingCommand(_newHearingId, participants)));
         }
+        
+        [Test]
+        public async Task should_throw_exception_when_adding_unsupported_role_to_hearing()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var representative = (Representative) seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+
+            representative.HearingRole.UserRole.Name = "NonExistent";
+            var newParticipant = new NewParticipant()
+            {
+                Person = representative.Person,
+                CaseRole = representative.CaseRole,
+                HearingRole = representative.HearingRole,
+                DisplayName = representative.DisplayName,
+                SolicitorsReference = representative.SolicitorsReference,
+                Representee = representative.Representee
+            };
+            
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
+            };
+
+            Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
+                new AddParticipantsToVideoHearingCommand(_newHearingId, participants)));
+        }
 
         [Test]
         public async Task should_use_existing_person_when_adding_to_video_hearing()

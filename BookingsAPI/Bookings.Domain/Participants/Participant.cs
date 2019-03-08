@@ -28,7 +28,7 @@ namespace Bookings.Domain.Participants
         public Guid PersonId { get; protected set; }
         public virtual Person Person { get; protected set; }
         public Guid HearingId { get; protected set; }
-        public virtual Hearing Hearing { get; protected set; }   
+        protected virtual Hearing Hearing { get; set; }   
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }

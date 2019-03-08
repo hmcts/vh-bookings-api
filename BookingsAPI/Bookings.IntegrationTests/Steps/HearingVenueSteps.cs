@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
-using Bookings.IntegrationTests.Api;
 using Bookings.IntegrationTests.Contexts;
 using FluentAssertions;
 using TechTalk.SpecFlow;
