@@ -7,16 +7,11 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
-using Bookings.DAL.Commands;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
-using Faker;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
@@ -100,7 +95,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.OldHearingId = _apiTestContext.NewHearingId;
             _apiTestContext.NewHearingId = seededHearing.Id;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            seededHearing.Participants.Count.Should().Be(3);
+            seededHearing.GetParticipants().Count.Should().Be(3);
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
             _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext);
         }
@@ -141,7 +136,7 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            _apiTestContext.Uri = _endpoints.GetParticipantInHearing(hearingId, seededHearing.Participants[0].Hearing.Participants[0].Id);
+            _apiTestContext.Uri = _endpoints.GetParticipantInHearing(hearingId, seededHearing.GetParticipants()[0].Id);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
 
@@ -271,12 +266,12 @@ namespace Bookings.IntegrationTests.Steps
             using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings
-                    .Include(x => x.Participants).ThenInclude(x => x.Person).AsNoTracking()
+                    .Include("Participants.Person").AsNoTracking()
                     .Single(x => x.Id == _apiTestContext.NewHearingId);
             }
             if (state.Equals("added"))
             {
-                hearingFromDb.Participants.Count.Should().BeGreaterThan(3);
+                hearingFromDb.GetParticipants().Count.Should().BeGreaterThan(3);
                 foreach (var participantRequest in _apiTestContext.Participants)
                 {
                     hearingFromDb.GetParticipants().Any(x => x.Person.Username == participantRequest.Username).Should()

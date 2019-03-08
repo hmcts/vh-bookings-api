@@ -10,7 +10,7 @@ namespace Bookings.DAL.Mappings
     {
         public void Configure(EntityTypeBuilder<Hearing> builder)
         {
-            builder.ToTable("Hearing");
+            builder.ToTable(nameof(Hearing));
             builder.Property(x => x.HearingMediumType).HasColumnName("HearingMediumId");
             builder.HasDiscriminator(x => x.HearingMediumType)
                 .HasValue<VideoHearing>(HearingMediumType.FullyVideo);
@@ -28,7 +28,7 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.Status).HasColumnName("HearingStatusId");
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
-            builder.HasMany<Participant>("Participants").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
+            builder.HasMany<Participant>("Participants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
 
             builder.HasOne(x => x.CaseType).WithMany().HasForeignKey(x => x.CaseTypeId).IsRequired();
             builder.HasOne(x => x.HearingType).WithMany().HasForeignKey(x => x.HearingTypeId).IsRequired();

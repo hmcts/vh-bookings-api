@@ -32,7 +32,7 @@ namespace Bookings.DAL.Commands
         public async Task Handle(RemoveParticipantFromHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include(x => x.Participants).ThenInclude(x => x.Person)
+                .Include("Participants.Person")
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
