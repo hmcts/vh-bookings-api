@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
+using Bookings.Domain;
 using Bookings.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -59,9 +60,11 @@ namespace Bookings.IntegrationTests.Database.Commands
             {
                 newParticipant
             };
+            var cases = new List<Case> {new Case("01234567890", "Test Add")};
 
             var command =
-                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, participants);
+                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, participants,
+                    cases);
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;
@@ -75,7 +78,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.HearingType.Should().NotBeNull();
             
             returnedVideoHearing.GetParticipants().Any().Should().BeTrue();
-            returnedVideoHearing.GetCases().Any().Should().BeFalse();
+            returnedVideoHearing.GetCases().Any().Should().BeTrue();
         }
         
         private CaseType GetCaseTypeFromDb(string caseTypeName)

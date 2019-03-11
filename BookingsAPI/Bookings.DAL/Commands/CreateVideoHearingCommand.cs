@@ -10,7 +10,7 @@ namespace Bookings.DAL.Commands
     public class CreateVideoHearingCommand : ICommand
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants)
+            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -18,6 +18,7 @@ namespace Bookings.DAL.Commands
             ScheduledDuration = scheduledDuration;
             Venue = venue;
             Participants = participants;
+            Cases = cases;
         }
 
         public Guid NewHearingId { get; set; }
@@ -27,6 +28,7 @@ namespace Bookings.DAL.Commands
         public int ScheduledDuration { get; }
         public HearingVenue Venue { get; }
         public List<NewParticipant> Participants { get; }
+        public List<Case> Cases { get; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -45,6 +47,7 @@ namespace Bookings.DAL.Commands
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue);
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+            videoHearing.AddCases(command.Cases);
             _context.VideoHearings.Add(videoHearing);
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;

@@ -108,15 +108,12 @@ namespace Bookings.API.Controllers
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
             var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
-            
+            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants);
+                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases);
             await _commandHandler.Handle(createVideoHearingCommand);
 
             var videoHearingId = createVideoHearingCommand.NewHearingId;
-            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            var addCasesToHearingCommand = new AddCasesToHearingCommand(videoHearingId, cases);
-            await _commandHandler.Handle(addCasesToHearingCommand);
 
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
             var queriedVideoHearing =
