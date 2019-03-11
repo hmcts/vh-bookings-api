@@ -22,7 +22,7 @@ dotnet sonarscanner end
 ```
 
 
-#### Generate HTML Report
+## Generate HTML Report
 
 Under the unit test project directory
 
