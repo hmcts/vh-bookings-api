@@ -11,10 +11,9 @@ namespace Bookings.UnitTests.Domain.Persons
         [Test]
         public void should_throw_exception_when_validation_fails()
         {
-            Action action = () =>
-            {
-                var _ = new Person(null, null, null, null);
-            };
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new Person(null, null, null, null);
+
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "Title")

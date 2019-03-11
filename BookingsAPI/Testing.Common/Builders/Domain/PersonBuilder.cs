@@ -37,11 +37,12 @@ namespace Testing.Common.Builders.Domain
 
         public PersonBuilder WithAddress()
         {
-            _person.Address = new Builder(_settings).CreateNew<Address>()
+           var address = new Builder(_settings).CreateNew<Address>()
                 .WithFactory(() => new Address())
                 .With(x => x.Street = Faker.Address.StreetAddress())
                 .With(x => x.Postcode = Faker.Address.UkPostCode())
                 .Build();
+           _person.UpdateAddress(address);
             return this;
         }
         

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
@@ -24,7 +25,8 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _queryHandler = new GetHearingByIdQueryHandler(context);
-            _commandHandler = new CreateVideoHearingCommandHandler(context);
+            var hearingService = new HearingService(context);
+            _commandHandler = new CreateVideoHearingCommandHandler(context, hearingService);
             _newHearingId = Guid.Empty;
             _secondHearingId = Guid.Empty;
         }
@@ -39,8 +41,27 @@ namespace Bookings.IntegrationTests.Database.Commands
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
             var venue = new RefDataBuilder().HearingVenues.First();
+            
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
+            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
 
-            var command = new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue);
+            var newPerson = new PersonBuilder(true).Build();
+            var newParticipant = new NewParticipant()
+            {
+                Person = newPerson,
+                CaseRole = claimantCaseRole,
+                HearingRole = claimantSolicitorHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                SolicitorsReference = string.Empty,
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
+            };
+
+            var command =
+                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, participants);
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;
@@ -53,7 +74,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.HearingVenue.Should().NotBeNull();
             returnedVideoHearing.HearingType.Should().NotBeNull();
             
-            returnedVideoHearing.GetParticipants().Any().Should().BeFalse();
+            returnedVideoHearing.GetParticipants().Any().Should().BeTrue();
             returnedVideoHearing.GetCases().Any().Should().BeFalse();
         }
         

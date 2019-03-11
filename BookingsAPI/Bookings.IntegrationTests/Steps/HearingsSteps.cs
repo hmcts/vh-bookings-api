@@ -138,20 +138,27 @@ namespace Bookings.IntegrationTests.Steps
             UpdateTheHearingRequest();
         }
 
-        [Given(@"I have a valid remove hearing request")]
-        public async Task GivenIHaveAValidRemoveHearingRequest()
-        {           
-            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _hearingId = seededHearing.Id;
-            _apiTestContext.Uri = _endpoints.RemoveHearing(_hearingId);
-            _apiTestContext.HttpMethod = HttpMethod.Delete;
-        }
-
-        [Given(@"I have remove hearing request with an nonexistent hearing id")]
-        public void GivenIHaveRemoveHearingRequestWithAnNonexistentHearingId()
+        [Given(@"I have a (.*) remove hearing request")]
+        [Given(@"I have an (.*) remove hearing request")]
+        public async Task GivenIHaveAValidRemoveHearingRequest(Scenario scenario)
         {
-            _hearingId = Guid.NewGuid();
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    break;
+                case Scenario.Invalid:
+                    _hearingId = Guid.Empty;
+                    break;
+                case Scenario.Nonexistent:
+                    _hearingId = Guid.NewGuid();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+            
             _apiTestContext.Uri = _endpoints.RemoveHearing(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Delete;
         }

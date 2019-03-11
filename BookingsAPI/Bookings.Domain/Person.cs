@@ -30,7 +30,7 @@ namespace Bookings.Domain
         protected long? OrganisationId { get; set; }
         public virtual Organisation Organisation { get; set; }
         protected long? AddressId { get; set; }
-        public virtual Address Address { get; set; }
+        public virtual Address Address { get; private set; }
         public DateTime CreatedDate { get; private set; }
         public DateTime UpdatedDate { get; private set; }
 
