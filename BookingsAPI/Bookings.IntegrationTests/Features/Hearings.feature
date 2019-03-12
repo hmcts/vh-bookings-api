@@ -94,8 +94,14 @@ Scenario: Delete a hearing
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And the hearing should be removed
-
+	
 Scenario: Hearing not deleted with an invalid hearing id
-	Given I have remove hearing request with an nonexistent hearing id 
+	Given I have an invalid remove hearing request
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+	And the response message should read 'Please provide a valid hearingId'
+	
+Scenario: Hearing not deleted with a nonexistent hearing id
+	Given I have a nonexistent remove hearing request 
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False

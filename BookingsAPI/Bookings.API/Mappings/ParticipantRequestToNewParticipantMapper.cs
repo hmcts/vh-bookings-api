@@ -14,8 +14,8 @@ namespace Bookings.API.Mappings
     {
         public NewParticipant MapRequestToNewParticipant(ParticipantRequest requestParticipant, CaseType caseType)
         {
-            var caseRole = caseType.CaseRoles.SingleOrDefault(x => x.Name == requestParticipant.CaseRoleName);
-            var hearingRole = caseRole?.HearingRoles.SingleOrDefault(x => x.Name == requestParticipant.HearingRoleName);
+            var caseRole = caseType.CaseRoles.Single(x => x.Name == requestParticipant.CaseRoleName);
+            var hearingRole = caseRole.HearingRoles.Single(x => x.Name == requestParticipant.HearingRoleName);
 
             var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
                 requestParticipant.Username)

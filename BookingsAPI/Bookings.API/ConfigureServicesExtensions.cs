@@ -63,6 +63,7 @@ namespace Bookings.API
             
             services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
             services.AddScoped<ICommandHandler, CommandHandler>();
+            services.AddScoped<IHearingService, HearingService>();
             
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);

@@ -124,6 +124,7 @@ namespace Bookings.Domain
 
             var existingParticipant = Participants.Single(x => x.Person.Username == participant.Person.Username);
             Participants.Remove(existingParticipant);
+            UpdatedDate = DateTime.UtcNow;
         }
 
         public virtual IList<Person> GetPersons()
@@ -167,6 +168,8 @@ namespace Bookings.Domain
             }
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
+            
+            UpdatedDate = DateTime.UtcNow;
         }
 
         private bool DoesParticipantExist(string username)
@@ -186,7 +189,7 @@ namespace Bookings.Domain
           
             if (hearingVenue == null || hearingVenue.Id <=0)
             {
-                _validationFailures.AddFailure("HearingVenue", "Court must have a valid value");
+                _validationFailures.AddFailure("HearingVenue", "HearingVenue must have a valid value");
             }
             if (hearingType == null || hearingType.Id <= 0)
             {

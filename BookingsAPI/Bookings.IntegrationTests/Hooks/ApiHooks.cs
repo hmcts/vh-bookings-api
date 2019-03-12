@@ -20,7 +20,7 @@ using Testing.Common.Configuration;
 namespace Bookings.IntegrationTests.Hooks
 {
     [Binding]
-    public class ApiHooks
+    public static class ApiHooks
     {
         [BeforeFeature]
         public static void BeforeApiFeature(ApiTestContext apiTestContext)

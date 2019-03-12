@@ -54,7 +54,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var beforeCount = seededHearing.GetCases().Count;
 
-            var cases = new List<Case>() {new Case("01234567890", "Test Add")};
+            var cases = new List<Case> {new Case("01234567890", "Test Add")};
             await _commandHandler.Handle(new AddCasesToHearingCommand(_newHearingId, cases));
 
             var returnedVideoHearing =
