@@ -210,6 +210,32 @@ namespace Bookings.API.Controllers
             return NoContent();
         }
         
+        /// <summary>
+        /// Get non-closed hearings for a person by their username
+        /// </summary>
+        /// <param name="username">person username</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet(Name = "GetHearingsForUsername")]
+        [SwaggerOperation(OperationId = "GetHearingsForUsername")]
+        [ProducesResponseType(typeof(List<HearingSummaryResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetHearingsForUsername([FromQuery] string username)
+        {
+            if (!username.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetHearingsForUsernameQuery(username);
+            var videoHearings = await _queryHandler.Handle<GetHearingsForUsernameQuery, List<VideoHearing>>(query);
+
+
+            var hearingMapper = new HearingToSummaryResponseMapper();
+            var response = videoHearings.Select(hearingMapper.MapHearingToSummaryResponse);
+            return Ok(response);
+        }
+        
         private async Task<HearingVenue> GetVenue(string venueName)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();

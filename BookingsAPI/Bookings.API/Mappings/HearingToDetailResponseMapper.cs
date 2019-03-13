@@ -6,27 +6,27 @@ namespace Bookings.API.Mappings
 {
     public class HearingToDetailResponseMapper
     {
-        public HearingDetailsResponse MapHearingToDetailedResponse(Hearing videoHearing)
+        public HearingDetailsResponse MapHearingToDetailedResponse(Hearing hearing)
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
             
-            var cases = videoHearing.GetCases()
+            var cases = hearing.GetCases()
                 .Select(x => caseMapper.MapCaseToResponse(x))
                 .ToList();
 
-            var participants = videoHearing.GetParticipants()
+            var participants = hearing.GetParticipants()
                 .Select(x => participantMapper.MapParticipantToResponse(x))
                 .ToList();
 
             var response = new HearingDetailsResponse
             {
-                Id = videoHearing.Id,
-                ScheduledDuration = videoHearing.ScheduledDuration,
-                ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType.Name,
-                CaseTypeName = videoHearing.CaseType.Name,
-                HearingVenueName = videoHearing.HearingVenueName,
+                Id = hearing.Id,
+                ScheduledDuration = hearing.ScheduledDuration,
+                ScheduledDateTime = hearing.ScheduledDateTime,
+                HearingTypeName = hearing.HearingType.Name,
+                CaseTypeName = hearing.CaseType.Name,
+                HearingVenueName = hearing.HearingVenueName,
                 Cases = cases,
                 Participants = participants
             };

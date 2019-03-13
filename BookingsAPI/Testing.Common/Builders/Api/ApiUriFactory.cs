@@ -50,6 +50,8 @@ namespace Testing.Common.Builders.Api
         public string BookNewHearing() => $"{ApiRoot}";
         public string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
         public string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+        
+        public string GetHearingsForUsername(string username) => $"{ApiRoot}/?username={username}";
     }
 
     public class ParticipantsEndpoints
