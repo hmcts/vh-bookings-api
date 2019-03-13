@@ -18,6 +18,7 @@ namespace Bookings.Domain
             Id = Guid.NewGuid();
             Cases = new List<Case>();
             Participants = new List<Participant>();
+            HearingCases = new List<HearingCase>();
             CreatedDate = DateTime.UtcNow;
         }
 
@@ -50,8 +51,8 @@ namespace Bookings.Domain
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedDate { get; protected set; }
-        protected virtual IList<Participant> Participants { get; set; }
-        protected virtual IList<HearingCase> HearingCases { get; set; } = new List<HearingCase>();
+        public virtual IList<Participant> Participants { get; private set; }
+        public virtual IList<HearingCase> HearingCases { get; private set; }
 
         public virtual void AddCase(string number, string name, bool isLeadCase)
         {
