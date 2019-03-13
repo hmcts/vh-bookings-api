@@ -28,7 +28,9 @@ namespace Bookings.API.Mappings
                 CaseTypeName = videoHearing.CaseType.Name,
                 HearingVenueName = videoHearing.HearingVenueName,
                 Cases = cases,
-                Participants = participants
+                Participants = participants,
+                HearingRoomName = videoHearing.HearingRoomName,
+                OtherInformation = videoHearing.OtherInformation
             };
             return response;
         }

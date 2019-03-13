@@ -107,7 +107,7 @@ namespace Bookings.API.Controllers
             }
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue);
+                request.ScheduledDateTime, request.ScheduledDuration, venue, request.OtherInformation, request.HearingRoomName);
             await _commandHandler.Handle(createVideoHearingCommand);
 
             var videoHearingId = createVideoHearingCommand.NewHearingId;
@@ -175,7 +175,8 @@ namespace Bookings.API.Controllers
             }
 
             var command =
-                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue);
+                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue, 
+                    request.OtherInformation, request.HearingRoomName);
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();

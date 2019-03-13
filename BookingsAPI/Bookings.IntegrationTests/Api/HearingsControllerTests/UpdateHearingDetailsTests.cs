@@ -131,6 +131,8 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             model.ScheduledDuration.Should().Be(request.ScheduledDuration);
             model.HearingVenueName.Should().Be(request.HearingVenueName);
             model.ScheduledDateTime.Should().Be(request.ScheduledDateTime);
+            model.OtherInformation.Should().Be(request.OtherInformation);
+            model.HearingRoomName.Should().Be(request.HearingRoomName);
         }
         
         private UpdateHearingRequest BuildRequest()
@@ -139,7 +141,9 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,
-                HearingVenueName = "Manchester Civil and Family Justice Centre"
+                HearingVenueName = "Manchester Civil and Family Justice Centre",
+                OtherInformation = "Edited Other Information",
+                HearingRoomName = "Edited HearingVenueRoomName"
             };
         }
         

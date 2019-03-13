@@ -61,7 +61,7 @@ namespace Bookings.DAL.Commands
             foreach (var participantToAdd in participants)
             {
                 var existingPerson = await _context.Persons
-                    .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username);
+                    .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.ContactEmail);
                 
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {

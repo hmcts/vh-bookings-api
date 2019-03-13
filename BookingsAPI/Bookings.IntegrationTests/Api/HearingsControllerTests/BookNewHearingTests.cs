@@ -270,13 +270,15 @@ namespace Bookings.IntegrationTests.Api.HearingsControllerTests
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Solicitor";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
-            
+
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
                 .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
+                .With(x => x.OtherInformation = "other information")
+                .With(x => x.HearingRoomName = "room C01")
                 .Build();
         }
     }

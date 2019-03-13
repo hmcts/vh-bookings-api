@@ -31,6 +31,8 @@ namespace Bookings.AcceptanceTests.Models
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
+                .With(x => x.OtherInformation = "OtherInformation 01")
+                .With(x => x.HearingRoomName = "Room 01")
                 .Build();
         }
     }

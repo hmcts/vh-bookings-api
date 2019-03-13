@@ -39,8 +39,10 @@ namespace Bookings.IntegrationTests.Database.Commands
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
             var venue = new RefDataBuilder().HearingVenues.First();
+            var otherInformation = "some information";
+            var hearingRoomName = "room 1";
 
-            var command = new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue);
+            var command = new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, otherInformation, hearingRoomName);
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;
