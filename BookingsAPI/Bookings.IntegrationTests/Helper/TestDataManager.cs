@@ -73,7 +73,7 @@ namespace Bookings.IntegrationTests.Helper
                 new GetHearingByIdQuery(videoHearing.Id)); 
         }
 
-        private CaseType GetCaseTypeFromDb(string caseTypeName)
+        public CaseType GetCaseTypeFromDb(string caseTypeName)
         {
             CaseType caseType;
             using (var db = new BookingsDbContext(_dbContextOptions))

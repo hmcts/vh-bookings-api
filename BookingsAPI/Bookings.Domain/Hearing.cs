@@ -128,6 +128,11 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
+        public void UpdateStatus(HearingStatus status)
+        {
+            Status = status;
+        }
+
         public virtual IList<Person> GetPersons()
         {
             return Participants.Select(x => x.Person).ToList();
