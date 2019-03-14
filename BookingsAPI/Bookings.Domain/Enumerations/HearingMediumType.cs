@@ -1,10 +1,7 @@
-﻿using System.ComponentModel;
-
-namespace Bookings.Domain.Enumerations
+﻿namespace Bookings.Domain.Enumerations
 {
     public enum HearingMediumType
     {
-        [Description("Fully Video")]
         FullyVideo = 1,
         Telephone = 2,
         Physical = 3,
