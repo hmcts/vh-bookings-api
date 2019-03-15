@@ -5,6 +5,7 @@ using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
+using Bookings.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
@@ -35,26 +36,51 @@ namespace Bookings.DAL.Commands
     public class AddParticipantsToVideoHearingCommandHandler : ICommandHandler<AddParticipantsToVideoHearingCommand>
     {
         private readonly BookingsDbContext _context;
-        private readonly IHearingService _hearingService;
 
-        public AddParticipantsToVideoHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
+        public AddParticipantsToVideoHearingCommandHandler(BookingsDbContext context)
         {
             _context = context;
-            _hearingService = hearingService;
         }
 
         public async Task Handle(AddParticipantsToVideoHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include("Participants.Person")
+                .Include(x => x.Participants).ThenInclude(x => x.Person)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-            await _hearingService.AddParticipantToService(hearing, command.Participants);
-            
+
+            // for each participant
+            // check for existing person
+            // add new individual/solicitor
+
+            var participants = command.Participants;
+            foreach (var participantToAdd in participants)
+            {
+                var existingPerson = await _context.Persons
+                    .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.ContactEmail);
+                
+                switch (participantToAdd.HearingRole.UserRole.Name)
+                {
+                    case "Individual":
+                        hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        break;
+                    case "Representative":
+                    {
+                        hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            participantToAdd.CaseRole, participantToAdd.DisplayName,
+                            participantToAdd.SolicitorsReference, participantToAdd.Representee);
+                        break;
+                    }
+                    default:
+                        throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
+                            $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
+                }
+            }
             await _context.SaveChangesAsync();
         }
     }

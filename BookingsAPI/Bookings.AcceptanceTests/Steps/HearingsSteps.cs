@@ -87,6 +87,8 @@ namespace Bookings.AcceptanceTests.Steps
             model.ScheduledDuration.Should().Be(100);
             model.ScheduledDateTime.Should().Be(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));
             model.HearingVenueName.Should().Be("Manchester Civil and Family Justice Centre");
+            model.HearingRoomName.Should().Be("Room 02");
+            model.OtherInformation.Should().Be("OtherInformation 02");
         }
 
         [Then(@"the hearing no longer exists")]

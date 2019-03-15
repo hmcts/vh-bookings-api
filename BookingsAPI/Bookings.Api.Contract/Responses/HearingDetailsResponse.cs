@@ -47,5 +47,15 @@ namespace Bookings.Api.Contract.Responses
         ///     List of participants in hearing
         /// </summary>
         public List<ParticipantResponse> Participants { get; set; }
+
+        /// <summary>
+        ///     Any other information about the hearing
+        /// </summary>
+        public string OtherInformation { get; set; }
+
+        /// <summary>
+        ///     The room name at the hearing venue
+        /// </summary>
+        public string HearingRoomName { get; set; }
     }
 }

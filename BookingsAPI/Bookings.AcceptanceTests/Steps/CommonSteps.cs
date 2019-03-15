@@ -39,6 +39,8 @@ namespace Bookings.AcceptanceTests.Steps
             model.ScheduledDuration.Should().NotBe(100);
             model.ScheduledDateTime.Should().NotBe(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));
             model.HearingVenueName.Should().NotBe("Manchester Civil and Family Justice Centre");
+            model.OtherInformation.Should().NotBe("OtherInformation 02");
+            model.HearingRoomName.Should().NotBe("Room 02");
         }
 
         [When(@"I send the request to the endpoint")]
