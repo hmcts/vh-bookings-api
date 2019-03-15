@@ -32,7 +32,7 @@ namespace Bookings.Domain
             HearingTypeId = hearingType.Id;
             HearingVenueName = hearingVenue.Name;
 
-            Status = HearingStatus.Created;
+            Status = BookingStatus.Booked;
             OtherInformation = otherInformation;
             HearingRoomName = hearingRoomName;
         }
@@ -47,7 +47,7 @@ namespace Bookings.Domain
         protected virtual IList<Case> Cases { get; set; }
         public DateTime ScheduledDateTime { get; protected set; }
         public int ScheduledDuration { get; protected set; }
-        public HearingStatus Status { get; protected set; }
+        public BookingStatus Status { get; protected set; }
         public DateTime CreatedDate { get; protected set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
@@ -57,6 +57,11 @@ namespace Bookings.Domain
         public string OtherInformation { get; set; }
         public string HearingRoomName { get; set; }
 
+        public void CancelHearing()
+        {
+            Status = BookingStatus.Cancelled;
+        }
+        
         public virtual void AddCase(string number, string name, bool isLeadCase)
         {
             var caseExists = Cases.SingleOrDefault(x => x.Number == number && x.Name == name);

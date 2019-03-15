@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
@@ -33,6 +34,20 @@ namespace Bookings.UnitTests.Domain.Hearing
             
             var afterAddCount = hearing.GetCases().Count;
             afterAddCount.Should().Be(beforeAddCount);
+        }
+    }
+
+    public class CancelHearingTests
+    {
+        [Test]
+        public void should_update_status_on_cancel()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.Status.Should().Be(BookingStatus.Booked);
+            
+            hearing.CancelHearing();
+            
+            hearing.Status.Should().Be(BookingStatus.Cancelled);
         }
     }
 }
