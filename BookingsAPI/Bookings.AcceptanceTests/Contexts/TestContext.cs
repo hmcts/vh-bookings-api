@@ -7,7 +7,7 @@ using Testing.Common.Builders.Api;
 
 namespace Bookings.AcceptanceTests.Contexts
 {
-    public class AcTestContext
+    public class TestContext
     {
         public RestRequest Request { get; set; }
         public IRestResponse Response { get; set; }

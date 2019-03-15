@@ -12,10 +12,10 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class HearingVenueSteps : StepsBase
     {
-        private readonly ApiTestContext _apiTestContext;
+        private readonly TestContext _apiTestContext;
         private readonly HearingVenueEndpoints _endpoints = new ApiUriFactory().HearingVenueEndpoints;
 
-        public HearingVenueSteps(ApiTestContext apiTestContext)
+        public HearingVenueSteps(TestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
         }

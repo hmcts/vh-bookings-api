@@ -8,12 +8,12 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class CaseTypesSteps : StepsBase
+    public sealed class CaseTypesSteps : BaseSteps
     {
-        private readonly AcTestContext _acTestContext;
+        private readonly TestContext _acTestContext;
         private readonly CaseTypesEndpoints _endpoints = new ApiUriFactory().CaseTypesEndpoints;
 
-        public CaseTypesSteps(AcTestContext acTestContext)
+        public CaseTypesSteps(TestContext acTestContext)
         {
             _acTestContext = acTestContext;
         }

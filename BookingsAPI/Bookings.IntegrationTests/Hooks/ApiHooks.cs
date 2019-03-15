@@ -23,7 +23,7 @@ namespace Bookings.IntegrationTests.Hooks
     public static class ApiHooks
     {
         [BeforeFeature]
-        public static void BeforeApiFeature(ApiTestContext apiTestContext)
+        public static void BeforeApiFeature(Contexts.TestContext apiTestContext)
         {
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(c => c.AddServerHeader = false)
@@ -46,7 +46,7 @@ namespace Bookings.IntegrationTests.Hooks
             apiTestContext.TestDataManager = new TestDataManager(apiTestContext.BookingsDbContextOptions);
         }
 
-        private static void GetClientAccessTokenForApi(ApiTestContext apiTestContext)
+        private static void GetClientAccessTokenForApi(Contexts.TestContext apiTestContext)
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -66,24 +66,24 @@ namespace Bookings.IntegrationTests.Hooks
                 azureAdConfiguration.VhBookingsApiResourceId);
         }
 
-        [BeforeScenario()]
-        public static void BeforeApiScenario(ApiTestContext apiTestContext)
+        [BeforeScenario]
+        public static void BeforeApiScenario(Contexts.TestContext apiTestContext)
         {
             apiTestContext.NewHearingId = Guid.Empty;
         }
 
         [AfterScenario]
-        public static async Task AfterApiScenario(ApiTestContext apiTestContext)
+        public static async Task AfterApiScenario(Contexts.TestContext apiTestContext)
         {
             if (apiTestContext.NewHearingId != Guid.Empty)
             {
-                TestContext.WriteLine($"Removing test hearing {apiTestContext.NewHearingId}");
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {apiTestContext.NewHearingId}");
                 await apiTestContext.TestDataManager.RemoveVideoHearing(apiTestContext.NewHearingId);
             }
         }
 
         [AfterFeature]
-        public static void AfterApiFeature(ApiTestContext apiTestContext)
+        public static void AfterApiFeature(Contexts.TestContext apiTestContext)
         {
             apiTestContext.Server.Dispose();
         }

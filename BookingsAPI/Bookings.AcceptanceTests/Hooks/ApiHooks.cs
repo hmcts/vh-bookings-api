@@ -12,17 +12,13 @@ using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 using Testing.Common.Configuration;
 
-namespace Bookings.AcceptanceTests.Steps
+namespace Bookings.AcceptanceTests.Hooks
 {
     [Binding]
-    public abstract class StepsBase
+    public static class ApiHooks
     {
-        protected StepsBase()
-        {
-        }
-
         [BeforeTestRun]
-        public static void OneTimeSetup(AcTestContext testContext)
+        public static void OneTimeSetup(TestContext testContext)
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -49,7 +45,7 @@ namespace Bookings.AcceptanceTests.Steps
         }
 
         [BeforeTestRun]
-        public static void CheckHealth(AcTestContext testContext)
+        public static void CheckHealth(TestContext testContext)
         {
             var endpoint = new ApiUriFactory().HealthCheckEndpoints;
             testContext.Request = testContext.Get(endpoint.HealthCheck);
@@ -58,11 +54,11 @@ namespace Bookings.AcceptanceTests.Steps
         }
 
         [AfterScenario]
-        public static void TearDown(AcTestContext testContext)
+        public static void TearDown(TestContext testContext)
         {
             if (testContext.HearingId == Guid.Empty) return;
             var endpoint = new ApiUriFactory().HearingsEndpoints.RemoveHearing(testContext.HearingId);
-            testContext.Request = testContext.Delete(endpoint);  
+            testContext.Request = testContext.Delete(endpoint);
             testContext.Response = testContext.Client().Execute(testContext.Request);
         }
     }
