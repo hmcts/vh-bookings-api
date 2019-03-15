@@ -12,13 +12,13 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class CommonSteps : StepsBase
+    public sealed class CommonSteps : BaseSteps
     {
         private readonly ScenarioContext context;
-        private readonly AcTestContext _acTestContext;
+        private readonly TestContext _acTestContext;
         private readonly HearingsEndpoints _endpoints = new ApiUriFactory().HearingsEndpoints;
 
-        public CommonSteps(ScenarioContext injectedContext, AcTestContext acTestContext)
+        public CommonSteps(ScenarioContext injectedContext, TestContext acTestContext)
         {
             context = injectedContext;
             _acTestContext = acTestContext;

@@ -5,12 +5,12 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class HealthCheckSteps : StepsBase
+    public sealed class HealthCheckSteps : BaseSteps
     {
-        private readonly AcTestContext _acTestContext;
+        private readonly TestContext _acTestContext;
         private readonly HealthCheckEndpoints _endpoints = new ApiUriFactory().HealthCheckEndpoints;
 
-        public HealthCheckSteps(AcTestContext acTestContext)
+        public HealthCheckSteps(TestContext acTestContext)
         {
             _acTestContext = acTestContext;
         }
