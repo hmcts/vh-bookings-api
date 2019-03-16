@@ -29,23 +29,23 @@ namespace Bookings.API
             services.AddSwagger();
             services.AddJsonOptions();
             RegisterSettings(services);
-            
+
             services.AddCustomTypes();
-            
+
             RegisterAuth(services);
-            
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddCors();
-            
+
             services.AddDbContextPool<BookingsDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VhBookings")));
         }
-        
+
         private void RegisterSettings(IServiceCollection services)
         {
-            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
+            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd", options));
         }
-        
+
         private void RegisterAuth(IServiceCollection serviceCollection)
         {
             var policy = new AuthorizationPolicyBuilder()
@@ -55,7 +55,7 @@ namespace Bookings.API
             serviceCollection.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(policy)); });
 
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            
+
             serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

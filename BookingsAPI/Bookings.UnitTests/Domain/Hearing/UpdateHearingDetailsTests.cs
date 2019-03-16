@@ -18,7 +18,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var newVenue = new RefDataBuilder().HearingVenues.Last();
             var newDateTime = DateTime.Today.AddDays(10).AddHours(14);
             var newDuration = 150; 
-            hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration);
+            hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, "note","room1");
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
         }
@@ -32,7 +32,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var newDateTime = DateTime.Today.AddDays(-10);
             var newDuration = -10; 
             
-            Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration);
+            Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,"note","room1");
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")

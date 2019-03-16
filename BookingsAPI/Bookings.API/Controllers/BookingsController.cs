@@ -1,7 +1,6 @@
 ﻿using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
 using Bookings.API.Utilities;
-using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
@@ -37,14 +36,14 @@ namespace Bookings.API.Controllers
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [SwaggerOperation(OperationId = "GetHearingsByTypes")]
-        [ProducesResponseType(typeof(BookingsHearingResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsHearingResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = "0", [FromQuery]int limit = 100)
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = "0", [FromQuery]int limit = 100)
         {
             const string BookingsEndpointUrl = "types";
             types = types ?? new List<int>();
-            if (await ValidateCaseTypes(types))
+            if (!await ValidateCaseTypes(types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
                 return BadRequest(ModelState);
