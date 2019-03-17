@@ -110,7 +110,8 @@ namespace Bookings.API.Controllers
             var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases);
+                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases, 
+                request.HearingRoomName, request.OtherInformation);
             await _commandHandler.Handle(createVideoHearingCommand);
 
             var videoHearingId = createVideoHearingCommand.NewHearingId;
@@ -168,7 +169,7 @@ namespace Bookings.API.Controllers
             }
 
             var command =
-                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue);
+                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation);
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();

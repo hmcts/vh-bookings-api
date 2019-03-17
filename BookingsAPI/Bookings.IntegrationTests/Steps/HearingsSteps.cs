@@ -195,6 +195,8 @@ namespace Bookings.IntegrationTests.Steps
             }
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
             model.ScheduledDuration.Should().BePositive();
+            model.HearingRoomName.Should().NotBeNullOrEmpty();
+            model.OtherInformation.Should().NotBeNullOrEmpty();
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
@@ -213,6 +215,8 @@ namespace Bookings.IntegrationTests.Steps
             model.ScheduledDuration.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDuration);
             model.HearingVenueName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingVenueName);
             model.ScheduledDateTime.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDateTime);
+            model.HearingRoomName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingRoomName);
+            model.OtherInformation.Should().Be(_apiTestContext.UpdateHearingRequest.OtherInformation);
         }
 
         [Then(@"the hearing should be removed")]

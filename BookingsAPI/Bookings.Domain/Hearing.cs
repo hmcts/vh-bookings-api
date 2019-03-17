@@ -21,7 +21,7 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue)
+        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -33,6 +33,8 @@ namespace Bookings.Domain
             HearingVenueName = hearingVenue.Name;
 
             Status = BookingStatus.Booked;
+            HearingRoomName = hearingRoomName;
+            OtherInformation = otherInformation;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -52,6 +54,8 @@ namespace Bookings.Domain
         public DateTime UpdatedDate { get; protected set; }
         protected virtual IList<Participant> Participants { get; set; }
         protected virtual IList<HearingCase> HearingCases { get; set; } = new List<HearingCase>();
+        public string HearingRoomName { get; set; }
+        public string OtherInformation { get; set; }
 
         public void CancelHearing()
         {
@@ -147,7 +151,7 @@ namespace Bookings.Domain
             return HearingCases.Select(x => x.Case).ToList();
         }
 
-        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration)
+        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -175,6 +179,9 @@ namespace Bookings.Domain
             ScheduledDuration = scheduledDuration;
             
             UpdatedDate = DateTime.UtcNow;
+
+            HearingRoomName = hearingRoomName;
+            OtherInformation = otherInformation;
         }
 
         private bool DoesParticipantExist(string username)

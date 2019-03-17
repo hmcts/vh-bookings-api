@@ -11,14 +11,18 @@ namespace Bookings.DAL.Commands
         public DateTime ScheduledDateTime { get; set; }
         public int ScheduledDuration { get; set; }
         public HearingVenue HearingVenue { get; set; }
+        public string HearingRoomName { get; set; }
+        public string OtherInformation { get; set; }
 
         public UpdateHearingCommand(Guid hearingId, DateTime scheduledDateTime, int scheduledDuration,
-            HearingVenue hearingVenue)
+            HearingVenue hearingVenue, string hearingRoomName, string otherInformation)
         {
             HearingId = hearingId;
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             HearingVenue = hearingVenue;
+            HearingRoomName = hearingRoomName;
+            OtherInformation = otherInformation;
         }
     }
 
@@ -34,7 +38,7 @@ namespace Bookings.DAL.Commands
         public async Task Handle(UpdateHearingCommand command)
         {
             var hearing = await _context.VideoHearings.FindAsync(command.HearingId);
-            hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime, command.ScheduledDuration);
+            hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime, command.ScheduledDuration, command.HearingRoomName, command.OtherInformation);
             await _context.SaveChangesAsync();
         }
     }
