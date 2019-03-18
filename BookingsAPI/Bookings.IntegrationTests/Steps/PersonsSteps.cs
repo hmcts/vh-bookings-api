@@ -16,11 +16,11 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public class Personsteps : StepsBase
     {
-        private readonly ApiTestContext _apiTestContext;
+        private readonly Contexts.TestContext _apiTestContext;
         private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
         private string _username;
         
-        public Personsteps(ApiTestContext apiTestContext)
+        public Personsteps(Contexts.TestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
             _username = string.Empty;
@@ -36,7 +36,7 @@ namespace Bookings.IntegrationTests.Steps
                 {
                     var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                     _apiTestContext.NewHearingId = seededHearing.Id;
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     _username = seededHearing.GetParticipants().First().Person.Username;
                     break;
                 }
@@ -62,7 +62,7 @@ namespace Bookings.IntegrationTests.Steps
                 {
                     var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                     _apiTestContext.NewHearingId = seededHearing.Id;
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     _username = seededHearing.GetParticipants().First().Person.ContactEmail;
                     break;
                 }

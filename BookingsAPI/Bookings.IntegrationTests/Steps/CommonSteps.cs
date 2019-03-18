@@ -13,9 +13,9 @@ namespace Bookings.IntegrationTests.Steps
     public sealed class CommonSteps : StepsBase
     {
         private readonly ScenarioContext context;
-        private readonly ApiTestContext _apiTestContext;
+        private readonly Contexts.TestContext _apiTestContext;
 
-        public CommonSteps(ScenarioContext injectedContext, ApiTestContext apiTestContext)
+        public CommonSteps(ScenarioContext injectedContext, Contexts.TestContext apiTestContext)
         {
             context = injectedContext;
             _apiTestContext = apiTestContext;
@@ -42,7 +42,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             _apiTestContext.ResponseMessage.StatusCode.Should().Be(statusCode);
             _apiTestContext.ResponseMessage.IsSuccessStatusCode.Should().Be(isSuccess);
-            TestContext.WriteLine($"Status Code: {_apiTestContext.ResponseMessage.StatusCode}");
+            NUnit.Framework.TestContext.WriteLine($"Status Code: {_apiTestContext.ResponseMessage.StatusCode}");
         }
 
         [Then(@"the response message should read '(.*)'")]

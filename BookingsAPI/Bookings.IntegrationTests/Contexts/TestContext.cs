@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.IntegrationTests.Contexts
 {
-    public class ApiTestContext
+    public class TestContext
     {
         public DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
         public TestDataManager TestDataManager { get; set; }

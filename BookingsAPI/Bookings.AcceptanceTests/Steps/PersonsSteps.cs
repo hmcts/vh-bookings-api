@@ -7,12 +7,12 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class PersonsSteps : StepsBase
+    public sealed class PersonsSteps : BaseSteps
     {
-        private readonly AcTestContext _acTestContext;
+        private readonly TestContext _acTestContext;
         private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
 
-        public PersonsSteps(AcTestContext acTestContext)
+        public PersonsSteps(TestContext acTestContext)
         {
             _acTestContext = acTestContext;
         }

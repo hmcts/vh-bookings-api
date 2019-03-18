@@ -22,10 +22,10 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class ParticipantsSteps : StepsBase
     {
-        private readonly ApiTestContext _apiTestContext;
+        private readonly Contexts.TestContext _apiTestContext;
         private readonly ParticipantsEndpoints _endpoints = new ApiUriFactory().ParticipantsEndpoints;
 
-        public ParticipantsSteps(ApiTestContext apiTestContext)
+        public ParticipantsSteps(Contexts.TestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
         }
@@ -42,7 +42,7 @@ namespace Bookings.IntegrationTests.Steps
                     var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                     _apiTestContext.NewHearingId = seededHearing.Id;
                     hearingId = _apiTestContext.NewHearingId;
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     break;
                 }
                 case Scenario.Nonexistent:
@@ -73,7 +73,7 @@ namespace Bookings.IntegrationTests.Steps
                     var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                     _apiTestContext.NewHearingId = seededHearing.Id;
                     hearingId = _apiTestContext.NewHearingId;
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     break;
                 }
                 case Scenario.Nonexistent:
@@ -94,7 +94,7 @@ namespace Bookings.IntegrationTests.Steps
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.OldHearingId = _apiTestContext.NewHearingId;
             _apiTestContext.NewHearingId = seededHearing.Id;
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             seededHearing.GetParticipants().Count.Should().Be(3);
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
             _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext);
@@ -108,7 +108,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
             _apiTestContext.HttpMethod = HttpMethod.Put;
         }
@@ -119,7 +119,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             Guid hearingId;
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.NewHearingId = seededHearing.Id;
             switch (scenario)
             {
@@ -145,7 +145,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetASingleParticipantInAHearingRequestWithAParticipantId(Scenario scenario)
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.NewHearingId = seededHearing.Id;
             Guid participantId;
             switch (scenario)
@@ -167,7 +167,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveARemoveParticipantFromAHearingWithAValidHearingId(Scenario scenario)
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.NewHearingId = seededHearing.Id;
             _apiTestContext.Participant = seededHearing.GetParticipants().First();
             _apiTestContext.HttpMethod = HttpMethod.Delete;
@@ -202,7 +202,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveARemoveParticipantFromAHearingWithAParticipantId(Scenario scenario)
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.NewHearingId = seededHearing.Id;
             _apiTestContext.HttpMethod = HttpMethod.Delete;
 
@@ -299,12 +299,12 @@ namespace Bookings.IntegrationTests.Steps
         {
             if (_apiTestContext.NewHearingId != Guid.Empty)
             {
-                TestContext.WriteLine($"Removing test hearing {_apiTestContext.NewHearingId}");
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {_apiTestContext.NewHearingId}");
                 await Hooks.RemoveVideoHearing(_apiTestContext.NewHearingId);
             }
             if (_apiTestContext.OldHearingId != Guid.Empty)
             {
-                TestContext.WriteLine($"Removing test hearing {_apiTestContext.OldHearingId}");
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {_apiTestContext.OldHearingId}");
                 await Hooks.RemoveVideoHearing(_apiTestContext.OldHearingId);
             }
         }
