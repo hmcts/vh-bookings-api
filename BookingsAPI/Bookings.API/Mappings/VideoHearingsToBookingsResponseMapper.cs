@@ -30,12 +30,12 @@ namespace Bookings.API.Mappings
             var response = new BookingsHearingResponse
             {
                 HearingId = videoHearing.Id,
-                HearingNumber = cases.Number,
-                HearingName = cases.Name,
+                HearingNumber = cases != null ? cases.Number : "",
+                HearingName = cases != null ? cases.Name : "",
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType.Name,
-                CaseTypeName = videoHearing.CaseType.Name,
+                HearingTypeName = videoHearing.HearingType != null ? videoHearing.HearingType.Name : "",
+                CaseTypeName = videoHearing.CaseType != null ? videoHearing.CaseType.Name : "",
                 CourtAddress = videoHearing.HearingVenueName,
                 CreatedDate = videoHearing.CreatedDate,
                 CreatedBy = videoHearing.CreatedBy,
