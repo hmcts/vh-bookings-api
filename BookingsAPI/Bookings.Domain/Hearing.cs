@@ -178,10 +178,9 @@ namespace Bookings.Domain
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             
-            UpdatedDate = DateTime.UtcNow;
-
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
+            UpdatedDate = DateTime.UtcNow;
         }
 
         private bool DoesParticipantExist(string username)
