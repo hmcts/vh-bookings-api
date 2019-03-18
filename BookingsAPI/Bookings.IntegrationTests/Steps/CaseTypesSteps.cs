@@ -12,10 +12,10 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class CaseTypesSteps : StepsBase
     {
-        private readonly ApiTestContext _apiTestContext;
+        private readonly TestContext _apiTestContext;
         private readonly CaseTypesEndpoints _endpoints = new ApiUriFactory().CaseTypesEndpoints;
 
-        public CaseTypesSteps(ApiTestContext apiTestContext)
+        public CaseTypesSteps(TestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
         }

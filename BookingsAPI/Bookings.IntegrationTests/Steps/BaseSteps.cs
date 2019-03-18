@@ -64,7 +64,7 @@ namespace Bookings.IntegrationTests.Steps
                 azureAdConfiguration.VhBookingsApiResourceId);
         }
 
-        protected async Task<HttpResponseMessage> SendGetRequestAsync(ApiTestContext apiTestContext)
+        protected async Task<HttpResponseMessage> SendGetRequestAsync(Contexts.TestContext apiTestContext)
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
@@ -73,7 +73,7 @@ namespace Bookings.IntegrationTests.Steps
             }
         }
 
-        protected async Task<HttpResponseMessage> SendPatchRequestAsync(ApiTestContext apiTestContext)
+        protected async Task<HttpResponseMessage> SendPatchRequestAsync(Contexts.TestContext apiTestContext)
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
@@ -82,7 +82,7 @@ namespace Bookings.IntegrationTests.Steps
             }
         }
 
-        protected async Task<HttpResponseMessage> SendPostRequestAsync(ApiTestContext apiTestContext)
+        protected async Task<HttpResponseMessage> SendPostRequestAsync(Contexts.TestContext apiTestContext)
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
@@ -91,7 +91,7 @@ namespace Bookings.IntegrationTests.Steps
             }
         }
 
-        protected async Task<HttpResponseMessage> SendPutRequestAsync(ApiTestContext apiTestContext)
+        protected async Task<HttpResponseMessage> SendPutRequestAsync(Contexts.TestContext apiTestContext)
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
@@ -100,7 +100,7 @@ namespace Bookings.IntegrationTests.Steps
             }
         }
 
-        protected async Task<HttpResponseMessage> SendDeleteRequestAsync(ApiTestContext apiTestContext)
+        protected async Task<HttpResponseMessage> SendDeleteRequestAsync(Contexts.TestContext apiTestContext)
         {
             using (var client = apiTestContext.Server.CreateClient())
             {

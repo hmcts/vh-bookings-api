@@ -22,11 +22,11 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class HearingsSteps : StepsBase
     {
-        private readonly ApiTestContext _apiTestContext;
+        private readonly Contexts.TestContext _apiTestContext;
         private readonly HearingsEndpoints _endpoints = new ApiUriFactory().HearingsEndpoints;
         private Guid _hearingId;
 
-        public HearingsSteps(ApiTestContext apiTestContext)
+        public HearingsSteps(Contexts.TestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
             _hearingId = Guid.Empty;
@@ -41,7 +41,7 @@ namespace Bookings.IntegrationTests.Steps
                 case Scenario.Valid:
                 {
                     var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     _hearingId = seededHearing.Id;
                     break;
                 }
@@ -146,7 +146,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     _hearingId = seededHearing.Id;
                     break;
                 case Scenario.Invalid:
@@ -235,7 +235,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             if (_hearingId != Guid.Empty)
             {
-                TestContext.WriteLine($"Removing test hearing {_hearingId}");
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {_hearingId}");
                 await Hooks.RemoveVideoHearing(_hearingId);
             }
         }

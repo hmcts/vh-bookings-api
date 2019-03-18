@@ -10,13 +10,13 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class ParticipantsSteps : StepsBase
+    public sealed class ParticipantsSteps : BaseSteps
     {
-        private readonly AcTestContext _acTestContext;
+        private readonly TestContext _acTestContext;
         private readonly ParticipantsEndpoints _endpoints = new ApiUriFactory().ParticipantsEndpoints;
         private Guid _removedParticipantId;
 
-        public ParticipantsSteps(AcTestContext acTestContext)
+        public ParticipantsSteps(TestContext acTestContext)
         {
             _acTestContext = acTestContext;
         }
