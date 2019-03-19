@@ -32,7 +32,7 @@ namespace Bookings.DAL.Migrations
                 columns: new[] { "Id", "Name", "Group", "CaseTypeId" },
                 values: new object[,]
                 {
-                    {5, "Judge", (int) CaseRoleGroup.PartyGroup0, 1},
+                    {5, "Judge", (int) CaseRoleGroup.PartyGroup3, 1},
                 });
         }
 
