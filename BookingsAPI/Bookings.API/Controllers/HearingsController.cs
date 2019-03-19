@@ -109,7 +109,8 @@ namespace Bookings.API.Controllers
             }
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, request.OtherInformation, request.HearingRoomName);
+                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases, 
+                request.HearingRoomName, request.OtherInformation);
             await _commandHandler.Handle(createVideoHearingCommand);
 
             var videoHearingId = createVideoHearingCommand.NewHearingId;

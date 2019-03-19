@@ -4,5 +4,6 @@ namespace Bookings.Domain.Enumerations
     {
         PartyGroup1 = 1,
         PartyGroup2 = 2,
+        PartyGroup3 = 3,
     }
 }
