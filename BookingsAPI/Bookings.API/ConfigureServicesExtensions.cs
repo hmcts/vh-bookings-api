@@ -15,6 +15,8 @@ using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 namespace Bookings.API
 {
@@ -113,5 +115,11 @@ namespace Bookings.API
 
             return serviceCollection;
         }
+
+        private static void RegisterInfrastructureServices(IServiceCollection services)
+        {
+            services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClient>();
+        }
+
     }
 }
