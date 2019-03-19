@@ -242,7 +242,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private static BookNewHearingRequest BuildRequest()
         {
-            var participants = Builder<ParticipantRequest>.CreateListOfSize(4).All()
+            var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
                 .With(x => x.ContactEmail = Faker.Internet.Email())
                 .With(x => x.Username = Faker.Internet.Email())
                 .Build().ToList();
@@ -257,6 +257,9 @@ namespace Bookings.IntegrationTests.Steps
 
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Solicitor";
+
+            participants[4].CaseRoleName = "Judge";
+            participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
 
             return Builder<BookNewHearingRequest>.CreateNew()
