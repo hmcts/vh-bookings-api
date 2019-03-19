@@ -58,7 +58,6 @@ namespace Bookings.IntegrationTests.Database.Queries
             response.Should().NotBeNull();
             response.Limit.Should().Be(2);
             response.Hearings.Count.Should().Be(1);
-            response.Hearings[0].ScheduledDate.Should().Be(DateTime.Now.Date);
             response.Hearings[0].Hearings.Count.Should().Be(2);
             nextCursor = response.Hearings[0].Hearings[1].CreatedDate.Ticks;
             response.NextCursor.Should().Be(nextCursor.ToString());
@@ -94,7 +93,6 @@ namespace Bookings.IntegrationTests.Database.Queries
             response.Should().NotBeNull();
             response.Limit.Should().Be(2);
             response.Hearings.Count.Should().Be(1);
-            response.Hearings[0].ScheduledDate.Should().Be(DateTime.Now.Date);
             response.Hearings[0].Hearings.Count.Should().Be(2);
             nextCursor = response.Hearings[0].Hearings[1].CreatedDate.Ticks;
             response.NextCursor.Should().Be(nextCursor.ToString());
