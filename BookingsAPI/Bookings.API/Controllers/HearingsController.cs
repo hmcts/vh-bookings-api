@@ -108,22 +108,15 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var mapper = new ParticipantRequestToNewParticipantMapper();
+            var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
+            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases, 
+                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
                 request.HearingRoomName, request.OtherInformation);
             await _commandHandler.Handle(createVideoHearingCommand);
 
             var videoHearingId = createVideoHearingCommand.NewHearingId;
-            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            var addCasesToHearingCommand = new AddCasesToHearingCommand(videoHearingId, cases);
-            await _commandHandler.Handle(addCasesToHearingCommand);
-
-            var mapper = new ParticipantRequestToNewParticipantMapper();
-            var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
-
-            var addParticipantsToVideoHearingCommand =
-                new AddParticipantsToVideoHearingCommand(videoHearingId, newParticipants);
-            await _commandHandler.Handle(addParticipantsToVideoHearingCommand);
 
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
             var queriedVideoHearing =
@@ -134,6 +127,7 @@ namespace Bookings.API.Controllers
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
+
 
 
         /// <summary>

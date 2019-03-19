@@ -28,7 +28,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             var hearingService = new HearingService(context);
-            _commandHandler = new AddParticipantsToVideoHearingCommandHandler(context);
+            _commandHandler = new AddParticipantsToVideoHearingCommandHandler(context, hearingService);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
             _newHearingId = Guid.Empty;
         }
