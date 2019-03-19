@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Bookings.Common.Configuration;
 using Bookings.DAL;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 namespace Bookings.API
 {
@@ -70,6 +71,17 @@ namespace Bookings.API
             });
 
             serviceCollection.AddAuthorization();
+        }
+        private void RegisterInfrastructureServices(IServiceCollection services)
+        {
+            if (bool.Parse(Configuration["UseServiceBusFake"]))
+            {
+                services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClientFake>();
+            }
+            else
+            {
+                services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClient>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

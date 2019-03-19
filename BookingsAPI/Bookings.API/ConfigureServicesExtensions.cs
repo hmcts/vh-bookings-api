@@ -115,11 +115,5 @@ namespace Bookings.API
 
             return serviceCollection;
         }
-
-        private static void RegisterInfrastructureServices(IServiceCollection services)
-        {
-            services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClient>();
-        }
-
     }
 }
