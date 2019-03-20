@@ -41,7 +41,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var newHearingRoomName = seededHearing.HearingRoomName;
 
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, 
-                newDuration, newVenue, newOtherInformation, newHearingRoomName));
+                newDuration, newVenue,  newHearingRoomName, newOtherInformation));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
