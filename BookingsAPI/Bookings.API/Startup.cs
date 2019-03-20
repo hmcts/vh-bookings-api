@@ -46,6 +46,7 @@ namespace Bookings.API
         private void RegisterSettings(IServiceCollection services)
         {
             services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
+            services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
         }
         
         private void RegisterAuth(IServiceCollection serviceCollection)
