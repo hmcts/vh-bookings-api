@@ -107,10 +107,15 @@ namespace Bookings.API.Controllers
             }
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
-            var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
+            var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType))
+                .ToList();
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases);
+                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases)
+            {
+                HearingRoomName = request.HearingRoomName,
+                OtherInformation = request.OtherInformation
+            };
             await _commandHandler.Handle(createVideoHearingCommand);
 
             var videoHearingId = createVideoHearingCommand.NewHearingId;
@@ -168,7 +173,8 @@ namespace Bookings.API.Controllers
             }
 
             var command =
-                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue);
+                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue,
+                    request.HearingRoomName, request.OtherInformation);
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
@@ -194,7 +200,7 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
@@ -202,14 +208,14 @@ namespace Bookings.API.Controllers
             {
                 return NotFound();
             }
-            
+
             var command =
                 new RemoveHearingCommand(hearingId);
             await _commandHandler.Handle(command);
 
             return NoContent();
         }
-        
+
         private async Task<HearingVenue> GetVenue(string venueName)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
