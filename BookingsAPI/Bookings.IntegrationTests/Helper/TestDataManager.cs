@@ -46,7 +46,9 @@ namespace Bookings.IntegrationTests.Helper
 
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First())
+            var hearingRoomName = "Room02";
+            var otherInformation = "OtherInformation02";
+            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation)
             {
                 CreatedBy = "test@integration.com"
             };
