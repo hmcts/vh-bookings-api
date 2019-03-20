@@ -120,7 +120,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task should_get_booking_details_for_given_cursor()
         {
-            long nextCursor = 0;
+            long nextCursor = DateTime.Now.AddSeconds(-30).Ticks;
             _ids = new List<Guid>();
             for (int i = 0; i < 4; i++)
             {
