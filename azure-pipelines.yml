@@ -13,7 +13,7 @@ variables:
     "Testing/TestClientSecret":"$(vh-admin-web-key)"
     '
   dalWorkingDirectory: 'BookingsAPI/Bookings.DAL'
-  keyVaultName: vhcoreinfrahtdev # Used to get secrets for integration tests
+  KeyVaultName: vhcoreinfrahtdev # Used to get secrets for integration tests
   secretsFilter: 'vh-admin-web-appid,vh-admin-web-key,tenantid,vh-bookings-api-identifieruris' # filters out secrets returned from key vault
 
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
@@ -22,7 +22,7 @@ resources:
   - repository: azureDevOpsTemplates
     type: github
     name: hmcts/azure-devops-templates
-    ref: refs/heads/master # ref name to use, defaults to 'refs/heads/master'
+    ref: refs/heads/fix-to-reading-keyvault-secrets # ref name to use, defaults to 'refs/heads/master'
     endpoint: 'GitHubDevOps'
 
 trigger:
