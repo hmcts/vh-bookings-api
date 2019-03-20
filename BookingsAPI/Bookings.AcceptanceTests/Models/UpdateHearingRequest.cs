@@ -11,8 +11,8 @@ namespace Bookings.AcceptanceTests.Models
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
-                OtherInformation = "OtherInformation 02",
-                HearingRoomName = "Room 02"
+                HearingRoomName = "HearingRoomName12345",
+                OtherInformation = "OtherInformation12345"
             };
         }
     }

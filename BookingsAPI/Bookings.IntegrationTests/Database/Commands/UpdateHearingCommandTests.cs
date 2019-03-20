@@ -48,6 +48,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.HearingVenue.Name.Should().Be(newVenue.Name);
             returnedVideoHearing.ScheduledDuration.Should().Be(newDuration);
             returnedVideoHearing.ScheduledDateTime.Should().Be(newDateTime);
+            returnedVideoHearing.HearingRoomName.Should().Be(newHearingRoomName);
+            returnedVideoHearing.OtherInformation.Should().Be(newOtherInformation);
         }
         
         [TearDown]

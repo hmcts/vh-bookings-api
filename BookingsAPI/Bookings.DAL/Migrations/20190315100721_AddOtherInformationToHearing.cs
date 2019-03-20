@@ -18,11 +18,11 @@ namespace Bookings.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(name: "HearingRoomName", table: "Hearing");
-            migrationBuilder.DropColumn(name: "OtherInformation", table: "Hearing");
-
-            migrationBuilder.DeleteData("CaseRole", "Id", 5);
             migrationBuilder.DeleteData("HearingRole", "Id", 13);
+            migrationBuilder.DeleteData("CaseRole", "Id", 5);
+            
+            migrationBuilder.DropColumn(name: "OtherInformation", table: "Hearing");
+            migrationBuilder.DropColumn(name: "HearingRoomName", table: "Hearing");
         }
 
         public void AddJudgeCaseRoles(MigrationBuilder migrationBuilder)

@@ -77,6 +77,8 @@ namespace Bookings.AcceptanceTests.Steps
             }
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
             model.ScheduledDuration.Should().BePositive();
+            model.HearingRoomName.Should().NotBeNullOrEmpty();
+            model.OtherInformation.Should().NotBeNullOrEmpty();
         }
 
         [Then(@"hearing details should be updated")]
@@ -87,8 +89,8 @@ namespace Bookings.AcceptanceTests.Steps
             model.ScheduledDuration.Should().Be(100);
             model.ScheduledDateTime.Should().Be(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));
             model.HearingVenueName.Should().Be("Manchester Civil and Family Justice Centre");
-            model.HearingRoomName.Should().Be("Room 02");
-            model.OtherInformation.Should().Be("OtherInformation 02");
+            model.OtherInformation.Should().Be("OtherInformation12345");
+            model.HearingRoomName.Should().Be("HearingRoomName12345");
         }
 
         [Then(@"the hearing no longer exists")]

@@ -19,6 +19,7 @@ variables:
   infraKeyVaultName: 'vhcoreinfradev'
   infraSecretsFilter: 'vh-core-infra-AppInsightsKey'
 
+
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:
   repositories:
@@ -44,5 +45,5 @@ jobs:
     dalWorkingDirectory: $(dalWorkingDirectory)
     keyVaultName: $(keyVaultName)
     secretsFilter: $(secretsFilter)
-    infraKeyVaultName: 'vhcoreinfradev'
-    infraSecretsFilter: 'vh-core-infra-AppInsightsKey'
+    infraKeyVaultName: $(infraKeyVaultName)
+    infraSecretsFilter: $(infraSecretsFilter)
