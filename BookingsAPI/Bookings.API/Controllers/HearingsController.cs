@@ -263,7 +263,12 @@ namespace Bookings.API.Controllers
         {
             var query = new GetAllCaseTypesQuery();
             var allCasesTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
-            return caseTypes.Count == 0 || caseTypes.All(s => allCasesTypes.Any(x => x.Id == s));
+            var result = false;
+            if(allCasesTypes != null)
+            {
+                result = caseTypes.Count == 0 || caseTypes.All(s => allCasesTypes.Any(x => x.Id == s));
+            }
+            return result;
         }
     }
 }
