@@ -2,6 +2,7 @@
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
+using Bookings.Domain;
 using Bookings.Domain.RefData;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +44,24 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = result.Result as ObjectResult;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        }
+
+        [Test]
+        public async Task should_return_bookings()
+        {
+            var caseTypes = new List<int>();
+            _quryHandlerCaseTypesMock
+             .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
+             .ReturnsAsync(new List<CaseType>());
+
+            _quryHandlerMock
+                .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, List<VideoHearing>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
+                .ReturnsAsync(new List<VideoHearing>());
+            var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
+
+            result.Should().NotBeNull();
+            var objectResult = result.Result as ObjectResult;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
     }
 }

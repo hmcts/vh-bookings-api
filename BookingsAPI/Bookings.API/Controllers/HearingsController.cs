@@ -247,9 +247,10 @@ namespace Bookings.API.Controllers
 
             var query = new GetBookingsByCaseTypesQuery(types, cursor, limit);
             var videoHearings = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, IList<VideoHearing>>(query);
+            var items = videoHearings ?? new List<VideoHearing>();
             var mapper = new VideoHearingsToBookingsResponseMapper();
             var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(videoHearings.AsQueryable())
+               .WithSourceItems(items.AsQueryable())
                .Limit(limit)
                .CaseTypes(types)
                .Cursor(cursor)
@@ -261,12 +262,20 @@ namespace Bookings.API.Controllers
 
         private async Task<bool> ValidateCaseTypes(List<int> caseTypes)
         {
-            var query = new GetAllCaseTypesQuery();
-            var allCasesTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
             var result = false;
-            if(allCasesTypes != null)
+
+            if (!caseTypes.Any())
             {
-                result = caseTypes.Count == 0 || caseTypes.All(s => allCasesTypes.Any(x => x.Id == s));
+                result = true;
+            }
+            else
+            {
+                var query = new GetAllCaseTypesQuery();
+                var allCasesTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
+                if (allCasesTypes != null)
+                {
+                    result = caseTypes.Count == 0 || caseTypes.All(s => allCasesTypes.Any(x => x.Id == s));
+                }
             }
             return result;
         }

@@ -3,6 +3,7 @@ using Bookings.API.Utilities;
 using Bookings.Domain;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Testing.Common.Builders.Domain;
@@ -14,7 +15,7 @@ namespace Bookings.UnitTests.Utilities
         private const string HearingTypesUrl = "/hearings/types";
 
         [Test]
-        public void should_return_next_cursor_zero_if_no_results_exist()
+        public void Should_return_next_cursor_zero_if_no_results_exist()
         {
             var items = GetQueryableItems();
             var caseTypes = new List<int> { 1, 2 };
@@ -33,7 +34,7 @@ namespace Bookings.UnitTests.Utilities
         }
 
         [Test]
-        public void should_return_response_with_next_cursor()
+        public void Should_return_response_with_next_cursor()
         {
             var items = GetHearings();
             var caseTypes = new List<int> { 1, 2 };
@@ -49,6 +50,19 @@ namespace Bookings.UnitTests.Utilities
             response.Limit.Should().Be(2);
             response.NextCursor.Should().NotBeNullOrEmpty();
             response.PrevPageUrl.Should().Be(expectedPreviousUrl1);
+        }
+        [Test]
+        public void Should_throw_exception_if_limit_is_not_set()
+        {
+            var items = GetHearings();
+            var caseTypes = new List<int> { 1, 2 };
+            Assert.Throws<ArgumentException>(() => GetBuilder()
+                .ResourceUrl(HearingTypesUrl)
+                .Limit(0)
+                .WithSourceItems(items)
+                .Cursor("0")
+                .CaseTypes(caseTypes)
+                .Build());
         }
 
         private PaginationCursorBasedBuilder<StubPagedCursorBasedResponse, VideoHearing> GetBuilder()
