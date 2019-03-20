@@ -10,8 +10,7 @@ namespace Bookings.DAL.Commands
     public class CreateVideoHearingCommand : ICommand
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases,
-            string hearingRoomName, string otherInformation)
+            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -20,8 +19,6 @@ namespace Bookings.DAL.Commands
             Venue = venue;
             Participants = participants;
             Cases = cases;
-            HearingRoomName = hearingRoomName;
-            OtherInformation = otherInformation;
         }
 
         public Guid NewHearingId { get; set; }
@@ -32,8 +29,8 @@ namespace Bookings.DAL.Commands
         public HearingVenue Venue { get; }
         public List<NewParticipant> Participants { get; }
         public List<Case> Cases { get; }
-        public string HearingRoomName { get; }
-        public string OtherInformation { get; }
+        public string HearingRoomName { get; set; }
+        public string OtherInformation { get; set; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>

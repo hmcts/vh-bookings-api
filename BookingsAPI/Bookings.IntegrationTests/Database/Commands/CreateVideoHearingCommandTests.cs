@@ -65,7 +65,11 @@ namespace Bookings.IntegrationTests.Database.Commands
             var otherInformation = "OtherInformation01";
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, participants,
-                    cases, hearingRoomName, otherInformation);
+                    cases)
+                {
+                    HearingRoomName = hearingRoomName,
+                    OtherInformation = otherInformation
+                };
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;
