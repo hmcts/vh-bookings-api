@@ -29,6 +29,60 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
+        public void should_get_CursorCreatedTime_as_a_number()
+        {
+            var query = new GetBookingsByCaseTypesQuery(new List<int>(), "604527484127", 2);
+            query.CursorCreatedTime.Should().Be(604527484127);
+        }
+
+        [Test]
+        public void should_get_CursorCreatedTime_as_zero_if_no_value()
+        {
+            _query.CursorCreatedTime.Should().Be(0);
+            var query = new GetBookingsByCaseTypesQuery(new List<int>(), "", 2);
+            query.CursorCreatedTime.Should().Be(0);
+        }
+
+        [Test]
+        public async Task should_get_booking_details_for_the_given_case_types()
+        {
+            var caseTypesIds = new List<int> { 1, 2 };
+
+            _query = new GetBookingsByCaseTypesQuery(caseTypesIds, "0", 2);
+
+            _ids = new List<Guid>();
+            long nextCursor = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                var seededHearing = await Hooks.SeedVideoHearing();
+                _ids.Add(seededHearing.Id);
+
+                TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            }
+
+            var hearings = await _handler.Handle(_query);
+
+            hearings.Should().NotBeNull();
+            hearings.Count.Should().Be(2);
+
+            var mapper = new VideoHearingsToBookingsResponseMapper();
+            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
+               .WithSourceItems(hearings.AsQueryable())
+               .Limit(_query.Limit)
+               .CaseTypes(_query.CaseTypes)
+               .Cursor(_query.Cursor)
+               .ResourceUrl("hearings/types")
+               .Build();
+
+            response.Should().NotBeNull();
+            response.Limit.Should().Be(2);
+            response.Hearings.Count.Should().Be(1);
+            response.Hearings[0].Hearings.Count.Should().Be(2);
+            nextCursor = response.Hearings[0].Hearings[1].CreatedDate.Ticks;
+            response.NextCursor.Should().Be(nextCursor.ToString());
+        }
+
+        [Test]
         public async Task should_get_booking_details_for_all_case_types()
         {
             _ids = new List<Guid>();
