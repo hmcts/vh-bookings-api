@@ -30,7 +30,8 @@ namespace Bookings.API
             services.AddSwagger();
             services.AddJsonOptions();
             RegisterSettings(services);
-            
+            RegisterInfrastructureServices(services);
+
             services.AddCustomTypes();
             
             RegisterAuth(services);

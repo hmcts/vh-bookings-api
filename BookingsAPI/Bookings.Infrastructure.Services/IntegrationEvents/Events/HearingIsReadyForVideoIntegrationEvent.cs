@@ -9,7 +9,7 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
     {
         public HearingIsReadyForVideoIntegrationEvent(Hearing hearing)
         {
-            var @case = hearing.GetCases().Single(x => x.IsLeadCase);
+            var @case = hearing.GetCases().First(); // is this needs to ba lead case?
             Hearing = new HearingDto(hearing.Id, hearing.ScheduledDateTime, hearing.ScheduledDuration,
                 hearing.CaseType.Name, @case.Number);
 
