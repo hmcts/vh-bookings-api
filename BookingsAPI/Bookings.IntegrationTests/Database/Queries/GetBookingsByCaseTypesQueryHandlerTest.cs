@@ -153,6 +153,32 @@ namespace Bookings.IntegrationTests.Database.Queries
 
         }
 
+        [Test]
+        public async Task should_returns_no_booking_details_for_given_cursor()
+        {
+            long nextCursor = DateTime.Now.AddHours(-1).Ticks;
+            _ids = new List<Guid>();
+            _query.Cursor = nextCursor.ToString();
+            var hearings = await _handler.Handle(_query);
+
+            hearings.Should().NotBeNull();
+            hearings.Count.Should().Be(0);
+
+            var mapper = new VideoHearingsToBookingsResponseMapper();
+            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
+               .WithSourceItems(hearings.AsQueryable())
+               .Limit(_query.Limit)
+               .CaseTypes(_query.CaseTypes)
+               .Cursor(_query.Cursor)
+               .ResourceUrl("hearings/types")
+               .Build();
+
+            response.Should().NotBeNull();
+            response.Limit.Should().Be(2);
+            response.Hearings.Count.Should().Be(0);
+            response.NextCursor.Should().Be("0");
+        }
+
         [TearDown]
         public async Task TearDown()
         {
