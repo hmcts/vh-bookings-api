@@ -173,7 +173,7 @@ namespace Bookings.API.Controllers
 
             var command =
                 new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue,
-                    request.OtherInformation, request.HearingRoomName);
+                     request.HearingRoomName, request.OtherInformation);
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
