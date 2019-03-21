@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190315100745_UpdateSeedData")]
+    partial class UpdateSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,13 +70,9 @@ namespace Bookings.DAL.Migrations
                     b.Property<int>("HearingMediumType")
                         .HasColumnName("HearingMediumId");
 
-                    b.Property<string>("HearingRoomName");
-
                     b.Property<int>("HearingTypeId");
 
                     b.Property<string>("HearingVenueName");
-
-                    b.Property<string>("OtherInformation");
 
                     b.Property<DateTime>("ScheduledDateTime");
 
