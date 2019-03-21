@@ -42,5 +42,3 @@ jobs:
     dalWorkingDirectory: $(dalWorkingDirectory)
     keyVaultName: $(keyVaultName)
     secretsFilter: $(secretsFilter)
-    infraKeyVaultName: $(infraKeyVaultName)
-    infraSecretsFilter: $(infraSecretsFilter)
