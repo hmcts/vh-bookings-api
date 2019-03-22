@@ -36,6 +36,16 @@ namespace Bookings.API.Controllers
                 return Ok("Result is less than 200");
             }
             
+            if (random < 400)
+            {
+                return Ok("Result is less than 400");
+            }
+            
+            if (random < 600)
+            {
+                return Ok("Result is less than 600");
+            }
+            
             return Ok(random);
         }
         
