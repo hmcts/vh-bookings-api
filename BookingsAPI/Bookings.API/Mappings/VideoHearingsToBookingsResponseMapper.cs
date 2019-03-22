@@ -24,7 +24,7 @@ namespace Bookings.API.Mappings
         private BookingsHearingResponse MapHearingResponse(VideoHearing videoHearing)
         {
             var cases = videoHearing.GetCases().FirstOrDefault();
-            var participant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole.UserRole.Name == "Judge");
+            var participant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole != null && s.HearingRole.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var judgeName = participant != null ? participant.DisplayName : "";
            
             var response = new BookingsHearingResponse
@@ -37,6 +37,7 @@ namespace Bookings.API.Mappings
                 HearingTypeName = videoHearing.HearingType != null ? videoHearing.HearingType.Name : "",
                 CaseTypeName = videoHearing.CaseType != null ? videoHearing.CaseType.Name : "",
                 CourtAddress = videoHearing.HearingVenueName,
+                CourtRoom = videoHearing.HearingRoomName,
                 CreatedDate = videoHearing.CreatedDate,
                 CreatedBy = videoHearing.CreatedBy,
                 LastEditDate = videoHearing.UpdatedDate,

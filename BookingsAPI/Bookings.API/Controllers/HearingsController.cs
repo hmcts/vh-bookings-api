@@ -28,7 +28,6 @@ namespace Bookings.API.Controllers
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
-        private const string HearingsListsEndpointBaseUrl = "hearings/";
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
         {
@@ -241,6 +240,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = "0", [FromQuery]int limit = 100)
         {
+            const string HearingsListsEndpointBaseUrl = "hearings/";
             const string BookingsEndpointUrl = "types";
             types = types ?? new List<int>();
             if (!await ValidateCaseTypes(types))
