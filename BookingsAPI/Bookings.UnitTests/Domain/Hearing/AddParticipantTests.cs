@@ -22,6 +22,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var beforeAddCount = hearing.GetParticipants().Count;
             hearing.AddSolicitor(newPerson, claimantSolicitorHearingRole, claimantCaseRole, "Display Name",
                 string.Empty, string.Empty);
+
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
@@ -42,6 +43,22 @@ namespace Bookings.UnitTests.Domain.Hearing
             
             var afterAddCount = hearing.GetParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
+        }
+
+        [Test]
+        public void should_add_judge_to_hearing()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var judgeCaseRole = new CaseRole(5, "Judge");
+            var judgeHearingRole = new HearingRole(13, "Judge");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var beforeAddCount = hearing.GetParticipants().Count;
+
+            hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Display Name");
+            var afterAddCount = hearing.GetParticipants().Count;
+
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
     }
 }

@@ -40,4 +40,12 @@ namespace Bookings.DAL.Mappings
             // Method intentionally left empty.
         }
     }
+
+    public class JudgeMap : IEntityTypeConfiguration<Judge>
+    {
+        public void Configure(EntityTypeBuilder<Judge> builder)
+        {
+            // Method intentionally left empty.
+        }
+    }
 }

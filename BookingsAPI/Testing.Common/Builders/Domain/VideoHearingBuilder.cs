@@ -34,11 +34,15 @@ namespace Testing.Common.Builders.Domain
             var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor");
 
             var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP");
-            
+
+            var judgeCaseRole = new CaseRole(5, "Judge");
+            var judgeHearingRole = new HearingRole(13, "Judge");
+
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            
+            var person4 = new PersonBuilder(true).Build();
+
             _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
@@ -47,7 +51,9 @@ namespace Testing.Common.Builders.Domain
             
             _videoHearing.AddSolicitor(person2, defendantSolicitorHearingRole, defendantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
-            
+
+            _videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole,
+                $"{person4.FirstName} {person4.LastName}");
         }
         
         public VideoHearing Build() => _videoHearing;
