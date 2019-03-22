@@ -65,7 +65,7 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", string.Empty, string.Empty);
 
-            videoHearing.AddIndividual(person4, judgeHearingRole, judgeCaseRole,
+            videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole,
                 $"{person4.FirstName} {person4.LastName}");
 
             videoHearing.AddCase("1234567890", "Test Case", true);
