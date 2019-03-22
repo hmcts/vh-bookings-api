@@ -16,15 +16,23 @@ namespace Bookings.API.Mappings
         {
             var caseRole = caseType.CaseRoles.Single(x => x.Name == requestParticipant.CaseRoleName);
             var hearingRole = caseRole.HearingRoles.Single(x => x.Name == requestParticipant.HearingRoleName);
-
-            var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username)
+            Person person;
+            if(hearingRole.UserRole.Name=="Individual")
             {
-                MiddleNames = requestParticipant.MiddleNames,
-                ContactEmail = requestParticipant.ContactEmail,
-                TelephoneNumber = requestParticipant.TelephoneNumber
-            };
+                var address = new Address(requestParticipant.HouseNumber, requestParticipant.Street, requestParticipant.Postcode, requestParticipant.City, requestParticipant.County);
+                person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
+                requestParticipant.Username, address);
+            }
+            else
+            {
+                person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
+                requestParticipant.Username);
+            }
 
+            person.MiddleNames = requestParticipant.MiddleNames;
+            person.ContactEmail = requestParticipant.ContactEmail;
+            person.TelephoneNumber = requestParticipant.TelephoneNumber;
+            
             return new NewParticipant
             {
                 Person = person,
