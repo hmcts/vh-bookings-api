@@ -25,6 +25,22 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
+        /// Just some new test code to check the conditions
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult SomeNewCode()
+        {
+            var random = new Random().Next();
+            if (random < 200)
+            {
+                return Ok("Result is less than 200");
+            }
+            
+            return Ok(random);
+        }
+        
+
+        /// <summary>
         ///     Run a health check of the service
         /// </summary>
         /// <returns>Error if fails, otherwise OK status</returns>
