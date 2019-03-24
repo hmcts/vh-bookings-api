@@ -32,7 +32,7 @@ namespace Bookings.Domain
         {
                if (string.IsNullOrEmpty(houseNumber))
                 {
-                    _validationFailures.AddFailure("Housenumber", "FirstName cannot be empty");
+                    _validationFailures.AddFailure("Housenumber", "Housenumber cannot be empty");
                 }
                 if (string.IsNullOrEmpty(street))
                 {

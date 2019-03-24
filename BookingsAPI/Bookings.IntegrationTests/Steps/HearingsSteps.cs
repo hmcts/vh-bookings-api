@@ -96,6 +96,16 @@ namespace Bookings.IntegrationTests.Steps
                     request.HearingVenueName = "Random";
                     break;
                 }
+                case "address":
+                    {
+                        request.Participants[0].County = string.Empty;
+                        request.Participants[0].Street = string.Empty;
+                        request.Participants[0].City = string.Empty;
+                        request.Participants[0].HouseNumber = string.Empty;
+                        request.Participants[0].Postcode = string.Empty;
+
+                        break;
+                    }
                 default: throw new ArgumentOutOfRangeException(invalidType, invalidType, null);
             }
             CreateTheNewHearingRequest(request);
