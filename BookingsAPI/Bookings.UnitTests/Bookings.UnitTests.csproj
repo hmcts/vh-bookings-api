@@ -23,6 +23,12 @@
     <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\HealthChecksController" />
+    <Compile Remove="Controllers\HealthChecksController\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Controllers\HealthChecksController\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Controllers\HealthChecksController\**" />
   </ItemGroup>
 </Project>
