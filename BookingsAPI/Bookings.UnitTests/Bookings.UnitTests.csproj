@@ -22,13 +22,4 @@
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
     <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Controllers\HealthChecksController\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Controllers\HealthChecksController\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Controllers\HealthChecksController\**" />
-  </ItemGroup>
 </Project>
