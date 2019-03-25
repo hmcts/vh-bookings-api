@@ -97,12 +97,21 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 }
                 case "address":
+                    
                     {
-                        request.Participants[0].County = string.Empty;
-                        request.Participants[0].Street = string.Empty;
-                        request.Participants[0].City = string.Empty;
-                        request.Participants[0].HouseNumber = string.Empty;
-                        request.Participants[0].Postcode = string.Empty;
+                        var individualRoles = new[] { "Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP" };
+                        foreach (ParticipantRequest participantRequest in request.Participants)
+                        {
+                            if (individualRoles.Contains(participantRequest.HearingRoleName))
+                            {
+                                participantRequest.County = string.Empty;
+                                participantRequest.Street = string.Empty;
+                                participantRequest.City = string.Empty;
+                                participantRequest.HouseNumber = string.Empty;
+                                participantRequest.Postcode = string.Empty;
+                            }
+                        }
+                        
 
                         break;
                     }
