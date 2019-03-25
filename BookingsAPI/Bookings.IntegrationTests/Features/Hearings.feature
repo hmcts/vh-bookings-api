@@ -110,6 +110,8 @@ Scenario: Hearing not created with an invalid address
     Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-	#And the error response message should contain 'Housenumber cannot be emptye cannot not be blank'
-	#And the error response message should also contain 'Schedule duration must be greater than 0"'
-	#And the error response message should also contain 'ScheduledDateTime cannot be in the past"'
+	And the error response message should contain 'Housenumber is required'
+	And the error response message should also contain 'Street is required'
+	And the error response message should also contain 'City is required'
+	And the error response message should also contain 'County is required'
+	And the error response message should also contain 'Postcode is required'
