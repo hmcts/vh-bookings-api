@@ -3,14 +3,16 @@
 
 ## Running code coverage
 
-First ensure you are running a terminal in the BookingsAPI directory of this repository and then run the following commands.
+1. Install the report generator dotnet tool
+https://www.nuget.org/packages/dotnet-reportgenerator-globaltool/
 
-``` bash
-dotnet test Bookings.UnitTests/Bookings.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat="\"opencover,cobertura,json,lcov\"" /p:CoverletOutput=../Artifacts/Coverage/ /p:MergeWith='../Artifacts/Coverage/coverage.json' /p:Exclude="\"[*]Bookings.Common.*,[*]Testing.Common.*,[Bookings.DAL]Bookings.DAL.BookingsDbContext,[*]Bookings.DAL.Mappings,[*]Bookings.DAL.Migrations,[*]Bookings.DAL.SeedData.*,[*]Bookings.DAL.Exceptions.*,[*]Bookings.DAL.Mappings.*,[*]Bookings.DAL.Migrations.*,[*]Bookings.Domain.Ddd.*,[Bookings.DAL]Bookings.DAL.DesignTimeHearingsContextFactory,[*]Bookings.Domain.Validations.*,[Bookings.API]Bookings.API.ConfigureServicesExtensions,[*]Bookings.API.Extensions.*,[*]Bookings.API.Swagger.*,[Bookings.API]Bookings.API.Program,[Bookings.API]Bookings.API.Startup\""
+You may need to restart your prompt to get the updated path.
 
-dotnet test Bookings.IntegrationTests/Bookings.IntegrationTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat="\"opencover,cobertura,json,lcov\"" /p:CoverletOutput=../Artifacts/Coverage/ /p:MergeWith='../Artifacts/Coverage/coverage.json' /p:Exclude="\"[*]Bookings.Common.*,[*]Testing.Common.*,[Bookings.DAL]Bookings.DAL.BookingsDbContext,[*]Bookings.DAL.Mappings,[*]Bookings.DAL.Migrations,[*]Bookings.DAL.SeedData.*,[*]Bookings.DAL.Exceptions.*,[*]Bookings.DAL.Mappings.*,[*]Bookings.DAL.Migrations.*,[*]Bookings.Domain.Ddd.*,[Bookings.DAL]Bookings.DAL.DesignTimeHearingsContextFactory,[*]Bookings.Domain.Validations.*,[Bookings.API]Bookings.API.ConfigureServicesExtensions,[*]Bookings.API.Extensions.*,[*]Bookings.API.Swagger.*,[Bookings.API]Bookings.API.Program,[Bookings.API]Bookings.API.Startup\""
+2. CD into the BookingsAPI folder
 
-```
+3. Run the command for windows or osx `./run_coverage.sh` or `run_coverage.bat`
+
+The coverage report will open automatically after run, joining the results for both integration and unit tests.
 
 ## Running Sonar Analysis
 
@@ -19,13 +21,4 @@ dotnet sonarscanner begin /k:"vh-bookings-api" /d:sonar.cs.opencover.reportsPath
 dotnet build BookingsAPI/BookingsApi.sln
 dotnet sonarscanner end
 
-```
-
-
-## Generate HTML Report
-
-In the BookingsAPI directory after having run either or both test projects:
-
-``` bash
-dotnet reportgenerator "-reports:Artifacts/Coverage/coverage.opencover.xml" "-targetDir:Artifacts/Coverage/Report" -reporttypes:HtmlInline_AzurePipelines
 ```
