@@ -14,6 +14,7 @@ using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using Microsoft.AspNetCore.Mvc;
@@ -226,6 +227,7 @@ namespace Bookings.API.Controllers
         /// <returns>Success status</returns>
         [HttpPatch("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateBookingStatus")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
@@ -245,7 +247,8 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var command = new UpdateHearingStatusCommand(hearingId, updateBookingStatusRequest.Status, updateBookingStatusRequest.UpdatedBy);
+                var bookingStatus = Enum.Parse<BookingStatus>(updateBookingStatusRequest.Status);
+                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
                 await _commandHandler.Handle(command);
                 return Ok();
             }

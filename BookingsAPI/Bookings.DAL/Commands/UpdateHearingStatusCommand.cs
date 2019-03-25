@@ -12,9 +12,9 @@ namespace Bookings.DAL.Commands
     public class UpdateHearingStatusCommand : ICommand
     {
         public Guid HearingId { get; set; }
-        public string Status { get; set; }
+        public BookingStatus Status { get; set; }
         public string UpdatedBy { get; set; }
-        public UpdateHearingStatusCommand(Guid hearingId, string status, string updatedBy)
+        public UpdateHearingStatusCommand(Guid hearingId, BookingStatus status, string updatedBy)
         {
             HearingId = hearingId;
             Status = status;
@@ -40,8 +40,7 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
-            var bookingStatus = Enum.Parse<BookingStatus>(command.Status);
-            hearing.UpdateStatus(bookingStatus, command.UpdatedBy);
+            hearing.UpdateStatus(command.Status, command.UpdatedBy);
             await _context.SaveChangesAsync();
         }
     }
