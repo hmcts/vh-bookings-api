@@ -4,6 +4,7 @@ variables:
   apiDirectory: 'BookingsAPI/Bookings.API'
   sonarCloudExtraProperties: |
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
+    sonar.cpd.exclusions="**/Program.cs,**/Startup.cs,Bookings.DAL/Mappings/**,Migrations/**,SeedData/**,DesignTimeHearingsContextFactory.cs,Ddd/**,Testing.Common/**,Bookings.API/ConfigureServicesExtensions.cs,Bookings.API/Extensions/**,Bookings.API/Swagger/**,Bookings.Common/**"
   coverletCoverageExclusions: '[*]Bookings.Common.*,[*]Testing.Common.*,[Bookings.DAL]Bookings.DAL.BookingsDbContext,[*]Bookings.DAL.Mappings,[*]Bookings.DAL.Migrations,[*]Bookings.DAL.SeedData.*,[*]Bookings.DAL.Exceptions.*,[*]Bookings.DAL.Mappings.*,[*]Bookings.DAL.Migrations.*,[*]Bookings.DAL.Commands.Core.*,[*]Bookings.DAL.Queries.Core.*,[*]Bookings.Domain.Ddd.*,[Bookings.DAL]Bookings.DAL.DesignTimeHearingsContextFactory,[*]Bookings.Domain.Validations.*,[Bookings.API]Bookings.API.ConfigureServicesExtensions,[*]Bookings.API.Extensions.*,[*]Bookings.API.Swagger.*,[Bookings.API]Bookings.API.Program,[Bookings.API]Bookings.API.Startup'
   integrationTestsAppSettingsTransform: '
     "AzureAd/TenantId":"$(tenantid)",
