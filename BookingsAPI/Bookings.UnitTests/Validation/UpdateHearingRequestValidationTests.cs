@@ -74,7 +74,9 @@ namespace Bookings.UnitTests.Validation
             {
                 HearingVenueName = "Test Venue",
                 ScheduledDuration = 60,
-                ScheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30)
+                ScheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30),
+                HearingRoomName = "RoomUpdate",
+                OtherInformation = "OtherInformationUpdate"
             };
         }
     }
