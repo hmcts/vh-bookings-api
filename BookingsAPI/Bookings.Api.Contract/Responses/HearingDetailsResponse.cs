@@ -12,37 +12,37 @@ namespace Bookings.Api.Contract.Responses
         ///     Hearing Id
         /// </summary>
         public Guid Id { get; set; }
-        
+
         /// <summary>
         ///     The date and time for a hearing
         /// </summary>
         public DateTime ScheduledDateTime { get; set; }
-        
+
         /// <summary>
         ///     The duration of a hearing (number of minutes)
         /// </summary>
         public int ScheduledDuration { get; set; }
-        
+
         /// <summary>
         ///     The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
-        
+
         /// <summary>
         ///     The name of the case type
         /// </summary>
         public string CaseTypeName { get; set; }
-        
+
         /// <summary>
         ///     The name of the hearing type
         /// </summary>
         public string HearingTypeName { get; set; }
-        
+
         /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseResponse> Cases { get; set; }
-        
+
         /// <summary>
         ///     List of participants in hearing
         /// </summary>
@@ -57,5 +57,25 @@ namespace Bookings.Api.Contract.Responses
         ///     Any other information about the hearing
         /// </summary>
         public string OtherInformation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the created date.
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the created by.
+        /// </summary>
+        public string CreatedBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the updated by.
+        /// </summary>
+        public string UpdatedBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the updated date.
+        /// </summary>
+        public DateTime UpdatedDate { get; set; }
     }
 }
