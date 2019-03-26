@@ -118,6 +118,19 @@ namespace Bookings.Domain
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
+        
+        public void AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        {
+            if (DoesParticipantExist(person.Username))
+            {
+                throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
+            }
+
+            Participant participant = new Judge(person, hearingRole, caseRole);
+            participant.DisplayName = displayName;        
+            Participants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
+        }
 
         public void RemoveParticipant(Participant participant)
         {
