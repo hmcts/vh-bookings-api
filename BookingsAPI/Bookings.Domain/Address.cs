@@ -50,7 +50,7 @@ namespace Bookings.Domain
 
                 if (string.IsNullOrEmpty(postcode))
                 {
-                    _validationFailures.AddFailure("Postcode", "Username cannot be empty");
+                    _validationFailures.AddFailure("Postcode", "Postcode cannot be empty");
                 }
 
                 if (_validationFailures.Any())
