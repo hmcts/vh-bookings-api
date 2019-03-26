@@ -29,13 +29,11 @@ namespace Bookings.API.Controllers
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
-        private readonly IServiceBusQueueClient _serviceBusQueueClient;
 
-        public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler, IServiceBusQueueClient serviceBusQueueClient)
+        public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _serviceBusQueueClient = serviceBusQueueClient;
         }
 
         /// <summary>
@@ -122,8 +120,6 @@ namespace Bookings.API.Controllers
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
             var queriedVideoHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-
-            await _serviceBusQueueClient.PublishMessageAsync(new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing));
 
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);

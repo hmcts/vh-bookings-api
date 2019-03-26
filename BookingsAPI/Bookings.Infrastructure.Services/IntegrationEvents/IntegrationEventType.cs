@@ -5,6 +5,7 @@
         HearingIsReadyForVideo,
         ParticipantAdded,
         ParticipantRemoved,
-        HearingDetailsUpdated
+        HearingDetailsUpdated,
+        HearingCancelled
     }
 }
