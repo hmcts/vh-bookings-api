@@ -22,9 +22,11 @@ namespace Testing.Common.Builders.Domain
             var hearingType = Builder<HearingType>.CreateNew().WithFactory(() => new HearingType(_hearingTypeName)).Build();
             var scheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
             var duration = 80;
+            var hearingRoomName = "Roome03";
+            var otherInformation = "OtherInformation03";
 
             _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue)).Build();
+                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation)).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var defendantCaseRole = new CaseRole(2, "Defendant");

@@ -195,6 +195,8 @@ namespace Bookings.IntegrationTests.Steps
             }
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
             model.ScheduledDuration.Should().BePositive();
+            model.HearingRoomName.Should().NotBeNullOrEmpty();
+            model.OtherInformation.Should().NotBeNullOrEmpty();
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
@@ -213,6 +215,8 @@ namespace Bookings.IntegrationTests.Steps
             model.ScheduledDuration.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDuration);
             model.HearingVenueName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingVenueName);
             model.ScheduledDateTime.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDateTime);
+            model.HearingRoomName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingRoomName);
+            model.OtherInformation.Should().Be(_apiTestContext.UpdateHearingRequest.OtherInformation);
         }
 
         [Then(@"the hearing should be removed")]
@@ -238,7 +242,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private static BookNewHearingRequest BuildRequest()
         {
-            var participants = Builder<ParticipantRequest>.CreateListOfSize(4).All()
+            var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
                 .With(x => x.ContactEmail = Faker.Internet.Email())
                 .With(x => x.Username = Faker.Internet.Email())
                 .Build().ToList();
@@ -253,6 +257,9 @@ namespace Bookings.IntegrationTests.Steps
 
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Solicitor";
+
+            participants[4].CaseRoleName = "Judge";
+            participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
             cases[0].IsLeadCase = true;
 
