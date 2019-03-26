@@ -74,6 +74,15 @@ namespace Bookings.AcceptanceTests.Steps
                 participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.UserRoleName.Should().NotBeNullOrEmpty();
+
+                if (participant.UserRoleName.Equals("Individual"))
+                {
+                    participant.HouseNumber.Should().NotBeNullOrEmpty();
+                    participant.Street.Should().NotBeNullOrEmpty();
+                    participant.City.Should().NotBeNullOrEmpty();
+                    participant.County.Should().NotBeNullOrEmpty();
+                    participant.Postcode.Should().NotBeNullOrEmpty();
+                }
             }
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
             model.ScheduledDuration.Should().BePositive();
