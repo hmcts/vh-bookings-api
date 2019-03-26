@@ -40,7 +40,7 @@ namespace Bookings.IntegrationTests.Helper
 
             var venues = new RefDataBuilder().HearingVenues;
 
-            var person1 = new PersonBuilder(true).Build();
+            var person1 = new PersonBuilder(true).WithAddress().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
 
