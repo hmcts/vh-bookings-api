@@ -8,6 +8,7 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 using FizzWare.NBuilder;
@@ -230,6 +231,86 @@ namespace Bookings.IntegrationTests.Steps
             hearingFromDb.Should().BeNull();
         }
 
+        [Given(@"I have a (.*) hearing cancellation request")]
+        public async Task GivenIHaveAValidHearingCancellationRequest(Scenario scenario)
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    break;
+                case Scenario.Invalid:
+                    _hearingId = Guid.Empty;
+                    break;
+                case Scenario.Nonexistent:
+                    _hearingId = Guid.NewGuid();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+            UpdateHearingStatus(BookingStatus.Cancelled);
+        }
+
+        [Given(@"I have a valid hearing request")]
+        public async Task GivenIHaveAValidHearingRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+        }
+
+        [Given(@"set the booking status to (.*)")]
+        public async Task SetTheBookingStatus(BookingStatus bookingStatus)
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            UpdateHearingStatus(bookingStatus);
+        }
+
+        [Given(@"I have an empty status in a hearing status request")]
+        public async Task GivenIHaveAnEmptyStatusHearingStatusRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            UpdateHearingStatus(null);
+        }
+
+        [Given(@"I have an empty username in a hearing status request")]
+        public async Task GivenIHaveAnEmptyUsernameHearingStatusRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            UpdateHearingStatus(BookingStatus.Cancelled, null);
+        }
+        
+        [Then(@"hearing status should be cancelled")]
+        public void ThenHearingDetailsShouldBeCancelled()
+        {
+            Hearing hearingFromDb;
+            using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
+            {
+                hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _apiTestContext.NewHearingId);
+            }
+            hearingFromDb.Should().NotBeNull();
+
+            hearingFromDb.Status.Should().Be(BookingStatus.Cancelled);
+        }
+
+        [Then(@"hearing status should be unchanged")]
+        public void ThenHearingDetailsShouldBeUnchanged()
+        {
+            Hearing hearingFromDb;
+            using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
+            {
+                hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _apiTestContext.NewHearingId);
+            }
+            hearingFromDb.Should().NotBeNull();
+
+            hearingFromDb.Status.Should().Be(BookingStatus.Booked);
+        }
+
         [TearDown]
         public async Task TearDown()
         {
@@ -295,6 +376,17 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             _apiTestContext.Uri = _endpoints.UpdateHearingDetails(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Put;
-        }       
+        }
+
+        private void UpdateHearingStatus(BookingStatus? status, string updatedBy = "testuser")
+        {
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest {
+                Status = status?.ToString(),
+                UpdatedBy = updatedBy
+            });
+            _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            _apiTestContext.Uri = _endpoints.UpdateHearingDetails(_hearingId);
+            _apiTestContext.HttpMethod = HttpMethod.Patch;
+        }
     }
 }
