@@ -123,7 +123,7 @@ namespace Bookings.Domain
         {
             if (DoesParticipantExist(person.Username))
             {
-                throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
+                throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
             }
 
             Participant participant = new Judge(person, hearingRole, caseRole);
