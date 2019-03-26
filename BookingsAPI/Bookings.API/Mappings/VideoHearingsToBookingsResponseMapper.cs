@@ -66,7 +66,7 @@ namespace Bookings.API.Mappings
                 result.Add(booking);
             }
 
-            return result;
+            return result.OrderBy(x =>x.ScheduledDate).ToList();
         }
     }
 }
