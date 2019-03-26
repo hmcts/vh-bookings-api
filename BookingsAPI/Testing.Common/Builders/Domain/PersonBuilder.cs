@@ -19,7 +19,7 @@ namespace Testing.Common.Builders.Domain
             _settings = new BuilderSettings();
             if (ignoreId)
             {
-                //_settings.DisablePropertyNamingFor<Address, long>(x => x.Id);
+                _settings.DisablePropertyNamingFor<Address, long>(x => x.Id);
                 _settings.DisablePropertyNamingFor<Organisation, long>(x => x.Id);
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>

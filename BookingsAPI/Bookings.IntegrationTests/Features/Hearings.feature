@@ -110,7 +110,7 @@ Scenario: Hearing not created with an invalid address
     Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-	And the error response message should contain 'Housenumber is required'
+	And the error response message should contain 'HouseNumber is required'
 	And the error response message should also contain 'Street is required'
 	And the error response message should also contain 'City is required'
 	And the error response message should also contain 'County is required'

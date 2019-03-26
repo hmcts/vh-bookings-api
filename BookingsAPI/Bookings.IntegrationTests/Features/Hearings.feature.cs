@@ -427,7 +427,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 112
  testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 113
- testRunner.And("the error response message should contain \'Housenumber is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the error response message should contain \'HouseNumber is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 114
  testRunner.And("the error response message should also contain \'Street is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 115

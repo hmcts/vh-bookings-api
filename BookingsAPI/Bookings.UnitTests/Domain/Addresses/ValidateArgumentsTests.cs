@@ -16,7 +16,7 @@ namespace Bookings.UnitTests.Domain.Addresses
 
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
-                .Contain(x => x.Name == "Housenumber")
+                .Contain(x => x.Name == "HouseNumber")
                 .And.Contain(x => x.Name == "Street")
                 .And.Contain(x => x.Name == "City")
                 .And.Contain(x => x.Name == "Postcode")

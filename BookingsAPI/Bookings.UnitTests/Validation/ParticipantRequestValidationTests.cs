@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
@@ -139,7 +140,116 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
-        
+        [Test]
+        public async Task should_return_missing_housenumber_error()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Claimant LIP";
+            request.HouseNumber = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoHouseNumberErrorMessage)
+                .Should().BeTrue();
+        }
+        [Test]
+        public async Task should_return_missing_street_error()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Defendant LIP";
+            request.Street = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoStreetErrorMessage)
+                .Should().BeTrue();
+        }
+        [Test]
+        public async Task should_return_missing_city_error()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Applicant LIP";
+            request.City = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCityErrorMessage)
+                .Should().BeTrue();
+        }
+        [Test]
+        public async Task should_return_missing_county_error()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Respondent LIP";
+            request.County = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCountyErrorMessage)
+                .Should().BeTrue();
+        }
+        [Test]
+        public async Task should_return_missing_postcode_error()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Claimant LIP";
+            request.Postcode = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoPostcodeErrorMessage)
+                .Should().BeTrue();
+        }
+
+        [Test]
+        public async Task should_return_missing_address_fields_error()
+        {
+            var addressErrorMessages = new List<string>() { ParticipantRequestValidation.NoHouseNumberErrorMessage, ParticipantRequestValidation.NoStreetErrorMessage, ParticipantRequestValidation.NoCityErrorMessage, ParticipantRequestValidation.NoCountyErrorMessage, ParticipantRequestValidation.NoPostcodeErrorMessage };
+            
+
+            var request = BuildRequest();
+            request.HearingRoleName = "Claimant LIP";
+            request.HouseNumber = string.Empty;
+            request.Street = string.Empty;
+            request.City = string.Empty;
+            request.County = string.Empty;
+            request.Postcode = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(5);
+            result.Errors.All(x => addressErrorMessages.Contains(x.ErrorMessage))
+                .Should().BeTrue();
+        }
+
+        [Test]
+        public async Task should_pass_validation_for_representative()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Solicitor";
+            request.HouseNumber = string.Empty;
+            request.Street = string.Empty;
+            request.City = string.Empty;
+            request.County = string.Empty;
+            request.Postcode = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeTrue();
+            result.Errors.Count.Should().Be(0);
+          }
+
         private ParticipantRequest BuildRequest()
         {
            return Builder<ParticipantRequest>.CreateNew()
