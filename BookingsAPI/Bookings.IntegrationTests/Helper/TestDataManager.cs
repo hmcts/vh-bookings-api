@@ -47,7 +47,7 @@ namespace Bookings.IntegrationTests.Helper
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
 
-            var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
+            var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             var duration = 45;
             var hearingRoomName = "Room02";
             var otherInformation = "OtherInformation02";
