@@ -42,9 +42,9 @@ namespace Bookings.API.Controllers
         /// <returns>Hearing details</returns>
         [HttpGet("{hearingId}", Name = "GetHearingDetailsById")]
         [SwaggerOperation(OperationId = "GetHearingDetailsById")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
@@ -73,8 +73,8 @@ namespace Bookings.API.Controllers
         /// <returns>Details of the newly booked hearing</returns>
         [HttpPost]
         [SwaggerOperation(OperationId = "BookNewHearing")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.Created)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> BookNewHearing(BookNewHearingRequest request)
         {
             var result = new BookNewHearingRequestValidation().Validate(request);
@@ -128,7 +128,7 @@ namespace Bookings.API.Controllers
 
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
-            return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
+            return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
 
@@ -140,9 +140,9 @@ namespace Bookings.API.Controllers
         /// <returns>Details of updated hearing</returns>
         [HttpPut("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateHearingDetails")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
             if (hearingId == Guid.Empty)
@@ -191,9 +191,9 @@ namespace Bookings.API.Controllers
         /// <returns></returns>
         [HttpDelete("{hearingId}")]
         [SwaggerOperation(OperationId = "RemoveHearing")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> RemoveHearing(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
