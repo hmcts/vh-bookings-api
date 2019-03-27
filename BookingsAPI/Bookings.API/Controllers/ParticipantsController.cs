@@ -217,5 +217,46 @@ namespace Bookings.API.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Remove a participant from a hearing
+        /// </summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns></returns>
+        [HttpDelete("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
+        [SwaggerOperation(OperationId = "UpdateParticipantDetails")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequest request)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            if (participantId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new UpdateParticipantRequestValidation().Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+
+
+            return Ok(new ParticipantResponse());
+        }
     }
+
+   
+
+
 }
