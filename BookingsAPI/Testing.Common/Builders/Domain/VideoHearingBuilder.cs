@@ -13,6 +13,7 @@ namespace Testing.Common.Builders.Domain
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
         
         private readonly VideoHearing _videoHearing;
+        private readonly Person _judgePerson;
 
         public VideoHearingBuilder()
         {
@@ -41,7 +42,7 @@ namespace Testing.Common.Builders.Domain
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder(true).Build();
+            _judgePerson = new PersonBuilder(true).Build();
 
             _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -52,9 +53,11 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.AddSolicitor(person2, defendantSolicitorHearingRole, defendantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
 
-            _videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole,
-                $"{person4.FirstName} {person4.LastName}");
+            _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
+                $"{_judgePerson.FirstName} {_judgePerson.LastName}");
         }
+
+        public Person Judge => _judgePerson;
         
         public VideoHearing Build() => _videoHearing;
     }
