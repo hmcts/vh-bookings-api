@@ -40,6 +40,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             participants.Any().Should().BeTrue();
             participants.Any(x => x.GetType() == typeof(Individual)).Should().BeTrue();
             participants.Any(x => x.GetType() == typeof(Representative)).Should().BeTrue();
+            participants.Any(x => x.GetType() == typeof(Judge)).Should().BeTrue();
 
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);

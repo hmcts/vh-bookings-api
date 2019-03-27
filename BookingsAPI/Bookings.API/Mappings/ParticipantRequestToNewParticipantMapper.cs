@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using Bookings.Api.Contract.Requests;
+using Bookings.Common;
 using Bookings.DAL.Commands;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
@@ -14,10 +16,15 @@ namespace Bookings.API.Mappings
     {
         public NewParticipant MapRequestToNewParticipant(ParticipantRequest requestParticipant, CaseType caseType)
         {
-            var caseRole = caseType.CaseRoles.Single(x => x.Name == requestParticipant.CaseRoleName);
-            var hearingRole = caseRole.HearingRoles.Single(x => x.Name == requestParticipant.HearingRoleName);
+
+            var caseRole = caseType.CaseRoles.FirstOrDefault(x => x.Name == requestParticipant.CaseRoleName);
+            if (caseRole == null) throw new BadRequestException($"Invalid case role [{requestParticipant.CaseRoleName}]");
+
+            var hearingRole = caseRole.HearingRoles.FirstOrDefault(x => x.Name == requestParticipant.HearingRoleName);
+            if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
             Person person;
             if(hearingRole.UserRole.Name=="Individual")
+
             {
                 var address = new Address(requestParticipant.HouseNumber, requestParticipant.Street, requestParticipant.Postcode, requestParticipant.City, requestParticipant.County);
                 person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
@@ -32,7 +39,7 @@ namespace Bookings.API.Mappings
             person.MiddleNames = requestParticipant.MiddleNames;
             person.ContactEmail = requestParticipant.ContactEmail;
             person.TelephoneNumber = requestParticipant.TelephoneNumber;
-            
+
             return new NewParticipant
             {
                 Person = person,

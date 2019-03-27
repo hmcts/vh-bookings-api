@@ -1,4 +1,4 @@
-using Bookings.Domain.RefData;
+﻿using Bookings.Domain.RefData;
 
 namespace Bookings.Domain.Participants
 {
