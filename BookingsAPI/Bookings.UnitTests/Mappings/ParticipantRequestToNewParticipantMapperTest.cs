@@ -6,7 +6,6 @@ using FluentAssertions;
 using Bookings.Common;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
-using Bookings.API.Utilities;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
 using Bookings.UnitTests.Utilities;
