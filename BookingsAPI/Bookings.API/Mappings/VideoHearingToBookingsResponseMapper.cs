@@ -43,6 +43,7 @@ namespace Bookings.API.Mappings
                 LastEditDate = videoHearing.UpdatedDate,
                 LastEditBy = videoHearing.UpdatedBy,
                 JudgeName = judgeName,
+                Status = videoHearing.Status
             };
             return response;
         }

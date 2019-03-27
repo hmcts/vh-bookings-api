@@ -1,4 +1,6 @@
 ﻿using System;
+using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 
 namespace Bookings.Api.Contract.Responses
 {
@@ -84,5 +86,10 @@ namespace Bookings.Api.Contract.Responses
                 return ScheduledDateTime.Date;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the booking status of the hearing
+        /// </summary>
+        public BookingStatus Status { get; set; }
     }
 }
