@@ -56,7 +56,7 @@ namespace Bookings.UnitTests.Controllers
 
             _queryHandlerMock
                 .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
-                .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "0", "next cursor"));
+                .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();

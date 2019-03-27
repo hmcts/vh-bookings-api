@@ -59,6 +59,13 @@ namespace Bookings.IntegrationTests.Database.Queries
             var hearingTypes = result.Select(hearing => hearing.CaseType.Name).Distinct().ToList();
             hearingTypes.Should().Equal(FinancialRemedy);
         }
+
+        [Test]
+        public void should_throw_on_invalid_cursor()
+        {
+            Assert.ThrowsAsync<FormatException>(() =>
+                _handler.Handle(new GetBookingsByCaseTypesQuery {Cursor = "invalid"}));
+        }
         
         [Test]
         public async Task should_limit_hearings_returned()

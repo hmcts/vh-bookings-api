@@ -88,7 +88,7 @@ namespace Bookings.DAL.Queries
                 nextCursor = $"{lastResult.ScheduledDateTime.Ticks}_{lastResult.Id}";
             }
 
-            return new CursorPagedResult<VideoHearing, string>(result, query.Cursor, nextCursor);
+            return new CursorPagedResult<VideoHearing, string>(result, nextCursor);
         }
 
         private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out string id)
