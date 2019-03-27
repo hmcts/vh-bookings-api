@@ -22,8 +22,6 @@ namespace Bookings.IntegrationTests.Helper
             
             BuilderSettings = new BuilderSettings();
         }
-        
-        
 
         public Task<VideoHearing> SeedVideoHearing()
         {
@@ -38,10 +36,12 @@ namespace Bookings.IntegrationTests.Helper
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ClaimantRole);
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
+            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
             var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
@@ -50,6 +50,7 @@ namespace Bookings.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder(true).Build();
 
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             var duration = 45;
@@ -68,7 +69,9 @@ namespace Bookings.IntegrationTests.Helper
             
             videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", string.Empty, string.Empty);
-            
+
+            videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
+
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
 

@@ -177,6 +177,45 @@ namespace Bookings.IntegrationTests.Database.Commands
 
         }
 
+        [Test]
+        public async Task should_add_judge_to_video_hearing()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var beforeCount = seededHearing.GetParticipants().Count;
+
+            var caseTypeName = "Civil Money Claims";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
+            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var newParticipant = new NewParticipant()
+            {
+                Person = newPerson,
+                CaseRole = judgeCaseRole,
+                HearingRole = judgeHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                SolicitorsReference = string.Empty,
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
+            };
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var afterCount = returnedVideoHearing.GetParticipants().Count;
+
+            afterCount.Should().BeGreaterThan(beforeCount);
+        }
+
         private async Task<int> GetNumberOfPersonsInDb()
         {
             using (var db = new BookingsDbContext(BookingsDbContextOptions))
