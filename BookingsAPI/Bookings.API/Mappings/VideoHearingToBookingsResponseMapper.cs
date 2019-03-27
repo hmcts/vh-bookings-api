@@ -8,20 +8,12 @@ namespace Bookings.API.Mappings
 {
     public class VideoHearingsToBookingsResponseMapper
     {
-        public BookingsResponse MapHearingResponses(List<VideoHearing> videoHearings)
+        public List<BookingsByDateResponse> MapHearingResponses(IEnumerable<VideoHearing> videoHearings)
         {
-            var hearings = videoHearings.Select(MapHearingResponse).ToList();
-            var lastItem = hearings != null && hearings.Any() ? hearings.Last() : null;
-            var last_cursor = lastItem != null ? lastItem.CreatedDate.Ticks : 0;
-
-            return new BookingsResponse
-            {
-                Hearings = GroupBookingsByDate(hearings),
-                NextCursor = last_cursor > 0 ? last_cursor.ToString() : "0"
-            };
+            return GroupBookingsByDate(videoHearings.Select(MapHearingResponse).ToList());
         }
 
-        private BookingsHearingResponse MapHearingResponse(VideoHearing videoHearing)
+        public BookingsHearingResponse MapHearingResponse(VideoHearing videoHearing)
         {
             var cases = videoHearing.GetCases().FirstOrDefault();
             var participant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole != null && s.HearingRole.UserRole != null && s.HearingRole.UserRole.Name == "Judge");

@@ -241,9 +241,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
-        {
-            const string HearingsListsEndpointBaseUrl = "hearings/";
-            const string BookingsEndpointUrl = "types";
+        {            
             types = types ?? new List<int>();
             if (!await ValidateCaseTypes(types))
             {
@@ -256,18 +254,35 @@ namespace Bookings.API.Controllers
                 Cursor = cursor == DefaultCursor ? null : cursor,
                 Limit = limit
             };
-            var videoHearings = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, IList<VideoHearing>>(query);
-            var items = videoHearings ?? new List<VideoHearing>();
+            var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
+            
             var mapper = new VideoHearingsToBookingsResponseMapper();
-            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(items.AsQueryable())
-               .Limit(limit)
-               .CaseTypes(types)
-               .Cursor(cursor)
-               .ResourceUrl(HearingsListsEndpointBaseUrl + BookingsEndpointUrl)
-               .Build();
-
+            
+            var response = new BookingsResponse
+            {
+                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types),
+                NextCursor = result.NextCursor,
+                Limit = limit,
+                Hearings = mapper.MapHearingResponses(result)
+            };
+            
             return Ok(response);
+        }
+
+        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
+        {
+            const string hearingsListsEndpointBaseUrl = "hearings/";
+            const string bookingsEndpointUrl = "types";
+            const string resourceUrl = hearingsListsEndpointBaseUrl + bookingsEndpointUrl;
+            
+            var types = string.Empty;
+            if (caseTypes != null && caseTypes.Any())
+            {
+                types = string.Join("&types=", caseTypes);
+            }
+
+            return $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
         }
 
         private async Task<bool> ValidateCaseTypes(List<int> caseTypes)
