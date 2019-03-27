@@ -11,10 +11,13 @@ using Bookings.API.Utilities;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
+using Bookings.Domain.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -215,6 +218,50 @@ namespace Bookings.API.Controllers
             await _commandHandler.Handle(command);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Update booking status
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}")]
+        [SwaggerOperation(OperationId = "UpdateBookingStatus")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new UpdateBookingStatusRequestValidation().Validate(updateBookingStatusRequest);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var bookingStatus = Enum.Parse<BookingStatus>(updateBookingStatusRequest.Status);
+                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
+                await _commandHandler.Handle(command);
+                return Ok();
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (DomainRuleException exception)
+            {
+                exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
+                return BadRequest(ModelState);
+            }
         }
 
         private async Task<HearingVenue> GetVenue(string venueName)
