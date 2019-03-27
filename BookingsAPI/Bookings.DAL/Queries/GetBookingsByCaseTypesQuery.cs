@@ -10,32 +10,33 @@ namespace Bookings.DAL.Queries
 {
     public class GetBookingsByCaseTypesQuery : IQuery
     {
+        private int _limit;
+
+        public GetBookingsByCaseTypesQuery() : this(new List<int>())
+        {}
+        
         public GetBookingsByCaseTypesQuery(IList<int> types)
         {
             CaseTypes = types;
+            Limit = 100;
         }
 
         public IList<int> CaseTypes { get; }
 
         public string Cursor { get; set; }
 
-        public int Limit { get; set; }
-
-        public long CursorCreatedTime
+        public int Limit
         {
-            get
+            get => _limit;
+            set
             {
-                if (!string.IsNullOrEmpty(Cursor))
-                {
-                    long.TryParse(Cursor, out long createdTime);
-                    return createdTime;
-                }
-                return 0;
+                if (value <= 0) throw new ArgumentException("Limit must be one or more");
+                _limit = value;
             }
         }
     }
 
-    public class GetBookingsByCaseTypesQueryHandler : IQueryHandler<GetBookingsByCaseTypesQuery, IList<VideoHearing>>
+    public class GetBookingsByCaseTypesQueryHandler : IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
 
@@ -44,60 +45,49 @@ namespace Bookings.DAL.Queries
             _context = context;
         }
 
-        public async Task<IList<VideoHearing>> Handle(GetBookingsByCaseTypesQuery query)
-        {
-            IQueryable<VideoHearing> allList;
-            IList<VideoHearing> response;
+        public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
+        {               
+            IQueryable<VideoHearing> hearings = _context.VideoHearings
+                .Include("Participants.Person")
+                .Include("Participants.HearingRole.UserRole")
+                .Include("Participants.CaseRole")
+                .Include("HearingCases.Case")
+                .Include(x => x.HearingType)
+                .Include(x => x.CaseType)
+                .Include(x => x.HearingVenue);
+            
             if (query.CaseTypes.Any())
             {
-                allList = _context.VideoHearings
-                    .Include("Participants.Person")
-                    .Include("Participants.HearingRole.UserRole")
-                    .Include("Participants.CaseRole")
-                    .Include("HearingCases.Case")
-                    .Include(x => x.HearingType)
-                    .Include(x => x.CaseType)
-                    .Include(x => x.HearingVenue)
-                    .Where(x => x.ScheduledDateTime > DateTime.Now && query.CaseTypes.Any(s => s == x.HearingTypeId))
-                    .OrderBy(d => d.CreatedDate).AsQueryable();
-            }
-            else
-            {
-                allList = _context.VideoHearings
-                    .Include("Participants.Person")
-                    .Include("Participants.HearingRole.UserRole")
-                    .Include("Participants.CaseRole")
-                    .Include("HearingCases.Case")
-                    .Include(x => x.HearingType)
-                    .Include(x => x.CaseType)
-                    .Include(x => x.HearingVenue)
-                    .Where(x => x.ScheduledDateTime > DateTime.Now)
-                    .OrderBy(d => d.CreatedDate).AsQueryable();
+                hearings = hearings.Where(x =>
+                    x.ScheduledDateTime > DateTime.Now && query.CaseTypes.Contains(x.CaseTypeId));
             }
 
-            if (!string.IsNullOrEmpty(query.Cursor) && query.Cursor != "0")
+            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id);
+            if (!string.IsNullOrEmpty(query.Cursor))
             {
-                var createdTime = query.CursorCreatedTime;
-                if (createdTime > 0)
-                {
-                    response = await allList
-                        .Where(x => x.CreatedDate.Ticks > createdTime)
-                       .Select(x => x)
-                       .Take(query.Limit).ToListAsync(new System.Threading.CancellationToken());
-                }
-                else
-                {
-                    //no data
-                    response = Enumerable.Empty<VideoHearing>().ToList();
-                }
-            }
-            else
-            {
-                // first request, the next cursor is not defined
-                response = await allList.Take(query.Limit).ToListAsync(new System.Threading.CancellationToken());
+                TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
+                hearings = hearings.Where(x =>
+                    x.ScheduledDateTime > scheduledDateTime || x.ScheduledDateTime == scheduledDateTime && x.Id.CompareTo(id) > 0);
             }
 
-            return response;
+            var result = await hearings.Take(query.Limit).ToListAsync();
+            var lastResult = result.Last();
+            var nextCursor = $"{lastResult.ScheduledDateTime.Date.Ticks}_{lastResult.Id}";
+            return new CursorPagedResult<VideoHearing, string>(result, query.Cursor, nextCursor);
+        }
+
+        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
+        {
+            try
+            {
+                var parts = cursor.Split('_');
+                scheduledDateTime = new DateTime(long.Parse(parts[0]));
+                id = Guid.Parse(parts[1]);
+            }
+            catch (Exception e)
+            {
+                throw new FormatException($"Unexpected cursor format [{cursor}]", e);
+            }
         }
     }
 }

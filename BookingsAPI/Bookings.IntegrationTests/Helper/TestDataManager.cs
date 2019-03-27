@@ -22,21 +22,28 @@ namespace Bookings.IntegrationTests.Helper
             
             BuilderSettings = new BuilderSettings();
         }
+        
+        
 
-        public async Task<VideoHearing> SeedVideoHearing()
+        public Task<VideoHearing> SeedVideoHearing()
         {
-            var caseTypeName = "Civil Money Claims";
-            var caseType = GetCaseTypeFromDb(caseTypeName);
+            return SeedVideoHearing(null);
+        }
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == "Defendant");
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions)
+        {
+            var options = new SeedVideoHearingOptions();
+            configureOptions?.Invoke(options);
+            var caseType = GetCaseTypeFromDb(options.CaseTypeName);
 
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Claimant LIP");
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ClaimantRole);
+            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
+
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
 
-            var hearingTypeName = "Application to Set Judgment Aside";
-            var hearingType = caseType.HearingTypes.First(x => x.Name == hearingTypeName);
+            var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
             var venues = new RefDataBuilder().HearingVenues;
 
@@ -85,7 +92,12 @@ namespace Bookings.IntegrationTests.Helper
                     .ThenInclude(x => x.HearingRoles)
                     .ThenInclude(x => x.UserRole)
                     .Include(x => x.HearingTypes)
-                    .First(x => x.Name == caseTypeName);
+                    .FirstOrDefault(x => x.Name == caseTypeName);
+
+                if (caseType == null)
+                {
+                    throw new InvalidOperationException("Unknown case type: "  + caseTypeName);
+                }
             }
 
             return caseType;
