@@ -285,24 +285,16 @@ namespace Bookings.API.Controllers
             return $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
         }
 
-        private async Task<bool> ValidateCaseTypes(List<int> caseTypes)
+        private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
         {
-            var result = false;
+            if (!filterCaseTypes.Any()) return true;
+            
+            var query = new GetAllCaseTypesQuery();
+            var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
+                .Select(caseType => caseType.Id);
 
-            if (!caseTypes.Any())
-            {
-                result = true;
-            }
-            else
-            {
-                var query = new GetAllCaseTypesQuery();
-                var allCasesTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
-                if (allCasesTypes != null)
-                {
-                    result = caseTypes.Count == 0 || caseTypes.All(s => allCasesTypes.Any(x => x.Id == s));
-                }
-            }
-            return result;
+            return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
+
         }
     }
 }
