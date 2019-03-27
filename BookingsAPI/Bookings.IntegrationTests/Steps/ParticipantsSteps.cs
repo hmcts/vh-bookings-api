@@ -95,7 +95,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.OldHearingId = _apiTestContext.NewHearingId;
             _apiTestContext.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            seededHearing.GetParticipants().Count.Should().Be(3);
+            seededHearing.GetParticipants().Count.Should().Be(4);
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
             _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext);
         }

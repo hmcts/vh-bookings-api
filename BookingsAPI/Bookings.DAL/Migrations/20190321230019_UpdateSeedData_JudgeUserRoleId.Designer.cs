@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190321230019_UpdateSeedData_JudgeUserRoleId")]
+    partial class UpdateSeedData_JudgeUserRoleId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -326,13 +328,6 @@ namespace Bookings.DAL.Migrations
                     b.HasBaseType("Bookings.Domain.Participants.Participant");
 
                     b.HasDiscriminator().HasValue("Individual");
-                });
-
-            modelBuilder.Entity("Bookings.Domain.Participants.Judge", b =>
-                {
-                    b.HasBaseType("Bookings.Domain.Participants.Participant");
-
-                    b.HasDiscriminator().HasValue("Judge");
                 });
 
             modelBuilder.Entity("Bookings.Domain.Participants.Representative", b =>
