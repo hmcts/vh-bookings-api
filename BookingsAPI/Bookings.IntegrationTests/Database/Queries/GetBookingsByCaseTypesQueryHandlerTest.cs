@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Api.Contract.Responses;
-using Bookings.API.Mappings;
-using Bookings.API.Utilities;
 using Bookings.DAL;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
-using Bookings.Domain.RefData;
-using FizzWare.NBuilder.Extensions;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace Bookings.IntegrationTests.Database.Queries
@@ -83,21 +77,40 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task should_return_different_hearings_for_each_new_page()
         {
-            // When we have at least three pages of hearings
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            // When generating the guids they may end up being in order accidentally, therefor,
+            // seed hearings until they end up in invalid order
+            while (IdsAreInOrder(_ids) || _ids.Count < 3)
+            {
+                _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            }
             
-            // And if each page returns a single result
-            var firstPage = await _handler.Handle(new GetBookingsByCaseTypesQuery { Limit = 1 });
-            var secondPage = await _handler.Handle(new GetBookingsByCaseTypesQuery
-                {Limit = 1, Cursor = firstPage.NextCursor});
-            var thirdPage = await _handler.Handle(new GetBookingsByCaseTypesQuery
-                {Limit = 1, Cursor = secondPage.NextCursor});
-            
+            // And paging through the results
+            string cursor = null;
+            var allHearings = new List<VideoHearing>();
+            while (true)
+            {
+                var result = await _handler.Handle(new GetBookingsByCaseTypesQuery { Limit = 1, Cursor = cursor });
+                allHearings.AddRange(result);
+                if (result.NextCursor == null) break;
+                cursor = result.NextCursor;
+            }
+                        
             // They should all have different id's
-            var ids = firstPage.Concat(secondPage).Concat(thirdPage).Select(x => x.Id);
-            ids.Distinct().Count().Should().Be(3);
+            var ids = allHearings.Select(x => x.Id);
+            ids.Distinct().Count().Should().Be(_context.VideoHearings.Count());
+        }
+
+        private static bool IdsAreInOrder(List<Guid> ids)
+        {
+            for (var i = 0; i < ids.Count - 1; ++i)
+            {
+                if (string.Compare(ids[i].ToString(), ids[i + 1].ToString(), StringComparison.Ordinal) < 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         [TearDown]

@@ -65,16 +65,15 @@ namespace Bookings.DAL.Queries
                     x.ScheduledDateTime > DateTime.Now && query.CaseTypes.Contains(x.CaseTypeId));
             }
 
-            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id);
+            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id.ToString());
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
                 
-                // We have to convert the guid to a string before comparison because the Guid.CompareTo
-                // and the ordering on the guid in database are different, where the ordering in db (ThenBy)
-                // seem to be done as a string
+                // Because of the difference in ordering using ThenBy and the comparison available with Guid.CompareTo
+                // we have to both sort and compare the guid as a string which will give us a consistent behavior
                 hearings = hearings.Where(x => x.ScheduledDateTime > scheduledDateTime
-                                               || x.ScheduledDateTime == scheduledDateTime
+                                               || x.ScheduledDateTime == scheduledDateTime 
                                                && string.Compare(x.Id.ToString(), id, StringComparison.Ordinal) > 0);
             }
 
