@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Api.Contract.Responses;
 
 
 namespace Bookings.UnitTests.Controllers
@@ -60,6 +61,26 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = (ObjectResult) result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        }
+        
+        [Test]
+        public async Task should_return_next_and_previous_page_urls()
+        {
+            var caseTypes = new List<int> { 1 };
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
+                .ReturnsAsync(new List<CaseType> { new CaseType(1, "Financial") });
+
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
+                .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
+            var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
+
+            result.Should().NotBeNull();
+            var response = (BookingsResponse)((ObjectResult) result.Result).Value;
+            response.PrevPageUrl.Should().Be("hearings/types?types=1&cursor=0&limit=2");
+            response.NextPageUrl.Should().Be("hearings/types?types=1&cursor=next-cursor&limit=2");
+
         }
     }
 }
