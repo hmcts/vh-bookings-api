@@ -72,7 +72,7 @@ namespace Bookings.DAL.Queries
 
             var result = await hearings.Take(query.Limit).ToListAsync();
             var lastResult = result.Last();
-            var nextCursor = $"{lastResult.ScheduledDateTime.Date.Ticks}_{lastResult.Id}";
+            var nextCursor = $"{lastResult.ScheduledDateTime.Ticks}_{lastResult.Id}";
             return new CursorPagedResult<VideoHearing, string>(result, query.Cursor, nextCursor);
         }
 
