@@ -26,6 +26,9 @@ namespace Bookings.API.Controllers
     [ApiController]
     public class HearingsController : Controller
     {
+        private const string DefaultCursor = "0";
+        private const int DefaultLimit = 100;
+        
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
 
@@ -237,7 +240,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = "0", [FromQuery]int limit = 100)
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
         {
             const string HearingsListsEndpointBaseUrl = "hearings/";
             const string BookingsEndpointUrl = "types";
@@ -248,7 +251,11 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var query = new GetBookingsByCaseTypesQuery(types, cursor, limit);
+            var query = new GetBookingsByCaseTypesQuery(types)
+            {
+                Cursor = cursor == DefaultCursor ? null : cursor,
+                Limit = limit
+            };
             var videoHearings = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, IList<VideoHearing>>(query);
             var items = videoHearings ?? new List<VideoHearing>();
             var mapper = new VideoHearingsToBookingsResponseMapper();

@@ -10,14 +10,12 @@ namespace Bookings.DAL.Queries
 {
     public class GetBookingsByCaseTypesQuery : IQuery
     {
-        public GetBookingsByCaseTypesQuery(IList<int> types, string cursor, int limit)
+        public GetBookingsByCaseTypesQuery(IList<int> types)
         {
             CaseTypes = types;
-            Cursor = cursor;
-            Limit = limit;
         }
 
-        public IList<int> CaseTypes { get; set; }
+        public IList<int> CaseTypes { get; }
 
         public string Cursor { get; set; }
 
@@ -27,7 +25,7 @@ namespace Bookings.DAL.Queries
         {
             get
             {
-                if (!string.IsNullOrEmpty(Cursor) && Cursor != "0")
+                if (!string.IsNullOrEmpty(Cursor))
                 {
                     long.TryParse(Cursor, out long createdTime);
                     return createdTime;

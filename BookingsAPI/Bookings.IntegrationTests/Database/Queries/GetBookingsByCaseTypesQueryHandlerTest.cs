@@ -24,14 +24,14 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetBookingsByCaseTypesQueryHandler(context);
-            _query = new GetBookingsByCaseTypesQuery(new List<int>(), "0", 2);
+            _query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 2};
             _ids = new List<Guid>();
         }
 
         [Test]
         public void should_get_CursorCreatedTime_as_a_number()
         {
-            var query = new GetBookingsByCaseTypesQuery(new List<int>(), "604527484127", 2);
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Cursor = "604527484127", Limit = 2};
             query.CursorCreatedTime.Should().Be(604527484127);
         }
 
@@ -39,7 +39,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         public void should_get_CursorCreatedTime_as_zero_if_no_value()
         {
             _query.CursorCreatedTime.Should().Be(0);
-            var query = new GetBookingsByCaseTypesQuery(new List<int>(), "", 2);
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 2, Cursor = "" };
             query.CursorCreatedTime.Should().Be(0);
         }
 
@@ -48,7 +48,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             var caseTypesIds = new List<int> { 1, 2 };
 
-            _query = new GetBookingsByCaseTypesQuery(caseTypesIds, "0", 2);
+            _query = new GetBookingsByCaseTypesQuery(caseTypesIds) { Limit = 2 };
 
             _ids = new List<Guid>();
             long nextCursor = 0;
