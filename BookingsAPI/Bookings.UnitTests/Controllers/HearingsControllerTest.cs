@@ -19,14 +19,12 @@ namespace Bookings.UnitTests.Controllers
     {
         private HearingsController _controller;
         private Mock<IQueryHandler> _queryHandlerMock;
-        private Mock<IQueryHandler> _queryHandlerCaseTypesMock;
         private Mock<ICommandHandler> _commandHandlerMock;
 
         [SetUp]
         public void Setup()
         {
             _queryHandlerMock = new Mock<IQueryHandler>();
-            _queryHandlerCaseTypesMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
             _controller = new HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object);
         }
@@ -35,7 +33,7 @@ namespace Bookings.UnitTests.Controllers
         public async Task should_return_bad_request_if_invalid_case_types()
         {
             var caseTypes = new List<int> { 44, 78 };
-            _queryHandlerCaseTypesMock
+            _queryHandlerMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
              .ReturnsAsync(new List<CaseType>());
 
@@ -50,7 +48,7 @@ namespace Bookings.UnitTests.Controllers
         public async Task should_return_bookings()
         {
             var caseTypes = new List<int>();
-            _queryHandlerCaseTypesMock
+            _queryHandlerMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
              .ReturnsAsync(new List<CaseType>());
 

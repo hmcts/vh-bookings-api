@@ -7,7 +7,6 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
 using Bookings.API.Mappings;
-using Bookings.API.Utilities;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
