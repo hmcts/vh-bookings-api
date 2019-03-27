@@ -13,8 +13,9 @@ namespace Bookings.DAL.Queries
         private int _limit;
 
         public GetBookingsByCaseTypesQuery() : this(new List<int>())
-        {}
-        
+        {
+        }
+
         public GetBookingsByCaseTypesQuery(IList<int> types)
         {
             CaseTypes = types;
@@ -36,7 +37,9 @@ namespace Bookings.DAL.Queries
         }
     }
 
-    public class GetBookingsByCaseTypesQueryHandler : IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
+    public class
+        GetBookingsByCaseTypesQueryHandler : IQueryHandler<GetBookingsByCaseTypesQuery,
+            CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
 
@@ -46,7 +49,7 @@ namespace Bookings.DAL.Queries
         }
 
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
-        {               
+        {
             IQueryable<VideoHearing> hearings = _context.VideoHearings
                 .Include("Participants.Person")
                 .Include("Participants.HearingRole.UserRole")
@@ -55,7 +58,7 @@ namespace Bookings.DAL.Queries
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue);
-            
+
             if (query.CaseTypes.Any())
             {
                 hearings = hearings.Where(x =>
@@ -66,23 +69,36 @@ namespace Bookings.DAL.Queries
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
-                hearings = hearings.Where(x =>
-                    x.ScheduledDateTime > scheduledDateTime || x.ScheduledDateTime == scheduledDateTime && x.Id.CompareTo(id) > 0);
+                
+                // We have to convert the guid to a string before comparison because the Guid.CompareTo
+                // and the ordering on the guid in database are different, where the ordering in db (ThenBy)
+                // seem to be done as a string
+                hearings = hearings.Where(x => x.ScheduledDateTime > scheduledDateTime
+                                               || x.ScheduledDateTime == scheduledDateTime
+                                               && string.Compare(x.Id.ToString(), id, StringComparison.Ordinal) > 0);
             }
 
-            var result = await hearings.Take(query.Limit).ToListAsync();
-            var lastResult = result.Last();
-            var nextCursor = $"{lastResult.ScheduledDateTime.Ticks}_{lastResult.Id}";
+            // Add one to the limit to know whether or not we have a next page
+            var result = await hearings.Take(query.Limit + 1).ToListAsync();
+            string nextCursor = null;
+            if (result.Count > query.Limit)
+            {
+                // The next cursor should be built based on the last item in the list
+                result = result.Take(query.Limit).ToList();
+                var lastResult = result.Last();
+                nextCursor = $"{lastResult.ScheduledDateTime.Ticks}_{lastResult.Id}";
+            }
+
             return new CursorPagedResult<VideoHearing, string>(result, query.Cursor, nextCursor);
         }
 
-        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
+        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out string id)
         {
             try
             {
                 var parts = cursor.Split('_');
                 scheduledDateTime = new DateTime(long.Parse(parts[0]));
-                id = Guid.Parse(parts[1]);
+                id = parts[1];
             }
             catch (Exception e)
             {
