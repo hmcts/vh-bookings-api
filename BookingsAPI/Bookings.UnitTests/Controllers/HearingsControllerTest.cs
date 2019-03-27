@@ -18,31 +18,31 @@ namespace Bookings.UnitTests.Controllers
     public class HearingsControllerTest
     {
         private HearingsController _controller;
-        private Mock<IQueryHandler> _quryHandlerMock;
-        private Mock<IQueryHandler> _quryHandlerCaseTypesMock;
+        private Mock<IQueryHandler> _queryHandlerMock;
+        private Mock<IQueryHandler> _queryHandlerCaseTypesMock;
         private Mock<ICommandHandler> _commandHandlerMock;
 
         [SetUp]
         public void Setup()
         {
-            _quryHandlerMock = new Mock<IQueryHandler>();
-            _quryHandlerCaseTypesMock = new Mock<IQueryHandler>();
+            _queryHandlerMock = new Mock<IQueryHandler>();
+            _queryHandlerCaseTypesMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
-            _controller = new HearingsController(_quryHandlerMock.Object, _commandHandlerMock.Object);
+            _controller = new HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object);
         }
 
         [Test]
         public async Task should_return_bad_request_if_invalid_case_types()
         {
             var caseTypes = new List<int> { 44, 78 };
-            _quryHandlerCaseTypesMock
+            _queryHandlerCaseTypesMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
              .ReturnsAsync(new List<CaseType>());
 
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var objectResult = result.Result as ObjectResult;
+            var objectResult = (ObjectResult) result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
@@ -50,17 +50,17 @@ namespace Bookings.UnitTests.Controllers
         public async Task should_return_bookings()
         {
             var caseTypes = new List<int>();
-            _quryHandlerCaseTypesMock
+            _queryHandlerCaseTypesMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
              .ReturnsAsync(new List<CaseType>());
 
-            _quryHandlerMock
+            _queryHandlerMock
                 .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, List<VideoHearing>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new List<VideoHearing>());
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var objectResult = result.Result as ObjectResult;
+            var objectResult = (ObjectResult) result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
     }
