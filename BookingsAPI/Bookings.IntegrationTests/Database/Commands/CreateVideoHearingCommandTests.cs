@@ -46,7 +46,11 @@ namespace Bookings.IntegrationTests.Database.Commands
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
 
+            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
+            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+            
             var newPerson = new PersonBuilder(true).Build();
+            var newJudgePerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
                 Person = newPerson,
@@ -56,9 +60,18 @@ namespace Bookings.IntegrationTests.Database.Commands
                 SolicitorsReference = string.Empty,
                 Representee = string.Empty
             };
+            var newJudgeParticipant = new NewParticipant()
+            {
+                Person = newJudgePerson,
+                CaseRole = judgeCaseRole,
+                HearingRole = judgeHearingRole,
+                DisplayName = $"{newJudgePerson.FirstName} {newJudgePerson.LastName}",
+                SolicitorsReference = string.Empty,
+                Representee = string.Empty
+            };
             var participants = new List<NewParticipant>()
             {
-                newParticipant
+                newParticipant, newJudgeParticipant
             };
             var cases = new List<Case> {new Case("01234567890", "Test Add")};
             var hearingRoomName = "Room01";
