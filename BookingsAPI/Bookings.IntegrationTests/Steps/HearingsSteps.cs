@@ -56,7 +56,6 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.Uri = _endpoints.GetHearingDetailsById(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
-
         [Given(@"I have a (.*) book a new hearing request")]
         [Given(@"I have an (.*) book a new hearing request")]
         public void GivenIHaveAValidBookANewHearingRequest(Scenario scenario)
@@ -71,6 +70,10 @@ namespace Bookings.IntegrationTests.Steps
                 request.HearingTypeName = string.Empty;
                 request.HearingVenueName = string.Empty;
                 request.ScheduledDateTime = DateTime.Today.AddDays(-5);
+            }
+            if (scenario == Scenario.Valid)
+            {
+                request.ScheduledDateTime = DateTime.Today.AddDays(1);
             }
             CreateTheNewHearingRequest(request);
         }
@@ -295,6 +298,22 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             _apiTestContext.Uri = _endpoints.UpdateHearingDetails(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Put;
-        }       
+        } 
+        [Given(@"I have a get details for a given hearing request with a valid case type")]
+        public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType()
+        {
+            _apiTestContext.Uri = _endpoints.GetHearingDetailsByType();
+            _apiTestContext.HttpMethod = HttpMethod.Get;
+        }
+        [Then(@"hearing details should be retrieved for the case type")]
+        public void ThenHearingDetailsShouldBeRetrievedForTheCaseType()
+        {
+            var json =  _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+           var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json.Result);
+            model.Should().NotBeNull();
+            model.Hearings.Count.Should().BeGreaterThan(0);
+            model.Limit.Should().Be(100);
+            model.NextCursor.Should().BeNull();
+        }
     }
 }
