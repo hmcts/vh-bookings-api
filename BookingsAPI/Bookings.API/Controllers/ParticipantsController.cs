@@ -123,7 +123,7 @@ namespace Bookings.API.Controllers
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
-        [HttpPut("{hearingId}/participants", Name = "AddParticipantsToHearing")]
+        [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [SwaggerOperation(OperationId = "AddParticipantsToHearing")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
