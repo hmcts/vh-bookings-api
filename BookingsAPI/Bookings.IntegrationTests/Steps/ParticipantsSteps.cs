@@ -85,7 +85,7 @@ namespace Bookings.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(hearingId);
-            _apiTestContext.HttpMethod = HttpMethod.Put;
+            _apiTestContext.HttpMethod = HttpMethod.Post;
         }
 
         [When(@"I send the same request but with a new hearing id")]
