@@ -34,5 +34,10 @@ namespace Bookings.Api.Contract.Requests
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseRequest> Cases { get; set; }
+
+        /// <summary>
+        ///     User updated the hearing record
+        /// </summary>
+        public string UpdatedBy { get; set; }
     }
 }
