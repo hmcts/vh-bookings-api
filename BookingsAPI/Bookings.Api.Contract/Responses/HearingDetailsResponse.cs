@@ -1,3 +1,4 @@
+using Bookings.Domain.Enumerations;
 using System;
 using System.Collections.Generic;
 
@@ -77,5 +78,10 @@ namespace Bookings.Api.Contract.Responses
         /// Gets or sets the updated date.
         /// </summary>
         public DateTime UpdatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the booking status of the hearing
+        /// </summary>
+        public BookingStatus Status { get; set; }
     }
 }
