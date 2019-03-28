@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Linq;
 using Bookings.Domain.Ddd;
 using Bookings.Domain.RefData;
+using Bookings.Domain.Validations;
 
 namespace Bookings.Domain.Participants
 {
     public abstract class Participant: Entity<Guid>
     {
+        private readonly ValidationFailures _validationFailures = new ValidationFailures();
+
         protected Participant()
         {
             Id = Guid.NewGuid();
@@ -34,5 +38,45 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
 
+        public void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
+        {
+            ValidateArguments(displayName);
+
+           if (_validationFailures.Any())
+            {
+                throw new DomainRuleException(_validationFailures);
+            }
+
+
+            DisplayName = displayName;
+            Person.Title = title;
+            Person.TelephoneNumber = telephoneNumber;
+
+            if(HearingRole.UserRole.Name.Equals("Individual"))
+            {
+                var address = new Address(houseNumber,street,postcode);
+                Person.UpdateAddress(address);
+            }
+            
+            if(!string.IsNullOrEmpty(organisationName))
+            {
+                var organisation = new Organisation(organisationName);
+                Person.UpdateOrganisation(organisation);
+            }
+
+        }
+
+        private void ValidateArguments(string displayName)
+        {
+           if (string.IsNullOrEmpty(displayName))
+            {
+                _validationFailures.AddFailure("DiaplayName", "DisplayName is required");
+            }
+
+            if (_validationFailures.Any())
+            {
+                throw new DomainRuleException(_validationFailures);
+            }
+        }
     }
 }
