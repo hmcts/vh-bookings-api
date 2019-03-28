@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace Bookings.UnitTests.Utilities
 {
-    public class PaginationBuilderTest
+    public class PaginationBuilderTest : TestBase
     {
         private const string SomeResourceUrl = "/api/hearings/participants/checklists";
 
@@ -137,12 +137,6 @@ namespace Bookings.UnitTests.Utilities
         private PaginationBuilder<StubPagedResponse, string> GetBuilder()
         {
             return new PaginationBuilder<StubPagedResponse, string>(items => new StubPagedResponse {Items = items});
-        }
-
-        /// <summary>Help wrapper to build catch clauses</summary>
-        private Action When(Action action)
-        {
-            return action;
         }
 
         private IQueryable<string> GetQueryableItems(params string[] items)

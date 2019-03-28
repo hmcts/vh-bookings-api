@@ -96,10 +96,14 @@ namespace Bookings.UnitTests.Infrastructure.Services
             individual2.HearingRole = new HearingRole(2, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
             individual2.CaseRole = new CaseRole(2, "test2");
 
-            var representatvie = hearing.GetParticipants().Single(x => x is Representative);
-            representatvie.HearingRole = new HearingRole(5, "Solicitor"){ UserRole = new UserRole(2, "Solitcitor") } ;
-            representatvie.CaseRole= new CaseRole(3, "test3");
+            var representative = hearing.GetParticipants().Single(x => x is Representative);
+            representative.HearingRole = new HearingRole(5, "Solicitor"){ UserRole = new UserRole(2, "Solitcitor") } ;
+            representative.CaseRole= new CaseRole(3, "test3");
 
+            var judge = hearing.GetParticipants().Single(x => x is Judge);
+            judge.HearingRole = new HearingRole(5, "Judge") { UserRole = new UserRole(2, "Judge") };
+            judge.CaseRole = new CaseRole(3, "test4");
+            
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
             _raiseIntegrationEvent.Raise(hearingIsReadyForVideoIntegrationEvent);
 
