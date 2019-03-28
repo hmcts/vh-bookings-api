@@ -219,7 +219,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        /// Remove a participant from a hearing
+        /// Update participant details
         /// </summary>
         /// <param name="hearingId">Id of hearing to look up</param>
         /// <param name="participantId">Id of participant to remove</param>
@@ -251,8 +251,16 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.Street, request.HouseNumber, request.City, request.County, request.Postcode, request.OrganisationName);
+            
+            await _commandHandler.Handle(updateParticipantCommand);
 
-            return Ok(new ParticipantResponse());
+            var particpant = updateParticipantCommand.UpdatedParticipant;
+
+            var participantMapper = new ParticipantToResponseMapper();
+            var response = participantMapper.MapParticipantToResponse(particpant);
+
+            return Ok(response);
         }
     }
 
