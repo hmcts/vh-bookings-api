@@ -1,16 +1,19 @@
+using System;
+using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using FluentValidation;
 
 namespace Bookings.API.Validations
 {
-    public class UpdarteParticipantRequestValidation : AbstractValidator<ParticipantRequest>
+    public class UpdateParticipantRequestValidation : AbstractValidator<UpdateParticipantRequest>
     {
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
-        public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
-
-        public UpdarteParticipantRequestValidation()
+        
+        public UpdateParticipantRequestValidation()
         {
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
         }
+
+        
     }
 }
