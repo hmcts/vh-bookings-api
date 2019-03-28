@@ -225,7 +225,7 @@ namespace Bookings.API.Controllers
         /// <param name="participantId">Id of participant to remove</param>
         /// <param name="request">The participant information to add</param>
         /// <returns></returns>
-        [HttpDelete("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
+        [HttpPut("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
         [SwaggerOperation(OperationId = "UpdateParticipantDetails")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
