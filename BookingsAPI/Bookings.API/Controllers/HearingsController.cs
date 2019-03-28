@@ -25,6 +25,9 @@ namespace Bookings.API.Controllers
     [ApiController]
     public class HearingsController : Controller
     {
+        private const string DefaultCursor = "0";
+        private const int DefaultLimit = 100;
+        
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
 
@@ -222,6 +225,75 @@ namespace Bookings.API.Controllers
             var hearingVenues =
                 await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
+        }
+
+        /// <summary>
+        ///     Gets list of upcoming bookings hearing for a given case types
+        /// </summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>The list of bookings video hearing</returns>
+        [HttpGet("types", Name = "GetHearingsByTypes")]
+        [SwaggerOperation(OperationId = "GetHearingsByTypes")]
+        [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
+        {            
+            types = types ?? new List<int>();
+            if (!await ValidateCaseTypes(types))
+            {
+                ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetBookingsByCaseTypesQuery(types)
+            {
+                Cursor = cursor == DefaultCursor ? null : cursor,
+                Limit = limit
+            };
+            var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
+            
+            var mapper = new VideoHearingsToBookingsResponseMapper();
+            
+            var response = new BookingsResponse
+            {
+                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types),
+                NextCursor = result.NextCursor,
+                Limit = limit,
+                Hearings = mapper.MapHearingResponses(result)
+            };
+            
+            return Ok(response);
+        }
+
+        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
+        {
+            const string hearingsListsEndpointBaseUrl = "hearings/";
+            const string bookingsEndpointUrl = "types";
+            const string resourceUrl = hearingsListsEndpointBaseUrl + bookingsEndpointUrl;
+            
+            var types = string.Empty;
+            if (caseTypes != null && caseTypes.Any())
+            {
+                types = string.Join("&types=", caseTypes);
+            }
+
+            return $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
+        }
+
+        private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
+        {
+            if (!filterCaseTypes.Any()) return true;
+            
+            var query = new GetAllCaseTypesQuery();
+            var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
+                .Select(caseType => caseType.Id);
+
+            return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
+
         }
     }
 }

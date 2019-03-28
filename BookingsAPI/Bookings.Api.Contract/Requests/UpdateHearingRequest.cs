@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Bookings.Api.Contract.Requests
 {
@@ -28,5 +29,10 @@ namespace Bookings.Api.Contract.Requests
         ///     Any other information about the hearing
         /// </summary>
         public string OtherInformation { get; set; }
+
+        /// <summary>
+        ///     List of cases associated to the hearing
+        /// </summary>
+        public List<CaseRequest> Cases { get; set; }
     }
 }
