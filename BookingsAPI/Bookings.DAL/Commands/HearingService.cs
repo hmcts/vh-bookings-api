@@ -41,6 +41,10 @@ namespace Bookings.DAL.Commands
                             participantToAdd.SolicitorsReference, participantToAdd.Representee);
                         break;
                     }
+                    case "Judge":
+                        hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        break;
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
