@@ -261,6 +261,7 @@ namespace Bookings.IntegrationTests.Steps
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
+            cases[0].IsLeadCase = true;
 
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
