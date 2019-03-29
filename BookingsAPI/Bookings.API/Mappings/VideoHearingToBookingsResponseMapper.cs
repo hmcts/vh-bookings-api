@@ -10,7 +10,15 @@ namespace Bookings.API.Mappings
     {
         public List<BookingsByDateResponse> MapHearingResponses(IEnumerable<VideoHearing> videoHearings)
         {
-            return GroupBookingsByDate(videoHearings.Select(MapHearingResponse).ToList());
+            var mapped = videoHearings.Select(MapHearingResponse);
+            return mapped.GroupBy(hearing => hearing.ScheduledDateTime.Date)
+                .Select(group => new BookingsByDateResponse
+                {
+                    Hearings = group.ToList(),
+                    ScheduledDate = group.Key
+                })
+                .OrderBy(x => x.ScheduledDate)
+                .ToList();
         }
 
         public BookingsHearingResponse MapHearingResponse(VideoHearing videoHearing)
@@ -42,28 +50,6 @@ namespace Bookings.API.Mappings
                 JudgeName = judgeName
             };
             return response;
-        }
-
-        private List<BookingsByDateResponse> GroupBookingsByDate(List<BookingsHearingResponse> bookingsHearings)
-        {
-            var result = new List<BookingsByDateResponse>();
-            IEnumerable<IGrouping<DateTime, BookingsHearingResponse>> groups = bookingsHearings.GroupBy(p => p.HearingDate).ToList();
-            foreach (var groupingBy in groups)
-            {
-                var booking = new BookingsByDateResponse
-                {
-                    ScheduledDate = groupingBy.Key,
-                    Hearings = new List<BookingsHearingResponse>()
-                };
-                //iterating through values
-                foreach (var item in groupingBy)
-                {
-                    booking.Hearings.Add(item);
-                }
-                result.Add(booking);
-            }
-
-            return result.OrderBy(x => x.ScheduledDate).ToList();
         }
     }
 }
