@@ -18,6 +18,8 @@ using Bookings.Domain;
 using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -127,7 +129,6 @@ namespace Bookings.API.Controllers
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
             var queriedVideoHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-
 
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);

@@ -31,11 +31,10 @@ namespace Testing.Common.Builders.Domain
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var defendantCaseRole = new CaseRole(2, "Defendant");
-            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP");
-            var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor");
+            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual")};
+            var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor") { UserRole = new UserRole(1, "Solicitor") };
 
-            var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP");
-
+            var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge");
             var judgeHearingRole = new HearingRole(13, "Judge");
 
