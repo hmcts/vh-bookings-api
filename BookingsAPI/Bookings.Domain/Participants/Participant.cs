@@ -51,14 +51,14 @@ namespace Bookings.Domain.Participants
             DisplayName = displayName;
             Person.Title = title;
             Person.TelephoneNumber = telephoneNumber;
-
-            if(HearingRole.UserRole.Name.Equals("Individual"))
+            UpdatedDate = DateTime.UtcNow;
+            if (HearingRole.UserRole.Name.Equals("Individual"))
             {
                 var address = new Address(houseNumber,street,postcode);
                 Person.UpdateAddress(address);
             }
             
-            if(!string.IsNullOrEmpty(organisationName))
+            if (!string.IsNullOrEmpty(organisationName))
             {
                 var organisation = new Organisation(organisationName);
                 Person.UpdateOrganisation(organisation);
@@ -70,7 +70,7 @@ namespace Bookings.Domain.Participants
         {
            if (string.IsNullOrEmpty(displayName))
             {
-                _validationFailures.AddFailure("DiaplayName", "DisplayName is required");
+                _validationFailures.AddFailure("DisplayName", "DisplayName is required");
             }
 
             if (_validationFailures.Any())
