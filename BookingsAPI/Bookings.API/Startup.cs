@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Bookings.Common.Configuration;
 using Bookings.DAL;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 namespace Bookings.API
 {
@@ -29,7 +31,8 @@ namespace Bookings.API
             services.AddSwagger();
             services.AddJsonOptions();
             RegisterSettings(services);
-            
+            RegisterInfrastructureServices(services);
+
             services.AddCustomTypes();
             
             RegisterAuth(services);
@@ -44,6 +47,7 @@ namespace Bookings.API
         private void RegisterSettings(IServiceCollection services)
         {
             services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
+            services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
         }
         
         private void RegisterAuth(IServiceCollection serviceCollection)
@@ -70,6 +74,19 @@ namespace Bookings.API
             });
 
             serviceCollection.AddAuthorization();
+        }
+        private void RegisterInfrastructureServices(IServiceCollection services)
+        {
+            if (bool.Parse(Configuration["UseServiceBusFake"]))
+            {
+                services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClientFake>();
+            }
+            else
+            {
+                services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClient>();
+            }
+
+            services.AddScoped<IRaiseIntegrationEvent, RaiseIntegrationEvent>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
