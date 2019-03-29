@@ -311,11 +311,7 @@ namespace Bookings.IntegrationTests.Steps
         [TearDown]
         public async Task TearDown()
         {
-            if (_hearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_hearingId}");
-                await Hooks.RemoveVideoHearing(_hearingId);
-            }
+            await Hooks.ClearSeededHearings();
         }
 
         private static BookNewHearingRequest BuildRequest()

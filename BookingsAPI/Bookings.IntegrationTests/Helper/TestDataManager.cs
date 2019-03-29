@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
@@ -14,7 +15,8 @@ namespace Bookings.IntegrationTests.Helper
     public class TestDataManager
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
-        private BuilderSettings BuilderSettings { get; set; }
+        private readonly List<Guid> _seededHearings = new List<Guid>();
+        private BuilderSettings BuilderSettings { get; }
 
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
         {
@@ -81,8 +83,11 @@ namespace Bookings.IntegrationTests.Helper
                 await db.SaveChangesAsync();
             }
 
-            return await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
-                new GetHearingByIdQuery(videoHearing.Id)); 
+            var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+                new GetHearingByIdQuery(videoHearing.Id));
+            
+            _seededHearings.Add(hearing.Id);
+            return hearing;
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
@@ -104,6 +109,14 @@ namespace Bookings.IntegrationTests.Helper
             }
 
             return caseType;
+        }
+
+        public async Task ClearSeededHearings()
+        {
+            foreach (var hearingId in _seededHearings)
+            {
+                await RemoveVideoHearing(hearingId);
+            }
         }
 
         public async Task RemoveVideoHearing(Guid hearingId)
