@@ -228,7 +228,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        ///     Gets list of upcoming bookings hearing for a given case types
+        ///     Get a paged list of booked hearings
         /// </summary>
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>

@@ -14,27 +14,32 @@ namespace Bookings.API.Mappings
         }
 
         public BookingsHearingResponse MapHearingResponse(VideoHearing videoHearing)
-        {
-            var cases = videoHearing.GetCases().FirstOrDefault();
-            var participant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole != null && s.HearingRole.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
-            var judgeName = participant != null ? participant.DisplayName : "";
-
+        {   
+            var @case = videoHearing.GetCases().FirstOrDefault();
+            if (@case == null) throw new ArgumentException("Hearing is missing case");
+            
+            if (videoHearing.CaseType == null) throw new ArgumentException("Hearing is missing case type");
+            if (videoHearing.HearingType == null) throw new ArgumentException("Hearing is missing hearing type");
+            
+            var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
+            var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
+            
             var response = new BookingsHearingResponse
             {
                 HearingId = videoHearing.Id,
-                HearingNumber = cases != null ? cases.Number : "",
-                HearingName = cases != null ? cases.Name : "",
+                HearingNumber = @case.Number,
+                HearingName = @case.Name,
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType != null ? videoHearing.HearingType.Name : "",
-                CaseTypeName = videoHearing.CaseType != null ? videoHearing.CaseType.Name : "",
+                HearingTypeName = videoHearing.HearingType.Name,
+                CaseTypeName = videoHearing.CaseType.Name,
                 CourtAddress = videoHearing.HearingVenueName,
                 CourtRoom = videoHearing.HearingRoomName,
                 CreatedDate = videoHearing.CreatedDate,
                 CreatedBy = videoHearing.CreatedBy,
                 LastEditDate = videoHearing.UpdatedDate,
                 LastEditBy = videoHearing.UpdatedBy,
-                JudgeName = judgeName,
+                JudgeName = judgeName
             };
             return response;
         }

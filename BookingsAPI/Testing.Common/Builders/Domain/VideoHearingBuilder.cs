@@ -55,6 +55,11 @@ namespace Testing.Common.Builders.Domain
 
             _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                 $"{_judgePerson.FirstName} {_judgePerson.LastName}");
+            
+            // Set the navigation properties as well since these would've been set if we got the hearing from DB
+            _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
+            _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
+            _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
         }
 
         public Person Judge => _judgePerson;
