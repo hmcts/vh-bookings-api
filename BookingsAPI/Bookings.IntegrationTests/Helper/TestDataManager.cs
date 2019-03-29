@@ -51,7 +51,8 @@ namespace Bookings.IntegrationTests.Helper
             var duration = 45;
             var hearingRoomName = "Room02";
             var otherInformation = "OtherInformation02";
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation)
+            var createdBy = string.Empty;
+            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation, createdBy)
             {
                 CreatedBy = "test@integration.com"
             };
