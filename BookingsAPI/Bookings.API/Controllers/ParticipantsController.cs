@@ -123,7 +123,7 @@ namespace Bookings.API.Controllers
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
-        [HttpPut("{hearingId}/participants", Name = "AddParticipantsToHearing")]
+        [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [SwaggerOperation(OperationId = "AddParticipantsToHearing")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
@@ -217,5 +217,54 @@ namespace Bookings.API.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Update participant details
+        /// </summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns></returns>
+        [HttpPut("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
+        [SwaggerOperation(OperationId = "UpdateParticipantDetails")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequest request)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            if (participantId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new UpdateParticipantRequestValidation().Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.Street, request.HouseNumber, request.City, request.County, request.Postcode, request.OrganisationName);
+            
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var particpant = updateParticipantCommand.UpdatedParticipant;
+
+            var participantMapper = new ParticipantToResponseMapper();
+            var response = participantMapper.MapParticipantToResponse(particpant);
+
+            return Ok(response);
+        }
     }
+
+   
+
+
 }

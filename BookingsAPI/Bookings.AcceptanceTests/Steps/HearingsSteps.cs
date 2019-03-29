@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Models;
@@ -108,6 +109,40 @@ namespace Bookings.AcceptanceTests.Steps
             _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingDetailsById(_acTestContext.HearingId));
             _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
             _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        [Given(@"I have a valid book a new hearing for a case type")]
+        public void GivenIHaveAValidBookANewHearingForAcaseType()
+        {
+            var bookNewHearingRequest = CreateHearingRequest.BuildRequest();
+            bookNewHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(2);
+            _acTestContext.Request = _acTestContext.Post(_endpoints.BookNewHearing(), bookNewHearingRequest);
+            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
+            _acTestContext.Json = _acTestContext.Response.Content;
+            _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_acTestContext.Json);
+            model.Should().NotBeNull();
+            _acTestContext.HearingId = model.Id;
+        }
+        [Given(@"I have a get details for a given hearing request with a valid case type")]
+        public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType()
+        {
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingDetailsByType());
+        }
+        [Then(@"hearing details should be retrieved for the case type")]
+        public void ThenHearingDetailsShouldBeRetrievedForTheCaseType()
+        {
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(_acTestContext.Json);
+            model.PrevPageUrl.Should().Contain(model.Limit.ToString());
+            var hearing = model.Hearings.Single(u => u.ScheduledDate.Date == DateTime.Now.AddDays(2).Date);
+            var response = hearing.Hearings.Single(u => u.HearingId == _acTestContext.HearingId);
+            response.CaseTypeName.Should().NotBeNullOrEmpty();
+            response.HearingTypeName.Should().NotBeNullOrEmpty();
+            response.ScheduledDateTime.Should().BeAfter(DateTime.Now);
+            response.ScheduledDuration.Should().NotBe(0);
+            response.JudgeName.Should().NotBeNullOrEmpty();
+            response.CourtAddress.Should().NotBeNullOrEmpty();
+            response.HearingName.Should().NotBeNullOrEmpty();
+            response.HearingNumber.Should().NotBeNullOrEmpty();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAnAddParticipantToAHearingHearingRequestWithAValidHearingId()
         {
             var addParticipantRequest = AddParticipantRequest.BuildRequest();
-            _acTestContext.Request = _acTestContext.Put(_endpoints.AddParticipantsToHearing(_acTestContext.HearingId), addParticipantRequest);
+            _acTestContext.Request = _acTestContext.Post(_endpoints.AddParticipantsToHearing(_acTestContext.HearingId), addParticipantRequest);
         }
 
         [Given(@"I have a get a single participant in a hearing request with a valid hearing id")]

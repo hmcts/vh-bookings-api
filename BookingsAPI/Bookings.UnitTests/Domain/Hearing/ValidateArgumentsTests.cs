@@ -19,6 +19,7 @@ namespace Bookings.UnitTests.Domain.Hearing
                 .Contain(x => x.Name == "ScheduledDuration")
                 .And.Contain(x => x.Name == "ScheduledDateTime")
                 .And.Contain(x => x.Name == "HearingVenue")
+                
                 .And.Contain(x => x.Name == "HearingType");
         }
     }

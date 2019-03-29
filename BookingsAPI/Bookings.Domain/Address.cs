@@ -6,6 +6,7 @@ namespace Bookings.Domain
 {
     public class Address : Entity<long>
     {
+
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
         public Address()
@@ -21,6 +22,7 @@ namespace Bookings.Domain
             Postcode = postCode;
             City = city;
             County = county;
+      
         }
         public string HouseNumber { get; set; }
         public string Street { get; set; }
@@ -57,7 +59,7 @@ namespace Bookings.Domain
                 {
                     throw new DomainRuleException(_validationFailures);
                 }
-            
+
         }
     }
 }

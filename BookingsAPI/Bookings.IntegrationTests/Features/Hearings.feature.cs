@@ -417,25 +417,47 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotCreatedWithAnInvalidAddress()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not created with an invalid address", null, ((string[])(null)));
+#line 108
+ this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
 #line 109
+    testRunner.Given("I have a book a new hearing request with an invalid address", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 110
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 111
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 112
+ testRunner.And("the error response message should contain \'HouseNumber is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 113
+ testRunner.And("the error response message should also contain \'Street is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 114
+ testRunner.And("the error response message should also contain \'City is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 115
+ testRunner.And("the error response message should also contain \'County is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 116
+ testRunner.And("the error response message should also contain \'Postcode is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get hearing details for a given case type")]
+        public virtual void GetHearingDetailsForAGivenCaseType()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get hearing details for a given case type", null, ((string[])(null)));
+#line 118
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 110
-    testRunner.Given("I have a book a new hearing request with an invalid address", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 111
+#line 119
+ testRunner.Given("I have a valid book a new hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 120
+ testRunner.And("I have a get details for a given hearing request with a valid case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 121
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 112
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 113
- testRunner.And("the error response message should contain \'HouseNumber is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 114
- testRunner.And("the error response message should also contain \'Street is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 115
- testRunner.And("the error response message should also contain \'City is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 116
- testRunner.And("the error response message should also contain \'County is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 117
- testRunner.And("the error response message should also contain \'Postcode is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 122
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 123
+ testRunner.And("hearing details should be retrieved for the case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

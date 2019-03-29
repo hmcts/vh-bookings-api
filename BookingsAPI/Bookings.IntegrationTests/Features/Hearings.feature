@@ -94,19 +94,18 @@ Scenario: Delete a hearing
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And the hearing should be removed
-	
+
 Scenario: Hearing not deleted with an invalid hearing id
 	Given I have an invalid remove hearing request
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 	And the response message should read 'Please provide a valid hearingId'
-	
+
 Scenario: Hearing not deleted with a nonexistent hearing id
-	Given I have a nonexistent remove hearing request 
+	Given I have a nonexistent remove hearing request
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
-
-Scenario: Hearing not created with an invalid address
+	Scenario: Hearing not created with an invalid address
     Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
@@ -115,3 +114,10 @@ Scenario: Hearing not created with an invalid address
 	And the error response message should also contain 'City is required'
 	And the error response message should also contain 'County is required'
 	And the error response message should also contain 'Postcode is required'
+
+Scenario: Get hearing details for a given case type
+	Given I have a valid book a new hearing request
+	And I have a get details for a given hearing request with a valid case type
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And hearing details should be retrieved for the case type
