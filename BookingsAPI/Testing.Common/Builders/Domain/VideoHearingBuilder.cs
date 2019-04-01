@@ -37,7 +37,7 @@ namespace Testing.Common.Builders.Domain
 
             var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge");
-            var judgeHearingRole = new HearingRole(13, "Judge");
+            var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
 
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
@@ -55,6 +55,11 @@ namespace Testing.Common.Builders.Domain
 
             _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                 $"{_judgePerson.FirstName} {_judgePerson.LastName}");
+
+            // Set the navigation properties as well since these would've been set if we got the hearing from DB
+            _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
+            _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
+            _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
         }
 
         public Person Judge => _judgePerson;
