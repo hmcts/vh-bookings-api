@@ -122,8 +122,11 @@ namespace Bookings.IntegrationTests.Helper
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 var hearing = await db.VideoHearings.FindAsync(hearingId);
-                db.Remove(hearing);
-                await db.SaveChangesAsync();
+                if (hearing != null)
+                {
+                    db.Remove(hearing);
+                    await db.SaveChangesAsync();   
+                }
             }
         }
     }
