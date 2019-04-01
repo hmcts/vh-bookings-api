@@ -31,3 +31,17 @@ Scenario: Add participant to a hearing
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And the participant should be removed
+
+	Scenario: Update participant details with user role individual
+	Given I have a hearing
+	And I have an update participant details request with a valid user Individual 
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And participant details should be updated
+
+	Scenario: Update participant details with user role Representative
+	Given I have a hearing
+	And I have an update participant details request with a valid user Representative 
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And participant details should be updated
