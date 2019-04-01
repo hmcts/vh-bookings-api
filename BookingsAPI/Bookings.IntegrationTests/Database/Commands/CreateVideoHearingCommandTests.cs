@@ -76,12 +76,14 @@ namespace Bookings.IntegrationTests.Database.Commands
             var cases = new List<Case> {new Case("01234567890", "Test Add")};
             var hearingRoomName = "Room01";
             var otherInformation = "OtherInformation01";
+            var createdBy = "User01";
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, participants,
                     cases)
                 {
                     HearingRoomName = hearingRoomName,
-                    OtherInformation = otherInformation
+                    OtherInformation = otherInformation,
+                    CreatedBy = createdBy
                 };
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();

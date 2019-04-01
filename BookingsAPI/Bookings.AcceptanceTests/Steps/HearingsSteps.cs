@@ -80,6 +80,7 @@ namespace Bookings.AcceptanceTests.Steps
             model.ScheduledDuration.Should().BePositive();
             model.HearingRoomName.Should().NotBeNullOrEmpty();
             model.OtherInformation.Should().NotBeNullOrEmpty();
+            model.CreatedBy.Should().NotBeNullOrEmpty();
         }
 
         [Then(@"hearing details should be updated")]

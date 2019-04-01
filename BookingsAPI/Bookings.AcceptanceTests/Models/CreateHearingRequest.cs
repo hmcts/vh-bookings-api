@@ -29,12 +29,15 @@ namespace Bookings.AcceptanceTests.Models
 
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
 
+            var createdBy = "caseAdmin@emailaddress.com";
+
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
                 .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
+                .With(x => x.CreatedBy = createdBy)
                 .Build();
         }
     }
