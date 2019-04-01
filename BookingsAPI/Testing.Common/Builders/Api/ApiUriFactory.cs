@@ -65,6 +65,9 @@ namespace Testing.Common.Builders.Api
 
         public string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
+
+        public string UpdateParticipantDetails(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}";
     }
 
     public class PersonEndpoints

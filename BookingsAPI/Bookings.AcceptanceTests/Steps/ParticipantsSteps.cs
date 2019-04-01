@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Models;
 using Bookings.Api.Contract.Responses;
@@ -99,5 +100,27 @@ namespace Bookings.AcceptanceTests.Steps
                 participant.Username.Should().NotBeNullOrEmpty();
             }
         }
+      
+        [Given(@"I have an update participant details request with a valid user (.*)")]
+        public void GivenIHaveAnUpdateParticipantDetailsRequestWithAValidUserRole(string role)
+        {
+            var participantId = _acTestContext.Participants.FirstOrDefault(x=>x.UserRoleName.Equals(role)).Id;
+            var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
+            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateParticipantDetails(_acTestContext.HearingId,participantId), updateParticipantRequest);
+        }
+
+        [Then(@"participant details should be updated")]
+        public void ThenParticipantDetailsShouldBeUpdated()
+        {
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_acTestContext.Json);
+            var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
+            model.Should().NotBeNull();
+            model.Title.Should().Be(updateParticipantRequest.Title);
+            model.DisplayName.Should().Be(updateParticipantRequest.DisplayName);
+            model.TelephoneNumber.Should().Be(updateParticipantRequest.TelephoneNumber);
+        }
+
+
+
     }
 }
