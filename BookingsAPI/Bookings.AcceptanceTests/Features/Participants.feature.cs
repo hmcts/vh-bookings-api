@@ -161,10 +161,10 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Update participant details with user role individual")]
+        [NUnit.Framework.DescriptionAttribute("Update participant details with user role Individual")]
         public virtual void UpdateParticipantDetailsWithUserRoleIndividual()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update participant details with user role individual", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update participant details with user role Individual", null, ((string[])(null)));
 #line 35
  this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
