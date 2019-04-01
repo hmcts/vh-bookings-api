@@ -110,7 +110,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
-            _apiTestContext.HttpMethod = HttpMethod.Put;
+            _apiTestContext.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a get a single participant in a hearing request with a (.*) hearing id")]
