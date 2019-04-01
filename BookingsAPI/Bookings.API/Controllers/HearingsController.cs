@@ -120,7 +120,8 @@ namespace Bookings.API.Controllers
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases)
             {
                 HearingRoomName = request.HearingRoomName,
-                OtherInformation = request.OtherInformation
+                OtherInformation = request.OtherInformation,
+                CreatedBy = request.CreatedBy
             };
             await _commandHandler.Handle(createVideoHearingCommand);
 

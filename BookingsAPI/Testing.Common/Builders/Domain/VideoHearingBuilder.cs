@@ -25,9 +25,10 @@ namespace Testing.Common.Builders.Domain
             var duration = 80;
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
+            var createdBy = "User03";
 
             _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation)).Build();
+                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation, createdBy)).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var defendantCaseRole = new CaseRole(2, "Defendant");
