@@ -85,7 +85,7 @@ namespace Bookings.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(hearingId);
-            _apiTestContext.HttpMethod = HttpMethod.Put;
+            _apiTestContext.HttpMethod = HttpMethod.Post;
         }
 
         [When(@"I send the same request but with a new hearing id")]
@@ -97,7 +97,7 @@ namespace Bookings.IntegrationTests.Steps
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             seededHearing.GetParticipants().Count.Should().Be(4);
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
-            _apiTestContext.ResponseMessage = await SendPutRequestAsync(_apiTestContext);
+            _apiTestContext.ResponseMessage = await SendPostRequestAsync(_apiTestContext);
         }
 
         [Given(@"I have an add participants in a hearing request with an invalid participant")]
@@ -110,7 +110,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _apiTestContext.Uri = _endpoints.AddParticipantsToHearing(_apiTestContext.NewHearingId);
-            _apiTestContext.HttpMethod = HttpMethod.Put;
+            _apiTestContext.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a get a single participant in a hearing request with a (.*) hearing id")]
@@ -293,6 +293,10 @@ namespace Bookings.IntegrationTests.Steps
                 Participants = new List<ParticipantRequest> { newParticipant }
             };
         }
+
+        
+
+
 
         [TearDown]
         public async Task TearDown()

@@ -21,7 +21,7 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation)
+        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string createdBy)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -35,6 +35,7 @@ namespace Bookings.Domain
             Status = BookingStatus.Booked;
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
+            CreatedBy = createdBy;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -96,6 +97,7 @@ namespace Bookings.Domain
 
             Participant participant = new Individual(person, hearingRole, caseRole);
             participant.DisplayName = displayName;
+            participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -115,6 +117,7 @@ namespace Bookings.Domain
             };
 
             participant.DisplayName = displayName;
+            participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -127,7 +130,8 @@ namespace Bookings.Domain
             }
 
             Participant participant = new Judge(person, hearingRole, caseRole);
-            participant.DisplayName = displayName;        
+            participant.DisplayName = displayName;
+            participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -164,7 +168,7 @@ namespace Bookings.Domain
             return HearingCases.Select(x => x.Case).ToList();
         }
 
-        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation)
+        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -193,6 +197,7 @@ namespace Bookings.Domain
             
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
+            UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
         }
 

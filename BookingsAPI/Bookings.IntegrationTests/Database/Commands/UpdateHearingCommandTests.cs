@@ -39,8 +39,9 @@ namespace Bookings.IntegrationTests.Database.Commands
             var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
             var newHearingRoomName = "Room02 edit";
             var newOtherInformation = "OtherInformation02 edit";
+            var updatedBy = "testuser";
 
-            await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, newVenue, newHearingRoomName, newOtherInformation));
+            await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, newVenue, newHearingRoomName, newOtherInformation, updatedBy));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 

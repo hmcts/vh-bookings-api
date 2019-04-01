@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace Testing.Common.Builders.Domain
 {
@@ -13,6 +13,6 @@ namespace Testing.Common.Builders.Domain
             var property = instanceType.GetProperty(propertyName);
             if (property == null) throw new InvalidOperationException($"No property '{propertyName}' found on object of type '{instanceType.Name}'");
             property.SetValue(instance, value);
-        }   
+        }
     }
 }
