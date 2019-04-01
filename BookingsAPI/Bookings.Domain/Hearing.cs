@@ -164,7 +164,7 @@ namespace Bookings.Domain
             return HearingCases.Select(x => x.Case).ToList();
         }
 
-        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation)
+        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -193,6 +193,7 @@ namespace Bookings.Domain
             
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
+            UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
         }
 
