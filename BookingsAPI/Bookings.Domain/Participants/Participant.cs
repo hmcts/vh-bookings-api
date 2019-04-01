@@ -54,7 +54,7 @@ namespace Bookings.Domain.Participants
             UpdatedDate = DateTime.UtcNow;
             if (HearingRole.UserRole.Name.Equals("Individual"))
             {
-                var address = new Address(houseNumber,street,postcode);
+                var address = new Address(houseNumber,street,postcode,city,county);
                 Person.UpdateAddress(address);
             }
             

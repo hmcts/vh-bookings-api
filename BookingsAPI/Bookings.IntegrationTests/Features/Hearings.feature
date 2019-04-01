@@ -105,6 +105,7 @@ Scenario: Hearing not deleted with a nonexistent hearing id
 	Given I have a nonexistent remove hearing request
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
+
 	Scenario: Hearing not created with an invalid address
     Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
