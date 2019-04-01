@@ -121,7 +121,7 @@ namespace Bookings.Domain
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
-
+        
         public void AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (DoesParticipantExist(person.Username))

@@ -100,7 +100,7 @@ Scenario: Hearing not deleted with an invalid hearing id
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 	And the response message should read 'Please provide a valid hearingId'
-	
+
 Scenario: Hearing not deleted with a nonexistent hearing id
 	Given I have a nonexistent remove hearing request 
 	When I send the request to the endpoint
@@ -136,6 +136,35 @@ Scenario: Hearing status changes to cancelled for a given hearing id
 	Then the response should have the status OK and success status True
 	And hearing status should be cancelled
 
+Scenario: Get a paged list of booked hearings
+	Given I have a request to the get booked hearings endpoint
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Get a paged list of booked hearings continued from previous page
+	Given I have a request to the second page of booked hearings
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Get a paged list of booked hearings limited in size
+	Given I have a request to the get booked hearings endpoint with a limit of one
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of one booked hearing
+
+Scenario: Get a paged list of booked hearings with a given case type
+	Given I have a request to the get booked hearings endpoint filtered on a valid case type
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+	
+Scenario: Cannot get a paged list of booked hearings with invalid case type
+	Given I have a request to the get booked hearings endpoint filtered on an invalid case type
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+		
 Scenario: Hearing status cannot change to booked that has been already booked for given hearing id
 	Given I have a valid hearing request
 	And set the booking status to Booked
@@ -151,3 +180,32 @@ Scenario: Hearing status cannot change for an invalid state transition for given
 	Then the response should have the status BadRequest and success status False
 	And hearing status should be unchanged
 
+Scenario: Get a paged list of booked hearings
+	Given I have a request to the get booked hearings endpoint
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Get a paged list of booked hearings continued from previous page
+	Given I have a request to the second page of booked hearings
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Get a paged list of booked hearings limited in size
+	Given I have a request to the get booked hearings endpoint with a limit of one
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of one booked hearing
+
+Scenario: Get a paged list of booked hearings with a given case type
+	Given I have a request to the get booked hearings endpoint filtered on a valid case type
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+	
+Scenario: Cannot get a paged list of booked hearings with invalid case type
+	Given I have a request to the get booked hearings endpoint filtered on an invalid case type
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+	

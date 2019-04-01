@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Api.Contract.Responses;
-using Bookings.API.Mappings;
-using Bookings.API.Utilities;
 using Bookings.DAL;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
@@ -16,179 +13,120 @@ namespace Bookings.IntegrationTests.Database.Queries
     public class GetBookingsByCaseTypesQueryHandlerTest : DatabaseTestsBase
     {
         private GetBookingsByCaseTypesQueryHandler _handler;
-        private GetBookingsByCaseTypesQuery _query;
         private List<Guid> _ids;
+        private BookingsDbContext _context;
 
+        private const string FinancialRemedy = "Financial Remedy";
+        
         [SetUp]
         public void Setup()
         {
-            var context = new BookingsDbContext(BookingsDbContextOptions);
-            _handler = new GetBookingsByCaseTypesQueryHandler(context);
-            _query = new GetBookingsByCaseTypesQuery(new List<int>(), "0", 2);
+            _context = new BookingsDbContext(BookingsDbContextOptions);
+            _handler = new GetBookingsByCaseTypesQueryHandler(_context);
             _ids = new List<Guid>();
         }
 
         [Test]
-        public void should_get_CursorCreatedTime_as_a_number()
+        public async Task should_return_all_case_types_if_no_filter_is_given()
         {
-            var query = new GetBookingsByCaseTypesQuery(new List<int>(), "604527484127", 2);
-            query.CursorCreatedTime.Should().Be(604527484127);
+            _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            _ids.Add((await Hooks.SeedVideoHearing(opts => opts.CaseTypeName = FinancialRemedy)).Id);
+            
+            // we have to (potentially) look through all the existing hearings to find these
+            var query = new GetBookingsByCaseTypesQuery { Limit = _context.VideoHearings.Count() };
+            var result = await _handler.Handle(query);
+
+            var hearingIds = result.Select(hearing => hearing.Id).ToList();
+            hearingIds.Should().Contain(_ids);
+
+            var hearingTypes = result.Select(hearing => hearing.CaseType.Name).Distinct().ToList();
+            hearingTypes.Count.Should().BeGreaterThan(1);
         }
 
         [Test]
-        public void should_get_CursorCreatedTime_as_zero_if_no_value()
+        public async Task should_only_return_filtered_case_types()
         {
-            _query.CursorCreatedTime.Should().Be(0);
-            var query = new GetBookingsByCaseTypesQuery(new List<int>(), "", 2);
-            query.CursorCreatedTime.Should().Be(0);
+            _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            var financialRemedyHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy); 
+            _ids.Add(financialRemedyHearing.Id);
+            
+            var query = new GetBookingsByCaseTypesQuery(new List<int>{financialRemedyHearing.CaseTypeId});
+            var result = await _handler.Handle(query);
+
+            var hearingIds = result.Select(hearing => hearing.Id).ToList();
+            hearingIds.Should().Contain(financialRemedyHearing.Id);
+
+            var hearingTypes = result.Select(hearing => hearing.CaseType.Name).Distinct().ToList();
+            hearingTypes.Should().Equal(FinancialRemedy);
         }
 
         [Test]
-        public async Task should_get_booking_details_for_the_given_case_types()
+        public void should_throw_on_invalid_cursor()
         {
-            var caseTypesIds = new List<int> { 1, 2 };
+            Assert.ThrowsAsync<FormatException>(() =>
+                _handler.Handle(new GetBookingsByCaseTypesQuery {Cursor = "invalid"}));
+        }
+        
+        [Test]
+        public async Task should_limit_hearings_returned()
+        {
+            _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            var hearing = await Hooks.SeedVideoHearing();
+            _ids.Add(hearing.Id);
+            
+            var query = new GetBookingsByCaseTypesQuery { Limit = 2 };
+            var result = await _handler.Handle(query);
 
-            _query = new GetBookingsByCaseTypesQuery(caseTypesIds, "0", 2);
-
-            _ids = new List<Guid>();
-            long nextCursor = 0;
-            for (int i = 0; i < 4; i++)
+            result.Count.Should().Be(2);
+        }
+        
+        [Test]
+        public async Task should_return_different_hearings_for_each_new_page()
+        {
+            // When generating the guids they may end up being in order accidentally, therefor,
+            // seed hearings until they end up in invalid order
+            while (IdsAreInOrder(_ids) || _ids.Count < 3)
             {
-                var seededHearing = await Hooks.SeedVideoHearing();
-                _ids.Add(seededHearing.Id);
+                _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            }
+            
+            // And paging through the results
+            string cursor = null;
+            var allHearings = new List<VideoHearing>();
+            while (true)
+            {
+                var result = await _handler.Handle(new GetBookingsByCaseTypesQuery { Limit = 1, Cursor = cursor });
+                allHearings.AddRange(result);
+                if (result.NextCursor == null) break;
+                cursor = result.NextCursor;
+            }
+                        
+            // They should all have different id's
+            var ids = allHearings.Select(x => x.Id);
+            ids.Distinct().Count().Should().Be(_context.VideoHearings.Count());
+        }
 
-                TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+        private static bool IdsAreInOrder(List<Guid> ids)
+        {
+            for (var i = 0; i < ids.Count - 1; ++i)
+            {
+                if (string.Compare(ids[i].ToString(), ids[i + 1].ToString(), StringComparison.Ordinal) < 0)
+                {
+                    return false;
+                }
             }
 
-            var hearings = await _handler.Handle(_query);
-
-            hearings.Should().NotBeNull();
-            hearings.Count.Should().Be(2);
-
-            var mapper = new VideoHearingsToBookingsResponseMapper();
-            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(hearings.AsQueryable())
-               .Limit(_query.Limit)
-               .CaseTypes(_query.CaseTypes)
-               .Cursor(_query.Cursor)
-               .ResourceUrl("hearings/types")
-               .Build();
-
-            response.Should().NotBeNull();
-            response.Limit.Should().Be(2);
-            response.Hearings.Count.Should().Be(1);
-            response.Hearings[0].Hearings.Count.Should().Be(2);
-            nextCursor = response.Hearings[0].Hearings[1].CreatedDate.Ticks;
-            response.NextCursor.Should().Be(nextCursor.ToString());
-        }
-
-        [Test]
-        public async Task should_get_booking_details_for_all_case_types()
-        {
-            _ids = new List<Guid>();
-            long nextCursor = 0;
-            for (int i = 0; i < 4; i++)
-            {
-                var seededHearing = await Hooks.SeedVideoHearing();
-                _ids.Add(seededHearing.Id);
-
-                TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            }
-
-            var hearings = await _handler.Handle(_query);
-
-            hearings.Should().NotBeNull();
-            hearings.Count.Should().Be(2);
-
-            var mapper = new VideoHearingsToBookingsResponseMapper();
-            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(hearings.AsQueryable())
-               .Limit(_query.Limit)
-               .CaseTypes(_query.CaseTypes)
-               .Cursor(_query.Cursor)
-               .ResourceUrl("hearings/types")
-               .Build();
-
-            response.Should().NotBeNull();
-            response.Limit.Should().Be(2);
-            response.Hearings.Count.Should().Be(1);
-            response.Hearings[0].Hearings.Count.Should().Be(2);
-            nextCursor = response.Hearings[0].Hearings[1].CreatedDate.Ticks;
-            response.NextCursor.Should().Be(nextCursor.ToString());
-        }
-
-        [Test]
-        public async Task should_get_booking_details_for_given_cursor()
-        {
-            long nextCursor = DateTime.Now.AddSeconds(-30).Ticks;
-            _ids = new List<Guid>();
-            for (int i = 0; i < 4; i++)
-            {
-                var seededHearing = await Hooks.SeedVideoHearing();
-                _ids.Add(seededHearing.Id);
-                TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            }
-
-            _query.Cursor = nextCursor.ToString();
-            var hearings = await _handler.Handle(_query);
-
-            hearings.Should().NotBeNull();
-            hearings.Count.Should().Be(2);
-
-            var mapper = new VideoHearingsToBookingsResponseMapper();
-            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(hearings.AsQueryable())
-               .Limit(_query.Limit)
-               .CaseTypes(_query.CaseTypes)
-               .Cursor(_query.Cursor)
-               .ResourceUrl("hearings/types")
-               .Build();
-
-            response.Should().NotBeNull();
-            response.Limit.Should().Be(2);
-            response.Hearings.Count.Should().Be(1);
-            response.Hearings[0].Hearings.Count.Should().Be(2);
-            nextCursor = response.Hearings[0].Hearings[1].CreatedDate.Ticks;
-            response.NextCursor.Should().Be(nextCursor.ToString());
-
-        }
-
-        [Test]
-        public async Task should_returns_no_booking_details_for_given_cursor()
-        {
-            long nextCursor = DateTime.Now.AddHours(-1).Ticks;
-            _ids = new List<Guid>();
-            _query.Cursor = nextCursor.ToString();
-            var hearings = await _handler.Handle(_query);
-
-            hearings.Should().NotBeNull();
-            hearings.Count.Should().Be(0);
-
-            var mapper = new VideoHearingsToBookingsResponseMapper();
-            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(hearings.AsQueryable())
-               .Limit(_query.Limit)
-               .CaseTypes(_query.CaseTypes)
-               .Cursor(_query.Cursor)
-               .ResourceUrl("hearings/types")
-               .Build();
-
-            response.Should().NotBeNull();
-            response.Limit.Should().Be(2);
-            response.Hearings.Count.Should().Be(0);
-            response.NextCursor.Should().Be("0");
+            return true;
         }
 
         [TearDown]
         public async Task TearDown()
         {
-            if (_ids.Any())
+            foreach (var item in _ids)
             {
-                foreach (var item in _ids)
-                {
-                    TestContext.WriteLine($"Removing test hearing {item}");
-                    await Hooks.RemoveVideoHearing(item);
-                }
+                TestContext.WriteLine($"Removing test hearing {item}");
+                await Hooks.RemoveVideoHearing(item);
             }
         }
     }

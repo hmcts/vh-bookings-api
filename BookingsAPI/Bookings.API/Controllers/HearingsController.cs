@@ -7,7 +7,6 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
 using Bookings.API.Mappings;
-using Bookings.API.Utilities;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
@@ -31,6 +30,9 @@ namespace Bookings.API.Controllers
     [ApiController]
     public class HearingsController : Controller
     {
+        private const string DefaultCursor = "0";
+        private const int DefaultLimit = 100;
+        
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
 
@@ -47,9 +49,9 @@ namespace Bookings.API.Controllers
         /// <returns>Hearing details</returns>
         [HttpGet("{hearingId}", Name = "GetHearingDetailsById")]
         [SwaggerOperation(OperationId = "GetHearingDetailsById")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
@@ -78,8 +80,8 @@ namespace Bookings.API.Controllers
         /// <returns>Details of the newly booked hearing</returns>
         [HttpPost]
         [SwaggerOperation(OperationId = "BookNewHearing")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.Created)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.Created)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> BookNewHearing(BookNewHearingRequest request)
         {
             var result = new BookNewHearingRequestValidation().Validate(request);
@@ -133,7 +135,7 @@ namespace Bookings.API.Controllers
 
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
-            return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
+            return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
 
@@ -145,9 +147,9 @@ namespace Bookings.API.Controllers
         /// <returns>Details of updated hearing</returns>
         [HttpPut("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateHearingDetails")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
             if (hearingId == Guid.Empty)
@@ -196,9 +198,9 @@ namespace Bookings.API.Controllers
         /// <returns></returns>
         [HttpDelete("{hearingId}")]
         [SwaggerOperation(OperationId = "RemoveHearing")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> RemoveHearing(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
@@ -275,7 +277,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        ///     Gets list of upcoming bookings hearing for a given case types
+        ///     Get a paged list of booked hearings
         /// </summary>
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
@@ -286,10 +288,8 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = "0", [FromQuery]int limit = 100)
-        {
-            const string HearingsListsEndpointBaseUrl = "hearings/";
-            const string BookingsEndpointUrl = "types";
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
+        {            
             types = types ?? new List<int>();
             if (!await ValidateCaseTypes(types))
             {
@@ -297,39 +297,52 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var query = new GetBookingsByCaseTypesQuery(types, cursor, limit);
-            var videoHearings = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, IList<VideoHearing>>(query);
-            var items = videoHearings ?? new List<VideoHearing>();
+            var query = new GetBookingsByCaseTypesQuery(types)
+            {
+                Cursor = cursor == DefaultCursor ? null : cursor,
+                Limit = limit
+            };
+            var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
+            
             var mapper = new VideoHearingsToBookingsResponseMapper();
-            var response = new PaginationCursorBasedBuilder<BookingsResponse, VideoHearing>(mapper.MapHearingResponses)
-               .WithSourceItems(items.AsQueryable())
-               .Limit(limit)
-               .CaseTypes(types)
-               .Cursor(cursor)
-               .ResourceUrl(HearingsListsEndpointBaseUrl + BookingsEndpointUrl)
-               .Build();
-
+            
+            var response = new BookingsResponse
+            {
+                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types),
+                NextCursor = result.NextCursor,
+                Limit = limit,
+                Hearings = mapper.MapHearingResponses(result)
+            };
+            
             return Ok(response);
         }
 
-        private async Task<bool> ValidateCaseTypes(List<int> caseTypes)
+        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
         {
-            var result = false;
+            const string hearingsListsEndpointBaseUrl = "hearings/";
+            const string bookingsEndpointUrl = "types";
+            const string resourceUrl = hearingsListsEndpointBaseUrl + bookingsEndpointUrl;
+            
+            var types = string.Empty;
+            if (caseTypes != null && caseTypes.Any())
+            {
+                types = string.Join("&types=", caseTypes);
+            }
 
-            if (!caseTypes.Any())
-            {
-                result = true;
-            }
-            else
-            {
-                var query = new GetAllCaseTypesQuery();
-                var allCasesTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
-                if (allCasesTypes != null)
-                {
-                    result = caseTypes.Count == 0 || caseTypes.All(s => allCasesTypes.Any(x => x.Id == s));
-                }
-            }
-            return result;
+            return $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
+        }
+
+        private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
+        {
+            if (!filterCaseTypes.Any()) return true;
+            
+            var query = new GetAllCaseTypesQuery();
+            var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
+                .Select(caseType => caseType.Id);
+
+            return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
+
         }
     }
 }
