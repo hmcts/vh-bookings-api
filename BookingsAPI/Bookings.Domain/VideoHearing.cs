@@ -7,8 +7,8 @@ namespace Bookings.Domain
     public class VideoHearing : Hearing
     {
         protected VideoHearing() { }
-        public VideoHearing(CaseType caseType,HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation) : 
-            base(caseType, hearingType, scheduledDateTime, scheduledDuration, hearingVenue, hearingRoomName, otherInformation)
+        public VideoHearing(CaseType caseType,HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string createdBy) : 
+            base(caseType, hearingType, scheduledDateTime, scheduledDuration, hearingVenue, hearingRoomName, otherInformation, createdBy)
         {
         }
 
