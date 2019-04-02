@@ -49,7 +49,10 @@ namespace Bookings.Api.Contract.Requests
         /// </summary>
         public string OrganisationName { get; set; }
 
-
+        /// <summary>
+        /// Hearing Role Name
+        /// </summary>
+        public string HearingRoleName { get; set; }
 
     }
 }

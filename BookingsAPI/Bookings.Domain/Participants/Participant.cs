@@ -42,7 +42,12 @@ namespace Bookings.Domain.Participants
         {
             ValidateArguments(displayName);
 
-           if (_validationFailures.Any())
+            if (HearingRole.UserRole.Name.Equals("Individual"))
+            {
+                ValidateAddressDetails(houseNumber, street, city, county, postcode); 
+            }
+
+            if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);
             }
@@ -72,10 +77,29 @@ namespace Bookings.Domain.Participants
             {
                 _validationFailures.AddFailure("DisplayName", "DisplayName is required");
             }
+        }
 
-            if (_validationFailures.Any())
+        private void ValidateAddressDetails(string houseNumber, string street, string city, string county, string postcode)
+        {
+            if (string.IsNullOrEmpty(houseNumber))
             {
-                throw new DomainRuleException(_validationFailures);
+                _validationFailures.AddFailure("HouseNumber", "HouseNumber is required");
+            }
+            if (string.IsNullOrEmpty(street))
+            {
+                _validationFailures.AddFailure("Street", "Street is required");
+            }
+            if (string.IsNullOrEmpty(city))
+            {
+                _validationFailures.AddFailure("City", "City is required");
+            }
+            if (string.IsNullOrEmpty(county))
+            {
+                _validationFailures.AddFailure("County", "County is required");
+            }
+            if (string.IsNullOrEmpty(postcode))
+            {
+                _validationFailures.AddFailure("Postcode", "Postcode is required");
             }
         }
     }
