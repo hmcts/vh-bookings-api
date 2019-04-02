@@ -15,7 +15,6 @@ namespace Bookings.IntegrationTests.Database.Commands
     {
         private AddCasesToHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
         
         [SetUp]
         public void Setup()
@@ -23,17 +22,12 @@ namespace Bookings.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new AddCasesToHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
         
         [TearDown]
         public async Task TearDown()
         {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
+            await Hooks.ClearSeededHearings();
         }
         
         [Test]
@@ -50,12 +44,11 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetCases().Count;
 
             var cases = new List<Case> {new Case("01234567890", "Test Add")};
-            await _commandHandler.Handle(new AddCasesToHearingCommand(_newHearingId, cases));
+            await _commandHandler.Handle(new AddCasesToHearingCommand(seededHearing.Id, cases));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

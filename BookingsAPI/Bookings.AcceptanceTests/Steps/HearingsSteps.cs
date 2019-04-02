@@ -118,7 +118,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a get details for a given hearing request with a valid case type")]
         public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType()
         {
-            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingDetailsByType());
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingsByAnyCaseType());
         }
         [Then(@"hearing details should be retrieved for the case type")]
         public void ThenHearingDetailsShouldBeRetrievedForTheCaseType()
