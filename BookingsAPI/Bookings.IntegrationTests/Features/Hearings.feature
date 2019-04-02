@@ -106,6 +106,7 @@ Scenario: Hearing not deleted with a nonexistent hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
 
+
 	Scenario: Hearing not created with an invalid address
     Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
@@ -122,3 +123,32 @@ Scenario: Get hearing details for a given case type
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And hearing details should be retrieved for the case type
+
+Scenario: Get a paged list of booked hearings
+	Given I have a request to the get booked hearings endpoint
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Get a paged list of booked hearings continued from previous page
+	Given I have a request to the second page of booked hearings
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Get a paged list of booked hearings limited in size
+	Given I have a request to the get booked hearings endpoint with a limit of one
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of one booked hearing
+
+Scenario: Get a paged list of booked hearings with a given case type
+	Given I have a request to the get booked hearings endpoint filtered on a valid case type
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should contain a list of booked hearings
+
+Scenario: Cannot get a paged list of booked hearings with invalid case type
+	Given I have a request to the get booked hearings endpoint filtered on an invalid case type
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False

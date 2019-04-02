@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Faker;
 using FizzWare.NBuilder;
 using Bookings.Domain;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Address = Bookings.Domain.Address;
 
 namespace Testing.Common.Builders.Domain
@@ -21,9 +23,11 @@ namespace Testing.Common.Builders.Domain
             {
                 _settings.DisablePropertyNamingFor<Address, long>(x => x.Id);
                 _settings.DisablePropertyNamingFor<Organisation, long>(x => x.Id);
+                
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
                     new Person(Name.Prefix(), Name.First(), Name.Last(), Internet.Email())).With(x => x.ContactEmail = Internet.Email())
+                .With(x => x.UpdatedDate, DateTime.MinValue)
                 .Build();
         }
 

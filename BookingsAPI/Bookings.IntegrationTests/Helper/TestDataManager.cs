@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
@@ -14,7 +15,8 @@ namespace Bookings.IntegrationTests.Helper
     public class TestDataManager
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
-        private BuilderSettings BuilderSettings { get; set; }
+        private readonly List<Guid> _seededHearings = new List<Guid>();
+        private BuilderSettings BuilderSettings { get; }
 
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
         {
@@ -56,10 +58,8 @@ namespace Bookings.IntegrationTests.Helper
             var duration = 45;
             var hearingRoomName = "Room02";
             var otherInformation = "OtherInformation02";
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation)
-            {
-                CreatedBy = "test@integration.com"
-            };
+            var createdBy = "test@integration.com";
+            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation, createdBy);
             
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -81,8 +81,11 @@ namespace Bookings.IntegrationTests.Helper
                 await db.SaveChangesAsync();
             }
 
-            return await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
-                new GetHearingByIdQuery(videoHearing.Id)); 
+            var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+                new GetHearingByIdQuery(videoHearing.Id));
+            
+            _seededHearings.Add(hearing.Id);
+            return hearing;
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
@@ -106,13 +109,24 @@ namespace Bookings.IntegrationTests.Helper
             return caseType;
         }
 
+        public async Task ClearSeededHearings()
+        {
+            foreach (var hearingId in _seededHearings)
+            {
+                await RemoveVideoHearing(hearingId);
+            }
+        }
+
         public async Task RemoveVideoHearing(Guid hearingId)
         {
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 var hearing = await db.VideoHearings.FindAsync(hearingId);
-                db.Remove(hearing);
-                await db.SaveChangesAsync();
+                if (hearing != null)
+                {
+                    db.Remove(hearing);
+                    await db.SaveChangesAsync();   
+                }
             }
         }
     }

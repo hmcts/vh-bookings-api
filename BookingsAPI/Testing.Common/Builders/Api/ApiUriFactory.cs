@@ -50,7 +50,12 @@ namespace Testing.Common.Builders.Api
         public string BookNewHearing() => $"{ApiRoot}";
         public string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
         public string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
-        public string GetHearingDetailsByType() => $"{ApiRoot}/types";
+
+        public string GetHearingsByCaseType(int caseType) => $"{ApiRoot}/types?types={caseType}";
+        
+        public string GetHearingsByAnyCaseType(int limit = 100) => $"{ApiRoot}/types?limit={limit}";
+
+        public string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
     }
 
     public class ParticipantsEndpoints
@@ -64,6 +69,9 @@ namespace Testing.Common.Builders.Api
         public string AddParticipantsToHearing(Guid hearingId) =>  $"{ApiRoot}/{hearingId}/participants";
 
         public string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}";
+
+        public string UpdateParticipantDetails(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
     }
 

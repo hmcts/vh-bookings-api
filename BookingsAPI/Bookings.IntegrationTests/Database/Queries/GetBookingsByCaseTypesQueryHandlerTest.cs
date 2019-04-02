@@ -13,7 +13,6 @@ namespace Bookings.IntegrationTests.Database.Queries
     public class GetBookingsByCaseTypesQueryHandlerTest : DatabaseTestsBase
     {
         private GetBookingsByCaseTypesQueryHandler _handler;
-        private List<Guid> _ids;
         private BookingsDbContext _context;
 
         private const string FinancialRemedy = "Financial Remedy";
@@ -23,21 +22,21 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             _context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetBookingsByCaseTypesQueryHandler(_context);
-            _ids = new List<Guid>();
         }
 
         [Test]
         public async Task should_return_all_case_types_if_no_filter_is_given()
         {
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
-            _ids.Add((await Hooks.SeedVideoHearing(opts => opts.CaseTypeName = FinancialRemedy)).Id);
+            var firstHearing = (await Hooks.SeedVideoHearing()).Id;
+            var financialRemedyHearing = (await Hooks.SeedVideoHearing(opts => opts.CaseTypeName = FinancialRemedy)).Id;
             
             // we have to (potentially) look through all the existing hearings to find these
             var query = new GetBookingsByCaseTypesQuery { Limit = _context.VideoHearings.Count() };
             var result = await _handler.Handle(query);
 
             var hearingIds = result.Select(hearing => hearing.Id).ToList();
-            hearingIds.Should().Contain(_ids);
+            hearingIds.Should().Contain(firstHearing);
+            hearingIds.Should().Contain(financialRemedyHearing);
 
             var hearingTypes = result.Select(hearing => hearing.CaseType.Name).Distinct().ToList();
             hearingTypes.Count.Should().BeGreaterThan(1);
@@ -46,9 +45,8 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task should_only_return_filtered_case_types()
         {
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
+            await Hooks.SeedVideoHearing();
             var financialRemedyHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy); 
-            _ids.Add(financialRemedyHearing.Id);
             
             var query = new GetBookingsByCaseTypesQuery(new List<int>{financialRemedyHearing.CaseTypeId});
             var result = await _handler.Handle(query);
@@ -70,10 +68,10 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task should_limit_hearings_returned()
         {
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
-            _ids.Add((await Hooks.SeedVideoHearing()).Id);
-            var hearing = await Hooks.SeedVideoHearing();
-            _ids.Add(hearing.Id);
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearing();
+            
             
             var query = new GetBookingsByCaseTypesQuery { Limit = 2 };
             var result = await _handler.Handle(query);
@@ -84,11 +82,12 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task should_return_different_hearings_for_each_new_page()
         {
-            // When generating the guids they may end up being in order accidentally, therefor,
+            // When generating the identifiers they may end up being in order accidentally, therefor,
             // seed hearings until they end up in invalid order
-            while (IdsAreInOrder(_ids) || _ids.Count < 3)
+            var createdHearings = new List<Guid>();
+            while (IdsAreInOrder(createdHearings) || createdHearings.Count < 3)
             {
-                _ids.Add((await Hooks.SeedVideoHearing()).Id);
+                createdHearings.Add((await Hooks.SeedVideoHearing()).Id);
             }
             
             // And paging through the results
@@ -123,11 +122,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         [TearDown]
         public async Task TearDown()
         {
-            foreach (var item in _ids)
-            {
-                TestContext.WriteLine($"Removing test hearing {item}");
-                await Hooks.RemoveVideoHearing(item);
-            }
+            await Hooks.ClearSeededHearings();
         }
     }
 }

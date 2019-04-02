@@ -51,6 +51,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             cases[0].Name.Should().NotBeEmpty();
             hearing.HearingRoomName.Should().NotBeEmpty();
             hearing.OtherInformation.Should().NotBeEmpty();
+            hearing.CreatedBy.Should().NotBeNullOrEmpty();
         }
         
         [TearDown]

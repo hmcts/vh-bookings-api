@@ -119,7 +119,8 @@ namespace Bookings.API.Controllers
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases)
             {
                 HearingRoomName = request.HearingRoomName,
-                OtherInformation = request.OtherInformation
+                OtherInformation = request.OtherInformation,
+                CreatedBy = request.CreatedBy
             };
             await _commandHandler.Handle(createVideoHearingCommand);
 
@@ -178,7 +179,7 @@ namespace Bookings.API.Controllers
 
             var command =
                 new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue,
-                    request.HearingRoomName, request.OtherInformation);
+                    request.HearingRoomName, request.OtherInformation, request.UpdatedBy);
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
@@ -229,7 +230,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        ///     Gets list of upcoming bookings hearing for a given case types
+        ///     Get a paged list of booked hearings
         /// </summary>
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>

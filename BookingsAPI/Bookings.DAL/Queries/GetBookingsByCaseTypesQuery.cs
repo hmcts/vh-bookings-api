@@ -31,7 +31,7 @@ namespace Bookings.DAL.Queries
             get => _limit;
             set
             {
-                if (value <= 0) throw new ArgumentException("Limit must be one or more");
+                if (value <= 0) throw new ArgumentException("Limit must be one or more", nameof(value));
                 _limit = value;
             }
         }
