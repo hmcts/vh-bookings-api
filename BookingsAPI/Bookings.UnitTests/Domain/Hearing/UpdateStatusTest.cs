@@ -47,5 +47,28 @@ namespace Bookings.UnitTests.Domain.Hearing
             hearing.Status.Should().Be(BookingStatus.Cancelled);
             hearing.UpdatedDate.Should().Be(updatedDate);
         }
+
+        [Test]
+        public void should_throw_argument_null_exception_when_updatedby_field_is_empty()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            
+            var newStatus = BookingStatus.Cancelled;
+            Action action = () => hearing.UpdateStatus(newStatus, string.Empty);
+            action.Should().Throw<ArgumentNullException>();
+            hearing.Status.Should().Be(BookingStatus.Booked);
+        }
+
+        [Test]
+        public void should_throw_argument_null_exception_when_updatedby_field_is_null()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+
+            var newStatus = BookingStatus.Cancelled;
+            Action action = () => hearing.UpdateStatus(newStatus, null);
+            action.Should().Throw<ArgumentNullException>();
+            hearing.Status.Should().Be(BookingStatus.Booked);
+        }
+
     }
 }
