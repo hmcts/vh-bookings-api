@@ -198,6 +198,7 @@ namespace Bookings.IntegrationTests.Steps
             model.ScheduledDuration.Should().BePositive();
             model.HearingRoomName.Should().NotBeNullOrEmpty();
             model.OtherInformation.Should().NotBeNullOrEmpty();
+            model.CreatedBy.Should().NotBeNullOrEmpty();
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
@@ -342,6 +343,9 @@ namespace Bookings.IntegrationTests.Steps
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
+            cases[0].IsLeadCase = true;
+
+            var createdBy = "UserAdmin";
 
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
@@ -349,6 +353,7 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
+                .With(x => x.CreatedBy = createdBy)
                 .Build();
         }
 

@@ -328,6 +328,13 @@ namespace Bookings.DAL.Migrations
                     b.HasDiscriminator().HasValue("Individual");
                 });
 
+            modelBuilder.Entity("Bookings.Domain.Participants.Judge", b =>
+                {
+                    b.HasBaseType("Bookings.Domain.Participants.Participant");
+
+                    b.HasDiscriminator().HasValue("Judge");
+                });
+
             modelBuilder.Entity("Bookings.Domain.Participants.Representative", b =>
                 {
                     b.HasBaseType("Bookings.Domain.Participants.Participant");

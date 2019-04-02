@@ -13,6 +13,7 @@ namespace Testing.Common.Builders.Domain
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
         
         private readonly VideoHearing _videoHearing;
+        private readonly Person _judgePerson;
 
         public VideoHearingBuilder()
         {
@@ -24,21 +25,25 @@ namespace Testing.Common.Builders.Domain
             var duration = 80;
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
+            var createdBy = "User03";
 
             _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation)).Build();
+                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation, createdBy)).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var defendantCaseRole = new CaseRole(2, "Defendant");
-            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP");
-            var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor");
+            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual")};
+            var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor") { UserRole = new UserRole(1, "Solicitor") };
 
-            var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP");
-            
+            var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
+            var judgeCaseRole = new CaseRole(5, "Judge");
+            var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
+
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            
+            _judgePerson = new PersonBuilder(true).Build();
+
             _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
@@ -47,8 +52,17 @@ namespace Testing.Common.Builders.Domain
             
             _videoHearing.AddSolicitor(person2, defendantSolicitorHearingRole, defendantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
-            
+
+            _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
+                $"{_judgePerson.FirstName} {_judgePerson.LastName}");
+
+            // Set the navigation properties as well since these would've been set if we got the hearing from DB
+            _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
+            _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
+            _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
         }
+
+        public Person Judge => _judgePerson;
         
         public VideoHearing Build() => _videoHearing;
     }

@@ -16,7 +16,8 @@ using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -117,7 +118,8 @@ namespace Bookings.API.Controllers
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases)
             {
                 HearingRoomName = request.HearingRoomName,
-                OtherInformation = request.OtherInformation
+                OtherInformation = request.OtherInformation,
+                CreatedBy = request.CreatedBy
             };
             await _commandHandler.Handle(createVideoHearingCommand);
 
@@ -126,7 +128,6 @@ namespace Bookings.API.Controllers
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
             var queriedVideoHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-
 
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);

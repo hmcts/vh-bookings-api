@@ -40,6 +40,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             participants.Any().Should().BeTrue();
             participants.Any(x => x.GetType() == typeof(Individual)).Should().BeTrue();
             participants.Any(x => x.GetType() == typeof(Representative)).Should().BeTrue();
+            participants.Any(x => x.GetType() == typeof(Judge)).Should().BeTrue();
 
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);
@@ -50,6 +51,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             cases[0].Name.Should().NotBeEmpty();
             hearing.HearingRoomName.Should().NotBeEmpty();
             hearing.OtherInformation.Should().NotBeEmpty();
+            hearing.CreatedBy.Should().NotBeNullOrEmpty();
         }
         
         [TearDown]

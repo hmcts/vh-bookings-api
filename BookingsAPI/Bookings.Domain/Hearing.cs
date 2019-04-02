@@ -21,7 +21,7 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation)
+        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string createdBy)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -35,6 +35,7 @@ namespace Bookings.Domain
             Status = BookingStatus.Booked;
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
+            CreatedBy = createdBy;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -96,6 +97,7 @@ namespace Bookings.Domain
 
             Participant participant = new Individual(person, hearingRole, caseRole);
             participant.DisplayName = displayName;
+            participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -115,6 +117,21 @@ namespace Bookings.Domain
             };
 
             participant.DisplayName = displayName;
+            participant.CreatedBy = CreatedBy;
+            Participants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public void AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        {
+            if (DoesParticipantExist(person.Username))
+            {
+                throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
+            }
+
+            Participant participant = new Judge(person, hearingRole, caseRole);
+            participant.DisplayName = displayName;
+            participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
         }

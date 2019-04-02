@@ -57,5 +57,10 @@ namespace Bookings.Api.Contract.Responses
         ///     Any other information about the hearing
         /// </summary>
         public string OtherInformation { get; set; }
+
+        /// <summary>
+        ///     The VH admin username that created the hearing
+        /// </summary>
+        public string CreatedBy { get; set; }
     }
 }
