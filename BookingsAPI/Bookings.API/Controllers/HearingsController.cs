@@ -16,6 +16,7 @@ using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
+using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.AspNetCore.Mvc;
