@@ -30,20 +30,5 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
-
-        [Test]
-        public async Task should_fail_validation_when_request_has_empty_booking_status()
-        {
-            object emptyStatus = null;
-            var request = new UpdateBookingStatusRequest
-            {
-                Status = (UpdateBookingStatus)emptyStatus,
-                UpdatedBy = "TestUser"
-            };
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-        }
     }
 }
