@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Bookings.Api.Contract.Requests.Enums;
 
 namespace Bookings.Api.Contract.Requests
 {
@@ -14,6 +12,8 @@ namespace Bookings.Api.Contract.Requests
         /// <summary>
         ///     New status of the hearing
         /// </summary>
-        public string Status { get; set; }
+        public UpdateBookingStatus Status { get; set; }
     }
+
+
 }

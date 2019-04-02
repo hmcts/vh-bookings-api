@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
+using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
 using Bookings.API.Mappings;
@@ -21,6 +22,7 @@ using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace Bookings.API.Controllers
 {
@@ -229,9 +231,10 @@ namespace Bookings.API.Controllers
         /// <returns>Success status</returns>
         [HttpPatch("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateBookingStatus")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Conflict)]
         public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
         {
             if (hearingId == Guid.Empty)
@@ -249,10 +252,10 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var bookingStatus = Enum.Parse<BookingStatus>(updateBookingStatusRequest.Status);
+                var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
                 var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
                 await _commandHandler.Handle(command);
-                return Ok();
+                return NoContent();
             }
             catch (HearingNotFoundException)
             {
@@ -261,9 +264,9 @@ namespace Bookings.API.Controllers
             catch (DomainRuleException exception)
             {
                 exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
-                return BadRequest(ModelState);
+                return Conflict(ModelState);
             }
-        }
+       }
 
         private async Task<HearingVenue> GetVenue(string venueName)
         {
@@ -271,6 +274,15 @@ namespace Bookings.API.Controllers
             var hearingVenues =
                 await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
+        }
+
+        private BookingStatus MapUpdateBookingStatus(UpdateBookingStatus status)
+        {
+            if(status == Api.Contract.Requests.Enums.UpdateBookingStatus.Created)
+            {
+                return BookingStatus.Created;
+            }
+            return BookingStatus.Cancelled;
         }
     }
 }

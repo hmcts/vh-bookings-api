@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
+using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
@@ -252,7 +253,7 @@ namespace Bookings.IntegrationTests.Steps
                 default:
                     throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            UpdateHearingStatus(BookingStatus.Cancelled);
+            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
         }
 
         [Given(@"I have a valid hearing request")]
@@ -263,11 +264,11 @@ namespace Bookings.IntegrationTests.Steps
         }
 
         [Given(@"set the booking status to (.*)")]
-        public async Task SetTheBookingStatus(BookingStatus bookingStatus)
+        public async Task SetTheBookingStatus(UpdateBookingStatus bookingStatus)
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
-            UpdateHearingStatus(bookingStatus);
+            UpdateTheHearingStatus(bookingStatus);
         }
 
         [Given(@"I have an empty status in a hearing status request")]
@@ -275,7 +276,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
-            UpdateHearingStatus(null);
+            UpdateTheHearingStatus(null);
         }
 
         [Given(@"I have an empty username in a hearing status request")]
@@ -283,7 +284,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
-            UpdateHearingStatus(BookingStatus.Cancelled, null);
+            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled, null);
         }
         
         [Then(@"hearing status should be cancelled")]
@@ -383,10 +384,10 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Put;
         }
 
-        private void UpdateHearingStatus(BookingStatus? status, string updatedBy = "testuser")
+        private void UpdateTheHearingStatus(UpdateBookingStatus? status, string updatedBy = "testuser")
         {
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest {
-                Status = status?.ToString(),
+                Status = (UpdateBookingStatus)status,
                 UpdatedBy = updatedBy
             });
             _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
