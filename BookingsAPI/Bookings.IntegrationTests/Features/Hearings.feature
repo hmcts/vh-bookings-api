@@ -118,12 +118,6 @@ Scenario: Hearing status does not change for an invalid hearing id
 	Then the response should have the status BadRequest and success status False
 	And hearing status should be unchanged
 
-Scenario: Hearing status does not change with empty status for given hearing id
-	Given I have an empty status in a hearing status request
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-	And hearing status should be unchanged
-
 Scenario: Hearing status does not change with empty username for given hearing id
 	Given I have an empty username in a hearing status request
 	When I send the request to the endpoint
@@ -133,7 +127,7 @@ Scenario: Hearing status does not change with empty username for given hearing i
 Scenario: Hearing status changes to cancelled for a given hearing id
 	Given I have a valid hearing cancellation request
 	When I send the request to the endpoint
-	Then the response should have the status OK and success status True
+	Then the response should have the status NoContent and success status True
 	And hearing status should be cancelled
 
 Scenario: Get a paged list of booked hearings
@@ -165,17 +159,11 @@ Scenario: Cannot get a paged list of booked hearings with invalid case type
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 		
-Scenario: Hearing status cannot change to booked that has been already booked for given hearing id
-	Given I have a valid hearing request
-	And set the booking status to Booked
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-	And hearing status should be unchanged
 
 Scenario: Hearing status cannot change for an invalid state transition for given hearing id
 	Given I have a valid hearing request
+	And set the booking status to Cancelled
 	And set the booking status to Created
-	And set the booking status to Booked
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 	And hearing status should be unchanged

@@ -245,6 +245,11 @@ namespace Bookings.Domain
 
         public void UpdateStatus(BookingStatus newStatus, string updatedBy)
         {
+            if(string.IsNullOrEmpty(updatedBy))
+            {
+                throw new ArgumentNullException(nameof(updatedBy));
+            }
+
             var bookingStatusTransition = new BookingStatusTransition();
             var statusChangedEvent = new StatusChangedEvent(Status, newStatus);
 
@@ -252,7 +257,7 @@ namespace Bookings.Domain
             {
                 throw new DomainRuleException("BookingStatus", $"Cannot change the booking status from {Status} to {newStatus}");
             }
-
+            
             Status = newStatus;
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;

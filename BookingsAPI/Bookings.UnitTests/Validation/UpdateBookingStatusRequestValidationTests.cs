@@ -3,6 +3,7 @@ using Bookings.API.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using Bookings.Api.Contract.Requests.Enums;
 
 namespace Bookings.UnitTests.Validation
 {
@@ -21,41 +22,13 @@ namespace Bookings.UnitTests.Validation
         {
             var request = new UpdateBookingStatusRequest
             {
-                Status = "Cancelled",
+                Status = UpdateBookingStatus.Cancelled,
                 UpdatedBy = "TestUser"
             };
 
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeTrue();
-        }
-
-        [Test]
-        public async Task should_fail_validation_when_request_has_invalid_booking_status()
-        {
-            var request = new UpdateBookingStatusRequest
-            {
-                Status = "InvalidStatus",
-                UpdatedBy = "TestUser"
-            };
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-        }
-
-        [Test]
-        public async Task should_fail_validation_when_request_has_empty_booking_status()
-        {
-            var request = new UpdateBookingStatusRequest
-            {
-                Status = "",
-                UpdatedBy = "TestUser"
-            };
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
         }
     }
 }
