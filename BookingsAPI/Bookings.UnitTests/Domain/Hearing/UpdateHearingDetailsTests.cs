@@ -20,8 +20,9 @@ namespace Bookings.UnitTests.Domain.Hearing
             var newDuration = 150;
             var hearingRoomName = "Room03 Edit";
             var otherInformation = "OtherInformation03 Edit";
+            var updatedBy = "testuser";
             hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                hearingRoomName, otherInformation);
+                hearingRoomName, otherInformation, updatedBy);
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
         }
@@ -33,10 +34,11 @@ namespace Bookings.UnitTests.Domain.Hearing
             var beforeUpdatedDate = hearing.UpdatedDate;
             HearingVenue newVenue = null;
             var newDateTime = DateTime.Today.AddDays(-10);
-            var newDuration = -10; 
-            
+            var newDuration = -10;
+            var updatedBy = "testuser";
+
             Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                string.Empty, string.Empty);
+                string.Empty, string.Empty, updatedBy);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")

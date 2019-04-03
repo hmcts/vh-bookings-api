@@ -13,37 +13,37 @@ namespace Bookings.Api.Contract.Responses
         ///     Hearing Id
         /// </summary>
         public Guid Id { get; set; }
-
+        
         /// <summary>
         ///     The date and time for a hearing
         /// </summary>
         public DateTime ScheduledDateTime { get; set; }
-
+        
         /// <summary>
         ///     The duration of a hearing (number of minutes)
         /// </summary>
         public int ScheduledDuration { get; set; }
-
+        
         /// <summary>
         ///     The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
-
+        
         /// <summary>
         ///     The name of the case type
         /// </summary>
         public string CaseTypeName { get; set; }
-
+        
         /// <summary>
         ///     The name of the hearing type
         /// </summary>
         public string HearingTypeName { get; set; }
-
+        
         /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseResponse> Cases { get; set; }
-
+        
         /// <summary>
         ///     List of participants in hearing
         /// </summary>
@@ -60,28 +60,26 @@ namespace Bookings.Api.Contract.Responses
         public string OtherInformation { get; set; }
 
         /// <summary>
-        /// Gets or sets the created date.
         /// </summary>
         public DateTime CreatedDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the created by.
+        ///     The VH admin username that created the hearing
         /// </summary>
         public string CreatedBy { get; set; }
 
         /// <summary>
-        /// Gets or sets the updated by.
+        ///     The last date and time any details for the hearing was updated
         /// </summary>
         public string UpdatedBy { get; set; }
 
         /// <summary>
-        /// Gets or sets the updated date.
+        ///     User id of the who last updated the hearing
         /// </summary>
         public DateTime UpdatedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the booking status of the hearing
-        /// </summary>
         public BookingStatus Status { get; set; }
     }
 }

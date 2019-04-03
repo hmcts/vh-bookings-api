@@ -39,7 +39,8 @@ namespace Bookings.UnitTests.Mappings
                 datetime, 
                 mockedHearing.ScheduledDuration, 
                 mockedHearing.HearingRoomName,
-                mockedHearing.OtherInformation
+                mockedHearing.OtherInformation,
+                "admin@hearings.reform.hmcts.net"
             );
             return mockedHearing;
         }

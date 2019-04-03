@@ -20,7 +20,7 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
         
-        public string Title { get; protected set; }
+        public string Title { get; set; }
         public string FirstName { get; protected set; }
         public string LastName { get; protected set; }
         public string MiddleNames { get; set; }
@@ -39,7 +39,13 @@ namespace Bookings.Domain
             Address = address;
             UpdatedDate = DateTime.UtcNow;
         }
-        
+
+        public void UpdateOrganisation(Organisation organisation)
+        {
+            Organisation = organisation;
+            UpdatedDate = DateTime.UtcNow;
+        }
+
         private void ValidateArguments(string title, string firstName, string lastName, string username)
         {
             if (string.IsNullOrEmpty(title))
