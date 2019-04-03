@@ -12,8 +12,8 @@ namespace Bookings.Domain
 
         }
 
-        public string Number { get; }
-        public string Name { get; }
+        public string Number { get; set; }
+        public string Name { get; set; }
         public bool IsLeadCase { get; set; }
         public virtual IList<HearingCase> HearingCases { get; protected set; }
     }
