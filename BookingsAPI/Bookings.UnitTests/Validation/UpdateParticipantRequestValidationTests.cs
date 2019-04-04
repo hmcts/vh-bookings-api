@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
@@ -42,7 +43,30 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
-                                   
+
+        [Test]
+        public async Task should_return_missing_address_fields_error()
+        {
+            var addressErrorMessages = new List<string>() { ParticipantRequestValidation.NoHouseNumberErrorMessage, ParticipantRequestValidation.NoStreetErrorMessage, ParticipantRequestValidation.NoCityErrorMessage, ParticipantRequestValidation.NoCountyErrorMessage, ParticipantRequestValidation.NoPostcodeErrorMessage };
+
+
+            var request = BuildRequest();
+            request.HearingRoleName = "Claimant LIP";
+            request.HouseNumber = string.Empty;
+            request.Street = string.Empty;
+            request.City = string.Empty;
+            request.County = string.Empty;
+            request.Postcode = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(5);
+            result.Errors.All(x => addressErrorMessages.Contains(x.ErrorMessage))
+                .Should().BeTrue();
+        }
+
+
         private UpdateParticipantRequest BuildRequest()
         {
            return Builder<UpdateParticipantRequest>.CreateNew()
