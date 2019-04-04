@@ -168,7 +168,15 @@ namespace Bookings.Domain
             return HearingCases.Select(x => x.Case).ToList();
         }
 
-        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy)
+        public virtual void UpdateCase(Case @case)
+        {
+            //It has been assumed that only one case exists for a given hearing, for now.
+            var existingCase = GetCases().FirstOrDefault();
+            existingCase.Number = @case.Number;
+            existingCase.Name = @case.Name;
+        }
+
+        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy, List<Case> cases)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -181,7 +189,7 @@ namespace Bookings.Domain
             {
                 _validationFailures.AddFailure("Venue", "Venue must have a valid value");
             }
-
+            
             if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);
@@ -192,6 +200,12 @@ namespace Bookings.Domain
                 HearingVenue = hearingVenue;
                 HearingVenueName = hearingVenue.Name;
             }
+
+            if(cases.Any())
+            {
+                UpdateCase(cases.First());
+            }
+
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             

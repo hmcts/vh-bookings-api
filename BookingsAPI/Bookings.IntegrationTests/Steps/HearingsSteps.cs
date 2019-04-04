@@ -248,6 +248,11 @@ namespace Bookings.IntegrationTests.Steps
             model.ScheduledDateTime.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDateTime);
             model.HearingRoomName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(_apiTestContext.UpdateHearingRequest.OtherInformation);
+
+            var updatedCases = model.Cases;
+            var caseRequest = _apiTestContext.UpdateHearingRequest.Cases.FirstOrDefault();
+            updatedCases.First().Name.Should().Be(caseRequest.Name);
+            updatedCases.First().Number.Should().Be(caseRequest.Number);
         }
 
         [Then(@"the hearing should be removed")]
@@ -379,11 +384,20 @@ namespace Bookings.IntegrationTests.Steps
 
         private static UpdateHearingRequest BuildUpdateHearingRequestRequest()
         {
+            var caseList = new List<CaseRequest>();
+            caseList.Add(new CaseRequest() {
+                Name = "CaseName",
+                Number = "CaseNumber"
+            });
             return new UpdateHearingRequest
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,
-                HearingVenueName = "Manchester Civil and Family Justice Centre"
+                HearingVenueName = "Manchester Civil and Family Justice Centre",
+                OtherInformation = "OtherInfo",
+                HearingRoomName = "20",
+                UpdatedBy = "admin@hearings.reform.hmcts.net",
+                Cases = caseList
             };
         }
 

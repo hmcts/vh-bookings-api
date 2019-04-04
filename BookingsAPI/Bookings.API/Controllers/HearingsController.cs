@@ -176,10 +176,10 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
                 return BadRequest(ModelState);
             }
-
+            var cases = MapCase(request.Cases);
             var command =
                 new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue,
-                    request.HearingRoomName, request.OtherInformation, request.UpdatedBy);
+                    request.HearingRoomName, request.OtherInformation, request.UpdatedBy, cases);
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
@@ -296,6 +296,16 @@ namespace Bookings.API.Controllers
 
             return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
 
+        }
+
+        private List<Case> MapCase(List<CaseRequest> caseRequestList)
+        {
+            var mappedList = new List<Case>();
+            foreach (var caseRequest in caseRequestList)
+            {
+                mappedList.Add(new Case(caseRequest.Number, caseRequest.Name));
+            }
+            return mappedList;
         }
     }
 }

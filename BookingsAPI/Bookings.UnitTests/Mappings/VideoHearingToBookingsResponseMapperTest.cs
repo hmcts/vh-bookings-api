@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Bookings.UnitTests.Utilities;
 using Testing.Common.Builders.Domain;
+using System.Collections.Generic;
 
 namespace Bookings.UnitTests.Mappings
 {
@@ -34,13 +35,17 @@ namespace Bookings.UnitTests.Mappings
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
+            var caseToUpdate = new Case("UpdateCaseNumber", "UpdateCasename");
+            var updatedCases = new List<Case>();
+            updatedCases.Add(caseToUpdate);
             mockedHearing.UpdateHearingDetails(
                 mockedHearing.HearingVenue, 
                 datetime, 
                 mockedHearing.ScheduledDuration, 
                 mockedHearing.HearingRoomName,
                 mockedHearing.OtherInformation,
-                "admin@hearings.reform.hmcts.net"
+                "admin@hearings.reform.hmcts.net",
+                updatedCases
             );
             return mockedHearing;
         }
