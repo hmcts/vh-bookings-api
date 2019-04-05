@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
@@ -14,7 +15,8 @@ namespace Bookings.IntegrationTests.Helper
     public class TestDataManager
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
-        private BuilderSettings BuilderSettings { get; set; }
+        private readonly List<Guid> _seededHearings = new List<Guid>();
+        private BuilderSettings BuilderSettings { get; }
 
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
         {
@@ -23,22 +25,27 @@ namespace Bookings.IntegrationTests.Helper
             BuilderSettings = new BuilderSettings();
         }
 
-        public async Task<VideoHearing> SeedVideoHearing()
+        public Task<VideoHearing> SeedVideoHearing()
         {
-            var caseTypeName = "Civil Money Claims";
-            var caseType = GetCaseTypeFromDb(caseTypeName);
+            return SeedVideoHearing(null);
+        }
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == "Defendant");
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions)
+        {
+            var options = new SeedVideoHearingOptions();
+            configureOptions?.Invoke(options);
+            var caseType = GetCaseTypeFromDb(options.CaseTypeName);
+
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ClaimantRole);
+            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Claimant LIP");
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
-            var hearingTypeName = "Application to Set Judgment Aside";
-            var hearingType = caseType.HearingTypes.First(x => x.Name == hearingTypeName);
+            var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
             var venues = new RefDataBuilder().HearingVenues;
 
@@ -47,7 +54,7 @@ namespace Bookings.IntegrationTests.Helper
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
 
-            var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
+            var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             var duration = 45;
             var hearingRoomName = "Room02";
             var otherInformation = "OtherInformation02";
@@ -63,8 +70,7 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", string.Empty, string.Empty);
 
-            videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole,
-                $"{person4.FirstName} {person4.LastName}");
+            videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
@@ -75,8 +81,11 @@ namespace Bookings.IntegrationTests.Helper
                 await db.SaveChangesAsync();
             }
 
-            return await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
-                new GetHearingByIdQuery(videoHearing.Id)); 
+            var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+                new GetHearingByIdQuery(videoHearing.Id));
+            
+            _seededHearings.Add(hearing.Id);
+            return hearing;
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
@@ -89,10 +98,23 @@ namespace Bookings.IntegrationTests.Helper
                     .ThenInclude(x => x.HearingRoles)
                     .ThenInclude(x => x.UserRole)
                     .Include(x => x.HearingTypes)
-                    .First(x => x.Name == caseTypeName);
+                    .FirstOrDefault(x => x.Name == caseTypeName);
+
+                if (caseType == null)
+                {
+                    throw new InvalidOperationException("Unknown case type: "  + caseTypeName);
+                }
             }
 
             return caseType;
+        }
+
+        public async Task ClearSeededHearings()
+        {
+            foreach (var hearingId in _seededHearings)
+            {
+                await RemoveVideoHearing(hearingId);
+            }
         }
 
         public async Task RemoveVideoHearing(Guid hearingId)
@@ -100,8 +122,11 @@ namespace Bookings.IntegrationTests.Helper
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 var hearing = await db.VideoHearings.FindAsync(hearingId);
-                db.Remove(hearing);
-                await db.SaveChangesAsync();
+                if (hearing != null)
+                {
+                    db.Remove(hearing);
+                    await db.SaveChangesAsync();   
+                }
             }
         }
     }
