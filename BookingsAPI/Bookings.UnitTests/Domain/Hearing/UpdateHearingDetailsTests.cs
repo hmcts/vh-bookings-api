@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bookings.Domain;
 using Bookings.Domain.Validations;
@@ -14,6 +15,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void should_update_hearing_details()
         {
             var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("0875", "Test Case Add", false);
             var beforeUpdatedDate = hearing.UpdatedDate;
             var newVenue = new RefDataBuilder().HearingVenues.Last();
             var newDateTime = DateTime.Today.AddDays(10).AddHours(14);
@@ -21,24 +23,35 @@ namespace Bookings.UnitTests.Domain.Hearing
             var hearingRoomName = "Room03 Edit";
             var otherInformation = "OtherInformation03 Edit";
             var updatedBy = "testuser";
+            var caseName = "CaseName Update";
+            var caseNumber = "CaseNumber Update";
+            
+            var casesToUpdate = new List<Case>();
+            casesToUpdate.Add(new Case(caseNumber, caseName));
             hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                hearingRoomName, otherInformation, updatedBy);
+                hearingRoomName, otherInformation, updatedBy, casesToUpdate);
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+
+            var updatedCases = hearing.GetCases();
+            updatedCases.First().Name.Should().Be(caseName);
+            updatedCases.First().Number.Should().Be(caseNumber);
         }
         
         [Test]
         public void should_throw_exception_when_validation_fails()
         {
             var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("0875", "Test Case Add", false);
             var beforeUpdatedDate = hearing.UpdatedDate;
             HearingVenue newVenue = null;
             var newDateTime = DateTime.Today.AddDays(-10);
             var newDuration = -10;
             var updatedBy = "testuser";
+            var cases = new List<Case>();
 
             Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                string.Empty, string.Empty, updatedBy);
+                string.Empty, string.Empty, updatedBy, cases);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")
