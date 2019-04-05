@@ -70,7 +70,7 @@ namespace Bookings.Api.Contract.Responses
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Stree number of an Individual
+        /// Street number of an Individual
         /// </summary>
         public string Street { get; set; }
 
