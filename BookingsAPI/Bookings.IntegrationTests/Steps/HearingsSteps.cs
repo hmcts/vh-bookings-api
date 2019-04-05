@@ -245,7 +245,7 @@ namespace Bookings.IntegrationTests.Steps
 
             model.ScheduledDuration.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDuration);
             model.HearingVenueName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingVenueName);
-            model.ScheduledDateTime.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDateTime);
+            model.ScheduledDateTime.Should().Be(_apiTestContext.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
             model.HearingRoomName.Should().Be(_apiTestContext.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(_apiTestContext.UpdateHearingRequest.OtherInformation);
 

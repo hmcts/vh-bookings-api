@@ -98,7 +98,7 @@ namespace Bookings.AcceptanceTests.Steps
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_acTestContext.Json);
             model.Should().NotBeNull();
             model.ScheduledDuration.Should().Be(100);
-            model.ScheduledDateTime.Should().Be(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));
+            model.ScheduledDateTime.Should().Be(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45).ToUniversalTime());
             model.HearingVenueName.Should().Be("Manchester Civil and Family Justice Centre");
             model.OtherInformation.Should().Be("OtherInformation12345");
             model.HearingRoomName.Should().Be("HearingRoomName12345");
@@ -134,11 +134,11 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(_acTestContext.Json);
             model.PrevPageUrl.Should().Contain(model.Limit.ToString());
-            var hearing = model.Hearings.Single(u => u.ScheduledDate.Date == DateTime.Now.AddDays(2).Date);
+            var hearing = model.Hearings.Single(u => u.ScheduledDate.Date == DateTime.UtcNow.AddDays(2).Date);
             var response = hearing.Hearings.Single(u => u.HearingId == _acTestContext.HearingId);
             response.CaseTypeName.Should().NotBeNullOrEmpty();
             response.HearingTypeName.Should().NotBeNullOrEmpty();
-            response.ScheduledDateTime.Should().BeAfter(DateTime.Now);
+            response.ScheduledDateTime.Should().BeAfter(DateTime.UtcNow);
             response.ScheduledDuration.Should().NotBe(0);
             response.JudgeName.Should().NotBeNullOrEmpty();
             response.CourtAddress.Should().NotBeNullOrEmpty();
