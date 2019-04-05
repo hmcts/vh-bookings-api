@@ -42,7 +42,7 @@ namespace Bookings.Domain.Participants
         {
             ValidateArguments(displayName);
 
-            if (HearingRole.UserRole.Name.Equals("Individual"))
+            if (HearingRole.UserRole.IsIndividual)
             {
                 ValidateAddressDetails(houseNumber, street, city, county, postcode); 
             }
