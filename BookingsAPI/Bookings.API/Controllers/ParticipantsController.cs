@@ -288,7 +288,7 @@ namespace Bookings.API.Controllers
                 }
             }
 
-            var mapper = new ParticipantRequestToNewAddressMapper();
+            var mapper = new UpdateParticipantRequestToNewAddressMapper();
 
             var address = mapper.MapRequestToNewAddress(request);
 

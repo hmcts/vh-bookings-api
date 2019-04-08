@@ -7,7 +7,7 @@ namespace Bookings.API.Mappings
     /// This class is used to map a participant request object to the NewAddress model
     /// used by the UpdateParticipantCommand.
     /// </summary>
-    public class ParticipantRequestToNewAddressMapper
+    public class UpdateParticipantRequestToNewAddressMapper
     {
         public NewAddress MapRequestToNewAddress(UpdateParticipantRequest requestParticipant)
         {
