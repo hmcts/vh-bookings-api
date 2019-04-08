@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
+using Bookings.API.Helpers;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
@@ -158,17 +159,12 @@ namespace Bookings.API.Controllers
 
             var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
 
-            foreach (ParticipantRequest participantRequest in request.Participants)
+            var addressValidationResult = AddressValidationHelper.ValidateAddress(individualRoles, request.Participants);
+
+            if (!addressValidationResult.IsValid)
             {
-                if (individualRoles.Contains(participantRequest.HearingRoleName))
-                {
-                    var validationResult = new AddressValidation().Validate(participantRequest);
-                    if (!validationResult.IsValid)
-                    {
-                        ModelState.AddFluentValidationErrors(validationResult.Errors);
-                        return BadRequest(ModelState);
-                    }
-                }
+                ModelState.AddFluentValidationErrors(addressValidationResult.Errors);
+                return BadRequest(ModelState);
             }
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
@@ -291,7 +287,12 @@ namespace Bookings.API.Controllers
                     return BadRequest(ModelState);
                 }
             }
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.Street, request.HouseNumber, request.City, request.County, request.Postcode, request.OrganisationName, videoHearing);
+
+            var mapper = new ParticipantRequestToNewAddressMapper();
+
+            var address = mapper.MapRequestToNewAddress(request);
+
+            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, address, request.OrganisationName, videoHearing);
 
             await _commandHandler.Handle(updateParticipantCommand);
 
