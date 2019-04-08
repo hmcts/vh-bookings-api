@@ -19,19 +19,17 @@ namespace Bookings.DAL.Commands
     }
     public class UpdateParticipantCommand : ICommand
     {
-        public Guid HearingId { get; set; }
         public Guid ParticipantId { get; set; }
         public string Title { get; set; }
         public string DisplayName { get; set; }
         public string TelephoneNumber { get; set; }
-        public NewAddress NewAddress;
+        public NewAddress NewAddress { get; set; }
         public string OrganisationName { get; set; }
         public Participant UpdatedParticipant { get; set; }
         public VideoHearing VideoHearing { get; set; }
 
-        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telphoneNumber, NewAddress address, string organisationName, VideoHearing videoHearing)
+        public UpdateParticipantCommand(Guid participantId, string title, string displayName, string telphoneNumber, NewAddress address, string organisationName, VideoHearing videoHearing)
         {
-            HearingId = hearingId;
             ParticipantId = participantId;
             Title = title;
             DisplayName = displayName;

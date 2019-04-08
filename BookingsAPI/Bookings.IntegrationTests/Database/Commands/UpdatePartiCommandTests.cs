@@ -53,7 +53,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 County = county,
                 Postcode = postcode
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
+            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
@@ -96,7 +96,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 Postcode = postcode
             };
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
+            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
