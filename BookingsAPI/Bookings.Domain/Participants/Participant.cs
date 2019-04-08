@@ -3,10 +3,11 @@ using System.Linq;
 using Bookings.Domain.Ddd;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
+using Bookings.Domain.Helpers;
 
 namespace Bookings.Domain.Participants
 {
-    public abstract class Participant: Entity<Guid>
+    public abstract class Participant : Entity<Guid>
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
@@ -32,7 +33,7 @@ namespace Bookings.Domain.Participants
         public Guid PersonId { get; protected set; }
         public virtual Person Person { get; protected set; }
         public Guid HearingId { get; protected set; }
-        protected virtual Hearing Hearing { get; set; }   
+        protected virtual Hearing Hearing { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
@@ -44,7 +45,12 @@ namespace Bookings.Domain.Participants
 
             if (HearingRole.UserRole.IsIndividual)
             {
-                ValidateAddressDetails(houseNumber, street, city, county, postcode); 
+
+                var addressFailures = CommonValidations.ValidateAddressDetails(houseNumber, street, city, county, postcode);
+                if (addressFailures.Any())
+                {
+                    _validationFailures.AddRange(addressFailures);
+                }
             }
 
             if (_validationFailures.Any())
@@ -57,12 +63,12 @@ namespace Bookings.Domain.Participants
             Person.Title = title;
             Person.TelephoneNumber = telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
-            if (HearingRole.UserRole.Name.Equals("Individual"))
+            if (HearingRole.UserRole.IsIndividual)
             {
-                var address = new Address(houseNumber,street,postcode,city,county);
+                var address = new Address(houseNumber, street, postcode, city, county);
                 Person.UpdateAddress(address);
             }
-            
+
             if (!string.IsNullOrEmpty(organisationName))
             {
                 var organisation = new Organisation(organisationName);
@@ -73,34 +79,11 @@ namespace Bookings.Domain.Participants
 
         private void ValidateArguments(string displayName)
         {
-           if (string.IsNullOrEmpty(displayName))
+            if (string.IsNullOrEmpty(displayName))
             {
                 _validationFailures.AddFailure("DisplayName", "DisplayName is required");
             }
         }
 
-        private void ValidateAddressDetails(string houseNumber, string street, string city, string county, string postcode)
-        {
-            if (string.IsNullOrEmpty(houseNumber))
-            {
-                _validationFailures.AddFailure("HouseNumber", "HouseNumber is required");
-            }
-            if (string.IsNullOrEmpty(street))
-            {
-                _validationFailures.AddFailure("Street", "Street is required");
-            }
-            if (string.IsNullOrEmpty(city))
-            {
-                _validationFailures.AddFailure("City", "City is required");
-            }
-            if (string.IsNullOrEmpty(county))
-            {
-                _validationFailures.AddFailure("County", "County is required");
-            }
-            if (string.IsNullOrEmpty(postcode))
-            {
-                _validationFailures.AddFailure("Postcode", "Postcode is required");
-            }
-        }
     }
 }

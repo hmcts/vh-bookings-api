@@ -129,5 +129,7 @@ namespace Bookings.IntegrationTests.Helper
                 }
             }
         }
+
+        public string[] GetIndividualHearingRoles => new[] { "Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP" };
     }
 }

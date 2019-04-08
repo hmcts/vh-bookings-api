@@ -45,7 +45,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var city = "City" + editPrefix;
             var county = "County" + editPrefix;
             var organisationName = "Organisation" + editPrefix;
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName, seededHearing);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
@@ -79,7 +79,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var city = "City" + editPrefix;
             var county = "County" + editPrefix;
             var organisationName = "Organisation" + editPrefix;
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName, seededHearing);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;

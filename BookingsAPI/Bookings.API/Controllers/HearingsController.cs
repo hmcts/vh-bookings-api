@@ -91,10 +91,27 @@ namespace Bookings.API.Controllers
             var query = new GetCaseTypeQuery(request.CaseTypeName);
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
 
+            
             if (caseType == null)
             {
                 ModelState.AddModelError(nameof(request.CaseTypeName), "Case type does not exist");
                 return BadRequest(ModelState);
+            }
+
+            var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
+
+            foreach(ParticipantRequest participantRequest in request.Participants)
+            {
+                if (individualRoles.Contains(participantRequest.HearingRoleName))
+                    {
+                    var validationResult = new AddressValidation().Validate(participantRequest);
+                    if (!validationResult.IsValid)
+                    {
+                        ModelState.AddFluentValidationErrors(validationResult.Errors);
+                        return BadRequest(ModelState);
+                    }
+                }
+              
             }
 
             var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);

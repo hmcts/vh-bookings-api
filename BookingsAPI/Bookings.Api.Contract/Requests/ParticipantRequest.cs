@@ -1,6 +1,6 @@
 namespace Bookings.Api.Contract.Requests
 {
-    public class ParticipantRequest
+    public class ParticipantRequest : IAddressRequest
     {
         /// <summary>
         ///     Participant Title.

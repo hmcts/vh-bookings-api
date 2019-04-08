@@ -13,11 +13,13 @@ namespace Bookings.UnitTests.Validation
     public class UpdateParticipantRequestValidationTests
     {
         private UpdateParticipantRequestValidation _validator;
+        private AddressValidation _addressValidator;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             _validator = new UpdateParticipantRequestValidation();
+            _addressValidator = new AddressValidation();
         }
         
         [Test]
@@ -47,7 +49,7 @@ namespace Bookings.UnitTests.Validation
         [Test]
         public async Task should_return_missing_address_fields_error()
         {
-            var addressErrorMessages = new List<string>() { ParticipantRequestValidation.NoHouseNumberErrorMessage, ParticipantRequestValidation.NoStreetErrorMessage, ParticipantRequestValidation.NoCityErrorMessage, ParticipantRequestValidation.NoCountyErrorMessage, ParticipantRequestValidation.NoPostcodeErrorMessage };
+            var addressErrorMessages = new List<string>() { AddressValidation.NoHouseNumberErrorMessage, AddressValidation.NoStreetErrorMessage, AddressValidation.NoCityErrorMessage, AddressValidation.NoCountyErrorMessage, AddressValidation.NoPostcodeErrorMessage };
 
 
             var request = BuildRequest();
@@ -58,7 +60,7 @@ namespace Bookings.UnitTests.Validation
             request.County = string.Empty;
             request.Postcode = string.Empty;
 
-            var result = await _validator.ValidateAsync(request);
+            var result = await _addressValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(5);

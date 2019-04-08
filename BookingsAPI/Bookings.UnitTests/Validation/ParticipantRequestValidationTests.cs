@@ -12,13 +12,16 @@ namespace Bookings.UnitTests.Validation
     public class ParticipantRequestValidationTests
     {
         private ParticipantRequestValidation _validator;
+        private AddressValidation _addressValidator;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             _validator = new ParticipantRequestValidation();
+            _addressValidator = new AddressValidation();
         }
-        
+
+
         [Test]
         public async Task should_pass_validation()
         {
@@ -28,7 +31,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_display_name_error()
         {
@@ -42,7 +45,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_case_role_name_error()
         {
@@ -56,7 +59,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCaseRoleNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_hearing_role_name_error()
         {
@@ -70,7 +73,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoHearingRoleNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_title_error()
         {
@@ -84,7 +87,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTitleErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_first_name_error()
         {
@@ -98,7 +101,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_last_name_error()
         {
@@ -112,7 +115,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_username_error()
         {
@@ -126,7 +129,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoUsernameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_contact_email_error()
         {
@@ -147,11 +150,11 @@ namespace Bookings.UnitTests.Validation
             request.HearingRoleName = "Claimant LIP";
             request.HouseNumber = string.Empty;
 
-            var result = await _validator.ValidateAsync(request);
+            var result = await _addressValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoHouseNumberErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == AddressValidation.NoHouseNumberErrorMessage)
                 .Should().BeTrue();
         }
         [Test]
@@ -161,11 +164,11 @@ namespace Bookings.UnitTests.Validation
             request.HearingRoleName = "Defendant LIP";
             request.Street = string.Empty;
 
-            var result = await _validator.ValidateAsync(request);
+            var result = await _addressValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoStreetErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == AddressValidation.NoStreetErrorMessage)
                 .Should().BeTrue();
         }
         [Test]
@@ -175,11 +178,11 @@ namespace Bookings.UnitTests.Validation
             request.HearingRoleName = "Applicant LIP";
             request.City = string.Empty;
 
-            var result = await _validator.ValidateAsync(request);
+            var result = await _addressValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCityErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == AddressValidation.NoCityErrorMessage)
                 .Should().BeTrue();
         }
         [Test]
@@ -189,11 +192,11 @@ namespace Bookings.UnitTests.Validation
             request.HearingRoleName = "Respondent LIP";
             request.County = string.Empty;
 
-            var result = await _validator.ValidateAsync(request);
+            var result = await _addressValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCountyErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == AddressValidation.NoCountyErrorMessage)
                 .Should().BeTrue();
         }
         [Test]
@@ -203,33 +206,11 @@ namespace Bookings.UnitTests.Validation
             request.HearingRoleName = "Claimant LIP";
             request.Postcode = string.Empty;
 
-            var result = await _validator.ValidateAsync(request);
+            var result = await _addressValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoPostcodeErrorMessage)
-                .Should().BeTrue();
-        }
-
-        [Test]
-        public async Task should_return_missing_address_fields_error()
-        {
-            var addressErrorMessages = new List<string>() { ParticipantRequestValidation.NoHouseNumberErrorMessage, ParticipantRequestValidation.NoStreetErrorMessage, ParticipantRequestValidation.NoCityErrorMessage, ParticipantRequestValidation.NoCountyErrorMessage, ParticipantRequestValidation.NoPostcodeErrorMessage };
-            
-
-            var request = BuildRequest();
-            request.HearingRoleName = "Claimant LIP";
-            request.HouseNumber = string.Empty;
-            request.Street = string.Empty;
-            request.City = string.Empty;
-            request.County = string.Empty;
-            request.Postcode = string.Empty;
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(5);
-            result.Errors.All(x => addressErrorMessages.Contains(x.ErrorMessage))
+            result.Errors.Any(x => x.ErrorMessage == AddressValidation.NoPostcodeErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -248,14 +229,14 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
             result.Errors.Count.Should().Be(0);
-          }
+        }
 
         private ParticipantRequest BuildRequest()
         {
-           return Builder<ParticipantRequest>.CreateNew()
-                .With(x => x.CaseRoleName = "Claimant")
-                .With(x => x.HearingRoleName = "Solicitor")
-                .Build();
+            return Builder<ParticipantRequest>.CreateNew()
+                 .With(x => x.CaseRoleName = "Claimant")
+                 .With(x => x.HearingRoleName = "Solicitor")
+                 .Build();
         }
     }
 }

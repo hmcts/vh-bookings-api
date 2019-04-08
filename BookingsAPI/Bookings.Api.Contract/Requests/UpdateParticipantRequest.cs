@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Bookings.Api.Contract.Requests
 {
-    public class UpdateParticipantRequest
+    public class UpdateParticipantRequest : IAddressRequest
     {
         /// <summary>
         ///     Participant Title.

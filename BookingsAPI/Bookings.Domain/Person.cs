@@ -20,17 +20,12 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-
-        public Person(string title, string firstName, string lastName, string username, Address address) : this(title,firstName,lastName,username)
+        public Person(string title, string firstName, string lastName, string username, Address address) : this(title, firstName, lastName, username)
         {
             Address = address;
         }
 
-
-
-
         public string Title { get; set; }
-
         public string FirstName { get; protected set; }
         public string LastName { get; protected set; }
         public string MiddleNames { get; set; }
@@ -49,7 +44,6 @@ namespace Bookings.Domain
             Address = address;
             UpdatedDate = DateTime.UtcNow;
         }
-
 
         public void UpdateOrganisation(Organisation organisation)
         {

@@ -31,6 +31,7 @@ namespace Bookings.DAL.Queries
                 .Include("Participants.Person")
                 .Include("Participants.Person.Address")
                 .Include("HearingCases.Case")
+                .Include("Participants.Person.Organisation")
                 .Include(x => x.CaseType)
                 .ThenInclude(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)

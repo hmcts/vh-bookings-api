@@ -38,12 +38,12 @@ namespace Bookings.IntegrationTests.Steps
             switch (scenario)
             {
                 case Scenario.Valid:
-                {
-                    var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+                    {
+                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                    _hearingId = seededHearing.Id;
-                    break;
-                }
+                        _hearingId = seededHearing.Id;
+                        break;
+                    }
                 case Scenario.Nonexistent:
                     _hearingId = Guid.NewGuid();
                     break;
@@ -85,24 +85,24 @@ namespace Bookings.IntegrationTests.Steps
             switch (invalidType)
             {
                 case "case type":
-                {
-                    request.CaseTypeName = "Random";
-                    break;
-                }
-                case "hearing type":
-                {
-                    request.HearingTypeName = "A nonexistent hearing type";
-                    break;
-                }
-                case "venue name":
-                {
-                    request.HearingVenueName = "Random";
-                    break;
-                }
-                case "address":
-                    
                     {
-                        var individualRoles = new[] { "Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP" };
+                        request.CaseTypeName = "Random";
+                        break;
+                    }
+                case "hearing type":
+                    {
+                        request.HearingTypeName = "A nonexistent hearing type";
+                        break;
+                    }
+                case "venue name":
+                    {
+                        request.HearingVenueName = "Random";
+                        break;
+                    }
+                case "address":
+
+                    {
+                        var individualRoles = _apiTestContext.TestDataManager.GetIndividualHearingRoles;
                         foreach (ParticipantRequest participantRequest in request.Participants)
                         {
                             if (individualRoles.Contains(participantRequest.HearingRoleName))
@@ -114,7 +114,7 @@ namespace Bookings.IntegrationTests.Steps
                                 participantRequest.Postcode = string.Empty;
                             }
                         }
-                        
+
 
                         break;
                     }
@@ -180,11 +180,11 @@ namespace Bookings.IntegrationTests.Steps
                 default:
                     throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            
+
             _apiTestContext.Uri = _endpoints.RemoveHearing(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Delete;
         }
-    
+
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
@@ -214,7 +214,7 @@ namespace Bookings.IntegrationTests.Steps
                 participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.UserRoleName.Should().NotBeNullOrEmpty();
-                if(participant.UserRoleName.Equals("Individual"))
+                if (participant.UserRoleName.Equals("Individual"))
                 {
                     participant.HouseNumber.Should().NotBeNullOrEmpty();
                     participant.Street.Should().NotBeNullOrEmpty();
@@ -265,7 +265,7 @@ namespace Bookings.IntegrationTests.Steps
             }
             hearingFromDb.Should().BeNull();
         }
-        
+
         [Given(@"I have a request to the get booked hearings endpoint")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
         {
@@ -274,7 +274,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.Uri = _endpoints.GetHearingsByAnyCaseType();
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
-        
+
         [Then(@"the response should contain a list of booked hearings")]
         public async Task ThenTheResponseShouldContainAListOfBookedHearings()
         {
@@ -286,7 +286,7 @@ namespace Bookings.IntegrationTests.Steps
             aHearing.HearingNumber.Should().NotBeNullOrEmpty();
             aHearing.HearingName.Should().NotBeNullOrEmpty();
         }
-        
+
         [Given(@"I have a request to the second page of booked hearings")]
         public async Task GivenIHaveARequestToTheSecondPageOfBookedHearings()
         {
@@ -300,7 +300,7 @@ namespace Bookings.IntegrationTests.Steps
 
             _apiTestContext.Uri = _endpoints.GetHearingsByAnyCaseTypeAndCursor(bookings.NextCursor);
         }
-        
+
         [Given(@"I have a request to the get booked hearings endpoint with a limit of one")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpointWithALimitOfOne()
         {
@@ -309,7 +309,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.Uri = _endpoints.GetHearingsByAnyCaseType(1);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
-        
+
         [Then(@"the response should contain a list of one booked hearing")]
         public async Task ThenTheResponseShouldContainAListOfOneBookedHearing()
         {
@@ -317,13 +317,13 @@ namespace Bookings.IntegrationTests.Steps
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
             model.Hearings.Count.Should().Be(1);
         }
-        
+
         [Given(@"I have a request to the get booked hearings endpoint filtered on a (.*) case type")]
         [Given(@"I have a request to the get booked hearings endpoint filtered on an (.*) case type")]
-        public async Task  GivenIHaveARequestToTheGetBookedHearingsEndpointFilteredOnAValidCaseType(Scenario scenario)
+        public async Task GivenIHaveARequestToTheGetBookedHearingsEndpointFilteredOnAValidCaseType(Scenario scenario)
         {
             await _apiTestContext.TestDataManager.SeedVideoHearing();
-            
+
             int caseType;
             switch (scenario)
             {
@@ -336,7 +336,7 @@ namespace Bookings.IntegrationTests.Steps
                 default:
                     throw new InvalidOperationException("Unexpected type of case type: " + scenario);
             }
-            
+
             _apiTestContext.Uri = _endpoints.GetHearingsByCaseType(caseType);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -385,7 +385,8 @@ namespace Bookings.IntegrationTests.Steps
         private static UpdateHearingRequest BuildUpdateHearingRequestRequest()
         {
             var caseList = new List<CaseRequest>();
-            caseList.Add(new CaseRequest() {
+            caseList.Add(new CaseRequest()
+            {
                 Name = "CaseName",
                 Number = "CaseNumber"
             });
