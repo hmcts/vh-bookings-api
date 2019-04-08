@@ -497,11 +497,31 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetAPagedListOfBookedHearings()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings", null, ((string[])(null)));
+#line 133
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 134
+ testRunner.Given("I have a request to the get booked hearings endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 135
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 136
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 137
+ testRunner.And("the response should contain a list of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get a paged list of booked hearings continued from previous page")]
+        public virtual void GetAPagedListOfBookedHearingsContinuedFromPreviousPage()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings continued from previous page", null, ((string[])(null)));
 #line 139
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 140
- testRunner.Given("I have a request to the get booked hearings endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have a request to the second page of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 141
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 142
@@ -513,40 +533,20 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Get a paged list of booked hearings continued from previous page")]
-        public virtual void GetAPagedListOfBookedHearingsContinuedFromPreviousPage()
+        [NUnit.Framework.DescriptionAttribute("Get a paged list of booked hearings limited in size")]
+        public virtual void GetAPagedListOfBookedHearingsLimitedInSize()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings continued from previous page", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings limited in size", null, ((string[])(null)));
 #line 145
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 146
- testRunner.Given("I have a request to the second page of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have a request to the get booked hearings endpoint with a limit of one", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 147
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 148
  testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 149
- testRunner.And("the response should contain a list of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Get a paged list of booked hearings limited in size")]
-        public virtual void GetAPagedListOfBookedHearingsLimitedInSize()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings limited in size", null, ((string[])(null)));
-#line 151
-this.ScenarioInitialize(scenarioInfo);
-            this.ScenarioStart();
-#line 152
- testRunner.Given("I have a request to the get booked hearings endpoint with a limit of one", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 153
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 154
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 155
  testRunner.And("the response should contain a list of one booked hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -557,17 +557,17 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetAPagedListOfBookedHearingsWithAGivenCaseType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings with a given case type", null, ((string[])(null)));
-#line 157
+#line 151
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 158
+#line 152
  testRunner.Given("I have a request to the get booked hearings endpoint filtered on a valid case typ" +
                     "e", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 159
+#line 153
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 160
+#line 154
  testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 161
+#line 155
  testRunner.And("the response should contain a list of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -578,15 +578,15 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void CannotGetAPagedListOfBookedHearingsWithInvalidCaseType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Cannot get a paged list of booked hearings with invalid case type", null, ((string[])(null)));
-#line 163
+#line 157
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 164
+#line 158
  testRunner.Given("I have a request to the get booked hearings endpoint filtered on an invalid case " +
                     "type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 165
+#line 159
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 166
+#line 160
  testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -599,20 +599,20 @@ this.ScenarioInitialize(scenarioInfo);
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status cannot change for an invalid state transition for given hearing id" +
                     "", null, ((string[])(null)));
-#line 134
+#line 163
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 135
+#line 164
  testRunner.Given("I have a valid hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 136
+#line 165
  testRunner.And("set the booking status to Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 137
+#line 166
  testRunner.And("set the booking status to Created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 138
+#line 167
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 139
+#line 168
  testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 140
+#line 169
  testRunner.And("hearing status should be unchanged", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
