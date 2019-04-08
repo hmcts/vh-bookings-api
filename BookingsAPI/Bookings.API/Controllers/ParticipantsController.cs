@@ -292,7 +292,7 @@ namespace Bookings.API.Controllers
 
             var address = mapper.MapRequestToNewAddress(request);
 
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, address, request.OrganisationName, videoHearing);
+            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title, request.DisplayName, request.TelephoneNumber, address, request.OrganisationName, videoHearing);
 
             await _commandHandler.Handle(updateParticipantCommand);
 
