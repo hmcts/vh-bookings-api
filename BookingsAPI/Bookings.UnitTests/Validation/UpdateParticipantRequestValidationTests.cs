@@ -21,7 +21,7 @@ namespace Bookings.UnitTests.Validation
             _validator = new UpdateParticipantRequestValidation();
             _addressValidator = new AddressValidation();
         }
-        
+
         [Test]
         public async Task should_pass_validation()
         {
@@ -31,7 +31,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_display_name_error()
         {
@@ -46,33 +46,10 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
 
-        [Test]
-        public async Task should_return_missing_address_fields_error()
-        {
-            var addressErrorMessages = new List<string>() { AddressValidation.NoHouseNumberErrorMessage, AddressValidation.NoStreetErrorMessage, AddressValidation.NoCityErrorMessage, AddressValidation.NoCountyErrorMessage, AddressValidation.NoPostcodeErrorMessage };
-
-
-            var request = BuildRequest();
-            request.HearingRoleName = "Claimant LIP";
-            request.HouseNumber = string.Empty;
-            request.Street = string.Empty;
-            request.City = string.Empty;
-            request.County = string.Empty;
-            request.Postcode = string.Empty;
-
-            var result = await _addressValidator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(5);
-            result.Errors.All(x => addressErrorMessages.Contains(x.ErrorMessage))
-                .Should().BeTrue();
-        }
-
-
         private UpdateParticipantRequest BuildRequest()
         {
-           return Builder<UpdateParticipantRequest>.CreateNew()
-                .Build();
+            return Builder<UpdateParticipantRequest>.CreateNew()
+                 .Build();
         }
     }
 }
