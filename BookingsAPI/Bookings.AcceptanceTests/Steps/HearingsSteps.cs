@@ -136,5 +136,11 @@ namespace Bookings.AcceptanceTests.Steps
             response.HearingName.Should().NotBeNullOrEmpty();
             response.HearingNumber.Should().NotBeNullOrEmpty();
         }
+        [Given(@"I have a cancel hearing request with a valid hearing id")]
+        public void GivenIHaveACancelHearingRequestWithAValidHearingId()
+        {
+            var updateHearingRequest = UpdateBookingStatusRequest.BuildRequest();
+            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingRequest);
+        }
     }
 }
