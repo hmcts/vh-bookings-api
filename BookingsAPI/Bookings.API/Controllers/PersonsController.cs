@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using System.Linq;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
@@ -82,5 +84,29 @@ namespace Bookings.API.Controllers
             var response = mapper.MapPersonToResponse(person);
             return Ok(response);
         }
-    }
+
+        /// <summary>
+        /// Get a person by email search term
+        /// </summary>
+        /// <param name="term">The term of contact email of the person</param>
+        /// <returns>Person list</returns>
+        [HttpGet("search/{term}", Name = "GetPersonBySearchTerm")]
+        [SwaggerOperation(OperationId = "GetPersonBySearchTerm")]
+        [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetPersonBySearchTerm(string term)
+        {
+            if (string.IsNullOrEmpty(term))
+            {
+                ModelState.AddModelError(nameof(term), $"Please provide a valid {nameof(term)}");
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetPersonBySearchTermQuery(term);
+            var personList = await _queryHandler.Handle<GetPersonBySearchTermQuery, List<Person>>(query);
+            var mapper = new PersonToResponseMapper();
+            var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
+            return Ok(response);
+        }
+    }   
 }

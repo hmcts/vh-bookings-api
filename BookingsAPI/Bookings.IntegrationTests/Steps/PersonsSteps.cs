@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -19,13 +20,13 @@ namespace Bookings.IntegrationTests.Steps
         private readonly Contexts.TestContext _apiTestContext;
         private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
         private string _username;
-        
+
         public Personsteps(Contexts.TestContext apiTestContext)
         {
             _apiTestContext = apiTestContext;
             _username = string.Empty;
         }
-        
+
         [Given(@"I have a get person by username request with a (.*) username")]
         [Given(@"I have a get person by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonByUsernameRequest(Scenario scenario)
@@ -33,13 +34,13 @@ namespace Bookings.IntegrationTests.Steps
             switch (scenario)
             {
                 case Scenario.Valid:
-                {
-                    var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                    _apiTestContext.NewHearingId = seededHearing.Id;
+                    {
+                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+                        _apiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                    _username = seededHearing.GetParticipants().First().Person.Username;
-                    break;
-                }
+                        _username = seededHearing.GetParticipants().First().Person.Username;
+                        break;
+                    }
                 case Scenario.Nonexistent:
                     _username = Internet.Email();
                     break;
@@ -51,7 +52,7 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.Uri = _endpoints.GetPersonByUsername(_username);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
-        
+
         [Given(@"I have a get person by contact email request with a (.*) contact email")]
         [Given(@"I have a get person by contact email request with an (.*) contact email")]
         public async Task GivenIHaveAGetPersonByContactEmailRequest(Scenario scenario)
@@ -59,13 +60,13 @@ namespace Bookings.IntegrationTests.Steps
             switch (scenario)
             {
                 case Scenario.Valid:
-                {
-                    var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                    _apiTestContext.NewHearingId = seededHearing.Id;
+                    {
+                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+                        _apiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                    _username = seededHearing.GetParticipants().First().Person.ContactEmail;
-                    break;
-                }
+                        _username = seededHearing.GetParticipants().First().Person.ContactEmail;
+                        break;
+                    }
                 case Scenario.Nonexistent:
                     _username = Internet.Email();
                     break;
@@ -77,7 +78,20 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.Uri = _endpoints.GetPersonByContactEmail(_username);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
-        
+
+
+        [Given(@"I have a get person by contact email search term request")]
+        public async Task GivenIHaveAGetPersonByContactEmailSearchTermRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            var email = seededHearing.GetParticipants().First().Person.ContactEmail;
+            var searchTerm = email.Substring(0, 3);
+            _apiTestContext.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
+            _apiTestContext.HttpMethod = HttpMethod.Get;
+        }
+
         [Then(@"person details should be retrieved")]
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {
@@ -94,5 +108,20 @@ namespace Bookings.IntegrationTests.Steps
             model.Username.Should().NotBeNullOrEmpty();
         }
 
+        [Then(@"persons details should be retrieved")]
+        public async Task ThenPersonsDetailsShouldBeRetrieved()
+        {
+            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(json);
+            model[0].Should().NotBeNull();
+            model[0].Id.Should().NotBeEmpty();
+            model[0].ContactEmail.Should().NotBeNullOrEmpty();
+            model[0].FirstName.Should().NotBeNullOrEmpty();
+            model[0].LastName.Should().NotBeNullOrEmpty();
+            model[0].MiddleNames.Should().NotBeNullOrEmpty();
+            model[0].TelephoneNumber.Should().NotBeNullOrEmpty();
+            model[0].Title.Should().NotBeNullOrEmpty();
+            model[0].Username.Should().NotBeNullOrEmpty();
+        }
     }
 }

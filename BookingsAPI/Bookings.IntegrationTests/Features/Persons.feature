@@ -35,3 +35,10 @@ Feature: Persons
     Given I have a get person by contact email request with a nonexistent contact email
     When I send the request to the endpoint
     Then the response should have the status NotFound and success status False
+
+  Scenario: Get person by contact email search term
+    Given I have a get person by contact email search term request 
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And persons details should be retrieved
+
