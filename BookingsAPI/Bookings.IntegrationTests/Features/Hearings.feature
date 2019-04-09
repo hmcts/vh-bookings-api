@@ -134,8 +134,7 @@ Scenario: Cannot get a paged list of booked hearings with invalid case type
 	Given I have a request to the get booked hearings endpoint filtered on an invalid case type
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-	Then the response should have the status NotFound and success status False
-
+	
 Scenario: Hearing status does not change for a nonexistent hearing id
 	Given I have a nonexistent hearing cancellation request
 	When I send the request to the endpoint

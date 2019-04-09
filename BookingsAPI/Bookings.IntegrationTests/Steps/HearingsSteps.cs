@@ -319,7 +319,7 @@ namespace Bookings.IntegrationTests.Steps
 
 
         [Given(@"I have a (.*) hearing cancellation request")]
-        public async Task GivenIHaveAValidHearingCancellationRequest(Scenario scenario)
+        public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
