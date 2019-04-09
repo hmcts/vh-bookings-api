@@ -31,7 +31,10 @@ namespace Bookings.API.Mappings
                 Participants = participants,
                 HearingRoomName = videoHearing.HearingRoomName,
                 OtherInformation = videoHearing.OtherInformation,
-                CreatedBy = videoHearing.CreatedBy
+                CreatedBy = videoHearing.CreatedBy,
+                CreatedDate = videoHearing.CreatedDate,
+                UpdatedBy = videoHearing.UpdatedBy,
+                UpdatedDate = videoHearing.UpdatedDate
             };
             return response;
         }

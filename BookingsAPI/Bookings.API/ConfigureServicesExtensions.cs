@@ -109,9 +109,13 @@ namespace Bookings.API
             };
 
             serviceCollection.AddMvc()
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = contractResolver)
+                .AddJsonOptions(options => {
+                    options.SerializerSettings.ContractResolver = contractResolver;
+                    options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
+                })
                 .AddJsonOptions(options =>
                     options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter()));
+
 
             return serviceCollection;
         }

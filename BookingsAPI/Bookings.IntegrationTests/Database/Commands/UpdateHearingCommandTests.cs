@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
+using Bookings.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -39,8 +41,15 @@ namespace Bookings.IntegrationTests.Database.Commands
             var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
             var newHearingRoomName = "Room02 edit";
             var newOtherInformation = "OtherInformation02 edit";
+            var updatedBy = "testuser";
+            var casesToUpdate = new List<Case>();
 
-            await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, newVenue, newHearingRoomName, newOtherInformation));
+            var caseName = "CaseName Update";
+            var caseNumber = "CaseNumber Update";
+            casesToUpdate.Add(new Case(caseNumber, caseName));
+
+            await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, 
+                        newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -49,6 +58,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.ScheduledDateTime.Should().Be(newDateTime);
             returnedVideoHearing.HearingRoomName.Should().Be(newHearingRoomName);
             returnedVideoHearing.OtherInformation.Should().Be(newOtherInformation);
+            returnedVideoHearing.GetCases().First().Name.Should().Be(caseName);
+            returnedVideoHearing.GetCases().First().Number.Should().Be(caseNumber);
         }
         
         [TearDown]

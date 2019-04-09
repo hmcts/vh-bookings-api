@@ -59,8 +59,23 @@ namespace Bookings.Api.Contract.Responses
         public string OtherInformation { get; set; }
 
         /// <summary>
+        ///     The date and time the hearing was created
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
+
+        /// <summary>
         ///     The VH admin username that created the hearing
         /// </summary>
         public string CreatedBy { get; set; }
+
+        /// <summary>
+        ///     The last date and time any details for the hearing was updated
+        /// </summary>
+        public string UpdatedBy { get; set; }
+
+        /// <summary>
+        ///     User id of the who last updated the hearing
+        /// </summary>
+        public DateTime UpdatedDate { get; set; }
     }
 }

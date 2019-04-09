@@ -60,6 +60,8 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
             _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
             _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
+
+            
         }
 
         public Person Judge => _judgePerson;
