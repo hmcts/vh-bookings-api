@@ -139,8 +139,17 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a cancel hearing request with a valid hearing id")]
         public void GivenIHaveACancelHearingRequestWithAValidHearingId()
         {
-            var updateHearingRequest = UpdateBookingStatusRequest.BuildRequest();
-            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingRequest);
+            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest();
+            _acTestContext.Request = _acTestContext.Patch(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingStatusRequest);
         }
+        [Then(@"hearing should be cancelled")]
+        public void ThenHearingShouldBeCancelled()
+        {
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingDetailsById(_acTestContext.HearingId));
+            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_acTestContext.Response.Content);
+            model.UpdatedBy.Should().NotBeNullOrEmpty();
+        }
+
     }
 }

@@ -43,5 +43,5 @@ Scenario: Cancel a hearing
 Given I have a hearing
 And I have a cancel hearing request with a valid hearing id
 When I send the request to the endpoint
-Then the response should have the status OK and success status True
-And hearing details should be updated
+Then the response should have the status NoContent and success status True
+And hearing should be cancelled

@@ -7,7 +7,7 @@ namespace Bookings.AcceptanceTests.Models
         {
             return new Api.Contract.Requests.UpdateBookingStatusRequest
             {
-                UpdatedBy = "test",
+                UpdatedBy = Faker.Internet.Email(),
                 Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled
             };
         }
