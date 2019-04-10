@@ -80,6 +80,7 @@ namespace Bookings.Api.Contract.Responses
 
         /// <summary>
         /// Gets or sets the booking status of the hearing
+        /// </summary>
         public BookingStatus Status { get; set; }
     }
 }
