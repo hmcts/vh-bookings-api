@@ -348,15 +348,6 @@ namespace Bookings.API.Controllers
 
         }
 
-        private BookingStatus MapUpdateBookingStatus(UpdateBookingStatus status)
-        {
-            if(status == Api.Contract.Requests.Enums.UpdateBookingStatus.Created)
-            {
-                return BookingStatus.Created;
-            }
-            return BookingStatus.Cancelled;
-        }
-                
         private List<Case> MapCase(List<CaseRequest> caseRequestList)
         {
             var mappedList = new List<Case>();
@@ -365,6 +356,20 @@ namespace Bookings.API.Controllers
                 mappedList.Add(new Case(caseRequest.Number, caseRequest.Name));
             }
             return mappedList;
+        }
+
+        private BookingStatus MapUpdateBookingStatus(UpdateBookingStatus status)
+        {
+            switch (status)
+            {
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Created:
+                    return BookingStatus.Created;
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled:
+                    return BookingStatus.Cancelled;
+                default:
+                    break;
+            }
+            throw new ArgumentException("Invalid booking status type");
         }
     }
 }

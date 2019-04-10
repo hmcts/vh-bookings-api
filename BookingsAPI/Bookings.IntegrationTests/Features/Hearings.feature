@@ -106,30 +106,6 @@ Scenario: Hearing not deleted with a nonexistent hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
 
-Scenario: Hearing status does not change for a nonexistent hearing id
-	Given I have a nonexistent hearing cancellation request
-	When I send the request to the endpoint
-	Then the response should have the status NotFound and success status False
-	And hearing status should be unchanged
-
-Scenario: Hearing status does not change for an invalid hearing id
-	Given I have a invalid hearing cancellation request
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-	And hearing status should be unchanged
-
-Scenario: Hearing status does not change with empty username for given hearing id
-	Given I have an empty username in a hearing status request
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-	And hearing status should be unchanged
-
-Scenario: Hearing status changes to cancelled for a given hearing id
-	Given I have a valid hearing cancellation request
-	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
-	And hearing status should be cancelled
-
 Scenario: Get a paged list of booked hearings
 	Given I have a request to the get booked hearings endpoint
 	When I send the request to the endpoint
@@ -158,7 +134,31 @@ Scenario: Cannot get a paged list of booked hearings with invalid case type
 	Given I have a request to the get booked hearings endpoint filtered on an invalid case type
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-		
+	
+Scenario: Hearing status does not change for a nonexistent hearing id
+	Given I have a nonexistent hearing cancellation request
+	When I send the request to the endpoint
+	Then the response should have the status NotFound and success status False
+	And hearing status should be unchanged
+
+Scenario: Hearing status does not change for an invalid hearing id
+	Given I have a invalid hearing cancellation request
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+	And hearing status should be unchanged
+
+Scenario: Hearing status does not change with empty username for given hearing id
+	Given I have an empty username in a hearing status request
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+	And hearing status should be unchanged
+
+Scenario: Hearing status changes to cancelled for a given hearing id
+	Given I have a valid hearing cancellation request
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+	And hearing status should be cancelled
+
 
 Scenario: Hearing status cannot change for an invalid state transition for given hearing id
 	Given I have a valid hearing request
@@ -167,3 +167,4 @@ Scenario: Hearing status cannot change for an invalid state transition for given
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 	And hearing status should be unchanged
+
