@@ -649,21 +649,23 @@ this.ScenarioInitialize(scenarioInfo);
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status cannot change for an invalid state transition for given hearing id" +
                     "", null, ((string[])(null)));
-#line 163
+#line 162
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 164
+#line 163
  testRunner.Given("I have a valid hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 165
+#line 164
  testRunner.And("set the booking status to Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 165
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 166
  testRunner.And("set the booking status to Created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 167
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 168
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the response should have the status Conflict and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 169
- testRunner.And("hearing status should be unchanged", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("hearing status should be Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

@@ -373,13 +373,13 @@ namespace Bookings.IntegrationTests.Steps
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
+            _hearingId = seededHearing.Id;
         }
 
         [Given(@"set the booking status to (.*)")]
+        [When(@"set the booking status to (.*)")]
         public async Task SetTheBookingStatus(UpdateBookingStatus bookingStatus)
         {
-            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            _apiTestContext.NewHearingId = seededHearing.Id;
             UpdateTheHearingStatus(bookingStatus);
         }
 
@@ -396,11 +396,12 @@ namespace Bookings.IntegrationTests.Steps
         {
             var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
             _apiTestContext.NewHearingId = seededHearing.Id;
+            _hearingId = seededHearing.Id;
             UpdateTheHearingStatus(UpdateBookingStatus.Cancelled, null);
         }
         
-        [Then(@"hearing status should be cancelled")]
-        public void ThenHearingDetailsShouldBeCancelled()
+        [Then(@"hearing status should be (.*)")]
+        public void ThenHearingDetailsShouldBeCancelled(UpdateBookingStatus bookingStatus)
         {
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
@@ -409,7 +410,21 @@ namespace Bookings.IntegrationTests.Steps
             }
             hearingFromDb.Should().NotBeNull();
 
-            hearingFromDb.Status.Should().Be(BookingStatus.Cancelled);
+            hearingFromDb.Status.Should().Be(GetMappedBookingStatus(bookingStatus));
+        }
+
+        private BookingStatus GetMappedBookingStatus(UpdateBookingStatus status)
+        {
+            switch (status)
+            {
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Created:
+                    return BookingStatus.Created;
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled:
+                    return BookingStatus.Cancelled;
+                default:
+                    break;
+            }
+            throw new ArgumentException("Invalid booking status type");
         }
 
         [Then(@"hearing status should be unchanged")]
