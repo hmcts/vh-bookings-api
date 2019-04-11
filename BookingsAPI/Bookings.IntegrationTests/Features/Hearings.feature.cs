@@ -561,6 +561,114 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Hearing status does not change for a nonexistent hearing id")]
+        public virtual void HearingStatusDoesNotChangeForANonexistentHearingId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status does not change for a nonexistent hearing id", null, ((string[])(null)));
+#line 138
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 139
+ testRunner.Given("I have a nonexistent hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 140
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 141
+ testRunner.Then("the response should have the status NotFound and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 142
+ testRunner.And("hearing status should be unchanged", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Hearing status does not change for an invalid hearing id")]
+        public virtual void HearingStatusDoesNotChangeForAnInvalidHearingId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status does not change for an invalid hearing id", null, ((string[])(null)));
+#line 144
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 145
+ testRunner.Given("I have a invalid hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 146
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 147
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 148
+ testRunner.And("hearing status should be unchanged", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Hearing status does not change with empty username for given hearing id")]
+        public virtual void HearingStatusDoesNotChangeWithEmptyUsernameForGivenHearingId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status does not change with empty username for given hearing id", null, ((string[])(null)));
+#line 150
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 151
+ testRunner.Given("I have an empty username in a hearing status request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 152
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 153
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 154
+ testRunner.And("hearing status should be unchanged", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Hearing status changes to cancelled for a given hearing id")]
+        public virtual void HearingStatusChangesToCancelledForAGivenHearingId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status changes to cancelled for a given hearing id", null, ((string[])(null)));
+#line 156
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 157
+ testRunner.Given("I have a valid hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 158
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 159
+ testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 160
+ testRunner.And("hearing status should be cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Hearing status cannot change for an invalid state transition for given hearing id" +
+            "")]
+        public virtual void HearingStatusCannotChangeForAnInvalidStateTransitionForGivenHearingId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status cannot change for an invalid state transition for given hearing id" +
+                    "", null, ((string[])(null)));
+#line 162
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 163
+ testRunner.Given("I have a valid hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 164
+ testRunner.And("set the booking status to Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 165
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 166
+ testRunner.And("set the booking status to Created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 167
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 168
+ testRunner.Then("the response should have the status Conflict and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 169
+ testRunner.And("hearing status should be Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
+using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
 using Bookings.API.Helpers;
@@ -11,14 +12,18 @@ using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
+using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace Bookings.API.Controllers
 {
@@ -233,6 +238,51 @@ namespace Bookings.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update booking status
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}")]
+        [SwaggerOperation(OperationId = "UpdateBookingStatus")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Conflict)]
+        public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new UpdateBookingStatusRequestValidation().Validate(updateBookingStatusRequest);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
+                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
+                await _commandHandler.Handle(command);
+                return NoContent();
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (DomainRuleException exception)
+            {
+                exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
+                return Conflict(ModelState);
+            }
+       }
+
         private async Task<HearingVenue> GetVenue(string venueName)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
@@ -318,6 +368,20 @@ namespace Bookings.API.Controllers
                 mappedList.Add(new Case(caseRequest.Number, caseRequest.Name));
             }
             return mappedList;
+        }
+
+        private BookingStatus MapUpdateBookingStatus(UpdateBookingStatus status)
+        {
+            switch (status)
+            {
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Created:
+                    return BookingStatus.Created;
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled:
+                    return BookingStatus.Cancelled;
+                default:
+                    break;
+            }
+            throw new ArgumentException("Invalid booking status type");
         }
     }
 }

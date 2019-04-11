@@ -1,3 +1,4 @@
+using Bookings.Domain.Enumerations;
 using System;
 using System.Collections.Generic;
 
@@ -59,7 +60,6 @@ namespace Bookings.Api.Contract.Responses
         public string OtherInformation { get; set; }
 
         /// <summary>
-        ///     The date and time the hearing was created
         /// </summary>
         public DateTime CreatedDate { get; set; }
 
@@ -77,5 +77,10 @@ namespace Bookings.Api.Contract.Responses
         ///     User id of the who last updated the hearing
         /// </summary>
         public DateTime UpdatedDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the booking status of the hearing
+        /// </summary>
+        public BookingStatus Status { get; set; }
     }
 }

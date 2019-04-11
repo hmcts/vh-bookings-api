@@ -5,9 +5,12 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
+using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
+using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -341,6 +344,101 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
 
+
+        [Given(@"I have a (.*) hearing cancellation request")]
+        public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    break;
+                case Scenario.Invalid:
+                    _hearingId = Guid.Empty;
+                    break;
+                case Scenario.Nonexistent:
+                    _hearingId = Guid.NewGuid();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
+        }
+
+        [Given(@"I have a valid hearing request")]
+        public async Task GivenIHaveAValidHearingRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            _hearingId = seededHearing.Id;
+        }
+
+        [Given(@"set the booking status to (.*)")]
+        [When(@"set the booking status to (.*)")]
+        public async Task SetTheBookingStatus(UpdateBookingStatus bookingStatus)
+        {
+            UpdateTheHearingStatus(bookingStatus);
+        }
+
+        [Given(@"I have an empty status in a hearing status request")]
+        public async Task GivenIHaveAnEmptyStatusHearingStatusRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            UpdateTheHearingStatus(null);
+        }
+
+        [Given(@"I have an empty username in a hearing status request")]
+        public async Task GivenIHaveAnEmptyUsernameHearingStatusRequest()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            _hearingId = seededHearing.Id;
+            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled, null);
+        }
+        
+        [Then(@"hearing status should be (.*)")]
+        public void ThenHearingDetailsShouldBeX(UpdateBookingStatus bookingStatus)
+        {
+            ThenHearingBookingStatusIs(GetMappedBookingStatus(bookingStatus));
+        }
+        
+        [Then(@"hearing status should be unchanged")]
+        public void ThenHearingDetailsShouldBeUnchanged()
+        {
+            ThenHearingBookingStatusIs(BookingStatus.Booked);
+        }
+
+        private void ThenHearingBookingStatusIs(BookingStatus status)
+        {
+            Hearing hearingFromDb;
+            using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
+            {
+                hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _apiTestContext.NewHearingId);
+            }
+
+            hearingFromDb.Should().NotBeNull();
+
+            hearingFromDb.Status.Should().Be(status);
+        }
+
+        private BookingStatus GetMappedBookingStatus(UpdateBookingStatus status)
+        {
+            switch (status)
+            {
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Created:
+                    return BookingStatus.Created;
+                case Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled:
+                    return BookingStatus.Cancelled;
+                default:
+                    break;
+            }
+            throw new ArgumentException("Invalid booking status type");
+        }
+
         [TearDown]
         public async Task TearDown()
         {
@@ -416,6 +514,17 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             _apiTestContext.Uri = _endpoints.UpdateHearingDetails(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Put;
+        }
+
+        private void UpdateTheHearingStatus(UpdateBookingStatus? status, string updatedBy = "testuser")
+        {
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest {
+                Status = (UpdateBookingStatus)status,
+                UpdatedBy = updatedBy
+            });
+            _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            _apiTestContext.Uri = _endpoints.UpdateHearingDetails(_hearingId);
+            _apiTestContext.HttpMethod = HttpMethod.Patch;
         }
     }
 }

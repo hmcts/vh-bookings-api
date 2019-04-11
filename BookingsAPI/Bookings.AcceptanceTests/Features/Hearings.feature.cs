@@ -181,6 +181,28 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Cancel a hearing")]
+        public virtual void CancelAHearing()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Cancel a hearing", null, ((string[])(null)));
+#line 42
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 43
+testRunner.Given("I have a hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 44
+testRunner.And("I have a cancel hearing request with a valid hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 45
+testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 46
+testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 47
+testRunner.And("hearing should be cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore
