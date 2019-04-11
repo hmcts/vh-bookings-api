@@ -149,8 +149,7 @@ namespace Bookings.AcceptanceTests.Steps
             _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_acTestContext.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
-            model.Status.Should().Be(Bookings.Domain.Enumerations.BookingStatus.Cancelled);
+            model.Status.Should().Be(Domain.Enumerations.BookingStatus.Cancelled);
         }
-
     }
 }
