@@ -401,16 +401,28 @@ namespace Bookings.IntegrationTests.Steps
         }
         
         [Then(@"hearing status should be (.*)")]
-        public void ThenHearingDetailsShouldBeCancelled(UpdateBookingStatus bookingStatus)
+        public void ThenHearingDetailsShouldBeX(UpdateBookingStatus bookingStatus)
+        {
+            ThenHearingBookingStatusIs(GetMappedBookingStatus(bookingStatus));
+        }
+        
+        [Then(@"hearing status should be unchanged")]
+        public void ThenHearingDetailsShouldBeUnchanged()
+        {
+            ThenHearingBookingStatusIs(BookingStatus.Booked);
+        }
+
+        private void ThenHearingBookingStatusIs(BookingStatus status)
         {
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _apiTestContext.NewHearingId);
             }
+
             hearingFromDb.Should().NotBeNull();
 
-            hearingFromDb.Status.Should().Be(GetMappedBookingStatus(bookingStatus));
+            hearingFromDb.Status.Should().Be(status);
         }
 
         private BookingStatus GetMappedBookingStatus(UpdateBookingStatus status)
@@ -425,19 +437,6 @@ namespace Bookings.IntegrationTests.Steps
                     break;
             }
             throw new ArgumentException("Invalid booking status type");
-        }
-
-        [Then(@"hearing status should be unchanged")]
-        public void ThenHearingDetailsShouldBeUnchanged()
-        {
-            Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(_apiTestContext.BookingsDbContextOptions))
-            {
-                hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _apiTestContext.NewHearingId);
-            }
-            hearingFromDb.Should().NotBeNull();
-
-            hearingFromDb.Status.Should().Be(BookingStatus.Booked);
         }
 
         [TearDown]
