@@ -16,19 +16,29 @@ namespace Bookings.API.Mappings
     {
         public NewParticipant MapRequestToNewParticipant(ParticipantRequest requestParticipant, CaseType caseType)
         {
+
             var caseRole = caseType.CaseRoles.FirstOrDefault(x => x.Name == requestParticipant.CaseRoleName);
             if (caseRole == null) throw new BadRequestException($"Invalid case role [{requestParticipant.CaseRoleName}]");
-            
+
             var hearingRole = caseRole.HearingRoles.FirstOrDefault(x => x.Name == requestParticipant.HearingRoleName);
             if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
+            Person person;
+            if(hearingRole.UserRole.IsIndividual)
 
-            var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username)
             {
-                MiddleNames = requestParticipant.MiddleNames,
-                ContactEmail = requestParticipant.ContactEmail,
-                TelephoneNumber = requestParticipant.TelephoneNumber
-            };
+                var address = new Address(requestParticipant.HouseNumber, requestParticipant.Street, requestParticipant.Postcode, requestParticipant.City, requestParticipant.County);
+                person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
+                requestParticipant.Username, address);
+            }
+            else
+            {
+                person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
+                requestParticipant.Username);
+            }
+
+            person.MiddleNames = requestParticipant.MiddleNames;
+            person.ContactEmail = requestParticipant.ContactEmail;
+            person.TelephoneNumber = requestParticipant.TelephoneNumber;
 
             return new NewParticipant
             {

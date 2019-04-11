@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
+using Bookings.API.Helpers;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
@@ -15,6 +16,7 @@ using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
+using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -42,9 +44,9 @@ namespace Bookings.API.Controllers
         /// <returns>List of participants</returns>
         [HttpGet("{hearingId}/participants", Name = "GetAllParticipantsInHearing")]
         [SwaggerOperation(OperationId = "GetAllParticipantsInHearing")]
-        [ProducesResponseType(typeof(List<ParticipantResponse>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetAllParticipantsInHearing(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
@@ -78,9 +80,9 @@ namespace Bookings.API.Controllers
         /// <returns>The participant</returns>
         [HttpGet("{hearingId}/participants/{participantId}", Name = "GetParticipantInHearing")]
         [SwaggerOperation(OperationId = "GetParticipantInHearing")]
-        [ProducesResponseType(typeof(ParticipantResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ParticipantResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetParticipantInHearing(Guid hearingId, Guid participantId)
         {
             if (hearingId == Guid.Empty)
@@ -88,13 +90,13 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             if (participantId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             var query = new GetParticipantsInHearingQuery(hearingId);
             try
             {
@@ -125,9 +127,9 @@ namespace Bookings.API.Controllers
         /// <returns>The participant</returns>
         [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [SwaggerOperation(OperationId = "AddParticipantsToHearing")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
             [FromBody] AddParticipantsToHearingRequest request)
         {
@@ -150,6 +152,19 @@ namespace Bookings.API.Controllers
             if (videoHearing == null)
             {
                 return NotFound();
+            }
+
+            var caseTypequery = new GetCaseTypeQuery(videoHearing.CaseType.Name);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypequery);
+
+            var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
+
+            var addressValidationResult = AddressValidationHelper.ValidateAddress(individualRoles, request.Participants);
+
+            if (!addressValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(addressValidationResult.Errors);
+                return BadRequest(ModelState);
             }
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
@@ -178,9 +193,9 @@ namespace Bookings.API.Controllers
         /// <returns></returns>
         [HttpDelete("{hearingId}/participants/{participantId}", Name = "RemoveParticipantFromHearing")]
         [SwaggerOperation(OperationId = "RemoveParticipantFromHearing")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> RemoveParticipantFromHearing(Guid hearingId, Guid participantId)
         {
             if (hearingId == Guid.Empty)
@@ -188,7 +203,7 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            
+
             if (participantId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
@@ -205,13 +220,13 @@ namespace Bookings.API.Controllers
             {
                 return NotFound();
             }
-            
+
             var participant = participants.FirstOrDefault(x => x.Id == participantId);
             if (participant == null)
             {
                 return NotFound();
             }
-            
+
             var command = new RemoveParticipantFromHearingCommand(hearingId, participant);
             await _commandHandler.Handle(command);
 
@@ -251,8 +266,34 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title, request.DisplayName, request.TelephoneNumber, request.Street, request.HouseNumber, request.City, request.County, request.Postcode, request.OrganisationName);
-            
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+            var query = new GetCaseTypeQuery(videoHearing.CaseType.Name);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+
+            var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
+
+            if (individualRoles.Contains(request.HearingRoleName))
+            {
+                var addressValidationResult = new AddressValidation().Validate(request);
+                if (!addressValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(result.Errors);
+                    return BadRequest(ModelState);
+                }
+            }
+
+            var mapper = new UpdateParticipantRequestToNewAddressMapper();
+
+            var address = mapper.MapRequestToNewAddress(request);
+
+            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title, request.DisplayName, request.TelephoneNumber, address, request.OrganisationName, videoHearing);
+
             await _commandHandler.Handle(updateParticipantCommand);
 
             var particpant = updateParticipantCommand.UpdatedParticipant;
@@ -263,8 +304,4 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
     }
-
-   
-
-
 }

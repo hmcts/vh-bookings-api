@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190320165537_Additional_Fields_To_Address")]
+    partial class Additional_Fields_To_Address
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,13 +332,6 @@ namespace Bookings.DAL.Migrations
                     b.HasBaseType("Bookings.Domain.Participants.Participant");
 
                     b.HasDiscriminator().HasValue("Individual");
-                });
-
-            modelBuilder.Entity("Bookings.Domain.Participants.Judge", b =>
-                {
-                    b.HasBaseType("Bookings.Domain.Participants.Participant");
-
-                    b.HasDiscriminator().HasValue("Judge");
                 });
 
             modelBuilder.Entity("Bookings.Domain.Participants.Representative", b =>
