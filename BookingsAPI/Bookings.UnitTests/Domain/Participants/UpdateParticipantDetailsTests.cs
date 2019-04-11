@@ -11,14 +11,12 @@ namespace Bookings.UnitTests.Domain.Hearing
 {
     public class UpdateParticipantDetailsTests
     {
-      
+
 
         [Test]
         public void should_update_participant_with_user_role_individual_details()
-       {
+        {
             var individualParticipant = new ParticipantBuilder().IndividualPrticipantClaimant;
-            //var hearing = new VideoHearingBuilder().Build();
-            //var participant = hearing.GetParticipants().First(x => individualRoles.Contains(x.HearingRole.Name));
             var displayName = "Edit Display Name";
             var telephoneNumber = "111122223";
             var title = "Edit Title";
@@ -28,7 +26,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var county = "Edit County";
             var postcode = "ED1 5NR";
             var organisationName = "Edit Org1";
-            var beforeUpdatedDate = individualParticipant.UpdatedDate ;
+            var beforeUpdatedDate = individualParticipant.UpdatedDate;
 
             individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
             individualParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
@@ -38,13 +36,11 @@ namespace Bookings.UnitTests.Domain.Hearing
             individualParticipant.Person.Address.HouseNumber.Should().Be(houseNumber);
             individualParticipant.Person.Address.Street.Should().Be(street);
             individualParticipant.Person.Address.Postcode.Should().Be(postcode);
-          }
+        }
 
         [Test]
         public void should_update_participant_with_user_role_representative_details()
         {
-            //var hearing = new VideoHearingBuilder().Build();
-            //var participant = hearing.GetParticipants().First(x => representativeRoles.Contains(x.HearingRole.Name));
             var representativeParticipant = new ParticipantBuilder().RepresentativePrticipantDefendant;
             var displayName = "Edit Display Name";
             var telephoneNumber = "111122223";
@@ -80,13 +76,11 @@ namespace Bookings.UnitTests.Domain.Hearing
             var organisationName = "Edit Org1";
             var beforeUpdatedDate = individualParticipant.UpdatedDate;
 
-
             Action action = () => individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName); ;
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "DisplayName");
-               
-            
+
             individualParticipant.UpdatedDate.Should().Be(beforeUpdatedDate);
         }
     }
