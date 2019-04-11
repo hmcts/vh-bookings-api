@@ -47,7 +47,8 @@ namespace Bookings.API.Mappings
                 CreatedBy = videoHearing.CreatedBy,
                 LastEditDate = videoHearing.UpdatedDate,
                 LastEditBy = videoHearing.UpdatedBy,
-                JudgeName = judgeName
+                JudgeName = judgeName,
+                Status = videoHearing.Status
             };
             return response;
         }

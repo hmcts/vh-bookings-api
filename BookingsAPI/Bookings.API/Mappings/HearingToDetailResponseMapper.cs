@@ -34,7 +34,8 @@ namespace Bookings.API.Mappings
                 CreatedBy = videoHearing.CreatedBy,
                 CreatedDate = videoHearing.CreatedDate,
                 UpdatedBy = videoHearing.UpdatedBy,
-                UpdatedDate = videoHearing.UpdatedDate
+                UpdatedDate = videoHearing.UpdatedDate,
+                Status = videoHearing.Status
             };
             return response;
         }
