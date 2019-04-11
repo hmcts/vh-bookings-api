@@ -157,13 +157,11 @@ Scenario: Hearing status does not change for a nonexistent hearing id
 	Given I have a nonexistent hearing cancellation request
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
-	And hearing status should be unchanged
 
 Scenario: Hearing status does not change for an invalid hearing id
 	Given I have a invalid hearing cancellation request
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-	And hearing status should be unchanged
 
 Scenario: Hearing status does not change with empty username for given hearing id
 	Given I have an empty username in a hearing status request
