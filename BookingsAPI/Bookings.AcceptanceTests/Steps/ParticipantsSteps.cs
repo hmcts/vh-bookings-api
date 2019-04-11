@@ -108,9 +108,9 @@ namespace Bookings.AcceptanceTests.Steps
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
             _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateParticipantDetails(_acTestContext.HearingId,participantId), updateParticipantRequest);
         }
-
-        [Then(@"participant details should be updated")]
-        public void ThenParticipantDetailsShouldBeUpdated()
+        
+        [Then(@"'(.*)' details should be updated")]
+        public void ThenIndividualDetailsShouldBeUpdated(string participant)
         {
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_acTestContext.Json);
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
@@ -118,9 +118,14 @@ namespace Bookings.AcceptanceTests.Steps
             model.Title.Should().Be(updateParticipantRequest.Title);
             model.DisplayName.Should().Be(updateParticipantRequest.DisplayName);
             model.TelephoneNumber.Should().Be(updateParticipantRequest.TelephoneNumber);
+            if (participant.Equals("Representative"))
+            {
+                model.HouseNumber.Should().BeNull();
+                model.Street.Should().BeNull();
+                model.City.Should().BeNull();
+                model.County.Should().BeNull();
+                model.Postcode.Should().BeNull();
+            }
         }
-
-
-
     }
 }

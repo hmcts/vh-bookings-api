@@ -1,5 +1,6 @@
 using Bookings.Api.Contract.Requests;
 using FluentValidation;
+using System.Linq;
 
 namespace Bookings.API.Validations
 {
@@ -13,7 +14,7 @@ namespace Bookings.API.Validations
         public static readonly string NoLastNameErrorMessage = "Last name is required";
         public static readonly string NoUsernameErrorMessage = "Username is required";
         public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
-        
+
         public ParticipantRequestValidation()
         {
             RuleFor(x => x.Title).NotEmpty().WithMessage(NoTitleErrorMessage);
@@ -21,7 +22,6 @@ namespace Bookings.API.Validations
             RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);
             RuleFor(x => x.ContactEmail).NotEmpty().WithMessage(NoContactEmailErrorMessage);
             RuleFor(x => x.Username).NotEmpty().WithMessage(NoUsernameErrorMessage);
-            
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);

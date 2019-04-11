@@ -37,11 +37,11 @@ Scenario: Add participant to a hearing
 	And I have an update participant details request with a valid user Individual 
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
-	And participant details should be updated
+	And 'Individual' details should be updated 
 
 	Scenario: Update participant details with user role Representative
 	Given I have a hearing
 	And I have an update participant details request with a valid user Representative 
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
-	And participant details should be updated
+	And 'Representative' details should be updated
