@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Bookings.Api.Contract.Requests
 {
     public class UpdateParticipantRequest
@@ -45,11 +43,18 @@ namespace Bookings.Api.Contract.Requests
         public string County { get; set; }
 
         /// <summary>
-        /// Organisation name
+        /// Organization name
         /// </summary>
         public string OrganisationName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the solicitor reference
+        /// </summary>
+        public string SolicitorReference { get; set; }
 
-
+        /// <summary>
+        /// Gets or set the representee of a representative
+        /// </summary>
+        public string Representee { get; set; }
     }
 }

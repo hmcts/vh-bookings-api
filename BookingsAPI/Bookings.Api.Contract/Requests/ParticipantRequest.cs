@@ -61,5 +61,10 @@ namespace Bookings.Api.Contract.Requests
         /// The representee of a representative
         /// </summary>
         public string Representee { get; set; }
+
+        /// <summary>
+        /// The organization name
+        /// </summary>
+        public string Organisation { get; set; }
     }
 }

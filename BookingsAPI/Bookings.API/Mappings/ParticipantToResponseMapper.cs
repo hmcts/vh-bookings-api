@@ -7,7 +7,7 @@ namespace Bookings.API.Mappings
     {
         public ParticipantResponse MapParticipantToResponse(Participant participant)
         {
-            return new ParticipantResponse
+            var participantResponse = new ParticipantResponse
             {
                 Id = participant.Id,
                 DisplayName = participant.DisplayName,
@@ -20,8 +20,23 @@ namespace Bookings.API.Mappings
                 MiddleNames = participant.Person.MiddleNames,
                 Username = participant.Person.Username,
                 ContactEmail = participant.Person.ContactEmail,
-                TelephoneNumber = participant.Person.TelephoneNumber
+                TelephoneNumber = participant.Person.TelephoneNumber,
+                Organisation = participant.Person.Organisation?.Name,
             };
+
+            switch (participant.HearingRole.UserRole.Name)
+            {
+                case "Representative":
+                    var representative = (Representative)participant;
+                    participantResponse.SolicitorReference = representative.SolicitorsReference;
+                    participantResponse.Representee = representative.Representee;
+                    break;
+                case "Individual":
+                case "Judge":
+                    break;
+            }
+
+            return participantResponse;
         }
     }
 }
