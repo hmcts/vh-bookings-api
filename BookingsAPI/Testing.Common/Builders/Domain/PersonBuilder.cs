@@ -45,6 +45,9 @@ namespace Testing.Common.Builders.Domain
                 .WithFactory(() => new Address())
                 .With(x => x.Street = Faker.Address.StreetAddress())
                 .With(x => x.Postcode = Faker.Address.UkPostCode())
+                .With(x => x.City = Faker.Address.City())
+                .With(x => x.County = Faker.Address.Country())
+                .With(x => x.HouseNumber = Faker.Address.StreetAddress())
                 .Build();
            _person.UpdateAddress(address);
             return this;

@@ -12,14 +12,19 @@ namespace Bookings.Domain
         public Person(string title, string firstName, string lastName, string username)
         {
             Id = Guid.NewGuid();
-            ValidateArguments(title, firstName, lastName, username);
+            ValidateArguments(firstName, lastName, username);
             Title = title;
             FirstName = firstName;
             LastName = lastName;
             Username = username;
             CreatedDate = DateTime.UtcNow;
         }
-        
+
+        public Person(string title, string firstName, string lastName, string username, Address address) : this(title, firstName, lastName, username)
+        {
+            Address = address;
+        }
+
         public string Title { get; set; }
         public string FirstName { get; protected set; }
         public string LastName { get; protected set; }
@@ -46,12 +51,8 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        private void ValidateArguments(string title, string firstName, string lastName, string username)
+        private void ValidateArguments(string firstName, string lastName, string username)
         {
-            if (string.IsNullOrEmpty(title))
-            {
-                _validationFailures.AddFailure("Title", "Title cannot be empty");
-            }
             if (string.IsNullOrEmpty(firstName))
             {
                 _validationFailures.AddFailure("FirstName", "FirstName cannot be empty");

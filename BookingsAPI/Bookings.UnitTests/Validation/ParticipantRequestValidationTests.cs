@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
@@ -11,13 +12,16 @@ namespace Bookings.UnitTests.Validation
     public class ParticipantRequestValidationTests
     {
         private ParticipantRequestValidation _validator;
+        private AddressValidation _addressValidator;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             _validator = new ParticipantRequestValidation();
+            _addressValidator = new AddressValidation();
         }
-        
+
+
         [Test]
         public async Task should_pass_validation()
         {
@@ -27,7 +31,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_display_name_error()
         {
@@ -41,7 +45,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_case_role_name_error()
         {
@@ -55,7 +59,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCaseRoleNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_hearing_role_name_error()
         {
@@ -69,7 +73,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoHearingRoleNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_title_error()
         {
@@ -83,7 +87,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTitleErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_first_name_error()
         {
@@ -97,7 +101,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_last_name_error()
         {
@@ -111,7 +115,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_username_error()
         {
@@ -125,7 +129,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoUsernameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_contact_email_error()
         {
@@ -139,13 +143,12 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
-        
         private ParticipantRequest BuildRequest()
         {
-           return Builder<ParticipantRequest>.CreateNew()
-                .With(x => x.CaseRoleName = "Claimant")
-                .With(x => x.HearingRoleName = "Solicitor")
-                .Build();
+            return Builder<ParticipantRequest>.CreateNew()
+                 .With(x => x.CaseRoleName = "Claimant")
+                 .With(x => x.HearingRoleName = "Solicitor")
+                 .Build();
         }
     }
 }

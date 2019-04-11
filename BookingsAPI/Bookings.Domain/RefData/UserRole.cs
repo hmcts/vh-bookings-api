@@ -11,5 +11,6 @@ namespace Bookings.Domain.RefData
         }
         
         public string Name { get; set; }
+        public bool IsIndividual => Name.ToLower().Equals("individual");
     }
 }
