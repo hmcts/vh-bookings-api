@@ -256,5 +256,25 @@ namespace Bookings.Domain
                 _validationFailures.AddFailure(nameof(ScheduledDateTime), "Schedule datetime cannot be set in the past");
             }
         }
+
+        public void UpdateStatus(BookingStatus newStatus, string updatedBy)
+        {
+            if(string.IsNullOrEmpty(updatedBy))
+            {
+                throw new ArgumentNullException(nameof(updatedBy));
+            }
+
+            var bookingStatusTransition = new BookingStatusTransition();
+            var statusChangedEvent = new StatusChangedEvent(Status, newStatus);
+
+            if (!bookingStatusTransition.IsValid(statusChangedEvent))
+            {
+                throw new DomainRuleException("BookingStatus", $"Cannot change the booking status from {Status} to {newStatus}");
+            }
+            
+            Status = newStatus;
+            UpdatedDate = DateTime.UtcNow;
+            UpdatedBy = updatedBy;
+        }
     }
 }

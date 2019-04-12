@@ -75,6 +75,23 @@ namespace Bookings.AcceptanceTests.Steps
                 participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.UserRoleName.Should().NotBeNullOrEmpty();
+
+                if (participant.UserRoleName.Equals("Individual"))
+                {
+                    participant.HouseNumber.Should().NotBeNullOrEmpty();
+                    participant.Street.Should().NotBeNullOrEmpty();
+                    participant.City.Should().NotBeNullOrEmpty();
+                    participant.County.Should().NotBeNullOrEmpty();
+                    participant.Postcode.Should().NotBeNullOrEmpty();
+                }
+                if (participant.UserRoleName.Equals("Representative"))
+                {
+                    participant.HouseNumber.Should().BeNull();
+                    participant.Street.Should().BeNull();
+                    participant.City.Should().BeNull();
+                    participant.County.Should().BeNull();
+                    participant.Postcode.Should().BeNull();
+                }
             }
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
             model.ScheduledDuration.Should().BePositive();
@@ -93,6 +110,37 @@ namespace Bookings.AcceptanceTests.Steps
             model.HearingVenueName.Should().Be("Manchester Civil and Family Justice Centre");
             model.OtherInformation.Should().Be("OtherInformation12345");
             model.HearingRoomName.Should().Be("HearingRoomName12345");
+            foreach (var participant in model.Participants)
+            {
+                participant.CaseRoleName.Should().NotBeNullOrEmpty();
+                participant.ContactEmail.Should().NotBeNullOrEmpty();
+                participant.DisplayName.Should().NotBeNullOrEmpty();
+                participant.FirstName.Should().NotBeNullOrEmpty();
+                participant.HearingRoleName.Should().NotBeNullOrEmpty();
+                participant.Id.Should().NotBeEmpty();
+                participant.LastName.Should().NotBeNullOrEmpty();
+                participant.MiddleNames.Should().NotBeNullOrEmpty();
+                participant.TelephoneNumber.Should().NotBeNullOrEmpty();
+                participant.Title.Should().NotBeNullOrEmpty();
+                participant.UserRoleName.Should().NotBeNullOrEmpty();
+
+                if (participant.UserRoleName.Equals("Individual"))
+                {
+                    participant.HouseNumber.Should().NotBeNullOrEmpty();
+                    participant.Street.Should().NotBeNullOrEmpty();
+                    participant.City.Should().NotBeNullOrEmpty();
+                    participant.County.Should().NotBeNullOrEmpty();
+                    participant.Postcode.Should().NotBeNullOrEmpty();
+                }
+                if (participant.UserRoleName.Equals("Representative"))
+                {
+                    participant.HouseNumber.Should().BeNull();
+                    participant.Street.Should().BeNull();
+                    participant.City.Should().BeNull();
+                    participant.County.Should().BeNull();
+                    participant.Postcode.Should().BeNull();
+                }
+            }
         }
 
         [Then(@"the hearing no longer exists")]
@@ -135,6 +183,21 @@ namespace Bookings.AcceptanceTests.Steps
             response.CourtAddress.Should().NotBeNullOrEmpty();
             response.HearingName.Should().NotBeNullOrEmpty();
             response.HearingNumber.Should().NotBeNullOrEmpty();
+        }
+        [Given(@"I have a cancel hearing request with a valid hearing id")]
+        public void GivenIHaveACancelHearingRequestWithAValidHearingId()
+        {
+            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest();
+            _acTestContext.Request = _acTestContext.Patch(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingStatusRequest);
+        }
+        [Then(@"hearing should be cancelled")]
+        public void ThenHearingShouldBeCancelled()
+        {
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingDetailsById(_acTestContext.HearingId));
+            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_acTestContext.Response.Content);
+            model.UpdatedBy.Should().NotBeNullOrEmpty();
+            model.Status.Should().Be(Domain.Enumerations.BookingStatus.Cancelled);
         }
     }
 }

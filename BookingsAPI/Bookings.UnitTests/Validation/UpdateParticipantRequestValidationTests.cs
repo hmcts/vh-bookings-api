@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
@@ -12,13 +13,15 @@ namespace Bookings.UnitTests.Validation
     public class UpdateParticipantRequestValidationTests
     {
         private UpdateParticipantRequestValidation _validator;
+        private AddressValidation _addressValidator;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             _validator = new UpdateParticipantRequestValidation();
+            _addressValidator = new AddressValidation();
         }
-        
+
         [Test]
         public async Task should_pass_validation()
         {
@@ -28,7 +31,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
-        
+
         [Test]
         public async Task should_return_missing_display_name_error()
         {
@@ -42,11 +45,11 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
-                                   
+
         private UpdateParticipantRequest BuildRequest()
         {
-           return Builder<UpdateParticipantRequest>.CreateNew()
-                .Build();
+            return Builder<UpdateParticipantRequest>.CreateNew()
+                 .Build();
         }
     }
 }
