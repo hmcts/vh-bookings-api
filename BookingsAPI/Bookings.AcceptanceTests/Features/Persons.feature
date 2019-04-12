@@ -18,7 +18,7 @@ Scenario: Get person by username
 	Then the response should have the status OK and success status True
 	And a person should be retrieved
 
-Scenario: Get person by serch term
+Scenario: Get person by search term
 	Given I have a hearing
 	And I have a get a person by search term request with a valid search term
 	When I send the request to the endpoint
