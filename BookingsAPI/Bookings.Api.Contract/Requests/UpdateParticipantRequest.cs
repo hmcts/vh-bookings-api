@@ -1,6 +1,6 @@
 namespace Bookings.Api.Contract.Requests
 {
-    public class UpdateParticipantRequest
+    public class UpdateParticipantRequest : IAddressRequest
     {
         /// <summary>
         ///     Participant Title.
@@ -48,11 +48,16 @@ namespace Bookings.Api.Contract.Requests
         public string OrganisationName { get; set; }
 
         /// <summary>
+        /// Hearing Role Name
+        /// </summary>
+        public string HearingRoleName { get; set; }
+        
+        /// <summary>
         /// Gets or sets the solicitor reference
         /// </summary>
         public string SolicitorReference { get; set; }
 
-        /// <summary>
+       /// <summary>
         /// Gets or set the representee of a representative
         /// </summary>
         public string Representee { get; set; }

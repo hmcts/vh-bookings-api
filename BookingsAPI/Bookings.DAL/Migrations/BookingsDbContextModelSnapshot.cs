@@ -26,6 +26,10 @@ namespace Bookings.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("City");
+
+                    b.Property<string>("County");
+
                     b.Property<string>("HouseNumber");
 
                     b.Property<string>("Postcode");
