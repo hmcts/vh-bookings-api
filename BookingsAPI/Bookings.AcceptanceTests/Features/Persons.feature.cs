@@ -96,11 +96,9 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get person by contact email")]
-        [NUnit.Framework.CategoryAttribute("002_WIP")]
         public virtual void GetPersonByContactEmail()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by contact email", null, new string[] {
-                        "002_WIP"});
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by contact email", null, ((string[])(null)));
 #line 14
  this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
@@ -119,12 +117,10 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Get person by serch term")]
-        [NUnit.Framework.CategoryAttribute("001_WIP")]
-        public virtual void GetPersonBySerchTerm()
+        [NUnit.Framework.DescriptionAttribute("Get person by search term")]
+        public virtual void GetPersonBySearchTerm()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by serch term", null, new string[] {
-                        "001_WIP"});
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by search term", null, ((string[])(null)));
 #line 21
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();

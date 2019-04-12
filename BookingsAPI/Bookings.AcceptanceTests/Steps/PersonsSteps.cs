@@ -2,6 +2,7 @@
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Linq;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -47,21 +48,25 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a get a person by search term request with a valid search term")]
         public void GivenIHaveAGetAPersonBySearchTermRequestWithAValidSearchTerm()
         {
-           _acTestContext.Request = _acTestContext.Get(_endpoints.GetPersonBySearchTerm(_acTestContext.Participants[0].ContactEmail));
+            var contactEmail = _acTestContext.Participants[0].ContactEmail;
+            var searchTerm = contactEmail.Substring(0, 3);
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetPersonBySearchTerm(searchTerm));
         }
         [Then(@"persons details should be retrieved")]
         public void ThenPersonsDetailsShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_acTestContext.Json);
-            model[0].Should().NotBeNull();
-            model[0].ContactEmail.Should().Be(_acTestContext.Participants[0].ContactEmail);
-            model[0].FirstName.Should().Be(_acTestContext.Participants[0].FirstName);
-            model[0].Id.Should().NotBeEmpty();
-            model[0].LastName.Should().Be(_acTestContext.Participants[0].LastName);
-            model[0].MiddleNames.Should().Be(_acTestContext.Participants[0].MiddleNames);
-            model[0].TelephoneNumber.Should().Be(_acTestContext.Participants[0].TelephoneNumber);
-            model[0].Title.Should().Be(_acTestContext.Participants[0].Title);
-            model[0].Username.Should().Be(_acTestContext.Participants[0].Username);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_acTestContext.Json);         
+            var expected = _acTestContext.Participants[0];
+            var actual = model.Single(u => u.ContactEmail == expected.ContactEmail);
+            actual.Should().NotBeNull();
+            actual.ContactEmail.Should().Be(expected.ContactEmail);
+            actual.FirstName.Should().Be(expected.FirstName);
+            actual.Id.Should().NotBeEmpty();
+            actual.LastName.Should().Be(expected.LastName);
+            actual.MiddleNames.Should().Be(expected.MiddleNames);
+            actual.TelephoneNumber.Should().Be(expected.TelephoneNumber);
+            actual.Title.Should().Be(expected.Title);
+            actual.Username.Should().Be(expected.Username);
         }
     }
 }
