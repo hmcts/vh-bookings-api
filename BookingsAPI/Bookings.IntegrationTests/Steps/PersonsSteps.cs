@@ -92,6 +92,18 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have a get person by contact email search term request that case insensitive")]
+        public async Task GivenIHaveAGetPersonByContactEmailSearchTermRequestThatCaseInsensitive()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            var email = seededHearing.GetParticipants().First().Person.ContactEmail;
+            var searchTerm = email.Substring(0, 3).ToUpperInvariant();
+            _apiTestContext.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
+            _apiTestContext.HttpMethod = HttpMethod.Get;
+        }
+
         [Then(@"person details should be retrieved")]
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {

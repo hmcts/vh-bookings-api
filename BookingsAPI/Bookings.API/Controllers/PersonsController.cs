@@ -86,9 +86,9 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        /// Get a person by email search term
+        /// Find persons with contact email matching a search term.
         /// </summary>
-        /// <param name="term">The term of contact email of the person</param>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         [HttpGet("search/{term}", Name = "GetPersonBySearchTerm")]
         [SwaggerOperation(OperationId = "GetPersonBySearchTerm")]
@@ -96,12 +96,6 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetPersonBySearchTerm(string term)
         {
-            if (string.IsNullOrEmpty(term))
-            {
-                ModelState.AddModelError(nameof(term), $"Please provide a valid {nameof(term)}");
-                return BadRequest(ModelState);
-            }
-
             var query = new GetPersonBySearchTermQuery(term);
             var personList = await _queryHandler.Handle<GetPersonBySearchTermQuery, List<Person>>(query);
             var mapper = new PersonToResponseMapper();

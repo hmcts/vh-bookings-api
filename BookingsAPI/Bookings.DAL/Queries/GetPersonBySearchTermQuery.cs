@@ -9,11 +9,11 @@ namespace Bookings.DAL.Queries
 {
     public class GetPersonBySearchTermQuery : IQuery
     {
-        public string Term { get; set; }
+        public string Term { get; }
 
         public GetPersonBySearchTermQuery(string term)
         {
-            Term = term;
+            Term = term.ToLowerInvariant();
         }
     }
 
@@ -31,7 +31,7 @@ namespace Bookings.DAL.Queries
             return await _context.Persons
                 .Include(x => x.Address)
                 .Include(x => x.Organisation)
-                .Where(x => x.ContactEmail.Contains(query.Term))
+                .Where(x => x.ContactEmail.ToLowerInvariant().Contains(query.Term))
                 .ToListAsync();
 
         }
