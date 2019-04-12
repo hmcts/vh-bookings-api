@@ -50,8 +50,6 @@ namespace Bookings.DAL.Commands
 
         public async Task Handle(UpdateParticipantCommand command)
         {
-            //var hearing = await _context.VideoHearings.FindAsync(command.HearingId);
-
             var hearing = await _context.VideoHearings
               .Include("Participants.Person")
               .Include("Participants.Person.Address")
