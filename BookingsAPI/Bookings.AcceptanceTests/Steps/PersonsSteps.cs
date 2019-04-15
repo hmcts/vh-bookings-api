@@ -1,6 +1,8 @@
 ﻿using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
+using System.Collections.Generic;
+using System.Linq;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -22,7 +24,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             _acTestContext.Request = _acTestContext.Get(_endpoints.GetPersonByUsername(_acTestContext.Participants[0].Username));
         }
-
+        
         [Given(@"I have a get a person by contact email request with a valid email")]
         public void GivenIHaveAGetAPersonByContactEmailRequestWithAValidEmail()
         {
@@ -42,6 +44,29 @@ namespace Bookings.AcceptanceTests.Steps
             model.TelephoneNumber.Should().Be(_acTestContext.Participants[0].TelephoneNumber);
             model.Title.Should().Be(_acTestContext.Participants[0].Title);
             model.Username.Should().Be(_acTestContext.Participants[0].Username);
+        }
+        [Given(@"I have a get a person by search term request with a valid search term")]
+        public void GivenIHaveAGetAPersonBySearchTermRequestWithAValidSearchTerm()
+        {
+            var contactEmail = _acTestContext.Participants[0].ContactEmail;
+            var searchTerm = contactEmail.Substring(0, 3);
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetPersonBySearchTerm(searchTerm));
+        }
+        [Then(@"persons details should be retrieved")]
+        public void ThenPersonsDetailsShouldBeRetrieved()
+        {
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_acTestContext.Json);         
+            var expected = _acTestContext.Participants[0];
+            var actual = model.Single(u => u.ContactEmail == expected.ContactEmail);
+            actual.Should().NotBeNull();
+            actual.ContactEmail.Should().Be(expected.ContactEmail);
+            actual.FirstName.Should().Be(expected.FirstName);
+            actual.Id.Should().NotBeEmpty();
+            actual.LastName.Should().Be(expected.LastName);
+            actual.MiddleNames.Should().Be(expected.MiddleNames);
+            actual.TelephoneNumber.Should().Be(expected.TelephoneNumber);
+            actual.Title.Should().Be(expected.Title);
+            actual.Username.Should().Be(expected.Username);
         }
     }
 }
