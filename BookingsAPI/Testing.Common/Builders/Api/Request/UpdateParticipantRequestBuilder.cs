@@ -11,7 +11,6 @@ namespace Testing.Common.Builders.Api.Request
         public UpdateParticipantRequestBuilder(string hearingRole)
         {
             _updateParticipantRequest = Builder<UpdateParticipantRequest>.CreateNew()
-                .With(x => x.HearingRoleName = hearingRole)
                 .With(x => x.Title = Name.Prefix())
                 .With(x => x.TelephoneNumber = Phone.Number())
                 .With(x => x.DisplayName = Name.FullName())

@@ -273,12 +273,14 @@ namespace Bookings.API.Controllers
             {
                 return NotFound();
             }
-            var query = new GetCaseTypeQuery(videoHearing.CaseType.Name);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
 
-            var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
+            var participant = videoHearing.GetParticipants().Single(x => x.Id.Equals(participantId));
+            if(participant==null)
+            {
+                return NotFound();
+            }
 
-            if (individualRoles.Contains(request.HearingRoleName))
+            if (participant.HearingRole.UserRole.IsIndividual)
             {
                 var addressValidationResult = new AddressValidation().Validate(request);
                 if (!addressValidationResult.IsValid)
