@@ -25,8 +25,10 @@ namespace Bookings.IntegrationTests.Database.Queries
             var person = seededHearing.GetPersons().First();
             var contactEmail = person.ContactEmail;
             
-            // Get a part of the email and change case
-            var searchTerm = contactEmail.Substring(0, 2).ToLower() + contactEmail.Substring(2, 2);
+            // Build a search term based on lower and upper case of the expected email
+            var twoCharactersLowercase = contactEmail.Substring(0, 2).ToLower();
+            var twoCharactersUppercase = contactEmail.Substring(2, 2).ToUpper(); 
+            var searchTerm =  twoCharactersLowercase + twoCharactersUppercase;
             var matches  = await _handler.Handle(new GetPersonBySearchTermQuery(searchTerm));
 
             matches.Select(m => m.Id).Should().Contain(person.Id);
