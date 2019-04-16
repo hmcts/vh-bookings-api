@@ -1,4 +1,5 @@
-﻿using Bookings.API;
+﻿using System.Threading.Tasks;
+using Bookings.API;
 using Bookings.DAL;
 using Bookings.IntegrationTests.Helper;
 using FizzWare.NBuilder;
@@ -35,6 +36,12 @@ namespace Bookings.IntegrationTests.Database
             
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.Database.Migrate();
+        }
+        
+        [TearDown]
+        public async Task TearDown()
+        {
+            await Hooks.ClearSeededHearings();
         }
     }
 }
