@@ -275,7 +275,7 @@ namespace Bookings.API.Controllers
             }
 
             var participant = videoHearing.GetParticipants().Single(x => x.Id.Equals(participantId));
-            if(participant==null)
+            if (participant == null)
             {
                 return NotFound();
             }
