@@ -298,10 +298,10 @@ namespace Bookings.API.Controllers
 
             await _commandHandler.Handle(updateParticipantCommand);
 
-            var particpant = updateParticipantCommand.UpdatedParticipant;
+            var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
 
             var participantMapper = new ParticipantToResponseMapper();
-            var response = participantMapper.MapParticipantToResponse(particpant);
+            var response = participantMapper.MapParticipantToResponse(updatedParticipant);
 
             return Ok(response);
         }
