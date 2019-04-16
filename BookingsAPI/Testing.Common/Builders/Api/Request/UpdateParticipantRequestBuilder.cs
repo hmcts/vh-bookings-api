@@ -8,10 +8,9 @@ namespace Testing.Common.Builders.Api.Request
     {
         private readonly UpdateParticipantRequest _updateParticipantRequest;
 
-        public UpdateParticipantRequestBuilder(string hearingRole)
+        public UpdateParticipantRequestBuilder()
         {
             _updateParticipantRequest = Builder<UpdateParticipantRequest>.CreateNew()
-                .With(x => x.HearingRoleName = hearingRole)
                 .With(x => x.Title = Name.Prefix())
                 .With(x => x.TelephoneNumber = Phone.Number())
                 .With(x => x.DisplayName = Name.FullName())
