@@ -22,7 +22,7 @@ namespace Bookings.UnitTests.Mappings
         [SetUp]
         public void Setup()
         {
-            UpdateParticipantRequest = new UpdateParticipantRequestBuilder("Claimant LIP").Build();
+            UpdateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
         }
 
         [Test]
