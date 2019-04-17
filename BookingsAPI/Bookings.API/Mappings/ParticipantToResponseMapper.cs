@@ -25,7 +25,8 @@ namespace Bookings.API.Mappings
                 Street = participant.Person.Address?.Street,
                 City = participant.Person.Address?.City,
                 County = participant.Person.Address?.County,
-                Postcode = participant.Person.Address?.Postcode
+                Postcode = participant.Person.Address?.Postcode,
+                Organisation = participant.Person.Organisation?.Name
                 
             };
 

@@ -17,6 +17,11 @@ namespace Bookings.DAL.Commands
         public string County { get; set; }
         public string Postcode { get; set; }
     }
+    public class RepresentativeInformation
+    {
+        public string SolicitorsReference { get; set; }
+        public string Representee { get; set; }
+    }
     public class UpdateParticipantCommand : ICommand
     {
         public Guid ParticipantId { get; set; }
@@ -27,8 +32,10 @@ namespace Bookings.DAL.Commands
         public string OrganisationName { get; set; }
         public Participant UpdatedParticipant { get; set; }
         public VideoHearing VideoHearing { get; set; }
+        public RepresentativeInformation RepresentativeInformation { get; set; }
 
-        public UpdateParticipantCommand(Guid participantId, string title, string displayName, string telphoneNumber, NewAddress address, string organisationName, VideoHearing videoHearing)
+        public UpdateParticipantCommand(Guid participantId, string title, string displayName, string telphoneNumber, 
+            NewAddress address, string organisationName, VideoHearing videoHearing, RepresentativeInformation representativeInformation)
         {
             ParticipantId = participantId;
             Title = title;
@@ -37,6 +44,7 @@ namespace Bookings.DAL.Commands
             OrganisationName = organisationName;
             NewAddress = address;
             VideoHearing = videoHearing;
+            RepresentativeInformation = representativeInformation;
         }
     }
 
@@ -62,6 +70,12 @@ namespace Bookings.DAL.Commands
 
             participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber, command.NewAddress.Street, command.NewAddress.HouseNumber, command.NewAddress.City, command.NewAddress.County, command.NewAddress.Postcode, command.OrganisationName);
 
+            if (participant.HearingRole.UserRole.IsRepresentative)
+            {
+                ((Representative)participant).UpdateRepresentativeDetails(
+                    command.RepresentativeInformation.SolicitorsReference,
+                    command.RepresentativeInformation.Representee);
+            }
             await _context.SaveChangesAsync();
 
             command.UpdatedParticipant = participant;

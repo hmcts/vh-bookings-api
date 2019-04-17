@@ -53,7 +53,14 @@ namespace Bookings.IntegrationTests.Database.Commands
                 County = county,
                 Postcode = postcode
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
+            var solicitorsReference = "Marvel Comics Division";
+            var representee = "Iron Man Inc.";
+            RepresentativeInformation repInfo = new RepresentativeInformation()
+            {
+                SolicitorsReference = solicitorsReference,
+                Representee = representee
+            };
+            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, repInfo);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
@@ -95,8 +102,14 @@ namespace Bookings.IntegrationTests.Database.Commands
                 County = county,
                 Postcode = postcode
             };
-
-            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
+            var solicitorsReference = "Marvel Comics Division";
+            var representee = "Iron Man Inc.";
+            RepresentativeInformation repInfo = new RepresentativeInformation()
+            {
+                SolicitorsReference = solicitorsReference,
+                Representee = representee
+            };
+            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, repInfo);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;

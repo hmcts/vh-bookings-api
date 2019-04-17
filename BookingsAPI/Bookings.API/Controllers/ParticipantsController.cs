@@ -291,10 +291,14 @@ namespace Bookings.API.Controllers
             }
 
             var mapper = new UpdateParticipantRequestToNewAddressMapper();
-
             var address = mapper.MapRequestToNewAddress(request);
 
-            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title, request.DisplayName, request.TelephoneNumber, address, request.OrganisationName, videoHearing);
+            var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
+            var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
+
+            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title, 
+                request.DisplayName, request.TelephoneNumber, address, 
+                request.OrganisationName, videoHearing, representative);
 
             await _commandHandler.Handle(updateParticipantCommand);
 

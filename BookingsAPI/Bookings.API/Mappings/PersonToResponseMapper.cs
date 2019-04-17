@@ -16,7 +16,13 @@ namespace Bookings.API.Mappings
                 MiddleNames = person.MiddleNames,
                 Username = person.Username,
                 ContactEmail = person.ContactEmail,
-                TelephoneNumber = person.TelephoneNumber
+                TelephoneNumber = person.TelephoneNumber,
+                Organisation = person.Organisation?.Name,
+                HouseNumber = person.Address?.Postcode,
+                Street = person.Address?.Street,
+                City  = person.Address?.City,
+                County = person.Address?.County,
+                Postcode = person.Address?.Postcode
             };
         }
     }
