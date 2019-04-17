@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace Bookings.API.Validations
 {
-
-
     public class AddressValidation : AbstractValidator<IAddressRequest>
     {
         public static readonly string NoHouseNumberErrorMessage = "HouseNumber is required";

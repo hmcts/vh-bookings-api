@@ -290,6 +290,16 @@ namespace Bookings.API.Controllers
                 }
             }
 
+            if (participant.HearingRole.UserRole.IsRepresentative)
+            {
+                var repValidationResult = new RepresentativeValidation().Validate(request);
+                if (!repValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(result.Errors);
+                    return BadRequest(ModelState);
+                }
+            }
+
             var mapper = new UpdateParticipantRequestToNewAddressMapper();
             var address = mapper.MapRequestToNewAddress(request);
 
