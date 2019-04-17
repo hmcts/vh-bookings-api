@@ -12,24 +12,12 @@ namespace Bookings.IntegrationTests.Database.Queries
     public class GetPersonByUsernameQueryHandlerTests : DatabaseTestsBase
     {
         private GetPersonByUsernameQueryHandler _handler;
-        private Guid _newHearingId;
-        
+
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetPersonByUsernameQueryHandler(context);
-            _newHearingId = Guid.Empty;
-        }
-        
-        [TearDown]
-        public async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
         }
 
         [Test]
@@ -45,7 +33,6 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var existingPerson = seededHearing.GetParticipants().First().Person;
             var query = new GetPersonByUsernameQuery(existingPerson.Username);

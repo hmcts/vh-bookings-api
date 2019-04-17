@@ -118,11 +118,5 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             return true;
         }
-
-        [TearDown]
-        public async Task TearDown()
-        {
-            await Hooks.ClearSeededHearings();
-        }
     }
 }
