@@ -188,12 +188,50 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Delete;
         }
 
+        [Given(@"I have a (.*) get hearings by username request")]
+        [Given(@"I have an (.*) get hearings by username request")]
+        public async Task GivenIHaveAGetHearingByUsernameRequest(Scenario scenario)
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            _apiTestContext.NewHearingId = seededHearing.Id;
+            _hearingId = seededHearing.Id;
+            string username;
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    username = seededHearing.GetParticipants().First().Person.Username;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+
+            _apiTestContext.Uri = _endpoints.GetHearingsByUsername(username);
+            _apiTestContext.HttpMethod = HttpMethod.Get;
+        }
+        
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
             var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
-            model.Should().NotBeNull();
+            var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            response.Should().NotBeNull();
+            AssertHearingDetailsResponse(response);
+        }
+
+        [Then(@"a list of hearing details should be retrieved")]
+        public async Task ThenAListOfHearingDetailsShouldBeRetrieved()
+        {
+            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(json);
+            response.Should().NotBeNull();
+            foreach (var hearingDetailsResponse in response)
+            {
+                AssertHearingDetailsResponse(hearingDetailsResponse);
+            }
+        }
+
+        private void AssertHearingDetailsResponse(HearingDetailsResponse model)
+        {
             _hearingId = model.Id;
 
             model.CaseTypeName.Should().NotBeNullOrEmpty();
@@ -202,6 +240,7 @@ namespace Bookings.IntegrationTests.Steps
                 theCase.Name.Should().NotBeNullOrEmpty();
                 theCase.Number.Should().NotBeNullOrEmpty();
             }
+
             model.HearingTypeName.Should().NotBeNullOrEmpty();
             model.HearingVenueName.Should().NotBeNullOrEmpty();
             foreach (var participant in model.Participants)
@@ -226,6 +265,7 @@ namespace Bookings.IntegrationTests.Steps
                     participant.Postcode.Should().NotBeNullOrEmpty();
                 }
             }
+
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
             model.ScheduledDuration.Should().BePositive();
             model.HearingRoomName.Should().NotBeNullOrEmpty();
@@ -237,6 +277,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             }
+
             hearingFromDb.Should().NotBeNull();
         }
 

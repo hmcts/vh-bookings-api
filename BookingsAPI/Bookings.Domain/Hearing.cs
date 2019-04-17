@@ -53,7 +53,7 @@ namespace Bookings.Domain
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedDate { get; protected set; }
-        protected virtual IList<Participant> Participants { get; set; }
+        public virtual IList<Participant> Participants { get; }
         protected virtual IList<HearingCase> HearingCases { get; set; } = new List<HearingCase>();
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }

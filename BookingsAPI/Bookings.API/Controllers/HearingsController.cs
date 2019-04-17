@@ -77,6 +77,25 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
+        /// Get list of hearings for a given username
+        /// </summary>
+        /// <param name="username">username of person to search against</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet(Name = "GetHearingsByUsername")]
+        [SwaggerOperation(OperationId = "GetHearingsByUsername")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsByUsername([FromQuery]string username)
+        {
+            var query = new GetHearingsByUsernameQuery(username);
+            var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
+
+            var hearingMapper = new HearingToDetailResponseMapper();
+            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Request to book a new hearing
         /// </summary>
         /// <param name="request">Details of a new hearing to book</param>
