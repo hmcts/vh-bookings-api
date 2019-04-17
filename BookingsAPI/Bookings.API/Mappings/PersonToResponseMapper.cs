@@ -17,7 +17,7 @@ namespace Bookings.API.Mappings
                 Username = person.Username,
                 ContactEmail = person.ContactEmail,
                 TelephoneNumber = person.TelephoneNumber,
-                Organisation  =person.Organisation?.Name,
+                Organisation = person.Organisation?.Name,
                 HouseNumber = person.Address?.HouseNumber,
                 Street = person.Address?.Street,
                 City = person.Address?.City,
