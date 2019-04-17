@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Bookings.API.Validations
 {
-    public class RepresentativeValidation : AbstractValidator<UpdateParticipantRequest>
+    public class RepresentativeValidation : AbstractValidator<IRepresentativeInfoRequest>
     {
         public static readonly string NoSolicitorReference = "Solicitor Reference is required";
         public static readonly string NoRepresentee = "Representee is required";
@@ -13,7 +13,7 @@ namespace Bookings.API.Validations
         {
             RuleFor(x => x.SolicitorReference).NotEmpty().WithMessage(NoSolicitorReference);
             RuleFor(x => x.Representee).NotEmpty().WithMessage(NoRepresentee);
-            // RuleFor(x => x.Organisation).NotEmpty().WithMessage(NoOrganisation);
+            RuleFor(x => x.OrganisationName).NotEmpty().WithMessage(NoOrganisation);
         }
     }
 }
