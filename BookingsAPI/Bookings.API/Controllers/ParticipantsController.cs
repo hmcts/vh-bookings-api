@@ -167,6 +167,16 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
+            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representativeRoles, request.Participants);
+
+            if (!representativeValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+
             var mapper = new ParticipantRequestToNewParticipantMapper();
             var participants = request.Participants
                 .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
