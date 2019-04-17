@@ -1,6 +1,6 @@
 namespace Bookings.Api.Contract.Requests
 {
-    public class UpdateParticipantRequest : IAddressRequest
+    public class UpdateParticipantRequest : IAddressRequest, IRepresentativeInfoRequest
     {
         /// <summary>
         ///     Participant Title.
@@ -43,17 +43,17 @@ namespace Bookings.Api.Contract.Requests
         public string County { get; set; }
 
         /// <summary>
-        /// Organization name
+        ///     Participant Organisation
         /// </summary>
         public string OrganisationName { get; set; }
 
         /// <summary>
-        /// Gets or sets the solicitor reference
+        ///     Solicitor Reference
         /// </summary>
         public string SolicitorReference { get; set; }
 
-       /// <summary>
-        /// Gets or set the representee of a representative
+        /// <summary>
+        ///     Representee
         /// </summary>
         public string Representee { get; set; }
     }

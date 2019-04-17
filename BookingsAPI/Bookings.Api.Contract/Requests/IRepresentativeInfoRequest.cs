@@ -9,7 +9,8 @@ namespace Bookings.Api.Contract.Requests
         /// <summary>
         ///     Participant Organisation
         /// </summary>
-        string Organisation { get; set; }
+        string OrganisationName { get; set; }
+
         /// <summary>
         ///     Solicitor Reference
         /// </summary>
