@@ -168,7 +168,9 @@ namespace Bookings.API.Controllers
             }
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representativeRoles, request.Participants);
+            var reprensentatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
+                
+            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(reprensentatives);
 
             if (!representativeValidationResult.IsValid)
             {
