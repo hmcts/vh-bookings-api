@@ -1,6 +1,6 @@
 namespace Bookings.Api.Contract.Requests
 {
-    public class ParticipantRequest : IAddressRequest
+    public class ParticipantRequest : IAddressRequest, IRepresentativeInfoRequest
     {
         /// <summary>
         ///     Participant Title.
@@ -65,7 +65,7 @@ namespace Bookings.Api.Contract.Requests
           /// <summary>
         /// The organization name
         /// </summary>
-        public string Organisation { get; set; }
+        public string OrganisationName { get; set; }
 
         /// <summary>
         /// House number of an Individual
