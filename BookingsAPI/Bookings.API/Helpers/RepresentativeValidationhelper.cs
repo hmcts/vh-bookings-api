@@ -14,7 +14,7 @@ namespace Bookings.API.Helpers
             {
                 if (roles.Contains(participantRequest.HearingRoleName))
                 {
-                    validationResult = new AddressValidation().Validate(participantRequest);
+                    validationResult = new RepresentativeValidation().Validate(participantRequest);
                     if (!validationResult.IsValid)
                     {
                         return validationResult;
