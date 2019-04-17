@@ -32,7 +32,7 @@ namespace Bookings.UnitTests.Mappings
             var representativeInfo = mapper.MapRequestToNewRepresentativeInfo(UpdateParticipantRequest);
             representativeInfo.Should().NotBeNull();
             representativeInfo.Representee.Should().BeEquivalentTo(UpdateParticipantRequest.Representee);
-            representativeInfo.SolicitorsReference.Should().BeEquivalentTo(UpdateParticipantRequest.SolicitorReference);
+            representativeInfo.SolicitorsReference.Should().BeEquivalentTo(UpdateParticipantRequest.SolicitorsReference);
         }
     }
 }

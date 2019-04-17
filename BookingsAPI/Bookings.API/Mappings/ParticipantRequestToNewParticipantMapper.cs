@@ -38,7 +38,7 @@ namespace Bookings.API.Mappings
             person.MiddleNames = requestParticipant.MiddleNames;
             person.ContactEmail = requestParticipant.ContactEmail;
             person.TelephoneNumber = requestParticipant.TelephoneNumber;
-            person.Organisation = new Organisation(requestParticipant.Organisation);
+            person.Organisation = new Organisation(requestParticipant.OrganisationName);
 
             return new NewParticipant
             {

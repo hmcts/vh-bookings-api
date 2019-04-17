@@ -50,7 +50,7 @@ namespace Bookings.Api.Contract.Requests
         /// <summary>
         ///     Solicitor Reference
         /// </summary>
-        public string SolicitorReference { get; set; }
+        public string SolicitorsReference { get; set; }
 
         /// <summary>
         ///     Representee

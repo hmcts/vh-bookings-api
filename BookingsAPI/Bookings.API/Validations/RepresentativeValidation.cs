@@ -11,7 +11,7 @@ namespace Bookings.API.Validations
 
         public RepresentativeValidation()
         {
-            RuleFor(x => x.SolicitorReference).NotEmpty().WithMessage(NoSolicitorReference);
+            RuleFor(x => x.SolicitorsReference).NotEmpty().WithMessage(NoSolicitorReference);
             RuleFor(x => x.Representee).NotEmpty().WithMessage(NoRepresentee);
             RuleFor(x => x.OrganisationName).NotEmpty().WithMessage(NoOrganisation);
         }
