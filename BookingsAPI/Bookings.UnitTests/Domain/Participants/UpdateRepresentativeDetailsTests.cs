@@ -14,7 +14,7 @@ namespace Bookings.UnitTests.Domain.Participants
         [Test]
         public void should_update_participant_with_user_role_representative_details()
         {
-            var participant = new ParticipantBuilder().RepresentativePrticipantDefendant;
+            var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var representativeParticipant = (Representative)participant;
             string representee = "Representee Edit";
             string solicitorsReference = "Test Reference Edit";
@@ -28,7 +28,7 @@ namespace Bookings.UnitTests.Domain.Participants
         [Test]
         public void should_throw_exception_when_validation_fails()
         {
-            var participant = new ParticipantBuilder().RepresentativePrticipantDefendant;
+            var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var representativeParticipant = (Representative)participant;
             string representee = "";
             string solicitorsReference = "";

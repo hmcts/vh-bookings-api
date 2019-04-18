@@ -41,7 +41,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         [Test]
         public void should_update_participant_with_user_role_representative_details()
         {
-            var representativeParticipant = new ParticipantBuilder().RepresentativePrticipantDefendant;
+            var representativeParticipant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var displayName = "Edit Display Name";
             var telephoneNumber = "111122223";
             var title = "Edit Title";

@@ -47,7 +47,7 @@ namespace Testing.Common.Builders.Domain
 
         public Participant IndividualPrticipantClaimant => _individualParticipant1;
         public Participant IndividualPrticipantDefendant => _individualParticipant2;
-        public Participant RepresentativePrticipantDefendant => _representativeParticipant;
+        public Participant RepresentativeParticipantDefendant => _representativeParticipant;
         public List<Participant> Build() => participants;
     }
 }

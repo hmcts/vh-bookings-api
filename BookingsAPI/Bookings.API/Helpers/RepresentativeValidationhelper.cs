@@ -12,12 +12,12 @@ namespace Bookings.API.Helpers
             ValidationResult validationResult = new ValidationResult();
             foreach (ParticipantRequest participantRequest in participantRequests)
             {
-               validationResult = new RepresentativeValidation().Validate(participantRequest);
-                    if (!validationResult.IsValid)
-                    {
-                        return validationResult;
-                    }
-               
+                validationResult = new RepresentativeValidation().Validate(participantRequest);
+                if (!validationResult.IsValid)
+                {
+                    return validationResult;
+                }
+
             }
             return validationResult;
         }
