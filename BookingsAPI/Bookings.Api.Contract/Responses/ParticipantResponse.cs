@@ -70,7 +70,7 @@ namespace Bookings.Api.Contract.Responses
         public string SolicitorReference { get; set; }
 
         /// <summary>
-        /// Gets or sets the organization name.
+        /// Gets or sets the organisation name.
         /// </summary>
         public string Organisation { get; set; }
 
