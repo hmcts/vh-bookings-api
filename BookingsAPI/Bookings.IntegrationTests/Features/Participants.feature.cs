@@ -477,6 +477,25 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Participant not updated with invalid solicitors reference")]
+        public virtual void ParticipantNotUpdatedWithInvalidSolicitorsReference()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant not updated with invalid solicitors reference", null, ((string[])(null)));
+#line 123
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 124
+ testRunner.Given("I have an update participant in a hearing request with a invalid solicitors refer" +
+                    "ence", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 125
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 126
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

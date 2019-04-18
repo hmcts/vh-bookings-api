@@ -317,7 +317,22 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Put;
         }
 
-        
+        [Given(@"I have an update participant in a hearing request with a invalid solicitors reference")]
+        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidSolicitorsReference()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            var participantId = seededHearing.GetParticipants().FirstOrDefault(x=>x.HearingRole.UserRole.IsRepresentative).Id;
+            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
+            var hearingId = seededHearing.Id;
+            updateParticipantRequest.SolicitorsReference = string.Empty;
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
+            _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            _apiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
+            _apiTestContext.HttpMethod = HttpMethod.Put;
+        }
+
+
         private static AddParticipantsToHearingRequest BuildRequest()
         {
             var newParticipant = new ParticipantRequestBuilder("Defendant", "Defendant LIP").Build();
