@@ -63,7 +63,7 @@ namespace Bookings.Api.Contract.Requests
         public string Representee { get; set; }
         
           /// <summary>
-        /// The organization name
+        /// The organisation name
         /// </summary>
         public string OrganisationName { get; set; }
 
