@@ -102,5 +102,35 @@ namespace Bookings.API.Controllers
             var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
             return Ok(response);
         }
+
+        /// <summary>
+        /// Get suitability answers for a given person
+        /// </summary>
+        /// <param name="username">The username of the person</param>
+        /// <returns>SuitabililityAnswers</returns>
+        [HttpGet("username/{username}/suitability-answers", Name = "GetPersonSuitabilityAnswers")]
+        [SwaggerOperation(OperationId = "GetPersonSuitabilityAnswers")]
+        [ProducesResponseType(typeof(PersonSuitabilityAnswerResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
+        {
+            if (!username.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
+                return BadRequest(ModelState);
+            }
+
+            //var query = new GetPersonByUsernameQuery(username);
+            //var person = await _queryHandler.Handle<GetPersonByUsernameQuery, Person>(query);
+            //if (person == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //var mapper = new PersonToResponseMapper();
+            //var response = mapper.MapPersonToResponse(person);
+            return Ok(new PersonSuitabilityAnswerResponse());
+        }
     }   
 }
