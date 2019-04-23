@@ -89,6 +89,18 @@ Scenario: Hearing not updated with an invalid venue
 	Then the response should have the status BadRequest and success status False
 	And the response message should read 'Hearing venue does not exist'
 
+Scenario: Get hearings by a username
+	Given I have a valid get hearings by username request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And a list of hearing details should be retrieved
+
+Scenario: Hearing not retrieved with a nonexistent username
+	Given I have a nonexistent get hearings by username request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And the response should be an empty list
+
 Scenario: Delete a hearing
 	Given I have a valid remove hearing request
 	When I send the request to the endpoint
@@ -106,8 +118,7 @@ Scenario: Hearing not deleted with a nonexistent hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
 
-
-	Scenario: Hearing not created with an invalid address
+Scenario: Hearing not created with an invalid address
     Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
@@ -183,4 +194,3 @@ Scenario: Hearing status cannot change for an invalid state transition for given
 	When I send the request to the endpoint
 	Then the response should have the status Conflict and success status False
 	And hearing status should be Cancelled
-

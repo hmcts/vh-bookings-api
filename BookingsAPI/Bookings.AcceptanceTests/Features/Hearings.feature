@@ -17,6 +17,13 @@ Scenario: Create a new hearing
 	Then the response should have the status Created and success status True
 	And hearing details should be retrieved
 
+Scenario: Get a hearing for a given username
+	Given I have a hearing
+	And I have a valid get hearing by username request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And a list of hearing details should be retrieved
+
 Scenario: Update a hearing
 	Given I have a hearing
 	And I have a valid update hearing request
@@ -40,8 +47,8 @@ Scenario: Get hearing details for a given case type
 	And hearing details should be retrieved for the case type
 
 Scenario: Cancel a hearing
-Given I have a hearing
-And I have a cancel hearing request with a valid hearing id
-When I send the request to the endpoint
-Then the response should have the status NoContent and success status True
-And hearing should be cancelled
+	Given I have a hearing
+	And I have a cancel hearing request with a valid hearing id
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+	And hearing should be cancelled
