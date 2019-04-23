@@ -77,7 +77,7 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        /// Get list of hearings for a given username
+        /// Get list of all hearings for a given username
         /// </summary>
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
@@ -87,7 +87,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingsByUsername([FromQuery]string username)
         {
-            var query = new GetHearingsByUsernameQuery(username.ToLower().Trim());
+            var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
 
             var hearingMapper = new HearingToDetailResponseMapper();
