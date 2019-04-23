@@ -23,7 +23,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task should_return_null_when_no_person_found()
         {
-            var query = new GetPersonByContactEmailQuery(Internet.Email());
+            var query = new GetPersonByContactEmailQuery("doesnt.existatall@email.com");
             var person = await _handler.Handle(query);
             person.Should().BeNull();
         }
