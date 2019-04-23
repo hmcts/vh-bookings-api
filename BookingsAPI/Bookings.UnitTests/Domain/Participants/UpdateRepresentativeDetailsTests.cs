@@ -15,13 +15,13 @@ namespace Bookings.UnitTests.Domain.Participants
         public void should_update_participant_with_user_role_representative_details()
         {
             var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
-            var representativeParticipant = (Representative)participant;
+            var representative = (Representative)participant;
             string representee = "Representee Edit";
             string solicitorsReference = "Test Reference Edit";
            
-            representativeParticipant.UpdateRepresentativeDetails(solicitorsReference,representee);
-            representativeParticipant.SolicitorsReference.Should().Be(solicitorsReference);
-            representativeParticipant.Representee.Should().Be(representee);
+            representative.UpdateRepresentativeDetails(solicitorsReference,representee);
+            representative.SolicitorsReference.Should().Be(solicitorsReference);
+            representative.Representee.Should().Be(representee);
                       
         }
 
