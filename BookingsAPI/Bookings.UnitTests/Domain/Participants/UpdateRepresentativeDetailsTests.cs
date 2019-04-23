@@ -3,8 +3,6 @@ using Bookings.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Testing.Common.Builders.Domain;
 
 namespace Bookings.UnitTests.Domain.Participants

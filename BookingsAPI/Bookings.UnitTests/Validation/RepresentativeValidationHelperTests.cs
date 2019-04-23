@@ -1,29 +1,14 @@
 ﻿using Bookings.Api.Contract.Requests;
 using Bookings.API.Helpers;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Testing.Common.Builders.Api.Request;
 
 namespace Bookings.UnitTests.Validation
 {
     public class RepresentativeValidationHelperTests
     {
-
-        //private RepresentativeValidationHelper _validationHelper;
-
-        //[OneTimeSetUp]
-        //public void OneTimeSetUp()
-        //{
-        //    _validationHelper = new RepresentativeValidationHelper();
-        //    _addressValidator = new AddressValidation();
-        //}
-
         [Test]
         public void should_pass_validation()
         {
