@@ -28,6 +28,7 @@ namespace Bookings.DAL.Queries
 
         public async Task<List<VideoHearing>> Handle(GetHearingsByUsernameQuery query)
         {
+            var username = query.Username.ToLower().Trim();
             return await _context.VideoHearings
                 .Include("Participants.Person")
                 .Include("Participants.Person.Address")
@@ -39,7 +40,7 @@ namespace Bookings.DAL.Queries
                 .ThenInclude(x=>x.UserRole)
                 .Include(x => x.HearingType)
                 .Include(x => x.HearingVenue)
-                .Where(x => x.Participants.Any(p => p.Person.Username == query.Username))
+                .Where(x => x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
                 .ToListAsync();
         }
     }

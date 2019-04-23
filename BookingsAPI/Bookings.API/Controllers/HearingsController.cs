@@ -87,7 +87,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingsByUsername([FromQuery]string username)
         {
-            var query = new GetHearingsByUsernameQuery(username);
+            var query = new GetHearingsByUsernameQuery(username.ToLower().Trim());
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
 
             var hearingMapper = new HearingToDetailResponseMapper();
