@@ -333,6 +333,26 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets all suitability answers for a given hearing
+        /// </summary>
+        /// <param name="hearingId">Hearing Id</param>
+        /// <returns>>A list of suitability answers</returns>
+        [HttpGet("{hearingId}/suitability-answers", Name = "GetSuitabilityAnswers")]
+        [SwaggerOperation(OperationId = "GetSuitabilityAnswers")]
+        [ProducesResponseType(typeof(HearingSuitabilityAnswerResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult GetSuitabilityAnswers(Guid hearingId)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+            return Ok(new List<HearingSuitabilityAnswerResponse>());
+        }
+
         private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
         {
             const string hearingsListsEndpointBaseUrl = "hearings/";

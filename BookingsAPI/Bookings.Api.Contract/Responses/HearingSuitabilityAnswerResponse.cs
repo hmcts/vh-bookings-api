@@ -4,13 +4,8 @@ using System.Text;
 
 namespace Bookings.Api.Contract.Responses
 {
-    public class PersonSuitabilityAnswerResponse
+    public class HearingSuitabilityAnswerResponse
     {
-        /// <summary>
-        ///     Hearing Id
-        /// </summary>
-        public Guid HearingId { get; set; }
-
         /// <summary>
         ///     Participant Id
         /// </summary>
@@ -35,5 +30,7 @@ namespace Bookings.Api.Contract.Responses
         /// List of answers
         /// </summary>
         public IList<SuitabilityAnswerResponse> Answers { get; set; }
+
+
     }
 }
