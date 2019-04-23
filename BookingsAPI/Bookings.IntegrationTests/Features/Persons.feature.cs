@@ -149,18 +149,38 @@ namespace Bookings.IntegrationTests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Get person by an invalid contact email")]
-        public virtual void GetPersonByAnInvalidContactEmail()
+        [NUnit.Framework.DescriptionAttribute("Get person address by a valid contact email")]
+        public virtual void GetPersonAddressByAValidContactEmail()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by an invalid contact email", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person address by a valid contact email", null, ((string[])(null)));
 #line 29
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 30
-    testRunner.Given("I have a get person by contact email request with an invalid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Given("I have a get individual by contact email request with a valid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 31
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 32
+    testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 33
+    testRunner.And("person address should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get person by an invalid contact email")]
+        public virtual void GetPersonByAnInvalidContactEmail()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by an invalid contact email", null, ((string[])(null)));
+#line 35
+  this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 36
+    testRunner.Given("I have a get person by contact email request with an invalid contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 37
+    testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 38
     testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -171,14 +191,14 @@ namespace Bookings.IntegrationTests.Features
         public virtual void GetPersonByNonExistentContactEmail()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by non existent contact email", null, ((string[])(null)));
-#line 34
+#line 40
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 35
+#line 41
     testRunner.Given("I have a get person by contact email request with a nonexistent contact email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 36
+#line 42
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 37
+#line 43
     testRunner.Then("the response should have the status NotFound and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -189,16 +209,16 @@ namespace Bookings.IntegrationTests.Features
         public virtual void GetPersonByContactEmailSearchTerm()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by contact email search term", null, ((string[])(null)));
-#line 39
+#line 45
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 40
+#line 46
     testRunner.Given("I have a get person by contact email search term request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 41
+#line 47
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 42
+#line 48
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 43
+#line 49
     testRunner.And("persons details should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -209,16 +229,16 @@ namespace Bookings.IntegrationTests.Features
         public virtual void GetPersonByContactEmailSearchTermCaseInsensitive()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person by contact email search term, case insensitive", null, ((string[])(null)));
-#line 45
+#line 51
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 46
+#line 52
     testRunner.Given("I have a get person by contact email search term request that case insensitive", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 47
+#line 53
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 48
+#line 54
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 49
+#line 55
     testRunner.And("persons details should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

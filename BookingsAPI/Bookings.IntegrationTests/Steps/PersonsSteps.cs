@@ -53,9 +53,9 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
 
-        [Given(@"I have a get person by contact email request with a (.*) contact email")]
-        [Given(@"I have a get person by contact email request with an (.*) contact email")]
-        public async Task GivenIHaveAGetPersonByContactEmailRequest(Scenario scenario)
+        [Given(@"I have a get (.*) by contact email request with a (.*) contact email")]
+        [Given(@"I have a get (.*) by contact email request with an (.*) contact email")]
+        public async Task GivenIHaveAGetPersonByContactEmailRequest(string personType, Scenario scenario)
         {
             switch (scenario)
             {
@@ -64,7 +64,14 @@ namespace Bookings.IntegrationTests.Steps
                         var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                         _apiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _username = seededHearing.GetParticipants().First().Person.ContactEmail;
+                        if(personType.Equals("individual"))
+                        {
+                            _username = seededHearing.GetParticipants().First(p => p.HearingRole.UserRole.IsIndividual).Person.ContactEmail;
+                        }
+                        else
+                        {
+                            _username = seededHearing.GetParticipants().First().Person.ContactEmail;
+                        }
                         break;
                     }
                 case Scenario.Nonexistent:
@@ -110,6 +117,11 @@ namespace Bookings.IntegrationTests.Steps
             var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
             model.Should().NotBeNull();
+            ValidatePersonData(model);
+        }
+
+        private static void ValidatePersonData(PersonResponse model)
+        {
             model.Id.Should().NotBeEmpty();
             model.ContactEmail.Should().NotBeNullOrEmpty();
             model.FirstName.Should().NotBeNullOrEmpty();
@@ -120,20 +132,29 @@ namespace Bookings.IntegrationTests.Steps
             model.Username.Should().NotBeNullOrEmpty();
         }
 
+        [Then(@"person address should be retrieved")]
+        public async Task ThenPersonAddressShouldBeRetrieved()
+        {
+            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
+            model.Should().NotBeNull();
+            model.Organisation.Should().NotBeNullOrEmpty();
+            model.Id.Should().NotBeEmpty();
+            model.HouseNumber.Should().NotBeNullOrEmpty();
+            model.Street.Should().NotBeNullOrEmpty();
+            model.City.Should().NotBeNullOrEmpty();
+            model.County.Should().NotBeNullOrEmpty();
+            model.Postcode.Should().NotBeNullOrEmpty();
+        }
+
+
         [Then(@"persons details should be retrieved")]
         public async Task ThenPersonsDetailsShouldBeRetrieved()
         {
             var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(json);
             model[0].Should().NotBeNull();
-            model[0].Id.Should().NotBeEmpty();
-            model[0].ContactEmail.Should().NotBeNullOrEmpty();
-            model[0].FirstName.Should().NotBeNullOrEmpty();
-            model[0].LastName.Should().NotBeNullOrEmpty();
-            model[0].MiddleNames.Should().NotBeNullOrEmpty();
-            model[0].TelephoneNumber.Should().NotBeNullOrEmpty();
-            model[0].Title.Should().NotBeNullOrEmpty();
-            model[0].Username.Should().NotBeNullOrEmpty();
+            ValidatePersonData(model[0]);
         }
     }
 }

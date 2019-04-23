@@ -45,32 +45,32 @@ namespace Bookings.Api.Contract.Responses
         public string Username { get; set; }
 
         /// <summary>
-        ///     Participant Organisation
+        ///     Organisation of representative
         /// </summary>
         public string Organisation { get; set; }
 
         /// <summary>
-        /// House number of an Individual
+        ///     House number of an Individual
         /// </summary>
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Stree number of an Individual
+        ///     Street number of an Individual
         /// </summary>
         public string Street { get; set; }
 
         /// <summary>
-        /// Postcode of an Individual
+        ///     Postcode of an Individual
         /// </summary>
         public string Postcode { get; set; }
 
         /// <summary>
-        /// City/Town of an Individual
+        ///     City/Town of an Individual
         /// </summary>
         public string City { get; set; }
 
         /// <summary>
-        /// County of an Individual
+        ///     County of an Individual
         /// </summary>
         public string County { get; set; }
     }

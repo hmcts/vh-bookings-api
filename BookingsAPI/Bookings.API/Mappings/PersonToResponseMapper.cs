@@ -18,12 +18,12 @@ namespace Bookings.API.Mappings
                 ContactEmail = person.ContactEmail,
                 TelephoneNumber = person.TelephoneNumber,
                 Organisation = person.Organisation?.Name,
-                HouseNumber = person.Address?.Postcode,
+                HouseNumber = person.Address?.HouseNumber,
                 Street = person.Address?.Street,
-                City  = person.Address?.City,
+                City = person.Address?.City,
                 County = person.Address?.County,
-                Postcode = person.Address?.Postcode
-            };
+                Postcode = person.Address?.Postcode,
+            }; 
         }
     }
 }

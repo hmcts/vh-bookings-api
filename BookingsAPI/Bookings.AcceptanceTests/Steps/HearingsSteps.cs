@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Bookings.AcceptanceTests.Contexts;
@@ -39,6 +40,12 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var updateHearingRequest = UpdateHearingRequest.BuildRequest();
             _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingRequest);
+        }
+
+        [Given(@"I have a valid get hearing by username request")]
+        public void GivenIHaveAValidGetHearingByUsernameRequest()
+        {
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingsByUsername(_acTestContext.Participants.First().Username));
         }
 
         [Given(@"I have a remove hearing request with a valid hearing id")]
@@ -150,6 +157,7 @@ namespace Bookings.AcceptanceTests.Steps
             _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
             _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
+
         [Given(@"I have a valid book a new hearing for a case type")]
         public void GivenIHaveAValidBookANewHearingForAcaseType()
         {
@@ -163,11 +171,13 @@ namespace Bookings.AcceptanceTests.Steps
             model.Should().NotBeNull();
             _acTestContext.HearingId = model.Id;
         }
+
         [Given(@"I have a get details for a given hearing request with a valid case type")]
         public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType()
         {
             _acTestContext.Request = _acTestContext.Get(_endpoints.GetHearingsByAnyCaseType());
         }
+
         [Then(@"hearing details should be retrieved for the case type")]
         public void ThenHearingDetailsShouldBeRetrievedForTheCaseType()
         {
@@ -184,12 +194,14 @@ namespace Bookings.AcceptanceTests.Steps
             response.HearingName.Should().NotBeNullOrEmpty();
             response.HearingNumber.Should().NotBeNullOrEmpty();
         }
+
         [Given(@"I have a cancel hearing request with a valid hearing id")]
         public void GivenIHaveACancelHearingRequestWithAValidHearingId()
         {
             var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest();
             _acTestContext.Request = _acTestContext.Patch(_endpoints.UpdateHearingDetails(_acTestContext.HearingId), updateHearingStatusRequest);
         }
+
         [Then(@"hearing should be cancelled")]
         public void ThenHearingShouldBeCancelled()
         {
@@ -198,6 +210,61 @@ namespace Bookings.AcceptanceTests.Steps
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_acTestContext.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
             model.Status.Should().Be(Domain.Enumerations.BookingStatus.Cancelled);
+        }
+
+        [Then(@"a list of hearing details should be retrieved")]
+        public void ThenAListOfHearingDetailsShouldBeRetrieved()
+        {
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(_acTestContext.Json);
+            model.Should().NotBeNull();
+            _acTestContext.HearingId = model.First().Id;
+
+            foreach (var hearing in model)
+            {
+                hearing.CaseTypeName.Should().NotBeNullOrEmpty();
+                foreach (var theCase in hearing.Cases)
+                {
+                    theCase.Name.Should().NotBeNullOrEmpty();
+                    theCase.Number.Should().NotBeNullOrEmpty();
+                }
+                hearing.HearingTypeName.Should().NotBeNullOrEmpty();
+                hearing.HearingVenueName.Should().NotBeNullOrEmpty();
+                foreach (var participant in hearing.Participants)
+                {
+                    participant.CaseRoleName.Should().NotBeNullOrEmpty();
+                    participant.ContactEmail.Should().NotBeNullOrEmpty();
+                    participant.DisplayName.Should().NotBeNullOrEmpty();
+                    participant.FirstName.Should().NotBeNullOrEmpty();
+                    participant.HearingRoleName.Should().NotBeNullOrEmpty();
+                    participant.Id.Should().NotBeEmpty();
+                    participant.LastName.Should().NotBeNullOrEmpty();
+                    participant.MiddleNames.Should().NotBeNullOrEmpty();
+                    participant.TelephoneNumber.Should().NotBeNullOrEmpty();
+                    participant.Title.Should().NotBeNullOrEmpty();
+                    participant.UserRoleName.Should().NotBeNullOrEmpty();
+
+                    if (participant.UserRoleName.Equals("Individual"))
+                    {
+                        participant.HouseNumber.Should().NotBeNullOrEmpty();
+                        participant.Street.Should().NotBeNullOrEmpty();
+                        participant.City.Should().NotBeNullOrEmpty();
+                        participant.County.Should().NotBeNullOrEmpty();
+                        participant.Postcode.Should().NotBeNullOrEmpty();
+                    }
+
+                    if (!participant.UserRoleName.Equals("Representative")) continue;
+                    participant.HouseNumber.Should().BeNull();
+                    participant.Street.Should().BeNull();
+                    participant.City.Should().BeNull();
+                    participant.County.Should().BeNull();
+                    participant.Postcode.Should().BeNull();
+                }
+                hearing.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
+                hearing.ScheduledDuration.Should().BePositive();
+                hearing.HearingRoomName.Should().NotBeNullOrEmpty();
+                hearing.OtherInformation.Should().NotBeNullOrEmpty();
+                hearing.CreatedBy.Should().NotBeNullOrEmpty();
+            }          
         }
     }
 }
