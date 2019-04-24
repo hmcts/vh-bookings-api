@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
+using Bookings.Domain.Participants;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -53,19 +54,20 @@ namespace Bookings.IntegrationTests.Database.Commands
                 County = county,
                 Postcode = postcode
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
+            
+            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, null);
             await _commandHandler.Handle(updateParticipantCommand);
 
-            var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
+            var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
 
-            updatedParticipant.Should().NotBeNull();
-            updatedParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            updatedParticipant.Person.Title.Should().Be(title);
-            updatedParticipant.DisplayName.Should().Be(displayName);
-            updatedParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);
-            updatedParticipant.Person.Address.HouseNumber.Should().Be(houseNumber);
-            updatedParticipant.Person.Address.Street.Should().Be(street);
-            updatedParticipant.Person.Address.Postcode.Should().Be(postcode);
+            updatedIndividual.Should().NotBeNull();
+            updatedIndividual.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            updatedIndividual.Person.Title.Should().Be(title);
+            updatedIndividual.DisplayName.Should().Be(displayName);
+            updatedIndividual.Person.TelephoneNumber.Should().Be(telephoneNumber);
+            updatedIndividual.Person.Address.HouseNumber.Should().Be(houseNumber);
+            updatedIndividual.Person.Address.Street.Should().Be(street);
+            updatedIndividual.Person.Address.Postcode.Should().Be(postcode);
         }
 
         [Test]
@@ -95,19 +97,30 @@ namespace Bookings.IntegrationTests.Database.Commands
                 County = county,
                 Postcode = postcode
             };
-
-            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing);
+            var solicitorsReference = "Marvel Comics Division";
+            var representee = "Iron Man Inc.";
+            RepresentativeInformation repInfo = new RepresentativeInformation()
+            {
+                SolicitorsReference = solicitorsReference,
+                Representee = representee
+            };
+            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, repInfo);
             await _commandHandler.Handle(updateParticipantCommand);
 
-            var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
+            var updatedRepresentative=(Representative) updateParticipantCommand.UpdatedParticipant;
 
-            updatedParticipant.Should().NotBeNull();
-            updatedParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            updatedParticipant.Person.Title.Should().Be(title);
-            updatedParticipant.DisplayName.Should().Be(displayName);
-            updatedParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);
-            updatedParticipant.Person.Address.Should().BeNull();
-           
+            updatedRepresentative.Should().NotBeNull();
+            updatedRepresentative.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            updatedRepresentative.Person.Title.Should().Be(title);
+            updatedRepresentative.DisplayName.Should().Be(displayName);
+            updatedRepresentative.Person.TelephoneNumber.Should().Be(telephoneNumber);
+            updatedRepresentative.Person.Address.Should().BeNull();
+            updatedRepresentative.Person.Organisation.Should().NotBeNull();
+            updatedRepresentative.Person.Organisation.Name.Should().Be(organisationName);
+            updatedRepresentative.SolicitorsReference.Should().Be(repInfo.SolicitorsReference);
+            updatedRepresentative.Representee.Should().Be(repInfo.Representee);
+
+
         }
 
         [TearDown]

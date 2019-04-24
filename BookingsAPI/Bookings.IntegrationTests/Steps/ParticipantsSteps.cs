@@ -284,6 +284,75 @@ namespace Bookings.IntegrationTests.Steps
             }
         }
 
+        [Given(@"I have an update participant in a hearing request with a (.*) hearing id")]
+        [Given(@"I have an update participant in a hearing request with an (.*) hearing id")]
+        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithANonexistentHearingId(Scenario scenario)
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            var participantId = seededHearing.GetParticipants().FirstOrDefault().Id;
+            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
+            Guid hearingId;
+
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
+            _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    {
+                        _apiTestContext.NewHearingId = seededHearing.Id;
+                        hearingId = _apiTestContext.NewHearingId;
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        break;
+                    }
+                case Scenario.Nonexistent:
+                    hearingId = Guid.NewGuid();
+                    break;
+                case Scenario.Invalid:
+                    hearingId = Guid.Empty;
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+            _apiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId,participantId);
+            _apiTestContext.HttpMethod = HttpMethod.Put;
+        }
+
+        [Given(@"I have an update participant in a hearing request with a invalid solicitors reference")]
+        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidSolicitorsReference()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            var participantId = seededHearing.GetParticipants().FirstOrDefault(x=>x.HearingRole.UserRole.IsRepresentative).Id;
+            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
+            var hearingId = seededHearing.Id;
+            updateParticipantRequest.SolicitorsReference = string.Empty;
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
+            _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            _apiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
+            _apiTestContext.HttpMethod = HttpMethod.Put;
+        }
+
+
+        [Given(@"I have an update participant in a hearing request with a invalid address")]
+        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidAddress()
+        {
+            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+            var participantId = seededHearing.GetParticipants().FirstOrDefault(x => x.HearingRole.UserRole.IsIndividual).Id;
+            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
+            var hearingId = seededHearing.Id;
+            updateParticipantRequest.Street = string.Empty;
+            updateParticipantRequest.HouseNumber = string.Empty;
+            updateParticipantRequest.Postcode = string.Empty;
+            updateParticipantRequest.City = string.Empty;
+            updateParticipantRequest.County = string.Empty;
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
+            _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            _apiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
+            _apiTestContext.HttpMethod = HttpMethod.Put;
+        }
+
+
         private static AddParticipantsToHearingRequest BuildRequest()
         {
             var newParticipant = new ParticipantRequestBuilder("Defendant", "Defendant LIP").Build();

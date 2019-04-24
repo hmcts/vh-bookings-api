@@ -1,6 +1,6 @@
 namespace Bookings.Api.Contract.Requests
 {
-    public class ParticipantRequest : IAddressRequest
+    public class ParticipantRequest : IAddressRequest, IRepresentativeInfoRequest
     {
         /// <summary>
         ///     Participant Title.
@@ -61,6 +61,11 @@ namespace Bookings.Api.Contract.Requests
         /// The representee of a representative
         /// </summary>
         public string Representee { get; set; }
+        
+          /// <summary>
+        /// The organisation name
+        /// </summary>
+        public string OrganisationName { get; set; }
 
         /// <summary>
         /// House number of an Individual

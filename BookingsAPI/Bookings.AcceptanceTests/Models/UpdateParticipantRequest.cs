@@ -16,7 +16,10 @@ namespace Bookings.AcceptanceTests.Models
                 Street="Update Street",
                 City="Update City",
                 County="Update County",
-                Postcode="ED1 5NR"
+                Postcode="ED1 5NR",
+                OrganisationName = "OrgName",
+                Representee = "Rep",
+                SolicitorsReference = "SolRef"
             };
         }
     }

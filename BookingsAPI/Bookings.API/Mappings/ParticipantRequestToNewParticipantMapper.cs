@@ -24,7 +24,6 @@ namespace Bookings.API.Mappings
             if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
             Person person;
             if(hearingRole.UserRole.IsIndividual)
-
             {
                 var address = new Address(requestParticipant.HouseNumber, requestParticipant.Street, requestParticipant.Postcode, requestParticipant.City, requestParticipant.County);
                 person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
@@ -39,6 +38,10 @@ namespace Bookings.API.Mappings
             person.MiddleNames = requestParticipant.MiddleNames;
             person.ContactEmail = requestParticipant.ContactEmail;
             person.TelephoneNumber = requestParticipant.TelephoneNumber;
+            if(!string.IsNullOrEmpty(requestParticipant.OrganisationName))
+            {
+                person.Organisation = new Organisation(requestParticipant.OrganisationName);
+            }
 
             return new NewParticipant
             {

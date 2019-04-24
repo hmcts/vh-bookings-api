@@ -9,7 +9,6 @@ using FluentValidation.Results;
 namespace Bookings.API.Helpers
 {
     public static class AddressValidationHelper
-
     {
         public static ValidationResult ValidateAddress(List<string> roles, List<ParticipantRequest> participantRequests)
         {
