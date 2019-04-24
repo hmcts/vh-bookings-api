@@ -19,6 +19,9 @@ namespace Testing.Common.Builders.Api.Request
                 .With(x => x.City = Address.City())
                 .With(x => x.County = Address.Country())
                 .With(x => x.Postcode = Address.UkPostCode())
+                .With(x=>x.OrganisationName = Company.Name())
+                .With(x=>x.Representee = Name.FullName())
+                .With(x=>x.SolicitorsReference = Company.Name())
                 .Build();
         }
 

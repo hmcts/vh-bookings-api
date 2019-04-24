@@ -58,7 +58,6 @@ namespace Bookings.Domain.Participants
                 throw new DomainRuleException(_validationFailures);
             }
 
-
             DisplayName = displayName;
             Person.Title = title;
             Person.TelephoneNumber = telephoneNumber;
@@ -76,10 +75,17 @@ namespace Bookings.Domain.Participants
 
             if (!string.IsNullOrEmpty(organisationName))
             {
-                var organisation = new Organisation(organisationName);
+                var organisation = Person.Organisation;
+                if (organisation != null)
+                {
+                    organisation.Name = organisationName;
+                }
+                else
+                {
+                    organisation = new Organisation(organisationName);
+                }
                 Person.UpdateOrganisation(organisation);
             }
-
         }
 
         private void ValidateArguments(string displayName)
