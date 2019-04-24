@@ -249,15 +249,15 @@ namespace Bookings.IntegrationTests.Features
         public virtual void GetPersonSuitabilityAnswersForInvalidUsername()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person suitability answers for invalid username", null, ((string[])(null)));
-#line 51
+#line 57
   this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 52
+#line 58
     testRunner.Given("I have a get person suitability answers by username request with an invalid usern" +
                     "ame", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 53
+#line 59
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 54
+#line 60
     testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -268,17 +268,17 @@ namespace Bookings.IntegrationTests.Features
         public virtual void GetPersonSuitabilityAnswersForValidUsername()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person suitability answers for valid username", null, ((string[])(null)));
-#line 56
+#line 62
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 57
+#line 63
     testRunner.Given("I have a get person suitability answers by username request with an valid usernam" +
                     "e", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 58
+#line 64
     testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 59
+#line 65
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 60
+#line 66
  testRunner.And("persons suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
