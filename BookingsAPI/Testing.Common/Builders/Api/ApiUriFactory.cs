@@ -74,6 +74,9 @@ namespace Testing.Common.Builders.Api
 
         public string UpdateParticipantDetails(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
+
+        public string UpdateSuitabilityAnswers(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}";
     }
 
     public class PersonEndpoints
