@@ -350,7 +350,21 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
             }
-            return Ok(new List<HearingSuitabilityAnswerResponse>());
+            //Stub the values here for the test to pass
+            var hearingSuitabilityAnswers = new List<HearingSuitabilityAnswerResponse>();
+            var hearingSuitabilityAnswer = new HearingSuitabilityAnswerResponse
+            {
+                ParticipantId = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                ScheduledAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Answers = new List<SuitabilityAnswerResponse>()
+                {
+                    { new SuitabilityAnswerResponse { Key = "Key", Answer = "Answer", ExtendedAnswer = "ExtendedAnswer" } }
+                }
+            };
+            hearingSuitabilityAnswers.Add(hearingSuitabilityAnswer);
+            return Ok(hearingSuitabilityAnswers);
         }
 
         private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)

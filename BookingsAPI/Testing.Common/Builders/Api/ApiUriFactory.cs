@@ -56,6 +56,7 @@ namespace Testing.Common.Builders.Api
         public string GetHearingsByAnyCaseType(int limit = 100) => $"{ApiRoot}/types?limit={limit}";
 
         public string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
+        public string GetSuitabilityAnswers(Guid hearingId) => $"{ApiRoot}/{hearingId}/suitability-answers";
     }
 
     public class ParticipantsEndpoints
