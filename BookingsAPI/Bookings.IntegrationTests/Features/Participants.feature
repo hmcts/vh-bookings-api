@@ -119,3 +119,8 @@ Scenario: Participant submits suitability answers with invalid hearing id
 	Given I have an update suitability answers request with an invalid hearing id and valid participant id
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
+
+Scenario: Participant submits suitability answers with valid data
+	Given I have an update suitability answers request with an valid hearing id and valid participant id
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True

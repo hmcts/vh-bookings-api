@@ -77,7 +77,7 @@ namespace Testing.Common.Builders.Api
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
 
         public string UpdateSuitabilityAnswers(Guid hearingId, Guid participantId) =>
-            $"{ApiRoot}/{hearingId}/participants/{participantId}";
+            $"{ApiRoot}/{hearingId}/participants/{participantId}/suitability-answers";
     }
 
     public class PersonEndpoints

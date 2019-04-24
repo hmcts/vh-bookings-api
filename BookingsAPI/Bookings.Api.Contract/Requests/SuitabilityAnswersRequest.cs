@@ -14,8 +14,8 @@ namespace Bookings.Api.Contract.Requests
         /// <summary>
         /// Answer the question
         /// </summary>
-        /// 
         public string Answer { get; set; }
+        
         /// <summary>
         /// Extended answer to the question
         /// </summary>

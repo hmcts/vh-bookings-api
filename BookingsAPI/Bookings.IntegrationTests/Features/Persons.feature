@@ -59,8 +59,8 @@ Feature: Persons
     When I send the request to the endpoint
     Then the response should have the status BadRequest and success status False
 
-Scenario: Get person suitability answers for valid username
+  Scenario: Get person suitability answers for valid username
     Given I have a get person suitability answers by username request with an valid username
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
-	And persons suitability answers should be retrieved
+    And persons suitability answers should be retrieved

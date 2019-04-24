@@ -359,7 +359,7 @@ namespace Bookings.API.Controllers
         /// <returns>>A list of suitability answers</returns>
         [HttpGet("{hearingId}/suitability-answers", Name = "GetSuitabilityAnswers")]
         [SwaggerOperation(OperationId = "GetSuitabilityAnswers")]
-        [ProducesResponseType(typeof(HearingSuitabilityAnswerResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<SuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public IActionResult GetSuitabilityAnswers(Guid hearingId)

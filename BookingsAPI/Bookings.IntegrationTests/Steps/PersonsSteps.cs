@@ -31,24 +31,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get person by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonByUsernameRequest(Scenario scenario)
         {
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    {
-                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                        _apiTestContext.NewHearingId = seededHearing.Id;
-                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _username = seededHearing.GetParticipants().First().Person.Username;
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    _username = Internet.Email();
-                    break;
-                case Scenario.Invalid:
-                    _username = "invalid username";
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
+            await SetUserNameForGivenScenario(scenario);
             _apiTestContext.Uri = _endpoints.GetPersonByUsername(_username);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -114,24 +97,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    {
-                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                        _apiTestContext.NewHearingId = seededHearing.Id;
-                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _username = seededHearing.GetParticipants().First().Person.Username;
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    _username = Internet.Email();
-                    break;
-                case Scenario.Invalid:
-                    _username = "invalid username";
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
+            await SetUserNameForGivenScenario(scenario);
             _apiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -198,6 +164,29 @@ namespace Bookings.IntegrationTests.Steps
             firstAnswer.Key.Should().NotBeEmpty();
             firstAnswer.Answer.Should().NotBeEmpty();
             firstAnswer.ExtendedAnswer.Should().NotBeEmpty();
+        }
+
+        private async Task SetUserNameForGivenScenario(Scenario scenario)
+        {
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    {
+                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+                        _apiTestContext.NewHearingId = seededHearing.Id;
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        _username = seededHearing.GetParticipants().First().Person.Username;
+                        break;
+                    }
+                case Scenario.Nonexistent:
+                    _username = Internet.Email();
+                    break;
+                case Scenario.Invalid:
+                    _username = "invalid username";
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+
         }
     }
 }

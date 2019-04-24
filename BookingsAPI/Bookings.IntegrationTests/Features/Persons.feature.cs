@@ -269,7 +269,7 @@ namespace Bookings.IntegrationTests.Features
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person suitability answers for valid username", null, ((string[])(null)));
 #line 62
-this.ScenarioInitialize(scenarioInfo);
+  this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 63
     testRunner.Given("I have a get person suitability answers by username request with an valid usernam" +
@@ -279,7 +279,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 65
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 66
- testRunner.And("persons suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("persons suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

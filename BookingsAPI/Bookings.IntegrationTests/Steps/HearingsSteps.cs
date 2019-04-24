@@ -167,23 +167,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have an (.*) remove hearing request")]
         public async Task GivenIHaveAValidRemoveHearingRequest(Scenario scenario)
         {
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                    NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                    _hearingId = seededHearing.Id;
-                    break;
-                case Scenario.Invalid:
-                    _hearingId = Guid.Empty;
-                    break;
-                case Scenario.Nonexistent:
-                    _hearingId = Guid.NewGuid();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
-
+            await SetHearingIdForGivenScenario(scenario);
             _apiTestContext.Uri = _endpoints.RemoveHearing(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Delete;
         }
@@ -415,23 +399,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a hearing with suitability answers a given hearing request with an (.*) hearing id")]
         public async Task GivenIHaveAHearingWithSuitabilityAnswersForGivenHearingRequest(Scenario scenario)
         {
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    {
-                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _hearingId = seededHearing.Id;
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    _hearingId = Guid.NewGuid();
-                    break;
-                case Scenario.Invalid:
-                    _hearingId = Guid.Empty;
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
+            await SetHearingIdForGivenScenario(scenario);
             _apiTestContext.Uri = _endpoints.GetSuitabilityAnswers(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -618,6 +586,27 @@ namespace Bookings.IntegrationTests.Steps
             _apiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             _apiTestContext.Uri = _endpoints.UpdateHearingDetails(_hearingId);
             _apiTestContext.HttpMethod = HttpMethod.Patch;
+        }
+
+        private async Task SetHearingIdForGivenScenario(Scenario scenario)
+        {
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    {
+                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
+                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                        _hearingId = seededHearing.Id;
+                        break;
+                    }
+                case Scenario.Nonexistent:
+                    _hearingId = Guid.NewGuid();
+                    break;
+                case Scenario.Invalid:
+                    _hearingId = Guid.Empty;
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
         }
     }
 }

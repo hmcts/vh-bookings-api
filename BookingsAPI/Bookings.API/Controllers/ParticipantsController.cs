@@ -317,7 +317,7 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "UpdateSuitabilityAnswers")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public IActionResult UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)
         {
             if (hearingId == Guid.Empty)
@@ -332,7 +332,7 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok();
+            return NoContent();
         }
     }
 }
