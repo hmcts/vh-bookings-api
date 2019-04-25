@@ -331,5 +331,34 @@ namespace Bookings.API.Controllers
 
             return Ok(response);
         }
+
+        /// <summary>
+        /// Updates suitability answers for the participant
+        /// </summary>
+        /// <param name="hearingId">Id of hearing</param>
+        /// <param name="participantId">Id of participant</param>
+        /// <param name="answers">A list of suitability answers to update</param>
+        /// <returns>Http status</returns>
+        [HttpPut("{hearingId}/participants/{participantId}/suitability-answers", Name = "UpdateSuitabilityAnswers")]
+        [SwaggerOperation(OperationId = "UpdateSuitabilityAnswers")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public IActionResult UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            if (participantId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
+                return BadRequest(ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }

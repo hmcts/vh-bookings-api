@@ -57,6 +57,7 @@ namespace Testing.Common.Builders.Api
 
         public string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
         public string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
+        public string GetSuitabilityAnswers(Guid hearingId) => $"{ApiRoot}/{hearingId}/suitability-answers";
     }
 
     public class ParticipantsEndpoints
@@ -74,6 +75,9 @@ namespace Testing.Common.Builders.Api
 
         public string UpdateParticipantDetails(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
+
+        public string UpdateSuitabilityAnswers(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}/suitability-answers";
     }
 
     public class PersonEndpoints
@@ -82,6 +86,6 @@ namespace Testing.Common.Builders.Api
         public string GetPersonByUsername(string username) => $"{ApiRoot}/username/{username}";
         public string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
         public string GetPersonBySearchTerm(string term) => $"{ApiRoot}/search/{term}";
-
+        public string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
     }
 }

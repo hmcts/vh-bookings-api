@@ -243,6 +243,46 @@ namespace Bookings.IntegrationTests.Features
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get person suitability answers for invalid username")]
+        public virtual void GetPersonSuitabilityAnswersForInvalidUsername()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person suitability answers for invalid username", null, ((string[])(null)));
+#line 57
+  this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 58
+    testRunner.Given("I have a get person suitability answers by username request with an invalid usern" +
+                    "ame", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 59
+    testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 60
+    testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get person suitability answers for valid username")]
+        public virtual void GetPersonSuitabilityAnswersForValidUsername()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person suitability answers for valid username", null, ((string[])(null)));
+#line 62
+  this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 63
+    testRunner.Given("I have a get person suitability answers by username request with an valid usernam" +
+                    "e", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 64
+    testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 65
+    testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 66
+    testRunner.And("persons suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

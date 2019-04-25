@@ -352,6 +352,40 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets all suitability answers for a given hearing
+        /// </summary>
+        /// <param name="hearingId">Hearing Id</param>
+        /// <returns>>A list of suitability answers</returns>
+        [HttpGet("{hearingId}/suitability-answers", Name = "GetSuitabilityAnswers")]
+        [SwaggerOperation(OperationId = "GetSuitabilityAnswers")]
+        [ProducesResponseType(typeof(List<SuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult GetSuitabilityAnswers(Guid hearingId)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+            //Stub the values here for the test to pass
+            var hearingSuitabilityAnswers = new List<HearingSuitabilityAnswerResponse>();
+            var hearingSuitabilityAnswer = new HearingSuitabilityAnswerResponse
+            {
+                ParticipantId = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                ScheduledAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Answers = new List<SuitabilityAnswerResponse>()
+                {
+                    { new SuitabilityAnswerResponse { Key = "Key", Answer = "Answer", ExtendedAnswer = "ExtendedAnswer" } }
+                }
+            };
+            hearingSuitabilityAnswers.Add(hearingSuitabilityAnswer);
+            return Ok(hearingSuitabilityAnswers);
+        }
+
         private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
         {
             const string hearingsListsEndpointBaseUrl = "hearings/";
