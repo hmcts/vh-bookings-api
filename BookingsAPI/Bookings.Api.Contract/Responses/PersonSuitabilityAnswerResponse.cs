@@ -17,17 +17,17 @@ namespace Bookings.Api.Contract.Responses
         public Guid ParticipantId { get; set; }
 
         /// <summary>
-        /// Scheduled At
+        /// Scheduled time of the hearing
         /// </summary>
         public DateTime ScheduledAt { get; set; }
 
         /// <summary>
-        /// Updated At
+        /// Updated At of the suitability answer
         /// </summary>
         public DateTime UpdatedAt { get; set; }
 
         /// <summary>
-        /// Created At
+        /// Created time 
         /// </summary>
         public DateTime CreatedAt { get; set; }
 

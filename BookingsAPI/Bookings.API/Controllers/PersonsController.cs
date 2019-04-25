@@ -111,10 +111,10 @@ namespace Bookings.API.Controllers
         /// <returns>A list of suitability answers</returns>
         [HttpGet("username/{username}/suitability-answers", Name = "GetPersonSuitabilityAnswers")]
         [SwaggerOperation(OperationId = "GetPersonSuitabilityAnswers")]
-        [ProducesResponseType(typeof(PersonSuitabilityAnswerResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<PersonSuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public IActionResult GetPersonSuitabilityAnswers(string username)
+        public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
         {
             if (!username.IsValidEmail())
             {
@@ -122,22 +122,27 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var query = new GetHearingsByUsernameQuery(username);
+            var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
+
+            var personSuitabilityAnswers = hearings.Select(hearing => BuildReponse(hearing, username)).ToList();
+            return Ok(personSuitabilityAnswers);
+        }
+
+        private PersonSuitabilityAnswerResponse BuildReponse(VideoHearing hearing, string username)
+        {
+            var participant = hearing.Participants.First(p => p.Person.Username.ToLower().Equals(username.ToLower().Trim()));
             //Stub the values here for the test to pass
-            var personSuitabilityAnswers = new List<PersonSuitabilityAnswerResponse>();
             var personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
             {
-                HearingId = Guid.NewGuid(),
-                ParticipantId = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow,
-                ScheduledAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                HearingId = hearing.Id,
+                ParticipantId = participant.Id,
+                CreatedAt = DateTime.MinValue,
+                ScheduledAt = hearing.ScheduledDateTime,
+                UpdatedAt = DateTime.MinValue,
                 Answers = new List<SuitabilityAnswerResponse>()
-                {
-                    { new SuitabilityAnswerResponse { Key = "Key", Answer = "Answer", ExtendedAnswer = "ExtendedAnswer" } }
-                }
             };
-            personSuitabilityAnswers.Add(personSuitabilityAnswer);
-            return Ok(personSuitabilityAnswers);
+            return personSuitabilityAnswer;
         }
     }   
 }

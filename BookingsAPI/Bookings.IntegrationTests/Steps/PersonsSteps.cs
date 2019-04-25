@@ -153,17 +153,22 @@ namespace Bookings.IntegrationTests.Steps
         {
             var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
+
             model[0].Should().NotBeNull();
             model[0].HearingId.Should().NotBeEmpty();
+            model[0].HearingId.Should().Be(_apiTestContext.NewHearingId);
             model[0].ParticipantId.Should().NotBeEmpty();
+            model[0].ParticipantId.Should().Be(_apiTestContext.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
-            model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
+            model[0].UpdatedAt.Should().Be(DateTime.MinValue);
+            model[0].CreatedAt.Should().Be(DateTime.MinValue);
             model[0].Answers.Should().NotBeNull();
-            var firstAnswer = model[0].Answers.First();
-            firstAnswer.Key.Should().NotBeEmpty();
-            firstAnswer.Answer.Should().NotBeEmpty();
-            firstAnswer.ExtendedAnswer.Should().NotBeEmpty();
+            model[0].Answers.Should().BeEmpty();
+
+
+            
+            
+
         }
 
         private async Task SetUserNameForGivenScenario(Scenario scenario)
@@ -175,7 +180,9 @@ namespace Bookings.IntegrationTests.Steps
                         var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
                         _apiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _username = seededHearing.GetParticipants().First().Person.Username;
+                        var participants = seededHearing.GetParticipants();
+                        _username = participants.First().Person.Username;
+                        _apiTestContext.Participant = participants.First(p => p.Person.Username.Equals(_username));
                         break;
                     }
                 case Scenario.Nonexistent:
