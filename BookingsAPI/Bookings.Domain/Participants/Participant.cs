@@ -43,7 +43,8 @@ namespace Bookings.Domain.Participants
         {
             ValidateArguments(displayName);
 
-            if (HearingRole.UserRole.IsIndividual)
+            var individual = this as Individual;
+            if (individual != null)
             {
 
                 var addressFailures = CommonValidations.ValidateAddressDetails(houseNumber, street, city, county, postcode);
@@ -62,7 +63,8 @@ namespace Bookings.Domain.Participants
             Person.Title = title;
             Person.TelephoneNumber = telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
-            if (HearingRole.UserRole.IsIndividual)
+
+            if (individual != null)
             {
                 var address = Person.Address;
                 address.HouseNumber = houseNumber;
