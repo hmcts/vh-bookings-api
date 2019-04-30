@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bookings.Domain;
 using Bookings.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.UnitTests.Domain.Hearing
+namespace Bookings.UnitTests.Domain.Participants
 {
     public class UpdateParticipantDetailsTests
     {
@@ -28,7 +25,8 @@ namespace Bookings.UnitTests.Domain.Hearing
             var organisationName = "Edit Org1";
             var beforeUpdatedDate = individualParticipant.UpdatedDate;
 
-            individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
+            individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber,
+                city, county, postcode, organisationName);
             individualParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
             individualParticipant.Person.Title.Should().Be(title);
             individualParticipant.DisplayName.Should().Be(displayName);
@@ -53,7 +51,8 @@ namespace Bookings.UnitTests.Domain.Hearing
             var organisationName = "Edit Org1";
             var beforeUpdatedDate = representativeParticipant.UpdatedDate;
 
-            representativeParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
+            representativeParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber,
+                city, county, postcode, organisationName);
             representativeParticipant.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
             representativeParticipant.Person.Title.Should().Be(title);
             representativeParticipant.DisplayName.Should().Be(displayName);
@@ -76,7 +75,8 @@ namespace Bookings.UnitTests.Domain.Hearing
             var organisationName = "Edit Org1";
             var beforeUpdatedDate = individualParticipant.UpdatedDate;
 
-            Action action = () => individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName); ;
+            Action action = () => individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber,
+                street, houseNumber, city, county, postcode, organisationName);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "DisplayName");

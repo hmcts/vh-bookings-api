@@ -63,7 +63,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [TearDown]
-        public async Task TearDown()
+        public new async Task TearDown()
         {
             if (_newHearingId != Guid.Empty)
             {

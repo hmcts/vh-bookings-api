@@ -24,12 +24,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
         }
         
-        [TearDown]
-        public async Task TearDown()
-        {
-            await Hooks.ClearSeededHearings();
-        }
-        
         [Test]
         public void should_throw_exception_when_hearing_does_not_exist()
         {

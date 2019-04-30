@@ -4,26 +4,22 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
-using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 using Faker;
 using FluentAssertions;
-using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public class Personsteps : StepsBase
+    public class PersonSteps : StepsBase
     {
-        private readonly Contexts.TestContext _apiTestContext;
         private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
         private string _username;
 
-        public Personsteps(Contexts.TestContext apiTestContext)
+        public PersonSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
         {
-            _apiTestContext = apiTestContext;
             _username = string.Empty;
         }
 
@@ -32,8 +28,8 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetPersonByUsernameRequest(Scenario scenario)
         {
             await SetUserNameForGivenScenario(scenario);
-            _apiTestContext.Uri = _endpoints.GetPersonByUsername(_username);
-            _apiTestContext.HttpMethod = HttpMethod.Get;
+            ApiTestContext.Uri = _endpoints.GetPersonByUsername(_username);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get (.*) by contact email request with a (.*) contact email")]
@@ -44,8 +40,8 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                        _apiTestContext.NewHearingId = seededHearing.Id;
+                        var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+                        ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         if(personType.Equals("individual"))
                         {
@@ -65,47 +61,47 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            _apiTestContext.Uri = _endpoints.GetPersonByContactEmail(_username);
-            _apiTestContext.HttpMethod = HttpMethod.Get;
+            ApiTestContext.Uri = _endpoints.GetPersonByContactEmail(_username);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
         }
 
 
         [Given(@"I have a get person by contact email search term request")]
         public async Task GivenIHaveAGetPersonByContactEmailSearchTermRequest()
         {
-            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            _apiTestContext.NewHearingId = seededHearing.Id;
+            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            ApiTestContext.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
             var searchTerm = email.Substring(0, 3);
-            _apiTestContext.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
-            _apiTestContext.HttpMethod = HttpMethod.Get;
+            ApiTestContext.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get person by contact email search term request that case insensitive")]
         public async Task GivenIHaveAGetPersonByContactEmailSearchTermRequestThatCaseInsensitive()
         {
-            var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-            _apiTestContext.NewHearingId = seededHearing.Id;
+            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            ApiTestContext.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
             var searchTerm = email.Substring(0, 3).ToUpperInvariant();
-            _apiTestContext.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
-            _apiTestContext.HttpMethod = HttpMethod.Get;
+            ApiTestContext.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
             await SetUserNameForGivenScenario(scenario);
-            _apiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
-            _apiTestContext.HttpMethod = HttpMethod.Get;
+            ApiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
         }
 
         [Then(@"person details should be retrieved")]
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {
-            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
             model.Should().NotBeNull();
             ValidatePersonData(model);
@@ -126,7 +122,7 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"person address should be retrieved")]
         public async Task ThenPersonAddressShouldBeRetrieved()
         {
-            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
             model.Should().NotBeNull();
             model.Organisation.Should().NotBeNullOrEmpty();
@@ -142,7 +138,7 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"persons details should be retrieved")]
         public async Task ThenPersonsDetailsShouldBeRetrieved()
         {
-            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(json);
             model[0].Should().NotBeNull();
             ValidatePersonData(model[0]);
@@ -151,14 +147,14 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"persons suitability answers should be retrieved")]
         public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved()
         {
-            var json = await _apiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
 
             model[0].Should().NotBeNull();
             model[0].HearingId.Should().NotBeEmpty();
-            model[0].HearingId.Should().Be(_apiTestContext.NewHearingId);
+            model[0].HearingId.Should().Be(ApiTestContext.NewHearingId);
             model[0].ParticipantId.Should().NotBeEmpty();
-            model[0].ParticipantId.Should().Be(_apiTestContext.Participant.Id);
+            model[0].ParticipantId.Should().Be(ApiTestContext.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
             model[0].UpdatedAt.Should().Be(DateTime.MinValue);
             model[0].CreatedAt.Should().Be(DateTime.MinValue);
@@ -177,12 +173,12 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await _apiTestContext.TestDataManager.SeedVideoHearing();
-                        _apiTestContext.NewHearingId = seededHearing.Id;
+                        var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+                        ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         var participants = seededHearing.GetParticipants();
                         _username = participants.First().Person.Username;
-                        _apiTestContext.Participant = participants.First(p => p.Person.Username.Equals(_username));
+                        ApiTestContext.Participant = participants.First(p => p.Person.Username.Equals(_username));
                         break;
                     }
                 case Scenario.Nonexistent:
