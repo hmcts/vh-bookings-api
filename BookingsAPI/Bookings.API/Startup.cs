@@ -77,9 +77,10 @@ namespace Bookings.API
         }
         private void RegisterInfrastructureServices(IServiceCollection services)
         {
-            if (bool.Parse(Configuration["UseServiceBusFake"]))
+            bool.TryParse(Configuration["UseServiceBusFake"], out var useFakeClient);
+            if (useFakeClient)
             {
-                services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClientFake>();
+                services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
             }
             else
             {

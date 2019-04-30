@@ -10,10 +10,13 @@ using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Bookings.IntegrationTests.Helper;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
@@ -416,6 +419,16 @@ namespace Bookings.IntegrationTests.Steps
             firstAnswer.Key.Should().NotBeEmpty();
             firstAnswer.Answer.Should().NotBeEmpty();
             firstAnswer.ExtendedAnswer.Should().NotBeEmpty();
+        }
+
+        [Then(@"the service bus should have been queued with a new bookings message")]
+        public void ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
+        {
+            var serviceBusQueueClient = (ServiceBusQueueClientFake) ApiTestContext.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
+            var integrationEvent = serviceBusQueueClient.ReadMessageFromQueue();
+            integrationEvent.Should().NotBeNull();
+            var hearingReadyForVideoEvent = integrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
+            hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(_hearingId);
         }
 
         private void ThenHearingBookingStatusIs(BookingStatus status)

@@ -26,6 +26,7 @@ namespace Bookings.IntegrationTests.Hooks
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(c => c.AddServerHeader = false)
                 .UseEnvironment("Development")
+                .UseDefaultServiceProvider(options => options.ValidateScopes = false)
                 .UseStartup<Startup>();
             apiTestContext.Server = new TestServer(webHostBuilder);
             GetClientAccessTokenForApi(apiTestContext);

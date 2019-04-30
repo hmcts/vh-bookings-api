@@ -32,8 +32,8 @@ namespace Bookings.IntegrationTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Participants", "\tIn order to manage participants in a hearing\r\n\tAs an api service\r\n\tI want to be " +
-                    "able to create, update and retrieve hearing participants", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Participants", "\tIn order to manage participants in a hearing\n\tAs an api service\n\tI want to be ab" +
+                    "le to create, update and retrieve hearing participants", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-3622"});
             testRunner.OnFeatureStart(featureInfo);
         }

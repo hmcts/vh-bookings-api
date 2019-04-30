@@ -38,11 +38,14 @@ namespace Bookings.API.Controllers
 
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
+        private readonly IServiceBusQueueClient _serviceBusQueueClient;
 
-        public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
+        public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
+            IServiceBusQueueClient serviceBusQueueClient)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
+            _serviceBusQueueClient = serviceBusQueueClient;
         }
 
         /// <summary>
@@ -166,6 +169,9 @@ namespace Bookings.API.Controllers
             var queriedVideoHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
+            var createVideoHearingEvent = new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing);
+            await _serviceBusQueueClient.PublishMessageAsync(createVideoHearingEvent);
+            
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
@@ -432,9 +438,8 @@ namespace Bookings.API.Controllers
                 case Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled:
                     return BookingStatus.Cancelled;
                 default:
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(status), status, "Invalid booking status type");
             }
-            throw new ArgumentException("Invalid booking status type");
         }
     }
 }
