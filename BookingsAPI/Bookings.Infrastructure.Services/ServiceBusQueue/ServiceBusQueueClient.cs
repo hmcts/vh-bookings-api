@@ -23,7 +23,7 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
         {
             _serviceBusSettings = serviceBusSettings.Value;
 
-            _serializerSettings = new JsonSerializerSettings()
+            _serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
@@ -38,7 +38,7 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
             var jsonObjectString = JsonConvert.SerializeObject(integrationEvent, _serializerSettings);
 
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
-            await queueClient.SendAsync(new Message(messageBytes));
+            await queueClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
         }
     }
 }

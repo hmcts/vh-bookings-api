@@ -13,10 +13,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Bookings.Common;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
-using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 namespace Bookings.API
 {
