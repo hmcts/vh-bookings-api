@@ -138,43 +138,33 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_use_existing_person_when_adding_to_video_hearing()
+        public async Task should_use_existing_representative_when_adding_to_video_hearing()
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
-            var seededPerson = await SeedPerson();
-            
-            var personCountBefore = await GetNumberOfPersonsInDb();
-            
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
-            
-            var caseTypeName = "Civil Money Claims";
-            var caseType = GetCaseTypeFromDb(caseTypeName);
+            var seededRepresentative = await SeedPerson(true, false);
+            var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
+            var personsListAfter = await GetPersonsInDb();
+            personsListAfter.Count.Should().Be(personListBefore.Count);
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
-            
-            var newParticipant = new NewParticipant()
-            {
-                Person = seededPerson,
-                CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
-                DisplayName = $"{seededPerson.FirstName} {seededPerson.LastName}",
-                SolicitorsReference = string.Empty,
-                Representee = string.Empty
-            };
+            var existingPersonInDb = personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+            existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
+            existingPersonInDb.Address.Should().BeNull();
+            CheckPersonDetails(existingPersonInDb, seededRepresentative);
+        }
 
-            var participants = new List<NewParticipant>()
-            {
-                newParticipant
-            };
+        [Test]
+        public async Task should_use_existing_individual_when_adding_to_video_hearing()
+        {
+            var seededRepresentative = await SeedPerson(true, true);
+            var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
+            var personsListAfter = await GetPersonsInDb();
+            personsListAfter.Count.Should().Be(personListBefore.Count);
 
-            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
-
-            var personCountAfter = await GetNumberOfPersonsInDb();
-
-            personCountAfter.Should().Be(personCountBefore);
-
+            var existingPersonInDb = personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+            existingPersonInDb.Organisation.Should().NotBeNull();
+            existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
+            CheckPersonDetails(existingPersonInDb, seededRepresentative);
+            existingPersonInDb.Address.Should().NotBeNull();
+            CheckAddressDetails(existingPersonInDb.Address, seededRepresentative.Address);
         }
 
         [Test]
@@ -216,17 +206,85 @@ namespace Bookings.IntegrationTests.Database.Commands
             afterCount.Should().BeGreaterThan(beforeCount);
         }
 
-        private async Task<int> GetNumberOfPersonsInDb()
+        private async Task<List<Person>> AddExistingPersonToAHearing(Person existingPerson)
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            var personListBefore = await GetPersonsInDb();
+
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var caseTypeName = "Civil Money Claims";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
+            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+
+            var newParticipant = new NewParticipant()
+            {
+                Person = existingPerson,
+                CaseRole = claimantCaseRole,
+                HearingRole = claimantSolicitorHearingRole,
+                DisplayName = $"{existingPerson.FirstName} {existingPerson.LastName}",
+                SolicitorsReference = string.Empty,
+                Representee = string.Empty
+            };
+
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
+            };
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+
+            return personListBefore;
+        }
+
+        private void CheckPersonDetails(Person existingPersonInDb, Person seededPerson)
+        {
+            existingPersonInDb.Title.Should().Be(seededPerson.Title);
+            existingPersonInDb.FirstName.Should().Be(seededPerson.FirstName);
+            existingPersonInDb.MiddleNames.Should().Be(seededPerson.MiddleNames);
+            existingPersonInDb.LastName.Should().Be(seededPerson.LastName);
+            existingPersonInDb.ContactEmail.Should().Be(seededPerson.ContactEmail);
+            existingPersonInDb.Username.Should().Be(seededPerson.Username);
+            existingPersonInDb.TelephoneNumber.Should().Be(seededPerson.TelephoneNumber);
+        }
+
+        private void CheckAddressDetails(Address existingPersonAddressInDb, Address seededPersonAddress)
+        {
+            existingPersonAddressInDb.HouseNumber.Should().Be(seededPersonAddress.HouseNumber);
+            existingPersonAddressInDb.Street.Should().Be(seededPersonAddress.Street);
+            existingPersonAddressInDb.County.Should().Be(seededPersonAddress.County);
+            existingPersonAddressInDb.City.Should().Be(seededPersonAddress.City);
+            existingPersonAddressInDb.Postcode.Should().Be(seededPersonAddress.Postcode);
+        }
+
+        private async Task<List<Person>> GetPersonsInDb()
         {
             using (var db = new BookingsDbContext(BookingsDbContextOptions))
             {
-                return await db.Persons.CountAsync();
+                return await db.Persons
+                    .Include(p => p.Organisation)
+                    .Include(p => p.Address)
+                    .ToListAsync();
             }
         }
-
-        private async Task<Person> SeedPerson()
+        
+        private async Task<Person> SeedPerson(bool withOrganisation = false, bool withAddress = false)
         {
-            var newPerson = new PersonBuilder(true).Build();
+            var builder = new PersonBuilder(true);
+            
+            if(withAddress)
+            {
+                builder.WithAddress();
+            }
+            if (withOrganisation)
+            {
+                builder.WithOrganisation();
+            }
+
+            var newPerson = builder.Build();
             using (var db = new BookingsDbContext(BookingsDbContextOptions))
             {
                 await db.Persons.AddAsync(newPerson);
