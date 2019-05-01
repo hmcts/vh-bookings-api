@@ -88,7 +88,7 @@ namespace Bookings.Domain
             }
         }
 
-        public void AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (DoesParticipantExist(person.Username))
             {
@@ -100,9 +100,10 @@ namespace Bookings.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            return participant;
         }
 
-        public void AddSolicitor(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
+        public Participant AddSolicitor(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
             string solicitorsReference, string representee)
         {
             if (DoesParticipantExist(person.Username))
@@ -120,6 +121,7 @@ namespace Bookings.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            return participant;
         }
         
         public void AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
