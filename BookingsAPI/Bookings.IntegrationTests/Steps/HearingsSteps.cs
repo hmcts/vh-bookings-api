@@ -425,9 +425,9 @@ namespace Bookings.IntegrationTests.Steps
         public void ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
         {
             var serviceBusQueueClient = (ServiceBusQueueClientFake) ApiTestContext.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
-            var integrationEvent = serviceBusQueueClient.ReadMessageFromQueue();
-            integrationEvent.Should().NotBeNull();
-            var hearingReadyForVideoEvent = integrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
+            var eventMessage = serviceBusQueueClient.ReadMessageFromQueue();
+            eventMessage.Should().NotBeNull();
+            var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
             hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(_hearingId);
         }
 

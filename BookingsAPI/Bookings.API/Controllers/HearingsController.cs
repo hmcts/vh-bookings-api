@@ -19,8 +19,8 @@ using Bookings.Domain;
 using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -38,14 +38,14 @@ namespace Bookings.API.Controllers
 
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
-        private readonly IServiceBusQueueClient _serviceBusQueueClient;
+        private readonly IEventPublisher _eventPublisher;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IServiceBusQueueClient serviceBusQueueClient)
+            IEventPublisher eventPublisher)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _serviceBusQueueClient = serviceBusQueueClient;
+            _eventPublisher = eventPublisher;
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Bookings.API.Controllers
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             var createVideoHearingEvent = new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing);
-            await _serviceBusQueueClient.PublishMessageAsync(createVideoHearingEvent);
+            await _eventPublisher.PublishAsync(createVideoHearingEvent);
             
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);

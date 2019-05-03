@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using FluentAssertions;
@@ -14,24 +14,25 @@ namespace Bookings.UnitTests.Infrastructure.Services
     public class IntegrationEventTests
     {
         private ServiceBusQueueClientFake _serviceBusQueueClient;
-        private IRaiseIntegrationEvent _raiseIntegrationEvent;
+        private IEventPublisher _eventPublisher;
 
         [SetUp]
         public void Setup()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
-            _raiseIntegrationEvent = new RaiseIntegrationEvent(_serviceBusQueueClient);
+            _eventPublisher = new EventPublisher(_serviceBusQueueClient);
         }
 
         [Test]
         public void should_publish_message_to_queue_when_HearingCancelledIntegrationEvent_is_raised()
         {
             var hearingCancelledEvent = new HearingCancelledIntegrationEvent(Guid.NewGuid());
-            _raiseIntegrationEvent.Raise(hearingCancelledEvent);
+            _eventPublisher.PublishAsync(hearingCancelledEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.Should().BeOfType<HearingCancelledIntegrationEvent>();
+            @event.IntegrationEvent.Should().BeOfType<HearingCancelledIntegrationEvent>();
+            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.HearingCancelled);
         }
 
         [Test]
@@ -42,11 +43,12 @@ namespace Bookings.UnitTests.Infrastructure.Services
             hearing.AddCase("1234", "test", true);
 
             var hearingDetailsUpdatedIntegrationEvent = new HearingDetailsUpdatedIntegrationEvent(hearing);
-            _raiseIntegrationEvent.Raise(hearingDetailsUpdatedIntegrationEvent);
+            _eventPublisher.PublishAsync(hearingDetailsUpdatedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
+            @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
+            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.HearingDetailsUpdated);
         }
 
         [Test]
@@ -62,22 +64,24 @@ namespace Bookings.UnitTests.Infrastructure.Services
             individual1.CaseRole = new CaseRole(1, "test");
 
             var participantAddedIntegrationEvent = new ParticipantAddedIntegrationEvent(hearing.Id, individual1);
-            _raiseIntegrationEvent.Raise(participantAddedIntegrationEvent);
+            _eventPublisher.PublishAsync(participantAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.Should().BeOfType<ParticipantAddedIntegrationEvent>();
+            @event.IntegrationEvent.Should().BeOfType<ParticipantAddedIntegrationEvent>();
+            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.ParticipantAdded);
         }
 
         [Test]
         public void should_publish_message_to_queue_when_ParticipantRemovedIntegrationEvent_is_raised()
         {
             var participantRemovedIntegrationEvent = new ParticipantRemovedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid());
-            _raiseIntegrationEvent.Raise(participantRemovedIntegrationEvent);
+            _eventPublisher.PublishAsync(participantRemovedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.Should().BeOfType<ParticipantRemovedIntegrationEvent>();
+            @event.IntegrationEvent.Should().BeOfType<ParticipantRemovedIntegrationEvent>();
+            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.ParticipantRemoved);
         }
 
         [Test]
@@ -105,11 +109,12 @@ namespace Bookings.UnitTests.Infrastructure.Services
             judge.CaseRole = new CaseRole(3, "test4");
             
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
-            _raiseIntegrationEvent.Raise(hearingIsReadyForVideoIntegrationEvent);
+            _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+            @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.HearingIsReadyForVideo);
         }
     }
 }

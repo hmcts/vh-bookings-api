@@ -1,4 +1,4 @@
-﻿namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
+﻿namespace Bookings.Infrastructure.Services.IntegrationEvents
 {
     public interface IIntegrationEvent
     {

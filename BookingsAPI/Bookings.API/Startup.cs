@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Bookings.Common.Configuration;
 using Bookings.DAL;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 namespace Bookings.API
@@ -87,7 +87,7 @@ namespace Bookings.API
                 services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClient>();
             }
 
-            services.AddScoped<IRaiseIntegrationEvent, RaiseIntegrationEvent>();
+            services.AddScoped<IEventPublisher, EventPublisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

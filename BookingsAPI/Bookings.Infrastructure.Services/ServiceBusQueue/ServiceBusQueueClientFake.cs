@@ -1,20 +1,20 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 
 namespace Bookings.Infrastructure.Services.ServiceBusQueue
 {
     public class ServiceBusQueueClientFake : IServiceBusQueueClient
     {
-        private readonly ConcurrentQueue<IIntegrationEvent> _eventMessages = new ConcurrentQueue<IIntegrationEvent>();
+        private readonly ConcurrentQueue<EventMessage> _eventMessages = new ConcurrentQueue<EventMessage>();
 
-        public Task PublishMessageAsync(IIntegrationEvent integrationEvent)
+        public Task PublishMessageAsync(EventMessage eventMessage)
         {
-            _eventMessages.Enqueue(integrationEvent);
+            _eventMessages.Enqueue(eventMessage);
             return Task.CompletedTask;
         }
 
-        public IIntegrationEvent ReadMessageFromQueue()
+        public EventMessage ReadMessageFromQueue()
         {
             _eventMessages.TryDequeue(out var message);
             return message;
