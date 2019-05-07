@@ -13,6 +13,7 @@ using Bookings.Common.Configuration;
 using Bookings.DAL;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Bookings.API
 {
@@ -28,6 +29,8 @@ namespace Bookings.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer());
+            
             services.AddSwagger();
             services.AddJsonOptions();
             RegisterSettings(services);
