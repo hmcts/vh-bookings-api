@@ -9,7 +9,7 @@ namespace Bookings.Domain.Participants
 {
     public abstract class Participant : Entity<Guid>
     {
-        private readonly ValidationFailures _validationFailures = new ValidationFailures();
+        protected readonly ValidationFailures _validationFailures = new ValidationFailures();
 
         protected Participant()
         {
@@ -39,39 +39,24 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
 
-        public void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
+        protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
         {
             ValidateArguments(displayName);
-
-            if (HearingRole.UserRole.IsIndividual)
-            {
-
-                var addressFailures = CommonValidations.ValidateAddressDetails(houseNumber, street, city, county, postcode);
-                if (addressFailures.Any())
-                {
-                    _validationFailures.AddRange(addressFailures);
-                }
-            }
 
             if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);
             }
+        }
+
+        public virtual void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
+        {
+            ValidatePartipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
 
             DisplayName = displayName;
             Person.Title = title;
             Person.TelephoneNumber = telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
-            if (HearingRole.UserRole.IsIndividual)
-            {
-                var address = Person.Address;
-                address.HouseNumber = houseNumber;
-                address.Street = street;
-                address.City = city;
-                address.County = county;
-                address.Postcode = postcode;
-                Person.UpdateAddress(address);
-            }
 
             if (!string.IsNullOrEmpty(organisationName))
             {
@@ -88,7 +73,7 @@ namespace Bookings.Domain.Participants
             }
         }
 
-        private void ValidateArguments(string displayName)
+        protected void ValidateArguments(string displayName)
         {
             if (string.IsNullOrEmpty(displayName))
             {
