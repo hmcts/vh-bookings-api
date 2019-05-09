@@ -10,6 +10,7 @@ using Bookings.Api.Contract.Responses;
 using Bookings.DAL;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Bookings.IntegrationTests.Helper;
@@ -422,13 +423,26 @@ namespace Bookings.IntegrationTests.Steps
         }
 
         [Then(@"the service bus should have been queued with a new bookings message")]
-        public void ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
+        public async Task ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
         {
             var serviceBusQueueClient = (ServiceBusQueueClientFake) ApiTestContext.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
             var eventMessage = serviceBusQueueClient.ReadMessageFromQueue();
             eventMessage.Should().NotBeNull();
+            eventMessage.Timestamp.Should().NotBeBefore(DateTime.Today);
+            eventMessage.Timestamp.Should().NotBeAfter(DateTime.UtcNow);
+            eventMessage.Id.Should().NotBeEmpty();
+            
+            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            
             var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
-            hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(_hearingId);
+            hearingReadyForVideoEvent.EventType.Should().Be(IntegrationEventType.HearingIsReadyForVideo);
+            hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(response.Id);
+            hearingReadyForVideoEvent.Hearing.CaseName.Should().Be(response.Cases[0].Name);
+            hearingReadyForVideoEvent.Hearing.CaseNumber.Should().Be(response.Cases[0].Number);
+            hearingReadyForVideoEvent.Hearing.CaseType.Should().Be(response.CaseTypeName);
+            hearingReadyForVideoEvent.Hearing.ScheduledDuration.Should().Be(response.ScheduledDuration);
+            hearingReadyForVideoEvent.Hearing.ScheduledDateTime.Should().Be(response.ScheduledDateTime);
         }
 
         private void ThenHearingBookingStatusIs(BookingStatus status)
