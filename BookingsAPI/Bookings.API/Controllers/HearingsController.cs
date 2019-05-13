@@ -431,15 +431,9 @@ namespace Bookings.API.Controllers
 
         private BookingStatus MapUpdateBookingStatus(UpdateBookingStatus status)
         {
-            switch (status)
-            {
-                case Api.Contract.Requests.Enums.UpdateBookingStatus.Created:
-                    return BookingStatus.Created;
-                case Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled:
-                    return BookingStatus.Cancelled;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(status), status, "Invalid booking status type");
-            }
+            return status == Api.Contract.Requests.Enums.UpdateBookingStatus.Created
+                ? BookingStatus.Created
+                : BookingStatus.Cancelled;
         }
     }
 }

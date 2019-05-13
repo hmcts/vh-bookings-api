@@ -17,25 +17,25 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
     public class ServiceBusQueueClient : IServiceBusQueueClient
     {
         private readonly ServiceBusSettings _serviceBusSettings;
-        private readonly JsonSerializerSettings _serializerSettings;
+        public JsonSerializerSettings SerializerSettings { get; set; }
 
         public ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings)
         {
             _serviceBusSettings = serviceBusSettings.Value;
 
-            _serializerSettings = new JsonSerializerSettings
+            SerializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                 Formatting = Formatting.Indented
             };
-            _serializerSettings.Converters.Add(new StringEnumConverter(true));
+            SerializerSettings.Converters.Add(new StringEnumConverter(true));
         }
 
         public async Task PublishMessageAsync(EventMessage eventMessage)
         {
             var queueClient = new QueueClient(_serviceBusSettings.ConnectionString, _serviceBusSettings.QueueName);
-            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, _serializerSettings);
+            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
 
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
             await queueClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
