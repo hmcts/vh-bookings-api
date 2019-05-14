@@ -25,6 +25,7 @@ Scenario: Create a new hearing
 	When I send the request to the endpoint
 	Then the response should have the status Created and success status True
 	And hearing details should be retrieved
+	And the service bus should have been queued with a new bookings message
 
 Scenario: Hearing not created with an invalid request
 	Given I have an invalid book a new hearing request

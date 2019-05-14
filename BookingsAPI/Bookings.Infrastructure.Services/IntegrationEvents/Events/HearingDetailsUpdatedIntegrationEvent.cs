@@ -10,7 +10,7 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
         {
             var @case = hearing.GetCases().Single(x => x.IsLeadCase);
             Hearing = new HearingDto(hearing.Id, hearing.ScheduledDateTime, hearing.ScheduledDuration,
-                hearing.CaseType.Name, @case.Number);
+                hearing.CaseType.Name, @case.Number, @case.Name);
         }
 
         public HearingDto Hearing { get; }

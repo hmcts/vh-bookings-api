@@ -4,7 +4,6 @@ using Bookings.API;
 using Bookings.Common.Configuration;
 using Bookings.Common.Security;
 using Bookings.DAL;
-using Bookings.IntegrationTests.Contexts;
 using Bookings.IntegrationTests.Helper;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 
@@ -28,6 +26,7 @@ namespace Bookings.IntegrationTests.Hooks
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(c => c.AddServerHeader = false)
                 .UseEnvironment("Development")
+                .UseDefaultServiceProvider(options => options.ValidateScopes = false)
                 .UseStartup<Startup>();
             apiTestContext.Server = new TestServer(webHostBuilder);
             GetClientAccessTokenForApi(apiTestContext);

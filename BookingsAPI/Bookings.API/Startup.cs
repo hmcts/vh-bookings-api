@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Bookings.Common.Configuration;
 using Bookings.DAL;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -80,16 +80,17 @@ namespace Bookings.API
         }
         private void RegisterInfrastructureServices(IServiceCollection services)
         {
-            if (bool.Parse(Configuration["UseServiceBusFake"]))
+            bool.TryParse(Configuration["UseServiceBusFake"], out var useFakeClient);
+            if (useFakeClient)
             {
-                services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClientFake>();
+                services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
             }
             else
             {
                 services.AddScoped<IServiceBusQueueClient, ServiceBusQueueClient>();
             }
 
-            services.AddScoped<IRaiseIntegrationEvent, RaiseIntegrationEvent>();
+            services.AddScoped<IEventPublisher, EventPublisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

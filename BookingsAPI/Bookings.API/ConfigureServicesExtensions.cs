@@ -13,10 +13,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Bookings.Common;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
-using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 namespace Bookings.API
 {
@@ -66,7 +63,6 @@ namespace Bookings.API
             services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
             services.AddScoped<ICommandHandler, CommandHandler>();
             services.AddScoped<IHearingService, HearingService>();
-            
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
             

@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
+using Bookings.Infrastructure.Services.IntegrationEvents;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 
 
 namespace Bookings.UnitTests.Controllers
@@ -21,13 +23,16 @@ namespace Bookings.UnitTests.Controllers
         private HearingsController _controller;
         private Mock<IQueryHandler> _queryHandlerMock;
         private Mock<ICommandHandler> _commandHandlerMock;
+        private IEventPublisher _eventPublisher;
 
         [SetUp]
         public void Setup()
         {
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
-            _controller = new HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object);
+            _eventPublisher = new EventPublisher(new ServiceBusQueueClientFake());
+            _controller = new HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object,
+                _eventPublisher);
         }
 
         [Test]

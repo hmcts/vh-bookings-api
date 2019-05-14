@@ -6,8 +6,6 @@ namespace Bookings.Domain.Participants
 {
     public class Representative : Participant
     {
-        private readonly ValidationFailures _validationFailures = new ValidationFailures();
-
         protected Representative()
         {
         }

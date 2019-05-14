@@ -1,32 +1,44 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace Bookings.Infrastructure.Services.ServiceBusQueue
 {
     public interface IServiceBusQueueClient
     {
-        Task PublishMessageAsync(IIntegrationEvent integrationEvent);
+        Task PublishMessageAsync(EventMessage eventMessage);
     }
 
     public class ServiceBusQueueClient : IServiceBusQueueClient
     {
         private readonly ServiceBusSettings _serviceBusSettings;
+        public JsonSerializerSettings SerializerSettings { get; set; }
 
-        public ServiceBusQueueClient(ServiceBusSettings serviceBusSettings)
+        public ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings)
         {
-            _serviceBusSettings = serviceBusSettings;
+            _serviceBusSettings = serviceBusSettings.Value;
+
+            SerializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                Formatting = Formatting.Indented
+            };
+            SerializerSettings.Converters.Add(new StringEnumConverter(true));
         }
 
-        public async Task PublishMessageAsync(IIntegrationEvent integrationEvent)
+        public async Task PublishMessageAsync(EventMessage eventMessage)
         {
             var queueClient = new QueueClient(_serviceBusSettings.ConnectionString, _serviceBusSettings.QueueName);
-            var jsonObjectString = JsonConvert.SerializeObject(integrationEvent);
+            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
 
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
-            await queueClient.SendAsync(new Message(messageBytes));
+            await queueClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
         }
     }
 }
