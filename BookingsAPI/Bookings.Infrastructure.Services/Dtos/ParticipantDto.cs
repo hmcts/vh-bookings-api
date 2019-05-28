@@ -1,6 +1,5 @@
 ﻿using System;
 using Bookings.Domain.Enumerations;
-using Bookings.Domain.RefData;
 
 namespace Bookings.Infrastructure.Services.Dtos
 {

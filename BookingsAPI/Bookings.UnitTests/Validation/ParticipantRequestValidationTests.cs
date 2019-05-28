@@ -75,20 +75,6 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_title_error()
-        {
-            var request = BuildRequest();
-            request.Title = string.Empty;
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTitleErrorMessage)
-                .Should().BeTrue();
-        }
-
-        [Test]
         public async Task should_return_missing_first_name_error()
         {
             var request = BuildRequest();

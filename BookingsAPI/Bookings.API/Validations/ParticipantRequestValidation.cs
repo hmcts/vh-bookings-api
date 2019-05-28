@@ -9,7 +9,6 @@ namespace Bookings.API.Validations
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
         public static readonly string NoCaseRoleNameErrorMessage = "Display name is required";
         public static readonly string NoHearingRoleNameErrorMessage = "Display name is required";
-        public static readonly string NoTitleErrorMessage = "Title is required";
         public static readonly string NoFirstNameErrorMessage = "First name is required";
         public static readonly string NoLastNameErrorMessage = "Last name is required";
         public static readonly string NoUsernameErrorMessage = "Username is required";
@@ -17,7 +16,6 @@ namespace Bookings.API.Validations
 
         public ParticipantRequestValidation()
         {
-            RuleFor(x => x.Title).NotEmpty().WithMessage(NoTitleErrorMessage);
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
             RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);
             RuleFor(x => x.ContactEmail).NotEmpty().WithMessage(NoContactEmailErrorMessage);

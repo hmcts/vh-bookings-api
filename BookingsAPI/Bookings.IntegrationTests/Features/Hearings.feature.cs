@@ -144,6 +144,8 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Then("the response should have the status Created and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 27
  testRunner.And("hearing details should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 28
+ testRunner.And("the service bus should have been queued with a new bookings message", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -153,37 +155,37 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotCreatedWithAnInvalidRequest()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not created with an invalid request", null, ((string[])(null)));
-#line 29
+#line 30
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 30
- testRunner.Given("I have an invalid book a new hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 31
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have an invalid book a new hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 32
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 33
- testRunner.And("the error response message should contain \'Cases\' must not be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 34
+ testRunner.And("the error response message should contain \'Cases\' must not be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 35
  testRunner.And("the error response message should also contain \'Please provide at least one case\'" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 35
- testRunner.And("the error response message should also contain \'Please provide a case type name\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 36
- testRunner.And("the error response message should also contain \'Participants\' must not be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the error response message should also contain \'Please provide a case type name\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 37
+ testRunner.And("the error response message should also contain \'Participants\' must not be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 38
  testRunner.And("the error response message should also contain \'Please provide at least one parti" +
                     "cipant\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 38
+#line 39
  testRunner.And("the error response message should also contain \'Please provide a hearing type nam" +
                     "e\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 39
+#line 40
  testRunner.And("the error response message should also contain \'Hearing venue cannot not be blank" +
                     "\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 40
+#line 41
  testRunner.And("the error response message should also contain \'Schedule duration must be greater" +
                     " than 0\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 41
+#line 42
  testRunner.And("the error response message should also contain \'ScheduledDateTime cannot be in th" +
                     "e past\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -195,16 +197,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotCreatedWithAnInvalidCaseType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not created with an invalid case type", null, ((string[])(null)));
-#line 43
+#line 44
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 44
- testRunner.Given("I have a book a new hearing request with an invalid case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 45
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a book a new hearing request with an invalid case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 46
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 47
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 48
  testRunner.And("the response message should read \'Case type does not exist\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -215,16 +217,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotCreatedWithAnInvalidHearingType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not created with an invalid hearing type", null, ((string[])(null)));
-#line 49
+#line 50
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 50
- testRunner.Given("I have a book a new hearing request with an invalid hearing type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 51
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a book a new hearing request with an invalid hearing type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 52
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 53
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 54
  testRunner.And("the response message should read \'Hearing type does not exist\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -235,16 +237,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotCreatedWithAnInvalidVenueName()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not created with an invalid venue name", null, ((string[])(null)));
-#line 55
+#line 56
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 56
- testRunner.Given("I have a book a new hearing request with an invalid venue name", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 57
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a book a new hearing request with an invalid venue name", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 58
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 59
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 60
  testRunner.And("the response message should read \'Hearing venue does not exist\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -255,16 +257,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void UpdateAHearing()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update a hearing", null, ((string[])(null)));
-#line 61
+#line 62
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 62
- testRunner.Given("I have a valid update hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 63
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a valid update hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 64
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 65
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 66
  testRunner.And("hearing details should be updated", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -275,21 +277,21 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotUpdatedWithAnInvalidRequest()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not updated with an invalid request", null, ((string[])(null)));
-#line 67
+#line 68
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 68
- testRunner.Given("I have an invalid update hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 69
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have an invalid update hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 70
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 71
- testRunner.And("the error response message should contain \'Hearing name cannot not be blank\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 72
+ testRunner.And("the error response message should contain \'Hearing name cannot not be blank\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 73
  testRunner.And("the error response message should also contain \'Schedule duration must be greater" +
                     " than 0\"\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 73
+#line 74
  testRunner.And("the error response message should also contain \'ScheduledDateTime cannot be in th" +
                     "e past\"\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -301,14 +303,14 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotUpdatedWithANonexistentHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not updated with a nonexistent hearing id", null, ((string[])(null)));
-#line 75
+#line 76
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 76
- testRunner.Given("I have a update hearing request with a nonexistent hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 77
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a update hearing request with a nonexistent hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 78
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 79
  testRunner.Then("the response should have the status NotFound and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -319,16 +321,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotUpdatedWithAnInvalidHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not updated with an invalid hearing id", null, ((string[])(null)));
-#line 80
+#line 81
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 81
- testRunner.Given("I have a update hearing request with an invalid hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 82
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a update hearing request with an invalid hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 83
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 84
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 85
  testRunner.And("the response message should read \'Please provide a valid hearingId\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -339,16 +341,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotUpdatedWithAnInvalidVenue()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not updated with an invalid venue", null, ((string[])(null)));
-#line 86
+#line 87
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 87
- testRunner.Given("I have a update hearing request with an invalid venue", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 88
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a update hearing request with an invalid venue", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 89
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 90
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 91
  testRunner.And("the response message should read \'Hearing venue does not exist\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -359,16 +361,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetHearingsByAUsername()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get hearings by a username", null, ((string[])(null)));
-#line 92
+#line 93
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 93
- testRunner.Given("I have a valid get hearings by username request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 94
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a valid get hearings by username request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 95
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 96
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 97
  testRunner.And("a list of hearing details should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -379,16 +381,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotRetrievedWithANonexistentUsername()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not retrieved with a nonexistent username", null, ((string[])(null)));
-#line 98
+#line 99
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 99
- testRunner.Given("I have a nonexistent get hearings by username request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 100
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a nonexistent get hearings by username request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 101
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 102
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 103
  testRunner.And("the response should be an empty list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -399,16 +401,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void DeleteAHearing()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Delete a hearing", null, ((string[])(null)));
-#line 104
+#line 105
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 105
- testRunner.Given("I have a valid remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 106
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a valid remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 107
- testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 108
+ testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 109
  testRunner.And("the hearing should be removed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -419,16 +421,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotDeletedWithAnInvalidHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not deleted with an invalid hearing id", null, ((string[])(null)));
-#line 110
+#line 111
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 111
- testRunner.Given("I have an invalid remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 112
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have an invalid remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 113
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 114
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 115
  testRunner.And("the response message should read \'Please provide a valid hearingId\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -439,14 +441,14 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotDeletedWithANonexistentHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not deleted with a nonexistent hearing id", null, ((string[])(null)));
-#line 116
+#line 117
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 117
- testRunner.Given("I have a nonexistent remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 118
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a nonexistent remove hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 119
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 120
  testRunner.Then("the response should have the status NotFound and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -457,24 +459,24 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingNotCreatedWithAnInvalidAddress()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing not created with an invalid address", null, ((string[])(null)));
-#line 121
+#line 122
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 122
-    testRunner.Given("I have a book a new hearing request with an invalid address", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 123
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+    testRunner.Given("I have a book a new hearing request with an invalid address", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 124
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 125
- testRunner.And("the error response message should contain \'HouseNumber is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 126
- testRunner.And("the error response message should also contain \'Street is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the error response message should contain \'HouseNumber is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 127
- testRunner.And("the error response message should also contain \'City is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the error response message should also contain \'Street is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 128
- testRunner.And("the error response message should also contain \'County is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the error response message should also contain \'City is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 129
+ testRunner.And("the error response message should also contain \'County is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 130
  testRunner.And("the error response message should also contain \'Postcode is required\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -485,18 +487,18 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetHearingDetailsForAGivenCaseType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get hearing details for a given case type", null, ((string[])(null)));
-#line 131
+#line 132
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 132
- testRunner.Given("I have a valid book a new hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 133
- testRunner.And("I have a get details for a given hearing request with a valid case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("I have a valid book a new hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 134
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.And("I have a get details for a given hearing request with a valid case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 135
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 136
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 137
  testRunner.And("hearing details should be retrieved for the case type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -507,16 +509,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetAPagedListOfBookedHearings()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings", null, ((string[])(null)));
-#line 138
+#line 139
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 139
- testRunner.Given("I have a request to the get booked hearings endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 140
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a request to the get booked hearings endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 141
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 142
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 143
  testRunner.And("the response should contain a list of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -527,16 +529,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetAPagedListOfBookedHearingsContinuedFromPreviousPage()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings continued from previous page", null, ((string[])(null)));
-#line 144
+#line 145
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 145
- testRunner.Given("I have a request to the second page of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 146
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a request to the second page of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 147
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 148
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 149
  testRunner.And("the response should contain a list of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -547,16 +549,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetAPagedListOfBookedHearingsLimitedInSize()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings limited in size", null, ((string[])(null)));
-#line 150
+#line 151
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 151
- testRunner.Given("I have a request to the get booked hearings endpoint with a limit of one", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 152
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a request to the get booked hearings endpoint with a limit of one", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 153
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 154
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 155
  testRunner.And("the response should contain a list of one booked hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -567,17 +569,17 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetAPagedListOfBookedHearingsWithAGivenCaseType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get a paged list of booked hearings with a given case type", null, ((string[])(null)));
-#line 156
+#line 157
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 157
+#line 158
  testRunner.Given("I have a request to the get booked hearings endpoint filtered on a valid case typ" +
                     "e", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 158
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 159
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 160
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 161
  testRunner.And("the response should contain a list of booked hearings", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -588,15 +590,15 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void CannotGetAPagedListOfBookedHearingsWithInvalidCaseType()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Cannot get a paged list of booked hearings with invalid case type", null, ((string[])(null)));
-#line 162
+#line 163
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 163
+#line 164
  testRunner.Given("I have a request to the get booked hearings endpoint filtered on an invalid case " +
                     "type", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 164
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 165
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 166
  testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -607,14 +609,14 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingStatusDoesNotChangeForANonexistentHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status does not change for a nonexistent hearing id", null, ((string[])(null)));
-#line 167
+#line 168
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 168
- testRunner.Given("I have a nonexistent hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 169
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a nonexistent hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 170
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 171
  testRunner.Then("the response should have the status NotFound and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -625,14 +627,14 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingStatusDoesNotChangeForAnInvalidHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status does not change for an invalid hearing id", null, ((string[])(null)));
-#line 172
+#line 173
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 173
- testRunner.Given("I have a invalid hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 174
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a invalid hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 175
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 176
  testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -643,16 +645,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingStatusDoesNotChangeWithEmptyUsernameForGivenHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status does not change with empty username for given hearing id", null, ((string[])(null)));
-#line 177
+#line 178
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 178
- testRunner.Given("I have an empty username in a hearing status request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 179
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have an empty username in a hearing status request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 180
- testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 181
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 182
  testRunner.And("hearing status should be unchanged", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -663,16 +665,16 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void HearingStatusChangesToCancelledForAGivenHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status changes to cancelled for a given hearing id", null, ((string[])(null)));
-#line 183
+#line 184
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 184
- testRunner.Given("I have a valid hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 185
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("I have a valid hearing cancellation request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 186
- testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 187
+ testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 188
  testRunner.And("hearing status should be cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -685,22 +687,22 @@ this.ScenarioInitialize(scenarioInfo);
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Hearing status cannot change for an invalid state transition for given hearing id" +
                     "", null, ((string[])(null)));
-#line 189
+#line 190
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 190
- testRunner.Given("I have a valid hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 191
- testRunner.And("set the booking status to Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("I have a valid hearing request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 192
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.And("set the booking status to Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 193
- testRunner.And("set the booking status to Created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 194
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 194
+ testRunner.And("set the booking status to Created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 195
- testRunner.Then("the response should have the status Conflict and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 196
+ testRunner.Then("the response should have the status Conflict and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 197
  testRunner.And("hearing status should be Cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -711,17 +713,17 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetSuitabilityAnswersForAGivenInvalidHearingId()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get suitability answers for a given invalid hearing Id", null, ((string[])(null)));
-#line 198
+#line 199
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 199
+#line 200
  testRunner.Given("I have a hearing with suitability answers for a given hearing request with a vali" +
                     "d hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 200
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 201
- testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 202
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 203
  testRunner.And("hearing suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -732,15 +734,15 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void GetSuitabilityAnswersForAGivenValidHearing()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get suitability answers for a given valid hearing", null, ((string[])(null)));
-#line 204
+#line 205
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 205
+#line 206
  testRunner.Given("I have a hearing with suitability answers for a given hearing request with a inva" +
                     "lid hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 206
- testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 207
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 208
  testRunner.Then("the response should have the status Badrequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

@@ -43,20 +43,6 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         
-        [Test]
-        public async Task should_return_participants_error()
-        {
-            var request = BuildRequest();
-            request.Participants[0].Title = string.Empty;
-           
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTitleErrorMessage)
-                .Should().BeTrue();
-        }
-        
         private AddParticipantsToHearingRequest BuildRequest()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(4).Build().ToList();
