@@ -2,9 +2,10 @@ namespace Bookings.Domain.Enumerations
 {
     public enum CaseRoleGroup
     {
-        PartyGroup0 = 0,
-        PartyGroup1 = 1,
-        PartyGroup2 = 2,
-        PartyGroup3 = 3,
+        Judge = 0,
+        Claimant = 1,
+        Defendant = 2,
+        Applicant = 3,
+        Respondent = 4
     }
 }

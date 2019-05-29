@@ -64,10 +64,10 @@ namespace Bookings.DAL.SeedData
                 columns: new[] {"Id", "Name", "Group", "CaseTypeId"},
                 values: new object[,]
                 {
-                    {1, "Claimant", (int) CaseRoleGroup.PartyGroup1, 1},
-                    {2, "Defendant", (int) CaseRoleGroup.PartyGroup2, 1},
-                    {3, "Applicant", (int) CaseRoleGroup.PartyGroup1, 2},
-                    {4, "Respondent", (int) CaseRoleGroup.PartyGroup2, 2}
+                    {1, "Claimant", (int) CaseRoleGroup.Claimant, 1},
+                    {2, "Defendant", (int) CaseRoleGroup.Defendant, 1},
+                    {3, "Applicant", (int) CaseRoleGroup.Applicant, 2},
+                    {4, "Respondent", (int) CaseRoleGroup.Respondent, 2}
                 });
         }
 
