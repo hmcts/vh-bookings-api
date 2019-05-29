@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bookings.Domain.Ddd;
+﻿using Bookings.Domain.Ddd;
 using Bookings.Domain.Validations;
+using System;
+using System.Linq;
 
 namespace Bookings.Domain
 {
@@ -39,7 +38,6 @@ namespace Bookings.Domain
         public virtual Address Address { get; private set; }
         public DateTime CreatedDate { get; private set; }
         public DateTime UpdatedDate { get; private set; }
-        public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; set; }
 
         public void UpdateAddress(Address address)
         {

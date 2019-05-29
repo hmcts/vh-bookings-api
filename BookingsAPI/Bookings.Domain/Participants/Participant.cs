@@ -4,6 +4,7 @@ using Bookings.Domain.Ddd;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using Bookings.Domain.Helpers;
+using System.Collections.Generic;
 
 namespace Bookings.Domain.Participants
 {
@@ -38,6 +39,8 @@ namespace Bookings.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+        public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; set; }
+
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
         {
