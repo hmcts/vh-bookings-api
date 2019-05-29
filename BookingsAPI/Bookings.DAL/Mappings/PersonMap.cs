@@ -25,6 +25,7 @@ namespace Bookings.DAL.Mappings
 
             builder.Property("AddressId").IsRequired(false);
             builder.Property("OrganisationId").IsRequired(false);
+            builder.HasMany<SuitabilityAnswer>("SuitabilityAnswers").WithOne("Person").HasForeignKey(x => x.PersonId);
         }
     }
 }
