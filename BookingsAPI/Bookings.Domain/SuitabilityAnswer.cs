@@ -6,11 +6,11 @@ namespace Bookings.Domain
 {
     public class SuitabilityAnswer : Entity<long>
     {
-        public SuitabilityAnswer(Guid participantId, string key, string data)
+        public SuitabilityAnswer(string key, string data, string extendedData)
         {
-            ParticipantId = participantId;
             Key = key;
             Data = data;
+            ExtendedData = extendedData;
             CreatedDate = DateTime.UtcNow;
         }
 
