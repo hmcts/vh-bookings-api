@@ -344,7 +344,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public IActionResult UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)
+        public async Task<IActionResult> UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)
         {
             if (hearingId == Guid.Empty)
             {
@@ -356,6 +356,29 @@ namespace Bookings.API.Controllers
             {
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
                 return BadRequest(ModelState);
+            }
+
+            var suitabilityAnswers = answers.Select(answer => new SuitabilityAnswer(answer.Key, answer.Answer, answer.ExtendedAnswer))
+                                .ToList();
+
+            var command = new UpdateSuitabilityAnswersCommand(hearingId, participantId, suitabilityAnswers);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+            }
+            catch (DomainRuleException e)
+            {
+                ModelState.AddDomainRuleErrors(e.ValidationFailures);
+                return BadRequest(ModelState);
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound("Hearing not found");
+            }
+            catch (ParticipantNotFoundException)
+            {
+                return NotFound("Participant not found");
             }
 
             return NoContent();
