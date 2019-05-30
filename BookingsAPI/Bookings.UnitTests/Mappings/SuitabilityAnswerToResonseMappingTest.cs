@@ -3,7 +3,6 @@ using Bookings.Domain;
 using Bookings.UnitTests.Utilities;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 
 namespace Bookings.UnitTests.Mappings
@@ -18,10 +17,9 @@ namespace Bookings.UnitTests.Mappings
         {
             mapper = new SuitabilityAnswerToResponseMapper();
 
-            var answer1 = new SuitabilityAnswer(Guid.NewGuid(), "AboutYou", "Yes");
-            var answer2 = new SuitabilityAnswer(Guid.NewGuid(), "AboutClient", "No");
-            answer2.ExtendedData = "note";
-            var answer3 = new SuitabilityAnswer(Guid.NewGuid(), "AboutCpmputer", "Yes");
+            var answer1 = new SuitabilityAnswer("AboutYou", "Yes",null);
+            var answer2 = new SuitabilityAnswer("AboutClient", "No", "note");
+            var answer3 = new SuitabilityAnswer("AboutCpmputer", "Yes", "");
 
             suitabilityAnswers = new List<SuitabilityAnswer> { answer1, answer2, answer3 };
         }

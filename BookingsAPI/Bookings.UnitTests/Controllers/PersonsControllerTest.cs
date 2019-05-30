@@ -7,7 +7,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -87,7 +86,7 @@ namespace Bookings.UnitTests.Controllers
         {
             var builder = new VideoHearingBuilder();
             var hearing = builder.Build();
-            hearing.Participants[0].SuitabilityAnswers = new List<SuitabilityAnswer> { new SuitabilityAnswer(Guid.NewGuid(), "AboutYou", "Yes") };
+            hearing.Participants[0].SuitabilityAnswers.Add( new SuitabilityAnswer("AboutYou", "Yes",""));
             return hearing;
         }
     }

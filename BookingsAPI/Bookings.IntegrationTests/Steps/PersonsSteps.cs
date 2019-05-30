@@ -159,12 +159,13 @@ namespace Bookings.IntegrationTests.Steps
             model[0].UpdatedAt.Should().Be(DateTime.MinValue);
             model[0].CreatedAt.Should().Be(DateTime.MinValue);
             model[0].Answers.Should().NotBeNull();
-            model[0].Answers.Should().BeEmpty();
-
-
-            
-            
-
+            model[0].Answers.Should().NotBeEmpty();
+            var individual = model.FirstOrDefault(s => s.Answers.Count > 0);
+            if (individual != null)
+            {
+                individual.Answers[0].Key.Should().NotBeEmpty();
+                individual.Answers[0].Answer.Should().NotBeEmpty();
+            }
         }
 
         private async Task SetUserNameForGivenScenario(Scenario scenario)
