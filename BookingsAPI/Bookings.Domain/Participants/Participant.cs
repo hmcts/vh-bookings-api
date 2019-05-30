@@ -16,6 +16,7 @@ namespace Bookings.Domain.Participants
         {
             Id = Guid.NewGuid();
             CreatedDate = DateTime.UtcNow;
+            SuitabilityAnswers = new List<SuitabilityAnswer>();
         }
 
         protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
@@ -24,6 +25,7 @@ namespace Bookings.Domain.Participants
             PersonId = person.Id;
             HearingRoleId = hearingRole.Id;
             CaseRoleId = caseRole.Id;
+            SuitabilityAnswers = new List<SuitabilityAnswer>();
         }
 
         public string DisplayName { get; set; }
@@ -39,7 +41,7 @@ namespace Bookings.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
-        public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; set; }
+        public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; protected set; }
 
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
@@ -84,5 +86,25 @@ namespace Bookings.Domain.Participants
             }
         }
 
+        public void AddSuitabilityAnswers(IList<SuitabilityAnswer> suitabilityAnswers)
+        {
+            foreach (var suitabilityAnswer in suitabilityAnswers)
+            {
+                AddSuitabilityAnswer(suitabilityAnswer.Key, suitabilityAnswer.Data, suitabilityAnswer.ExtendedData);
+            }
+        }
+
+        public virtual void AddSuitabilityAnswer(string key, string data, string extendedData)
+        {
+            if (SuitabilityAnswers.Any(answer => answer.Key == key))
+            {
+                throw new DomainRuleException("SuitabilityAnswer", $"The key '{key}' for this answer already exists.");
+            }
+
+            var newSuitabilityAnswer = new SuitabilityAnswer(key, data, extendedData);
+            newSuitabilityAnswer.Participant = this;
+            SuitabilityAnswers.Add(newSuitabilityAnswer);
+            UpdatedDate = DateTime.UtcNow;
+        }
     }
 }
