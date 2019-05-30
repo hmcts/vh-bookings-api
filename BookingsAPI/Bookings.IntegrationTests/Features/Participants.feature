@@ -140,6 +140,16 @@ Scenario: Participant submits suitability answers with invalid hearing id
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 
+Scenario: Participant submits suitability answers with nonexisting hearing id
+	Given I have an update suitability answers request with an Nonexistent hearing id and valid participant id
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+
+Scenario: Participant submits suitability answers with nonexisting participant id
+	Given I have an update suitability answers request with an valid hearing id and Nonexistent participant id
+	When I send the request to the endpoint
+	Then the response should have the status BadRequest and success status False
+
 Scenario: Participant submits suitability answers with valid data
 	Given I have an update suitability answers request with an valid hearing id and valid participant id
 	When I send the request to the endpoint

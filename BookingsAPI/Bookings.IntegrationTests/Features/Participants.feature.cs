@@ -554,19 +554,57 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Participant submits suitability answers with valid data")]
-        public virtual void ParticipantSubmitsSuitabilityAnswersWithValidData()
+        [NUnit.Framework.DescriptionAttribute("Participant submits suitability answers with nonexisting hearing id")]
+        public virtual void ParticipantSubmitsSuitabilityAnswersWithNonexistingHearingId()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant submits suitability answers with valid data", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant submits suitability answers with nonexisting hearing id", null, ((string[])(null)));
 #line 143
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 144
- testRunner.Given("I have an update suitability answers request with an valid hearing id and valid p" +
-                    "articipant id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have an update suitability answers request with an Nonexistent hearing id and v" +
+                    "alid participant id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 145
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 146
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Participant submits suitability answers with nonexisting participant id")]
+        public virtual void ParticipantSubmitsSuitabilityAnswersWithNonexistingParticipantId()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant submits suitability answers with nonexisting participant id", null, ((string[])(null)));
+#line 148
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 149
+ testRunner.Given("I have an update suitability answers request with an valid hearing id and Nonexis" +
+                    "tent participant id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 150
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 151
+ testRunner.Then("the response should have the status BadRequest and success status False", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Participant submits suitability answers with valid data")]
+        public virtual void ParticipantSubmitsSuitabilityAnswersWithValidData()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant submits suitability answers with valid data", null, ((string[])(null)));
+#line 153
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 154
+ testRunner.Given("I have an update suitability answers request with an valid hearing id and valid p" +
+                    "articipant id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 155
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 156
  testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
