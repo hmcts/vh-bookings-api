@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Steps
                         var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
                         ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        if(personType.Equals("individual"))
+                        if (personType.Equals("individual"))
                         {
                             _username = seededHearing.GetParticipants().First(p => p.HearingRole.UserRole.IsIndividual).Person.ContactEmail;
                         }
@@ -159,13 +159,9 @@ namespace Bookings.IntegrationTests.Steps
             model[0].UpdatedAt.Should().Be(DateTime.MinValue);
             model[0].CreatedAt.Should().Be(DateTime.MinValue);
             model[0].Answers.Should().NotBeNull();
-            model[0].Answers.Should().NotBeEmpty();
             var individual = model.FirstOrDefault(s => s.Answers.Count > 0);
-            if (individual != null)
-            {
-                individual.Answers[0].Key.Should().NotBeEmpty();
-                individual.Answers[0].Answer.Should().NotBeEmpty();
-            }
+            individual.Answers[0].Key.Should().NotBeEmpty();
+            individual.Answers[0].Answer.Should().NotBeEmpty();
         }
 
         private async Task SetUserNameForGivenScenario(Scenario scenario)
