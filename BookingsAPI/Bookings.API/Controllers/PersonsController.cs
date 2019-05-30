@@ -125,23 +125,29 @@ namespace Bookings.API.Controllers
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
 
-            var personSuitabilityAnswers = hearings.Select(hearing => BuildReponse(hearing, username)).ToList();
+            var personSuitabilityAnswers = hearings.Select(hearing => BuildResponse(hearing, username)).Where(s => s != null).ToList();
+
             return Ok(personSuitabilityAnswers);
         }
 
-        private PersonSuitabilityAnswerResponse BuildReponse(VideoHearing hearing, string username)
+        private PersonSuitabilityAnswerResponse BuildResponse(VideoHearing hearing, string username)
         {
-            var participant = hearing.Participants.First(p => p.Person.Username.ToLower().Equals(username.ToLower().Trim()));
-            //Stub the values here for the test to pass
-            var personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
+            PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;
+            var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.ToLower().Trim());
+            if (participant != null)
             {
-                HearingId = hearing.Id,
-                ParticipantId = participant.Id,
-                CreatedAt = DateTime.MinValue,
-                ScheduledAt = hearing.ScheduledDateTime,
-                UpdatedAt = DateTime.MinValue,
-                Answers = new List<SuitabilityAnswerResponse>()
-            };
+                var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
+                personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
+                {
+                    HearingId = hearing.Id,
+                    ParticipantId = participant.Id,
+                    CreatedAt = DateTime.MinValue,
+                    ScheduledAt = hearing.ScheduledDateTime,
+                    UpdatedAt = DateTime.MinValue,
+                    Answers = participant.SuitabilityAnswers != null ? suitabilityAnswerToResponseMapper.MapToResponses(participant.SuitabilityAnswers.ToList()) : null,
+                };
+
+            }
             return personSuitabilityAnswer;
         }
     }   

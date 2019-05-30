@@ -9,8 +9,7 @@ namespace Bookings.API.Mappings
     {
         public IList<SuitabilityAnswerResponse> MapToResponses(IList<SuitabilityAnswer> answers)
         {
-            var responses = answers.Select(s => Map(s)).ToList();
-            return responses;
+            return answers != null ? answers.Select(s => Map(s)).ToList() : new List<SuitabilityAnswerResponse>();
         }
 
         private SuitabilityAnswerResponse Map(SuitabilityAnswer answer)
