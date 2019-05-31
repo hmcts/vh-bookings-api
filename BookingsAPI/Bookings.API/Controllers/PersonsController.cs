@@ -125,7 +125,7 @@ namespace Bookings.API.Controllers
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
 
-            var personSuitabilityAnswers = hearings.Select(hearing => BuildResponse(hearing, username)).Where(s => s != null).ToList();
+            var personSuitabilityAnswers = hearings.Select(hearing => BuildResponse(hearing, username)).Where(s => s != null);
 
             return Ok(personSuitabilityAnswers);
         }
@@ -134,17 +134,17 @@ namespace Bookings.API.Controllers
         {
             PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;
             var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.ToLower().Trim());
-            if (participant != null)
+            if (participant != null && participant.SuitabilityAnswers.Any())
             {
+                var createdDate = participant.SuitabilityAnswers.First().CreatedDate;
                 var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
                 personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
                 {
                     HearingId = hearing.Id,
                     ParticipantId = participant.Id,
-                    CreatedAt = DateTime.MinValue,
+                    CreatedAt = createdDate,
                     ScheduledAt = hearing.ScheduledDateTime,
-                    UpdatedAt = DateTime.MinValue,
-                    Answers = participant.SuitabilityAnswers != null ? suitabilityAnswerToResponseMapper.MapToResponses(participant.SuitabilityAnswers.ToList()) : null,
+                    Answers = participant.SuitabilityAnswers != null ? suitabilityAnswerToResponseMapper.MapToResponses(participant.SuitabilityAnswers) : null,
                 };
 
             }

@@ -156,8 +156,7 @@ namespace Bookings.IntegrationTests.Steps
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ParticipantId.Should().Be(ApiTestContext.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].UpdatedAt.Should().Be(DateTime.MinValue);
-            model[0].CreatedAt.Should().Be(DateTime.MinValue);
+            model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
             model[0].Answers.Should().NotBeNull();
         }
 

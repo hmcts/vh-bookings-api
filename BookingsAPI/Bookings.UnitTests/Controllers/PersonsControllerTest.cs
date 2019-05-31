@@ -7,7 +7,9 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Testing.Common.Builders.Domain;
@@ -38,8 +40,8 @@ namespace Bookings.UnitTests.Controllers
 
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
-            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            data.Count.Should().Be(0);
+            var data = (IEnumerable<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            data.ToList().Count.Should().Be(0);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
@@ -56,8 +58,8 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
 
             var objectResult = result as ObjectResult;
-            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            data.Count.Should().Be(0);
+            var data = (IEnumerable<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            data.ToList().Count.Should().Be(0);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
@@ -75,10 +77,12 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
 
             var objectResult = result as ObjectResult;
-            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            data.Count.Should().Be(1);
-            data[0].Answers.Count.Should().Be(1);
-            data[0].Answers[0].Key.Should().Be("AboutYou");
+            var data = (IEnumerable<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            var dataList = data.ToList();
+            dataList.Count.Should().Be(1);
+            dataList[0].Answers.Count.Should().Be(1);
+            dataList[0].Answers[0].Key.Should().Be("AboutYou");
+            dataList[0].CreatedAt.Date.Should().Be(DateTime.Now.AddDays(-2).Date);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
@@ -87,6 +91,7 @@ namespace Bookings.UnitTests.Controllers
             var builder = new VideoHearingBuilder();
             var hearing = builder.Build();
             hearing.Participants[0].SuitabilityAnswers.Add( new SuitabilityAnswer("AboutYou", "Yes",""));
+            hearing.Participants[0].SuitabilityAnswers[0].CreatedDate = DateTime.Now.AddDays(-2);
             return hearing;
         }
     }
