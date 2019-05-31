@@ -148,8 +148,8 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved()
         {
             var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
-            var modelSuitability = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<IEnumerable<PersonSuitabilityAnswerResponse>>(json);
-            var model = modelSuitability.ToList();
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
+
             model[0].Should().NotBeNull();
             model[0].HearingId.Should().NotBeEmpty();
             model[0].HearingId.Should().Be(ApiTestContext.NewHearingId);

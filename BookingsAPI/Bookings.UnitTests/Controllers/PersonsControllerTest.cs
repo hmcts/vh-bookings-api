@@ -9,7 +9,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Testing.Common.Builders.Domain;
@@ -40,8 +39,8 @@ namespace Bookings.UnitTests.Controllers
 
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
-            var data = (IEnumerable<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            data.ToList().Count.Should().Be(0);
+            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            data.Count.Should().Be(0);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
@@ -58,8 +57,8 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
 
             var objectResult = result as ObjectResult;
-            var data = (IEnumerable<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            data.ToList().Count.Should().Be(0);
+            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            data.Count.Should().Be(0);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
@@ -77,12 +76,11 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
 
             var objectResult = result as ObjectResult;
-            var data = (IEnumerable<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            var dataList = data.ToList();
-            dataList.Count.Should().Be(1);
-            dataList[0].Answers.Count.Should().Be(1);
-            dataList[0].Answers[0].Key.Should().Be("AboutYou");
-            dataList[0].CreatedAt.Date.Should().Be(DateTime.Now.AddDays(-2).Date);
+            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            data.Count.Should().Be(1);
+            data[0].Answers.Count.Should().Be(1);
+            data[0].Answers[0].Key.Should().Be("AboutYou");
+            data[0].CreatedAt.Date.Should().Be(DateTime.Now.AddDays(-2).Date);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
