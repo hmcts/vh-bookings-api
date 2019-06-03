@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using Bookings.Domain.Ddd;
+﻿using Bookings.Domain.Ddd;
 using Bookings.Domain.Validations;
+using System;
+using System.Linq;
 
 namespace Bookings.Domain
 {
