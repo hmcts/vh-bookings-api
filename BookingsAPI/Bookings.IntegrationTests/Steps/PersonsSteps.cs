@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Steps
                         var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
                         ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        if(personType.Equals("individual"))
+                        if (personType.Equals("individual"))
                         {
                             _username = seededHearing.GetParticipants().First(p => p.HearingRole.UserRole.IsIndividual).Person.ContactEmail;
                         }
@@ -93,7 +93,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
-            await SetUserNameForGivenScenario(scenario);
+            await SetUserNameForGivenScenario(scenario, true);
             ApiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
             ApiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -156,18 +156,11 @@ namespace Bookings.IntegrationTests.Steps
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ParticipantId.Should().Be(ApiTestContext.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].UpdatedAt.Should().Be(DateTime.MinValue);
-            model[0].CreatedAt.Should().Be(DateTime.MinValue);
+            model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
             model[0].Answers.Should().NotBeNull();
-            model[0].Answers.Should().BeEmpty();
-
-
-            
-            
-
         }
 
-        private async Task SetUserNameForGivenScenario(Scenario scenario)
+        private async Task SetUserNameForGivenScenario(Scenario scenario, bool hasSuitability = false)
         {
             switch (scenario)
             {
@@ -177,7 +170,14 @@ namespace Bookings.IntegrationTests.Steps
                         ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         var participants = seededHearing.GetParticipants();
-                        _username = participants.First().Person.Username;
+                        if(hasSuitability)
+                        {
+                            _username = participants.First(p => p.SuitabilityAnswers.Any()).Person.Username;
+                        }
+                        else
+                        {
+                            _username = participants.First().Person.Username;
+                        }
                         ApiTestContext.Participant = participants.First(p => p.Person.Username.Equals(_username));
                         break;
                     }
