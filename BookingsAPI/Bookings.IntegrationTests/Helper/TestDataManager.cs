@@ -75,6 +75,9 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
 
+            videoHearing.Participants[0].AddSuitabilityAnswer("NEED_INTERPRETER", "No", "");
+            videoHearing.Participants[0].AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "Yes", "");
+
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 await db.VideoHearings.AddAsync(videoHearing);
