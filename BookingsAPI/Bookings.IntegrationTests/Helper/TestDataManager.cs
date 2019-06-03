@@ -25,12 +25,12 @@ namespace Bookings.IntegrationTests.Helper
             BuilderSettings = new BuilderSettings();
         }
 
-        public Task<VideoHearing> SeedVideoHearing()
+        public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false)
         {
-            return SeedVideoHearing(null);
+            return SeedVideoHearing(null, addSuitabilityAnswer);
         }
 
-        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions)
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions, bool addSuitabilityAnswer = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -61,7 +61,7 @@ namespace Bookings.IntegrationTests.Helper
             var createdBy = "test@integration.com";
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation, createdBy);
             
-            videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+            var participant = videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
             videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
@@ -75,9 +75,12 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
 
-            videoHearing.Participants[0].AddSuitabilityAnswer("NEED_INTERPRETER", "No", "");
-            videoHearing.Participants[0].AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "Yes", "");
-
+            if(addSuitabilityAnswer)
+            {
+                participant.AddSuitabilityAnswer("NEED_INTERPRETER", "No", "");
+                participant.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "Yes", "");
+            }
+            
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 await db.VideoHearings.AddAsync(videoHearing);

@@ -134,20 +134,18 @@ namespace Bookings.API.Controllers
         {
             PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;
             var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.ToLower().Trim());
-            if (participant != null && participant.SuitabilityAnswers.Any())
+            var answers = participant.SuitabilityAnswers;
+            var createdDate = answers.Any() ? answers.First().CreatedDate : DateTime.MinValue;
+            var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
+            personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
             {
-                var createdDate = participant.SuitabilityAnswers.First().CreatedDate;
-                var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
-                personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
-                {
-                    HearingId = hearing.Id,
-                    ParticipantId = participant.Id,
-                    CreatedAt = createdDate,
-                    ScheduledAt = hearing.ScheduledDateTime,
-                    Answers = participant.SuitabilityAnswers != null ? suitabilityAnswerToResponseMapper.MapToResponses(participant.SuitabilityAnswers) : null,
-                };
+                HearingId = hearing.Id,
+                ParticipantId = participant.Id,
+                CreatedAt = createdDate,
+                ScheduledAt = hearing.ScheduledDateTime,
+                Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
+            };
 
-            }
             return personSuitabilityAnswer;
         }
     }   

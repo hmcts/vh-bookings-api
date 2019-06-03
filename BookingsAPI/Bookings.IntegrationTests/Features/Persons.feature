@@ -63,4 +63,10 @@ Feature: Persons
     Given I have a get person suitability answers by username request with an valid username
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
-    And persons suitability answers should be retrieved
+    And 'with' suitability answers should be retrieved
+
+  Scenario: Get person without suitability answers for valid username
+    Given I have a get person without suitability answers by username request with an valid username
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And 'without' suitability answers should be retrieved
