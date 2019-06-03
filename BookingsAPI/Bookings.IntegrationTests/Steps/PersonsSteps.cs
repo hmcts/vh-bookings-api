@@ -93,7 +93,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
-            await SetUserNameForGivenScenario(scenario);
+            await SetUserNameForGivenScenario(scenario, true);
             ApiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
             ApiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -160,7 +160,7 @@ namespace Bookings.IntegrationTests.Steps
             model[0].Answers.Should().NotBeNull();
         }
 
-        private async Task SetUserNameForGivenScenario(Scenario scenario)
+        private async Task SetUserNameForGivenScenario(Scenario scenario, bool hasSuitability = false)
         {
             switch (scenario)
             {
@@ -170,7 +170,14 @@ namespace Bookings.IntegrationTests.Steps
                         ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         var participants = seededHearing.GetParticipants();
-                        _username = participants.First().Person.Username;
+                        if(hasSuitability)
+                        {
+                            _username = participants.First(p => p.SuitabilityAnswers.Any()).Person.Username;
+                        }
+                        else
+                        {
+                            _username = participants.First().Person.Username;
+                        }
                         ApiTestContext.Participant = participants.First(p => p.Person.Username.Equals(_username));
                         break;
                     }
