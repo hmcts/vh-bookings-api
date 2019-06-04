@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Bookings.Api.Contract.Responses
 {
@@ -22,12 +21,7 @@ namespace Bookings.Api.Contract.Responses
         public DateTime ScheduledAt { get; set; }
 
         /// <summary>
-        /// Updated At of the suitability answer
-        /// </summary>
-        public DateTime UpdatedAt { get; set; }
-
-        /// <summary>
-        /// Created time 
+        /// Created time of the suitability answers
         /// </summary>
         public DateTime CreatedAt { get; set; }
 

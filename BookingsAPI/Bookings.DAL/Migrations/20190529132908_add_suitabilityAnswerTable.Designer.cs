@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190529132908_add_suitabilityAnswerTable")]
+    partial class add_suitabilityAnswerTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,11 +336,11 @@ namespace Bookings.DAL.Migrations
                     b.Property<string>("Key")
                         .IsRequired();
 
-                    b.Property<Guid>("ParticipantId");
+                    b.Property<Guid>("PersonId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId");
+                    b.HasIndex("PersonId");
 
                     b.ToTable("SuitabilityAnswer");
                 });
@@ -467,9 +469,9 @@ namespace Bookings.DAL.Migrations
 
             modelBuilder.Entity("Bookings.Domain.SuitabilityAnswer", b =>
                 {
-                    b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
+                    b.HasOne("Bookings.Domain.Person", "Person")
                         .WithMany("SuitabilityAnswers")
-                        .HasForeignKey("ParticipantId")
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
