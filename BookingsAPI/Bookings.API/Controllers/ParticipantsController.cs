@@ -358,6 +358,14 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Reject any requests with duplicate keys
+            var duplicateKeyFound = answers.GroupBy(x => x.Key).Any(g => g.Count() > 1);
+            if(duplicateKeyFound)
+            {
+                ModelState.AddModelError(nameof(participantId), $"Request '{nameof(answers)}' cannot contain duplicate keys.");
+                return BadRequest(ModelState);
+            }
+
             var suitabilityAnswers = answers.Select(answer => new SuitabilityAnswer(answer.Key, answer.Answer, answer.ExtendedAnswer))
                                 .ToList();
 
