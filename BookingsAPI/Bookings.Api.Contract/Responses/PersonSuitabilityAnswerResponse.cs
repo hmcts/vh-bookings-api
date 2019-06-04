@@ -21,9 +21,9 @@ namespace Bookings.Api.Contract.Responses
         public DateTime ScheduledAt { get; set; }
 
         /// <summary>
-        /// Created time of the suitability answers
+        /// Last updated date and time of the suitability answers
         /// </summary>
-        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         /// <summary>
         /// List of answers

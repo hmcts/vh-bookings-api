@@ -152,7 +152,7 @@ namespace Bookings.IntegrationTests.Steps
             ValidatePersonData(model[0]);
         }
 
-        [Then(@"'(.*)' suitability answers should be retrieved")]
+        [Then(@"suitability answers retrieved should '(.*)'")]
         public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved(string scenario)
         {
             var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
@@ -164,16 +164,16 @@ namespace Bookings.IntegrationTests.Steps
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ParticipantId.Should().Be(ApiTestContext.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            if(scenario == "with")
+            if(scenario == "be empty")
             {
-                model[0].Answers.Should().NotBeNull();
-                model[0].Answers.Count.Should().Be(2);
-                model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
+                model[0].Answers.Count.Should().Be(0);
+                model[0].UpdatedAt.Should().Be(DateTime.MinValue);
             }
             else
             {
-                model[0].Answers.Count.Should().Be(0);
-                model[0].CreatedAt.Should().Be(DateTime.MinValue);
+                model[0].Answers.Should().NotBeNull();
+                model[0].Answers.Count.Should().Be(2);
+                model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
             }
             
         }

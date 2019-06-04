@@ -279,7 +279,7 @@ namespace Bookings.IntegrationTests.Features
 #line 65
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 66
-    testRunner.And("\'with\' suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("suitability answers retrieved should \'not be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -300,7 +300,7 @@ namespace Bookings.IntegrationTests.Features
 #line 71
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 72
-    testRunner.And("\'without\' suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("suitability answers retrieved should \'be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
