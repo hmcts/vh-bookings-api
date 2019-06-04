@@ -53,7 +53,7 @@ namespace Bookings.UnitTests.Controllers
             _queryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
              .ReturnsAsync(new List<VideoHearing> { videoHearing });
-            var userName = videoHearing.Participants.FirstOrDefault(p => p is Individual).Person.Username;
+            var userName = videoHearing.Participants.First(p => p is Individual).Person.Username;
             var result = await _controller.GetPersonSuitabilityAnswers(userName);
 
             result.Should().NotBeNull();
