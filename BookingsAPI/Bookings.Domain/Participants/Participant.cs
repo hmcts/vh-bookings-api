@@ -42,7 +42,7 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; protected set; }
-
+        public DateTime SuitabilityAnswerUpdatedAt => SuitabilityAnswers.DefaultIfEmpty().Max(s => s.UpdatedDate);
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
         {
@@ -96,14 +96,21 @@ namespace Bookings.Domain.Participants
 
         public virtual void AddSuitabilityAnswer(string key, string data, string extendedData)
         {
-            if (SuitabilityAnswers.Any(answer => answer.Key == key))
+            var existingSuitabilityAnswer = SuitabilityAnswers.FirstOrDefault(answer => answer.Key == key);
+            if (existingSuitabilityAnswer == null)
             {
-                throw new DomainRuleException("SuitabilityAnswer", $"The key '{key}' for this answer already exists.");
+                // Add a new answer to collection
+                var newSuitabilityAnswer = new SuitabilityAnswer(key, data, extendedData);
+                newSuitabilityAnswer.Participant = this;
+                SuitabilityAnswers.Add(newSuitabilityAnswer);
             }
-
-            var newSuitabilityAnswer = new SuitabilityAnswer(key, data, extendedData);
-            newSuitabilityAnswer.Participant = this;
-            SuitabilityAnswers.Add(newSuitabilityAnswer);
+            else
+            {
+                // Update the existing object in the collection
+                existingSuitabilityAnswer.Data = data;
+                existingSuitabilityAnswer.ExtendedData = extendedData;
+                existingSuitabilityAnswer.UpdatedDate = DateTime.UtcNow;
+            }
             UpdatedDate = DateTime.UtcNow;
         }
     }

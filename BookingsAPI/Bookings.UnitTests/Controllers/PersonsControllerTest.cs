@@ -50,7 +50,7 @@ namespace Bookings.UnitTests.Controllers
             var userName = "some@becker.ca";
             _queryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
-             .ReturnsAsync(new List<VideoHearing> { TestData() });
+             .ReturnsAsync(new List<VideoHearing> { TestData(false) });
 
             var result = await _controller.GetPersonSuitabilityAnswers(userName);
 
@@ -80,16 +80,19 @@ namespace Bookings.UnitTests.Controllers
             data.Count.Should().Be(1);
             data[0].Answers.Count.Should().Be(1);
             data[0].Answers[0].Key.Should().Be("AboutYou");
-            data[0].CreatedAt.Date.Should().Be(DateTime.Now.AddDays(-2).Date);
+            data[0].UpdatedAt.Date.Should().Be(DateTime.Now.AddDays(-2).Date);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
-        private VideoHearing TestData()
+        private VideoHearing TestData(bool addSuitability = true)
         {
             var builder = new VideoHearingBuilder();
             var hearing = builder.Build();
-            hearing.Participants[0].SuitabilityAnswers.Add( new SuitabilityAnswer("AboutYou", "Yes",""));
-            hearing.Participants[0].SuitabilityAnswers[0].CreatedDate = DateTime.Now.AddDays(-2);
+            if(addSuitability)
+            {
+                hearing.Participants[0].SuitabilityAnswers.Add(new SuitabilityAnswer("AboutYou", "Yes", ""));
+                hearing.Participants[0].SuitabilityAnswers[0].UpdatedDate = DateTime.Now.AddDays(-2);
+            }
             return hearing;
         }
     }

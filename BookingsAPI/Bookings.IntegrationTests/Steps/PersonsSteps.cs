@@ -168,12 +168,12 @@ namespace Bookings.IntegrationTests.Steps
             {
                 model[0].Answers.Should().NotBeNull();
                 model[0].Answers.Count.Should().Be(2);
-                model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
+                model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
             }
             else
             {
                 model[0].Answers.Count.Should().Be(0);
-                model[0].CreatedAt.Should().Be(DateTime.MinValue);
+                model[0].UpdatedAt.Should().Be(DateTime.MinValue);
             }
             
         }
