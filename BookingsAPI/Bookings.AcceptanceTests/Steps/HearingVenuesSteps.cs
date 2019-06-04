@@ -8,7 +8,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class HearingVenuesSteps : BaseSteps
+    public sealed class HearingVenuesSteps
     {
         private readonly TestContext _acTestContext;
         private readonly HearingVenueEndpoints _endpoints = new ApiUriFactory().HearingVenueEndpoints;

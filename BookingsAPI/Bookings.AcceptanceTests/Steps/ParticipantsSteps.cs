@@ -11,7 +11,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class ParticipantsSteps : BaseSteps
+    public sealed class ParticipantsSteps
     {
         private readonly TestContext _acTestContext;
         private readonly ParticipantsEndpoints _endpoints = new ApiUriFactory().ParticipantsEndpoints;
