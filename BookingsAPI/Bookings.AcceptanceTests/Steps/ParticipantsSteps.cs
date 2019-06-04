@@ -127,5 +127,13 @@ namespace Bookings.AcceptanceTests.Steps
                 model.Postcode.Should().BeNull();
             }
         }
+
+        [Given(@"I have an update participant suitability answers with a valid user '(.*)'")]
+        public void GivenIHaveAnUpdateParticipantSuitabilityAnswersWithAValidUser(string role)
+        {
+            var participantId = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(role)).Id;
+            var updateParticipantRequest = UpdateSuitabilityAnswersRequest.BuildRequest();
+            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateSuitabilityAnswers(_acTestContext.HearingId, participantId), updateParticipantRequest);
+        }
     }
 }
