@@ -42,7 +42,7 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; protected set; }
-        public DateTime SuitabilityAnswerUpdatedAt => SuitabilityAnswers.DefaultIfEmpty().Max(s => s.UpdatedDate);
+        public DateTime SuitabilityAnswerUpdatedAt => SuitabilityAnswers.Any() ? SuitabilityAnswers.Max(s => s.UpdatedDate): DateTime.MinValue ;
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
         {

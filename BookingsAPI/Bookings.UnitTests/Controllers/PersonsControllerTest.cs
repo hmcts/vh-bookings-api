@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Testing.Common.Builders.Domain;
+using System.Linq;
+using Bookings.Domain.Participants;
 
 namespace Bookings.UnitTests.Controllers
 {
@@ -47,18 +49,19 @@ namespace Bookings.UnitTests.Controllers
         [Test]
         public async Task Should_return_empty_list_of_suitability_answers_if_not_found_username()
         {
-            var userName = "some@becker.ca";
+            var videoHearing = TestData(false);
             _queryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
-             .ReturnsAsync(new List<VideoHearing> { TestData(false) });
-
+             .ReturnsAsync(new List<VideoHearing> { videoHearing });
+            var userName = videoHearing.Participants.FirstOrDefault(p => p is Individual).Person.Username;
             var result = await _controller.GetPersonSuitabilityAnswers(userName);
 
             result.Should().NotBeNull();
 
             var objectResult = result as ObjectResult;
             var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
-            data.Count.Should().Be(0);
+            data.Count.Should().BeGreaterThan(0);
+            data[0].Answers.Count.Should().Be(0);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
@@ -90,8 +93,14 @@ namespace Bookings.UnitTests.Controllers
             var hearing = builder.Build();
             if(addSuitability)
             {
-                hearing.Participants[0].SuitabilityAnswers.Add(new SuitabilityAnswer("AboutYou", "Yes", ""));
-                hearing.Participants[0].SuitabilityAnswers[0].UpdatedDate = DateTime.Now.AddDays(-2);
+                var participant = hearing.Participants.FirstOrDefault(p => p is Individual);
+                if(participant != null)
+                {
+                    var answer = new SuitabilityAnswer("AboutYou", "Yes", "");
+                    answer.UpdatedDate = DateTime.Now.AddDays(-2);
+                    participant.SuitabilityAnswers.Add(answer);
+                }
+                
             }
             return hearing;
         }
