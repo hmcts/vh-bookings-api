@@ -279,7 +279,28 @@ namespace Bookings.IntegrationTests.Features
 #line 65
     testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 66
-    testRunner.And("persons suitability answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("suitability answers retrieved should \'not be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get person without suitability answers for valid username")]
+        public virtual void GetPersonWithoutSuitabilityAnswersForValidUsername()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get person without suitability answers for valid username", null, ((string[])(null)));
+#line 68
+  this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 69
+    testRunner.Given("I have a get person without suitability answers by username request with an valid" +
+                    " username", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 70
+    testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 71
+    testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 72
+    testRunner.And("suitability answers retrieved should \'be empty\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
