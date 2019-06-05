@@ -1,8 +1,10 @@
 ﻿using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -67,6 +69,23 @@ namespace Bookings.AcceptanceTests.Steps
             actual.TelephoneNumber.Should().Be(expected.TelephoneNumber);
             actual.Title.Should().Be(expected.Title);
             actual.Username.Should().Be(expected.Username);
+        }
+
+        [Then(@"suitability answers for '(.*)' should be updated")]
+        public void ThenSuitabilityAnswersForShouldBeUpdated(string participant)
+        {
+            var username = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Username;
+            var particpantId = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetPersonSuitabilityAnswers(username));
+            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
+            if (_acTestContext.Response.Content != null)
+                _acTestContext.Json = _acTestContext.Response.Content;
+            _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(_acTestContext.Json);
+            model[0].Answers.Count().Should().Be(2);
+            model[0].HearingId.Should().Be(_acTestContext.HearingId);
+            model[0].ParticipantId.Should().Be(particpantId);
+            model[0].UpdatedAt.Should().BeBefore(DateTime.UtcNow);
         }
     }
 }
