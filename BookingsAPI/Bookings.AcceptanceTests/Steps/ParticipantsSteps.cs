@@ -133,6 +133,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var participantId = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(role)).Id;
             var updateParticipantRequest = UpdateSuitabilityAnswersRequest.BuildRequest();
+            _acTestContext.Answers = updateParticipantRequest;
             _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateSuitabilityAnswers(_acTestContext.HearingId, participantId), updateParticipantRequest);
         }
     }

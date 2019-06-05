@@ -14,7 +14,7 @@ namespace Bookings.AcceptanceTests.Steps
     public sealed class PersonsSteps
     {
         private readonly TestContext _acTestContext;
-        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
+        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;        
 
         public PersonsSteps(TestContext acTestContext)
         {
@@ -82,10 +82,16 @@ namespace Bookings.AcceptanceTests.Steps
                 _acTestContext.Json = _acTestContext.Response.Content;
             _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(_acTestContext.Json);
-            model[0].Answers.Count().Should().Be(2);
+            var expectedResult = _acTestContext.Answers;
+            expectedResult[0].Key.Should().Be(model[0].Answers[0].Key);
+            expectedResult[0].Answer.Should().Be(model[0].Answers[0].Answer);
+            expectedResult[0].ExtendedAnswer.Should().Be(model[0].Answers[0].ExtendedAnswer);
+            expectedResult[1].Key.Should().Be(model[0].Answers[1].Key);
+            expectedResult[1].Answer.Should().Be(model[0].Answers[1].Answer);
+            expectedResult[1].ExtendedAnswer.Should().Be(model[0].Answers[1].ExtendedAnswer);
             model[0].HearingId.Should().Be(_acTestContext.HearingId);
             model[0].ParticipantId.Should().Be(particpantId);
-            model[0].UpdatedAt.Should().BeBefore(DateTime.UtcNow);
+            model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
         }
     }
 }

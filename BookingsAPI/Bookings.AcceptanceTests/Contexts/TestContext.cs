@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
-using Bookings.Domain.Participants;
 using RestSharp;
 using Testing.Common.Builders.Api;
 
@@ -16,6 +16,7 @@ namespace Bookings.AcceptanceTests.Contexts
         public string Json { get; set; }
         public Guid HearingId { get; set; }
         public List<ParticipantResponse> Participants { get; set; }
+        public List<SuitabilityAnswersRequest> Answers { get; set; }
 
         public RestClient Client()
         {
