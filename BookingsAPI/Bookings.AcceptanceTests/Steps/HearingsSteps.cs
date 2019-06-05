@@ -183,7 +183,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(_acTestContext.Json);
             model.PrevPageUrl.Should().Contain(model.Limit.ToString());
-            var response = model.Hearings.SelectMany(u => u.Hearings).Single(x => x.ScheduledDateTime.Date == DateTime.UtcNow.AddDays(2).Date && x.HearingId == _acTestContext.HearingId);
+            var response = model.Hearings.SelectMany(u => u.Hearings).FirstOrDefault(x => x.ScheduledDateTime.Date == DateTime.Now.AddDays(2).Date && x.HearingId == _acTestContext.HearingId);
             response.CaseTypeName.Should().NotBeNullOrEmpty();
             response.HearingTypeName.Should().NotBeNullOrEmpty();
             response.ScheduledDateTime.Should().BeAfter(DateTime.UtcNow);

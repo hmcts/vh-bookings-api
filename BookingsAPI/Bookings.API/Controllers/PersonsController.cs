@@ -132,16 +132,14 @@ namespace Bookings.API.Controllers
 
         private PersonSuitabilityAnswerResponse BuildResponse(VideoHearing hearing, string username)
         {
-            PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;
-            var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.ToLower().Trim());
+            var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
             var answers = participant.SuitabilityAnswers;
-            var createdDate = answers.Any() ? answers.First().CreatedDate : DateTime.MinValue;
             var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
-            personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
+            var personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
             {
                 HearingId = hearing.Id,
                 ParticipantId = participant.Id,
-                CreatedAt = createdDate,
+                UpdatedAt = participant.SuitabilityAnswerUpdatedAt,
                 ScheduledAt = hearing.ScheduledDateTime,
                 Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
             };
