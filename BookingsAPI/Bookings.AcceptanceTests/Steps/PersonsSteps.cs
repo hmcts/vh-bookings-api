@@ -91,7 +91,7 @@ namespace Bookings.AcceptanceTests.Steps
             expectedResult[1].ExtendedAnswer.Should().Be(model[0].Answers[1].ExtendedAnswer);
             model[0].HearingId.Should().Be(_acTestContext.HearingId);
             model[0].ParticipantId.Should().Be(particpantId);
-            model[0].UpdatedAt.Should().BeBefore(DateTime.UtcNow);
+            model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
         }
     }
 }
