@@ -1,8 +1,10 @@
 ﻿using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -12,7 +14,7 @@ namespace Bookings.AcceptanceTests.Steps
     public sealed class PersonsSteps : BaseSteps
     {
         private readonly TestContext _acTestContext;
-        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
+        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;        
 
         public PersonsSteps(TestContext acTestContext)
         {
@@ -67,6 +69,29 @@ namespace Bookings.AcceptanceTests.Steps
             actual.TelephoneNumber.Should().Be(expected.TelephoneNumber);
             actual.Title.Should().Be(expected.Title);
             actual.Username.Should().Be(expected.Username);
+        }
+
+        [Then(@"suitability answers for '(.*)' should be updated")]
+        public void ThenSuitabilityAnswersForShouldBeUpdated(string participant)
+        {
+            var username = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Username;
+            var particpantId = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
+            _acTestContext.Request = _acTestContext.Get(_endpoints.GetPersonSuitabilityAnswers(username));
+            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
+            if (_acTestContext.Response.Content != null)
+                _acTestContext.Json = _acTestContext.Response.Content;
+            _acTestContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(_acTestContext.Json);
+            var expectedResult = _acTestContext.Answers;
+            expectedResult[0].Key.Should().Be(model[0].Answers[0].Key);
+            expectedResult[0].Answer.Should().Be(model[0].Answers[0].Answer);
+            expectedResult[0].ExtendedAnswer.Should().Be(model[0].Answers[0].ExtendedAnswer);
+            expectedResult[1].Key.Should().Be(model[0].Answers[1].Key);
+            expectedResult[1].Answer.Should().Be(model[0].Answers[1].Answer);
+            expectedResult[1].ExtendedAnswer.Should().Be(model[0].Answers[1].ExtendedAnswer);
+            model[0].HearingId.Should().Be(_acTestContext.HearingId);
+            model[0].ParticipantId.Should().Be(particpantId);
+            model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
         }
     }
 }
