@@ -5,7 +5,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class HealthCheckSteps : BaseSteps
+    public sealed class HealthCheckSteps
     {
         private readonly TestContext _acTestContext;
         private readonly HealthCheckEndpoints _endpoints = new ApiUriFactory().HealthCheckEndpoints;

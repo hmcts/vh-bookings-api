@@ -11,7 +11,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class ParticipantsSteps : BaseSteps
+    public sealed class ParticipantsSteps
     {
         private readonly TestContext _acTestContext;
         private readonly ParticipantsEndpoints _endpoints = new ApiUriFactory().ParticipantsEndpoints;
@@ -126,6 +126,15 @@ namespace Bookings.AcceptanceTests.Steps
                 model.County.Should().BeNull();
                 model.Postcode.Should().BeNull();
             }
+        }
+
+        [Given(@"I have an update participant suitability answers with a valid user '(.*)'")]
+        public void GivenIHaveAnUpdateParticipantSuitabilityAnswersWithAValidUser(string role)
+        {
+            var participantId = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(role)).Id;
+            var updateParticipantRequest = UpdateSuitabilityAnswersRequest.BuildRequest();
+            _acTestContext.Answers = updateParticipantRequest;
+            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateSuitabilityAnswers(_acTestContext.HearingId, participantId), updateParticipantRequest);
         }
     }
 }

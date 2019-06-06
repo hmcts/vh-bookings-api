@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
 
@@ -11,7 +10,7 @@ namespace Bookings.AcceptanceTests.Models
         {
             return Builder<Api.Contract.Requests.SuitabilityAnswersRequest>
                     .CreateListOfSize(2).All()
-                    .With(x => x.Key = Faker.Lorem.GetFirstWord())
+                    .With(x => x.Key = Faker.RandomNumber.Next().ToString())
                     .With(x => x.Answer = Faker.Lorem.Sentence(10))
                     .With(x => x.ExtendedAnswer = Faker.Lorem.Sentence(30))
                     .Build()

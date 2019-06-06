@@ -93,7 +93,15 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
-            await SetUserNameForGivenScenario(scenario, true);
+            await SetUserNameForGivenScenario(scenario, true, true);
+            ApiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
+        }
+
+        [Given(@"I have a get person without suitability answers by username request with an (.*) username")]
+        public async Task GivenIHaveAGetPersonWithoutSuitabilityAnswersByUsernameRequest(Scenario scenario)
+        {
+            await SetUserNameForGivenScenario(scenario, false);
             ApiTestContext.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
             ApiTestContext.HttpMethod = HttpMethod.Get;
         }
@@ -144,8 +152,8 @@ namespace Bookings.IntegrationTests.Steps
             ValidatePersonData(model[0]);
         }
 
-        [Then(@"persons suitability answers should be retrieved")]
-        public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved()
+        [Then(@"suitability answers retrieved should '(.*)'")]
+        public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved(string scenario)
         {
             var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
@@ -156,17 +164,27 @@ namespace Bookings.IntegrationTests.Steps
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ParticipantId.Should().Be(ApiTestContext.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
-            model[0].Answers.Should().NotBeNull();
+            if(scenario == "be empty")
+            {
+                model[0].Answers.Count.Should().Be(0);
+                model[0].UpdatedAt.Should().Be(DateTime.MinValue);
+            }
+            else
+            {
+                model[0].Answers.Should().NotBeNull();
+                model[0].Answers.Count.Should().Be(2);
+                model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
+            }
+            
         }
 
-        private async Task SetUserNameForGivenScenario(Scenario scenario, bool hasSuitability = false)
+        private async Task SetUserNameForGivenScenario(Scenario scenario, bool hasSuitability = false, bool addSuitabilityAnswer = false)
         {
             switch (scenario)
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+                        var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing(addSuitabilityAnswer);
                         ApiTestContext.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         var participants = seededHearing.GetParticipants();

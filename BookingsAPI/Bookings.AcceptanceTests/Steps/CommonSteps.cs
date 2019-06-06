@@ -12,7 +12,7 @@ using Testing.Common.Builders.Api;
 namespace Bookings.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class CommonSteps : BaseSteps
+    public sealed class CommonSteps
     {
         private readonly ScenarioContext context;
         private readonly TestContext _acTestContext;
