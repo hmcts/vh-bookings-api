@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ namespace Bookings.DAL
         public DbSet<Person> Persons { get; set; }
         public DbSet<CaseType> CaseTypes { get; set; }
         public DbSet<HearingVenue> Venues { get; set; }
+        public DbSet<Participant> Participants { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

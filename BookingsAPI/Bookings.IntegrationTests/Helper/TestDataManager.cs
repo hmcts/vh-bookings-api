@@ -64,7 +64,7 @@ namespace Bookings.IntegrationTests.Helper
             var participant = videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
-            videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
+            var participantSolicitor = videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
             
             videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
@@ -79,6 +79,9 @@ namespace Bookings.IntegrationTests.Helper
             {
                 participant.AddSuitabilityAnswer("NEED_INTERPRETER", "No", "");
                 participant.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "Yes", "");
+
+                participantSolicitor.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
+                participantSolicitor.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "No", "Comments");
             }
             
             using (var db = new BookingsDbContext(_dbContextOptions))

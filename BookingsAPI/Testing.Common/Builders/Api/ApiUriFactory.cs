@@ -12,14 +12,16 @@ namespace Testing.Common.Builders.Api
             ParticipantsEndpoints = new ParticipantsEndpoints();
             PersonEndpoints = new PersonEndpoints();
             HealthCheckEndpoints = new HealthCheckEndpoints();
+            SuitabilityAnswerEndpoints = new SuitabilityAnswerEndpoints();
         }
-        
+
         public HearingVenueEndpoints HearingVenueEndpoints { get; set; }
         public CaseTypesEndpoints CaseTypesEndpoints { get; set; }
         public HearingsEndpoints HearingsEndpoints { get; set; }
         public ParticipantsEndpoints ParticipantsEndpoints { get; set; }
         public PersonEndpoints PersonEndpoints { get; set; }
         public HealthCheckEndpoints HealthCheckEndpoints { get; set; }
+        public SuitabilityAnswerEndpoints SuitabilityAnswerEndpoints { get; set; }
     }
 
     public class HearingVenueEndpoints
@@ -52,7 +54,7 @@ namespace Testing.Common.Builders.Api
         public string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
 
         public string GetHearingsByCaseType(int caseType) => $"{ApiRoot}/types?types={caseType}";
-        
+
         public string GetHearingsByAnyCaseType(int limit = 100) => $"{ApiRoot}/types?limit={limit}";
 
         public string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
@@ -67,8 +69,8 @@ namespace Testing.Common.Builders.Api
 
         public string GetParticipantInHearing(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
-        
-        public string AddParticipantsToHearing(Guid hearingId) =>  $"{ApiRoot}/{hearingId}/participants";
+
+        public string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
 
         public string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
@@ -88,4 +90,11 @@ namespace Testing.Common.Builders.Api
         public string GetPersonBySearchTerm(string term) => $"{ApiRoot}/search/{term}";
         public string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
     }
+
+    public class SuitabilityAnswerEndpoints
+    {
+        private string ApiRoot => "suitability_answers";
+        public string GetSuitabilityAnswers(string cursor) => $"{ApiRoot}/{cursor}";
+    }
+
 }
