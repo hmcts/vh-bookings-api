@@ -1,10 +1,7 @@
 ﻿using Bookings.Api.Contract.Responses;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
@@ -20,13 +17,15 @@ namespace Bookings.IntegrationTests.Steps
         {
         }
 
-        [Given(@"I have a get suitable answers for participants")]
-        public async Task GivenIHaveAGetSuitableAnswersForParticipants()
+        [Given(@"I have the suitable answers for participants")]
+        public async Task GivenIHaveTheSuitableAnswersForParticipants()
         {
             await ApiTestContext.TestDataManager.SeedVideoHearing(true);
             ApiTestContext.Uri = _endpoints.GetSuitabilityAnswers("");
             ApiTestContext.HttpMethod = HttpMethod.Get;
         }
+
+
         [Then(@"suitable answers should be retrieved")]
         public async Task ThenSuitableAnswersShouldBeRetrieved()
         {
@@ -42,6 +41,21 @@ namespace Bookings.IntegrationTests.Steps
             participantAnswer.Answers.Should().NotBeNull();
             participantAnswer.Answers.Count.Should().BeGreaterThan(0);
             participantAnswer.UpdatedAt.Should().Be(model.ParticipantSuitabilityAnswerResponse.Max(s => s.UpdatedAt));
+        }
+
+        [Given(@"I have a request to the second set of suitable answers")]
+        public async Task GivenIHaveARequestToTheSecondSetOfSuitableAnswers()
+        {
+            await ApiTestContext.TestDataManager.SeedVideoHearing(true);
+            await ApiTestContext.TestDataManager.SeedVideoHearing(true);
+
+            ApiTestContext.Uri = _endpoints.GetSuitabilityAnswerWithLimit("", 1);
+            ApiTestContext.HttpMethod = HttpMethod.Get;
+            var response = await SendGetRequestAsync(ApiTestContext);
+            var json = await response.Content.ReadAsStringAsync();
+            var bookings = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
+
+            ApiTestContext.Uri = _endpoints.GetSuitabilityAnswerWithLimit(bookings.NextCursor, 1);
         }
     }
 }

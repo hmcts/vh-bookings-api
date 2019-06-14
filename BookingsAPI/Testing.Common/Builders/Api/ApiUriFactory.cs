@@ -95,6 +95,7 @@ namespace Testing.Common.Builders.Api
     {
         private string ApiRoot => "suitability-answers";
         public string GetSuitabilityAnswers(string cursor) => $"{ApiRoot}/{cursor}";
+        public string GetSuitabilityAnswerWithLimit(string cursor="", int limit = 100) => $"{ApiRoot}/?cursor={cursor}&limit={limit}";
     }
 
 }

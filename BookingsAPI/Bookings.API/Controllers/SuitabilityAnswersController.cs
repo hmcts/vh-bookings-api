@@ -35,7 +35,6 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "GetSuitabilityAnswers")]
         [ProducesResponseType(typeof(SuitabilityAnswersResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<SuitabilityAnswersResponse>> GetSuitabilityAnswers([FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
         {
            
@@ -62,7 +61,7 @@ namespace Bookings.API.Controllers
 
         private string BuildCursorPageUrl(string cursor, int limit)
         {
-            const string resourceUrl = "suitability_answer/";
+            const string resourceUrl = "suitability-answers/";
             return $"{resourceUrl}?cursor={cursor}&limit={limit}";
         }
     }

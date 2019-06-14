@@ -79,9 +79,11 @@ namespace Bookings.IntegrationTests.Helper
             {
                 participant.AddSuitabilityAnswer("NEED_INTERPRETER", "No", "");
                 participant.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "Yes", "");
+                participant.UpdatedDate = DateTime.UtcNow;
 
                 participantSolicitor.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
                 participantSolicitor.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "No", "Comments");
+                participantSolicitor.UpdatedDate = DateTime.UtcNow;
             }
             
             using (var db = new BookingsDbContext(_dbContextOptions))

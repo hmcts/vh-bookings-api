@@ -81,12 +81,34 @@ namespace Bookings.IntegrationTests.Features
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 8
- testRunner.Given("I have a get suitable answers for participants", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have the suitable answers for participants", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
  testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 11
+ testRunner.And("suitable answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Get next set of suitable answers for participants continued from the next cursor")]
+        [NUnit.Framework.CategoryAttribute("VIH-4460-1")]
+        public virtual void GetNextSetOfSuitableAnswersForParticipantsContinuedFromTheNextCursor()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get next set of suitable answers for participants continued from the next cursor", null, new string[] {
+                        "VIH-4460-1"});
+#line 14
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 15
+ testRunner.Given("I have a request to the second set of suitable answers", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 16
+ testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 17
+ testRunner.Then("the response should have the status OK and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 18
  testRunner.And("suitable answers should be retrieved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
