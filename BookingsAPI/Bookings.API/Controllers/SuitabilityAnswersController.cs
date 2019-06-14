@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Bookings.API.Controllers
 {
     [Produces("application/json")]
-    [Route("suitability_answers")]
+    [Route("suitability-answers")]
     [ApiController]
     public class SuitabilityAnswersController : Controller
     {

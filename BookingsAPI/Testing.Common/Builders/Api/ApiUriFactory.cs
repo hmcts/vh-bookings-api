@@ -93,7 +93,7 @@ namespace Testing.Common.Builders.Api
 
     public class SuitabilityAnswerEndpoints
     {
-        private string ApiRoot => "suitability_answers";
+        private string ApiRoot => "suitability-answers";
         public string GetSuitabilityAnswers(string cursor) => $"{ApiRoot}/{cursor}";
     }
 
