@@ -32,6 +32,7 @@ namespace Bookings.IntegrationTests.Steps
             var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
             model.Should().NotBeNull();
+            model.PrevPageUrl.Should().NotBe(model.NextPageUrl);
             model.ParticipantSuitabilityAnswerResponse.Should().NotBeNull();
             model.ParticipantSuitabilityAnswerResponse.Count.Should().BeGreaterThan(0);
             var participantAnswer = model.ParticipantSuitabilityAnswerResponse[0];
