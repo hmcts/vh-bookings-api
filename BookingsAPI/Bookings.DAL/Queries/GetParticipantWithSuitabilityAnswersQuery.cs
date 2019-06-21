@@ -52,9 +52,8 @@ namespace Bookings.DAL.Queries
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var updatedDateTime, out var id);
-                participants = participants.Where(x => (x.SuitabilityAnswerUpdatedAt < updatedDateTime
-                                               || x.SuitabilityAnswerUpdatedAt == updatedDateTime)
-                                               && (x.Id.ToString() == id || string.Compare(x.Id.ToString(), id, true) > 0));
+                participants = participants.Where(x => x.SuitabilityAnswerUpdatedAt <= updatedDateTime
+                                               &&  string.Compare(x.Id.ToString(), id, true) > 0);
             }
 
             // Add one to the limit to know whether or not we have a next page
