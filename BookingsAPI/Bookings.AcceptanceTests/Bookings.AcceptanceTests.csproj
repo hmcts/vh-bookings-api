@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <SpecFlowFeatureFiles Remove="Features\SuitabilityAnswers.feature" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.6.0" />
@@ -27,6 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\SuitabilityAnswers.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SuitabilityAnswers.feature</DependentUpon>
+    </Compile>
     <Compile Update="Hooks\ApiHooks.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -35,6 +44,10 @@
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Features\SuitabilityAnswers.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>SuitabilityAnswers.feature.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
