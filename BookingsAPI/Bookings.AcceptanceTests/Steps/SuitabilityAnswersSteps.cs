@@ -70,7 +70,7 @@ namespace Bookings.AcceptanceTests.Steps
             participantAnswer.UpdatedAt.Should().Be(model.ParticipantSuitabilityAnswerResponse.Max(s => s.UpdatedAt));
         }
 
-        private void AddSuitabilityAnswersToHearing()
+        private void AddSuitabilityAnswersToParticipantsOfAHearing()
         {
             var request = _acTestContext.Post(_hearingEndpoints.BookNewHearing(), CreateHearingRequest.BuildRequest());
             var response = _acTestContext.Client().Execute(request);
