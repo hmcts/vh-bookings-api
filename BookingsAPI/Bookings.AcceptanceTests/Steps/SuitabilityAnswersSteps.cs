@@ -40,8 +40,8 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveARequestToTheSecondSetOfSuitableAnswers()
         {
             //Create hearing and submit answers to participants
-            AddSuitabilityAnswersToHearing();
-            AddSuitabilityAnswersToHearing();
+            AddSuitabilityAnswersToParticipantsOfAHearing();
+            AddSuitabilityAnswersToParticipantsOfAHearing();
             
             //Get first set of the suitability answers
             var suitabilityGetRequest = _acTestContext.Get(_suitabilityEndpoints.GetSuitabilityAnswerWithLimit("", 1));
@@ -62,9 +62,12 @@ namespace Bookings.AcceptanceTests.Steps
             model.ParticipantSuitabilityAnswerResponse.Should().NotBeNull();
             model.ParticipantSuitabilityAnswerResponse.Count.Should().BeGreaterThan(0);
             var participantAnswer = model.ParticipantSuitabilityAnswerResponse[0];
-            participantAnswer.FirstName.Should().NotBeEmpty();
-            participantAnswer.LastName.Should().NotBeEmpty();
-            participantAnswer.HearingRole.Should().NotBeEmpty();
+
+            var requestParticipant = _acTestContext.Participants.Single(p => p.Id == participantAnswer.ParticipantId);
+            participantAnswer.Title.Should().Be(requestParticipant.Title);
+            participantAnswer.FirstName.Should().Be(requestParticipant.FirstName);
+            participantAnswer.LastName.Should().Be(requestParticipant.LastName);
+            participantAnswer.HearingRole.Should().Be(requestParticipant.HearingRoleName);
             participantAnswer.Answers.Should().NotBeNull();
             participantAnswer.Answers.Count.Should().BeGreaterThan(0);
             participantAnswer.UpdatedAt.Should().Be(model.ParticipantSuitabilityAnswerResponse.Max(s => s.UpdatedAt));
@@ -76,6 +79,11 @@ namespace Bookings.AcceptanceTests.Steps
             var response = _acTestContext.Client().Execute(request);
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(response.Content);
             AddSuitabilityAnswersToParticipants( model.Id, model.Participants);
+            if(_acTestContext.Participants == null)
+            {
+                _acTestContext.Participants = new List<ParticipantResponse>();
+            }
+            _acTestContext.Participants.AddRange(model.Participants);
         }
 
         private void AddSuitabilityAnswersToParticipants(Guid hearingId, List<ParticipantResponse> participants)
