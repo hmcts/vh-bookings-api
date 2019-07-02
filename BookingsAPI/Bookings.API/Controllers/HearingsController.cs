@@ -227,6 +227,7 @@ namespace Bookings.API.Controllers
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
 
+            await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(videoHearing));
             return Ok(response);
         }
 
@@ -295,6 +296,10 @@ namespace Bookings.API.Controllers
                 var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
                 var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
                 await _commandHandler.Handle(command);
+                if (bookingStatus == BookingStatus.Cancelled)
+                {
+                    await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                }
                 return NoContent();
             }
             catch (HearingNotFoundException)

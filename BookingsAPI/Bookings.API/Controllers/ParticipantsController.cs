@@ -18,6 +18,8 @@ using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
+using Bookings.Infrastructure.Services.IntegrationEvents;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -30,11 +32,15 @@ namespace Bookings.API.Controllers
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
+        private readonly IEventPublisher _eventPublisher;
 
-        public ParticipantsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
+        public ParticipantsController(IQueryHandler queryHandler, 
+            ICommandHandler commandHandler,
+            IEventPublisher eventPublisher)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
+            _eventPublisher = eventPublisher;
         }
 
         /// <summary>
@@ -194,6 +200,9 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+            await PublishParticipantsAddedEvent(participants, hearing);
+            
             return NoContent();
         }
 
@@ -242,6 +251,7 @@ namespace Bookings.API.Controllers
             var command = new RemoveParticipantFromHearingCommand(hearingId, participant);
             await _commandHandler.Handle(command);
 
+            await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(hearingId, participantId));
             return NoContent();
         }
 
@@ -329,6 +339,7 @@ namespace Bookings.API.Controllers
             var participantMapper = new ParticipantToResponseMapper();
             var response = participantMapper.MapParticipantToResponse(updatedParticipant);
 
+            await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearingId, updatedParticipant));
             return Ok(response);
         }
 
@@ -390,6 +401,12 @@ namespace Bookings.API.Controllers
             }
 
             return NoContent();
+        }
+
+        private async Task PublishParticipantsAddedEvent(IEnumerable<NewParticipant> newParticipants, Hearing hearing)
+        {
+            var participants = hearing.GetParticipants().Where(x => newParticipants.Any(y => y.Person.Username == x.Person.Username));
+            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing.Id, participants));
         }
     }
 }

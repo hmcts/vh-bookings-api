@@ -2,6 +2,5 @@
 {
     public interface IIntegrationEvent
     {
-        IntegrationEventType EventType { get; }
     }
 }

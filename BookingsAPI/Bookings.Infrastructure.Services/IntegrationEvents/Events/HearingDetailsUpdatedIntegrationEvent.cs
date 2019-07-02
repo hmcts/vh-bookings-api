@@ -14,6 +14,5 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
         }
 
         public HearingDto Hearing { get; }
-        public IntegrationEventType EventType { get; } = IntegrationEventType.HearingDetailsUpdated;
     }
 }
