@@ -169,6 +169,7 @@ namespace Bookings.API.Controllers
             var queriedVideoHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
+            // TODO: ONLY publish this event when Hearing is set for ready for video
             var createVideoHearingEvent = new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing);
             await _eventPublisher.PublishAsync(createVideoHearingEvent);
             
@@ -227,6 +228,7 @@ namespace Bookings.API.Controllers
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
 
+            // TODO: ONLY publish this event when Hearing is set for ready for video
             await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(videoHearing));
             return Ok(response);
         }

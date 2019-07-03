@@ -201,8 +201,9 @@ namespace Bookings.API.Controllers
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+            // TODO: ONLY publish this event when Hearing is set for ready for video
             await PublishParticipantsAddedEvent(participants, hearing);
-            
             return NoContent();
         }
 
@@ -251,6 +252,7 @@ namespace Bookings.API.Controllers
             var command = new RemoveParticipantFromHearingCommand(hearingId, participant);
             await _commandHandler.Handle(command);
 
+            // TODO: ONLY publish this event when Hearing is set for ready for video
             await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(hearingId, participantId));
             return NoContent();
         }
@@ -339,6 +341,7 @@ namespace Bookings.API.Controllers
             var participantMapper = new ParticipantToResponseMapper();
             var response = participantMapper.MapParticipantToResponse(updatedParticipant);
 
+            // TODO: ONLY publish this event when Hearing is set for ready for video
             await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearingId, updatedParticipant));
             return Ok(response);
         }
