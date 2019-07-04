@@ -8,7 +8,7 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
     {
         public HearingDetailsUpdatedIntegrationEvent(Hearing hearing)
         {
-            var @case = hearing.GetCases().Single(x => x.IsLeadCase);
+            var @case = hearing.GetCases().First(); // Does this need to be a lead case?
             Hearing = new HearingDto(hearing.Id, hearing.ScheduledDateTime, hearing.ScheduledDuration,
                 hearing.CaseType.Name, @case.Number, @case.Name);
         }
