@@ -4,9 +4,9 @@ using Bookings.Infrastructure.Services.Dtos;
 
 namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
 {
-    public class ParticipantAddedIntegrationEvent: IIntegrationEvent
+    public class ParticipantUpdatedIntegrationEvent: IIntegrationEvent
     {
-        public ParticipantAddedIntegrationEvent(Guid hearingId, Participant participant)
+        public ParticipantUpdatedIntegrationEvent(Guid hearingId, Participant participant)
         {
             HearingId = hearingId;
             var representee = participant is Representative representative ? representative.Representee : string.Empty;
@@ -20,6 +20,5 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
 
         public Guid HearingId { get; }
         public ParticipantDto Participant { get; }
-        public IntegrationEventType EventType { get; } = IntegrationEventType.ParticipantAdded;
     }
 }

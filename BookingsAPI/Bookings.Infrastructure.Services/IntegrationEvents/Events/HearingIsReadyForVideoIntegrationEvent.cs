@@ -28,7 +28,6 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
 
         public HearingDto Hearing { get; }
         public IList<ParticipantDto> Participants { get; }
-        public IntegrationEventType EventType { get; } = IntegrationEventType.HearingIsReadyForVideo;
     }
 }
 

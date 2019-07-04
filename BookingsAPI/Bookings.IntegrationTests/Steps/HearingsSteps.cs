@@ -436,7 +436,6 @@ namespace Bookings.IntegrationTests.Steps
             var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
             
             var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
-            hearingReadyForVideoEvent.EventType.Should().Be(IntegrationEventType.HearingIsReadyForVideo);
             hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(response.Id);
             hearingReadyForVideoEvent.Hearing.CaseName.Should().Be(response.Cases[0].Name);
             hearingReadyForVideoEvent.Hearing.CaseNumber.Should().Be(response.Cases[0].Number);

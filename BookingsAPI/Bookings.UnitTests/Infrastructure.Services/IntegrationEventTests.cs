@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
@@ -32,7 +33,6 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<HearingCancelledIntegrationEvent>();
-            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.HearingCancelled);
         }
 
         [Test]
@@ -48,11 +48,10 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
-            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.HearingDetailsUpdated);
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_ParticipantAddedIntegrationEvent_is_raised()
+        public void should_publish_message_to_queue_when_ParticipantsAddedIntegrationEvent_is_raised()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.CaseType = new CaseType(1, "test");
@@ -63,13 +62,12 @@ namespace Bookings.UnitTests.Infrastructure.Services
             individual1.HearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var participantAddedIntegrationEvent = new ParticipantAddedIntegrationEvent(hearing.Id, individual1);
+            var participantAddedIntegrationEvent = new ParticipantsAddedIntegrationEvent(hearing.Id, new List<Participant>{ individual1});
             _eventPublisher.PublishAsync(participantAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
-            @event.IntegrationEvent.Should().BeOfType<ParticipantAddedIntegrationEvent>();
-            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.ParticipantAdded);
+            @event.IntegrationEvent.Should().BeOfType<ParticipantsAddedIntegrationEvent>();
         }
 
         [Test]
@@ -81,7 +79,23 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<ParticipantRemovedIntegrationEvent>();
-            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.ParticipantRemoved);
+        }
+
+        [Test]
+        public void should_publish_message_to_queue_when_ParticipantUpdatedIntegrationEvent_is_raised()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
+            var individual1 = individuals.First();
+            individual1.HearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
+            individual1.CaseRole = new CaseRole(1, "test");
+
+            var participantUpdatedIntegrationEvent = new ParticipantUpdatedIntegrationEvent(Guid.NewGuid(), individual1);
+            _eventPublisher.PublishAsync(participantUpdatedIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
         }
 
         [Test]
@@ -114,7 +128,6 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
-            @event.IntegrationEvent.EventType.Should().Be(IntegrationEventType.HearingIsReadyForVideo);
         }
     }
 }
