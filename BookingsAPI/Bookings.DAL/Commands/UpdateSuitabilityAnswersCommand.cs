@@ -52,7 +52,7 @@ namespace Bookings.DAL.Commands
 
             if (participant.Questionnaire == null)
             {
-                participant.Questionnaire = new Questionnaire()
+                participant.Questionnaire = new Questionnaire
                 {
                     Participant = participant,
                     ParticipantId = participant.Id
