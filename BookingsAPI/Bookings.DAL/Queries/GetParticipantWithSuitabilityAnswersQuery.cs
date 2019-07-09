@@ -45,14 +45,15 @@ namespace Bookings.DAL.Queries
                 .Include("Person")
                 .Include("HearingRole")
                 .Include("Hearing.HearingCases.Case")
-                .Include("SuitabilityAnswers");
+                .Include("Questionnaire")
+                .Include("Questionnaire.SuitabilityAnswers");
 
-            participants = participants.Where(x => x.SuitabilityAnswers.Any()).OrderByDescending(x => x.SuitabilityAnswerUpdatedAt).ThenBy(x => x.Id.ToString());
+            participants = participants.Where(x => x.Questionnaire != null && x.Questionnaire.SuitabilityAnswers.Any()).OrderByDescending(x => x.Questionnaire.UpdatedDate).ThenBy(x => x.Id.ToString());
 
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var updatedDateTime, out var id);
-                participants = participants.Where(x => x.SuitabilityAnswerUpdatedAt <= updatedDateTime
+                participants = participants.Where(x => x.Questionnaire.UpdatedDate <= updatedDateTime
                                                &&  string.Compare(x.Id.ToString(), id, true) > 0);
             }
 

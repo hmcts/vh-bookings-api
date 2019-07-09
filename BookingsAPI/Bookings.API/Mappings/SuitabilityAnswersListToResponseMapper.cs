@@ -27,9 +27,9 @@ namespace Bookings.API.Mappings
                 FirstName = participant.Person.FirstName,
                 LastName = participant.Person.LastName,
                 HearingRole = participant.HearingRole.Name,
-                UpdatedAt = participant.SuitabilityAnswerUpdatedAt,
+                UpdatedAt = participant.Questionnaire.UpdatedDate,
                 Representee = @representative != null ? @representative.Representee : string.Empty,
-                Answers = answerMapper.MapToResponses(participant.SuitabilityAnswers)
+                Answers = answerMapper.MapToResponses(participant.Questionnaire.SuitabilityAnswers)
             };
 
             return response;

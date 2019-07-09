@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
-using Bookings.Domain.Ddd;
+﻿using Bookings.Domain.Ddd;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
-using Bookings.Domain.Helpers;
-using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Bookings.Domain.Participants
 {
@@ -16,7 +14,6 @@ namespace Bookings.Domain.Participants
         {
             Id = Guid.NewGuid();
             CreatedDate = DateTime.UtcNow;
-            SuitabilityAnswers = new List<SuitabilityAnswer>();
         }
 
         protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
@@ -25,7 +22,6 @@ namespace Bookings.Domain.Participants
             PersonId = person.Id;
             HearingRoleId = hearingRole.Id;
             CaseRoleId = caseRole.Id;
-            SuitabilityAnswers = new List<SuitabilityAnswer>();
         }
 
         public string DisplayName { get; set; }
@@ -41,8 +37,8 @@ namespace Bookings.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
-        public virtual IList<SuitabilityAnswer> SuitabilityAnswers { get; protected set; }
-        public DateTime SuitabilityAnswerUpdatedAt => SuitabilityAnswers.Any() ? SuitabilityAnswers.Max(s => s.UpdatedDate): DateTime.MinValue ;
+        public long? QuestionnaireId { get; set; }
+        public virtual Questionnaire Questionnaire { get; set; }
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
         {
@@ -84,34 +80,6 @@ namespace Bookings.Domain.Participants
             {
                 _validationFailures.AddFailure("DisplayName", "DisplayName is required");
             }
-        }
-
-        public void AddSuitabilityAnswers(IList<SuitabilityAnswer> suitabilityAnswers)
-        {
-            foreach (var suitabilityAnswer in suitabilityAnswers)
-            {
-                AddSuitabilityAnswer(suitabilityAnswer.Key, suitabilityAnswer.Data, suitabilityAnswer.ExtendedData);
-            }
-        }
-
-        public virtual void AddSuitabilityAnswer(string key, string data, string extendedData)
-        {
-            var existingSuitabilityAnswer = SuitabilityAnswers.FirstOrDefault(answer => answer.Key == key);
-            if (existingSuitabilityAnswer == null)
-            {
-                // Add a new answer to collection
-                var newSuitabilityAnswer = new SuitabilityAnswer(key, data, extendedData);
-                newSuitabilityAnswer.Participant = this;
-                SuitabilityAnswers.Add(newSuitabilityAnswer);
-            }
-            else
-            {
-                // Update the existing object in the collection
-                existingSuitabilityAnswer.Data = data;
-                existingSuitabilityAnswer.ExtendedData = extendedData;
-                existingSuitabilityAnswer.UpdatedDate = DateTime.UtcNow;
-            }
-            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

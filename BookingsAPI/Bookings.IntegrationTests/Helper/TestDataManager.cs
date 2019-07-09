@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,13 @@ namespace Bookings.IntegrationTests.Helper
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
         private BuilderSettings BuilderSettings { get; }
+        private Guid _individualId;
+        private List<Guid> _participantSolicitorIds;
 
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
         {
             _dbContextOptions = dbContextOptions;
-            
+
             BuilderSettings = new BuilderSettings();
         }
 
@@ -60,43 +63,70 @@ namespace Bookings.IntegrationTests.Helper
             var otherInformation = "OtherInformation02";
             var createdBy = "test@integration.com";
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation, createdBy);
-            
-            var participant = videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+
+           videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
-            var participantSolicitor = videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
-            
+            videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
+                $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
+
             videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
-                $"{person3.FirstName} {person3.LastName}", string.Empty, string.Empty);
+                $"{person3.FirstName} {person3.LastName}", string.Empty, "Ms Y");
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
             videoHearing.AddCase("1234567890", "Test Case", true);
             videoHearing.AddCase("1234567891", "Test Case2", false);
 
-            if(addSuitabilityAnswer)
-            {
-                participant.AddSuitabilityAnswer("NEED_INTERPRETER", "No", "");
-                participant.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "Yes", "");
-                participant.UpdatedDate = DateTime.UtcNow;
-
-                participantSolicitor.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
-                participantSolicitor.AddSuitabilityAnswer("SUITABLE_ROOM_AVAILABLE", "No", "Comments");
-                participantSolicitor.UpdatedDate = DateTime.UtcNow;
-            }
-            
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 await db.VideoHearings.AddAsync(videoHearing);
                 await db.SaveChangesAsync();
             }
-
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+               new GetHearingByIdQuery(videoHearing.Id));
+            _individualId = hearing.Participants.FirstOrDefault(x => x.HearingRole.Name.ToLower().IndexOf("judge") < 0 && x.HearingRole.Name.ToLower().IndexOf("solicitor") < 0).Id;
+            _participantSolicitorIds = hearing.Participants.Where(x => x.HearingRole.Name.ToLower().IndexOf("solicitor") >= 0).Select(x => x.Id).ToList();
+
+            if (addSuitabilityAnswer)
+            {
+                await AddQuestionnaire();
+            }
+
+            hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            
             _seededHearings.Add(hearing.Id);
             return hearing;
+        }
+
+        private async Task AddQuestionnaire()
+        {
+            using (var db = new BookingsDbContext(_dbContextOptions))
+            {
+                var participant = db.Participants
+                    .Include(x => x.Questionnaire)
+                    .FirstOrDefault(x => x.Id == _individualId);
+                participant.Questionnaire = new Questionnaire { Participant = participant, ParticipantId = _individualId };
+                participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
+                participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
+                participant.UpdatedDate = DateTime.UtcNow;
+                db.Participants.Update(participant);
+
+                foreach (var item in _participantSolicitorIds)
+                {
+                    var participantSolicitor = db.Participants
+                    .Include(x => x.Questionnaire)
+                    .FirstOrDefault(x => x.Id == item);
+                    participantSolicitor.Questionnaire = new Questionnaire { Participant = participantSolicitor, ParticipantId = item };
+
+                    participantSolicitor.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
+                    participantSolicitor.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
+                    participantSolicitor.UpdatedDate = DateTime.UtcNow;
+                    db.Participants.Update(participantSolicitor);
+                }
+                
+                await db.SaveChangesAsync();
+            }
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
@@ -113,7 +143,7 @@ namespace Bookings.IntegrationTests.Helper
 
                 if (caseType == null)
                 {
-                    throw new InvalidOperationException("Unknown case type: "  + caseTypeName);
+                    throw new InvalidOperationException("Unknown case type: " + caseTypeName);
                 }
             }
 
@@ -136,7 +166,7 @@ namespace Bookings.IntegrationTests.Helper
                 if (hearing != null)
                 {
                     db.Remove(hearing);
-                    await db.SaveChangesAsync();   
+                    await db.SaveChangesAsync();
                 }
             }
         }

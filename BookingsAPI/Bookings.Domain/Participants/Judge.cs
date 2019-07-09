@@ -1,5 +1,4 @@
 using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
 
 namespace Bookings.Domain.Participants
 {
@@ -11,11 +10,6 @@ namespace Bookings.Domain.Participants
             : base(person, hearingRole, caseRole)
         {
 
-        }
-
-        public override void AddSuitabilityAnswer(string key, string data, string extendedData)
-        {
-            throw new DomainRuleException("SuitabilityAnswer", $"Cannot add suitability answers to Judge.");
         }
     }
 }
