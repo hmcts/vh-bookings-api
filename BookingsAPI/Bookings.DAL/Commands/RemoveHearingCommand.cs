@@ -37,20 +37,10 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
-            hearing.Participants.ToList().ForEach(x => RemoveQuestionnaires(x.Questionnaire));
-            await _context.SaveChangesAsync();
-
             _context.Remove(hearing);
 
             await _context.SaveChangesAsync();
         }
 
-        private void RemoveQuestionnaires(Questionnaire questionnaire)
-        {
-            if (questionnaire != null)
-            {
-                _context.Remove(questionnaire);
-            }
-        }
     }
 }

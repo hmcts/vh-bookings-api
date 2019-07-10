@@ -16,15 +16,12 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.DisplayName);
             builder.Property(x => x.CaseRoleId);
             builder.Property(x => x.HearingRoleId);
-            builder.Property(x => x.QuestionnaireId);
 
             builder.HasOne(x => x.CaseRole).WithMany().HasForeignKey(x => x.CaseRoleId);
             builder.HasOne(x => x.HearingRole).WithMany().HasForeignKey(x => x.HearingRoleId);
-            builder.HasOne(x => x.Questionnaire).WithMany().HasForeignKey(x => x.QuestionnaireId);
 
             builder.HasOne<Hearing>("Hearing").WithMany("Participants").HasForeignKey(x => x.HearingId);
 
-           // builder.HasMany<SuitabilityAnswer>("SuitabilityAnswers").WithOne("Participant").HasForeignKey(x => x.ParticipantId);
         }
     }
 

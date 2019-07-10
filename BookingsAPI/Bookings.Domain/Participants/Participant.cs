@@ -37,7 +37,6 @@ namespace Bookings.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
-        public long? QuestionnaireId { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
