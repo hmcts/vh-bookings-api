@@ -64,8 +64,8 @@ namespace Bookings.IntegrationTests.Helper
             var createdBy = "test@integration.com";
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration, venues.First(), hearingRoomName, otherInformation, createdBy);
 
-           videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
-                $"{person1.FirstName} {person1.LastName}");
+            videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+                 $"{person1.FirstName} {person1.LastName}");
 
             videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
@@ -103,29 +103,38 @@ namespace Bookings.IntegrationTests.Helper
         {
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
-                var participant = db.Participants
-                    .Include(x => x.Questionnaire)
-                    .FirstOrDefault(x => x.Id == _individualId);
-                participant.Questionnaire = new Questionnaire { Participant = participant, ParticipantId = _individualId };
-                participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
-                participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
-                participant.UpdatedDate = DateTime.UtcNow;
-                db.Participants.Update(participant);
+                AddIndividualQuestionnaire(db);
+                AddRepresentativeQuestionnaire(db);
 
-                foreach (var item in _participantSolicitorIds)
-                {
-                    var participantSolicitor = db.Participants
-                    .Include(x => x.Questionnaire)
-                    .FirstOrDefault(x => x.Id == item);
-                    participantSolicitor.Questionnaire = new Questionnaire { Participant = participantSolicitor, ParticipantId = item };
-
-                    participantSolicitor.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
-                    participantSolicitor.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
-                    participantSolicitor.UpdatedDate = DateTime.UtcNow;
-                    db.Participants.Update(participantSolicitor);
-                }
-                
                 await db.SaveChangesAsync();
+            }
+        }
+
+        private void AddIndividualQuestionnaire(BookingsDbContext db)
+        {
+            var participant = db.Participants
+                .Include(x => x.Questionnaire)
+                .FirstOrDefault(x => x.Id == _individualId);
+            participant.Questionnaire = new Questionnaire { Participant = participant, ParticipantId = _individualId };
+            participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
+            participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
+            participant.UpdatedDate = DateTime.UtcNow;
+            db.Participants.Update(participant);
+        }
+
+        private void AddRepresentativeQuestionnaire(BookingsDbContext db)
+        {
+            foreach (var item in _participantSolicitorIds)
+            {
+                var participantSolicitor = db.Participants
+                .Include(x => x.Questionnaire)
+                .FirstOrDefault(x => x.Id == item);
+                participantSolicitor.Questionnaire = new Questionnaire { Participant = participantSolicitor, ParticipantId = item };
+
+                participantSolicitor.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
+                participantSolicitor.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
+                participantSolicitor.UpdatedDate = DateTime.UtcNow;
+                db.Participants.Update(participantSolicitor);
             }
         }
 

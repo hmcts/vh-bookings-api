@@ -133,7 +133,7 @@ namespace Bookings.API.Controllers
         private PersonSuitabilityAnswerResponse BuildResponse(VideoHearing hearing, string username)
         {
             var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
-            var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers: null;
+            var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers: new List<SuitabilityAnswer>();
             var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
             var personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
             {
