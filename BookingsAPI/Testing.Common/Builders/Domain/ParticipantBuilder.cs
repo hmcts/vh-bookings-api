@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Bookings.Domain.Participants;
-    using Bookings.Domain;
+using Bookings.Domain;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 using System.Collections.Generic;
@@ -14,8 +14,8 @@ namespace Testing.Common.Builders.Domain
         private readonly Participant _individualParticipant2;
         private readonly Participant _representativeParticipant;
 
-        private readonly List<Participant> participants= new List<Participant>();
-       
+        private readonly List<Participant> participants = new List<Participant>();
+
 
         public ParticipantBuilder()
         {
@@ -23,9 +23,9 @@ namespace Testing.Common.Builders.Domain
             var defendantCaseRole = new CaseRole(2, "Defendant");
             var claimantLipHearingRole = new HearingRole(1, "Claimant LIP");
             claimantLipHearingRole.UserRole = new UserRole(5, "Individual");
-            var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor");
+            var defendantSolicitorHearingRole = new HearingRole(5, "Solicitor");
             defendantSolicitorHearingRole.UserRole = new UserRole(6, "Representative");
-            var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP");
+            var defendantLipHearingRole = new HearingRole(4, "Defendant LIP");
             defendantLipHearingRole.UserRole = new UserRole(5, "Individual");
             var person1 = new PersonBuilder(true).WithAddress().Build();
             var person2 = new PersonBuilder(true).WithAddress().Build();
@@ -33,15 +33,30 @@ namespace Testing.Common.Builders.Domain
 
             _individualParticipant1 = new Individual(person1, claimantLipHearingRole, claimantCaseRole);
             _individualParticipant1.HearingRole = claimantLipHearingRole;
-            _individualParticipant1.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
+            _individualParticipant1.Questionnaire = new Questionnaire
+            {
+                Participant = _individualParticipant1,
+                ParticipantId = _individualParticipant1.Id
+            };
+            _individualParticipant1.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
             _individualParticipant2 = new Individual(person2, defendantLipHearingRole, defendantCaseRole);
             _individualParticipant2.HearingRole = defendantLipHearingRole;
-            _individualParticipant2.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
+            _individualParticipant2.Questionnaire = new Questionnaire
+            {
+                Participant = _individualParticipant2,
+                ParticipantId = _individualParticipant2.Id
+            };
+            _individualParticipant2.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
             _representativeParticipant = new Representative(person3, defendantSolicitorHearingRole, defendantCaseRole);
             _representativeParticipant.HearingRole = defendantSolicitorHearingRole;
-            _representativeParticipant.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
+            _representativeParticipant.Questionnaire = new Questionnaire
+            {
+                Participant = _representativeParticipant,
+                ParticipantId = _representativeParticipant.Id
+            };
+            _representativeParticipant.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
             participants.Add(_individualParticipant1);
             participants.Add(_individualParticipant2);

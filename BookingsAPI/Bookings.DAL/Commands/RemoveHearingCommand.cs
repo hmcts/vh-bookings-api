@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
+using Bookings.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
@@ -15,7 +17,7 @@ namespace Bookings.DAL.Commands
 
         public Guid HearingId { get; set; }
     }
-    
+
     public class RemoveHearingCommandHandler : ICommandHandler<RemoveHearingCommand>
     {
         private readonly BookingsDbContext _context;
@@ -29,14 +31,16 @@ namespace Bookings.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
-            
+
             if (hearing == null)
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
 
             _context.Remove(hearing);
+
             await _context.SaveChangesAsync();
         }
+
     }
 }

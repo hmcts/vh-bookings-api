@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190708130456_AddQuestionnaireTable")]
+    partial class AddQuestionnaireTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,6 +173,8 @@ namespace Bookings.DAL.Migrations
 
                     b.Property<Guid>("PersonId");
 
+                    b.Property<long?>("QuestionnaireId");
+
                     b.Property<string>("UpdatedBy");
 
                     b.Property<DateTime>("UpdatedDate");
@@ -182,6 +186,8 @@ namespace Bookings.DAL.Migrations
                     b.HasIndex("HearingId");
 
                     b.HasIndex("HearingRoleId");
+
+                    b.HasIndex("QuestionnaireId");
 
                     b.HasIndex("PersonId", "HearingId")
                         .IsUnique();
@@ -247,8 +253,7 @@ namespace Bookings.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParticipantId")
-                        .IsUnique();
+                    b.HasIndex("ParticipantId");
 
                     b.ToTable("Questionnaire");
                 });
@@ -444,6 +449,10 @@ namespace Bookings.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Bookings.Domain.Questionnaire", "Questionnaire")
+                        .WithMany()
+                        .HasForeignKey("QuestionnaireId");
                 });
 
             modelBuilder.Entity("Bookings.Domain.Person", b =>
@@ -460,8 +469,8 @@ namespace Bookings.DAL.Migrations
             modelBuilder.Entity("Bookings.Domain.Questionnaire", b =>
                 {
                     b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
-                        .WithOne("Questionnaire")
-                        .HasForeignKey("Bookings.Domain.Questionnaire", "ParticipantId")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

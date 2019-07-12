@@ -14,12 +14,12 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public Guid ParticipantId { get; set; }
+        public long QuestionnaireId { get; set; }
         public string Key { get; set; }
         public string Data { get; set; }
         public string ExtendedData { get; set; }
         public DateTime UpdatedDate { get; set; }
 
-        public virtual Participant Participant {get;set;}
+        public virtual Questionnaire Questionnaire { get; set; }
     }
 }

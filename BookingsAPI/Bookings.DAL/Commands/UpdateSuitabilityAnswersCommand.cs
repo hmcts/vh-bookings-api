@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Bookings.DAL.Commands
@@ -36,9 +35,10 @@ namespace Bookings.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include("Participants.Person")
-                .Include("Participants.SuitabilityAnswers")
+                .Include("Participants.Questionnaire")
+                .Include("Participants.Questionnaire.SuitabilityAnswers")
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
-            
+
             if (hearing == null)
             {
                 throw new HearingNotFoundException(command.HearingId);
@@ -49,7 +49,17 @@ namespace Bookings.DAL.Commands
             {
                 throw new ParticipantNotFoundException(command.ParticipantId);
             }
-            participant.AddSuitabilityAnswers(command.SuitabilityAnswers);
+
+            if (participant.Questionnaire == null)
+            {
+                participant.Questionnaire = new Questionnaire
+                {
+                    Participant = participant,
+                    ParticipantId = participant.Id
+                };
+            }
+
+            participant.Questionnaire.AddSuitabilityAnswers(command.SuitabilityAnswers);
             await _context.SaveChangesAsync();
         }
     }

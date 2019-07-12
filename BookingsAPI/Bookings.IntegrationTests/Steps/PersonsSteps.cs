@@ -190,7 +190,7 @@ namespace Bookings.IntegrationTests.Steps
                         var participants = seededHearing.GetParticipants();
                         if(hasSuitability)
                         {
-                            _username = participants.First(p => p.SuitabilityAnswers.Any()).Person.Username;
+                            _username = participants.First(p => p.Questionnaire != null && p.Questionnaire.SuitabilityAnswers.Any()).Person.Username;
                         }
                         else
                         {
