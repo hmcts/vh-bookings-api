@@ -262,6 +262,8 @@ namespace Bookings.API.Controllers
             var command =
                 new RemoveHearingCommand(hearingId);
             await _commandHandler.Handle(command);
+            
+            await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
 
             return NoContent();
         }
