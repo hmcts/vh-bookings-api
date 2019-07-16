@@ -7,18 +7,18 @@ namespace Bookings.AcceptanceTests.Steps
     [Binding]
     public sealed class HealthCheckSteps
     {
-        private readonly TestContext _acTestContext;
+        private readonly TestContext _context;
         private readonly HealthCheckEndpoints _endpoints = new ApiUriFactory().HealthCheckEndpoints;
 
-        public HealthCheckSteps(TestContext acTestContext)
+        public HealthCheckSteps(TestContext context)
         {
-            _acTestContext = acTestContext;
+            _context = context;
         }
 
         [Given(@"I have a get health request")]
         public void GivenIHaveAGetHealthRequest()
         {
-            _acTestContext.Request = _acTestContext.Get(_endpoints.HealthCheck);
+            _context.Request = _context.Get(_endpoints.HealthCheck);
         }
     }
 }

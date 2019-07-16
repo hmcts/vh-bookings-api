@@ -10,24 +10,24 @@ namespace Bookings.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingVenuesSteps
     {
-        private readonly TestContext _acTestContext;
+        private readonly TestContext _context;
         private readonly HearingVenueEndpoints _endpoints = new ApiUriFactory().HearingVenueEndpoints;
 
-        public HearingVenuesSteps(TestContext acTestContext)
+        public HearingVenuesSteps(TestContext context)
         {
-            _acTestContext = acTestContext;
+            _context = context;
         }
 
         [Given(@"I have a get all hearing venues available for booking request")]
         public void GivenIHaveAGetAllHearingVenuesAvailableForBookingRequest()
         {
-            _acTestContext.Request = _acTestContext.Get(_endpoints.GetVenues);
+            _context.Request = _context.Get(_endpoints.GetVenues);
         }
 
         [Then(@"hearing venues should be retrieved")]
         public void ThenHearingVenuesShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(_acTestContext.Json);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(_context.Json);
             model.Should().NotBeNullOrEmpty();
         }
     }
