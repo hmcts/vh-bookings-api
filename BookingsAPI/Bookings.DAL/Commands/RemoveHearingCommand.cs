@@ -30,13 +30,15 @@ namespace Bookings.DAL.Commands
         public async Task Handle(RemoveHearingCommand command)
         {
             var hearing = await _context.VideoHearings
+                .Include("HearingCases.Case")
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-
+            
+            _context.RemoveRange(hearing.GetCases());
             _context.Remove(hearing);
 
             await _context.SaveChangesAsync();
