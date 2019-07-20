@@ -11,11 +11,11 @@ namespace Bookings.IntegrationTests.Steps
     {
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
         protected TestDataManager TestDataManager { get; set; }
-        protected readonly TestContext ApiTestContext;
+        protected readonly TestContext Context;
 
         protected StepsBase(TestContext apiTextContext)
         {
-            ApiTestContext = apiTextContext;
+            Context = apiTextContext;
             BookingsDbContextOptions = apiTextContext.BookingsDbContextOptions;
             TestDataManager = apiTextContext.TestDataManager;
         }
