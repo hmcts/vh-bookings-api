@@ -10,7 +10,7 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class CommonSteps : StepsBase
     {
-        public CommonSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
+        public CommonSteps(Contexts.TestContext _context) : base(_context)
         {
         }
 
