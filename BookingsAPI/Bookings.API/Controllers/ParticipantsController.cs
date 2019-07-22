@@ -32,7 +32,7 @@ namespace Bookings.API.Controllers
         /// <returns>Participant</returns>
         [HttpGet("username/{username}", Name = "GetParticipantsByUsername")]
         [SwaggerOperation(OperationId = "GetParticipantsByUsername")]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetParticipantsByUsername(string username)
