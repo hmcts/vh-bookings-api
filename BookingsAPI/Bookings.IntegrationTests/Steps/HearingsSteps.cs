@@ -536,6 +536,7 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
+                .With(x => x.OrganisationName = "Automation Organisation")
                 .Build().ToList();
             participants[0].CaseRoleName = "Claimant";
             participants[0].HearingRoleName = "Claimant LIP";
@@ -548,11 +549,13 @@ namespace Bookings.IntegrationTests.Steps
 
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Solicitor";
-
+            
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
             cases[0].IsLeadCase = true;
+            cases[0].Name = $"Bookings Api Automated Integration Test {Faker.RandomNumber.Next(0, 9999999)}";
+            cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
             const string createdBy = "UserAdmin";
 
