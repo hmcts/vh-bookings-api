@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
@@ -75,8 +74,8 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
-            videoHearing.AddCase("1234567890", "Test Case", true);
-            videoHearing.AddCase("1234567891", "Test Case2", false);
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}", $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", true);
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}", $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", false);
 
             using (var db = new BookingsDbContext(_dbContextOptions))
             {

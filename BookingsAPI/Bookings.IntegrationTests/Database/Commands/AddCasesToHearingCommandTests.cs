@@ -50,5 +50,11 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             afterCount.Should().BeGreaterThan(beforeCount);
         }
+
+        [TearDown]
+        public new async Task TearDown()
+        {
+            await Hooks.ClearSeededHearings();
+        }
     }
 }
