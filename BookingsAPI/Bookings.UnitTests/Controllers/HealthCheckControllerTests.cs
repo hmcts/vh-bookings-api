@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Api.Contract.Responses;
 using Bookings.API.Controllers;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
@@ -33,11 +34,11 @@ namespace Bookings.UnitTests.Controllers
                 .ReturnsAsync(new List<HearingVenue>());
 
             var result = await _controller.CheckServiceHealth();
-            var objectResult = (ObjectResult) result;
-
-            objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-            objectResult.Value.ToString().Should().Contain("Could not retrieve ref data during service health check");
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
+            var response = (BookingsApiHealthResponse) typedResult.Value;
+            response.DatabaseHealth.Successful.Should().BeFalse();
+            response.DatabaseHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
         }
         
         [Test]
@@ -48,9 +49,12 @@ namespace Bookings.UnitTests.Controllers
                 .ReturnsAsync(new RefDataBuilder().HearingVenues);
 
             var result = await _controller.CheckServiceHealth();
-            var okResult = (OkResult) result;
-
-            okResult.Should().NotBeNull();
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
+            var response = (BookingsApiHealthResponse) typedResult.Value;
+            response.DatabaseHealth.Successful.Should().BeTrue();
+            response.DatabaseHealth.ErrorMessage.Should().BeNullOrWhiteSpace();
+            response.DatabaseHealth.Data.Should().BeNullOrEmpty();
         }
     }
 }
