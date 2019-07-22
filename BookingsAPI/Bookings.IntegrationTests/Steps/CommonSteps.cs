@@ -10,7 +10,7 @@ namespace Bookings.IntegrationTests.Steps
     [Binding]
     public sealed class CommonSteps : StepsBase
     {
-        public CommonSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
+        public CommonSteps(Contexts.TestContext _context) : base(_context)
         {
         }
 
@@ -18,24 +18,24 @@ namespace Bookings.IntegrationTests.Steps
         [When(@"I send the same request twice")]
         public async Task WhenISendTheRequestToTheEndpoint()
         {
-            ApiTestContext.ResponseMessage = new HttpResponseMessage();
-            switch (ApiTestContext.HttpMethod.Method)
+            Context.ResponseMessage = new HttpResponseMessage();
+            switch (Context.HttpMethod.Method)
             {
-                case "GET": ApiTestContext.ResponseMessage = await SendGetRequestAsync(ApiTestContext); break;
-                case "POST": ApiTestContext.ResponseMessage = await SendPostRequestAsync(ApiTestContext); break;
-                case "PATCH": ApiTestContext.ResponseMessage = await SendPatchRequestAsync(ApiTestContext); break;
-                case "PUT": ApiTestContext.ResponseMessage = await SendPutRequestAsync(ApiTestContext); break;
-                case "DELETE": ApiTestContext.ResponseMessage = await SendDeleteRequestAsync(ApiTestContext); break;
-                default: throw new ArgumentOutOfRangeException(ApiTestContext.HttpMethod.ToString(), ApiTestContext.HttpMethod.ToString(), null);
+                case "GET": Context.ResponseMessage = await SendGetRequestAsync(Context); break;
+                case "POST": Context.ResponseMessage = await SendPostRequestAsync(Context); break;
+                case "PATCH": Context.ResponseMessage = await SendPatchRequestAsync(Context); break;
+                case "PUT": Context.ResponseMessage = await SendPutRequestAsync(Context); break;
+                case "DELETE": Context.ResponseMessage = await SendDeleteRequestAsync(Context); break;
+                default: throw new ArgumentOutOfRangeException(Context.HttpMethod.ToString(), Context.HttpMethod.ToString(), null);
             }
         }
 
         [Then(@"the response should have the status (.*) and success status (.*)")]
         public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
-            ApiTestContext.ResponseMessage.StatusCode.Should().Be(statusCode);
-            ApiTestContext.ResponseMessage.IsSuccessStatusCode.Should().Be(isSuccess);
-            NUnit.Framework.TestContext.WriteLine($"Status Code: {ApiTestContext.ResponseMessage.StatusCode}");
+            Context.ResponseMessage.StatusCode.Should().Be(statusCode);
+            Context.ResponseMessage.IsSuccessStatusCode.Should().Be(isSuccess);
+            NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.ResponseMessage.StatusCode}");
         }
 
         [Then(@"the response message should read '(.*)'")]
@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the error response message should also contain '(.*)'")]
         public void ThenTheResponseShouldContain(string errorMessage)
         {
-            ApiTestContext.ResponseMessage.Content.ReadAsStringAsync().Result.Should().Contain(errorMessage);
+            Context.ResponseMessage.Content.ReadAsStringAsync().Result.Should().Contain(errorMessage);
         }
     }
 }

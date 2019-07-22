@@ -21,31 +21,31 @@ namespace Bookings.IntegrationTests.Hooks
     public static class ApiHooks
     {
         [BeforeFeature]
-        public static void BeforeApiFeature(Contexts.TestContext apiTestContext)
+        public static void BeforeApiFeature(Contexts.TestContext context)
         {
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(c => c.AddServerHeader = false)
                 .UseEnvironment("Development")
                 .UseDefaultServiceProvider(options => options.ValidateScopes = false)
                 .UseStartup<Startup>();
-            apiTestContext.Server = new TestServer(webHostBuilder);
-            GetClientAccessTokenForApi(apiTestContext);
+            context.Server = new TestServer(webHostBuilder);
+            GetClientAccessTokenForApi(context);
 
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables()
                 .AddUserSecrets<Startup>().Build();
 
-            apiTestContext.DbString = configuration.GetConnectionString("VhBookings");
+            context.DbString = configuration.GetConnectionString("VhBookings");
 
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
-            dbContextOptionsBuilder.UseSqlServer(apiTestContext.DbString);
-            apiTestContext.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            apiTestContext.TestDataManager = new TestDataManager(apiTestContext.BookingsDbContextOptions);
+            dbContextOptionsBuilder.UseSqlServer(context.DbString);
+            context.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
+            context.TestDataManager = new TestDataManager(context.BookingsDbContextOptions);
         }
 
-        private static void GetClientAccessTokenForApi(Contexts.TestContext apiTestContext)
+        private static void GetClientAccessTokenForApi(Contexts.TestContext context)
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -60,31 +60,31 @@ namespace Bookings.IntegrationTests.Hooks
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
             var testSettings = testSettingsOptions.Value;
 
-            apiTestContext.BearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
+            context.BearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 azureAdConfiguration.VhBookingsApiResourceId);
         }
 
         [BeforeScenario]
-        public static void BeforeApiScenario(Contexts.TestContext apiTestContext)
+        public static void BeforeApiScenario(Contexts.TestContext context)
         {
-            apiTestContext.NewHearingId = Guid.Empty;
+            context.NewHearingId = Guid.Empty;
         }
 
         [AfterScenario]
-        public static async Task AfterApiScenario(Contexts.TestContext apiTestContext)
+        public static async Task AfterApiScenario(Contexts.TestContext context)
         {
-            if (apiTestContext.NewHearingId != Guid.Empty)
+            if (context.NewHearingId != Guid.Empty)
             {
-                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {apiTestContext.NewHearingId}");
-                await apiTestContext.TestDataManager.RemoveVideoHearing(apiTestContext.NewHearingId);
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {context.NewHearingId}");
+                await context.TestDataManager.RemoveVideoHearing(context.NewHearingId);
             }
         }
 
         [AfterFeature]
-        public static void AfterApiFeature(Contexts.TestContext apiTestContext)
+        public static void AfterApiFeature(Contexts.TestContext context)
         {
-            apiTestContext.Server.Dispose();
+            context.Server.Dispose();
         }
     }
 }
