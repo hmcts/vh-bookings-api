@@ -36,9 +36,9 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                 {
-                    var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
-                    ApiTestContext.NewHearingId = seededHearing.Id;
-                    hearingId = ApiTestContext.NewHearingId;
+                    var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+                    Context.NewHearingId = seededHearing.Id;
+                    hearingId = Context.NewHearingId;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     break;
                 }
@@ -50,8 +50,8 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.GetAllParticipantsInHearing(hearingId);
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetAllParticipantsInHearing(hearingId);
+            Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have an add participant to a hearing request with a (.*) hearing id")]
@@ -59,17 +59,17 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnAddParticipantToAHearingRequestWithAHearingId(Scenario scenario)
         {
             var request = BuildRequest();
-            ApiTestContext.Participants = request.Participants;
+            Context.Participants = request.Participants;
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(request);
-            ApiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Guid hearingId;
             switch (scenario)
             {
                 case Scenario.Valid:
                 {
-                    var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
-                    ApiTestContext.NewHearingId = seededHearing.Id;
-                    hearingId = ApiTestContext.NewHearingId;
+                    var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+                    Context.NewHearingId = seededHearing.Id;
+                    hearingId = Context.NewHearingId;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                     break;
                 }
@@ -81,20 +81,20 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.AddParticipantsToHearing(hearingId);
-            ApiTestContext.HttpMethod = HttpMethod.Post;
+            Context.Uri = _endpoints.AddParticipantsToHearing(hearingId);
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [When(@"I send the same request but with a new hearing id")]
         public async Task WhenISendTheSameRequestButWithANewHearingId()
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
-            ApiTestContext.OldHearingId = ApiTestContext.NewHearingId;
-            ApiTestContext.NewHearingId = seededHearing.Id;
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.OldHearingId = Context.NewHearingId;
+            Context.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             seededHearing.GetParticipants().Count.Should().Be(4);
-            ApiTestContext.Uri = _endpoints.AddParticipantsToHearing(ApiTestContext.NewHearingId);
-            ApiTestContext.ResponseMessage = await SendPostRequestAsync(ApiTestContext);
+            Context.Uri = _endpoints.AddParticipantsToHearing(Context.NewHearingId);
+            Context.ResponseMessage = await SendPostRequestAsync(Context);
         }
 
         [Given(@"I have an add participants in a hearing request with an invalid participant")]
@@ -102,12 +102,12 @@ namespace Bookings.IntegrationTests.Steps
         {
             var request = new InvalidRequest();
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(request.BuildRequest());
-            ApiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
-            ApiTestContext.NewHearingId = seededHearing.Id;
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            ApiTestContext.Uri = _endpoints.AddParticipantsToHearing(ApiTestContext.NewHearingId);
-            ApiTestContext.HttpMethod = HttpMethod.Post;
+            Context.Uri = _endpoints.AddParticipantsToHearing(Context.NewHearingId);
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a get a single participant in a hearing request with a (.*) hearing id")]
@@ -115,14 +115,14 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetASingleParticipantInAHearingRequestWithAValidHearingId(Scenario scenario)
         {
             Guid hearingId;
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            ApiTestContext.NewHearingId = seededHearing.Id;
+            Context.NewHearingId = seededHearing.Id;
             switch (scenario)
             {
                 case Scenario.Valid:
                 {
-                    hearingId = ApiTestContext.NewHearingId;
+                    hearingId = Context.NewHearingId;
                     break;
                 }
                 case Scenario.Nonexistent:
@@ -133,17 +133,17 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.GetParticipantInHearing(hearingId, seededHearing.GetParticipants()[0].Id);
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetParticipantInHearing(hearingId, seededHearing.GetParticipants()[0].Id);
+            Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get a single participant in a hearing request with a (.*) participant id")]
         [Given(@"I have a get a single participant in a hearing request with an (.*) participant id")]
         public async Task GivenIHaveAGetASingleParticipantInAHearingRequestWithAParticipantId(Scenario scenario)
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            ApiTestContext.NewHearingId = seededHearing.Id;
+            Context.NewHearingId = seededHearing.Id;
             Guid participantId;
             switch (scenario)
             {
@@ -155,19 +155,19 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.GetParticipantInHearing(ApiTestContext.NewHearingId, participantId);
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetParticipantInHearing(Context.NewHearingId, participantId);
+            Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a remove participant from a hearing request with a (.*) hearing id")]
         [Given(@"I have a remove participant from a hearing request with an (.*) hearing id")]
         public async Task GivenIHaveARemoveParticipantFromAHearingWithAValidHearingId(Scenario scenario)
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            ApiTestContext.NewHearingId = seededHearing.Id;
-            ApiTestContext.Participant = seededHearing.GetParticipants().First();
-            ApiTestContext.HttpMethod = HttpMethod.Delete;
+            Context.NewHearingId = seededHearing.Id;
+            Context.Participant = seededHearing.GetParticipants().First();
+            Context.HttpMethod = HttpMethod.Delete;
 
             var participantId = seededHearing.GetParticipants().First().Id;
             Guid hearingId;
@@ -176,7 +176,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        hearingId = ApiTestContext.NewHearingId;
+                        hearingId = Context.NewHearingId;
                         break;
                     }
                 case Scenario.Nonexistent:
@@ -191,17 +191,17 @@ namespace Bookings.IntegrationTests.Steps
                     }
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.RemoveParticipantFromHearing(hearingId, participantId);
+            Context.Uri = _endpoints.RemoveParticipantFromHearing(hearingId, participantId);
         }
 
         [Given(@"I have a remove participant from a hearing request with a (.*) participant id")]
         [Given(@"I have a remove participant from a hearing request with an (.*) participant id")]
         public async Task GivenIHaveARemoveParticipantFromAHearingWithAParticipantId(Scenario scenario)
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            ApiTestContext.NewHearingId = seededHearing.Id;
-            ApiTestContext.HttpMethod = HttpMethod.Delete;
+            Context.NewHearingId = seededHearing.Id;
+            Context.HttpMethod = HttpMethod.Delete;
 
             Guid participantId;
             switch (scenario)
@@ -218,13 +218,13 @@ namespace Bookings.IntegrationTests.Steps
                 }
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.RemoveParticipantFromHearing(ApiTestContext.NewHearingId, participantId);
+            Context.Uri = _endpoints.RemoveParticipantFromHearing(Context.NewHearingId, participantId);
         }
 
         [Then(@"a list of hearing participants should be retrieved")]
         public async Task ThenAListOfHearingParticipantsShouldBeRetrieved()
         {
-            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(json);
             CheckParticipantData(model);
         }
@@ -233,9 +233,9 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have an update suitability answers request with an (.*) hearing id and (.*) participant id")]
         public async Task GivenIHaveAnUpdateSuitabilityAnswersRequest(Scenario hearingScenario, Scenario participantScenario)
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            ApiTestContext.NewHearingId = seededHearing.Id;
+            Context.NewHearingId = seededHearing.Id;
             Guid participantId;
             Guid hearingId;
 
@@ -243,7 +243,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        hearingId = ApiTestContext.NewHearingId;
+                        hearingId = Context.NewHearingId;
                         break;
                     }
                 case Scenario.Nonexistent:
@@ -278,11 +278,11 @@ namespace Bookings.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(participantScenario), participantScenario, null);
             }
 
-            ApiTestContext.Uri = _endpoints.UpdateSuitabilityAnswers(hearingId, participantId);
-            ApiTestContext.HttpMethod = HttpMethod.Put;
+            Context.Uri = _endpoints.UpdateSuitabilityAnswers(hearingId, participantId);
+            Context.HttpMethod = HttpMethod.Put;
             var request = UpdateSuitabilityAnswersRequest();
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(request);
-            ApiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
 
         private static void CheckParticipantData(IReadOnlyCollection<ParticipantResponse> model)
@@ -307,7 +307,7 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"a hearing participant should be retrieved")]
         public async Task ThenAHearingParticipantShouldBeRetrieved()
         {
-            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = new List<ParticipantResponse> { ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(json) };
             CheckParticipantData(model);
         }
@@ -316,16 +316,16 @@ namespace Bookings.IntegrationTests.Steps
         public void ThenTheParticipantShouldBeAddedOrRemoved(string state)
         {
             Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(ApiTestContext.BookingsDbContextOptions))
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings
                     .Include("Participants.Person").AsNoTracking()
-                    .Single(x => x.Id == ApiTestContext.NewHearingId);
+                    .Single(x => x.Id == Context.NewHearingId);
             }
             if (state.Equals("added"))
             {
                 hearingFromDb.GetParticipants().Count.Should().BeGreaterThan(3);
-                foreach (var participantRequest in ApiTestContext.Participants)
+                foreach (var participantRequest in Context.Participants)
                 {
                     hearingFromDb.GetParticipants().Any(x => x.Person.Username == participantRequest.Username).Should()
                         .BeTrue();
@@ -333,7 +333,7 @@ namespace Bookings.IntegrationTests.Steps
             }
             if (state.Equals("removed"))
             {               
-                hearingFromDb.GetParticipants().Any(x => x.Id == ApiTestContext.Participant.Id).Should().BeFalse();
+                hearingFromDb.GetParticipants().Any(x => x.Id == Context.Participant.Id).Should().BeFalse();
             }
         }
 
@@ -341,20 +341,20 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have an update participant in a hearing request with an (.*) hearing id")]
         public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithANonexistentHearingId(Scenario scenario)
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var participantId = seededHearing.GetParticipants().FirstOrDefault().Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             Guid hearingId;
 
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
-            ApiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             switch (scenario)
             {
                 case Scenario.Valid:
                     {
-                        ApiTestContext.NewHearingId = seededHearing.Id;
-                        hearingId = ApiTestContext.NewHearingId;
+                        Context.NewHearingId = seededHearing.Id;
+                        hearingId = Context.NewHearingId;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         break;
                     }
@@ -366,30 +366,30 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            ApiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId,participantId);
-            ApiTestContext.HttpMethod = HttpMethod.Put;
+            Context.Uri = _endpoints.UpdateParticipantDetails(hearingId,participantId);
+            Context.HttpMethod = HttpMethod.Put;
         }
 
         [Given(@"I have an update participant in a hearing request with a invalid solicitors reference")]
         public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidSolicitorsReference()
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var participantId = seededHearing.GetParticipants().FirstOrDefault(x=>x.HearingRole.UserRole.IsRepresentative).Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             var hearingId = seededHearing.Id;
             updateParticipantRequest.SolicitorsReference = string.Empty;
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
-            ApiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            ApiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
-            ApiTestContext.HttpMethod = HttpMethod.Put;
+            Context.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
+            Context.HttpMethod = HttpMethod.Put;
         }
 
 
         [Given(@"I have an update participant in a hearing request with a invalid address")]
         public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidAddress()
         {
-            var seededHearing = await ApiTestContext.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var participantId = seededHearing.GetParticipants().FirstOrDefault(x => x.HearingRole.UserRole.IsIndividual).Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             var hearingId = seededHearing.Id;
@@ -399,10 +399,10 @@ namespace Bookings.IntegrationTests.Steps
             updateParticipantRequest.City = string.Empty;
             updateParticipantRequest.County = string.Empty;
             var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
-            ApiTestContext.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            ApiTestContext.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
-            ApiTestContext.HttpMethod = HttpMethod.Put;
+            Context.Uri = _endpoints.UpdateParticipantDetails(hearingId, participantId);
+            Context.HttpMethod = HttpMethod.Put;
         }
 
 
@@ -436,15 +436,15 @@ namespace Bookings.IntegrationTests.Steps
         [TearDown]
         public async Task TearDown()
         {
-            if (ApiTestContext.NewHearingId != Guid.Empty)
+            if (Context.NewHearingId != Guid.Empty)
             {
-                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {ApiTestContext.NewHearingId}");
-                await TestDataManager.RemoveVideoHearing(ApiTestContext.NewHearingId);
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {Context.NewHearingId}");
+                await TestDataManager.RemoveVideoHearing(Context.NewHearingId);
             }
-            if (ApiTestContext.OldHearingId != Guid.Empty)
+            if (Context.OldHearingId != Guid.Empty)
             {
-                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {ApiTestContext.OldHearingId}");
-                await TestDataManager.RemoveVideoHearing(ApiTestContext.OldHearingId);
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {Context.OldHearingId}");
+                await TestDataManager.RemoveVideoHearing(Context.OldHearingId);
             }
         }
     }

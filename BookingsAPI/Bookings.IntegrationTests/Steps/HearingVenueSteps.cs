@@ -21,14 +21,14 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get all hearing venues available for booking request")]
         public void GivenIHaveAGetAllHearingVenuesAvailableForBookingRequest()
         {           
-            ApiTestContext.Uri = _endpoints.GetVenues;
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetVenues;
+            Context.HttpMethod = HttpMethod.Get;
         }
 
         [Then(@"hearing venues should be retrieved")]
         public async Task ThenHearingVenuesShouldBeRetrieved()
         {
-            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(json);
             foreach (var venue in model)
             {

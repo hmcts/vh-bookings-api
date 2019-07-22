@@ -23,29 +23,29 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get available case types request")]
         public void GivenIHaveAGetAvailableCaseTypesRequest()
         {
-            ApiTestContext.Uri = _endpoints.GetCaseTypes();
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetCaseTypes();
+            Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get case roles for a case type of (.*) request")]
         public void GivenIHaveAGetCaseRolesForACaseTypeRequest(string caseType)
         {
-            ApiTestContext.Uri = _endpoints.GetCaseRolesForCaseType(caseType);
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetCaseRolesForCaseType(caseType);
+            Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get hearing roles for a case role of '(.*)' and case type of '(.*)' request")]
         public void GivenIHaveAGetHearingRolesForCaseRoleOfCaseTypeRequest(string caseType, string caseRoleName)
         {          
-            ApiTestContext.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName);
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            Context.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName);
+            Context.HttpMethod = HttpMethod.Get;
             _scenarioContext.Add("CaseTypeKey", caseType);
         }
 
         [Then(@"a list of case types should be retrieved")]
         public async Task ThenAListOfCaseTypesShouldBeRetrieved()
         {
-            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
             model.Should().NotBeEmpty();
             foreach (var caseType in model)
@@ -63,7 +63,7 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"a list of case roles should be retrieved")]
         public async Task ThenAListOfCaseRolesShouldBeRetrieved()
         {
-            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
             model.Should().NotBeEmpty();
             model[0].Name.IsNotNullOrEmpty();
