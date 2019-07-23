@@ -20,16 +20,16 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have the suitable answers for participants")]
         public async Task GivenIHaveTheSuitableAnswersForParticipants()
         {
-            await ApiTestContext.TestDataManager.SeedVideoHearing(true);
-            ApiTestContext.Uri = _endpoints.GetSuitabilityAnswers("");
-            ApiTestContext.HttpMethod = HttpMethod.Get;
+            await Context.TestDataManager.SeedVideoHearing(true);
+            Context.Uri = _endpoints.GetSuitabilityAnswers("");
+            Context.HttpMethod = HttpMethod.Get;
         }
 
 
         [Then(@"suitable answers should be retrieved")]
         public async Task ThenSuitableAnswersShouldBeRetrieved()
         {
-            var json = await ApiTestContext.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
             model.Should().NotBeNull();
             model.PrevPageUrl.Should().NotBe(model.NextPageUrl);
@@ -47,16 +47,16 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a request to the second set of suitable answers")]
         public async Task GivenIHaveARequestToTheSecondSetOfSuitableAnswers()
         {
-            await ApiTestContext.TestDataManager.SeedVideoHearing(true);
-            await ApiTestContext.TestDataManager.SeedVideoHearing(true);
+            await Context.TestDataManager.SeedVideoHearing(true);
+            await Context.TestDataManager.SeedVideoHearing(true);
 
-            ApiTestContext.Uri = _endpoints.GetSuitabilityAnswerWithLimit("", 1);
-            ApiTestContext.HttpMethod = HttpMethod.Get;
-            var response = await SendGetRequestAsync(ApiTestContext);
+            Context.Uri = _endpoints.GetSuitabilityAnswerWithLimit("", 1);
+            Context.HttpMethod = HttpMethod.Get;
+            var response = await SendGetRequestAsync(Context);
             var json = await response.Content.ReadAsStringAsync();
             var bookings = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
 
-            ApiTestContext.Uri = _endpoints.GetSuitabilityAnswerWithLimit(bookings.NextCursor, 1);
+            Context.Uri = _endpoints.GetSuitabilityAnswerWithLimit(bookings.NextCursor, 1);
         }
     }
 }

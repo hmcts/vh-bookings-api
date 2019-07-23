@@ -4,9 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -14,6 +16,7 @@ namespace Bookings.API.Controllers
 {
     [Produces("application/json")]
     [Route("HealthCheck")]
+    [AllowAnonymous]
     [ApiController]
     public class HealthCheckController : Controller
     {
@@ -30,29 +33,33 @@ namespace Bookings.API.Controllers
         /// <returns>Error if fails, otherwise OK status</returns>
         [HttpGet("health")]
         [SwaggerOperation(OperationId = "CheckServiceHealth")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> CheckServiceHealth()
         {
+            var response = new BookingsApiHealthResponse();
             try
             {
                 var query = new GetHearingVenuesQuery();
                 var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query);
 
                 if (!hearingVenues.Any())
+                {
                     throw new DataException("Could not retrieve ref data during service health check");
+                }
+
+                response.DatabaseHealth.Successful = true;
             }
             catch (Exception ex)
             {
-                var data = new
-                {
-                    ex.Message,
-                    ex.Data
-                };
-                return StatusCode((int) HttpStatusCode.InternalServerError, data);
+                response.DatabaseHealth.Successful = false;
+                response.DatabaseHealth.ErrorMessage = ex.Message;
+                response.DatabaseHealth.Data = ex.Data;
             }
 
-            return Ok();
+            return !response.DatabaseHealth.Successful
+                ? StatusCode((int) HttpStatusCode.InternalServerError, response)
+                : Ok(response);
         }
     }
 }

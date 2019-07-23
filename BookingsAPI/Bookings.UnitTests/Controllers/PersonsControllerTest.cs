@@ -91,16 +91,26 @@ namespace Bookings.UnitTests.Controllers
         {
             var builder = new VideoHearingBuilder();
             var hearing = builder.Build();
-            if(addSuitability)
+            if (addSuitability)
             {
                 var participant = hearing.Participants.FirstOrDefault(p => p is Individual);
-                if(participant != null)
+                if (participant != null)
                 {
-                    var answer = new SuitabilityAnswer("AboutYou", "Yes", "");
-                    answer.UpdatedDate = DateTime.Now.AddDays(-2);
-                    participant.SuitabilityAnswers.Add(answer);
+                    var answer = new SuitabilityAnswer("AboutYou", "Yes", "")
+                    {
+                        UpdatedDate = DateTime.Now.AddDays(-2)
+                    };
+
+                    participant.Questionnaire = new Questionnaire
+                    {
+                        Participant = participant,
+                        ParticipantId = participant.Id
+                    };
+
+                    participant.Questionnaire.SuitabilityAnswers.Add(answer);
+                    participant.Questionnaire.UpdatedDate = DateTime.Now.AddDays(-2);
                 }
-                
+
             }
             return hearing;
         }

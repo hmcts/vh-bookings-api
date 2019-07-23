@@ -27,7 +27,8 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
             {
                 ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.Indented
+                Formatting = Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.Objects
             };
             SerializerSettings.Converters.Add(new StringEnumConverter(true));
         }

@@ -10,6 +10,5 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
         }
 
         public Guid HearingId { get; }
-        public IntegrationEventType EventType { get; } = IntegrationEventType.HearingCancelled;
     }
 }

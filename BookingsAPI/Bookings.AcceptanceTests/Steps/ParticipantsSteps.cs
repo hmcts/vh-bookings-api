@@ -13,62 +13,62 @@ namespace Bookings.AcceptanceTests.Steps
     [Binding]
     public sealed class ParticipantsSteps
     {
-        private readonly TestContext _acTestContext;
+        private readonly TestContext _context;
         private readonly ParticipantsEndpoints _endpoints = new ApiUriFactory().ParticipantsEndpoints;
         private Guid _removedParticipantId;
 
-        public ParticipantsSteps(TestContext acTestContext)
+        public ParticipantsSteps(TestContext context)
         {
-            _acTestContext = acTestContext;
+            _context = context;
         }
 
         [Given(@"I have a get participants in a hearing request with a valid hearing id")]
         public void GivenIHaveAGetAParticipantsInAHearingRequestWithAValidHearingId()
         {
-            _acTestContext.Request = _acTestContext.Get(_endpoints.GetAllParticipantsInHearing(_acTestContext.HearingId));
+            _context.Request = _context.Get(_endpoints.GetAllParticipantsInHearing(_context.HearingId));
         }
 
         [Given(@"I have an add participant to a hearing request with a valid hearing id")]
         public void GivenIHaveAnAddParticipantToAHearingHearingRequestWithAValidHearingId()
         {
             var addParticipantRequest = AddParticipantRequest.BuildRequest();
-            _acTestContext.Request = _acTestContext.Post(_endpoints.AddParticipantsToHearing(_acTestContext.HearingId), addParticipantRequest);
+            _context.Request = _context.Post(_endpoints.AddParticipantsToHearing(_context.HearingId), addParticipantRequest);
         }
 
         [Given(@"I have a get a single participant in a hearing request with a valid hearing id")]
         public void GivenIHaveAGetASingleParticipantInAHearingRequestWithAValidHearingId()
         {
-            _acTestContext.Request = _acTestContext.Get(_endpoints.GetParticipantInHearing(_acTestContext.HearingId, _acTestContext.Participants[0].Id));
+            _context.Request = _context.Get(_endpoints.GetParticipantInHearing(_context.HearingId, _context.Participants[0].Id));
         }
 
         [Given(@"I have a remove participant from a hearing with a valid hearing id")]
         public void GivenIHaveARemoveParticipantFromAHearingWithAValidHearingId()
         {
-            _removedParticipantId = _acTestContext.Participants[_acTestContext.Participants.Count - 1].Id;
-            _acTestContext.Request = _acTestContext.Delete(_endpoints.RemoveParticipantFromHearing(_acTestContext.HearingId, _removedParticipantId));
+            _removedParticipantId = _context.Participants[_context.Participants.Count - 1].Id;
+            _context.Request = _context.Delete(_endpoints.RemoveParticipantFromHearing(_context.HearingId, _removedParticipantId));
         }
 
         [Then(@"a list of hearing participants should be retrieved")]
         public void ThenAListOfHearingParticipantsShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_acTestContext.Json);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Json);
             CheckParticipantDetailsAreReturned(model);
         }        
 
         [Then(@"a hearing participant should be retrieved")]
         public void ThenAHearingParticipantShouldBeRetrieved()
         {
-            var model = new List<ParticipantResponse>{ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_acTestContext.Json)};
+            var model = new List<ParticipantResponse>{ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_context.Json)};
             CheckParticipantDetailsAreReturned(model);
         }
 
         [Then(@"the participant should be (.*)")]
         public void ThenTheParticipantShouldBeAddedOrRemoved(string state)
         {
-            _acTestContext.Request = _acTestContext.Get(_endpoints.GetAllParticipantsInHearing(_acTestContext.HearingId));
-            _acTestContext.Response = _acTestContext.Client().Execute(_acTestContext.Request);
-            _acTestContext.Json = _acTestContext.Response.Content;
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_acTestContext.Json);
+            _context.Request = _context.Get(_endpoints.GetAllParticipantsInHearing(_context.HearingId));
+            _context.Response = _context.Client().Execute(_context.Request);
+            _context.Json = _context.Response.Content;
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Json);
             if (state.Equals("added"))
             {
                 var exists = model.Exists(x => x.FirstName == "Added Participant");
@@ -104,15 +104,15 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have an update participant details request with a valid user (.*)")]
         public void GivenIHaveAnUpdateParticipantDetailsRequestWithAValidUserRole(string role)
         {
-            var participantId = _acTestContext.Participants.FirstOrDefault(x=>x.UserRoleName.Equals(role)).Id;
+            var participantId = _context.Participants.FirstOrDefault(x=>x.UserRoleName.Equals(role)).Id;
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
-            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateParticipantDetails(_acTestContext.HearingId,participantId), updateParticipantRequest);
+            _context.Request = _context.Put(_endpoints.UpdateParticipantDetails(_context.HearingId,participantId), updateParticipantRequest);
         }
         
         [Then(@"'(.*)' details should be updated")]
         public void ThenIndividualDetailsShouldBeUpdated(string participant)
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_acTestContext.Json);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_context.Json);
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
             model.Should().NotBeNull();
             model.Title.Should().Be(updateParticipantRequest.Title);
@@ -131,10 +131,10 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have an update participant suitability answers with a valid user '(.*)'")]
         public void GivenIHaveAnUpdateParticipantSuitabilityAnswersWithAValidUser(string role)
         {
-            var participantId = _acTestContext.Participants.FirstOrDefault(x => x.UserRoleName.Equals(role)).Id;
+            var participantId = _context.Participants.FirstOrDefault(x => x.UserRoleName.Equals(role)).Id;
             var updateParticipantRequest = UpdateSuitabilityAnswersRequest.BuildRequest();
-            _acTestContext.Answers = updateParticipantRequest;
-            _acTestContext.Request = _acTestContext.Put(_endpoints.UpdateSuitabilityAnswers(_acTestContext.HearingId, participantId), updateParticipantRequest);
+            _context.Answers = updateParticipantRequest;
+            _context.Request = _context.Put(_endpoints.UpdateSuitabilityAnswers(_context.HearingId, participantId), updateParticipantRequest);
         }
     }
 }
