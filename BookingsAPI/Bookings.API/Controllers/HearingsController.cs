@@ -168,10 +168,6 @@ namespace Bookings.API.Controllers
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
             var queriedVideoHearing =
                 await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-
-            // TODO: ONLY publish this event when Hearing is set for ready for video
-            var createVideoHearingEvent = new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing);
-            await _eventPublisher.PublishAsync(createVideoHearingEvent);
             
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
@@ -300,10 +296,22 @@ namespace Bookings.API.Controllers
                 var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
                 var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
                 await _commandHandler.Handle(command);
-                if (bookingStatus == BookingStatus.Cancelled)
+                switch (bookingStatus)
                 {
-                    await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                    case BookingStatus.Booked:
+                        break;
+                    case BookingStatus.Created:
+                        var queriedVideoHearing = await GetHearingToPublish(hearingId);
+                        var createVideoHearingEvent = new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing);
+                        await _eventPublisher.PublishAsync(createVideoHearingEvent);
+                        break;
+                    case BookingStatus.Cancelled:
+                        await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                        break;
+                    default:
+                        break;
                 }
+
                 return NoContent();
             }
             catch (HearingNotFoundException)
@@ -316,6 +324,13 @@ namespace Bookings.API.Controllers
                 return Conflict(ModelState);
             }
        }
+
+        private async Task<Hearing> GetHearingToPublish(Guid hearingId)
+        {
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            return videoHearing;
+        }
 
         private async Task<HearingVenue> GetVenue(string venueName)
         {

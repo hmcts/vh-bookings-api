@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bookings.Api.Contract.Requests.Enums
+﻿namespace Bookings.Api.Contract.Requests.Enums
 {
     /// <summary>
     ///     Booking status to update
