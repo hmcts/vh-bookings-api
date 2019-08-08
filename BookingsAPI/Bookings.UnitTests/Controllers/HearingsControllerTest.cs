@@ -116,7 +116,7 @@ namespace Bookings.UnitTests.Controllers
             var message = _sbQueueClient.ReadMessageFromQueue();
             var typedMessage = (HearingIsReadyForVideoIntegrationEvent)message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
-            typedMessage.Hearing.HearingId.Should().Be(hearingId);
+            typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
         }
 
         [Test]
@@ -143,7 +143,7 @@ namespace Bookings.UnitTests.Controllers
             var message = _sbQueueClient.ReadMessageFromQueue();
             var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
-            typedMessage.HearingId.Should().Be(hearingId);
+            typedMessage.HearingId.Should().Be(hearing.Id);
         }
 
         private VideoHearing GetHearing()
