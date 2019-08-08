@@ -9,6 +9,7 @@ using Bookings.Api.Contract.Responses;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
+using Bookings.Api.Contract.Requests.Enums;
 using UpdateBookingStatusRequest = Bookings.AcceptanceTests.Models.UpdateBookingStatusRequest;
 using UpdateHearingRequest = Bookings.AcceptanceTests.Models.UpdateHearingRequest;
 
@@ -190,8 +191,25 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a cancel hearing request with a valid hearing id")]
         public void GivenIHaveACancelHearingRequestWithAValidHearingId()
         {
-            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest();
+            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest(UpdateBookingStatus.Cancelled);
             _context.Request = _context.Patch(_endpoints.UpdateHearingDetails(_context.HearingId), updateHearingStatusRequest);
+        }
+
+        [Given(@"I have a created hearing request with a valid hearing id")]
+        public void GivenIHaveACreatedHearingRequestWithAValidHearingId()
+        {
+            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest(UpdateBookingStatus.Created);
+            _context.Request = _context.Patch(_endpoints.UpdateHearingDetails(_context.HearingId), updateHearingStatusRequest);
+        }
+
+        [Then(@"hearing should be created")]
+        public void ThenHearingShouldBeCreated()
+        {
+            _context.Request = _context.Get(_endpoints.GetHearingDetailsById(_context.HearingId));
+            _context.Response = _context.Client().Execute(_context.Request);
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
+            model.UpdatedBy.Should().NotBeNullOrEmpty();
+            model.Status.Should().Be(Domain.Enumerations.BookingStatus.Created);
         }
 
         [Then(@"hearing should be cancelled")]

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 
@@ -30,13 +31,13 @@ namespace Testing.Common.Builders.Domain
             _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
                 new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation, createdBy)).Build();
 
-            var claimantCaseRole = new CaseRole(1, "Claimant");
-            var defendantCaseRole = new CaseRole(2, "Defendant");
+            var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
+            var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };
             var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual")};
             var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor") { UserRole = new UserRole(1, "Solicitor") };
 
             var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
-            var judgeCaseRole = new CaseRole(5, "Judge");
+            var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
             var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
 
             var person1 = new PersonBuilder(true).Build();
