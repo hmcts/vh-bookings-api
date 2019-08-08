@@ -25,7 +25,6 @@ Scenario: Create a new hearing
 	When I send the request to the endpoint
 	Then the response should have the status Created and success status True
 	And hearing details should be retrieved
-	And the service bus should have been queued with a new bookings message
 
 Scenario: Hearing not created with an invalid request
 	Given I have an invalid book a new hearing request
@@ -120,7 +119,7 @@ Scenario: Hearing not deleted with a nonexistent hearing id
 	Then the response should have the status NotFound and success status False
 
 Scenario: Hearing not created with an invalid address
-    Given I have a book a new hearing request with an invalid address
+	Given I have a book a new hearing request with an invalid address
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 	And the error response message should contain 'HouseNumber is required'
@@ -164,7 +163,7 @@ Scenario: Cannot get a paged list of booked hearings with invalid case type
 	Given I have a request to the get booked hearings endpoint filtered on an invalid case type
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-	
+
 Scenario: Hearing status does not change for a nonexistent hearing id
 	Given I have a nonexistent hearing cancellation request
 	When I send the request to the endpoint
@@ -186,7 +185,15 @@ Scenario: Hearing status changes to cancelled for a given hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And hearing status should be cancelled
-	
+
+@VIH-4121
+Scenario: Hearing status changes to created for a given hearing id
+	Given I have a valid hearing confirmation request
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+	And hearing status should be created
+	And the service bus should have been queued with a new bookings message
+
 Scenario: Hearing status cannot change for an invalid state transition for given hearing id
 	Given I have a valid hearing request
 	And set the booking status to Cancelled

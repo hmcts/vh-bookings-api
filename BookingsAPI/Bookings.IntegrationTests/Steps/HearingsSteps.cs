@@ -309,6 +309,16 @@ namespace Bookings.IntegrationTests.Steps
             UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
         }
 
+        [Given(@"I have a valid hearing confirmation request")]
+        public async Task GivenIHaveAValidHearingConfirmationRequest()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.NewHearingId = seededHearing.Id;
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _hearingId = seededHearing.Id;
+            UpdateTheHearingStatus(UpdateBookingStatus.Created);
+        }
+
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
@@ -329,7 +339,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 AssertHearingDetailsResponse(hearingDetailsResponse);
             }
-        }      
+        }
 
         [Then(@"hearing details should be updated")]
         public async Task ThenHearingDetailsShouldBeUpdated()
@@ -358,7 +368,7 @@ namespace Bookings.IntegrationTests.Steps
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             }
             hearingFromDb.Should().BeNull();
-        }        
+        }
 
         [Then(@"the response should contain a list of booked hearings")]
         public async Task ThenTheResponseShouldContainAListOfBookedHearings()
@@ -371,21 +381,21 @@ namespace Bookings.IntegrationTests.Steps
             aHearing.HearingNumber.Should().NotBeNullOrEmpty();
             aHearing.HearingName.Should().NotBeNullOrEmpty();
         }
-       
+
         [Then(@"the response should contain a list of one booked hearing")]
         public async Task ThenTheResponseShouldContainAListOfOneBookedHearing()
         {
             var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
             model.Hearings.Count.Should().Be(1);
-        }           
-        
+        }
+
         [Then(@"hearing status should be (.*)")]
         public void ThenHearingDetailsShouldBeX(UpdateBookingStatus bookingStatus)
         {
             ThenHearingBookingStatusIs(GetMappedBookingStatus(bookingStatus));
         }
-        
+
         [Then(@"hearing status should be unchanged")]
         public void ThenHearingDetailsShouldBeUnchanged()
         {
@@ -428,16 +438,16 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the service bus should have been queued with a new bookings message")]
         public async Task ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
         {
-            var serviceBusQueueClient = (ServiceBusQueueClientFake) Context.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
+            var serviceBusQueueClient = (ServiceBusQueueClientFake)Context.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
             var eventMessage = serviceBusQueueClient.ReadMessageFromQueue();
             eventMessage.Should().NotBeNull();
             eventMessage.Timestamp.Should().NotBeBefore(DateTime.Today);
             eventMessage.Timestamp.Should().NotBeAfter(DateTime.UtcNow);
             eventMessage.Id.Should().NotBeEmpty();
-            
+
             var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
-            
+
             var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
             hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(response.Id);
             hearingReadyForVideoEvent.Hearing.CaseName.Should().Be(response.Cases[0].Name);
@@ -549,7 +559,7 @@ namespace Bookings.IntegrationTests.Steps
 
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Solicitor";
-            
+
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
@@ -609,7 +619,8 @@ namespace Bookings.IntegrationTests.Steps
 
         private void UpdateTheHearingStatus(UpdateBookingStatus? status, string updatedBy = "testuser")
         {
-            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest {
+            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest
+            {
                 Status = status.GetValueOrDefault(),
                 UpdatedBy = updatedBy
             });
