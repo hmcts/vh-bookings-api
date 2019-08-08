@@ -17,6 +17,7 @@ using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Bookings.Api.Contract.Requests;
 using System;
 using Testing.Common.Builders.Domain;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace Bookings.UnitTests.Controllers
 {
@@ -26,13 +27,15 @@ namespace Bookings.UnitTests.Controllers
         private Mock<IQueryHandler> _queryHandlerMock;
         private Mock<ICommandHandler> _commandHandlerMock;
         private IEventPublisher _eventPublisher;
+        private ServiceBusQueueClientFake _sbQueueClient;
 
         [SetUp]
         public void Setup()
         {
+            _sbQueueClient = new ServiceBusQueueClientFake();
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
-            _eventPublisher = new EventPublisher(new ServiceBusQueueClientFake());
+            _eventPublisher = new EventPublisher(_sbQueueClient);
             _controller = new HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object,
                 _eventPublisher);
         }
@@ -109,6 +112,11 @@ namespace Bookings.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+
+            var message = _sbQueueClient.ReadMessageFromQueue();
+            var typedMessage = (HearingIsReadyForVideoIntegrationEvent)message.IntegrationEvent;
+            typedMessage.Should().NotBeNull();
+            typedMessage.Hearing.HearingId.Should().Be(hearingId);
         }
 
         [Test]
@@ -126,12 +134,16 @@ namespace Bookings.UnitTests.Controllers
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
              .ReturnsAsync(hearing);
 
-
             var result = await _controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+
+            var message = _sbQueueClient.ReadMessageFromQueue();
+            var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
+            typedMessage.Should().NotBeNull();
+            typedMessage.HearingId.Should().Be(hearingId);
         }
 
         private VideoHearing GetHearing()
