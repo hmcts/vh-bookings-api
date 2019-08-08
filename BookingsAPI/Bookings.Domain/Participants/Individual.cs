@@ -36,13 +36,21 @@ namespace Bookings.Domain.Participants
         public override void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
         {
             base.UpdateParticipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
-            var address = Person.Address;
-            address.HouseNumber = houseNumber;
-            address.Street = street;
-            address.City = city;
-            address.County = county;
-            address.Postcode = postcode;
-            Person.UpdateAddress(address);
+            if (Person.Address != null)
+            {
+                var address = Person.Address;
+                address.HouseNumber = houseNumber;
+                address.Street = street;
+                address.City = city;
+                address.County = county;
+                address.Postcode = postcode;
+                Person.UpdateAddress(address);
+            }
+            else
+            {
+                var newAddress = new Address(houseNumber, street, postcode, city, county);
+                Person.UpdateAddress(newAddress);
+            }
         }
     }
 }
