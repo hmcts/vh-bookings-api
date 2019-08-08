@@ -14,7 +14,9 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
-
+using Bookings.Api.Contract.Requests;
+using System;
+using Testing.Common.Builders.Domain;
 
 namespace Bookings.UnitTests.Controllers
 {
@@ -46,7 +48,7 @@ namespace Bookings.UnitTests.Controllers
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var objectResult = (ObjectResult) result.Result;
+            var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
@@ -64,10 +66,10 @@ namespace Bookings.UnitTests.Controllers
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var objectResult = (ObjectResult) result.Result;
+            var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
-        
+
         [Test]
         public async Task should_return_next_and_previous_page_urls()
         {
@@ -82,10 +84,67 @@ namespace Bookings.UnitTests.Controllers
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var response = (BookingsResponse)((ObjectResult) result.Result).Value;
+            var response = (BookingsResponse)((ObjectResult)result.Result).Value;
             response.PrevPageUrl.Should().Be("hearings/types?types=1&cursor=0&limit=2");
             response.NextPageUrl.Should().Be("hearings/types?types=1&cursor=next-cursor&limit=2");
+        }
 
+        [Test]
+        public async Task should_change_hearing_status_to_created_and_send_event_notification()
+        {
+            var request = new UpdateBookingStatusRequest
+            {
+                UpdatedBy = "email@toupdate.com",
+                Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Created
+            };
+            var hearingId = Guid.NewGuid();
+            var hearing = GetHearing();
+
+            _queryHandlerMock
+             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+             .ReturnsAsync(hearing);
+
+            var result = await _controller.UpdateBookingStatus(hearingId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+        }
+
+        [Test]
+        public async Task should_change_hearing_status_to_cancelled()
+        {
+            var request = new UpdateBookingStatusRequest
+            {
+                UpdatedBy = "email@toupdate.com",
+                Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled
+            };
+            var hearingId = Guid.NewGuid();
+            var hearing = GetHearing();
+
+            _queryHandlerMock
+             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+             .ReturnsAsync(hearing);
+
+
+            var result = await _controller.UpdateBookingStatus(hearingId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+        }
+
+        private VideoHearing GetHearing()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("123", "Case name", true);
+            foreach (var participant in hearing.Participants)
+            {
+                participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+                participant.CaseRole = new CaseRole(1, "Name");
+            }
+
+            return hearing;
         }
     }
 }
