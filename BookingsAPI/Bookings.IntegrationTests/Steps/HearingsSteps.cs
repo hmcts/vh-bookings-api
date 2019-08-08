@@ -309,16 +309,6 @@ namespace Bookings.IntegrationTests.Steps
             UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
         }
 
-        [Given(@"I have a valid hearing confirmation request")]
-        public async Task GivenIHaveAValidHearingConfirmationRequest()
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _hearingId = seededHearing.Id;
-            UpdateTheHearingStatus(UpdateBookingStatus.Created);
-        }
-
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
