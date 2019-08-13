@@ -18,14 +18,12 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.CaseTypeId).IsRequired();
             builder.Property(x => x.HearingTypeId).IsRequired();
             builder.Property(x => x.HearingVenueName);
-
             builder.Property(x => x.ScheduledDateTime);
             builder.Property(x => x.ScheduledDuration);
             builder.Property(x => x.CreatedDate);
             builder.Property(x => x.UpdatedDate);
-
-
             builder.Property(x => x.Status).HasColumnName("HearingStatusId");
+            builder.Property(x => x.QuestionnaireNotRequired);
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
             builder.HasMany<Participant>("Participants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
