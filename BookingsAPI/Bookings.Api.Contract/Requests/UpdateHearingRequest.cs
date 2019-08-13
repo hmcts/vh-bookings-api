@@ -39,5 +39,10 @@ namespace Bookings.Api.Contract.Requests
         ///     User updated the hearing record
         /// </summary>
         public string UpdatedBy { get; set; }
+
+        /// <summary>
+        /// QuestionnaireNotRequired
+        /// </summary>
+        public bool QuestionnaireNotRequired { get; set; }
     }
 }

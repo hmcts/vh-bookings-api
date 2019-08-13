@@ -399,15 +399,6 @@ namespace Bookings.IntegrationTests.Steps
             json.Should().BeEquivalentTo("[]");
         }
 
-        [Given(@"I have a hearing with suitability answers for a given hearing request with a (.*) hearing id")]
-        [Given(@"I have a hearing with suitability answers a given hearing request with an (.*) hearing id")]
-        public async Task GivenIHaveAHearingWithSuitabilityAnswersForGivenHearingRequest(Scenario scenario)
-        {
-            await SetHearingIdForGivenScenario(scenario);
-            Context.Uri = _endpoints.GetSuitabilityAnswers(_hearingId);
-            Context.HttpMethod = HttpMethod.Get;
-        }
-
         [Then(@"hearing suitability answers should be retrieved")]
         public async Task ThenHearingSuitabilityAnswersShouldBeRetrieved()
         {

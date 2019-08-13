@@ -59,7 +59,6 @@ namespace Testing.Common.Builders.Api
 
         public string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
         public string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
-        public string GetSuitabilityAnswers(Guid hearingId) => $"{ApiRoot}/{hearingId}/suitability-answers";
     }
 
     public class ParticipantsEndpoints

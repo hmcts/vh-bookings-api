@@ -60,5 +60,10 @@ namespace Bookings.Api.Contract.Requests
         ///     The VH admin username that created the hearing
         /// </summary>
         public string CreatedBy { get; set; }
+
+        /// <summary>
+        /// QuestionnaireNotRequired
+        /// </summary>
+        public bool QuestionnaireNotRequired { get; set; }
     }
 }

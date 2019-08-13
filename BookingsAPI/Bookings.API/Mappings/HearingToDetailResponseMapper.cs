@@ -35,8 +35,10 @@ namespace Bookings.API.Mappings
                 CreatedDate = videoHearing.CreatedDate,
                 UpdatedBy = videoHearing.UpdatedBy,
                 UpdatedDate = videoHearing.UpdatedDate,
-                Status = videoHearing.Status
+                Status = videoHearing.Status,
+                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired
             };
+
             return response;
         }
     }

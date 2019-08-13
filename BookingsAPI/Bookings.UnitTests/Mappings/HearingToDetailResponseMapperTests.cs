@@ -37,9 +37,11 @@ namespace Bookings.UnitTests.Mappings
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
+            const bool questionnaireNotRequired = false;
 
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-               new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, otherInformation, createdBy)).Build();
+               new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, 
+                   otherInformation, createdBy, questionnaireNotRequired)).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };

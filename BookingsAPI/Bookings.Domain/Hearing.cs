@@ -21,7 +21,9 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string createdBy)
+        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, 
+            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, 
+            string otherInformation, string createdBy, bool questionnaireNotRequired)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -36,6 +38,7 @@ namespace Bookings.Domain
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
             CreatedBy = createdBy;
+            QuestionnaireNotRequired = questionnaireNotRequired;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -57,6 +60,7 @@ namespace Bookings.Domain
         protected virtual IList<HearingCase> HearingCases { get; set; } = new List<HearingCase>();
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
+        public bool QuestionnaireNotRequired { get; set; }
 
         public void CancelHearing()
         {
@@ -178,7 +182,9 @@ namespace Bookings.Domain
             existingCase.Name = @case.Name;
         }
 
-        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy, List<Case> cases)
+        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, 
+            int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy, 
+            List<Case> cases, bool questionnaireNotRequired)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -215,6 +221,7 @@ namespace Bookings.Domain
             OtherInformation = otherInformation;
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
+            QuestionnaireNotRequired = questionnaireNotRequired;
         }
 
         private bool DoesParticipantExist(string username)

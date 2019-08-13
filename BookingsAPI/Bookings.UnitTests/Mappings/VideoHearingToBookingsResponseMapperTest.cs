@@ -37,6 +37,8 @@ namespace Bookings.UnitTests.Mappings
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
             var caseToUpdate = new Case("UpdateCaseNumber", "UpdateCasename");
             var updatedCases = new List<Case>();
+            const bool questionnaireNotRequired = false;
+
             updatedCases.Add(caseToUpdate);
             mockedHearing.UpdateHearingDetails(
                 mockedHearing.HearingVenue, 
@@ -45,7 +47,8 @@ namespace Bookings.UnitTests.Mappings
                 mockedHearing.HearingRoomName,
                 mockedHearing.OtherInformation,
                 "admin@hearings.reform.hmcts.net",
-                updatedCases
+                updatedCases,
+                questionnaireNotRequired
             );
             return mockedHearing;
         }
