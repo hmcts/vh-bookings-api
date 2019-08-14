@@ -65,6 +65,7 @@ namespace Bookings.IntegrationTests.Steps
         public void GivenIHaveAValidBookANewHearingRequest(Scenario scenario)
         {
             var request = BuildRequest();
+
             if (scenario == Scenario.Invalid)
             {
                 request.Cases = new List<CaseRequest>();
@@ -75,10 +76,12 @@ namespace Bookings.IntegrationTests.Steps
                 request.HearingVenueName = string.Empty;
                 request.ScheduledDateTime = DateTime.Today.AddDays(-5);
             }
+
             if (scenario == Scenario.Valid)
             {
                 request.ScheduledDateTime = DateTime.Today.AddDays(1);
             }
+
             CreateTheNewHearingRequest(request);
         }
 
@@ -148,6 +151,7 @@ namespace Bookings.IntegrationTests.Steps
                 Context.UpdateHearingRequest.HearingVenueName = string.Empty;
                 Context.UpdateHearingRequest.ScheduledDuration = 0;
                 Context.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
+                Context.UpdateHearingRequest.QuestionnaireNotRequired = true;
             }
             UpdateTheHearingRequest();
         }
@@ -342,6 +346,7 @@ namespace Bookings.IntegrationTests.Steps
             model.ScheduledDateTime.Should().Be(Context.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
             model.HearingRoomName.Should().Be(Context.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(Context.UpdateHearingRequest.OtherInformation);
+            model.QuestionnaireNotRequired.Should().Be(Context.UpdateHearingRequest.QuestionnaireNotRequired);
 
             var updatedCases = model.Cases;
             var caseRequest = Context.UpdateHearingRequest.Cases.FirstOrDefault();
@@ -504,6 +509,7 @@ namespace Bookings.IntegrationTests.Steps
             model.HearingRoomName.Should().NotBeNullOrEmpty();
             model.OtherInformation.Should().NotBeNullOrEmpty();
             model.CreatedBy.Should().NotBeNullOrEmpty();
+            model.QuestionnaireNotRequired.Should().BeFalse();
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))

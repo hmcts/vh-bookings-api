@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Bookings.UnitTests.Utilities;
 using Testing.Common.Builders.Domain;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Bookings.UnitTests.Mappings
 {
@@ -19,9 +20,9 @@ namespace Bookings.UnitTests.Mappings
         {
             var hearings = new[]
             {
-                MockHearingAtDate(DateTime.Now.AddDays(1)),
-                MockHearingAtDate(DateTime.Now.AddDays(2)),
-                MockHearingAtDate(DateTime.Now.AddDays(3))
+                MockHearingAtDate(DateTime.Now.AddDays(1), true),
+                MockHearingAtDate(DateTime.Now.AddDays(2), false),
+                MockHearingAtDate(DateTime.Now.AddDays(3), false)
             };
             var mappedHearings = _mapper.MapHearingResponses(hearings);
             mappedHearings.Count.Should().Be(3);
@@ -29,15 +30,15 @@ namespace Bookings.UnitTests.Mappings
             var firstGroup = mappedHearings[0]; 
             firstGroup.ScheduledDate.Should().Be(hearings[0].ScheduledDateTime.Date);
             firstGroup.Hearings.Count.Should().Be(1);
+            firstGroup.Hearings.First().QuestionnaireNotRequired.Should().Be(true);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime)
+        private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired)
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
             var caseToUpdate = new Case("UpdateCaseNumber", "UpdateCasename");
             var updatedCases = new List<Case>();
-            const bool questionnaireNotRequired = false;
 
             updatedCases.Add(caseToUpdate);
             mockedHearing.UpdateHearingDetails(

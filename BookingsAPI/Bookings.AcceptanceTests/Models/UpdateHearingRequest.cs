@@ -8,13 +8,11 @@ namespace Bookings.AcceptanceTests.Models
     {
         public static Api.Contract.Requests.UpdateHearingRequest BuildRequest()
         {
-            var caseList = new List<CaseRequest>();
-            caseList.Add(new CaseRequest()
+            var caseList = new List<CaseRequest>
             {
-                Name = "CaseName",
-                Number = "CaseNumber"
-            });
-            
+                new CaseRequest {Name = "CaseName", Number = "CaseNumber"}
+            };
+
             return new Api.Contract.Requests.UpdateHearingRequest
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
@@ -23,7 +21,8 @@ namespace Bookings.AcceptanceTests.Models
                 HearingRoomName = "HearingRoomName12345",
                 OtherInformation = "OtherInformation12345",
                 UpdatedBy = "admin@hearings.reform.hmcts.net",
-                Cases = caseList
+                Cases = caseList,
+                QuestionnaireNotRequired = true
             };
         }
     }

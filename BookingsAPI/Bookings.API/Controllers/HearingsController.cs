@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
@@ -23,6 +18,11 @@ using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 
 namespace Bookings.API.Controllers
@@ -171,7 +171,7 @@ namespace Bookings.API.Controllers
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
 
             var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-            
+
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
@@ -222,8 +222,8 @@ namespace Bookings.API.Controllers
 
             var cases = MapCase(request.Cases);
 
-            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime, 
-                request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation, 
+            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
+                request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.QuestionnaireNotRequired);
 
             await _commandHandler.Handle(command);
@@ -265,7 +265,7 @@ namespace Bookings.API.Controllers
             var command = new RemoveHearingCommand(hearingId);
 
             await _commandHandler.Handle(command);
-            
+
             await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
 
             return NoContent();
@@ -280,8 +280,8 @@ namespace Bookings.API.Controllers
         [HttpPatch("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateBookingStatus")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.Conflict)]
         public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
         {
@@ -406,7 +406,10 @@ namespace Bookings.API.Controllers
 
         private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
         {
-            if (!filterCaseTypes.Any()) return true;
+            if (!filterCaseTypes.Any())
+            {
+                return true;
+            }
 
             var query = new GetAllCaseTypesQuery();
             var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
