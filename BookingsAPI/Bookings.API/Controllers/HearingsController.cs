@@ -231,7 +231,11 @@ namespace Bookings.API.Controllers
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
 
-            await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(videoHearing));
+            if (videoHearing.Status == BookingStatus.Created)
+            {
+                // publish this event when Hearing is set for ready for video
+                await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(videoHearing));
+            }
 
             return Ok(response);
         }
@@ -266,8 +270,11 @@ namespace Bookings.API.Controllers
 
             await _commandHandler.Handle(command);
 
-            await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
-
+            if (videoHearing.Status == BookingStatus.Created)
+            {
+                // publish the event only for confirmed(created) hearing  
+                await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+            }
             return NoContent();
         }
 

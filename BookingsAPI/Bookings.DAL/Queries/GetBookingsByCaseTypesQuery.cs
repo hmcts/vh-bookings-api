@@ -61,7 +61,7 @@ namespace Bookings.DAL.Queries
             if (query.CaseTypes.Any())
             {
                 hearings = hearings.Where(x =>
-                    x.ScheduledDateTime > DateTime.Now && query.CaseTypes.Contains(x.CaseTypeId));
+                    x.ScheduledDateTime > DateTime.UtcNow && query.CaseTypes.Contains(x.CaseTypeId));
             }
 
             hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id.ToString());
