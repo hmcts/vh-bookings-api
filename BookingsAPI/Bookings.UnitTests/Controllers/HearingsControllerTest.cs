@@ -185,6 +185,29 @@ namespace Bookings.UnitTests.Controllers
             typedMessage.Hearing.CaseName.Should().Be("name");
         }
 
+        [Test]
+        public async Task should_remove_hearing_with_status_created_and_send_event_to_video()
+        {
+            var hearingId = Guid.NewGuid();
+            var hearing = GetHearing();
+            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
+
+            _queryHandlerMock
+            .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+            .ReturnsAsync(hearing);
+
+            var result = await _controller.RemoveHearing(hearingId);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+
+            var message = _sbQueueClient.ReadMessageFromQueue();
+            var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
+            typedMessage.Should().NotBeNull();
+            typedMessage.HearingId.Should().Be(hearingId);
+        }
+
         private VideoHearing GetHearing()
         {
             var hearing = new VideoHearingBuilder().Build();

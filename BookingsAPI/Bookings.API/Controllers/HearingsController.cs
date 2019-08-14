@@ -262,9 +262,12 @@ namespace Bookings.API.Controllers
             var command =
                 new RemoveHearingCommand(hearingId);
             await _commandHandler.Handle(command);
-            
-            await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
 
+            if (videoHearing.Status == BookingStatus.Created)
+            {
+                // publish the event only for confirmed(created) hearing  
+                await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+            }
             return NoContent();
         }
 
