@@ -47,7 +47,7 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Response = _context.Client().Execute(_context.Request);
             if (_context.Response.Content != null)
                 _context.Json = _context.Response.Content;
-       }
+        }
 
         [Then(@"the response should have the status (.*) and success status (.*)")]
         public void ThenTheResponseShouldHaveTheStatusAndSuccessStatus(HttpStatusCode httpStatusCode, bool isSuccess)

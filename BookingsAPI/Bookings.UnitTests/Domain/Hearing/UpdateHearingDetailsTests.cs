@@ -25,11 +25,12 @@ namespace Bookings.UnitTests.Domain.Hearing
             var updatedBy = "testuser";
             var caseName = "CaseName Update";
             var caseNumber = "CaseNumber Update";
-            
+            const bool questionnaireNotRequired = false;
+
             var casesToUpdate = new List<Case>();
             casesToUpdate.Add(new Case(caseNumber, caseName));
             hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                hearingRoomName, otherInformation, updatedBy, casesToUpdate);
+                hearingRoomName, otherInformation, updatedBy, casesToUpdate, questionnaireNotRequired);
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
 
@@ -49,9 +50,10 @@ namespace Bookings.UnitTests.Domain.Hearing
             var newDuration = -10;
             var updatedBy = "testuser";
             var cases = new List<Case>();
+            const bool questionnaireNotRequired = false;
 
             Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                string.Empty, string.Empty, updatedBy, cases);
+                string.Empty, string.Empty, updatedBy, cases, questionnaireNotRequired);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")

@@ -43,13 +43,14 @@ namespace Bookings.IntegrationTests.Database.Commands
             var newOtherInformation = "OtherInformation02 edit";
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
-
             var caseName = "CaseName Update";
             var caseNumber = "CaseNumber Update";
             casesToUpdate.Add(new Case(caseNumber, caseName));
+            const bool questionnaireNotRequired = false;
 
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, 
-                        newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate));
+                        newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate,
+                        questionnaireNotRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 

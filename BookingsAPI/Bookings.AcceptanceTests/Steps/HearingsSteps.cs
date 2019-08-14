@@ -107,6 +107,8 @@ namespace Bookings.AcceptanceTests.Steps
             model.HearingVenueName.Should().Be("Manchester Civil and Family Justice Centre");
             model.OtherInformation.Should().Be("OtherInformation12345");
             model.HearingRoomName.Should().Be("HearingRoomName12345");
+            model.QuestionnaireNotRequired.Should().Be(true);
+
             foreach (var participant in model.Participants)
             {
                 participant.CaseRoleName.Should().NotBeNullOrEmpty();

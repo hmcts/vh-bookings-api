@@ -37,9 +37,8 @@ namespace Bookings.DAL.Queries
         }
     }
 
-    public class
-        GetBookingsByCaseTypesQueryHandler : IQueryHandler<GetBookingsByCaseTypesQuery,
-            CursorPagedResult<VideoHearing, string>>
+    public class GetBookingsByCaseTypesQueryHandler : 
+        IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
 

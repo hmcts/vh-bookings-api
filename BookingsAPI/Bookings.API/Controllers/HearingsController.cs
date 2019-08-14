@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
@@ -23,6 +18,11 @@ using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 
 namespace Bookings.API.Controllers
@@ -153,9 +153,12 @@ namespace Bookings.API.Controllers
             var mapper = new ParticipantRequestToNewParticipantMapper();
             var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType))
                 .ToList();
+
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases)
+                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
+                request.QuestionnaireNotRequired)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,
@@ -166,9 +169,9 @@ namespace Bookings.API.Controllers
             var videoHearingId = createVideoHearingCommand.NewHearingId;
 
             var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
-            var queriedVideoHearing =
-                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-            
+
+            var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
@@ -210,15 +213,19 @@ namespace Bookings.API.Controllers
             }
 
             var venue = await GetVenue(request.HearingVenueName);
+
             if (venue == null)
             {
                 ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
                 return BadRequest(ModelState);
             }
+
             var cases = MapCase(request.Cases);
-            var command =
-                new UpdateHearingCommand(hearingId, request.ScheduledDateTime, request.ScheduledDuration, venue,
-                    request.HearingRoomName, request.OtherInformation, request.UpdatedBy, cases);
+
+            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
+                request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
+                request.UpdatedBy, cases, request.QuestionnaireNotRequired);
+
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
@@ -259,8 +266,8 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            var command =
-                new RemoveHearingCommand(hearingId);
+            var command = new RemoveHearingCommand(hearingId);
+
             await _commandHandler.Handle(command);
 
             if (videoHearing.Status == BookingStatus.Created)
@@ -280,8 +287,8 @@ namespace Bookings.API.Controllers
         [HttpPatch("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateBookingStatus")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.Conflict)]
         public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
         {
@@ -330,21 +337,6 @@ namespace Bookings.API.Controllers
                 exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
                 return Conflict(ModelState);
             }
-       }
-
-        private async Task<Hearing> GetHearingToPublish(Guid hearingId)
-        {
-            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-            return videoHearing;
-        }
-
-        private async Task<HearingVenue> GetVenue(string venueName)
-        {
-            var getHearingVenuesQuery = new GetHearingVenuesQuery();
-            var hearingVenues =
-                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
-            return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
 
         /// <summary>
@@ -389,38 +381,19 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Gets all suitability answers for a given hearing
-        /// </summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>>A list of suitability answers</returns>
-        [HttpGet("{hearingId}/suitability-answers", Name = "GetSuitabilityAnswers")]
-        [SwaggerOperation(OperationId = "GetSuitabilityAnswers")]
-        [ProducesResponseType(typeof(List<SuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public IActionResult GetSuitabilityAnswers(Guid hearingId)
+        private async Task<Hearing> GetHearingToPublish(Guid hearingId)
         {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-            //Stub the values here for the test to pass
-            var hearingSuitabilityAnswers = new List<HearingSuitabilityAnswerResponse>();
-            var hearingSuitabilityAnswer = new HearingSuitabilityAnswerResponse
-            {
-                ParticipantId = Guid.NewGuid(),
-                CreatedAt = DateTime.UtcNow,
-                ScheduledAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Answers = new List<SuitabilityAnswerResponse>()
-                {
-                    { new SuitabilityAnswerResponse { Key = "Key", Answer = "Answer", ExtendedAnswer = "ExtendedAnswer" } }
-                }
-            };
-            hearingSuitabilityAnswers.Add(hearingSuitabilityAnswer);
-            return Ok(hearingSuitabilityAnswers);
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            return videoHearing;
+        }
+
+        private async Task<HearingVenue> GetVenue(string venueName)
+        {
+            var getHearingVenuesQuery = new GetHearingVenuesQuery();
+            var hearingVenues =
+                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
+            return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
 
         private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
@@ -440,7 +413,10 @@ namespace Bookings.API.Controllers
 
         private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
         {
-            if (!filterCaseTypes.Any()) return true;
+            if (!filterCaseTypes.Any())
+            {
+                return true;
+            }
 
             var query = new GetAllCaseTypesQuery();
             var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))

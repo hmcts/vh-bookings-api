@@ -11,7 +11,9 @@ namespace Bookings.API.Mappings
         public List<BookingsByDateResponse> MapHearingResponses(IEnumerable<VideoHearing> videoHearings)
         {
             var mapped = videoHearings.Select(MapHearingResponse);
-            return mapped.GroupBy(hearing => hearing.ScheduledDateTime.Date)
+
+            return mapped
+                .GroupBy(hearing => hearing.ScheduledDateTime.Date)
                 .Select(group => new BookingsByDateResponse
                 {
                     Hearings = group.ToList(),
@@ -48,8 +50,10 @@ namespace Bookings.API.Mappings
                 LastEditDate = videoHearing.UpdatedDate,
                 LastEditBy = videoHearing.UpdatedBy,
                 JudgeName = judgeName,
-                Status = videoHearing.Status
+                Status = videoHearing.Status,
+                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired
             };
+
             return response;
         }
     }
