@@ -18,9 +18,11 @@ namespace Bookings.DAL.Commands
         public string OtherInformation { get; set; }
         public string UpdatedBy { get; set; }
         public List<Case> Cases { get; set; }
+        public bool QuestionnaireNotRequired { get; set; }
 
         public UpdateHearingCommand(Guid hearingId, DateTime scheduledDateTime, int scheduledDuration,
-            HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string updatedBy, List<Case> cases)
+            HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string updatedBy, 
+            List<Case> cases, bool questionnaireNotRequired)
         {
             HearingId = hearingId;
             ScheduledDateTime = scheduledDateTime;
@@ -30,6 +32,7 @@ namespace Bookings.DAL.Commands
             OtherInformation = otherInformation;
             UpdatedBy = updatedBy;
             Cases = cases;
+            QuestionnaireNotRequired = questionnaireNotRequired;
         }
     }
 
@@ -47,11 +50,16 @@ namespace Bookings.DAL.Commands
             var hearing = await _context.VideoHearings
                 .Include("HearingCases.Case")
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
+
             if (hearing == null)
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-            hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime, command.ScheduledDuration, command.HearingRoomName, command.OtherInformation, command.UpdatedBy, command.Cases);
+
+            hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime, 
+                command.ScheduledDuration, command.HearingRoomName, command.OtherInformation, 
+                command.UpdatedBy, command.Cases, command.QuestionnaireNotRequired);
+
             await _context.SaveChangesAsync();
         }
     }

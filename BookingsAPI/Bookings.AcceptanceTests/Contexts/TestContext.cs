@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Bookings.Api.Contract.Requests;
+﻿using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
-using FizzWare.NBuilder;
 using RestSharp;
+using System;
+using System.Collections.Generic;
 using Testing.Common.Builders.Api;
 
 namespace Bookings.AcceptanceTests.Contexts

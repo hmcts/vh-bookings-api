@@ -77,9 +77,11 @@ namespace Bookings.IntegrationTests.Database.Commands
             var hearingRoomName = "Room01";
             var otherInformation = "OtherInformation01";
             var createdBy = "User01";
+            const bool questionnaireNotRequired = false;
+
             var command =
-                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, participants,
-                    cases)
+                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, 
+                    participants, cases, questionnaireNotRequired)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,

@@ -10,7 +10,7 @@ namespace Bookings.DAL.Commands
     public class CreateVideoHearingCommand : ICommand
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases)
+            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, bool questionnaireNotRequired)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -19,6 +19,7 @@ namespace Bookings.DAL.Commands
             Venue = venue;
             Participants = participants;
             Cases = cases;
+            QuestionnaireNotRequired = questionnaireNotRequired;
         }
 
         public Guid NewHearingId { get; set; }
@@ -32,6 +33,7 @@ namespace Bookings.DAL.Commands
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public string CreatedBy { get; set; }
+        public bool QuestionnaireNotRequired { get; set; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -48,11 +50,17 @@ namespace Bookings.DAL.Commands
         public async Task Handle(CreateVideoHearingCommand command)
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
-                command.ScheduledDuration, command.Venue, command.HearingRoomName, command.OtherInformation, command.CreatedBy);
+                command.ScheduledDuration, command.Venue, command.HearingRoomName, 
+                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired);
+
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+
             videoHearing.AddCases(command.Cases);
+
             _context.VideoHearings.Add(videoHearing);
+
             await _context.SaveChangesAsync();
+
             command.NewHearingId = videoHearing.Id;
         }
     }
