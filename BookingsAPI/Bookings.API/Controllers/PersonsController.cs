@@ -130,7 +130,7 @@ namespace Bookings.API.Controllers
             return Ok(personSuitabilityAnswers);
         }
 
-        private PersonSuitabilityAnswerResponse BuildResponse(VideoHearing hearing, string username)
+        private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)
         {
             var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
             var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers: new List<SuitabilityAnswer>();
@@ -139,9 +139,10 @@ namespace Bookings.API.Controllers
             {
                 HearingId = hearing.Id,
                 ParticipantId = participant.Id,
-                UpdatedAt = participant.Questionnaire != null ? participant.Questionnaire.UpdatedDate : DateTime.MinValue,
+                UpdatedAt = participant.Questionnaire?.UpdatedDate ?? DateTime.MinValue,
                 ScheduledAt = hearing.ScheduledDateTime,
                 Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
+                QuestionnaireNotRequired = hearing.QuestionnaireNotRequired
             };
 
             return personSuitabilityAnswer;
