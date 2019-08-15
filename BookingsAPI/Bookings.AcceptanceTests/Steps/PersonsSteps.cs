@@ -14,7 +14,7 @@ namespace Bookings.AcceptanceTests.Steps
     public sealed class PersonsSteps
     {
         private readonly TestContext _context;
-        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;        
+        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
 
         public PersonsSteps(TestContext context)
         {
@@ -26,7 +26,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             _context.Request = _context.Get(_endpoints.GetPersonByUsername(_context.Participants[0].Username));
         }
-        
+
         [Given(@"I have a get a person by contact email request with a valid email")]
         public void GivenIHaveAGetAPersonByContactEmailRequestWithAValidEmail()
         {
@@ -57,7 +57,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"persons details should be retrieved")]
         public void ThenPersonsDetailsShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_context.Json);         
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_context.Json);
             var expected = _context.Participants[0];
             var actual = model.Single(u => u.ContactEmail == expected.ContactEmail);
             actual.Should().NotBeNull();
@@ -75,23 +75,30 @@ namespace Bookings.AcceptanceTests.Steps
         public void ThenSuitabilityAnswersForShouldBeUpdated(string participant)
         {
             var username = _context.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Username;
-            var particpantId = _context.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
+            var participantId = _context.Participants.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
             _context.Request = _context.Get(_endpoints.GetPersonSuitabilityAnswers(username));
             _context.Response = _context.Client().Execute(_context.Request);
+
             if (_context.Response.Content != null)
+            {
                 _context.Json = _context.Response.Content;
+            }
+
             _context.Response.StatusCode.Should().Be(HttpStatusCode.OK);
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(_context.Json);
             var expectedResult = _context.Answers;
+
             expectedResult[0].Key.Should().Be(model[0].Answers[0].Key);
             expectedResult[0].Answer.Should().Be(model[0].Answers[0].Answer);
             expectedResult[0].ExtendedAnswer.Should().Be(model[0].Answers[0].ExtendedAnswer);
             expectedResult[1].Key.Should().Be(model[0].Answers[1].Key);
             expectedResult[1].Answer.Should().Be(model[0].Answers[1].Answer);
             expectedResult[1].ExtendedAnswer.Should().Be(model[0].Answers[1].ExtendedAnswer);
+
             model[0].HearingId.Should().Be(_context.HearingId);
-            model[0].ParticipantId.Should().Be(particpantId);
+            model[0].ParticipantId.Should().Be(participantId);
             model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
+            model[0].QuestionnaireNotRequired.Should().Be(false);
         }
     }
 }

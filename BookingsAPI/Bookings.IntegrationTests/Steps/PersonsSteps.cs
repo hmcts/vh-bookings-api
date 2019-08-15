@@ -164,6 +164,8 @@ namespace Bookings.IntegrationTests.Steps
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ParticipantId.Should().Be(Context.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
+            model[0].QuestionnaireNotRequired.Should().Be(false);
+
             if(scenario == "be empty")
             {
                 model[0].Answers.Count.Should().Be(0);
