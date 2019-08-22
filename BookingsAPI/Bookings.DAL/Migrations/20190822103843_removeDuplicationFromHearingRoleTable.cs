@@ -36,36 +36,5 @@ namespace Bookings.DAL.Migrations
                });
 
         }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DeleteData("HearingRole", "Id", 15);
-            migrationBuilder.DeleteData("HearingRole", "Id", 16);
-            migrationBuilder.DeleteData("HearingRole", "Id", 17);
-            migrationBuilder.DeleteData("HearingRole", "Id", 18);
-            migrationBuilder.DeleteData("HearingRole", "Id", 19);
-
-            migrationBuilder.InsertData(
-               table: nameof(HearingRole),
-               columns: new[] { "Id", "Name", "UserRoleId", "CaseRoleId", },
-               values: new object[,]
-               {
-                    { 15, "Claimant LIP", 5, 1 },
-                    { 16, "Solicitor", 6, 1 },
-                    { 17, "Defendant LIP", 5, 2 },
-                    { 18, "Solicitor", 6, 2 },
-                    { 19, "Applicant LIP", 5, 3 },
-                    { 20, "Solicitor", 6, 3 },
-                    { 21, "Respondent LIP", 5, 4 },
-                    { 22, "Solicitor", 6, 4 },
-                    { 23, "Judge", 4, 5 },
-                    { 24, "Judge", 4, 6 },
-                    { 25, "Applicant LIP", 5, 7 },
-                    { 26, "Solicitor", 6, 7 },
-                    { 27, "Respondent LIP", 5, 8 },
-                    { 28, "Solicitor", 6, 8 },
-                    { 29, "Judge", 4, 9 },
-               });
-        }
     }
 }
