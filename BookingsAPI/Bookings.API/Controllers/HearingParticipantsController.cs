@@ -34,7 +34,7 @@ namespace Bookings.API.Controllers
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
 
-        public HearingParticipantsController(IQueryHandler queryHandler, 
+        public HearingParticipantsController(IQueryHandler queryHandler,
             ICommandHandler commandHandler,
             IEventPublisher eventPublisher)
         {
@@ -175,7 +175,7 @@ namespace Bookings.API.Controllers
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
             var reprensentatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
-                
+
             var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(reprensentatives);
 
             if (!representativeValidationResult.IsValid)
@@ -202,8 +202,12 @@ namespace Bookings.API.Controllers
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
-            // TODO: ONLY publish this event when Hearing is set for ready for video
-            await PublishParticipantsAddedEvent(participants, hearing);
+            // ONLY publish this event when Hearing is set for ready for video
+            if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+            {
+                await PublishParticipantsAddedEvent(participants, hearing);
+            }
+
             return NoContent();
         }
 
@@ -224,6 +228,14 @@ namespace Bookings.API.Controllers
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return BadRequest(ModelState);
+            }
+
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
             }
 
             if (participantId == Guid.Empty)
@@ -252,8 +264,12 @@ namespace Bookings.API.Controllers
             var command = new RemoveParticipantFromHearingCommand(hearingId, participant);
             await _commandHandler.Handle(command);
 
-            // TODO: ONLY publish this event when Hearing is set for ready for video
-            await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(hearingId, participantId));
+            // ONLY publish this event when Hearing is set for ready for video
+            if (videoHearing.Status == Domain.Enumerations.BookingStatus.Created)
+            {
+                await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(hearingId, participantId));
+            }
+
             return NoContent();
         }
 
@@ -330,8 +346,8 @@ namespace Bookings.API.Controllers
             var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
             var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
 
-            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title, 
-                request.DisplayName, request.TelephoneNumber, address, 
+            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title,
+                request.DisplayName, request.TelephoneNumber, address,
                 request.OrganisationName, videoHearing, representative);
 
             await _commandHandler.Handle(updateParticipantCommand);
@@ -341,8 +357,12 @@ namespace Bookings.API.Controllers
             var participantMapper = new ParticipantToResponseMapper();
             var response = participantMapper.MapParticipantToResponse(updatedParticipant);
 
-            // TODO: ONLY publish this event when Hearing is set for ready for video
-            await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearingId, updatedParticipant));
+            // ONLY publish this event when Hearing is set for ready for video
+            if (videoHearing.Status == Domain.Enumerations.BookingStatus.Created)
+            {
+                await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearingId, updatedParticipant));
+            }
+
             return Ok(response);
         }
 
@@ -374,7 +394,7 @@ namespace Bookings.API.Controllers
 
             // Reject any requests with duplicate keys
             var duplicateKeyFound = answers.GroupBy(x => x.Key).Any(g => g.Count() > 1);
-            if(duplicateKeyFound)
+            if (duplicateKeyFound)
             {
                 ModelState.AddModelError(nameof(participantId), $"Request '{nameof(answers)}' cannot contain duplicate keys.");
                 return BadRequest(ModelState);
