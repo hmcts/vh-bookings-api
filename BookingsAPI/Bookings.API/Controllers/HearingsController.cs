@@ -247,9 +247,9 @@ namespace Bookings.API.Controllers
         /// <returns></returns>
         [HttpDelete("{hearingId}")]
         [SwaggerOperation(OperationId = "RemoveHearing")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> RemoveHearing(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
@@ -270,11 +270,7 @@ namespace Bookings.API.Controllers
 
             await _commandHandler.Handle(command);
 
-            if (videoHearing.Status == BookingStatus.Created)
-            {
-                // publish the event only for confirmed(created) hearing  
-                await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
-            }
+            await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
             return NoContent();
         }
 
