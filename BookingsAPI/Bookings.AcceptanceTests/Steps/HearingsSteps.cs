@@ -152,7 +152,7 @@ namespace Bookings.AcceptanceTests.Steps
         }
 
         [Given(@"I have a valid book a new hearing for a case type (.*)")]
-        public void GivenIHaveAValidBookANewHearingForAcaseType(string caseType)
+        public void GivenIHaveAValidBookANewHearingForACaseType(string caseType)
         {
             var request = new CreateHearingRequestBuilder().WithContext(_context).Build();
             request.ScheduledDateTime = DateTime.Now.AddDays(2);

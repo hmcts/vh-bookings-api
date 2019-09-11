@@ -26,7 +26,7 @@ namespace Testing.Common.Builders.Domain
                 
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), Name.First(), Name.Last(), Internet.Email())).With(x => x.ContactEmail = Internet.Email())
+                    new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", $"Automation_{Internet.Email()}")).With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
                 .With(x => x.UpdatedDate, DateTime.MinValue)
                 .Build();
         }
@@ -35,7 +35,7 @@ namespace Testing.Common.Builders.Domain
         {
             var settings = new BuilderSettings();
             _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), Name.First(), Name.Last(), userId)).With(x => x.ContactEmail = Internet.Email())
+                    new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", userId)).With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
                 .Build();
         }
 
@@ -72,7 +72,7 @@ namespace Testing.Common.Builders.Domain
             if (_participants == null || _nextParticipantIndex >= numParticipantsToCreate)
             {
                 _participants = Builder<Person>.CreateListOfSize(numParticipantsToCreate).All().WithFactory(() =>
-                        new Person(Name.Prefix(), Name.First(), Name.Last(), Internet.Email())).With(x => x.ContactEmail = Internet.Email())
+                        new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", $"Automation_{Internet.Email()}")).With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
                     .Build().ToList();
                 _nextParticipantIndex = 0;
             }

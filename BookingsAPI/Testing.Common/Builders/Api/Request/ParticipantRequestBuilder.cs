@@ -14,10 +14,10 @@ namespace Testing.Common.Builders.Api.Request
                 .With(x => x.CaseRoleName = caseRole)
                 .With(x => x.HearingRoleName = hearingRole)
                 .With(x => x.Title = Name.Prefix())
-                .With(x => x.FirstName = Name.First())
-                .With(x => x.LastName = Name.Last())
-                .With(x => x.Username = Internet.Email())
-                .With(x => x.ContactEmail = Internet.Email())
+                .With(x => x.FirstName = $"Automation_{Name.First()}")
+                .With(x => x.LastName = $"Automation_{Name.Last()}")
+                .With(x => x.Username = $"Automation_{Internet.Email()}")
+                .With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
                 .With(x => x.TelephoneNumber = Phone.Number())
                 .Build();
         }
