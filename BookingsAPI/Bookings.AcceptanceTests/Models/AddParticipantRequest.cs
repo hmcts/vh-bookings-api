@@ -9,12 +9,12 @@ namespace Bookings.AcceptanceTests.Models
         public static AddParticipantsToHearingRequest BuildRequest()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(1).All()
-                .With(x => x.ContactEmail = Faker.Internet.Email())
-                .With(x => x.Username = Faker.Internet.Email())
+                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
                 .Build().ToList();
             participants[0].CaseRoleName = "Claimant";
             participants[0].HearingRoleName = "Claimant LIP";
-            participants[0].FirstName = "Added Participant";
+            participants[0].FirstName = "Automation_Added Participant";
             var request = new AddParticipantsToHearingRequest{Participants = participants};
             return request;
         }

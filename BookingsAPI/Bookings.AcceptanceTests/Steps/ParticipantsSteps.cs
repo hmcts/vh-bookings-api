@@ -71,7 +71,7 @@ namespace Bookings.AcceptanceTests.Steps
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Json);
             if (state.Equals("added"))
             {
-                var exists = model.Exists(x => x.FirstName == "Added Participant");
+                var exists = model.Exists(x => x.FirstName == "Automation_Added Participant");
                 exists.Should().BeTrue();
             }
             if (!state.Equals("removed")) return;
