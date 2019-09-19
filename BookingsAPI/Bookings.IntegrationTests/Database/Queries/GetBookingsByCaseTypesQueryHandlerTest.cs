@@ -80,21 +80,6 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_get_all_hearings_for_today_returned()
-        {
-            await Hooks.SeedVideoHearingWithStartDateToday(opt => opt.CaseTypeName = FinancialRemedy);
-            var caseTypes = new List<int> { 1, 2, 3 };
-            var query = new GetBookingsByCaseTypesQuery(caseTypes) { Limit = 10 };
-            var result = await _handler.Handle(query);
-            var expectDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            result.Count.Should().BeGreaterThan(0);
-            foreach (var item in result)
-            {
-                item.ScheduledDateTime.Ticks.Should().BeGreaterThan(expectDay.Ticks);
-            }
-        }
-
-        [Test]
         public async Task should_return_different_hearings_for_each_new_page()
         {
             // When generating the identifiers they may end up being in order accidentally, therefor,
