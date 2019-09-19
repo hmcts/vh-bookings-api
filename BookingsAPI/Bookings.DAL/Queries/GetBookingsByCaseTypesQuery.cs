@@ -37,7 +37,7 @@ namespace Bookings.DAL.Queries
         }
     }
 
-    public class GetBookingsByCaseTypesQueryHandler : 
+    public class GetBookingsByCaseTypesQueryHandler :
         IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
@@ -60,19 +60,21 @@ namespace Bookings.DAL.Queries
 
             if (query.CaseTypes.Any())
             {
+                var dayToday = DateTime.UtcNow;
+                var dateNow = new DateTime(dayToday.Year, dayToday.Month, dayToday.Day);
                 hearings = hearings.Where(x =>
-                    x.ScheduledDateTime > DateTime.UtcNow && query.CaseTypes.Contains(x.CaseTypeId));
+                    x.ScheduledDateTime > dateNow && query.CaseTypes.Contains(x.CaseTypeId));
             }
 
             hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id.ToString());
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
-                
+
                 // Because of the difference in ordering using ThenBy and the comparison available with Guid.CompareTo
                 // we have to both sort and compare the guid as a string which will give us a consistent behavior
                 hearings = hearings.Where(x => x.ScheduledDateTime > scheduledDateTime
-                                               || x.ScheduledDateTime == scheduledDateTime 
+                                               || x.ScheduledDateTime == scheduledDateTime
                                                && string.Compare(x.Id.ToString(), id, StringComparison.Ordinal) > 0);
             }
 

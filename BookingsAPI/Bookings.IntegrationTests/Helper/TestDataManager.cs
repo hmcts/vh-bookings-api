@@ -32,7 +32,12 @@ namespace Bookings.IntegrationTests.Helper
             return SeedVideoHearing(null, addSuitabilityAnswer);
         }
 
-        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions, bool addSuitabilityAnswer = false)
+        public Task<VideoHearing> SeedVideoHearingWithStartDateToday(Action<SeedVideoHearingOptions> configureOptions)
+        {
+            return SeedVideoHearing(configureOptions, false, true);
+        }
+
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions, bool addSuitabilityAnswer = false, bool todayStartDay = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -55,8 +60,11 @@ namespace Bookings.IntegrationTests.Helper
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
-
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            if (todayStartDay)
+            {
+                scheduledDate = DateTime.Today;
+            }
             var duration = 45;
             var hearingRoomName = "Room02";
             var otherInformation = "OtherInformation02";
