@@ -17,12 +17,12 @@ Scenario: Get case roles for a case type with nonexistent case type
 	Then the response should have the status NotFound and success status False
 
 Scenario: Get hearing roles for a case role of a case type with nonexistent case type
-	Given I have a get hearing roles for a case role of 'Civil Money Claims' and case type of 'nonexistent' request
+	Given I have a get hearing roles for a case type of 'Civil Money Claims' and case role of 'nonexistent' request
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
 
 Scenario: Get hearing roles for a case role of a case type with nonexistent role name
-	Given I have a get hearing roles for a case role of 'nonexistent' and case type of 'Claimant' request
+	Given I have a get hearing roles for a case type of 'nonexistent' and case role of 'Claimant' request
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
 
@@ -33,20 +33,40 @@ Scenario Outline: Get case roles for a case type
 	And a list of case roles should be retrieved
 Examples:
 | CaseTypes          |
-| Financial Remedy   |
 | Civil Money Claims |
+| Financial Remedy   |
+| Generic            |
+| Children Act       |
+| Tax                |
+| Family Law Act     |
+| Tribunal           |
 
 Scenario Outline: Get hearing roles for a case role of a case type
-	Given I have a get hearing roles for a case role of '<CaseTypes>' and case type of '<CaseRole>' request
+	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And a list of hearing roles should be retrieved
 
 Examples:
 | CaseTypes          | CaseRole   |
-| Financial Remedy   | Applicant  |
-| Financial Remedy   | Respondent |
-| Financial Remedy   | Judge      |
+| Children Act       | Applicant  |
+| Children Act       | Respondent |
+| Children Act       | Judge      |
 | Civil Money Claims | Claimant   |
 | Civil Money Claims | Defendant  |
 | Civil Money Claims | Judge      |
+| Family Law Act     | Applicant  |
+| Family Law Act     | Respondent |
+| Family Law Act     | Judge      |
+| Financial Remedy   | Applicant  |
+| Financial Remedy   | Respondent |
+| Financial Remedy   | Judge      |
+| Generic            | Applicant  |
+| Generic            | Respondent |
+| Generic            | Judge      |
+| Tax                | Applicant  |
+| Tax                | Respondent |
+| Tax                | Judge      |
+| Tribunal           | Applicant  |
+| Tribunal           | Respondent |
+| Tribunal           | Judge      |
