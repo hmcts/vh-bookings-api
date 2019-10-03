@@ -18,7 +18,7 @@ Scenario: Get case roles for a case type
 	And a list of case roles should be retrieved
 
 Scenario: Get hearing roles for a case role of a case type
-	Given I have a get hearing roles for a case role of 'Civil Money Claims' and case type of 'Claimant' request
+	Given I have a get hearing roles for a case type of 'Civil Money Claims' and case role of 'Claimant' request
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And a list of hearing roles should be retrieved

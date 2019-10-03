@@ -30,8 +30,8 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Request = _context.Get(_endpoints.GetCaseRolesForCaseType(caseType));
         }
 
-        [Given(@"I have a get hearing roles for a case role of '(.*)' and case type of '(.*)' request")]
-        public void GivenIHaveAGetHearingRolesForCaseRoleOfCaseTypeRequest(string caseType, string caseRoleName)
+        [Given(@"I have a get hearing roles for a case type of '(.*)' and case role of '(.*)' request")]
+        public void GivenIHaveAGetHearingRolesForCaseTypeOfCaseRoleRequest(string caseType, string caseRoleName)
         {
             _context.Request = _context.Get(_endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName));
         }
