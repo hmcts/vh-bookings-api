@@ -37,6 +37,10 @@ pr:
   - master
 
 jobs:
+  - template: jobs/efMigration.yml@azureDevOpsTemplates # Template reference
+    parameters:
+      dbProjectPath: $(Build.SourcesDirectory)/BookingsAPI/Bookings.DAL/Bookings.DAL.csproj
+
   - template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
     parameters:
       sonarCloudExtraProperties: $(sonarCloudExtraProperties)
@@ -46,7 +50,3 @@ jobs:
       dalWorkingDirectory: $(dalWorkingDirectory)
       keyVaultName: $(keyVaultName)
       secretsFilter: $(secretsFilter)
-
-  - template: jobs/efMigration.yml@azureDevOpsTemplates # Template reference
-    parameters:
-      dbProjectPath: $(Build.SourceDirectory)/BookingsAPI/Bookings.DAL/Bookings.DAL.csproj
