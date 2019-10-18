@@ -23,7 +23,7 @@ resources:
     - repository: azureDevOpsTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/feature/efmigration # ref name to use, defaults to 'refs/heads/master'
+      ref: refs/heads/feature/master # ref name to use, defaults to 'refs/heads/master'
       endpoint: "GitHubDevOps"
 
 trigger:
@@ -40,6 +40,8 @@ jobs:
   - template: jobs/efMigration.yml@azureDevOpsTemplates # Template reference
     parameters:
       dbProjectPath: $(Build.SourcesDirectory)/BookingsAPI/Bookings.DAL/Bookings.DAL.csproj
+      pool:
+        vmImage: vs2017-win2016
 
   - template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
     parameters:
