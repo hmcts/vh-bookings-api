@@ -16,7 +16,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         private BookingsDbContext _context;
 
         private const string FinancialRemedy = "Financial Remedy";
-        
+
         [SetUp]
         public void Setup()
         {
@@ -29,7 +29,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         {
             var firstHearing = (await Hooks.SeedVideoHearing()).Id;
             var financialRemedyHearing = (await Hooks.SeedVideoHearing(opts => opts.CaseTypeName = FinancialRemedy)).Id;
-            
+
             // we have to (potentially) look through all the existing hearings to find these
             var query = new GetBookingsByCaseTypesQuery { Limit = _context.VideoHearings.Count() };
             var result = await _handler.Handle(query);
@@ -46,9 +46,9 @@ namespace Bookings.IntegrationTests.Database.Queries
         public async Task should_only_return_filtered_case_types()
         {
             await Hooks.SeedVideoHearing();
-            var financialRemedyHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy); 
-            
-            var query = new GetBookingsByCaseTypesQuery(new List<int>{financialRemedyHearing.CaseTypeId});
+            var financialRemedyHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { financialRemedyHearing.CaseTypeId });
             var result = await _handler.Handle(query);
 
             var hearingIds = result.Select(hearing => hearing.Id).ToList();
@@ -62,23 +62,23 @@ namespace Bookings.IntegrationTests.Database.Queries
         public void should_throw_on_invalid_cursor()
         {
             Assert.ThrowsAsync<FormatException>(() =>
-                _handler.Handle(new GetBookingsByCaseTypesQuery {Cursor = "invalid"}));
+                _handler.Handle(new GetBookingsByCaseTypesQuery { Cursor = "invalid" }));
         }
-        
+
         [Test]
         public async Task should_limit_hearings_returned()
         {
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
-            
-            
+
+
             var query = new GetBookingsByCaseTypesQuery { Limit = 2 };
             var result = await _handler.Handle(query);
 
             result.Count.Should().Be(2);
         }
-        
+
         [Test]
         public async Task should_return_different_hearings_for_each_new_page()
         {
@@ -89,7 +89,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             {
                 createdHearings.Add((await Hooks.SeedVideoHearing()).Id);
             }
-            
+
             // And paging through the results
             string cursor = null;
             var allHearings = new List<VideoHearing>();
@@ -100,7 +100,7 @@ namespace Bookings.IntegrationTests.Database.Queries
                 if (result.NextCursor == null) break;
                 cursor = result.NextCursor;
             }
-                        
+
             // They should all have different id's
             var ids = allHearings.Select(x => x.Id);
             ids.Distinct().Count().Should().Be(_context.VideoHearings.Count());
