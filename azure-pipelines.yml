@@ -29,7 +29,8 @@ resources:
 trigger:
   branches:
     include:
-      - master
+    - master
+    - release/*
   tags:
     include:
       - v*
