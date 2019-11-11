@@ -98,6 +98,7 @@ namespace Bookings.API.Controllers
         public async Task<IActionResult> PostPersonBySearchTerm([FromBody] string term)
         {
             var query = new GetPersonBySearchTermQuery(term);
+
             var personList = await _queryHandler.Handle<GetPersonBySearchTermQuery, List<Person>>(query);
             var mapper = new PersonToResponseMapper();
             var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
