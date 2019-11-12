@@ -52,7 +52,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var contactEmail = _context.Participants[0].ContactEmail;
             var searchTerm = contactEmail.Substring(0, 3);
-            _context.Request = _context.Get(_endpoints.GetPersonBySearchTerm(searchTerm));
+            _context.Request = _context.Post(_endpoints.PostPersonBySearchTerm(searchTerm), searchTerm);
         }
         [Then(@"persons details should be retrieved")]
         public void ThenPersonsDetailsShouldBeRetrieved()

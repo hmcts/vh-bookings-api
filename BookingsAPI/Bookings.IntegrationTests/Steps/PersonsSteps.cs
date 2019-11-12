@@ -74,7 +74,7 @@ namespace Bookings.IntegrationTests.Steps
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
             var searchTerm = email.Substring(0, 3);
-            Context.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
+            Context.Uri = _endpoints.PostPersonBySearchTerm(searchTerm);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -86,7 +86,7 @@ namespace Bookings.IntegrationTests.Steps
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
             var searchTerm = email.Substring(0, 3).ToUpperInvariant();
-            Context.Uri = _endpoints.GetPersonBySearchTerm(searchTerm);
+            Context.Uri = _endpoints.PostPersonBySearchTerm(searchTerm);
             Context.HttpMethod = HttpMethod.Get;
         }
 

@@ -86,7 +86,7 @@ namespace Testing.Common.Builders.Api
         private string ApiRoot => "persons";
         public string GetPersonByUsername(string username) => $"{ApiRoot}/username/{username}";
         public string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
-        public string GetPersonBySearchTerm(string term) => $"{ApiRoot}/search/{term}";
+        public string PostPersonBySearchTerm(string term) => $"{ApiRoot}";
         public string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
     }
 
