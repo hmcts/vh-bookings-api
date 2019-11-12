@@ -41,8 +41,7 @@ jobs:
   - template: jobs/efMigration.yml@azureDevOpsTemplates # Template reference
     parameters:
       dbProjectPath: $(Build.SourcesDirectory)/BookingsAPI/Bookings.DAL/Bookings.DAL.csproj
-      pool:
-        vmImage: vs2017-win2016
+      pool: Azure-VSTS-VS2017
 
   - template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
     parameters:
