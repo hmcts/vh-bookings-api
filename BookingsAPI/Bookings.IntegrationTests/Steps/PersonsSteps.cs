@@ -75,7 +75,7 @@ namespace Bookings.IntegrationTests.Steps
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
             var searchTerm = email.Substring(0, 3);
             Context.Uri = _endpoints.PostPersonBySearchTerm(searchTerm);
-            Context.HttpMethod = HttpMethod.Get;
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a get person by contact email search term request that case insensitive")]
@@ -87,7 +87,7 @@ namespace Bookings.IntegrationTests.Steps
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
             var searchTerm = email.Substring(0, 3).ToUpperInvariant();
             Context.Uri = _endpoints.PostPersonBySearchTerm(searchTerm);
-            Context.HttpMethod = HttpMethod.Get;
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]
