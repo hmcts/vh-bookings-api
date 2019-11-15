@@ -52,8 +52,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAGetAPersonBySearchTermRequestWithAValidSearchTerm()
         {
             var contactEmail = _context.Participants[0].ContactEmail;
-            var searchTerm = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(
-                new SearchTermRequest(contactEmail.Substring(0, 3)));
+            var searchTerm = new SearchTermRequest(contactEmail.Substring(0, 3));
             _context.Request = _context.Post(_endpoints.PostPersonBySearchTerm(), searchTerm);
         }
         [Then(@"persons details should be retrieved")]
