@@ -1,12 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.IntegrationTests.Helper;
 using Faker;
 using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -73,9 +75,14 @@ namespace Bookings.IntegrationTests.Steps
             Context.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
-            var searchTerm = email.Substring(0, 3);
-            Context.Uri = _endpoints.PostPersonBySearchTerm(searchTerm);
+            var searchTerm = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(
+                new SearchTermRequest(email.Substring(0, 3))
+                );
+
+            Context.Uri = _endpoints.PostPersonBySearchTerm();
             Context.HttpMethod = HttpMethod.Post;
+            Context.HttpContent = new StringContent(searchTerm, Encoding.UTF8, "application/json");
+
         }
 
         [Given(@"I have a get person by contact email search term request that case insensitive")]
@@ -85,9 +92,12 @@ namespace Bookings.IntegrationTests.Steps
             Context.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
-            var searchTerm = email.Substring(0, 3).ToUpperInvariant();
-            Context.Uri = _endpoints.PostPersonBySearchTerm(searchTerm);
+            var searchTerm = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(
+                new SearchTermRequest(email.Substring(0, 3).ToUpperInvariant())
+                );
+            Context.Uri = _endpoints.PostPersonBySearchTerm();
             Context.HttpMethod = HttpMethod.Post;
+            Context.HttpContent = new StringContent(searchTerm, Encoding.UTF8, "application/json");
         }
 
         [Given(@"I have a get person suitability answers by username request with an (.*) username")]

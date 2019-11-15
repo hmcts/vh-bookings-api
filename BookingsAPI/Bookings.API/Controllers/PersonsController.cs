@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using System.Linq;
+using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
@@ -11,6 +8,10 @@ using Bookings.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Bookings.API.Controllers
 {
@@ -95,9 +96,9 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "PostPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PostPersonBySearchTerm([FromBody] string term)
+        public async Task<IActionResult> PostPersonBySearchTerm(SearchTermRequest term)
         {
-            var query = new GetPersonBySearchTermQuery(term);
+            var query = new GetPersonBySearchTermQuery(term.Term);
             var personList = await _queryHandler.Handle<GetPersonBySearchTermQuery, List<Person>>(query);
             var mapper = new PersonToResponseMapper();
             var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
