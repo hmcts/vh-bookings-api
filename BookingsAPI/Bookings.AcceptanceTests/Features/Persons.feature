@@ -3,7 +3,6 @@ Feature: Persons
 	In order to manage persons
 	As an api service
 	I want to be able to retrieve persons from the database
-
 Scenario: Get person by username
 	Given I have a hearing
 	And I have a get a person by username request with a valid username
