@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using System.Linq;
+using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
@@ -11,6 +8,10 @@ using Bookings.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Bookings.API.Controllers
 {
@@ -33,24 +34,24 @@ namespace Bookings.API.Controllers
         /// <returns>Person</returns>
         [HttpGet("username/{username}", Name = "GetPersonByUsername")]
         [SwaggerOperation(OperationId = "GetPersonByUsername")]
-        [ProducesResponseType(typeof(PersonResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPersonByUsername(string username)
-        {            
+        {
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
                 return BadRequest(ModelState);
             }
-            
+
             var query = new GetPersonByUsernameQuery(username);
             var person = await _queryHandler.Handle<GetPersonByUsernameQuery, Person>(query);
             if (person == null)
             {
                 return NotFound();
             }
-            
+
             var mapper = new PersonToResponseMapper();
             var response = mapper.MapPersonToResponse(person);
             return Ok(response);
@@ -63,9 +64,9 @@ namespace Bookings.API.Controllers
         /// <returns>Person</returns>
         [HttpGet("contactEmail/{contactEmail}", Name = "GetPersonByContactEmail")]
         [SwaggerOperation(OperationId = "GetPersonByContactEmail")]
-        [ProducesResponseType(typeof(PersonResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPersonByContactEmail(string contactEmail)
         {
             if (!contactEmail.IsValidEmail())
@@ -73,7 +74,7 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
                 return BadRequest(ModelState);
             }
-            
+
             var query = new GetPersonByContactEmailQuery(contactEmail);
             var person = await _queryHandler.Handle<GetPersonByContactEmailQuery, Person>(query);
             if (person == null)
@@ -91,13 +92,13 @@ namespace Bookings.API.Controllers
         /// </summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
-        [HttpGet("search/{term}", Name = "GetPersonBySearchTerm")]
-        [SwaggerOperation(OperationId = "GetPersonBySearchTerm")]
+        [HttpPost]
+        [SwaggerOperation(OperationId = "PostPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetPersonBySearchTerm(string term)
+        public async Task<IActionResult> PostPersonBySearchTerm(SearchTermRequest term)
         {
-            var query = new GetPersonBySearchTermQuery(term);
+            var query = new GetPersonBySearchTermQuery(term.Term);
             var personList = await _queryHandler.Handle<GetPersonBySearchTermQuery, List<Person>>(query);
             var mapper = new PersonToResponseMapper();
             var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
@@ -133,7 +134,7 @@ namespace Bookings.API.Controllers
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)
         {
             var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
-            var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers: new List<SuitabilityAnswer>();
+            var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers : new List<SuitabilityAnswer>();
             var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
             var personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
             {
@@ -147,5 +148,5 @@ namespace Bookings.API.Controllers
 
             return personSuitabilityAnswer;
         }
-    }   
+    }
 }

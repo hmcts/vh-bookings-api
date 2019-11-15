@@ -1,4 +1,5 @@
 ﻿using Bookings.AcceptanceTests.Contexts;
+using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
 using System;
@@ -51,8 +52,8 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAGetAPersonBySearchTermRequestWithAValidSearchTerm()
         {
             var contactEmail = _context.Participants[0].ContactEmail;
-            var searchTerm = contactEmail.Substring(0, 3);
-            _context.Request = _context.Get(_endpoints.GetPersonBySearchTerm(searchTerm));
+            var searchTerm = new SearchTermRequest(contactEmail.Substring(0, 3));
+            _context.Request = _context.Post(_endpoints.PostPersonBySearchTerm(), searchTerm);
         }
         [Then(@"persons details should be retrieved")]
         public void ThenPersonsDetailsShouldBeRetrieved()

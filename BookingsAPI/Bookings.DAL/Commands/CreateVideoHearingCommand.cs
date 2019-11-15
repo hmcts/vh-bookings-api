@@ -50,7 +50,7 @@ namespace Bookings.DAL.Commands
         public async Task Handle(CreateVideoHearingCommand command)
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
-                command.ScheduledDuration, command.Venue, command.HearingRoomName, 
+                command.ScheduledDuration, command.Venue, command.HearingRoomName,
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired);
 
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
@@ -58,7 +58,6 @@ namespace Bookings.DAL.Commands
             videoHearing.AddCases(command.Cases);
 
             _context.VideoHearings.Add(videoHearing);
-
             await _context.SaveChangesAsync();
 
             command.NewHearingId = videoHearing.Id;
