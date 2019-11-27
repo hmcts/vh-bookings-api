@@ -34,6 +34,7 @@ namespace Bookings.DAL.Commands
         public string OtherInformation { get; set; }
         public string CreatedBy { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
+        public bool StreamingFlag { get; set; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -51,7 +52,10 @@ namespace Bookings.DAL.Commands
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired);
+                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired)
+            {
+                StreamingFlag = command.StreamingFlag,
+            };
 
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 

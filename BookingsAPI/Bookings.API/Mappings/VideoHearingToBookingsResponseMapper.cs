@@ -51,7 +51,8 @@ namespace Bookings.API.Mappings
                 LastEditBy = videoHearing.UpdatedBy,
                 JudgeName = judgeName,
                 Status = videoHearing.Status,
-                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired
+                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
+                StreamingFlag = videoHearing.StreamingFlag
             };
 
             return response;

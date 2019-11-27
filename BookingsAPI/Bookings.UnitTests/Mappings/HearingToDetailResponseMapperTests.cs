@@ -27,7 +27,6 @@ namespace Bookings.UnitTests.Mappings
         [Test]
         public void should_map_all_properties()
         {
-            
             var refDataBuilder = new RefDataBuilder();
             var venue = refDataBuilder.HearingVenues.First(x => x.Name == _hearingVenueName);
             var caseType = new CaseType(1, _caseTypeName);
@@ -38,10 +37,16 @@ namespace Bookings.UnitTests.Mappings
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
             const bool questionnaireNotRequired = true;
+            const bool streamingFlag = true;
+
+            var hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
+                   otherInformation, createdBy, questionnaireNotRequired)
+            {
+                StreamingFlag = streamingFlag,
+            };
 
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-               new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, 
-                   otherInformation, createdBy, questionnaireNotRequired)).Build();
+               hearing).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
@@ -64,6 +69,7 @@ namespace Bookings.UnitTests.Mappings
             response.Should().BeEquivalentTo(response, options => options
                 .Excluding(v => v.Id)
             );
+            response.StreamingFlag.Should().BeTrue();
         }
     }
 }

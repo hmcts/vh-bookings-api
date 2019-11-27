@@ -162,7 +162,8 @@ namespace Bookings.API.Controllers
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,
-                CreatedBy = request.CreatedBy
+                CreatedBy = request.CreatedBy,
+                StreamingFlag = request.StreamingFlag,
             };
             await _commandHandler.Handle(createVideoHearingCommand);
 
@@ -224,7 +225,10 @@ namespace Bookings.API.Controllers
 
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, request.QuestionnaireNotRequired);
+                request.UpdatedBy, cases, request.QuestionnaireNotRequired)
+            {
+                StreamingFlag = request.StreamingFlag
+            };
 
             await _commandHandler.Handle(command);
 

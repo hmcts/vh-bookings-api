@@ -61,6 +61,7 @@ namespace Bookings.Domain
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
+        public bool StreamingFlag { get; set; }
 
         public void CancelHearing()
         {
@@ -184,7 +185,7 @@ namespace Bookings.Domain
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, 
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy, 
-            List<Case> cases, bool questionnaireNotRequired)
+            List<Case> cases, bool questionnaireNotRequired, bool streamingFlag)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -222,6 +223,7 @@ namespace Bookings.Domain
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
             QuestionnaireNotRequired = questionnaireNotRequired;
+            StreamingFlag = streamingFlag;
         }
 
         private bool DoesParticipantExist(string username)

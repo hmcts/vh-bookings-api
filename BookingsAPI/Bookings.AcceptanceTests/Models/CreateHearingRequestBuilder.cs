@@ -71,6 +71,7 @@ namespace Bookings.AcceptanceTests.Models
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.QuestionnaireNotRequired = false)
+                .With(x => x.StreamingFlag = false)
                 .Build();
         }
 

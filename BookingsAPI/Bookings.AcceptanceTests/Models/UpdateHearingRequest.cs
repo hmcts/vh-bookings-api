@@ -22,7 +22,8 @@ namespace Bookings.AcceptanceTests.Models
                 OtherInformation = "OtherInformation12345",
                 UpdatedBy = "admin@hearings.reform.hmcts.net",
                 Cases = caseList,
-                QuestionnaireNotRequired = true
+                QuestionnaireNotRequired = true,
+                StreamingFlag = true
             };
         }
     }

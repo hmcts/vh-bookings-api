@@ -14,46 +14,49 @@ namespace Bookings.UnitTests.Mappings
     public class VideoHearingToBookingsResponseMapperTest : TestBase
     {
         private readonly VideoHearingsToBookingsResponseMapper _mapper = new VideoHearingsToBookingsResponseMapper();
-        
+
         [Test]
         public void should_return_mapped_hearings_grouped_by_date()
         {
             var hearings = new[]
             {
-                MockHearingAtDate(DateTime.Now.AddDays(1), true),
-                MockHearingAtDate(DateTime.Now.AddDays(2), false),
-                MockHearingAtDate(DateTime.Now.AddDays(3), false)
+                MockHearingAtDate(DateTime.Now.AddDays(1), true, true),
+                MockHearingAtDate(DateTime.Now.AddDays(2), false, false),
+                MockHearingAtDate(DateTime.Now.AddDays(3), false, false)
             };
             var mappedHearings = _mapper.MapHearingResponses(hearings);
             mappedHearings.Count.Should().Be(3);
-            
-            var firstGroup = mappedHearings[0]; 
+
+            var firstGroup = mappedHearings[0];
             firstGroup.ScheduledDate.Should().Be(hearings[0].ScheduledDateTime.Date);
             firstGroup.Hearings.Count.Should().Be(1);
             firstGroup.Hearings.First().QuestionnaireNotRequired.Should().Be(true);
+            firstGroup.Hearings.First().StreamingFlag.Should().Be(true);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired)
+        private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired, bool streamingFlag)
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
             var caseToUpdate = new Case("UpdateCaseNumber", "UpdateCasename");
-            var updatedCases = new List<Case>();
-
-            updatedCases.Add(caseToUpdate);
+            var updatedCases = new List<Case>
+            {
+                caseToUpdate
+            };
             mockedHearing.UpdateHearingDetails(
-                mockedHearing.HearingVenue, 
-                datetime, 
-                mockedHearing.ScheduledDuration, 
+                mockedHearing.HearingVenue,
+                datetime,
+                mockedHearing.ScheduledDuration,
                 mockedHearing.HearingRoomName,
                 mockedHearing.OtherInformation,
                 "admin@hearings.reform.hmcts.net",
                 updatedCases,
-                questionnaireNotRequired
+                questionnaireNotRequired,
+                streamingFlag
             );
             return mockedHearing;
         }
-        
+
         [Test]
         public void should_map_properties_of_hearing()
         {
@@ -70,6 +73,7 @@ namespace Bookings.UnitTests.Mappings
             mapped.CaseTypeName.Should().Be("Civil Money Claims");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
+            mapped.StreamingFlag.Should().Be(true);
         }
 
         [Test]
@@ -90,7 +94,7 @@ namespace Bookings.UnitTests.Mappings
             hearingWithoutCaseType.SetProtected(nameof(hearingWithoutCaseType.CaseType), null);
             When(() => _mapper.MapHearingResponse(hearingWithoutCaseType))
                 .Should().Throw<ArgumentException>().WithMessage("Hearing is missing case type");
-            
+
             var hearingWithoutHearingType = MockHearingWithCase();
             hearingWithoutHearingType.SetProtected(nameof(hearingWithoutCaseType.HearingType), null);
             When(() => _mapper.MapHearingResponse(hearingWithoutHearingType))
@@ -112,6 +116,7 @@ namespace Bookings.UnitTests.Mappings
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("234", "X vs Y", true);
+            hearing.StreamingFlag = true;
             return hearing;
         }
     }
