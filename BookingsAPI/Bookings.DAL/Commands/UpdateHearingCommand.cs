@@ -19,6 +19,7 @@ namespace Bookings.DAL.Commands
         public string UpdatedBy { get; set; }
         public List<Case> Cases { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
+        public bool StreamingFlag { get; set; }
 
         public UpdateHearingCommand(Guid hearingId, DateTime scheduledDateTime, int scheduledDuration,
             HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string updatedBy, 
@@ -58,7 +59,7 @@ namespace Bookings.DAL.Commands
 
             hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime, 
                 command.ScheduledDuration, command.HearingRoomName, command.OtherInformation, 
-                command.UpdatedBy, command.Cases, command.QuestionnaireNotRequired);
+                command.UpdatedBy, command.Cases, command.QuestionnaireNotRequired, command.StreamingFlag);
 
             await _context.SaveChangesAsync();
         }

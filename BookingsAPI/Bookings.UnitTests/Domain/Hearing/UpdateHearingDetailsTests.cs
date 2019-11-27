@@ -26,14 +26,18 @@ namespace Bookings.UnitTests.Domain.Hearing
             var caseName = "CaseName Update";
             var caseNumber = "CaseNumber Update";
             const bool questionnaireNotRequired = false;
+            const bool streamingFlag = true;
 
-            var casesToUpdate = new List<Case>();
-            casesToUpdate.Add(new Case(caseNumber, caseName));
+            var casesToUpdate = new List<Case>
+            {
+                new Case(caseNumber, caseName)
+            };
+
             hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                hearingRoomName, otherInformation, updatedBy, casesToUpdate, questionnaireNotRequired);
+                hearingRoomName, otherInformation, updatedBy, casesToUpdate, questionnaireNotRequired, streamingFlag);
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-
+            hearing.StreamingFlag.Should().BeTrue();
             var updatedCases = hearing.GetCases();
             updatedCases.First().Name.Should().Be(caseName);
             updatedCases.First().Number.Should().Be(caseNumber);
@@ -51,9 +55,10 @@ namespace Bookings.UnitTests.Domain.Hearing
             var updatedBy = "testuser";
             var cases = new List<Case>();
             const bool questionnaireNotRequired = false;
+            const bool streamingFlag = false;
 
             Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                string.Empty, string.Empty, updatedBy, cases, questionnaireNotRequired);
+                string.Empty, string.Empty, updatedBy, cases, questionnaireNotRequired, streamingFlag);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")
