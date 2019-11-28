@@ -510,7 +510,6 @@ namespace Bookings.IntegrationTests.Steps
             model.OtherInformation.Should().NotBeNullOrEmpty();
             model.CreatedBy.Should().NotBeNullOrEmpty();
             model.QuestionnaireNotRequired.Should().BeFalse();
-            model.StreamingFlag.Should().BeFalse();
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
@@ -556,7 +555,6 @@ namespace Bookings.IntegrationTests.Steps
             cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
             const string createdBy = "UserAdmin";
-            var streamingFlag = false;
 
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
@@ -565,7 +563,6 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
-                .With(x => x.StreamingFlag = streamingFlag)
                 .Build();
         }
 

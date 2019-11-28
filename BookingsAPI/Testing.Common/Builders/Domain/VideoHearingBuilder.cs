@@ -28,12 +28,10 @@ namespace Testing.Common.Builders.Domain
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
             const bool questionnaireNotRequired = false;
-            const bool streamingFlag = false;
 
             _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
                 new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, 
                     otherInformation, createdBy, questionnaireNotRequired)).Build();
-            _videoHearing.StreamingFlag = streamingFlag;
 
             var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
             var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };

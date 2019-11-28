@@ -52,7 +52,6 @@ namespace Bookings.API.Mappings
                 JudgeName = judgeName,
                 Status = videoHearing.Status,
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
-                StreamingFlag = videoHearing.StreamingFlag
             };
 
             return response;

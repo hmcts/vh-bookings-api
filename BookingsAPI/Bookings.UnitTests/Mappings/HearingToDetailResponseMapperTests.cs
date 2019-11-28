@@ -37,14 +37,10 @@ namespace Bookings.UnitTests.Mappings
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
             const bool questionnaireNotRequired = true;
-            const bool streamingFlag = true;
 
             var hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
-                   otherInformation, createdBy, questionnaireNotRequired)
-            {
-                StreamingFlag = streamingFlag,
-            };
-
+                   otherInformation, createdBy, questionnaireNotRequired);
+           
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                hearing).Build();
 
@@ -69,7 +65,6 @@ namespace Bookings.UnitTests.Mappings
             response.Should().BeEquivalentTo(response, options => options
                 .Excluding(v => v.Id)
             );
-            response.StreamingFlag.Should().BeTrue();
         }
     }
 }
