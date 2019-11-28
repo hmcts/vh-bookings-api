@@ -69,7 +69,6 @@ namespace Bookings.AcceptanceTests.Steps
             model.Should().NotBeNull();
             _context.HearingId = model.Id;
             model.Should().BeEquivalentTo(_context.HearingRequest, o => o.Excluding(x => x.Participants));
-            model.StreamingFlag.Should().Be(false);
 
             var expectedIndividuals = _context.HearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));
             var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));
@@ -189,7 +188,6 @@ namespace Bookings.AcceptanceTests.Steps
             response.CourtAddress.Should().NotBeNullOrEmpty();
             response.HearingName.Should().NotBeNullOrEmpty();
             response.HearingNumber.Should().NotBeNullOrEmpty();
-            response.StreamingFlag.Should().Be(false);
         }
 
         [Given(@"I have a cancel hearing request with a valid hearing id")]
@@ -278,7 +276,6 @@ namespace Bookings.AcceptanceTests.Steps
                 hearing.HearingRoomName.Should().NotBeNullOrEmpty();
                 hearing.OtherInformation.Should().NotBeNullOrEmpty();
                 hearing.CreatedBy.Should().NotBeNullOrEmpty();
-                hearing.StreamingFlag.Should().Be(false);
             }          
         }
     }

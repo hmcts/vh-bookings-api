@@ -87,10 +87,5 @@ namespace Bookings.Api.Contract.Responses
         /// QuestionnaireNotRequired
         /// </summary>
         public bool QuestionnaireNotRequired { get; set; }
-
-        /// <summary>
-        /// Gets or sets the streaming flag indicated that the video streaming on/off 
-        /// </summary>
-        public bool StreamingFlag { get; set; }
     }
 }

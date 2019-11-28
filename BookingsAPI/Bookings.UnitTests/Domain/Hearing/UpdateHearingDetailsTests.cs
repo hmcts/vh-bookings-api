@@ -26,23 +26,21 @@ namespace Bookings.UnitTests.Domain.Hearing
             var caseName = "CaseName Update";
             var caseNumber = "CaseNumber Update";
             const bool questionnaireNotRequired = false;
-            const bool streamingFlag = true;
 
             var casesToUpdate = new List<Case>
             {
                 new Case(caseNumber, caseName)
             };
 
-            hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                hearingRoomName, otherInformation, updatedBy, casesToUpdate, questionnaireNotRequired, streamingFlag);
+            hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,
+                hearingRoomName, otherInformation, updatedBy, casesToUpdate, questionnaireNotRequired);
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.StreamingFlag.Should().BeTrue();
             var updatedCases = hearing.GetCases();
             updatedCases.First().Name.Should().Be(caseName);
             updatedCases.First().Number.Should().Be(caseNumber);
         }
-        
+
         [Test]
         public void should_throw_exception_when_validation_fails()
         {
@@ -55,16 +53,15 @@ namespace Bookings.UnitTests.Domain.Hearing
             var updatedBy = "testuser";
             var cases = new List<Case>();
             const bool questionnaireNotRequired = false;
-            const bool streamingFlag = false;
 
-            Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration, 
-                string.Empty, string.Empty, updatedBy, cases, questionnaireNotRequired, streamingFlag);
+            Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,
+                string.Empty, string.Empty, updatedBy, cases, questionnaireNotRequired);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")
                 .And.Contain(x => x.Name == "ScheduledDateTime")
                 .And.Contain(x => x.Name == "Venue");
-            
+
             hearing.UpdatedDate.Should().Be(beforeUpdatedDate);
         }
     }

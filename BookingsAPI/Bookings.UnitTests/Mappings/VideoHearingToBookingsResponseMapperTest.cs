@@ -20,9 +20,9 @@ namespace Bookings.UnitTests.Mappings
         {
             var hearings = new[]
             {
-                MockHearingAtDate(DateTime.Now.AddDays(1), true, true),
-                MockHearingAtDate(DateTime.Now.AddDays(2), false, false),
-                MockHearingAtDate(DateTime.Now.AddDays(3), false, false)
+                MockHearingAtDate(DateTime.Now.AddDays(1), true),
+                MockHearingAtDate(DateTime.Now.AddDays(2), false),
+                MockHearingAtDate(DateTime.Now.AddDays(3), false)
             };
             var mappedHearings = _mapper.MapHearingResponses(hearings);
             mappedHearings.Count.Should().Be(3);
@@ -31,10 +31,9 @@ namespace Bookings.UnitTests.Mappings
             firstGroup.ScheduledDate.Should().Be(hearings[0].ScheduledDateTime.Date);
             firstGroup.Hearings.Count.Should().Be(1);
             firstGroup.Hearings.First().QuestionnaireNotRequired.Should().Be(true);
-            firstGroup.Hearings.First().StreamingFlag.Should().Be(true);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired, bool streamingFlag)
+        private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired)
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
@@ -51,8 +50,7 @@ namespace Bookings.UnitTests.Mappings
                 mockedHearing.OtherInformation,
                 "admin@hearings.reform.hmcts.net",
                 updatedCases,
-                questionnaireNotRequired,
-                streamingFlag
+                questionnaireNotRequired
             );
             return mockedHearing;
         }
@@ -73,7 +71,6 @@ namespace Bookings.UnitTests.Mappings
             mapped.CaseTypeName.Should().Be("Civil Money Claims");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
-            mapped.StreamingFlag.Should().Be(true);
         }
 
         [Test]
@@ -116,7 +113,6 @@ namespace Bookings.UnitTests.Mappings
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("234", "X vs Y", true);
-            hearing.StreamingFlag = true;
             return hearing;
         }
     }

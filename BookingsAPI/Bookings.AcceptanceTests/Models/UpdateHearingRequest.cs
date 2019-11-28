@@ -23,7 +23,6 @@ namespace Bookings.AcceptanceTests.Models
                 UpdatedBy = "admin@hearings.reform.hmcts.net",
                 Cases = caseList,
                 QuestionnaireNotRequired = true,
-                StreamingFlag = true
             };
         }
     }

@@ -21,8 +21,8 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime, 
-            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, 
+        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
+            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
             string otherInformation, string createdBy, bool questionnaireNotRequired)
             : this()
         {
@@ -61,13 +61,12 @@ namespace Bookings.Domain
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
-        public bool StreamingFlag { get; set; }
 
         public void CancelHearing()
         {
             Status = BookingStatus.Cancelled;
         }
-        
+
         public virtual void AddCase(string number, string name, bool isLeadCase)
         {
             var caseExists = Cases.SingleOrDefault(x => x.Number == number && x.Name == name);
@@ -79,9 +78,9 @@ namespace Bookings.Domain
             {
                 IsLeadCase = isLeadCase
             };
-            HearingCases.Add(new HearingCase { Case = newCase, Hearing = this});
+            HearingCases.Add(new HearingCase { Case = newCase, Hearing = this });
             Cases.Add(newCase);
-            
+
             UpdatedDate = DateTime.UtcNow;
         }
 
@@ -128,7 +127,7 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
             return participant;
         }
-        
+
         public void AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (DoesParticipantExist(person.Username))
@@ -164,7 +163,7 @@ namespace Bookings.Domain
         {
             return Participants.Select(x => x.Person).ToList();
         }
-        
+
         public virtual IList<Participant> GetParticipants()
         {
             return Participants;
@@ -183,9 +182,9 @@ namespace Bookings.Domain
             existingCase.Name = @case.Name;
         }
 
-        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime, 
-            int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy, 
-            List<Case> cases, bool questionnaireNotRequired, bool streamingFlag)
+        public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
+            int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
+            List<Case> cases, bool questionnaireNotRequired)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -198,32 +197,31 @@ namespace Bookings.Domain
             {
                 _validationFailures.AddFailure("Venue", "Venue must have a valid value");
             }
-            
+
             if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);
             }
 
-            if(hearingVenue != null)
+            if (hearingVenue != null)
             {
                 HearingVenue = hearingVenue;
                 HearingVenueName = hearingVenue.Name;
             }
 
-            if(cases.Any())
+            if (cases.Any())
             {
                 UpdateCase(cases.First());
             }
 
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
-            
+
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
             QuestionnaireNotRequired = questionnaireNotRequired;
-            StreamingFlag = streamingFlag;
         }
 
         private bool DoesParticipantExist(string username)
@@ -240,8 +238,8 @@ namespace Bookings.Domain
             {
                 _validationFailures.AddFailure("ScheduledDuration", "ScheduledDuration is not a valid value");
             }
-          
-            if (hearingVenue == null || hearingVenue.Id <=0)
+
+            if (hearingVenue == null || hearingVenue.Id <= 0)
             {
                 _validationFailures.AddFailure("HearingVenue", "HearingVenue must have a valid value");
             }
@@ -270,7 +268,7 @@ namespace Bookings.Domain
 
         public void UpdateStatus(BookingStatus newStatus, string updatedBy)
         {
-            if(string.IsNullOrEmpty(updatedBy))
+            if (string.IsNullOrEmpty(updatedBy))
             {
                 throw new ArgumentNullException(nameof(updatedBy));
             }
@@ -282,7 +280,7 @@ namespace Bookings.Domain
             {
                 throw new DomainRuleException("BookingStatus", $"Cannot change the booking status from {Status} to {newStatus}");
             }
-            
+
             Status = newStatus;
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
