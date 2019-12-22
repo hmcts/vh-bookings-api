@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
+using Testing.Common.Builders.Domain;
 using Testing.Common.Configuration;
 
 namespace Bookings.AcceptanceTests.Hooks
@@ -27,16 +28,17 @@ namespace Bookings.AcceptanceTests.Hooks
 
             var configRoot = configRootBuilder.Build();
 
-            var azureAdConfigurationOptions =
-                Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
-            var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
+            var azureAdConfig = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
+            var testConfig = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
+            var tokenProvider = new TokenProvider();
 
-            var azureAdConfiguration = azureAdConfigurationOptions.Value;
-            var testSettings = testSettingsOptions.Value;
-
-            testContext.BearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
-                testSettings.TestClientId, testSettings.TestClientSecret,
-                azureAdConfiguration.VhBookingsApiResourceId);
+            testContext.BookingsApiToken = tokenProvider.GetClientAccessToken
+            (
+                azureAdConfig.Value.TenantId,
+                azureAdConfig.Value.ClientId,
+                azureAdConfig.Value.ClientSecret,
+                new []{ $"{azureAdConfig.Value.Scope}/.default" }
+            );
 
             var apiTestsOptions =
                 Options.Create(configRoot.GetSection("AcceptanceTestSettings").Get<AcceptanceTestConfiguration>());

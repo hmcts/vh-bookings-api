@@ -55,7 +55,7 @@ namespace Bookings.API
             
             services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
             
-            services.AddScoped<ITokenProvider, AzureTokenProvider>();
+            services.AddScoped<ITokenProvider, TokenProvider>();
 
             services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
             services.AddScoped<IQueryHandler, QueryHandler>();

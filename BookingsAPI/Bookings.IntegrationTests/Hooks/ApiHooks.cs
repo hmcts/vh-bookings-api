@@ -54,15 +54,17 @@ namespace Bookings.IntegrationTests.Hooks
 
             var configRoot = configRootBuilder.Build();
 
-            var azureAdConfigurationOptions =
-                Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
-            var testSettingsOptions = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
-            var azureAdConfiguration = azureAdConfigurationOptions.Value;
-            var testSettings = testSettingsOptions.Value;
-
-            context.BearerToken = new AzureTokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
-                testSettings.TestClientId, testSettings.TestClientSecret,
-                azureAdConfiguration.VhBookingsApiResourceId);
+            var azureAdConfig = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
+            var testConfig = Options.Create(configRoot.GetSection("Testing").Get<TestSettings>());
+            var tokenProvider = new TokenProvider();
+            
+            context.BookingsApiToken = tokenProvider.GetClientAccessToken
+            (
+                azureAdConfig.Value.TenantId,
+                azureAdConfig.Value.ClientId,
+                azureAdConfig.Value.ClientSecret,
+                new []{ $"{azureAdConfig.Value.Scope}/.default" }
+            );
         }
 
         [BeforeScenario]

@@ -11,7 +11,7 @@ namespace Bookings.AcceptanceTests.Contexts
     {
         public RestRequest Request { get; set; }
         public IRestResponse Response { get; set; }
-        public string BearerToken { get; set; }
+        public string BookingsApiToken { get; set; }
         public string BaseUrl { get; set; }
         public string Json { get; set; }
         public Guid HearingId { get; set; }
@@ -24,7 +24,7 @@ namespace Bookings.AcceptanceTests.Contexts
         {
             var client = new RestClient(BaseUrl);
             client.AddDefaultHeader("Accept", "application/json");
-            client.AddDefaultHeader("Authorization", $"Bearer {BearerToken}");
+            client.AddDefaultHeader("Authorization", $"Bearer {BookingsApiToken}");
             return client;
         }
 

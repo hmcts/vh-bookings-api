@@ -16,7 +16,7 @@ namespace Bookings.IntegrationTests.Contexts
         public TestDataManager TestDataManager { get; set; }
         public TestServer Server { get; set; }
         public string DbString { get; set; }
-        public string BearerToken { get; set; }
+        public string BookingsApiToken { get; set; }
         public string Uri { get; set; }
         public UpdateHearingRequest UpdateHearingRequest { get; set; }
         public HttpMethod HttpMethod { get; set; }

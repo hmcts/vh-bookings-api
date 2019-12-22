@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Bookings.API.Authorization;
 using Bookings.API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +16,7 @@ using Bookings.DAL;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Bookings.API
 {
@@ -25,6 +28,7 @@ namespace Bookings.API
         }
 
         private IConfiguration Configuration { get; }
+        private AzureAdConfiguration AzureAdSettings { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -49,34 +53,49 @@ namespace Bookings.API
         
         private void RegisterSettings(IServiceCollection services)
         {
-            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
+            AzureAdSettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
+            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd", options));
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
         }
         
-        private void RegisterAuth(IServiceCollection serviceCollection)
+        private void RegisterAuth(IServiceCollection services)
         {
-            var policy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .Build();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new AuthorizeFilter(Policies.Default));
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            serviceCollection.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(policy)); });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policies.Default, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                });
+            });
 
-            var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            
-            serviceCollection.AddAuthentication(options =>
+            services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            })
+            .AddJwtBearer(options =>
             {
-                options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                options.TokenValidationParameters.ValidateLifetime = true;
-                options.Audience = securitySettings.VhBookingsApiResourceId;
-                options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                options.RequireHttpsMetadata = true;
+                options.Authority = $"{AzureAdSettings.Authority}/{AzureAdSettings.TenantId}/v2.0";
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidAudiences = new List<string>
+                    {
+                        AzureAdSettings.AppRegistrationId,
+                        AzureAdSettings.ClientId
+                    }
+                };
             });
 
-            serviceCollection.AddAuthorization();
+            services.AddSingleton<IClaimsTransformation, AzureAdScopeClaimTransformation>();
+            services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
         }
         private void RegisterInfrastructureServices(IServiceCollection services)
         {

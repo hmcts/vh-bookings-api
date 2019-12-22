@@ -24,7 +24,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BookingsApiToken}");
                 return await client.GetAsync(apiTestContext.Uri);
             }
         }
@@ -33,7 +33,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BookingsApiToken}");
                 return await client.PatchAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
@@ -42,7 +42,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BookingsApiToken}");
                 return await client.PostAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
@@ -51,7 +51,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BookingsApiToken}");
                 return await client.PutAsync(apiTestContext.Uri, apiTestContext.HttpContent);
             }
         }
@@ -60,7 +60,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             using (var client = apiTestContext.Server.CreateClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiTestContext.BookingsApiToken}");
                 return await client.DeleteAsync(apiTestContext.Uri);
             }
         }
