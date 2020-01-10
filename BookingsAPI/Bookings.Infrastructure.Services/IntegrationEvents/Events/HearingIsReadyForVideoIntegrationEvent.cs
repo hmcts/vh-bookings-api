@@ -12,7 +12,7 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
         {
             var @case = hearing.GetCases().First(); // Does this need to be a lead case?
             Hearing = new HearingDto(hearing.Id, hearing.ScheduledDateTime, hearing.ScheduledDuration,
-                hearing.CaseType.Name, @case.Number, @case.Name);
+                hearing.CaseType.Name, @case.Number, @case.Name, hearing.HearingVenueName);
 
             var hearingParticipants = hearing.GetParticipants();
 
