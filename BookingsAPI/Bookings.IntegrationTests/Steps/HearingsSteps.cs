@@ -441,6 +441,7 @@ namespace Bookings.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.CaseType.Should().Be(response.CaseTypeName);
             hearingReadyForVideoEvent.Hearing.ScheduledDuration.Should().Be(response.ScheduledDuration);
             hearingReadyForVideoEvent.Hearing.ScheduledDateTime.Should().Be(response.ScheduledDateTime);
+            hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName);
         }
 
         private void ThenHearingBookingStatusIs(BookingStatus status)

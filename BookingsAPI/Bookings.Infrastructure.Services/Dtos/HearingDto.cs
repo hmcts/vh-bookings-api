@@ -22,6 +22,6 @@ namespace Bookings.Infrastructure.Services.Dtos
         public string CaseType { get; }
         public string CaseNumber { get; }
         public string CaseName { get; }
-        public string HearingVenueName { get; set; }
+        public string HearingVenueName { get; }
     }
 }
