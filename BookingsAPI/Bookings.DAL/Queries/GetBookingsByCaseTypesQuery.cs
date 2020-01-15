@@ -56,7 +56,8 @@ namespace Bookings.DAL.Queries
                 .Include("HearingCases.Case")
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
-                .Include(x => x.HearingVenue);
+                .Include(x => x.HearingVenue)
+                .AsNoTracking();
 
             if (query.CaseTypes.Any())
             {
@@ -73,9 +74,9 @@ namespace Bookings.DAL.Queries
 
                 // Because of the difference in ordering using ThenBy and the comparison available with Guid.CompareTo
                 // we have to both sort and compare the guid as a string which will give us a consistent behavior
-                hearings = hearings.Where(x => x.ScheduledDateTime > scheduledDateTime
-                                               || x.ScheduledDateTime == scheduledDateTime
-                                               && string.Compare(x.Id.ToString(), id, StringComparison.Ordinal) > 0);
+                hearings = hearings.Where(x =>
+                    x.ScheduledDateTime > scheduledDateTime ||
+                    x.ScheduledDateTime == scheduledDateTime && x.Id.CompareTo(id) > 0);
             }
 
             // Add one to the limit to know whether or not we have a next page

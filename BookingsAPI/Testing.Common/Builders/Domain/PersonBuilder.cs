@@ -4,7 +4,6 @@ using System.Linq;
 using Faker;
 using FizzWare.NBuilder;
 using Bookings.Domain;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Address = Bookings.Domain.Address;
 
 namespace Testing.Common.Builders.Domain

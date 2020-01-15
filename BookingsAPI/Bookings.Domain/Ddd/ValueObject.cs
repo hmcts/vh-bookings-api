@@ -21,21 +21,6 @@ namespace Bookings.Domain.Ddd
             return Equals(other);
         }
 
-        public override int GetHashCode()
-        {
-            var fields = GetFields(this);
-
-            var startValue = 17;
-            var multiplier = 59;
-
-            return fields
-                .Select(field => field.GetValue(this))
-                .Where(value => value != null)
-                .Aggregate(
-                    startValue,
-                        (current, value) => current * multiplier + value.GetHashCode());
-        }
-
         public virtual bool Equals(T other)
         {
             if (other == null)
@@ -66,6 +51,21 @@ namespace Bookings.Domain.Ddd
             return true;
         }
 
+        public override int GetHashCode()
+        {
+            var fields = GetFields(this);
+
+            var startValue = 17;
+            var multiplier = 59;
+
+            return fields
+                .Select(field => field.GetValue(this))
+                .Where(value => value != null)
+                .Aggregate(
+                    startValue,
+                    (current, value) => current * multiplier + value.GetHashCode());
+        }
+        
         private static IEnumerable<FieldInfo> GetFields(object obj)
         {
             var t = obj.GetType();

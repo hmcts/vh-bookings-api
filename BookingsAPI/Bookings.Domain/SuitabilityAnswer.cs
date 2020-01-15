@@ -1,5 +1,4 @@
 ﻿using Bookings.Domain.Ddd;
-using Bookings.Domain.Participants;
 using System;
 
 namespace Bookings.Domain

@@ -1,6 +1,5 @@
 using Bookings.Api.Contract.Requests;
 using FluentValidation;
-using System.Linq;
 
 namespace Bookings.API.Validations
 {

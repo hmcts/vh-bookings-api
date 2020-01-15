@@ -66,7 +66,7 @@ namespace Bookings.IntegrationTests.Steps
             var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
             model.Should().NotBeEmpty();
-            model[0].Name.IsNotNullOrEmpty();
+            model[0].Name.Should().NotBeNullOrEmpty();
         }
     }
 }

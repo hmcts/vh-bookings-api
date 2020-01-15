@@ -53,8 +53,9 @@ namespace Bookings.DAL.Commands
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
+
             await _hearingService.AddParticipantToService(hearing, command.Participants);
-            
+            _context.Entry(hearing).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

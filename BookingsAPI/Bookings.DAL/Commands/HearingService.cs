@@ -36,19 +36,22 @@ namespace Bookings.DAL.Commands
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        _context.Entry(individual).State = EntityState.Added;
                         UpdateAddressAndOrganisationDetails(participantToAdd.Person, individual);
                         break;
                     case "Representative":
                     {
-                            var solicitior = hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            var solicitor = hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
                             participantToAdd.SolicitorsReference, participantToAdd.Representee);
-                            UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitior);
+                            _context.Entry(solicitor).State = EntityState.Added;
+                            UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitor);
                         break;
                     }
                     case "Judge":
-                        hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                        var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        _context.Entry(judge).State = EntityState.Added;
                         break;
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),

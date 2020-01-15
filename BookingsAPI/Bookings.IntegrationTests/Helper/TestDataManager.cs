@@ -175,7 +175,8 @@ namespace Bookings.IntegrationTests.Helper
                         .SingleOrDefaultAsync(x => x.Id == hearingId);
                 if (hearing != null)
                 {
-                    db.RemoveRange(hearing.Participants.Select(x => x.Person));
+                    var persons = hearing.Participants.Select(x => x.Person);
+                    db.RemoveRange(persons);
                     db.RemoveRange(hearing.GetCases());
                     db.Remove(hearing);
                     await db.SaveChangesAsync();

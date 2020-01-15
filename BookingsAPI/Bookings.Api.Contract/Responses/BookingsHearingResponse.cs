@@ -1,5 +1,4 @@
 ﻿using System;
-using Bookings.Domain;
 using Bookings.Domain.Enumerations;
 
 namespace Bookings.Api.Contract.Responses

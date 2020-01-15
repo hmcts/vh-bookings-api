@@ -11,6 +11,11 @@ namespace Bookings.Domain.Validations
             ValidationFailures = validationFailures;
         }
 
+        public DomainRuleException(string name, string message) : base(message)
+        {
+            ValidationFailures.Add(new ValidationFailure(name, message));
+        }
+
         private static string BuildMessage(ValidationFailures validationFailures)
         {
             if (validationFailures.Count == 1)
@@ -20,11 +25,6 @@ namespace Bookings.Domain.Validations
 
             var errors = string.Join(", ", validationFailures.Select(v => v.Message));
             return $"Domain validation failed with errors: {errors}";
-        }
-
-        public DomainRuleException(string name, string message) : base(message)
-        {
-            ValidationFailures.Add(new ValidationFailure(name, message));
         }
 
         public ValidationFailures ValidationFailures { get; protected set; } = new ValidationFailures();

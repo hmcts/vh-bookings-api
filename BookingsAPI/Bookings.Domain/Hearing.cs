@@ -128,7 +128,7 @@ namespace Bookings.Domain
             return participant;
         }
 
-        public void AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (DoesParticipantExist(person.Username))
             {
@@ -140,6 +140,7 @@ namespace Bookings.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            return participant;
         }
 
         public void RemoveParticipant(Participant participant)

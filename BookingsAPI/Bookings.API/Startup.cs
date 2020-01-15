@@ -14,6 +14,7 @@ using Bookings.DAL;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Hosting;
 
 namespace Bookings.API
 {
@@ -29,9 +30,24 @@ namespace Bookings.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers()
+                .AddNewtonsoftJson();
+            
             services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer());
             
+            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+            
             services.AddSwagger();
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+                builder =>
+                {
+                    builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowCredentials();
+                }));
+            
             services.AddJsonOptions();
             RegisterSettings(services);
             RegisterInfrastructureServices(services);
@@ -40,7 +56,7 @@ namespace Bookings.API
             
             RegisterAuth(services);
             
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddCors();
             
             services.AddDbContextPool<BookingsDbContext>(options =>
@@ -94,7 +110,7 @@ namespace Bookings.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.RunLatestMigrations();
 
@@ -114,18 +130,16 @@ namespace Bookings.API
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
-
+            app.UseRouting();
+            app.UseAuthorization();
+            
             app.UseAuthentication();
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .AllowAnyHeader());
+            app.UseCors("CorsPolicy");
 
+            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
+            
             app.UseMiddleware<LogResponseBodyMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
-
-            app.UseMvc();
         }
     }
 }

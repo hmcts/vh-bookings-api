@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Bookings.Api.Contract.Responses
+﻿namespace Bookings.Api.Contract.Responses
 {
     /// <summary>
     /// Suitability Answer Response Object
