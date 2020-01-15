@@ -68,19 +68,23 @@ namespace Bookings.DAL.Queries
             }
 
             hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id.ToString());
+            var hearingList = await hearings.ToListAsync();
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
 
                 // Because of the difference in ordering using ThenBy and the comparison available with Guid.CompareTo
                 // we have to both sort and compare the guid as a string which will give us a consistent behavior
-                hearings = hearings.Where(x =>
-                    x.ScheduledDateTime > scheduledDateTime ||
-                    x.ScheduledDateTime == scheduledDateTime && x.Id.CompareTo(id) > 0);
+                
+                // TODO: investigate way to re-write query to run on server-side
+                hearingList = hearingList.Where(x => x.ScheduledDateTime > scheduledDateTime
+                                                     || x.ScheduledDateTime == scheduledDateTime
+                                                     && string.Compare(x.Id.ToString(), id, StringComparison.Ordinal) > 0)
+                    .ToList();
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result = await hearings.Take(query.Limit + 1).ToListAsync();
+            var result = hearingList.Take(query.Limit + 1).ToList();
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
