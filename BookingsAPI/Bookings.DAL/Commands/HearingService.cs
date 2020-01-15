@@ -30,7 +30,11 @@ namespace Bookings.DAL.Commands
                     .Include("Address")
                     .Include("Organisation")
                     .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username);
-                
+
+                if (existingPerson == null)
+                {
+                    _context.Entry(participantToAdd.Person).State = EntityState.Added;
+                }
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
                     case "Individual":
