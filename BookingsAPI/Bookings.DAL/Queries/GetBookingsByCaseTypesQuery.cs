@@ -67,24 +67,20 @@ namespace Bookings.DAL.Queries
                     x.ScheduledDateTime > dateNow && query.CaseTypes.Contains(x.CaseTypeId));
             }
 
-            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id.ToString());
-            var hearingList = await hearings.ToListAsync();
+            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id);
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
 
                 // Because of the difference in ordering using ThenBy and the comparison available with Guid.CompareTo
                 // we have to both sort and compare the guid as a string which will give us a consistent behavior
-                
-                // TODO: investigate way to re-write query to run on server-side
-                hearingList = hearingList.Where(x => x.ScheduledDateTime > scheduledDateTime
-                                                     || x.ScheduledDateTime == scheduledDateTime
-                                                     && string.Compare(x.Id.ToString(), id, StringComparison.Ordinal) > 0)
-                    .ToList();
+                hearings = hearings.Where(x => x.ScheduledDateTime > scheduledDateTime
+                                               || x.ScheduledDateTime == scheduledDateTime
+                                               && x.Id.CompareTo(id) > 0);
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result = hearingList.Take(query.Limit + 1).ToList();
+            var result = await hearings.Take(query.Limit + 1).ToListAsync();
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
@@ -97,13 +93,13 @@ namespace Bookings.DAL.Queries
             return new CursorPagedResult<VideoHearing, string>(result, nextCursor);
         }
 
-        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out string id)
+        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
         {
             try
             {
                 var parts = cursor.Split('_');
                 scheduledDateTime = new DateTime(long.Parse(parts[0]));
-                id = parts[1];
+                id = Guid.Parse(parts[1]);
             }
             catch (Exception e)
             {
