@@ -34,9 +34,15 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             var participants = hearing.GetParticipants();
             participants.Any().Should().BeTrue();
-            participants.Any(x => x.GetType() == typeof(Individual)).Should().BeTrue();
-            participants.Any(x => x.GetType() == typeof(Representative)).Should().BeTrue();
-            participants.Any(x => x.GetType() == typeof(Judge)).Should().BeTrue();
+            var individuals = participants.Where(x => x.GetType() == typeof(Individual))
+                .ToList();
+            individuals.Should().NotBeNullOrEmpty();
+            
+            var representatives = participants.Where(x => x.GetType() == typeof(Representative));
+            representatives.Should().NotBeNullOrEmpty();
+
+            var judges = participants.Where(x => x.GetType() == typeof(Judge));
+            judges.Should().NotBeNullOrEmpty();
 
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);
@@ -48,6 +54,15 @@ namespace Bookings.IntegrationTests.Database.Queries
             hearing.HearingRoomName.Should().NotBeEmpty();
             hearing.OtherInformation.Should().NotBeEmpty();
             hearing.CreatedBy.Should().NotBeNullOrEmpty();
+
+            foreach (var individual in individuals)
+            {
+                var address = individual.Person.Address;
+                address.Should().NotBeNull();
+                address.HouseNumber.Should().NotBeNullOrEmpty();
+                address.Street.Should().NotBeNullOrEmpty();
+                address.Postcode.Should().NotBeNullOrEmpty();
+            }
         }
     }
 }
