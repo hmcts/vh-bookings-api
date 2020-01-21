@@ -53,14 +53,16 @@ namespace Bookings.DAL.Commands
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired);
 
+            _context.VideoHearings.Add(videoHearing);
+            await _context.SaveChangesAsync();
+            
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
             videoHearing.AddCases(command.Cases);
 
-            _context.VideoHearings.Add(videoHearing);
             await _context.SaveChangesAsync();
-
             command.NewHearingId = videoHearing.Id;
+            
         }
     }
 }

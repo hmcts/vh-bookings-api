@@ -46,7 +46,10 @@ namespace Bookings.DAL.Commands
         public async Task Handle(AddParticipantsToVideoHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include("Participants.Person")
+                .Include(x => x.Participants).ThenInclude(x=> x.Person.Address)
+                .Include(x => x.Participants).ThenInclude(x=> x.Person.Organisation)
+                .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
+                .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
@@ -54,8 +57,8 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
+            _context.Update(hearing);
             await _hearingService.AddParticipantToService(hearing, command.Participants);
-            _context.Entry(hearing).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

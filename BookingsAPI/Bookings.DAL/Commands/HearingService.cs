@@ -30,17 +30,20 @@ namespace Bookings.DAL.Commands
                     .Include("Address")
                     .Include("Organisation")
                     .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username);
-
+                
                 if (existingPerson == null)
                 {
                     _context.Entry(participantToAdd.Person).State = EntityState.Added;
                 }
+
+                
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
                         _context.Entry(individual).State = EntityState.Added;
+
                         UpdateAddressAndOrganisationDetails(participantToAdd.Person, individual);
                         break;
                     case "Representative":
@@ -49,6 +52,7 @@ namespace Bookings.DAL.Commands
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
                             participantToAdd.SolicitorsReference, participantToAdd.Representee);
                             _context.Entry(solicitor).State = EntityState.Added;
+
                             UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitor);
                         break;
                     }
@@ -56,6 +60,7 @@ namespace Bookings.DAL.Commands
                         var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
                         _context.Entry(judge).State = EntityState.Added;
+
                         break;
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
