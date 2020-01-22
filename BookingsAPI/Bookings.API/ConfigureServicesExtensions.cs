@@ -26,12 +26,12 @@ namespace Bookings.API
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-            var contractsXmlFile = $"{typeof(PaginatedRequest).Assembly.GetName().Name}.xml";
+            var contractsXmlFile = $"{typeof(BookNewHearingRequest).Assembly.GetName().Name}.xml";
             var contractsXmlPath = Path.Combine(AppContext.BaseDirectory, contractsXmlFile);
 
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Video API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Bookings API", Version = "v1"});
                 c.AddFluentValidationRules();
                 c.IncludeXmlComments(xmlPath);
                 c.IncludeXmlComments(contractsXmlPath);
