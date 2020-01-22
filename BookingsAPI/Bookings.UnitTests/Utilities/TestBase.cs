@@ -7,6 +7,10 @@ namespace Bookings.UnitTests.Utilities
     /// </summary>
     public abstract class TestBase
     {
+        protected TestBase()
+        {
+        }
+        
         /// <summary>Help wrapper to build catch clauses</summary>
         protected static Action When(Action action)
         {

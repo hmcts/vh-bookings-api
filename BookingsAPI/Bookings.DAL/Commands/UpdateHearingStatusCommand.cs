@@ -2,9 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
-using Bookings.Domain;
 using Bookings.Domain.Enumerations;
-using Bookings.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands

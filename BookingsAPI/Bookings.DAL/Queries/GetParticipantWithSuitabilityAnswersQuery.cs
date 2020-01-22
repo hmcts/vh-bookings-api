@@ -54,7 +54,7 @@ namespace Bookings.DAL.Queries
             {
                 TryParseCursor(query.Cursor, out var updatedDateTime, out var id);
                 participants = participants.Where(x => x.Questionnaire.UpdatedDate <= updatedDateTime
-                                               &&  string.Compare(x.Id.ToString(), id, true) > 0);
+                                               &&  x.Id == Guid.Parse(id));
             }
 
             // Add one to the limit to know whether or not we have a next page

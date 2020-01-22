@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using Bookings.Domain.Participants;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
-using FizzWare.NBuilder;
 using System.Collections.Generic;
 
 namespace Testing.Common.Builders.Domain
@@ -14,7 +11,7 @@ namespace Testing.Common.Builders.Domain
         private readonly Participant _individualParticipant2;
         private readonly Participant _representativeParticipant;
 
-        private readonly List<Participant> participants = new List<Participant>();
+        private readonly List<Participant> _participants = new List<Participant>();
 
 
         public ParticipantBuilder()
@@ -58,9 +55,9 @@ namespace Testing.Common.Builders.Domain
             };
             _representativeParticipant.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
-            participants.Add(_individualParticipant1);
-            participants.Add(_individualParticipant2);
-            participants.Add(_representativeParticipant);
+            _participants.Add(_individualParticipant1);
+            _participants.Add(_individualParticipant2);
+            _participants.Add(_representativeParticipant);
         }
 
         private List<SuitabilityAnswer> ListOfSuitabilityAnswers()
@@ -75,6 +72,6 @@ namespace Testing.Common.Builders.Domain
         public Participant IndividualPrticipantClaimant => _individualParticipant1;
         public Participant IndividualPrticipantDefendant => _individualParticipant2;
         public Participant RepresentativeParticipantDefendant => _representativeParticipant;
-        public List<Participant> Build() => participants;
+        public List<Participant> Build() => _participants;
     }
 }

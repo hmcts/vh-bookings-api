@@ -31,7 +31,7 @@ namespace Bookings.DAL.Queries
             return await _context.Persons
                 .Include(x => x.Address)
                 .Include(x => x.Organisation)
-                .Where(x => x.ContactEmail.ToLowerInvariant().Contains(query.Term))
+                .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLower()))
                 .ToListAsync();
 
         }

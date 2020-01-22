@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -10,6 +10,6 @@
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="7.11.0.8083" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.2.0.14119" />
   </ItemGroup>
 </Project>

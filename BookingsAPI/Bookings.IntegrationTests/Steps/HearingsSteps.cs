@@ -129,15 +129,7 @@ namespace Bookings.IntegrationTests.Steps
             }
             CreateTheNewHearingRequest(request);
         }
-
-        [Given(@"I have a update hearing request with a nonexistent hearing id")]
-        public void GivenIHaveAUpdateHearingRequestWithANonexistentHearingId()
-        {
-            _hearingId = Guid.NewGuid();
-            Context.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
-            UpdateTheHearingRequest();
-        }
-
+        
         [Given(@"I have a (.*) update hearing request")]
         [Given(@"I have an (.*) update hearing request")]
         public async Task GivenIHaveAUpdateHearingRequest(Scenario scenario)
@@ -153,6 +145,14 @@ namespace Bookings.IntegrationTests.Steps
                 Context.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
                 Context.UpdateHearingRequest.QuestionnaireNotRequired = true;
             }
+            UpdateTheHearingRequest();
+        }
+
+        [Given(@"I have a update hearing request with a nonexistent hearing id")]
+        public void GivenIHaveAUpdateHearingRequestWithANonexistentHearingId()
+        {
+            _hearingId = Guid.NewGuid();
+            Context.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
             UpdateTheHearingRequest();
         }
 

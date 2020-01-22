@@ -128,13 +128,6 @@ Scenario: Hearing not created with an invalid address
 	And the error response message should also contain 'County is required'
 	And the error response message should also contain 'Postcode is required'
 
-Scenario: Get hearing details for a given case type
-	Given I have a valid book a new hearing request
-	And I have a get details for a given hearing request with a valid case type
-	When I send the request to the endpoint
-	Then the response should have the status OK and success status True
-	And hearing details should be retrieved for the case type
-
 Scenario: Get a paged list of booked hearings
 	Given I have a request to the get booked hearings endpoint
 	When I send the request to the endpoint

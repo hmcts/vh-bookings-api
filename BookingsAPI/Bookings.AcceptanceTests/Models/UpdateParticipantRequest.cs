@@ -1,7 +1,4 @@
-﻿using Bookings.Api.Contract.Responses;
-using System;
-
-namespace Bookings.AcceptanceTests.Models
+﻿namespace Bookings.AcceptanceTests.Models
 {
     internal static class UpdateParticipantRequest
     {

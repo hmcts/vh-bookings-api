@@ -9,6 +9,13 @@ namespace Bookings.DAL.Commands
 {
     public interface IHearingService
     {
+        /// <summary>
+        /// Add a participant to a hearing service. This will re-use existing personnel entries before attempting to
+        /// create a new one.
+        /// </summary>
+        /// <param name="hearing">Hearing to amend</param>
+        /// <param name="participants">List of participants to add</param>
+        /// <returns></returns>
         Task AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants);
     }
     public class HearingService : IHearingService
@@ -19,11 +26,9 @@ namespace Bookings.DAL.Commands
         {
             _context = context;
         }
+        
         public async Task AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants)
         {
-            // for each participant
-            // check for existing person
-            // add new individual/solicitor
             foreach (var participantToAdd in participants)
             {
                 var existingPerson = await _context.Persons
@@ -36,20 +41,21 @@ namespace Bookings.DAL.Commands
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
+
                         UpdateAddressAndOrganisationDetails(participantToAdd.Person, individual);
                         break;
                     case "Representative":
                     {
-                            var solicitior = hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            var solicitor = hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
                             participantToAdd.SolicitorsReference, participantToAdd.Representee);
-                            UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitior);
+                            UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitor);
                         break;
                     }
                     case "Judge":
-                        hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                       hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
-                        break;
+                       break;
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");

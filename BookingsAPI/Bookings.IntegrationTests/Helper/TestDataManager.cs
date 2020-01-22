@@ -171,11 +171,24 @@ namespace Bookings.IntegrationTests.Helper
         {
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
-                var hearing = await db.VideoHearings.Include("HearingCases.Case")
-                        .SingleOrDefaultAsync(x => x.Id == hearingId);
+                var hearing = await db.VideoHearings
+                    .Include("Participants.Person")
+                    .Include("Participants.Person.Address")
+                    .Include("HearingCases.Case")
+                    .Include("Participants.Person.Organisation")
+                    .Include("Participants.Questionnaire")
+                    .Include("Participants.Questionnaire.SuitabilityAnswers")
+                    .Include(x => x.CaseType)
+                    .ThenInclude(x => x.CaseRoles)
+                    .ThenInclude(x => x.HearingRoles)
+                    .ThenInclude(x => x.UserRole)
+                    .Include(x => x.HearingType)
+                    .Include(x => x.HearingVenue)
+                    .SingleOrDefaultAsync(x => x.Id == hearingId);
                 if (hearing != null)
                 {
-                    db.RemoveRange(hearing.Participants.Select(x => x.Person));
+                    var persons = hearing.Participants.Select(x => x.Person);
+                    db.RemoveRange(persons);
                     db.RemoveRange(hearing.GetCases());
                     db.Remove(hearing);
                     await db.SaveChangesAsync();

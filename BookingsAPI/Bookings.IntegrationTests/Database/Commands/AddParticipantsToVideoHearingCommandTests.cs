@@ -41,8 +41,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
                 new AddParticipantsToVideoHearingCommand(hearingId, new List<NewParticipant>())));
         }
-
-
+        
         [Test]
         public async Task should_add_participants_to_video_hearing()
         {

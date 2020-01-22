@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Bookings.Api.Contract.Requests;
 using FluentAssertions;
 using Bookings.Common;
-using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
-using Bookings.Domain;
 using Bookings.Domain.RefData;
 using Bookings.UnitTests.Utilities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
 namespace Bookings.UnitTests.Mappings

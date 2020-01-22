@@ -10,6 +10,9 @@ namespace Bookings.DAL.Mappings
     {
         public void Configure(EntityTypeBuilder<Hearing> builder)
         {
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
+            
             builder.ToTable(nameof(Hearing));
             builder.Property(x => x.HearingMediumType).HasColumnName("HearingMediumId");
             builder.HasDiscriminator(x => x.HearingMediumType)

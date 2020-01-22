@@ -59,7 +59,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(_context.Json);
             model.Should().NotBeEmpty();
-            model[0].Name.IsNotNullOrEmpty();
+            model[0].Name.Should().NotBeNullOrEmpty();
         }
     }
 }

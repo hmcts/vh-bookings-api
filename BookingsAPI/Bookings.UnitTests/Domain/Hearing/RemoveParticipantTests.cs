@@ -16,9 +16,12 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void should_remove_existing_participant_from_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
+            var beforeCount = hearing.GetParticipants().Count;
             var participant = hearing.GetParticipants().First();
 
             hearing.RemoveParticipant(participant);
+            var afterCount =hearing.GetParticipants().Count;
+            afterCount.Should().BeLessThan(beforeCount);
         }
         
         [Test]

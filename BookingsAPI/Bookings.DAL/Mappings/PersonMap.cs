@@ -11,7 +11,7 @@ namespace Bookings.DAL.Mappings
             builder.ToTable(nameof(Person));
 
             builder.HasKey(x => x.Id);
-
+            builder.Property(x => x.Id).ValueGeneratedNever();
             builder.Property(x => x.Title);
             builder.Property(x => x.FirstName);
             builder.Property(x => x.MiddleNames);

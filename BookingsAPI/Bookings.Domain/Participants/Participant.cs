@@ -31,7 +31,7 @@ namespace Bookings.Domain.Participants
         public virtual HearingRole HearingRole { get; set; }
         public Guid PersonId { get; protected set; }
         public virtual Person Person { get; protected set; }
-        public Guid HearingId { get; protected set; }
+        public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; protected set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }

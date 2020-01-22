@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,6 +13,9 @@ using Bookings.Common;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries.Core;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Bookings.API
 {
@@ -29,22 +31,22 @@ namespace Bookings.API
 
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info {Title = "Bookings API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Video API", Version = "v1"});
+                c.AddFluentValidationRules();
                 c.IncludeXmlComments(xmlPath);
                 c.IncludeXmlComments(contractsXmlPath);
                 c.EnableAnnotations();
-                c.AddSecurityDefinition("Bearer",
-                    new ApiKeyScheme
-                    {
-                        In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization",
-                        Type = "apiKey"
-                    });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    {"Bearer", Enumerable.Empty<string>()},
+                    In = ParameterLocation.Header,
+                    Description = "Please enter JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
                 });
                 c.OperationFilter<AuthResponsesOperationFilter>();
             });
+            serviceCollection.AddSwaggerGenNewtonsoftSupport();
 
             return serviceCollection;
         }
@@ -105,13 +107,12 @@ namespace Bookings.API
             };
 
             serviceCollection.AddMvc()
-                .AddJsonOptions(options => {
+                .AddNewtonsoftJson(options =>
+                {
                     options.SerializerSettings.ContractResolver = contractResolver;
-                    options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
-                })
-                .AddJsonOptions(options =>
-                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter()));
-
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
             return serviceCollection;
         }
