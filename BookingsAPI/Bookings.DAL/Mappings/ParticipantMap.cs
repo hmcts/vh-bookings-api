@@ -12,6 +12,7 @@ namespace Bookings.DAL.Mappings
             builder.ToTable(nameof(Participant));
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
             builder.HasIndex(x => new {ParticipantId = x.PersonId, x.HearingId}).IsUnique();
             builder.Property(x => x.DisplayName);
             builder.Property(x => x.CaseRoleId);
