@@ -1,5 +1,6 @@
 ﻿using System;
 using Bookings.API.Extensions;
+using Bookings.API.Validations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,7 @@ using Bookings.Common.Configuration;
 using Bookings.DAL;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
+using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 
@@ -56,7 +58,9 @@ namespace Bookings.API
             
             RegisterAuth(services);
             
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation(fv =>
+                    fv.RegisterValidatorsFromAssemblyContaining<BookNewHearingRequestValidation>());
             services.AddCors();
             
             services.AddDbContextPool<BookingsDbContext>(options =>
