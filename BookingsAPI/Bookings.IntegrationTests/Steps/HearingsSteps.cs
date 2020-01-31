@@ -206,8 +206,8 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a request to the get booked hearings endpoint")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
         {
-            await Context.TestDataManager.SeedVideoHearing();
-            await Context.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.NewHearingId = seededHearing.Id;
             Context.Uri = _endpoints.GetHearingsByAnyCaseType();
             Context.HttpMethod = HttpMethod.Get;
         }
@@ -247,8 +247,12 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a request to the second page of booked hearings")]
         public async Task GivenIHaveARequestToTheSecondPageOfBookedHearings()
         {
-            await Context.TestDataManager.SeedVideoHearing();
-            await Context.TestDataManager.SeedVideoHearing();
+            var firstHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.OldHearingId = firstHearing.Id;
+            
+            var secondHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.NewHearingId = secondHearing.Id;
+            
             Context.Uri = _endpoints.GetHearingsByAnyCaseType(1);
             Context.HttpMethod = HttpMethod.Get;
             var response = await SendGetRequestAsync(Context);
@@ -261,8 +265,10 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a request to the get booked hearings endpoint with a limit of one")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpointWithALimitOfOne()
         {
-            await Context.TestDataManager.SeedVideoHearing();
-            await Context.TestDataManager.SeedVideoHearing();
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.OldHearingId = seededHearing.Id;
+            var secondSeededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.NewHearingId = secondSeededHearing.Id;
             Context.Uri = _endpoints.GetHearingsByAnyCaseType(1);
             Context.HttpMethod = HttpMethod.Get;
         }
@@ -271,8 +277,8 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a request to the get booked hearings endpoint filtered on an (.*) case type")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpointFilteredOnAValidCaseType(Scenario scenario)
         {
-            await Context.TestDataManager.SeedVideoHearing();
-
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.NewHearingId = seededHearing.Id;
             int caseType;
             switch (scenario)
             {
