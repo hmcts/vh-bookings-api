@@ -26,6 +26,7 @@ namespace Bookings.IntegrationTests.Contexts
         public Guid OldHearingId { get; set; }
         public HttpResponseMessage ResponseMessage { get; set; }
         public List<ParticipantRequest> Participants { get; set; }
+        public List<string> RemovedPersons { get; set; }
         public Participant Participant { get; set; }
     }
 }

@@ -115,7 +115,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);
-            representative.HearingRole = new HearingRole(5, "Solicitor"){ UserRole = new UserRole(2, "Solitcitor") } ;
+            representative.HearingRole = new HearingRole(5, "Solicitor"){ UserRole = new UserRole(2, "Solicitor") } ;
             representative.CaseRole= new CaseRole(3, "test3");
 
             var judge = hearing.GetParticipants().Single(x => x is Judge);

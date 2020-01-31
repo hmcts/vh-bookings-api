@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bookings.Api.Contract.Requests;
 using Bookings.DAL;
+using Bookings.DAL.Commands;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
 namespace Bookings.IntegrationTests.Helper
@@ -32,7 +36,8 @@ namespace Bookings.IntegrationTests.Helper
             return SeedVideoHearing(null, addSuitabilityAnswer);
         }
 
-        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions, bool addSuitabilityAnswer = false)
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
+            bool addSuitabilityAnswer = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -42,7 +47,8 @@ namespace Bookings.IntegrationTests.Helper
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantLipHearingRole =
+                claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
@@ -65,7 +71,7 @@ namespace Bookings.IntegrationTests.Helper
                 venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired);
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
-                 $"{person1.FirstName} {person1.LastName}");
+                $"{person1.FirstName} {person1.LastName}");
 
             videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
@@ -75,18 +81,24 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
-            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}", $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", true);
-            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}", $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", false);
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
+                $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", true);
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
+                $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", false);
 
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 await db.VideoHearings.AddAsync(videoHearing);
                 await db.SaveChangesAsync();
             }
+
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
-               new GetHearingByIdQuery(videoHearing.Id));
-            _individualId = hearing.Participants.FirstOrDefault(x => x.HearingRole.Name.ToLower().IndexOf("judge") < 0 && x.HearingRole.Name.ToLower().IndexOf("solicitor") < 0).Id;
-            _participantSolicitorIds = hearing.Participants.Where(x => x.HearingRole.Name.ToLower().IndexOf("solicitor") >= 0).Select(x => x.Id).ToList();
+                new GetHearingByIdQuery(videoHearing.Id));
+            _individualId = hearing.Participants.First(x =>
+                x.HearingRole.Name.ToLower().IndexOf("judge", StringComparison.Ordinal) < 0 &&
+                x.HearingRole.Name.ToLower().IndexOf("solicitor", StringComparison.Ordinal) < 0).Id;
+            _participantSolicitorIds = hearing.Participants
+                .Where(x => x.HearingRole.Name.ToLower().IndexOf("solicitor", StringComparison.Ordinal) >= 0).Select(x => x.Id).ToList();
 
             if (addSuitabilityAnswer)
             {
@@ -115,7 +127,7 @@ namespace Bookings.IntegrationTests.Helper
             var participant = db.Participants
                 .Include(x => x.Questionnaire)
                 .FirstOrDefault(x => x.Id == _individualId);
-            participant.Questionnaire = new Questionnaire { Participant = participant, ParticipantId = _individualId };
+            participant.Questionnaire = new Questionnaire {Participant = participant, ParticipantId = _individualId};
             participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
             participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
             participant.UpdatedDate = DateTime.UtcNow;
@@ -127,9 +139,10 @@ namespace Bookings.IntegrationTests.Helper
             foreach (var item in _participantSolicitorIds)
             {
                 var participantSolicitor = db.Participants
-                .Include(x => x.Questionnaire)
-                .FirstOrDefault(x => x.Id == item);
-                participantSolicitor.Questionnaire = new Questionnaire { Participant = participantSolicitor, ParticipantId = item };
+                    .Include(x => x.Questionnaire)
+                    .FirstOrDefault(x => x.Id == item);
+                participantSolicitor.Questionnaire = new Questionnaire
+                    {Participant = participantSolicitor, ParticipantId = item};
 
                 participantSolicitor.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
                 participantSolicitor.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
@@ -169,33 +182,38 @@ namespace Bookings.IntegrationTests.Helper
 
         public async Task RemoveVideoHearing(Guid hearingId)
         {
-            using (var db = new BookingsDbContext(_dbContextOptions))
+            try
             {
-                var hearing = await db.VideoHearings
-                    .Include("Participants.Person")
-                    .Include("Participants.Person.Address")
-                    .Include("HearingCases.Case")
-                    .Include("Participants.Person.Organisation")
-                    .Include("Participants.Questionnaire")
-                    .Include("Participants.Questionnaire.SuitabilityAnswers")
-                    .Include(x => x.CaseType)
-                    .ThenInclude(x => x.CaseRoles)
-                    .ThenInclude(x => x.HearingRoles)
-                    .ThenInclude(x => x.UserRole)
-                    .Include(x => x.HearingType)
-                    .Include(x => x.HearingVenue)
-                    .SingleOrDefaultAsync(x => x.Id == hearingId);
-                if (hearing != null)
-                {
-                    var persons = hearing.Participants.Select(x => x.Person);
-                    db.RemoveRange(persons);
-                    db.RemoveRange(hearing.GetCases());
-                    db.Remove(hearing);
-                    await db.SaveChangesAsync();
-                }
+                await using var db = new BookingsDbContext(_dbContextOptions);
+                await new RemoveHearingCommandHandler(db).Handle(new RemoveHearingCommand(hearingId));
+            }
+            catch (HearingNotFoundException)
+            {
+                TestContext.WriteLine(@$"Ignoring cleanup for: ${hearingId}. Does not exist.");
             }
         }
+        
+        public async Task ClearUnattachedPersons(IEnumerable<string> removedPersons)
+        {
+            foreach (var personEmail in removedPersons)
+            {
+                await using var db = new BookingsDbContext(_dbContextOptions);
+                var person = await db.Persons
+                    .Include(x => x.Address)
+                    .Include(x => x.Organisation)
+                    .SingleOrDefaultAsync(x => x.ContactEmail == personEmail);
 
-        public string[] GetIndividualHearingRoles => new[] { "Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP" };
+                if (person == null) return;
+                if(person.Address != null)db.Remove(person.Address);
+                if(person.Organisation != null)db.Remove(person.Organisation);
+                db.Remove(person);
+
+                await db.SaveChangesAsync();
+            }
+
+        }
+
+        public string[] GetIndividualHearingRoles =>
+            new[] {"Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP"};
     }
 }

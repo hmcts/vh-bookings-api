@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Bookings.API;
 using Bookings.Common.Configuration;
@@ -78,6 +79,17 @@ namespace Bookings.IntegrationTests.Hooks
             {
                 NUnit.Framework.TestContext.WriteLine($"Removing test hearing {context.NewHearingId}");
                 await context.TestDataManager.RemoveVideoHearing(context.NewHearingId);
+            }
+            
+            if (context.OldHearingId != Guid.Empty)
+            {
+                NUnit.Framework.TestContext.WriteLine($"Removing test hearing {context.OldHearingId}");
+                await context.TestDataManager.RemoveVideoHearing(context.OldHearingId);
+            }
+
+            if (context.RemovedPersons != null && context.RemovedPersons.Any())
+            {
+                await context.TestDataManager.ClearUnattachedPersons(context.RemovedPersons);
             }
         }
 
