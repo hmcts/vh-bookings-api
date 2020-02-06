@@ -26,7 +26,10 @@
     <ItemGroup>
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-       
+        </None>       
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Features\*.feature" />
     </ItemGroup>
 </Project>

@@ -15,6 +15,7 @@ using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 using Testing.Common.Builders.Api.Request;
+using TestContext = Bookings.IntegrationTests.Contexts.TestContext;
 
 namespace Bookings.IntegrationTests.Steps
 {
@@ -23,7 +24,7 @@ namespace Bookings.IntegrationTests.Steps
     {
         private readonly ParticipantsEndpoints _endpoints = new ApiUriFactory().ParticipantsEndpoints;
 
-        public ParticipantsSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
+        public ParticipantsSteps(TestContext apiTestContext) : base(apiTestContext)
         {
         }
 
@@ -169,7 +170,9 @@ namespace Bookings.IntegrationTests.Steps
             Context.Participant = seededHearing.GetParticipants().First();
             Context.HttpMethod = HttpMethod.Delete;
 
-            var participantId = seededHearing.GetParticipants().First().Id;
+            var participantToRemove = seededHearing.GetParticipants().First();
+            var participantId = participantToRemove.Id;
+            Context.RemovedPersons = new List<string>{participantToRemove.Person.ContactEmail};
             Guid hearingId;
 
             switch (scenario)
@@ -342,7 +345,8 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithANonexistentHearingId(Scenario scenario)
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            var participantId = seededHearing.GetParticipants().FirstOrDefault().Id;
+            Context.NewHearingId = seededHearing.Id;
+            var participantId = seededHearing.GetParticipants().First().Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             Guid hearingId;
 
@@ -353,7 +357,6 @@ namespace Bookings.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        Context.NewHearingId = seededHearing.Id;
                         hearingId = Context.NewHearingId;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         break;
@@ -374,7 +377,8 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidSolicitorsReference()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            var participantId = seededHearing.GetParticipants().FirstOrDefault(x=>x.HearingRole.UserRole.IsRepresentative).Id;
+            Context.NewHearingId = seededHearing.Id;
+            var participantId = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.IsRepresentative).Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             var hearingId = seededHearing.Id;
             updateParticipantRequest.SolicitorsReference = string.Empty;
@@ -390,7 +394,8 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidAddress()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            var participantId = seededHearing.GetParticipants().FirstOrDefault(x => x.HearingRole.UserRole.IsIndividual).Id;
+            Context.NewHearingId = seededHearing.Id;
+            var participantId = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsIndividual).Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             var hearingId = seededHearing.Id;
             updateParticipantRequest.Street = string.Empty;
