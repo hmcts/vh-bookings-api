@@ -54,7 +54,6 @@ namespace Bookings.DAL.Commands
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired);
 
             _context.VideoHearings.Add(videoHearing);
-            await _context.SaveChangesAsync();
             
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 

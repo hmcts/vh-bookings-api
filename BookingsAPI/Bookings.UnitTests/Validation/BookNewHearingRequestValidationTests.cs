@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
@@ -39,7 +40,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.NoHearingVenueErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -65,7 +66,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.NoScheduleDurationErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -79,7 +80,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.NoCaseTypeNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseTypeNameErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -93,7 +94,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.NoHearingTypeErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -107,7 +108,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.NoParticipantsErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ParticipantsErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -121,7 +122,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.NoCasesErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CasesErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -135,7 +136,25 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.NoCaseNameMessage)
+            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNameMessage)
+                .Should().BeTrue();
+        }
+        
+        [Test]
+        public async Task should_return_case_duplication_error()
+        {
+            var request = BuildRequest();
+            request.Cases = new List<CaseRequest>
+            {
+                new CaseRequest{Name = "one", Number = "one" },
+                new CaseRequest{Name = "one", Number = "one" }
+            };
+           
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseDuplicationErrorMessage)
                 .Should().BeTrue();
         }
         
