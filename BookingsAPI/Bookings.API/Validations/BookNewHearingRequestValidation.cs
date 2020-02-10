@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Bookings.Api.Contract.Requests;
 using FluentValidation;
 
@@ -6,36 +7,41 @@ namespace Bookings.API.Validations
 {
     public class BookNewHearingRequestValidation : AbstractValidator<BookNewHearingRequest>
     {
-        public static readonly string NoHearingVenueErrorMessage = "Hearing venue cannot not be blank";
-        public static readonly string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
-        public static readonly string NoScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
-        public static readonly string NoCaseTypeNameErrorMessage = "Please provide a case type name";
-        public static readonly string NoHearingTypeErrorMessage = "Please provide a hearing type name";
-        public static readonly string NoParticipantsErrorMessage = "Please provide at least one participant";
-        public static readonly string NoCasesErrorMessage = "Please provide at least one case";
+        public const string HearingVenueErrorMessage = "Hearing venue cannot not be blank";
+        public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
+        public const string ScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
+        public const string CaseTypeNameErrorMessage = "Please provide a case type name";
+        public const string HearingTypeErrorMessage = "Please provide a hearing type name";
+        public const string ParticipantsErrorMessage = "Please provide at least one participant";
+        public const string CasesErrorMessage = "Please provide at least one case";
+        public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
 
         public BookNewHearingRequestValidation()
         {
             RuleFor(x => x.HearingVenueName)
-                .NotEmpty().WithMessage(NoHearingVenueErrorMessage);
+                .NotEmpty().WithMessage(HearingVenueErrorMessage);
 
             RuleFor(x => x.ScheduledDateTime.Date)
                 .GreaterThanOrEqualTo(DateTime.Now.Date).WithMessage(ScheduleDateTimeInPastErrorMessage);
 
             RuleFor(x => x.ScheduledDuration)
-                .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
+                .GreaterThan(0).WithMessage(ScheduleDurationErrorMessage);
 
             RuleFor(x => x.CaseTypeName)
-                .NotEmpty().WithMessage(NoCaseTypeNameErrorMessage);
+                .NotEmpty().WithMessage(CaseTypeNameErrorMessage);
 
             RuleFor(x => x.HearingTypeName)
-                .NotEmpty().WithMessage(NoHearingTypeErrorMessage);
+                .NotEmpty().WithMessage(HearingTypeErrorMessage);
 
             RuleFor(x => x.Participants).NotEmpty()
-                .NotEmpty().WithMessage(NoParticipantsErrorMessage);
+                .NotEmpty().WithMessage(ParticipantsErrorMessage);
 
             RuleFor(x => x.Cases).NotEmpty()
-                .NotEmpty().WithMessage(NoCasesErrorMessage);
+                .NotEmpty().WithMessage(CasesErrorMessage);
+
+            RuleFor(x => x.Cases)
+                .Must(cases => !cases.GroupBy(i => new {i.Number, i.Name}).Any(i => i.Count() > 1))
+                .WithMessage(CaseDuplicationErrorMessage);
 
             RuleForEach(x => x.Participants)
                 .SetValidator(new ParticipantRequestValidation());

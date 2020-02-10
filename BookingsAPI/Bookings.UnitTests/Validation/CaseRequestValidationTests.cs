@@ -37,7 +37,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.NoCaseNameMessage)
+            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNameMessage)
                 .Should().BeTrue();
         }
         
@@ -51,7 +51,7 @@ namespace Bookings.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.NoCaseNumberMessage)
+            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNumberMessage)
                 .Should().BeTrue();
         }
 
