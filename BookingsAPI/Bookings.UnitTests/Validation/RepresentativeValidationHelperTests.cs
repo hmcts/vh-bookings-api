@@ -22,19 +22,28 @@ namespace Bookings.UnitTests.Validation
         [Test]
         public void should_fail_validaion_with_empty_solicitors_refernce_and_representee()
         {
-            var request = BuildRequest();
-            request[0].Representee = string.Empty;
-            request[0].SolicitorsReference = string.Empty;
+            var request = BuildRequest(true);
             var result = RepresentativeValidationHelper.ValidateRepresentativeInfo(request);
 
             result.IsValid.Should().BeFalse();
         }
-        private List<ParticipantRequest> BuildRequest()
-        {
-            var newParticipant = new ParticipantRequestBuilder("Defendant", "Solicitor").WithSolicitorDetails("Test Reference","Test Representee").Build();
 
-            return new List<ParticipantRequest> { newParticipant };
-        
+        private List<ParticipantRequest> BuildRequest(bool withInvalid = false)
+        {
+            var invalidParticipantRequest = new ParticipantRequestBuilder("Defendant", "Solicitor").Build();
+            invalidParticipantRequest.Representee = string.Empty;
+            invalidParticipantRequest.SolicitorsReference = string.Empty;
+
+            var validParticipantRequest = new ParticipantRequestBuilder("Defendant", "Solicitor").WithSolicitorDetails("Test Reference","Test Representee").Build();
+
+            var participantRequests = new List<ParticipantRequest>() { validParticipantRequest };
+            
+            if (withInvalid)
+            {
+                participantRequests.Add(invalidParticipantRequest);
+            }
+
+            return participantRequests;        
         }
     }
 }

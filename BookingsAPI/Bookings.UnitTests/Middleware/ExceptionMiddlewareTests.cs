@@ -6,6 +6,7 @@ using Moq;
 using System.Threading.Tasks;
 using System.Net;
 using Bookings.Common;
+using FluentAssertions;
 
 namespace Bookings.UnitTests.Middleware
 {
@@ -50,6 +51,7 @@ namespace Bookings.UnitTests.Middleware
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, _HttpContext.Response.StatusCode);
+            _HttpContext.Response.ContentType.Should().Be("application/json");
         }
 
         [Test]
@@ -65,7 +67,8 @@ namespace Bookings.UnitTests.Middleware
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
             Assert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
-          }
+            _HttpContext.Response.ContentType.Should().Be("application/json");
+        }
 
         public interface IDelegateMock
         {

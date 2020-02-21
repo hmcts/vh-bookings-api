@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 using System.Linq;
 using Bookings.Domain.Participants;
@@ -85,6 +86,32 @@ namespace Bookings.UnitTests.Controllers
             data[0].Answers[0].Key.Should().Be("AboutYou");
             data[0].UpdatedAt.Date.Should().Be(DateTime.Now.AddDays(-2).Date);
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task Should_return_badrequest_for_invalid_username()
+        {
+            var username = string.Empty;
+
+            var result = await _controller.GetPersonSuitabilityAnswers(username);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(username), $"Please provide a valid {nameof(username)}");
+        }
+
+        [Test]
+        public async Task Should_return_badrequest_for_given_invalid_contact_email()
+        {
+            var contactEmail = string.Empty;
+
+            var result = await _controller.GetPersonByContactEmail(contactEmail);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
         }
 
         private VideoHearing TestData(bool addSuitability = true)
