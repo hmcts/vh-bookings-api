@@ -38,13 +38,13 @@ namespace Bookings.UnitTests.Controllers
 
         private Participant Create(VideoHearing hearing,string fName, string lName,int addHour)
         {
-            var participantOne = new Mock<Participant>();
-            participantOne.SetupGet(p => p.Hearing).Returns(hearing);
-            participantOne.SetupGet(p => p.Questionnaire).Returns(new Questionnaire { UpdatedDate = DateTime.Now.AddHours(addHour) });
-            participantOne.SetupGet(p => p.Person).Returns(new Person("Mr", fName, lName,  $"{fName} {lName}"));
-            participantOne.SetupGet(p => p.HearingRole).Returns(new Bookings.Domain.RefData.HearingRole(1,"Test"));
+            var participant = new Mock<Participant>();
+            participant.SetupGet(p => p.Hearing).Returns(hearing);
+            participant.SetupGet(p => p.Questionnaire).Returns(new Questionnaire { UpdatedDate = DateTime.Now.AddHours(addHour) });
+            participant.SetupGet(p => p.Person).Returns(new Person("Mr", fName, lName,  $"{fName} {lName}"));
+            participant.SetupGet(p => p.HearingRole).Returns(new Bookings.Domain.RefData.HearingRole(1,"Test"));
 
-            return participantOne.Object;
+            return participant.Object;
         }
 
         [Test]
