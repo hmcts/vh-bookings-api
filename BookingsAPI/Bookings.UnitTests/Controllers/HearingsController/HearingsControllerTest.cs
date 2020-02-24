@@ -24,9 +24,9 @@ namespace Bookings.UnitTests.Controllers
 {
     public class HearingsControllerTest
     {
-        private HearingsController _controller;
-        private Mock<IQueryHandler> _queryHandlerMock;
-        private Mock<ICommandHandler> _commandHandlerMock;
+        protected HearingsController _controller;
+        protected Mock<IQueryHandler> _queryHandlerMock;
+        protected Mock<ICommandHandler> _commandHandlerMock;
         private IEventPublisher _eventPublisher;
         private ServiceBusQueueClientFake _sbQueueClient;
 
@@ -292,7 +292,7 @@ namespace Bookings.UnitTests.Controllers
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
 
-        private VideoHearing GetHearing()
+        protected VideoHearing GetHearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("123", "Case name", true);
