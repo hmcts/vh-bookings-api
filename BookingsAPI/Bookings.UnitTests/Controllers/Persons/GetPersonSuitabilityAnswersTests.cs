@@ -1,7 +1,5 @@
 ﻿using Bookings.Api.Contract.Responses;
-using Bookings.API.Controllers;
 using Bookings.DAL.Queries;
-using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -11,23 +9,14 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Testing.Common.Builders.Domain;
+using Testing.Common.Assertions;
 using System.Linq;
 using Bookings.Domain.Participants;
 
 namespace Bookings.UnitTests.Controllers
 {
-    public class PersonsControllerTest
+    public class GetPersonSuitabilityAnswersTests : PersonsControllerTest
     {
-        private PersonsController _controller;
-        private Mock<IQueryHandler> _queryHandlerMock;
-
-        [SetUp]
-        public void Setup()
-        {
-            _queryHandlerMock = new Mock<IQueryHandler>();
-            _controller = new PersonsController(_queryHandlerMock.Object);
-        }
 
         [Test]
         public async Task Should_return_empty_list_of_suitability_answers_if_no_hearings()
@@ -87,32 +76,19 @@ namespace Bookings.UnitTests.Controllers
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
-        private VideoHearing TestData(bool addSuitability = true)
+        [Test]
+        public async Task Should_return_badrequest_for_invalid_username()
         {
-            var builder = new VideoHearingBuilder();
-            var hearing = builder.Build();
-            if (addSuitability)
-            {
-                var participant = hearing.Participants.FirstOrDefault(p => p is Individual);
-                if (participant != null)
-                {
-                    var answer = new SuitabilityAnswer("AboutYou", "Yes", "")
-                    {
-                        UpdatedDate = DateTime.Now.AddDays(-2)
-                    };
+            var username = string.Empty;
 
-                    participant.Questionnaire = new Questionnaire
-                    {
-                        Participant = participant,
-                        ParticipantId = participant.Id
-                    };
+            var result = await _controller.GetPersonSuitabilityAnswers(username);
 
-                    participant.Questionnaire.SuitabilityAnswers.Add(answer);
-                    participant.Questionnaire.UpdatedDate = DateTime.Now.AddDays(-2);
-                }
-
-            }
-            return hearing;
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(username), $"Please provide a valid {nameof(username)}");
         }
+
+        
     }
 }

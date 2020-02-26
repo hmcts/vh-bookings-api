@@ -15,7 +15,7 @@ namespace Bookings.UnitTests.Mappings
 
         [SetUp]
         public void Setup()
-    {
+        {
             _caseType = new CaseType(1, "Money claims")
             {
                 CaseRoles = new List<CaseRole>
@@ -25,7 +25,7 @@ namespace Bookings.UnitTests.Mappings
                         HearingRoles = new List<HearingRole>
                         {
                             new HearingRole(1, "Claimant LIP"),
-                            new HearingRole(2, "Solicitor")
+                            new HearingRole(2, "Solicitor") { UserRole = new UserRole(1, "individual")}
                         }
                     },
                     new CaseRole(0, "Respondent")
@@ -33,7 +33,7 @@ namespace Bookings.UnitTests.Mappings
                         HearingRoles = new List<HearingRole>
                         {
                             new HearingRole(1, "Respondent LIP"),
-                            new HearingRole(2, "Solicitor")
+                            new HearingRole(2, "Solicitor") { UserRole = new UserRole(1, "representative")}
                         }
                     }
                 }
@@ -64,6 +64,54 @@ namespace Bookings.UnitTests.Mappings
 
             When(() => new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType))
                 .Should().Throw<BadRequestException>().WithMessage("Invalid hearing role [Missing hearing role]");
+        }
+
+        [Test]
+        public void should_map_and_return_newparticipant_with_address_and_organistaion()
+        {
+            var request = new ParticipantRequest
+            {
+                Title = "Mr",
+                FirstName = "Test",
+                LastName = "Tester",
+                Username = "TestTester",
+                CaseRoleName = "Claimant",
+                HearingRoleName = "Solicitor",
+                HouseNumber = "123A",
+                Street = "Test Street",
+                Postcode = "SW1V 1AB",
+                City = "Westminister",
+                County = "London"
+            };
+
+            var newParticipant = new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType);
+            newParticipant.Should().NotBeNull();
+            var person = newParticipant.Person;
+            person.Should().NotBeNull();
+            person.Address.Should().NotBeNull();
+            person.Organisation.Should().BeNull();
+        }
+
+        [Test]
+        public void should_map_and_return_newparticipant_with_organistaion()
+        {
+            var request = new ParticipantRequest
+            {
+                Title = "Mr",
+                FirstName = "Test",
+                LastName = "Tester",
+                Username = "TestTester",
+                CaseRoleName = "Respondent",
+                HearingRoleName = "Solicitor",
+                OrganisationName = "Test Corp Ltd"
+            };
+
+            var newParticipant = new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType);
+            newParticipant.Should().NotBeNull();
+            var person = newParticipant.Person;
+            person.Should().NotBeNull();
+            person.Address.Should().BeNull();
+            person.Organisation.Should().NotBeNull();
         }
     }
 }

@@ -12,6 +12,7 @@ using Bookings.Domain.RefData;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Testing.Common.Assertions;
 using NUnit.Framework;
 
 namespace Bookings.UnitTests.Controllers
@@ -31,14 +32,15 @@ namespace Bookings.UnitTests.Controllers
         [Test]
         public async Task should_return_bad_request_when_username_is_not_a_valid_email()
         {
-            const string email = "what";
+            const string username = "what";
 
-            var result = await _controller.GetParticipantsByUsername(email);
+            var result = await _controller.GetParticipantsByUsername(username);
 
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             objectResult.Should().NotBeNull();
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(username), $"Please provide a valid {nameof(username)}");
         }
 
         [Test]

@@ -404,7 +404,7 @@ namespace Bookings.API.Controllers
             const string resourceUrl = hearingsListsEndpointBaseUrl + bookingsEndpointUrl;
 
             var types = string.Empty;
-            if (caseTypes != null && caseTypes.Any())
+            if (caseTypes.Any())
             {
                 types = string.Join("&types=", caseTypes);
             }

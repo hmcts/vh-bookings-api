@@ -16,6 +16,7 @@ using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Bookings.Api.Contract.Requests;
 using System;
+using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
@@ -23,9 +24,9 @@ namespace Bookings.UnitTests.Controllers
 {
     public class HearingsControllerTest
     {
-        private HearingsController _controller;
-        private Mock<IQueryHandler> _queryHandlerMock;
-        private Mock<ICommandHandler> _commandHandlerMock;
+        protected HearingsController _controller;
+        protected Mock<IQueryHandler> _queryHandlerMock;
+        protected Mock<ICommandHandler> _commandHandlerMock;
         private IEventPublisher _eventPublisher;
         private ServiceBusQueueClientFake _sbQueueClient;
 
@@ -46,13 +47,14 @@ namespace Bookings.UnitTests.Controllers
             var caseTypes = new List<int> { 44, 78 };
             _queryHandlerMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
-             .ReturnsAsync(new List<CaseType>());
+             .ReturnsAsync(new List<CaseType> { new CaseType(44, "Financial"), new CaseType(2, "Civil") });
 
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types", "Invalid value for hearing types");
         }
 
         [Test]
@@ -66,20 +68,26 @@ namespace Bookings.UnitTests.Controllers
             _queryHandlerMock
                 .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
+
             var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var response = (BookingsResponse)((ObjectResult)result.Result).Value;
+            response.PrevPageUrl.Should().Be("hearings/types?types=&cursor=0&limit=2");
+            response.NextPageUrl.Should().Be("hearings/types?types=&cursor=next cursor&limit=2");
+            _queryHandlerMock.Verify(q => q.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
+                                            (It.Is<GetBookingsByCaseTypesQuery>(g => g.Cursor == null)), Times.Once);
         }
 
         [Test]
         public async Task should_return_next_and_previous_page_urls()
         {
-            var caseTypes = new List<int> { 1 };
+            var caseTypes = new List<int> { 1, 2 };
             _queryHandlerMock
                 .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
-                .ReturnsAsync(new List<CaseType> { new CaseType(1, "Financial") });
+                .ReturnsAsync(new List<CaseType> { new CaseType(1, "Financial"), new CaseType(2, "Civil") });
 
             _queryHandlerMock
                 .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
@@ -88,8 +96,8 @@ namespace Bookings.UnitTests.Controllers
 
             result.Should().NotBeNull();
             var response = (BookingsResponse)((ObjectResult)result.Result).Value;
-            response.PrevPageUrl.Should().Be("hearings/types?types=1&cursor=0&limit=2");
-            response.NextPageUrl.Should().Be("hearings/types?types=1&cursor=next-cursor&limit=2");
+            response.PrevPageUrl.Should().Be("hearings/types?types=1&types=2&cursor=0&limit=2");
+            response.NextPageUrl.Should().Be("hearings/types?types=1&types=2&cursor=next-cursor&limit=2");
         }
 
         [Test]
@@ -118,7 +126,7 @@ namespace Bookings.UnitTests.Controllers
             typedMessage.Should().NotBeNull();
             typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
         }
-
+        
         [Test]
         public async Task should_change_hearing_status_to_cancelled()
         {
@@ -144,6 +152,20 @@ namespace Bookings.UnitTests.Controllers
             var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.HearingId.Should().Be(hearingId);
+        }
+
+        [Test]
+        public async Task should_not_update_booking_and_return_badrequest_with_an_invalid_hearingid()
+        {
+            var request = new UpdateBookingStatusRequest();
+            var hearingId = Guid.Empty;
+
+            var result = await _controller.UpdateBookingStatus(hearingId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
 
         [Test]
@@ -186,6 +208,55 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
+        public async Task should_return_notfound_when_no_matching_venue_found()
+        {
+            var request = new UpdateHearingRequest
+            {
+                ScheduledDateTime = DateTime.Now.AddDays(2),
+                HearingRoomName = "123",
+                ScheduledDuration = 15,
+                OtherInformation = "note",
+                HearingVenueName = "venue2",
+                Cases = new List<CaseRequest> { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
+            };
+
+            var hearingId = Guid.NewGuid();
+            var hearing = GetHearing();
+            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
+            hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
+                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true);
+            _queryHandlerMock
+            .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+            .ReturnsAsync(hearing);
+
+            var venues = new List<HearingVenue> { new HearingVenue(1, "venue1"), };
+            _queryHandlerMock
+           .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
+           .ReturnsAsync(venues);
+
+            var result = await _controller.UpdateHearingDetails(hearingId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
+        }
+
+        [Test]
+        public async Task should_return_badrequest_with_an_invalid_hearingid()
+        {
+            var request = new UpdateHearingRequest();
+            var hearingId = Guid.Empty;
+
+            var result = await _controller.UpdateHearingDetails(hearingId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+        }
+
+        [Test]
         public async Task should_remove_hearing_with_status_created_and_send_event_to_video()
         {
             var hearingId = Guid.NewGuid();
@@ -208,7 +279,20 @@ namespace Bookings.UnitTests.Controllers
             typedMessage.HearingId.Should().Be(hearingId);
         }
 
-        private VideoHearing GetHearing()
+        [Test]
+        public async Task should_not_remove_hearing_and_return_badrequest_with_an_invalid_hearingid()
+        {
+            var hearingId = Guid.Empty;
+
+            var result = await _controller.RemoveHearing(hearingId);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+        }
+
+        protected VideoHearing GetHearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("123", "Case name", true);
