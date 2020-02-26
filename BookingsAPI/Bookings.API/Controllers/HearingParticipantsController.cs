@@ -99,7 +99,7 @@ namespace Bookings.API.Controllers
 
             if (participantId == Guid.Empty)
             {
-                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
+                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
                 return BadRequest(ModelState);
             }
 
@@ -240,7 +240,7 @@ namespace Bookings.API.Controllers
 
             if (participantId == Guid.Empty)
             {
-                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
+                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
                 return BadRequest(ModelState);
             }
 
@@ -295,7 +295,7 @@ namespace Bookings.API.Controllers
 
             if (participantId == Guid.Empty)
             {
-                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(hearingId)}");
+                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
                 return BadRequest(ModelState);
             }
 
