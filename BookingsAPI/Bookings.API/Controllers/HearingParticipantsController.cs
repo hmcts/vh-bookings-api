@@ -317,7 +317,7 @@ namespace Bookings.API.Controllers
             var participants = videoHearing.GetParticipants();
             if (participants != null)
             {
-                participant = videoHearing.GetParticipants().SingleOrDefault(x => x.Id.Equals(participantId));
+                participant = participants.SingleOrDefault(x => x.Id.Equals(participantId));
             }
 
             if (participant == null)
