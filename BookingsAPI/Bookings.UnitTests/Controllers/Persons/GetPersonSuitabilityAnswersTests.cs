@@ -89,6 +89,25 @@ namespace Bookings.UnitTests.Controllers
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(username), $"Please provide a valid {nameof(username)}");
         }
 
-        
+        [Test]
+        public async Task Should_return_empty_list_of_suitability_answers_if_no_matched_participant_with_username()
+        {
+            var hearing = TestData();
+            var userName = "some@new.com";
+            
+            _queryHandlerMock
+             .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
+             .ReturnsAsync(new List<VideoHearing> { hearing });
+
+            var result = await _controller.GetPersonSuitabilityAnswers(userName);
+
+            result.Should().NotBeNull();
+
+            var objectResult = result as ObjectResult;
+            var data = (List<PersonSuitabilityAnswerResponse>)(objectResult.Value);
+            data.Count.Should().Be(0);
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        }
+
     }
 }

@@ -133,18 +133,24 @@ namespace Bookings.API.Controllers
 
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)
         {
-            var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
-            var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers : new List<SuitabilityAnswer>();
-            var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
-            var personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
-            {
-                HearingId = hearing.Id,
-                ParticipantId = participant.Id,
-                UpdatedAt = participant.Questionnaire?.UpdatedDate ?? DateTime.MinValue,
-                ScheduledAt = hearing.ScheduledDateTime,
-                Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
-                QuestionnaireNotRequired = hearing.QuestionnaireNotRequired
-            };
+            PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;
+            if (hearing.Participants != null) {
+                var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
+                if (participant != null)
+                {
+                    var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers : new List<SuitabilityAnswer>();
+                    var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
+                    personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
+                    {
+                        HearingId = hearing.Id,
+                        ParticipantId = participant.Id,
+                        UpdatedAt = participant.Questionnaire?.UpdatedDate ?? DateTime.MinValue,
+                        ScheduledAt = hearing.ScheduledDateTime,
+                        Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
+                        QuestionnaireNotRequired = hearing.QuestionnaireNotRequired
+                    };
+                }
+            }
 
             return personSuitabilityAnswer;
         }

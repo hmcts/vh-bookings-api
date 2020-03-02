@@ -27,17 +27,25 @@ namespace Bookings.UnitTests.Controllers
         [SetUp]
         public void TestInitialize()
         {
-            var participants = Builder<ParticipantRequest>.CreateListOfSize(1).All()
-               .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
-               .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
-               .Build().ToList();
-            participants[0].CaseRoleName = "Civil Money Claims";
-            participants[0].HearingRoleName = "Claimant LIP";
-            participants[0].FirstName = "Automation_Added Participant";
+            var participants = BuildParticipants(1);
             request = new AddParticipantsToHearingRequest { Participants = participants };
 
         }
-        
+        private List<ParticipantRequest> BuildParticipants(int listSize)
+        {
+            var participants = Builder<ParticipantRequest>.CreateListOfSize(listSize).All()
+               .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
+               .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+               .Build().ToList();
+            participants.ForEach(x =>
+            {
+                x.CaseRoleName = "Civil Money Claims";
+                x.HearingRoleName = "Claimant LIP";
+                x.FirstName = "Automation_Added Participant";
+            });
+
+            return participants;
+        }
 
         [Test]
         public async Task Should_add_given_participants_to_hearing()
@@ -66,6 +74,7 @@ namespace Bookings.UnitTests.Controllers
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.Is<ParticipantsAddedIntegrationEvent>(p => p.HearingId == hearing.Id && p.Participants[0].Username == request.Participants[0].Username)), Times.Once);
         }
+
 
         [Test]
         public async Task Should_return_badrequest_for_given_invalid_hearingid()
@@ -131,6 +140,43 @@ namespace Bookings.UnitTests.Controllers
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("SolicitorsReference", "Solicitor Reference is required");
+        }
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_and_not_PublishParticipantsAddedEvent_if_no_matching_participant_with_username()
+        {
+            var hearing = GetVideoHearing(true);
+            var participants = BuildParticipants(3);
+            request = new AddParticipantsToHearingRequest { Participants = participants };
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            var response = await Controller.AddParticipantsToHearing(hearingId, request);
+
+            response.Should().NotBeNull();
+            QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
+            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantsAddedIntegrationEvent>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_and_PublishParticipantsAddedEvent_if_several_matching_participant_with_username()
+        {
+            var hearing = GetVideoHearing(true);
+            var participants = BuildParticipants(3);
+            participants[0].Username = hearing.Participants[0].Person.Username;
+            participants[1].Username = hearing.Participants[1].Person.Username;
+
+            request = new AddParticipantsToHearingRequest { Participants = participants };
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            var response = await Controller.AddParticipantsToHearing(hearingId, request);
+
+            response.Should().NotBeNull();
+            QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
+            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantsAddedIntegrationEvent>()), Times.Once);
         }
 
     }

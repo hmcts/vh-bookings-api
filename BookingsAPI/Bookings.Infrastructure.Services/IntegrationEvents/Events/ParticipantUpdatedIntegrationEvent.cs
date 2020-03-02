@@ -8,14 +8,18 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
     {
         public ParticipantUpdatedIntegrationEvent(Guid hearingId, Participant participant)
         {
-            HearingId = hearingId;
-            var representee = participant is Representative representative ? representative.Representee : string.Empty;
+            if (participant != null)
+            {
 
-            Participant = new ParticipantDto(participant.Id,
-                $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
-                participant.Person.Username, participant.DisplayName, 
-                participant.HearingRole.Name, participant.HearingRole.UserRole.Name, 
-                participant.CaseRole.Group, representee);
+                HearingId = hearingId;
+                var representee = participant is Representative representative ? representative.Representee : string.Empty;
+
+                Participant = new ParticipantDto(participant.Id,
+                    $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
+                    participant.Person.Username, participant.DisplayName,
+                    participant.HearingRole.Name, participant.HearingRole.UserRole.Name,
+                    participant.CaseRole.Group, representee);
+            }
         }
 
         public Guid HearingId { get; }
