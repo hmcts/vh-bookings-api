@@ -11,6 +11,10 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Testing.Common.Assertions;
+using FizzWare.NBuilder;
+using Bookings.Domain.Participants;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.IntegrationEvents;
 
 namespace Bookings.UnitTests.Controllers
 {
@@ -88,6 +92,38 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
+        public async Task Should_return_notfound_with_no_matching_participants()
+        {
+            var videoHearing = Builder<VideoHearing>.CreateNew().Build();
+
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(videoHearing);
+
+            var result = await Controller.UpdateParticipantDetails(hearingId, participantId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (NotFoundResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_pablish_event_if_state_is_created()
+        {
+            var videoHearing = GetVideoHearing(true);
+
+            var participant = videoHearing.Participants[0];
+            EventPublisher.Setup(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>())).Verifiable();
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(videoHearing);
+
+            var result = await Controller.UpdateParticipantDetails(hearingId, participant.Id, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (OkObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.Once);
+        }
+
+        [Test]
         public async Task Should_return_badrequest_for_given_request_with_invalid_address()
         {
             var hearing = GetVideoHearing();
@@ -97,7 +133,6 @@ namespace Bookings.UnitTests.Controllers
             participantId = hearing.Participants[0].Id;
 
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
-
             var result = await Controller.UpdateParticipantDetails(hearingId, participantId, request);
 
             result.Should().NotBeNull();

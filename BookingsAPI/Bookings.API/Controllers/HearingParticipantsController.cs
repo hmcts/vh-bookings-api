@@ -313,8 +313,13 @@ namespace Bookings.API.Controllers
             {
                 return NotFound();
             }
+            Participant participant = null;
+            var participants = videoHearing.GetParticipants();
+            if (participants != null)
+            {
+                participant = participants.SingleOrDefault(x => x.Id.Equals(participantId));
+            }
 
-            var participant = videoHearing.GetParticipants().Single(x => x.Id.Equals(participantId));
             if (participant == null)
             {
                 return NotFound();
@@ -355,11 +360,16 @@ namespace Bookings.API.Controllers
             var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
 
             var participantMapper = new ParticipantToResponseMapper();
-            var response = participantMapper.MapParticipantToResponse(updatedParticipant);
+
+            ParticipantResponse response = null;
+            if (updatedParticipant != null)
+            {
+                response = participantMapper.MapParticipantToResponse(updatedParticipant);
+            }
 
             // ONLY publish this event when Hearing is set for ready for video
             if (videoHearing.Status == Domain.Enumerations.BookingStatus.Created)
-            {
+            { 
                 await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearingId, updatedParticipant));
             }
 
@@ -429,7 +439,10 @@ namespace Bookings.API.Controllers
         private async Task PublishParticipantsAddedEvent(IEnumerable<NewParticipant> newParticipants, Hearing hearing)
         {
             var participants = hearing.GetParticipants().Where(x => newParticipants.Any(y => y.Person.Username == x.Person.Username));
-            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing.Id, participants));
+            if (participants != null && participants.Any())
+            {
+                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing.Id, participants));
+            }
         }
     }
 }
