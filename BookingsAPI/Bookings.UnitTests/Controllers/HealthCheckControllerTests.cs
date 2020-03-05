@@ -56,5 +56,15 @@ namespace Bookings.UnitTests.Controllers
             response.DatabaseHealth.ErrorMessage.Should().BeNullOrWhiteSpace();
             response.DatabaseHealth.Data.Should().BeNullOrEmpty();
         }
+
+        [Test]
+        public async Task should_return_the_application_version_from_assembly()
+        {
+            var result = await _controller.CheckServiceHealth();
+            var typedResult = (ObjectResult)result;
+            var response = (BookingsApiHealthResponse)typedResult.Value;
+            response.AppVersion.FileVersion.Should().NotBeNullOrEmpty();
+            response.AppVersion.InformationVersion.Should().NotBeNullOrEmpty();
+        }
     }
 }
