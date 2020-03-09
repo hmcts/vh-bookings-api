@@ -11,11 +11,18 @@ BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
  TRIMMED=$(echo $BRANCH_NAME | sed -e 's/.*\/*\(VIH-[0-9]\{4\}\).*/\1/')
 # get the current commit message
 currentmsg=$(cat "$COMMIT_MSG_FILE")
-
-valid_mesg_regex="^(VIH-[0-9]{4} : )[a-zA-Z0-9._-]+$"
+message="Commit message must start with the prefix 'feature/VIH-XXXX : '. Your commit will be rejected. You should rename your commit to a valid name and try again."
+valid_mesg_regex="^(feature\/VIH-[0-9]{4} : )[a-zA-Z0-9._-]+$"
+task_regex="^(VIH-[0-9]{4})[a-zA-Z0-9._-]+$"
 if [[ ! $currentmsg =~ $valid_mesg_regex ]]
 then
-    echo "${TRIMMED} : ${currentmsg} " > "$COMMIT_MSG_FILE"
+if [[ ! $currentmsg =~ $task_regex ]]
+then
+    echo "feature\${TRIMMED} : ${currentmsg} " > "$COMMIT_MSG_FILE"
+	exit 0
+	fi
+	 echo "$message"
+	 exit 1
 fi
 
 
