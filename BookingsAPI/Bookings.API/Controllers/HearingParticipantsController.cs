@@ -367,7 +367,6 @@ namespace Bookings.API.Controllers
                 response = participantMapper.MapParticipantToResponse(updatedParticipant);
             }
 
-
             // ONLY publish this event when Hearing is set for ready for video
             if (videoHearing.Status == Domain.Enumerations.BookingStatus.Created)
             { 
