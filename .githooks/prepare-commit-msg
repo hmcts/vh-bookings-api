@@ -15,7 +15,7 @@ currentmsg=$(cat "$COMMIT_MSG_FILE")
 valid_mesg_regex="^(VIH-[0-9]{4} : )[a-zA-Z0-9._-]+$"
 if [[ ! $currentmsg =~ $valid_mesg_regex ]]
 then
-    echo "${TRIMMED}${currentmsg} " > "$COMMIT_MSG_FILE"
+    echo "${TRIMMED} : ${currentmsg} " > "$COMMIT_MSG_FILE"
 fi
 
 
