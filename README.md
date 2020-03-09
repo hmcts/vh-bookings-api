@@ -23,10 +23,13 @@ dotnet sonarscanner end
 
 ##Branch name git hook will run on pre commit and control the standard for new branch name.
 
-The branch name should start with: feature/VIH-XXX  (X - is digit).
+The branch name should start with: feature/VIH-XXXX  (X - is digit).
 If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
 To change git hooks directory to directory under source control run (works only for git version 2.9 or greater) :
 $ git config core.hooksPath .githooks
 
-
+##Commit message 
+The commit message will be validated by prepare-commit-msg hook.
+If the number of task is included in the message, but format is not match pattern : 'feature/VIH-XXXX : ', then worning message will be present.
+If no number task is included, then the prefix 'feature/VIH-XXXX : ' will be prepended.
 ```
