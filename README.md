@@ -21,4 +21,12 @@ dotnet sonarscanner begin /k:"vh-bookings-api" /d:sonar.cs.opencover.reportsPath
 dotnet build BookingsAPI/BookingsApi.sln
 dotnet sonarscanner end
 
+##Branch name git hook will run on pre commit and control the standard for new branch name.
+
+The branch name should start with: feature/VIH-XXX  (X - is digit).
+If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
+To change git hooks directory to directory under source control run (works only for git version 2.9 or greater) :
+$ git config core.hooksPath .githooks
+
+
 ```
