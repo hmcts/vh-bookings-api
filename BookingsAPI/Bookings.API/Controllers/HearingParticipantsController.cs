@@ -368,6 +368,7 @@ namespace Bookings.API.Controllers
             }
 
             // ONLY publish this event when Hearing is set for ready for video
+
             if (videoHearing.Status == Domain.Enumerations.BookingStatus.Created)
             { 
                 await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearingId, updatedParticipant));
