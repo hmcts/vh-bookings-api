@@ -30,6 +30,6 @@ $ git config core.hooksPath .githooks
 
 ##Commit message 
 The commit message will be validated by prepare-commit-msg hook.
-If the number of task is included in the message, but format is not match pattern : 'feature/VIH-XXXX : ', then worning message will be present.
-If no number task is included, then the prefix 'feature/VIH-XXXX : ' will be prepended.
+The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters, otherwise the warning message will be presented.
+
 ```
