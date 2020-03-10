@@ -13,22 +13,16 @@ BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 currentmsg=$(cat "$COMMIT_MSG_FILE")
 message="Commit message must start with the prefix 'feature/VIH-XXXX : '. Your commit will be rejected. You should rename your commit to a valid name and try again."
 valid_mesg_regex="^(feature\/VIH-[0-9]{4} : )[a-zA-Z0-9._-]{8,}+$"
-task_regex="^(VIH-[0-9]{4})[a-zA-Z0-9._-]{8,}+$"
 
 feature="feature/"
 
 if [[ ! $currentmsg =~ $valid_mesg_regex ]]
 then
-if [[ ! $currentmsg =~ $task_regex ]]
-then
-    echo "$feature${TRIMMED} : ${currentmsg} " > "$COMMIT_MSG_FILE"
-	exit 0
-	fi
 	 echo "$message"
-	 exit 1
+	exit 1
+	fi
+	 exit 0
 fi
-
-
 
 
 
