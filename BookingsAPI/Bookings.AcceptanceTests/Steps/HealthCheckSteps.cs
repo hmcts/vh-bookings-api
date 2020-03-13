@@ -1,4 +1,6 @@
 ﻿using Bookings.AcceptanceTests.Contexts;
+using Bookings.Api.Contract.Responses;
+using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
@@ -19,6 +21,16 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAGetHealthRequest()
         {
             _context.Request = _context.Get(_endpoints.HealthCheck);
+        }
+
+        [Then(@"the application version should be retrieved")]
+        public void ThenTheApplicationVersionShouldBeRetrieved()
+        {
+            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsApiHealthResponse>(_context.Json);
+            model.Should().NotBeNull();
+            model.AppVersion.Should().NotBeNull();
+            model.AppVersion.FileVersion.Should().NotBeNull();
+            model.AppVersion.InformationVersion.Should().NotBeNull();
         }
     }
 }
