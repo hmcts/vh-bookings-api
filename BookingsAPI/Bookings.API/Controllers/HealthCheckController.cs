@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
@@ -38,6 +39,7 @@ namespace Bookings.API.Controllers
         public async Task<IActionResult> CheckServiceHealth()
         {
             var response = new BookingsApiHealthResponse();
+            response.AppVersion = GetApplicationVersion();
             try
             {
                 var query = new GetHearingVenuesQuery();
@@ -60,6 +62,20 @@ namespace Bookings.API.Controllers
             return !response.DatabaseHealth.Successful
                 ? StatusCode((int) HttpStatusCode.InternalServerError, response)
                 : Ok(response);
+        }
+
+        private ApplicationVersion GetApplicationVersion()
+        {
+            var applicationVersion = new ApplicationVersion();
+            applicationVersion.FileVersion = GetExecutingAssemblyAttribute<AssemblyFileVersionAttribute>(a => a.Version);
+            applicationVersion.InformationVersion = GetExecutingAssemblyAttribute<AssemblyInformationalVersionAttribute>(a => a.InformationalVersion);
+            return applicationVersion;
+        }
+
+        private string GetExecutingAssemblyAttribute<T>(Func<T, string> value) where T : Attribute
+        {
+            T attribute = (T)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(T));
+            return value.Invoke(attribute);
         }
     }
 }

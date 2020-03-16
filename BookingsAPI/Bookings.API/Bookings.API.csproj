@@ -5,6 +5,9 @@
   
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DocumentationFile>
     </DocumentationFile>
