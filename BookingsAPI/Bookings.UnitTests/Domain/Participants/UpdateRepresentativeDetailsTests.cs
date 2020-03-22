@@ -10,7 +10,7 @@ namespace Bookings.UnitTests.Domain.Participants
     public class UpdateRepresentativeDetailsTests
     {
         [Test]
-        public void should_update_participant_with_user_role_representative_details()
+        public void Should_update_participant_with_user_role_representative_details()
         {
             var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var representative = (Representative)participant;
@@ -24,7 +24,7 @@ namespace Bookings.UnitTests.Domain.Participants
         }
 
         [Test]
-        public void should_throw_exception_when_validation_fails()
+        public void Should_throw_exception_when_validation_fails()
         {
             var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var representativeParticipant = (Representative)participant;

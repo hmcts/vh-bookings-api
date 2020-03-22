@@ -11,7 +11,7 @@ namespace Bookings.UnitTests.Domain.Participants
 
 
         [Test]
-        public void should_update_participant_with_user_role_individual_details()
+        public void Should_update_participant_with_user_role_individual_details()
         {
             var individualParticipant = new ParticipantBuilder().IndividualPrticipantClaimant;
             var displayName = "Edit Display Name";
@@ -37,7 +37,7 @@ namespace Bookings.UnitTests.Domain.Participants
         }
 
         [Test]
-        public void should_update_participant_with_user_role_representative_details()
+        public void Should_update_participant_with_user_role_representative_details()
         {
             var representativeParticipant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var displayName = "Edit Display Name";
@@ -61,7 +61,7 @@ namespace Bookings.UnitTests.Domain.Participants
         }
 
         [Test]
-        public void should_throw_exception_when_validation_fails()
+        public void Should_throw_exception_when_validation_fails()
         {
             var individualParticipant = new ParticipantBuilder().IndividualPrticipantClaimant;
             var displayName = "";

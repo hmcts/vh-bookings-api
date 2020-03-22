@@ -25,7 +25,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_HearingCancelledIntegrationEvent_is_raised()
+        public void Should_publish_message_to_queue_when_HearingCancelledIntegrationEvent_is_raised()
         {
             var hearingCancelledEvent = new HearingCancelledIntegrationEvent(Guid.NewGuid());
             _eventPublisher.PublishAsync(hearingCancelledEvent);
@@ -36,7 +36,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_HearingDetailsUpdatedIntegrationEvent_is_raised()
+        public void Should_publish_message_to_queue_when_HearingDetailsUpdatedIntegrationEvent_is_raised()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.CaseType = new CaseType(1, "test");
@@ -51,7 +51,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_ParticipantsAddedIntegrationEvent_is_raised()
+        public void Should_publish_message_to_queue_when_ParticipantsAddedIntegrationEvent_is_raised()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.CaseType = new CaseType(1, "test");
@@ -71,7 +71,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_ParticipantRemovedIntegrationEvent_is_raised()
+        public void Should_publish_message_to_queue_when_ParticipantRemovedIntegrationEvent_is_raised()
         {
             var participantRemovedIntegrationEvent = new ParticipantRemovedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid());
             _eventPublisher.PublishAsync(participantRemovedIntegrationEvent);
@@ -82,7 +82,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_ParticipantUpdatedIntegrationEvent_is_raised()
+        public void Should_publish_message_to_queue_when_ParticipantUpdatedIntegrationEvent_is_raised()
         {
             var hearing = new VideoHearingBuilder().Build();
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
@@ -99,7 +99,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised()
+        public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.CaseType = new CaseType(1, "test");

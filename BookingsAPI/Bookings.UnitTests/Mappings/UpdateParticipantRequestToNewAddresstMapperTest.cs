@@ -18,7 +18,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_address_fields_request_to_address()
+        public void Should_map_address_fields_request_to_address()
         {
             var mapper = new UpdateParticipantRequestToNewAddressMapper();
             var address = mapper.MapRequestToNewAddress(UpdateParticipantRequest);

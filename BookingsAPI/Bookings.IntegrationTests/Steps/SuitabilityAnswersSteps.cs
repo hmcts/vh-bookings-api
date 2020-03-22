@@ -3,17 +3,16 @@ using FluentAssertions;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AcceptanceTests.Common.Api.Helpers;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api;
+using static Testing.Common.Builders.Api.ApiUriFactory.SuitabilityAnswerEndpoints;
 
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class SuitabilityAnswersSteps : StepsBase
+    public sealed class SuitabilityAnswersBaseSteps : BaseSteps
     {
-        private readonly SuitabilityAnswerEndpoints _endpoints = new ApiUriFactory().SuitabilityAnswerEndpoints;
-
-        public SuitabilityAnswersSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
+        public SuitabilityAnswersBaseSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
         {
         }
 
@@ -21,17 +20,16 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveTheSuitableAnswersForParticipants()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
-            Context.NewHearingId = seededHearing.Id;
-            Context.Uri = _endpoints.GetSuitabilityAnswers("");
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.Uri = GetSuitabilityAnswers("");
             Context.HttpMethod = HttpMethod.Get;
         }
-
 
         [Then(@"suitable answers should be retrieved")]
         public async Task ThenSuitableAnswersShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
             model.Should().NotBeNull();
             model.PrevPageUrl.Should().NotBe(model.NextPageUrl);
             model.ParticipantSuitabilityAnswerResponse.Should().NotBeNull();
@@ -51,16 +49,16 @@ namespace Bookings.IntegrationTests.Steps
             var firstHearing =  await Context.TestDataManager.SeedVideoHearing(true);
             var secondHearing = await Context.TestDataManager.SeedVideoHearing(true);
 
-            Context.OldHearingId = firstHearing.Id;
-            Context.NewHearingId = secondHearing.Id;
+            Context.TestData.OldHearingId = firstHearing.Id;
+            Context.TestData.NewHearingId = secondHearing.Id;
             
-            Context.Uri = _endpoints.GetSuitabilityAnswerWithLimit("", 1);
+            Context.Uri = GetSuitabilityAnswerWithLimit("", 1);
             Context.HttpMethod = HttpMethod.Get;
             var response = await SendGetRequestAsync(Context);
             var json = await response.Content.ReadAsStringAsync();
-            var bookings = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
+            var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
 
-            Context.Uri = _endpoints.GetSuitabilityAnswerWithLimit(bookings.NextCursor, 1);
+            Context.Uri = GetSuitabilityAnswerWithLimit(bookings.NextCursor, 1);
         }
     }
 }

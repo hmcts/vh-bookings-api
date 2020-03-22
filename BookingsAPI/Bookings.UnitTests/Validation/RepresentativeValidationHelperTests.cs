@@ -10,7 +10,7 @@ namespace Bookings.UnitTests.Validation
     public class RepresentativeValidationHelperTests
     {
         [Test]
-        public void should_pass_validation()
+        public void Should_pass_validation()
         {
             var request = BuildRequest();
 
@@ -20,7 +20,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public void should_fail_validaion_with_empty_solicitors_refernce_and_representee()
+        public void Should_fail_validaion_with_empty_solicitors_refernce_and_representee()
         {
             var request = BuildRequest(true);
             var result = RepresentativeValidationHelper.ValidateRepresentativeInfo(request);

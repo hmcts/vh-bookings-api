@@ -1,14 +1,14 @@
-﻿using Bookings.API.Controllers;
+﻿using System;
+using System.Linq;
+using Bookings.API.Controllers;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 using Moq;
 using NUnit.Framework;
-using System;
 using Testing.Common.Builders.Domain;
-using System.Linq;
-using Bookings.Domain.Participants;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.Persons
 {
     public class PersonsControllerTest
     {

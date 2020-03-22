@@ -1,19 +1,19 @@
-﻿using Bookings.Api.Contract.Responses;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using Testing.Common.Assertions;
-using System.Linq;
-using Bookings.Domain.Participants;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.Persons
 {
     public class GetPersonSuitabilityAnswersTests : PersonsControllerTest
     {

@@ -17,6 +17,7 @@ using Bookings.Infrastructure.Services.ServiceBusQueue;
 using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
+using Testing.Common.Configuration;
 
 namespace Bookings.API
 {
@@ -69,10 +70,11 @@ namespace Bookings.API
         
         private void RegisterSettings(IServiceCollection services)
         {
-            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
+            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd", options));
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
+            services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
         }
-        
+
         private void RegisterAuth(IServiceCollection serviceCollection)
         {
             var policy = new AuthorizationPolicyBuilder()
@@ -82,7 +84,8 @@ namespace Bookings.API
             serviceCollection.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(policy)); });
 
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            
+            var serviceSettings = Configuration.GetSection("Services").Get<ServicesConfiguration>();
+
             serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -91,7 +94,7 @@ namespace Bookings.API
             {
                 options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
                 options.TokenValidationParameters.ValidateLifetime = true;
-                options.Audience = securitySettings.VhBookingsApiResourceId;
+                options.Audience = serviceSettings.BookingsApiResourceId;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 options.RequireHttpsMetadata = true;
             });

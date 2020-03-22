@@ -11,7 +11,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <DocumentationFile>
     </DocumentationFile>
-    <UserSecretsId>d76b6eb8-f1a2-4a51-9b8f-21e1b6b81e4f</UserSecretsId>
+    <UserSecretsId>D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F</UserSecretsId>
   </PropertyGroup>
   
   <ItemGroup>

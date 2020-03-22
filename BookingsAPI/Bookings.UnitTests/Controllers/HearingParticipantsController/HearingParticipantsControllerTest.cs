@@ -1,4 +1,5 @@
-﻿using Bookings.API.Controllers;
+﻿using System;
+using System.Collections.Generic;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
@@ -8,11 +9,9 @@ using Bookings.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.HearingParticipantsController
 {
     public class HearingParticipantsControllerTest
     {
@@ -46,7 +45,7 @@ namespace Bookings.UnitTests.Controllers
             }
         }
 
-        protected HearingParticipantsController Controller;
+        protected API.Controllers.HearingParticipantsController Controller;
 
         protected Guid hearingId;
         protected Guid participantId;
@@ -80,7 +79,7 @@ namespace Bookings.UnitTests.Controllers
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
 
-            Controller = new HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
+            Controller = new API.Controllers.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);

@@ -41,7 +41,7 @@ namespace Bookings.UnitTests.Mappings
         }
         
         [Test]
-        public void should_raise_bad_request_exception_on_invalid_case_role()
+        public void Should_raise_bad_request_exception_on_invalid_case_role()
         {
             var request = new ParticipantRequest
             {
@@ -54,7 +54,7 @@ namespace Bookings.UnitTests.Mappings
         }
         
         [Test]
-        public void should_raise_bad_request_exception_on_invalid_hearing_role()
+        public void Should_raise_bad_request_exception_on_invalid_hearing_role()
         {
             var request = new ParticipantRequest
             {
@@ -67,7 +67,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_and_return_newparticipant_with_address_and_organistaion()
+        public void Should_map_and_return_newparticipant_with_address_and_organistaion()
         {
             var request = new ParticipantRequest
             {
@@ -93,7 +93,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_and_return_newparticipant_with_organistaion()
+        public void Should_map_and_return_newparticipant_with_organistaion()
         {
             var request = new ParticipantRequest
             {

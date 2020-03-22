@@ -9,18 +9,18 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using AcceptanceTests.Common.Api.Helpers;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api;
+using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;
 
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public class PersonSteps : StepsBase
+    public class PersonBaseSteps : BaseSteps
     {
-        private readonly PersonEndpoints _endpoints = new ApiUriFactory().PersonEndpoints;
         private string _username;
 
-        public PersonSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
+        public PersonBaseSteps(Contexts.TestContext apiTestContext) : base(apiTestContext)
         {
             _username = string.Empty;
         }
@@ -30,7 +30,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetPersonByUsernameRequest(Scenario scenario)
         {
             await SetUserNameForGivenScenario(scenario);
-            Context.Uri = _endpoints.GetPersonByUsername(_username);
+            Context.Uri = GetPersonByUsername(_username);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Steps
                 case Scenario.Valid:
                     {
                         var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-                        Context.NewHearingId = seededHearing.Id;
+                        Context.TestData.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         if (personType.Equals("individual"))
                         {
@@ -63,7 +63,7 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            Context.Uri = _endpoints.GetPersonByContactEmail(_username);
+            Context.Uri = GetPersonByContactEmail(_username);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -72,14 +72,14 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetPersonByContactEmailSearchTermRequest()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
-            var searchTerm = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(
+            var searchTerm = RequestHelper.SerialiseRequestToSnakeCaseJson(
                 new SearchTermRequest(email.Substring(0, 3))
                 );
 
-            Context.Uri = _endpoints.PostPersonBySearchTerm();
+            Context.Uri = PostPersonBySearchTerm;
             Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = new StringContent(searchTerm, Encoding.UTF8, "application/json");
 
@@ -89,13 +89,13 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetPersonByContactEmailSearchTermRequestThatCaseInsensitive()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
-            var searchTerm = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(
+            var searchTerm = RequestHelper.SerialiseRequestToSnakeCaseJson(
                 new SearchTermRequest(email.Substring(0, 3).ToUpperInvariant())
                 );
-            Context.Uri = _endpoints.PostPersonBySearchTerm();
+            Context.Uri = PostPersonBySearchTerm;
             Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = new StringContent(searchTerm, Encoding.UTF8, "application/json");
         }
@@ -104,7 +104,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
             await SetUserNameForGivenScenario(scenario, true, true);
-            Context.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
+            Context.Uri = GetPersonSuitabilityAnswers(_username);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -112,15 +112,15 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetPersonWithoutSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
             await SetUserNameForGivenScenario(scenario, false);
-            Context.Uri = _endpoints.GetPersonSuitabilityAnswers(_username);
+            Context.Uri = GetPersonSuitabilityAnswers(_username);
             Context.HttpMethod = HttpMethod.Get;
         }
 
         [Then(@"person details should be retrieved")]
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
             model.Should().NotBeNull();
             ValidatePersonData(model);
         }
@@ -140,8 +140,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"person address should be retrieved")]
         public async Task ThenPersonAddressShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
             model.Should().NotBeNull();
             model.Organisation.Should().NotBeNullOrEmpty();
             model.Id.Should().NotBeEmpty();
@@ -156,8 +156,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"persons details should be retrieved")]
         public async Task ThenPersonsDetailsShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(json);
             model[0].Should().NotBeNull();
             ValidatePersonData(model[0]);
         }
@@ -165,14 +165,14 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"suitability answers retrieved should '(.*)'")]
         public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved(string scenario)
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
 
             model[0].Should().NotBeNull();
             model[0].HearingId.Should().NotBeEmpty();
-            model[0].HearingId.Should().Be(Context.NewHearingId);
+            model[0].HearingId.Should().Be(Context.TestData.NewHearingId);
             model[0].ParticipantId.Should().NotBeEmpty();
-            model[0].ParticipantId.Should().Be(Context.Participant.Id);
+            model[0].ParticipantId.Should().Be(Context.TestData.Participant.Id);
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
             model[0].QuestionnaireNotRequired.Should().Be(false);
 
@@ -197,7 +197,7 @@ namespace Bookings.IntegrationTests.Steps
                 case Scenario.Valid:
                     {
                         var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer);
-                        Context.NewHearingId = seededHearing.Id;
+                        Context.TestData.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         var participants = seededHearing.GetParticipants();
                         if(hasSuitability)
@@ -208,7 +208,7 @@ namespace Bookings.IntegrationTests.Steps
                         {
                             _username = participants.First().Person.Username;
                         }
-                        Context.Participant = participants.First(p => p.Person.Username.Equals(_username));
+                        Context.TestData.Participant = participants.First(p => p.Person.Username.Equals(_username));
                         break;
                     }
                 case Scenario.Nonexistent:

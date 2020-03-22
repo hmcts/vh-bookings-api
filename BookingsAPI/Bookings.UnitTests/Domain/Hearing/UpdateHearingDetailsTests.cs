@@ -12,7 +12,7 @@ namespace Bookings.UnitTests.Domain.Hearing
     public class UpdateHearingDetailsTests
     {
         [Test]
-        public void should_update_hearing_details()
+        public void Should_update_hearing_details()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("0875", "Test Case Add", false);
@@ -42,7 +42,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_throw_exception_when_validation_fails()
+        public void Should_throw_exception_when_validation_fails()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("0875", "Test Case Add", false);

@@ -1,10 +1,9 @@
-﻿
-using Bookings.API.Controllers;
+﻿using Bookings.API.Controllers;
 using Bookings.DAL.Queries.Core;
 using Moq;
 using NUnit.Framework;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.CaseTypes
 {
     public class CaseTypesControllerTests
     {

@@ -82,7 +82,7 @@ namespace Bookings.AcceptanceTests.Models
 
         public BookNewHearingRequest Build()
         {
-            _context.HearingRequest = _request;
+            _context.TestData.CreateHearingRequest = _request;
             return _request;
         }
     }

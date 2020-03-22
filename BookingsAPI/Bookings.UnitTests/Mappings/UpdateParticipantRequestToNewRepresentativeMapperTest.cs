@@ -18,7 +18,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_representative_fields_request_to_representative_info()
+        public void Should_map_representative_fields_request_to_representative_info()
         {
             var mapper = new UpdateParticipantRequestToNewRepresentativeMapper();
             var representativeInfo = mapper.MapRequestToNewRepresentativeInfo(UpdateParticipantRequest);

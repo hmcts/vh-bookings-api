@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Api.Contract.Requests;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
-using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -20,15 +18,12 @@ namespace Bookings.IntegrationTests.Helper
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
-        private BuilderSettings BuilderSettings { get; }
         private Guid _individualId;
         private List<Guid> _participantSolicitorIds;
 
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
         {
             _dbContextOptions = dbContextOptions;
-
-            BuilderSettings = new BuilderSettings();
         }
 
         public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false)
@@ -86,7 +81,7 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", false);
 
-            using (var db = new BookingsDbContext(_dbContextOptions))
+            await using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 await db.VideoHearings.AddAsync(videoHearing);
                 await db.SaveChangesAsync();
@@ -113,13 +108,11 @@ namespace Bookings.IntegrationTests.Helper
 
         private async Task AddQuestionnaire()
         {
-            using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                AddIndividualQuestionnaire(db);
-                AddRepresentativeQuestionnaire(db);
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            AddIndividualQuestionnaire(db);
+            AddRepresentativeQuestionnaire(db);
 
-                await db.SaveChangesAsync();
-            }
+            await db.SaveChangesAsync();
         }
 
         private void AddIndividualQuestionnaire(BookingsDbContext db)

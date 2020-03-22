@@ -1,4 +1,8 @@
-﻿using Bookings.DAL.Commands;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
@@ -7,13 +11,9 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using Testing.Common.Assertions;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.HearingParticipantsController
 {
     public class RemoveParticipantFromHearingTests : HearingParticipantsControllerTest
     {

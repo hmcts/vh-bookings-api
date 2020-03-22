@@ -27,7 +27,7 @@ namespace Bookings.UnitTests.Controllers
         }
         
         [Test]
-        public async Task should_return_server_error_when_service_is_unhealthy()
+        public async Task Should_return_server_error_when_service_is_unhealthy()
         {
             _quryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
@@ -42,7 +42,7 @@ namespace Bookings.UnitTests.Controllers
         }
         
         [Test]
-        public async Task should_return_ok_when_service_is_healthy()
+        public async Task Should_return_ok_when_service_is_healthy()
         {
             _quryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
@@ -58,7 +58,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_the_application_version_from_assembly()
+        public async Task Should_return_the_application_version_from_assembly()
         {
             var result = await _controller.CheckServiceHealth();
             var typedResult = (ObjectResult)result;

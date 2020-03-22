@@ -10,7 +10,7 @@ namespace Bookings.DAL
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
-                .AddUserSecrets("d76b6eb8-f1a2-4a51-9b8f-21e1b6b81e4f")
+                .AddUserSecrets("D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F")
                 .Build();
             var builder = new DbContextOptionsBuilder<BookingsDbContext>();
             builder.UseSqlServer(config.GetConnectionString("VhBookings"));

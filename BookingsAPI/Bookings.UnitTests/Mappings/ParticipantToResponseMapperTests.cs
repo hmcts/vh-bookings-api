@@ -14,7 +14,7 @@ namespace Bookings.UnitTests.Mappings
         private readonly ParticipantToResponseMapper _mapper = new ParticipantToResponseMapper();
         
         [Test]
-        public void should_map_judge()
+        public void Should_map_judge()
         {
             var caseRole = new CaseRole(5, "Judge");
             var hearingRole = new HearingRole(13, "Judge") {UserRole = new UserRole(4, "Judge")};
@@ -38,7 +38,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_individual()
+        public void Should_map_individual()
         {
             var caseRole = new CaseRole(1, "Claimant");
             var hearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(5, "Individual")};
@@ -61,7 +61,7 @@ namespace Bookings.UnitTests.Mappings
         }
         
         [Test]
-        public void should_map_representative()
+        public void Should_map_representative()
         {
             var caseRole = new CaseRole(1, "Claimant");
             var hearingRole = new HearingRole(2, "Solicitor") {UserRole = new UserRole(6, "Representative")};

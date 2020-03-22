@@ -26,7 +26,6 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
         
         public Task PublishMessageAsync(EventMessage eventMessage)
         {
-            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
             _eventMessages.Enqueue(eventMessage);
             return Task.CompletedTask;
         }

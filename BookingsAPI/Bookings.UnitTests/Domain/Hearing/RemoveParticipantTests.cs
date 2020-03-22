@@ -13,7 +13,7 @@ namespace Bookings.UnitTests.Domain.Hearing
     public class RemoveParticipantTests
     {
         [Test]
-        public void should_remove_existing_participant_from_hearing()
+        public void Should_remove_existing_participant_from_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeCount = hearing.GetParticipants().Count;
@@ -25,7 +25,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
         
         [Test]
-        public void should_not_remove_participant_that_does_not_exist_in_hearing()
+        public void Should_not_remove_participant_that_does_not_exist_in_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             
@@ -42,7 +42,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_not_remove_participant_when_count_is_below_two()
+        public void Should_not_remove_participant_when_count_is_below_two()
         {
             var hearing = new VideoHearingBuilder().Build();
             var currentCount = hearing.GetParticipants().Count;
