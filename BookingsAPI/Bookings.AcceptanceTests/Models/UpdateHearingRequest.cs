@@ -6,11 +6,11 @@ namespace Bookings.AcceptanceTests.Models
 {
     internal static class UpdateHearingRequest
     {
-        public static Api.Contract.Requests.UpdateHearingRequest BuildRequest()
+        public static Api.Contract.Requests.UpdateHearingRequest BuildRequest(string caseName)
         {
             var caseList = new List<CaseRequest>
             {
-                new CaseRequest {Name = "CaseName", Number = "CaseNumber"}
+                new CaseRequest {Name = caseName, Number = "CaseNumber"}
             };
 
             return new Api.Contract.Requests.UpdateHearingRequest

@@ -48,7 +48,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a valid update hearing request")]
         public void GivenIHaveAValidUpdateHearingRequest()
         {
-            var updateHearingRequest = UpdateHearingRequest.BuildRequest();
+            var updateHearingRequest = UpdateHearingRequest.BuildRequest(_context.TestData.CaseName);
             _context.Request = _context.Put(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingRequest);
         }
 
