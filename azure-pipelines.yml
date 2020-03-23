@@ -9,10 +9,10 @@ variables:
   coverletCoverageExclusions: "[*]Bookings.Common.*,[*]Testing.Common.*,[Bookings.DAL]Bookings.DAL.BookingsDbContext,[*]Bookings.DAL.Mappings,[*]Bookings.DAL.Migrations,[*]Bookings.DAL.SeedData.*,[*]Bookings.DAL.Exceptions.*,[*]Bookings.DAL.Mappings.*,[*]Bookings.DAL.Migrations.*,[*]Bookings.DAL.Commands.Core.*,[*]Bookings.DAL.Queries.Core.*,[*]Bookings.Domain.Ddd.*,[Bookings.DAL]Bookings.DAL.DesignTimeHearingsContextFactory,[Bookings.API]Bookings.API.ConfigureServicesExtensions,[*]Bookings.API.Extensions.*,[*]Bookings.API.Swagger.*,[Bookings.API]Bookings.API.Program,[Bookings.API]Bookings.API.Startup"
   integrationTestsAppSettingsTransform: '
     "AzureAd/ClientId":"$(vh-admin-web-appid)",
-    "AzureAd/ClientSecret":"$(vh-admin-web-key)"
+    "AzureAd/ClientSecret":"$(vh-admin-web-key)",
     "AzureAd/TenantId":"$(tenantid)",
     "Testing/UsernameStem":"$(username-stem)",
-    "Services/BookingsApiResourceId":"$(vh-bookings-api-identifieruris)",
+    "Services/BookingsApiResourceId":"$(vh-bookings-api-identifieruris)"
     '
   dalWorkingDirectory: "BookingsAPI/Bookings.DAL"
   keyVaultName: vhcoreinfrahtdev # Used to get secrets for integration tests
