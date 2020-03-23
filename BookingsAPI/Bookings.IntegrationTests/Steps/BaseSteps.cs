@@ -16,7 +16,7 @@ namespace Bookings.IntegrationTests.Steps
         protected BaseSteps(TestContext testContext)
         {
             Context = testContext;
-            BookingsDbContextOptions = testContext.Config.BookingsDbContextOptions;
+            BookingsDbContextOptions = testContext.BookingsDbContextOptions;
             TestDataManager = testContext.TestDataManager;
         }
 

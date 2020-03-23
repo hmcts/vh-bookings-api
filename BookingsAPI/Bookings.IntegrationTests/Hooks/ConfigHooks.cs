@@ -97,8 +97,8 @@ namespace Bookings.IntegrationTests.Hooks
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(context.Config.ConnectionStrings.VhBookings);
-            context.Config.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            context.TestDataManager = new TestDataManager(context.Config.BookingsDbContextOptions, context.TestData.CaseName);
+            context.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
+            context.TestDataManager = new TestDataManager(context.BookingsDbContextOptions, context.TestData.CaseName);
         }
 
         private static void RegisterServer(TestContext context)

@@ -313,7 +313,7 @@ namespace Bookings.IntegrationTests.Steps
         public void ThenTheParticipantShouldBeAddedOrRemoved(string state)
         {
             Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(Context.Config.BookingsDbContextOptions))
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings
                     .Include("Participants.Person").AsNoTracking()

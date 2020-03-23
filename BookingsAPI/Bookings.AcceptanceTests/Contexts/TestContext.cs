@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Configuration.Users;
+using Bookings.DAL;
+using Microsoft.EntityFrameworkCore;
 using Testing.Common.Configuration;
 
 namespace Bookings.AcceptanceTests.Contexts
@@ -9,6 +11,7 @@ namespace Bookings.AcceptanceTests.Contexts
     public class TestContext
     {
         public string BearerToken { get; set; }
+        public DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
         public Config Config { get; set; }
         public RestRequest Request { get; set; }
         public IRestResponse Response { get; set; }

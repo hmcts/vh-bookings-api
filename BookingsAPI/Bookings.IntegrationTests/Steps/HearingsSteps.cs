@@ -352,7 +352,7 @@ namespace Bookings.IntegrationTests.Steps
         public void ThenTheHearingShouldBeRemoved()
         {
             Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(Context.Config.BookingsDbContextOptions))
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             }
@@ -441,7 +441,7 @@ namespace Bookings.IntegrationTests.Steps
         private void ThenHearingBookingStatusIs(BookingStatus status)
         {
             Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(Context.Config.BookingsDbContextOptions))
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking().Single(x => x.Id == Context.TestData.NewHearingId);
             }
@@ -505,7 +505,7 @@ namespace Bookings.IntegrationTests.Steps
             model.QuestionnaireNotRequired.Should().BeFalse();
 
             Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(Context.Config.BookingsDbContextOptions))
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             }
