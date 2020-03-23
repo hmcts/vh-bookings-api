@@ -80,10 +80,10 @@ namespace Bookings.AcceptanceTests.Steps
             model.Exists(x => x.Id == _removedParticipantId).Should().BeFalse();
         }
 
-        private static void CheckParticipantDetailsAreReturned(IReadOnlyCollection<ParticipantResponse> model)
+        private static void CheckParticipantDetailsAreReturned(IReadOnlyCollection<ParticipantResponse> participantResponses)
         {
-            model.Should().NotBeNull();
-            foreach (var participant in model)
+            participantResponses.Should().NotBeNull();
+            foreach (var participant in participantResponses)
             {
                 participant.CaseRoleName.Should().NotBeNullOrEmpty();
                 participant.ContactEmail.Should().NotBeNullOrEmpty();
