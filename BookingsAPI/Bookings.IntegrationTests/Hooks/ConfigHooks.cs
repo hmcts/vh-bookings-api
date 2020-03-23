@@ -87,6 +87,7 @@ namespace Bookings.IntegrationTests.Hooks
                 Participants = new List<ParticipantRequest>(),
                 RemovedPersons = new List<string>()
             };
+            context.TestData.CaseName.Should().NotBeNullOrEmpty();
         }
 
         private void RegisterDatabaseSettings(TestContext context)

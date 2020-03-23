@@ -77,6 +77,7 @@ namespace Bookings.AcceptanceTests.Hooks
                 CaseName = "Bookings Api Automated Test",
                 ParticipantsResponses = new List<ParticipantResponse>()
             };
+            context.TestData.CaseName.Should().NotBeNullOrEmpty();
         }
 
         private static async Task GenerateBearerTokens(TestContext context)
