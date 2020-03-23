@@ -48,7 +48,7 @@ namespace Bookings.UnitTests.Mappings
                 mockedHearing.ScheduledDuration,
                 mockedHearing.HearingRoomName,
                 mockedHearing.OtherInformation,
-                "admin@hearings.reform.hmcts.net",
+                "admin@madeupemail.com",
                 updatedCases,
                 questionnaireNotRequired
             );
