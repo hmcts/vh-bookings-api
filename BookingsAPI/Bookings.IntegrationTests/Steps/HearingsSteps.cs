@@ -64,7 +64,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have an (.*) book a new hearing request")]
         public void GivenIHaveAValidBookANewHearingRequest(Scenario scenario)
         {
-            var request = BuildRequest();
+            var request = BuildRequest(Context.TestData.CaseName);
 
             if (scenario == Scenario.Invalid)
             {
@@ -88,7 +88,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a book a new hearing request with an invalid (.*)")]
         public void GivenIHaveABookANewHearingRequestWithAnInvalidHearingType(string invalidType)
         {
-            var request = BuildRequest();
+            var request = BuildRequest(Context.TestData.CaseName);
             switch (invalidType)
             {
                 case "case type":
@@ -137,7 +137,7 @@ namespace Bookings.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             _hearingId = seededHearing.Id;
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
             if (scenario == Scenario.Invalid)
             {
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
@@ -152,7 +152,7 @@ namespace Bookings.IntegrationTests.Steps
         public void GivenIHaveAUpdateHearingRequestWithANonexistentHearingId()
         {
             _hearingId = Guid.NewGuid();
-            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
             UpdateTheHearingRequest();
         }
 
@@ -162,7 +162,7 @@ namespace Bookings.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = invalidType.Equals("hearing id") ? Guid.Empty : seededHearing.Id;
-            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
             if (invalidType.Equals("venue"))
             {
                 Context.TestData.UpdateHearingRequest.HearingVenueName = "Random";
@@ -519,7 +519,7 @@ namespace Bookings.IntegrationTests.Steps
             await TestDataManager.ClearSeededHearings();
         }
 
-        private static BookNewHearingRequest BuildRequest()
+        private static BookNewHearingRequest BuildRequest(string caseName)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
                 .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
@@ -544,7 +544,7 @@ namespace Bookings.IntegrationTests.Steps
             participants[4].HearingRoleName = "Judge";
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
             cases[0].IsLeadCase = true;
-            cases[0].Name = $"Bookings Api Automated Integration Test {Faker.RandomNumber.Next(0, 9999999)}";
+            cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
             cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
             const string createdBy = "UserAdmin";
@@ -559,13 +559,13 @@ namespace Bookings.IntegrationTests.Steps
                 .Build();
         }
 
-        private static UpdateHearingRequest BuildUpdateHearingRequestRequest()
+        private static UpdateHearingRequest BuildUpdateHearingRequestRequest(string caseName, string usernameStem)
         {
             var caseList = new List<CaseRequest>
             {
                 new CaseRequest()
                 {
-                    Name = $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}",
+                    Name = $"{caseName} {Faker.RandomNumber.Next(900000, 999999)}",
                     Number = $"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}"
                 }
             };
@@ -576,7 +576,7 @@ namespace Bookings.IntegrationTests.Steps
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
                 OtherInformation = "OtherInfo",
                 HearingRoomName = "20",
-                UpdatedBy = "admin@hearings.reform.hmcts.net",
+                UpdatedBy = $"admin{usernameStem}",
                 Cases = caseList
             };
         }

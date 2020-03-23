@@ -34,7 +34,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public void should_throw_exception_when_hearing_does_not_exist()
+        public void Should_throw_exception_when_hearing_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
 
@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_add_participants_to_video_hearing()
+        public async Task Should_add_participants_to_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -51,7 +51,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            var caseTypeName = "Civil Money Claims";
+            const string caseTypeName = "Civil Money Claims";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
@@ -82,7 +82,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_not_add_existing_participant_to_the_same_video_hearing()
+        public async Task Should_not_add_existing_participant_to_the_same_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -109,7 +109,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_throw_exception_when_adding_unsupported_role_to_hearing()
+        public async Task Should_throw_exception_when_adding_unsupported_role_to_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -137,7 +137,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_use_existing_representative_when_adding_to_video_hearing()
+        public async Task Should_use_existing_representative_when_adding_to_video_hearing()
         {
             var seededRepresentative = await SeedPerson(true, false);
             var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
@@ -151,7 +151,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_use_existing_individual_when_adding_to_video_hearing()
+        public async Task Should_use_existing_individual_when_adding_to_video_hearing()
         {
             var seededRepresentative = await SeedPerson(true, true);
             var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
@@ -167,7 +167,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_add_judge_to_video_hearing()
+        public async Task Should_add_judge_to_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -261,13 +261,11 @@ namespace Bookings.IntegrationTests.Database.Commands
 
         private async Task<List<Person>> GetPersonsInDb()
         {
-            using (var db = new BookingsDbContext(BookingsDbContextOptions))
-            {
-                return await db.Persons
-                    .Include(p => p.Organisation)
-                    .Include(p => p.Address)
-                    .ToListAsync();
-            }
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            return await db.Persons
+                .Include(p => p.Organisation)
+                .Include(p => p.Address)
+                .ToListAsync();
         }
         
         private async Task<Person> SeedPerson(bool withOrganisation = false, bool withAddress = false)

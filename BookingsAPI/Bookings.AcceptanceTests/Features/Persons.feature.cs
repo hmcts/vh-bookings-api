@@ -19,9 +19,8 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute(TestName="Persons")]
-    [NUnit.Framework.DescriptionAttribute("\tIn order to manage persons\r\n\tAs an api service\r\n\tI want to be able to retrieve p" +
-        "ersons from the database")]
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("Persons")]
     [NUnit.Framework.CategoryAttribute("VIH-3622")]
     public partial class PersonsFeature
     {
@@ -78,7 +77,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get person by username")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get person by username")]
         public virtual void GetPersonByUsername()
         {
@@ -123,7 +122,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get person by contact email")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get person by contact email")]
         public virtual void GetPersonByContactEmail()
         {
@@ -168,7 +167,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get person by search term")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get person by search term")]
         public virtual void GetPersonBySearchTerm()
         {

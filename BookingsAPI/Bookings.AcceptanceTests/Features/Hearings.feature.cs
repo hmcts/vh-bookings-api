@@ -19,9 +19,8 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute(TestName="Hearings")]
-    [NUnit.Framework.DescriptionAttribute("\tIn order to manage hearings\r\n\tAs an api service\r\n\tI want to be able to create, u" +
-        "pdate and retrieve hearings data")]
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("Hearings")]
     [NUnit.Framework.CategoryAttribute("VIH-3622")]
     public partial class HearingsFeature
     {
@@ -78,7 +77,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get details for a given hearing")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get details for a given hearing")]
         public virtual void GetDetailsForAGivenHearing()
         {
@@ -123,7 +122,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Create a new hearing")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Create a new hearing")]
         public virtual void CreateANewHearing()
         {
@@ -165,7 +164,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get a hearing for a given username")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get a hearing for a given username")]
         public virtual void GetAHearingForAGivenUsername()
         {
@@ -210,7 +209,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Update a hearing")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Update a hearing")]
         public virtual void UpdateAHearing()
         {
@@ -255,7 +254,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Delete a hearing")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Delete a hearing")]
         public virtual void DeleteAHearing()
         {
@@ -300,25 +299,15 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get hearing details for a given case type")]
         [NUnit.Framework.CategoryAttribute("VIH-4193")]
-        [NUnit.Framework.TestCaseAttribute("Civil Money Claims", null, TestName="Get hearing details for a given case type(Civil Money Claims)")]
-        [NUnit.Framework.TestCaseAttribute("Financial Remedy", null, TestName="Get hearing details for a given case type(Financial Remedy)")]
-        [NUnit.Framework.TestCaseAttribute("Generic", null, TestName="Get hearing details for a given case type(Generic)")]
-        [NUnit.Framework.TestCaseAttribute("Children Act", null, TestName="Get hearing details for a given case type(Children Act)")]
-        [NUnit.Framework.TestCaseAttribute("Tax", null, TestName="Get hearing details for a given case type(Tax)")]
-        [NUnit.Framework.TestCaseAttribute("Family Law Act", null, TestName="Get hearing details for a given case type(Family Law Act)")]
-        [NUnit.Framework.TestCaseAttribute("Tribunal", null, TestName="Get hearing details for a given case type(Tribunal)")]
-        public virtual void GetHearingDetailsForAGivenCaseType(string caseType, string[] exampleTags)
+        public virtual void GetHearingDetailsForAGivenCaseType()
         {
-            string[] @__tags = new string[] {
+            string[] tagsOfScenario = new string[] {
                     "VIH-4193"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            string[] tagsOfScenario = @__tags;
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get hearing details for a given case type", null, @__tags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get hearing details for a given case type", null, new string[] {
+                        "VIH-4193"});
 #line 42
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -340,10 +329,11 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 43
- testRunner.Given(string.Format("I have a valid book a new hearing for a case type {0}", caseType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have a valid book a new hearing for a case type Civil Money Claims", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 44
- testRunner.And(string.Format("I have a get details for a given hearing request for case type {0}", caseType), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I have a get details for a given hearing request for case type Civil Money Claims" +
+                        "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 45
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
@@ -358,13 +348,13 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Cancel a hearing")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Cancel a hearing")]
         public virtual void CancelAHearing()
         {
             string[] tagsOfScenario = ((string[])(null));
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Cancel a hearing", null, ((string[])(null)));
-#line 58
+#line 49
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -384,26 +374,26 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 59
+#line 50
  testRunner.Given("I have a hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 60
+#line 51
  testRunner.And("I have a cancel hearing request with a valid hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 61
+#line 52
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 62
+#line 53
  testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 63
+#line 54
  testRunner.And("hearing should be cancelled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Created a hearing")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Created a hearing")]
         [NUnit.Framework.CategoryAttribute("VIH-4121")]
         public virtual void CreatedAHearing()
@@ -412,7 +402,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "VIH-4121"};
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Created a hearing", null, new string[] {
                         "VIH-4121"});
-#line 66
+#line 57
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -432,19 +422,19 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 67
+#line 58
  testRunner.Given("I have a hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 68
+#line 59
  testRunner.And("I have a created hearing request with a valid hearing id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 69
+#line 60
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 70
+#line 61
  testRunner.Then("the response should have the status NoContent and success status True", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 71
+#line 62
  testRunner.And("hearing should be created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }

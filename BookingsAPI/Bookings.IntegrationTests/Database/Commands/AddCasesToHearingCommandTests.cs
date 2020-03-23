@@ -25,7 +25,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public void should_throw_exception_when_hearing_does_not_exist()
+        public void Should_throw_exception_when_hearing_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
 
@@ -34,7 +34,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_add_cases_to_video_hearing()
+        public async Task Should_add_cases_to_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");

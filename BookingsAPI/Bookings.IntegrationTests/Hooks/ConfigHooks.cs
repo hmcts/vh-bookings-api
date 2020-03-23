@@ -83,6 +83,7 @@ namespace Bookings.IntegrationTests.Hooks
         {
             context.TestData = new TestData()
             {
+                CaseName = "Bookings Api Integration Test",
                 Participants = new List<ParticipantRequest>(),
                 RemovedPersons = new List<string>()
             };
@@ -95,7 +96,7 @@ namespace Bookings.IntegrationTests.Hooks
             dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(context.Config.ConnectionStrings.VhBookings);
             context.Config.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            context.TestDataManager = new TestDataManager(context.Config.BookingsDbContextOptions);
+            context.TestDataManager = new TestDataManager(context.Config.BookingsDbContextOptions, context.TestData.CaseName);
         }
 
         private static void RegisterServer(TestContext context)

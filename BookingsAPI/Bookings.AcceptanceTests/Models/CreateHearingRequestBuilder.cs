@@ -11,7 +11,7 @@ namespace Bookings.AcceptanceTests.Models
         private TestContext _context;
         private readonly BookNewHearingRequest _request;
 
-        public CreateHearingRequestBuilder()
+        public CreateHearingRequestBuilder(string caseName)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
                 .With(x => x.Title = "Mrs")
@@ -56,7 +56,7 @@ namespace Bookings.AcceptanceTests.Models
 
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].IsLeadCase = false;
-            cases[0].Name = $"Bookings Api Automated Test {Faker.RandomNumber.Next(0, 9999999)}";
+            cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
             cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
             const string createdBy = "caseAdmin@emailaddress.com";

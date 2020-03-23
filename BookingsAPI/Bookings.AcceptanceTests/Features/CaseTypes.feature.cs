@@ -19,9 +19,8 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute(TestName="CaseTypes")]
-    [NUnit.Framework.DescriptionAttribute("\tIn order to retrieve a list of case types\r\n\tAs an api service\r\n\tI want to be abl" +
-        "e to return a list of case types")]
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("CaseTypes")]
     [NUnit.Framework.CategoryAttribute("VIH-3622")]
     public partial class CaseTypesFeature
     {
@@ -78,7 +77,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get available case types")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get available case types")]
         [NUnit.Framework.CategoryAttribute("VIH-3582")]
         public virtual void GetAvailableCaseTypes()
@@ -123,7 +122,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get case roles for a case type")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get case roles for a case type")]
         public virtual void GetCaseRolesForACaseType()
         {
@@ -165,7 +164,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get hearing roles for a case role of a case type")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get hearing roles for a case role of a case type")]
         public virtual void GetHearingRolesForACaseRoleOfACaseType()
         {

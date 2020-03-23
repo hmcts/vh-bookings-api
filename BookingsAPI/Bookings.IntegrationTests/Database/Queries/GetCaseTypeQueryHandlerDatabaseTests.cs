@@ -20,7 +20,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_have_user_roles_for_civil_money_claims_claimant()
+        public async Task Should_have_user_roles_for_civil_money_claims_claimant()
         {
             var caseTypeName = "Civil Money Claims";
             var caseRoleName = "Claimant";
@@ -30,7 +30,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_have_user_roles_for_civil_money_claims_defendant()
+        public async Task Should_have_user_roles_for_civil_money_claims_defendant()
         {
             var caseTypeName = "Civil Money Claims";
             var caseRoleName = "Defendant";
@@ -40,7 +40,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_have_user_roles_for_financial_remedy_applicant()
+        public async Task Should_have_user_roles_for_financial_remedy_applicant()
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Applicant";
@@ -50,7 +50,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_have_user_roles_for_financial_remedy_respondent()
+        public async Task Should_have_user_roles_for_financial_remedy_respondent()
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Respondent";

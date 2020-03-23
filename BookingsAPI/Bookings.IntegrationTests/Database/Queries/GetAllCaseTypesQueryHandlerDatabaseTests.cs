@@ -20,7 +20,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_return_all_case_types_and_their_hearing_types()
+        public async Task Should_return_all_case_types_and_their_hearing_types()
         {
             var caseTypes = await _handler.Handle(new GetAllCaseTypesQuery());
             var financialRemedy = caseTypes.FirstOrDefault(c => c.Name == "Financial Remedy");

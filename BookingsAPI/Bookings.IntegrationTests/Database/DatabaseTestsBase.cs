@@ -32,7 +32,7 @@ namespace Bookings.IntegrationTests.Database
             dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
             BookingsDbContextOptions = dbContextOptionsBuilder.Options;
             
-            Hooks = new TestDataManager(BookingsDbContextOptions);
+            Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
             
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.Database.Migrate();

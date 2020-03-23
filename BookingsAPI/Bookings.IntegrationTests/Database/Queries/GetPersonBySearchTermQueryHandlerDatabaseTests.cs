@@ -19,7 +19,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_find_contact_by_email_case_insensitive()
+        public async Task Should_find_contact_by_email_case_insensitive()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             var person = seededHearing.GetPersons().First();

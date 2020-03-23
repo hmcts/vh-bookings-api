@@ -19,9 +19,8 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute(TestName="Hearing Venues")]
-    [NUnit.Framework.DescriptionAttribute("\tIn order to manage hearing venues\r\n\tAs an api service\r\n\tI want to be able to ret" +
-        "rieve hearing venue data")]
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("Hearing Venues")]
     [NUnit.Framework.CategoryAttribute("VIH-3622")]
     public partial class HearingVenuesFeature
     {
@@ -78,7 +77,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get all hearing venues")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get all hearing venues")]
         public virtual void GetAllHearingVenues()
         {

@@ -23,7 +23,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a hearing")]
         public void GivenIHaveAHearing()
         {
-            var bookNewHearingRequest = new CreateHearingRequestBuilder().WithContext(_context).Build();
+            var bookNewHearingRequest = new CreateHearingRequestBuilder(_context.TestData.CaseName).WithContext(_context).Build();
             _context.Request = _context.Post(BookNewHearing, bookNewHearingRequest);
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.Created);

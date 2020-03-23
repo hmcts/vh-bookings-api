@@ -28,7 +28,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_be_able_to_update_individual_participant()
+        public async Task Should_be_able_to_update_individual_participant()
         {
             var editPrefix = " _Edit";
             var seededHearing = await Hooks.SeedVideoHearing();
@@ -71,7 +71,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_be_able_to_update_representative_participant()
+        public async Task Should_be_able_to_update_representative_participant()
         {
             var editPrefix = " _Edit";
             var seededHearing = await Hooks.SeedVideoHearing();

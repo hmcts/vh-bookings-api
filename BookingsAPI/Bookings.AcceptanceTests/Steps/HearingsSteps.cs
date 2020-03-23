@@ -38,7 +38,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a valid book a new hearing request")]
         public void GivenIHaveAValidBookANewHearingRequest()
         {
-            var bookNewHearingRequest = new CreateHearingRequestBuilder()
+            var bookNewHearingRequest = new CreateHearingRequestBuilder(_context.TestData.CaseName)
                 .WithContext(_context)
                 .Build();
 
@@ -154,7 +154,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a valid book a new hearing for a case type (.*)")]
         public void GivenIHaveAValidBookANewHearingForACaseType(string caseTypeName)
         {
-            var request = new CreateHearingRequestBuilder().WithContext(_context).Build();
+            var request = new CreateHearingRequestBuilder(_context.TestData.CaseName).WithContext(_context).Build();
             request.ScheduledDateTime = DateTime.Now.AddDays(2);
             request.CaseTypeName = caseTypeName;
             _context.Request = _context.Post(BookNewHearing, request);
@@ -169,6 +169,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType(string caseTypeString)
         {
             _context.Request = _context.Get(GetHearingsByCaseType(CaseType.FromString(caseTypeString).Id));
+            _context.Request.AddQueryParameter("Limit", "1000");
         }
 
         [Then(@"hearing details should be retrieved for the case type")]

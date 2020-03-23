@@ -74,6 +74,7 @@ namespace Bookings.AcceptanceTests.Hooks
         {
             context.TestData = new TestData()
             {
+                CaseName = "Bookings Api Automated Test",
                 ParticipantsResponses = new List<ParticipantResponse>()
             };
         }

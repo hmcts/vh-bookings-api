@@ -19,9 +19,8 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute(TestName="Healthcheck")]
-    [NUnit.Framework.DescriptionAttribute("\tIn order to assess the status of the service\r\n\tAs an api service\r\n\tI want to be " +
-        "able to request the health of the bookings api")]
+    [NUnit.Framework.TestFixtureAttribute()]
+    [NUnit.Framework.DescriptionAttribute("Healthcheck")]
     [NUnit.Framework.CategoryAttribute("VIH-3806")]
     [NUnit.Framework.CategoryAttribute("health")]
     public partial class HealthcheckFeature
@@ -81,7 +80,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Get the health of the bookings api")]
+        [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Get the health of the bookings api")]
         public virtual void GetTheHealthOfTheBookingsApi()
         {

@@ -4,6 +4,7 @@
     {
         ConfigHooks = 1,
         HealthCheckHooks = 2,
-        RemoveDataHooks = 3
+        RemoveDataHooks = 3,
+        RemoveAllDataHooks = 4
     }
 }
