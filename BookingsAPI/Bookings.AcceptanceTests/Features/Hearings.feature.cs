@@ -19,8 +19,9 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("Hearings")]
+    [NUnit.Framework.TestFixtureAttribute(TestName="Hearings")]
+    [NUnit.Framework.DescriptionAttribute("\tIn order to manage hearings\r\n\tAs an api service\r\n\tI want to be able to create, u" +
+        "pdate and retrieve hearings data")]
     [NUnit.Framework.CategoryAttribute("VIH-3622")]
     public partial class HearingsFeature
     {
@@ -77,7 +78,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Get details for a given hearing")]
         [NUnit.Framework.DescriptionAttribute("Get details for a given hearing")]
         public virtual void GetDetailsForAGivenHearing()
         {
@@ -122,7 +123,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Create a new hearing")]
         [NUnit.Framework.DescriptionAttribute("Create a new hearing")]
         public virtual void CreateANewHearing()
         {
@@ -164,7 +165,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Get a hearing for a given username")]
         [NUnit.Framework.DescriptionAttribute("Get a hearing for a given username")]
         public virtual void GetAHearingForAGivenUsername()
         {
@@ -209,7 +210,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Update a hearing")]
         [NUnit.Framework.DescriptionAttribute("Update a hearing")]
         public virtual void UpdateAHearing()
         {
@@ -254,7 +255,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Delete a hearing")]
         [NUnit.Framework.DescriptionAttribute("Delete a hearing")]
         public virtual void DeleteAHearing()
         {
@@ -299,7 +300,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Get hearing details for a given case type")]
         [NUnit.Framework.DescriptionAttribute("Get hearing details for a given case type")]
         [NUnit.Framework.CategoryAttribute("VIH-4193")]
         public virtual void GetHearingDetailsForAGivenCaseType()
@@ -348,7 +349,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Cancel a hearing")]
         [NUnit.Framework.DescriptionAttribute("Cancel a hearing")]
         public virtual void CancelAHearing()
         {
@@ -393,7 +394,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Created a hearing")]
         [NUnit.Framework.DescriptionAttribute("Created a hearing")]
         [NUnit.Framework.CategoryAttribute("VIH-4121")]
         public virtual void CreatedAHearing()

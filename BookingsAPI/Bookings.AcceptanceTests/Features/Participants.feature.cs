@@ -19,8 +19,9 @@ namespace Bookings.AcceptanceTests.Features
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.1.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("Participants")]
+    [NUnit.Framework.TestFixtureAttribute(TestName="Participants")]
+    [NUnit.Framework.DescriptionAttribute("\tIn order to manage participants in a hearing\r\n\tAs an api service\r\n\tI want to be " +
+        "able to create, update and retrieve hearing participants")]
     [NUnit.Framework.CategoryAttribute("VIH-3622")]
     public partial class ParticipantsFeature
     {
@@ -77,7 +78,7 @@ namespace Bookings.AcceptanceTests.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Get participants in a hearing")]
         [NUnit.Framework.DescriptionAttribute("Get participants in a hearing")]
         public virtual void GetParticipantsInAHearing()
         {
@@ -122,7 +123,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Add participant to a hearing")]
         [NUnit.Framework.DescriptionAttribute("Add participant to a hearing")]
         public virtual void AddParticipantToAHearing()
         {
@@ -167,7 +168,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Get a single participant in a hearing")]
         [NUnit.Framework.DescriptionAttribute("Get a single participant in a hearing")]
         public virtual void GetASingleParticipantInAHearing()
         {
@@ -212,7 +213,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Remove participant from a hearing")]
         [NUnit.Framework.DescriptionAttribute("Remove participant from a hearing")]
         public virtual void RemoveParticipantFromAHearing()
         {
@@ -257,7 +258,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Update participant details with user role Individual")]
         [NUnit.Framework.DescriptionAttribute("Update participant details with user role Individual")]
         public virtual void UpdateParticipantDetailsWithUserRoleIndividual()
         {
@@ -302,7 +303,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Update participant details with user role Representative")]
         [NUnit.Framework.DescriptionAttribute("Update participant details with user role Representative")]
         public virtual void UpdateParticipantDetailsWithUserRoleRepresentative()
         {
@@ -347,7 +348,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Update suitability answers with user role Individual")]
         [NUnit.Framework.DescriptionAttribute("Update suitability answers with user role Individual")]
         public virtual void UpdateSuitabilityAnswersWithUserRoleIndividual()
         {
@@ -392,7 +393,7 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.TestCaseAttribute(TestName="Update suitability answers with user role Representative")]
         [NUnit.Framework.DescriptionAttribute("Update suitability answers with user role Representative")]
         public virtual void UpdateSuitabilityAnswersWithUserRoleRepresentative()
         {
