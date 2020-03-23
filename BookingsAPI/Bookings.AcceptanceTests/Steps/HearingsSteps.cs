@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
+using AcceptanceTests.Common.Model.Case;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Models;
 using Bookings.Api.Contract.Requests;
@@ -20,7 +22,6 @@ namespace Bookings.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingsSteps
     {
-        private const int FamilyLawActCaseTypeId = 6;
         private readonly TestContext _context;
 
         public HearingsSteps(TestContext context)
@@ -151,11 +152,11 @@ namespace Bookings.AcceptanceTests.Steps
         }
 
         [Given(@"I have a valid book a new hearing for a case type (.*)")]
-        public void GivenIHaveAValidBookANewHearingForACaseType(string caseType)
+        public void GivenIHaveAValidBookANewHearingForACaseType(string caseTypeName)
         {
             var request = new CreateHearingRequestBuilder().WithContext(_context).Build();
             request.ScheduledDateTime = DateTime.Now.AddDays(2);
-            request.CaseTypeName = caseType;
+            request.CaseTypeName = caseTypeName;
             _context.Request = _context.Post(BookNewHearing, request);
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -164,10 +165,10 @@ namespace Bookings.AcceptanceTests.Steps
             _context.TestData.Hearing = model;
         }
 
-        [Given(@"I have a get details for a given hearing request with a valid case type")]
-        public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType()
+        [Given(@"I have a get details for a given hearing request for case type (.*)")]
+        public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType(string caseTypeString)
         {
-            _context.Request = _context.Get(GetHearingsByCaseType(FamilyLawActCaseTypeId));
+            _context.Request = _context.Get(GetHearingsByCaseType(CaseType.FromString(caseTypeString).Id));
         }
 
         [Then(@"hearing details should be retrieved for the case type")]
@@ -176,7 +177,7 @@ namespace Bookings.AcceptanceTests.Steps
             var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(_context.Response.Content);
             response.PrevPageUrl.Should().Contain(response.Limit.ToString());
             response.Hearings.Count.Should().BeGreaterThan(0);
-            var hearing = response.Hearings.SelectMany(u => u.Hearings).FirstOrDefault(x => x.ScheduledDateTime.Date == DateTime.UtcNow.AddDays(2).Date && x.HearingId == _context.TestData.Hearing.Id);
+            var hearing = HearingInResponse(response);
             hearing.Should().NotBeNull();
             hearing.CaseTypeName.Should().NotBeNullOrEmpty();
             hearing.HearingTypeName.Should().NotBeNullOrEmpty();
@@ -186,6 +187,22 @@ namespace Bookings.AcceptanceTests.Steps
             hearing.CourtAddress.Should().NotBeNullOrEmpty();
             hearing.HearingName.Should().NotBeNullOrEmpty();
             hearing.HearingNumber.Should().NotBeNullOrEmpty();
+        }
+
+        private BookingsHearingResponse HearingInResponse(BookingsResponse response)
+        {
+            foreach (var pageInHearingsResponse in response.Hearings)
+            {
+                foreach (var hearing in pageInHearingsResponse.Hearings)
+                {
+                    if (hearing.HearingId.Equals(_context.TestData.Hearing.Id))
+                    {
+                        return hearing;
+                    }
+                }
+            }
+
+            throw new DataException("Expected hearing not found in the response.");
         }
 
         [Given(@"I have a cancel hearing request with a valid hearing id")]
