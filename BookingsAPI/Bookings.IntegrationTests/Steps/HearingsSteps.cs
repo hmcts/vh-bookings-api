@@ -542,7 +542,7 @@ namespace Bookings.IntegrationTests.Steps
 
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
-            var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
+            var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].IsLeadCase = true;
             cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
             cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
