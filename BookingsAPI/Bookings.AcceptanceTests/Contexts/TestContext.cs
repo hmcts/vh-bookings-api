@@ -1,28 +1,26 @@
-﻿using Bookings.Api.Contract.Requests;
-using Bookings.Api.Contract.Responses;
-using RestSharp;
-using System;
+﻿using RestSharp;
 using System.Collections.Generic;
-using Testing.Common.Builders.Api;
+using AcceptanceTests.Common.Api.Helpers;
+using AcceptanceTests.Common.Configuration.Users;
+using Bookings.DAL;
+using Microsoft.EntityFrameworkCore;
+using Testing.Common.Configuration;
 
 namespace Bookings.AcceptanceTests.Contexts
 {
     public class TestContext
     {
+        public string BearerToken { get; set; }
+        public DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
+        public Config Config { get; set; }
         public RestRequest Request { get; set; }
         public IRestResponse Response { get; set; }
-        public string BearerToken { get; set; }
-        public string BaseUrl { get; set; }
-        public string Json { get; set; }
-        public Guid HearingId { get; set; }
-        public HearingDetailsResponse Hearing { get; set; }
-        public BookNewHearingRequest HearingRequest { get; set; }
-        public List<ParticipantResponse> Participants { get; set; }
-        public List<SuitabilityAnswersRequest> Answers { get; set; }
+        public TestData TestData { get; set; }
+        public List<UserAccount> UserAccounts { get; set; }
 
         public RestClient Client()
         {
-            var client = new RestClient(BaseUrl);
+            var client = new RestClient(Config.ServicesConfiguration.BookingsApiUrl);
             client.AddDefaultHeader("Accept", "application/json");
             client.AddDefaultHeader("Authorization", $"Bearer {BearerToken}");
             return client;
@@ -33,7 +31,7 @@ namespace Bookings.AcceptanceTests.Contexts
         public RestRequest Post(string path, object requestBody)
         {
             var request = new RestRequest(path, Method.POST);
-            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
+            request.AddParameter("Application/json", RequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
                 ParameterType.RequestBody);
             return request;
         }
@@ -43,7 +41,7 @@ namespace Bookings.AcceptanceTests.Contexts
         public RestRequest Put(string path, object requestBody)
         {
             var request = new RestRequest(path, Method.PUT);
-            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
+            request.AddParameter("Application/json", RequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
                 ParameterType.RequestBody);
             return request;
         }
@@ -51,7 +49,7 @@ namespace Bookings.AcceptanceTests.Contexts
         public RestRequest Patch(string path, object requestBody = null)
         {
             var request = new RestRequest(path, Method.PATCH);
-            request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
+            request.AddParameter("Application/json", RequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
                 ParameterType.RequestBody);
             return request;
         }

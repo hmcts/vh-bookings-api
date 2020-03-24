@@ -19,7 +19,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_pass_validation()
+        public async Task Should_pass_validation()
         {
             var request = BuildRequest();
 
@@ -29,7 +29,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_missing_hearing_venue_name_error()
+        public async Task Should_return_missing_hearing_venue_name_error()
         {
             var request = BuildRequest();
             request.HearingVenueName = string.Empty;
@@ -43,7 +43,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_hearing_schedule_date_time_in_past_error()
+        public async Task Should_return_hearing_schedule_date_time_in_past_error()
         {
             var request = BuildRequest();
             request.ScheduledDateTime = DateTime.MinValue;
@@ -56,7 +56,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_hearing_schedule_duration_error()
+        public async Task Should_return_hearing_schedule_duration_error()
         {
             var request = BuildRequest();
             request.ScheduledDuration = 0;

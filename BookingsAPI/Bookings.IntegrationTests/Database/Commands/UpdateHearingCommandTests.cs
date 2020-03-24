@@ -29,7 +29,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_be_able_to_update_video_hearing()
+        public async Task Should_be_able_to_update_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");

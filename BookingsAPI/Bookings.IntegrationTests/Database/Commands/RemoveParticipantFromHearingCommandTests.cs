@@ -40,7 +40,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public void should_throw_exception_when_hearing_does_not_exist()
+        public void Should_throw_exception_when_hearing_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
 
@@ -51,7 +51,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_throw_exception_when_participant_does_not_exist()
+        public async Task Should_throw_exception_when_participant_does_not_exist()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -64,7 +64,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_remove_participant_from_hearing()
+        public async Task Should_remove_participant_from_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");

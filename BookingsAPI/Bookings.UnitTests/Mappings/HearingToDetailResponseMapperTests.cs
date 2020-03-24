@@ -25,7 +25,7 @@ namespace Bookings.UnitTests.Mappings
         public DateTime UpdatedDate { get; protected set; }
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var refDataBuilder = new RefDataBuilder();
             var venue = refDataBuilder.HearingVenues.First(x => x.Name == _hearingVenueName);

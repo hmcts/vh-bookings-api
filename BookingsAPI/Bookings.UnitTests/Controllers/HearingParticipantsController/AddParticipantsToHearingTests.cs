@@ -1,5 +1,8 @@
-﻿
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
@@ -11,14 +14,9 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Testing.Common.Assertions;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.HearingParticipantsController
 {
     public class AddParticipantsToHearingTests : HearingParticipantsControllerTest
     {

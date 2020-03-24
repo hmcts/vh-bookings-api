@@ -16,7 +16,7 @@ namespace Bookings.UnitTests.Mappings
         private readonly VideoHearingsToBookingsResponseMapper _mapper = new VideoHearingsToBookingsResponseMapper();
 
         [Test]
-        public void should_return_mapped_hearings_grouped_by_date()
+        public void Should_return_mapped_hearings_grouped_by_date()
         {
             var hearings = new[]
             {
@@ -48,7 +48,7 @@ namespace Bookings.UnitTests.Mappings
                 mockedHearing.ScheduledDuration,
                 mockedHearing.HearingRoomName,
                 mockedHearing.OtherInformation,
-                "admin@hearings.reform.hmcts.net",
+                "admin@madeupemail.com",
                 updatedCases,
                 questionnaireNotRequired
             );
@@ -56,7 +56,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_properties_of_hearing()
+        public void Should_map_properties_of_hearing()
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
@@ -74,7 +74,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_throw_exception_if_hearing_is_missing_case()
+        public void Should_throw_exception_if_hearing_is_missing_case()
         {
             var mockedHearing = new VideoHearingBuilder().Build();
 
@@ -85,7 +85,7 @@ namespace Bookings.UnitTests.Mappings
         /// <summary>Test that all the data we require is being validated</summary>
         /// <remarks>If we don't do this, in case some piece of code isn't loading navigation properties we may hide bugs</remarks>
         [Test]
-        public void should_throw_exception_if_required_navigation_properties_are_empty()
+        public void Should_throw_exception_if_required_navigation_properties_are_empty()
         {
             var hearingWithoutCaseType = MockHearingWithCase();
             hearingWithoutCaseType.SetProtected(nameof(hearingWithoutCaseType.CaseType), null);
@@ -99,7 +99,7 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void should_set_judge_name_to_missing_if_empty()
+        public void Should_set_judge_name_to_missing_if_empty()
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");

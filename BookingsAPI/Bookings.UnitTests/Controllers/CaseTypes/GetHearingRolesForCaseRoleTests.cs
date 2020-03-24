@@ -1,15 +1,15 @@
-﻿using Bookings.Api.Contract.Responses;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Queries;
 using Bookings.Domain.RefData;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.CaseTypes
 {
     public class GetHearingRolesForCaseRoleTests : CaseTypesControllerTests
     {

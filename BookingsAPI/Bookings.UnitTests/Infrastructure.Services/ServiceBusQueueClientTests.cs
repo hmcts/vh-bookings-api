@@ -22,7 +22,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         }
 
         [Test]
-        public void should_initialise_serialiser_settings()
+        public void Should_initialise_serialiser_settings()
         {
             _client.SerializerSettings.Should().BeOfType<JsonSerializerSettings>();
         }

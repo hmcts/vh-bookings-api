@@ -9,7 +9,7 @@ namespace Bookings.UnitTests.Domain.Persons
     public class UpdateAddressTests
     {
         [Test]
-        public void should_update_address()
+        public void Should_update_address()
         {
             var person = new PersonBuilder().Build();
             var beforeUpdatedDate = person.UpdatedDate;

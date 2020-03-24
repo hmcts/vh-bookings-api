@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Api.Contract.Requests;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
-using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -20,15 +18,14 @@ namespace Bookings.IntegrationTests.Helper
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
-        private BuilderSettings BuilderSettings { get; }
         private Guid _individualId;
         private List<Guid> _participantSolicitorIds;
+        private readonly string _defaultCaseName;
 
-        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions)
+        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
         {
             _dbContextOptions = dbContextOptions;
-
-            BuilderSettings = new BuilderSettings();
+            _defaultCaseName = defaultCaseName;
         }
 
         public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false)
@@ -47,8 +44,7 @@ namespace Bookings.IntegrationTests.Helper
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
-            var claimantLipHearingRole =
-                claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
@@ -62,10 +58,10 @@ namespace Bookings.IntegrationTests.Helper
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var duration = 45;
-            var hearingRoomName = "Room02";
-            var otherInformation = "OtherInformation02";
-            var createdBy = "test@integration.com";
+            const int duration = 45;
+            const string hearingRoomName = "Room02";
+            const string otherInformation = "OtherInformation02";
+            const string createdBy = "test@integration.com";
             const bool questionnaireNotRequired = false;
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
                 venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired);
@@ -82,11 +78,11 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
-                $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", true);
+                $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
-                $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}", false);
+                $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
 
-            using (var db = new BookingsDbContext(_dbContextOptions))
+            await using (var db = new BookingsDbContext(_dbContextOptions))
             {
                 await db.VideoHearings.AddAsync(videoHearing);
                 await db.SaveChangesAsync();
@@ -113,13 +109,11 @@ namespace Bookings.IntegrationTests.Helper
 
         private async Task AddQuestionnaire()
         {
-            using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                AddIndividualQuestionnaire(db);
-                AddRepresentativeQuestionnaire(db);
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            AddIndividualQuestionnaire(db);
+            AddRepresentativeQuestionnaire(db);
 
-                await db.SaveChangesAsync();
-            }
+            await db.SaveChangesAsync();
         }
 
         private void AddIndividualQuestionnaire(BookingsDbContext db)

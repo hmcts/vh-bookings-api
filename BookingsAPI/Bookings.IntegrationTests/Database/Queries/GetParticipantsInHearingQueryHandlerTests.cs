@@ -21,7 +21,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_get_participants_in_hearing()
+        public async Task Should_get_participants_in_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
@@ -47,7 +47,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
         
         [Test]
-        public void should_not_get_participants_in_hearing_that_does_not_exist()
+        public void Should_not_get_participants_in_hearing_that_does_not_exist()
         {
             Assert.ThrowsAsync<HearingNotFoundException>(() => _handler.Handle(new GetParticipantsInHearingQuery(Guid.Empty)));
         }

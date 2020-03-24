@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using AcceptanceTests.Common.Api.Helpers;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
@@ -19,17 +20,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api;
+using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class HearingsSteps : StepsBase
+    public sealed class HearingsBaseSteps : BaseSteps
     {
-        private readonly HearingsEndpoints _endpoints = new ApiUriFactory().HearingsEndpoints;
         private Guid _hearingId;
 
-        public HearingsSteps(Contexts.TestContext context) : base(context)
+        public HearingsBaseSteps(Contexts.TestContext context) : base(context)
         {
             _hearingId = Guid.Empty;
         }
@@ -45,7 +45,7 @@ namespace Bookings.IntegrationTests.Steps
                         var seededHearing = await Context.TestDataManager.SeedVideoHearing();
                         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         _hearingId = seededHearing.Id;
-                        Context.NewHearingId = seededHearing.Id;
+                        Context.TestData.NewHearingId = seededHearing.Id;
                         break;
                     }
                 case Scenario.Nonexistent:
@@ -56,7 +56,7 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
-            Context.Uri = _endpoints.GetHearingDetailsById(_hearingId);
+            Context.Uri = GetHearingDetailsById(_hearingId);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -64,7 +64,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have an (.*) book a new hearing request")]
         public void GivenIHaveAValidBookANewHearingRequest(Scenario scenario)
         {
-            var request = BuildRequest();
+            var request = BuildRequest(Context.TestData.CaseName);
 
             if (scenario == Scenario.Invalid)
             {
@@ -88,7 +88,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a book a new hearing request with an invalid (.*)")]
         public void GivenIHaveABookANewHearingRequestWithAnInvalidHearingType(string invalidType)
         {
-            var request = BuildRequest();
+            var request = BuildRequest(Context.TestData.CaseName);
             switch (invalidType)
             {
                 case "case type":
@@ -136,14 +136,14 @@ namespace Bookings.IntegrationTests.Steps
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             _hearingId = seededHearing.Id;
-            Context.NewHearingId = seededHearing.Id;
-            Context.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
             if (scenario == Scenario.Invalid)
             {
-                Context.UpdateHearingRequest.HearingVenueName = string.Empty;
-                Context.UpdateHearingRequest.ScheduledDuration = 0;
-                Context.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
-                Context.UpdateHearingRequest.QuestionnaireNotRequired = true;
+                Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
+                Context.TestData.UpdateHearingRequest.ScheduledDuration = 0;
+                Context.TestData.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
+                Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = true;
             }
             UpdateTheHearingRequest();
         }
@@ -152,7 +152,7 @@ namespace Bookings.IntegrationTests.Steps
         public void GivenIHaveAUpdateHearingRequestWithANonexistentHearingId()
         {
             _hearingId = Guid.NewGuid();
-            Context.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
             UpdateTheHearingRequest();
         }
 
@@ -160,12 +160,12 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAUpdateHearingRequestWithANonexistentHearingId(string invalidType)
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = invalidType.Equals("hearing id") ? Guid.Empty : seededHearing.Id;
-            Context.UpdateHearingRequest = BuildUpdateHearingRequestRequest();
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
             if (invalidType.Equals("venue"))
             {
-                Context.UpdateHearingRequest.HearingVenueName = "Random";
+                Context.TestData.UpdateHearingRequest.HearingVenueName = "Random";
             }
             UpdateTheHearingRequest();
         }
@@ -175,7 +175,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAValidRemoveHearingRequest(Scenario scenario)
         {
             await SetHearingIdForGivenScenario(scenario);
-            Context.Uri = _endpoints.RemoveHearing(_hearingId);
+            Context.Uri = RemoveHearing(_hearingId);
             Context.HttpMethod = HttpMethod.Delete;
         }
 
@@ -184,22 +184,16 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAGetHearingByUsernameRequest(Scenario scenario)
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = seededHearing.Id;
-            string username;
-            switch (scenario)
+            var username = scenario switch
             {
-                case Scenario.Valid:
-                    username = seededHearing.GetParticipants().First().Person.Username;
-                    break;
-                case Scenario.Nonexistent:
-                    username = "madeupusername@nonexistent.com";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
+                Scenario.Valid => seededHearing.GetParticipants().First().Person.Username,
+                Scenario.Nonexistent => "madeupusername@nonexistent.com",
+                _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null)
+            };
 
-            Context.Uri = _endpoints.GetHearingsByUsername(username);
+            Context.Uri = GetHearingsByUsername(username);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -207,8 +201,8 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
-            Context.Uri = _endpoints.GetHearingsByAnyCaseType();
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.Uri = GetHearingsByAnyCaseType();
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -216,7 +210,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAValidHearingRequest()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = seededHearing.Id;
         }
 
@@ -231,7 +225,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnEmptyStatusHearingStatusRequest()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             UpdateTheHearingStatus(null);
         }
 
@@ -239,7 +233,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnEmptyUsernameHearingStatusRequest()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = seededHearing.Id;
             UpdateTheHearingStatus(UpdateBookingStatus.Cancelled, null);
         }
@@ -248,28 +242,28 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveARequestToTheSecondPageOfBookedHearings()
         {
             var firstHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.OldHearingId = firstHearing.Id;
+            Context.TestData.OldHearingId = firstHearing.Id;
             
             var secondHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = secondHearing.Id;
+            Context.TestData.NewHearingId = secondHearing.Id;
             
-            Context.Uri = _endpoints.GetHearingsByAnyCaseType(1);
+            Context.Uri = GetHearingsByAnyCaseType(1);
             Context.HttpMethod = HttpMethod.Get;
             var response = await SendGetRequestAsync(Context);
             var json = await response.Content.ReadAsStringAsync();
-            var bookings = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
+            var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
 
-            Context.Uri = _endpoints.GetHearingsByAnyCaseTypeAndCursor(bookings.NextCursor);
+            Context.Uri = GetHearingsByAnyCaseTypeAndCursor(bookings.NextCursor);
         }
 
         [Given(@"I have a request to the get booked hearings endpoint with a limit of one")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpointWithALimitOfOne()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.OldHearingId = seededHearing.Id;
+            Context.TestData.OldHearingId = seededHearing.Id;
             var secondSeededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = secondSeededHearing.Id;
-            Context.Uri = _endpoints.GetHearingsByAnyCaseType(1);
+            Context.TestData.NewHearingId = secondSeededHearing.Id;
+            Context.Uri = GetHearingsByAnyCaseType(1);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -278,21 +272,15 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpointFilteredOnAValidCaseType(Scenario scenario)
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
-            int caseType;
-            switch (scenario)
+            Context.TestData.NewHearingId = seededHearing.Id;
+            var caseType = scenario switch
             {
-                case Scenario.Valid:
-                    caseType = 1;
-                    break;
-                case Scenario.Invalid:
-                    caseType = 99;
-                    break;
-                default:
-                    throw new InvalidOperationException("Unexpected type of case type: " + scenario);
-            }
+                Scenario.Valid => 1,
+                Scenario.Invalid => 99,
+                _ => throw new InvalidOperationException("Unexpected type of case type: " + scenario)
+            };
 
-            Context.Uri = _endpoints.GetHearingsByCaseType(caseType);
+            Context.Uri = GetHearingsByCaseType(caseType);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -300,7 +288,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.NewHearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
             switch (scenario)
             {
                 case Scenario.Valid:
@@ -322,18 +310,18 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
             response.Should().NotBeNull();
             AssertHearingDetailsResponse(response);
-            Context.NewHearingId = response.Id;
+            Context.TestData.NewHearingId = response.Id;
         }
 
         [Then(@"a list of hearing details should be retrieved")]
         public async Task ThenAListOfHearingDetailsShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(json);
             response.Should().NotBeNull();
             foreach (var hearingDetailsResponse in response)
             {
@@ -344,18 +332,18 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"hearing details should be updated")]
         public async Task ThenHearingDetailsShouldBeUpdated()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
 
-            model.ScheduledDuration.Should().Be(Context.UpdateHearingRequest.ScheduledDuration);
-            model.HearingVenueName.Should().Be(Context.UpdateHearingRequest.HearingVenueName);
-            model.ScheduledDateTime.Should().Be(Context.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
-            model.HearingRoomName.Should().Be(Context.UpdateHearingRequest.HearingRoomName);
-            model.OtherInformation.Should().Be(Context.UpdateHearingRequest.OtherInformation);
-            model.QuestionnaireNotRequired.Should().Be(Context.UpdateHearingRequest.QuestionnaireNotRequired);
+            model.ScheduledDuration.Should().Be(Context.TestData.UpdateHearingRequest.ScheduledDuration);
+            model.HearingVenueName.Should().Be(Context.TestData.UpdateHearingRequest.HearingVenueName);
+            model.ScheduledDateTime.Should().Be(Context.TestData.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
+            model.HearingRoomName.Should().Be(Context.TestData.UpdateHearingRequest.HearingRoomName);
+            model.OtherInformation.Should().Be(Context.TestData.UpdateHearingRequest.OtherInformation);
+            model.QuestionnaireNotRequired.Should().Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired);
 
             var updatedCases = model.Cases;
-            var caseRequest = Context.UpdateHearingRequest.Cases.FirstOrDefault();
+            var caseRequest = Context.TestData.UpdateHearingRequest.Cases.FirstOrDefault();
             updatedCases.First().Name.Should().Be(caseRequest?.Name);
             updatedCases.First().Number.Should().Be(caseRequest?.Number);
         }
@@ -374,8 +362,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the response should contain a list of booked hearings")]
         public async Task ThenTheResponseShouldContainAListOfBookedHearings()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
             model.Hearings.Count.Should().BeGreaterThan(0);
 
             var aHearing = model.Hearings.First().Hearings.First();
@@ -386,8 +374,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the response should contain a list of one booked hearing")]
         public async Task ThenTheResponseShouldContainAListOfOneBookedHearing()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
             model.Hearings.Count.Should().Be(1);
         }
 
@@ -406,15 +394,15 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the response should be an empty list")]
         public async Task ThenTheResponseShouldBeAnEmptyList()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
+            var json = await Context.Response.Content.ReadAsStringAsync();
             json.Should().BeEquivalentTo("[]");
         }
 
         [Then(@"hearing suitability answers should be retrieved")]
         public async Task ThenHearingSuitabilityAnswersShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingSuitabilityAnswerResponse>>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingSuitabilityAnswerResponse>>(json);
             model[0].Should().NotBeNull();
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
@@ -437,8 +425,8 @@ namespace Bookings.IntegrationTests.Steps
             eventMessage.Timestamp.Should().NotBeAfter(DateTime.UtcNow);
             eventMessage.Id.Should().NotBeEmpty();
 
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var response = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
 
             var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
             hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(response.Id);
@@ -455,7 +443,7 @@ namespace Bookings.IntegrationTests.Steps
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
-                hearingFromDb = db.VideoHearings.AsNoTracking().Single(x => x.Id == Context.NewHearingId);
+                hearingFromDb = db.VideoHearings.AsNoTracking().Single(x => x.Id == Context.TestData.NewHearingId);
             }
 
             hearingFromDb.Should().NotBeNull();
@@ -463,16 +451,14 @@ namespace Bookings.IntegrationTests.Steps
             hearingFromDb.Status.Should().Be(status);
         }
 
-        private BookingStatus GetMappedBookingStatus(UpdateBookingStatus status)
+        private static BookingStatus GetMappedBookingStatus(UpdateBookingStatus status)
         {
-            switch (status)
+            return status switch
             {
-                case UpdateBookingStatus.Created:
-                    return BookingStatus.Created;
-                case UpdateBookingStatus.Cancelled:
-                    return BookingStatus.Cancelled;
-            }
-            throw new ArgumentException("Invalid booking status type");
+                UpdateBookingStatus.Created => BookingStatus.Created,
+                UpdateBookingStatus.Cancelled => BookingStatus.Cancelled,
+                _ => throw new ArgumentException("Invalid booking status type")
+            };
         }
 
         private void AssertHearingDetailsResponse(HearingDetailsResponse model)
@@ -533,7 +519,7 @@ namespace Bookings.IntegrationTests.Steps
             await TestDataManager.ClearSeededHearings();
         }
 
-        private static BookNewHearingRequest BuildRequest()
+        private static BookNewHearingRequest BuildRequest(string caseName)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
                 .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
@@ -556,9 +542,9 @@ namespace Bookings.IntegrationTests.Steps
 
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
-            var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
+            var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].IsLeadCase = true;
-            cases[0].Name = $"Bookings Api Automated Integration Test {Faker.RandomNumber.Next(0, 9999999)}";
+            cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
             cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
             const string createdBy = "UserAdmin";
@@ -573,13 +559,13 @@ namespace Bookings.IntegrationTests.Steps
                 .Build();
         }
 
-        private static UpdateHearingRequest BuildUpdateHearingRequestRequest()
+        private static UpdateHearingRequest BuildUpdateHearingRequestRequest(string caseName, string usernameStem)
         {
             var caseList = new List<CaseRequest>
             {
                 new CaseRequest()
                 {
-                    Name = $"Bookings Api Integration Test {Faker.RandomNumber.Next(900000, 999999)}",
+                    Name = $"{caseName} {Faker.RandomNumber.Next(900000, 999999)}",
                     Number = $"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}"
                 }
             };
@@ -590,36 +576,36 @@ namespace Bookings.IntegrationTests.Steps
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
                 OtherInformation = "OtherInfo",
                 HearingRoomName = "20",
-                UpdatedBy = "admin@hearings.reform.hmcts.net",
+                UpdatedBy = $"admin{usernameStem}",
                 Cases = caseList
             };
         }
 
         private void CreateTheNewHearingRequest(BookNewHearingRequest request)
         {
-            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            Context.Uri = _endpoints.BookNewHearing();
+            Context.Uri = BookNewHearing;
             Context.HttpMethod = HttpMethod.Post;
         }
 
         private void UpdateTheHearingRequest()
         {
-            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(Context.UpdateHearingRequest);
+            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(Context.TestData.UpdateHearingRequest);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            Context.Uri = _endpoints.UpdateHearingDetails(_hearingId);
+            Context.Uri = UpdateHearingDetails(_hearingId);
             Context.HttpMethod = HttpMethod.Put;
         }
 
         private void UpdateTheHearingStatus(UpdateBookingStatus? status, string updatedBy = "testuser")
         {
-            var jsonBody = ApiRequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest
+            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest
             {
                 Status = status.GetValueOrDefault(),
                 UpdatedBy = updatedBy
             });
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            Context.Uri = _endpoints.UpdateHearingDetails(_hearingId);
+            Context.Uri = UpdateHearingDetails(_hearingId);
             Context.HttpMethod = HttpMethod.Patch;
         }
 
@@ -632,7 +618,7 @@ namespace Bookings.IntegrationTests.Steps
                         var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
                         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         _hearingId = seededHearing.Id;
-                        Context.NewHearingId = seededHearing.Id;
+                        Context.TestData.NewHearingId = seededHearing.Id;
                         break;
                     }
                 case Scenario.Nonexistent:

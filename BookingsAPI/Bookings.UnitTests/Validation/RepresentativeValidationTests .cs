@@ -21,7 +21,7 @@ namespace Bookings.UnitTests.Validation
 
 
         [Test]
-        public async Task should_return_missing_representee_error()
+        public async Task Should_return_missing_representee_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Solicitor";
@@ -35,7 +35,7 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task should_return_missing_solicitor_reference_error()
+        public async Task Should_return_missing_solicitor_reference_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Solicitor";
@@ -49,7 +49,7 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task should_return_missing_organisation_error()
+        public async Task Should_return_missing_organisation_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Solicitor";

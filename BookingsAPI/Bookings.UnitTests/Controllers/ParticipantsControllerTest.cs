@@ -30,7 +30,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_bad_request_when_username_is_not_a_valid_email()
+        public async Task Should_return_bad_request_when_username_is_not_a_valid_email()
         {
             const string username = "what";
 
@@ -44,7 +44,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_not_found_when_no_participants_found()
+        public async Task Should_return_not_found_when_no_participants_found()
         {
             const string email = "real@email.com";
 
@@ -56,7 +56,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_mapped_participants()
+        public async Task Should_return_mapped_participants()
         {
             const string email = "real@email.com";
 

@@ -1,22 +1,19 @@
-﻿
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Net;
-using System.Threading.Tasks;
 using Testing.Common.Assertions;
-using FizzWare.NBuilder;
-using Bookings.Domain.Participants;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Bookings.Infrastructure.Services.IntegrationEvents;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.HearingParticipantsController
 {
     public class UpdateParticipantDetailsTests : HearingParticipantsControllerTest
     {

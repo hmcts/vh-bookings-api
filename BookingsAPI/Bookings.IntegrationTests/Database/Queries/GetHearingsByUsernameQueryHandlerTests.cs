@@ -19,7 +19,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_return_hearings_for_username()
+        public async Task Should_return_hearings_for_username()
         {
             var hearing1 = await Hooks.SeedVideoHearing();
             var hearing2 = await Hooks.SeedVideoHearing();

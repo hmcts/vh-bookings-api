@@ -6,11 +6,11 @@ namespace Bookings.AcceptanceTests.Models
 {
     internal static class UpdateHearingRequest
     {
-        public static Api.Contract.Requests.UpdateHearingRequest BuildRequest()
+        public static Api.Contract.Requests.UpdateHearingRequest BuildRequest(string caseName)
         {
             var caseList = new List<CaseRequest>
             {
-                new CaseRequest {Name = "CaseName", Number = "CaseNumber"}
+                new CaseRequest {Name = caseName, Number = "CaseNumber"}
             };
 
             return new Api.Contract.Requests.UpdateHearingRequest
@@ -20,7 +20,7 @@ namespace Bookings.AcceptanceTests.Models
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
                 HearingRoomName = "HearingRoomName12345",
                 OtherInformation = "OtherInformation12345",
-                UpdatedBy = "admin@hearings.reform.hmcts.net",
+                UpdatedBy = "admin@madeupemail.com",
                 Cases = caseList,
                 QuestionnaireNotRequired = true,
             };

@@ -11,7 +11,7 @@ namespace Bookings.UnitTests.Domain.Hearing
     public class AddCaseTests
     {
         [Test]
-        public void should_add_new_case()
+        public void Should_add_new_case()
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeAddCount = hearing.GetCases().Count;
@@ -21,7 +21,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
         
         [Test]
-        public void should_not_add_existing_case()
+        public void Should_not_add_existing_case()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("0875", "Test Case Add",false);
@@ -40,7 +40,7 @@ namespace Bookings.UnitTests.Domain.Hearing
     public class CancelHearingTests
     {
         [Test]
-        public void should_update_status_on_cancel()
+        public void Should_update_status_on_cancel()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.Status.Should().Be(BookingStatus.Booked);

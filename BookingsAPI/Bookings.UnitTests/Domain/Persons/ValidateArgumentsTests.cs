@@ -9,7 +9,7 @@ namespace Bookings.UnitTests.Domain.Persons
     public class ValidateArgumentsTests
     {
         [Test]
-        public void should_throw_exception_when_validation_fails()
+        public void Should_throw_exception_when_validation_fails()
         {
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new Person(null, null, null, null);

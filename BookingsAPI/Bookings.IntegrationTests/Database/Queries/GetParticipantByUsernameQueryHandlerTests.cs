@@ -20,7 +20,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_return_empty_when_no_participant_found()
+        public async Task Should_return_empty_when_no_participant_found()
         {
             var query = new GetParticipantsByUsernameQuery("doesnt.existatall@email.com");
             var participants = await _handler.Handle(query);
@@ -29,7 +29,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
         
         [Test]
-        public async Task should_return_participant_that_exists()
+        public async Task Should_return_participant_that_exists()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");

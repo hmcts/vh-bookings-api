@@ -23,7 +23,7 @@ namespace Bookings.UnitTests.Validation
 
 
         [Test]
-        public async Task should_return_missing_housenumber_error()
+        public async Task Should_return_missing_housenumber_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Claimant LIP";
@@ -37,7 +37,7 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task should_return_missing_street_error()
+        public async Task Should_return_missing_street_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Defendant LIP";
@@ -51,7 +51,7 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task should_return_missing_city_error()
+        public async Task Should_return_missing_city_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Applicant LIP";
@@ -65,7 +65,7 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task should_return_missing_county_error()
+        public async Task Should_return_missing_county_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Respondent LIP";
@@ -79,7 +79,7 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task should_return_missing_postcode_error()
+        public async Task Should_return_missing_postcode_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Claimant LIP";
@@ -94,7 +94,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_pass_validation_for_representative()
+        public async Task Should_pass_validation_for_representative()
         {
             var request = BuildRequest();
             request.HearingRoleName = "Solicitor";

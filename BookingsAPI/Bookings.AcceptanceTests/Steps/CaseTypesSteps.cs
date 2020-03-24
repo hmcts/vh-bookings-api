@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using AcceptanceTests.Common.Api.Helpers;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api;
+using static Testing.Common.Builders.Api.ApiUriFactory.CaseTypesEndpoints;
 
 namespace Bookings.AcceptanceTests.Steps
 {
@@ -11,7 +12,6 @@ namespace Bookings.AcceptanceTests.Steps
     public sealed class CaseTypesSteps
     {
         private readonly TestContext _context;
-        private readonly CaseTypesEndpoints _endpoints = new ApiUriFactory().CaseTypesEndpoints;
 
         public CaseTypesSteps(TestContext context)
         {
@@ -21,25 +21,25 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a get available case types request")]
         public void GivenIHaveAGetAvailableCaseTypesRequest()
         {
-            _context.Request = _context.Get(_endpoints.GetCaseTypes());
+            _context.Request = _context.Get(GetCaseTypes);
         }
 
         [Given(@"I have a get case roles for a case type of '(.*)' request")]
         public void GivenIHaveAGetAllHearingVenuesAvailableForBookingRequest(string caseType)
         {
-            _context.Request = _context.Get(_endpoints.GetCaseRolesForCaseType(caseType));
+            _context.Request = _context.Get(GetCaseRolesForCaseType(caseType));
         }
 
         [Given(@"I have a get hearing roles for a case type of '(.*)' and case role of '(.*)' request")]
         public void GivenIHaveAGetHearingRolesForCaseTypeOfCaseRoleRequest(string caseType, string caseRoleName)
         {
-            _context.Request = _context.Get(_endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName));
+            _context.Request = _context.Get(GetHearingRolesForCaseRole(caseType, caseRoleName));
         }
 
         [Then(@"a list of case types should be retrieved")]
         public void ThenAListOfCaseTypesShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(_context.Json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(_context.Response.Content);
             model.Should().NotBeEmpty();
             foreach (var caseType in model)
             {
@@ -57,7 +57,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of hearing roles should be retrieved")]
         public void ThenAListOfRolesShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(_context.Json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(_context.Response.Content);
             model.Should().NotBeEmpty();
             model[0].Name.Should().NotBeNullOrEmpty();
         }

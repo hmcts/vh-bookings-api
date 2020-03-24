@@ -13,7 +13,7 @@ namespace Bookings.UnitTests.Domain.Hearing
     public class AddParticipantTests : TestBase
     {
         [Test]
-        public void should_add_new_participant_to_hearing()
+        public void Should_add_new_participant_to_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             var claimantCaseRole = new CaseRole(1, "Claimant");
@@ -30,7 +30,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_not_add_existing_participant_to_hearing()
+        public void Should_not_add_existing_participant_to_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             var representative = (Representative) hearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
@@ -47,7 +47,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_add_judge_to_hearing()
+        public void Should_add_judge_to_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
             var judgeCaseRole = new CaseRole(5, "Judge");
@@ -63,7 +63,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_raise_exception_if_adding_judge_twice()
+        public void Should_raise_exception_if_adding_judge_twice()
         {
             var hearingBuilder = new VideoHearingBuilder();
             var hearing = hearingBuilder.Build();

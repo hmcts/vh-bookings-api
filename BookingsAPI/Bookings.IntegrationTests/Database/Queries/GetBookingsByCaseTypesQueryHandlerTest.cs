@@ -25,7 +25,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_return_all_case_types_if_no_filter_is_given()
+        public async Task Should_return_all_case_types_if_no_filter_is_given()
         {
             var firstHearing = (await Hooks.SeedVideoHearing()).Id;
             var financialRemedyHearing = (await Hooks.SeedVideoHearing(opts => opts.CaseTypeName = FinancialRemedy)).Id;
@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_only_return_filtered_case_types()
+        public async Task Should_only_return_filtered_case_types()
         {
             await Hooks.SeedVideoHearing();
             var financialRemedyHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
@@ -59,14 +59,14 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public void should_throw_on_invalid_cursor()
+        public void Should_throw_on_invalid_cursor()
         {
             Assert.ThrowsAsync<FormatException>(() =>
                 _handler.Handle(new GetBookingsByCaseTypesQuery { Cursor = "invalid" }));
         }
 
         [Test]
-        public async Task should_limit_hearings_returned()
+        public async Task Should_limit_hearings_returned()
         {
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
@@ -80,7 +80,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task should_return_different_hearings_for_each_new_page()
+        public async Task Should_return_different_hearings_for_each_new_page()
         {
             // When generating the identifiers they may end up being in order accidentally, therefor,
             // seed hearings until they end up in invalid order

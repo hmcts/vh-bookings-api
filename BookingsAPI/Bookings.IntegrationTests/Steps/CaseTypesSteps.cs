@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AcceptanceTests.Common.Api.Helpers;
 using Bookings.Api.Contract.Responses;
 using Bookings.IntegrationTests.Contexts;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api;
+using static Testing.Common.Builders.Api.ApiUriFactory.CaseTypesEndpoints;
 
 namespace Bookings.IntegrationTests.Steps
 {
     [Binding]
-    public sealed class CaseTypesSteps : StepsBase
+    public sealed class CaseTypesBaseSteps : BaseSteps
     {
-        private readonly CaseTypesEndpoints _endpoints = new ApiUriFactory().CaseTypesEndpoints;
         private readonly ScenarioContext _scenarioContext;
 
-        public CaseTypesSteps(TestContext apiTestContext, ScenarioContext scenarioContext) : base(apiTestContext)
+        public CaseTypesBaseSteps(TestContext apiTestContext, ScenarioContext scenarioContext) : base(apiTestContext)
         {
             _scenarioContext = scenarioContext;
         }   
@@ -23,21 +23,21 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get available case types request")]
         public void GivenIHaveAGetAvailableCaseTypesRequest()
         {
-            Context.Uri = _endpoints.GetCaseTypes();
+            Context.Uri = GetCaseTypes;
             Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get case roles for a case type of (.*) request")]
         public void GivenIHaveAGetCaseRolesForACaseTypeRequest(string caseType)
         {
-            Context.Uri = _endpoints.GetCaseRolesForCaseType(caseType);
+            Context.Uri = GetCaseRolesForCaseType(caseType);
             Context.HttpMethod = HttpMethod.Get;
         }
 
         [Given(@"I have a get hearing roles for a case type of '(.*)' and case role of '(.*)' request")]
         public void GivenIHaveAGetHearingRolesForCaseTypeOfCaseRoleRequest(string caseType, string caseRoleName)
         {          
-            Context.Uri = _endpoints.GetHearingRolesForCaseRole(caseType, caseRoleName);
+            Context.Uri = GetHearingRolesForCaseRole(caseType, caseRoleName);
             Context.HttpMethod = HttpMethod.Get;
             _scenarioContext.Add("CaseTypeKey", caseType);
         }
@@ -45,8 +45,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"a list of case types should be retrieved")]
         public async Task ThenAListOfCaseTypesShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
             model.Should().NotBeEmpty();
             foreach (var caseType in model)
             {
@@ -63,8 +63,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"a list of case roles should be retrieved")]
         public async Task ThenAListOfCaseRolesShouldBeRetrieved()
         {
-            var json = await Context.ResponseMessage.Content.ReadAsStringAsync();
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
             model.Should().NotBeEmpty();
             model[0].Name.Should().NotBeNullOrEmpty();
         }

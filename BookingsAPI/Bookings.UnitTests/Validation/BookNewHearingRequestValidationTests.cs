@@ -21,7 +21,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_pass_validation()
+        public async Task Should_pass_validation()
         {
             var request = BuildRequest();
 
@@ -31,7 +31,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_missing_hearing_venue_name_error()
+        public async Task Should_return_missing_hearing_venue_name_error()
         {
             var request = BuildRequest();
             request.HearingVenueName = string.Empty;
@@ -45,7 +45,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_hearing_schedule_date_time_in_past_error()
+        public async Task Should_return_hearing_schedule_date_time_in_past_error()
         {
             var request = BuildRequest();
             request.ScheduledDateTime = DateTime.MinValue;
@@ -58,7 +58,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_hearing_schedule_duration_error()
+        public async Task Should_return_hearing_schedule_duration_error()
         {
             var request = BuildRequest();
             request.ScheduledDuration = 0;
@@ -71,7 +71,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_missing_case_type_name_error()
+        public async Task Should_return_missing_case_type_name_error()
         {
             var request = BuildRequest();
             request.CaseTypeName = string.Empty;
@@ -85,7 +85,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_missing_hearing_type_name_error()
+        public async Task Should_return_missing_hearing_type_name_error()
         {
             var request = BuildRequest();
             request.HearingTypeName = string.Empty;
@@ -99,7 +99,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_missing_participants_error()
+        public async Task Should_return_missing_participants_error()
         {
             var request = BuildRequest();
             request.Participants = Enumerable.Empty<ParticipantRequest>().ToList();
@@ -113,7 +113,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_cases_error()
+        public async Task Should_return_missing_cases_error()
         {
             var request = BuildRequest();
             request.Cases = Enumerable.Empty<CaseRequest>().ToList();
@@ -127,7 +127,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_cases_error()
+        public async Task Should_return_cases_error()
         {
             var request = BuildRequest();
             request.Cases[0].Name = string.Empty;
@@ -141,7 +141,7 @@ namespace Bookings.UnitTests.Validation
         }
         
         [Test]
-        public async Task should_return_case_duplication_error()
+        public async Task Should_return_case_duplication_error()
         {
             var request = BuildRequest();
             request.Cases = new List<CaseRequest>

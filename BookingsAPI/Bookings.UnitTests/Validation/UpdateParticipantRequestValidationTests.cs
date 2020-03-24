@@ -23,7 +23,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_pass_validation()
+        public async Task Should_pass_validation()
         {
             var request = BuildRequest();
 
@@ -33,7 +33,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_display_name_error()
+        public async Task Should_return_missing_display_name_error()
         {
             var request = BuildRequest();
             request.DisplayName = string.Empty;

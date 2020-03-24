@@ -11,7 +11,7 @@ namespace Bookings.UnitTests.Domain.Hearing
     public class UpdateStatusTest
     {
         [Test]
-        public void should_update_hearing_status()
+        public void Should_update_hearing_status()
         {
             var hearing = new VideoHearingBuilder().Build();
             var updatedDate = hearing.UpdatedDate;
@@ -21,7 +21,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_throw_domain_exception_Upon_hearing_status_update_to_booked()
+        public void Should_throw_domain_exception_Upon_hearing_status_update_to_booked()
         {
             var hearing = new VideoHearingBuilder().Build();
             var updatedDate = hearing.UpdatedDate;
@@ -34,7 +34,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_throw_domain_exception_Upon_hearing_status_update_to_created()
+        public void Should_throw_domain_exception_Upon_hearing_status_update_to_created()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.UpdateStatus(BookingStatus.Cancelled, "testuser");
@@ -49,7 +49,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_throw_argument_null_exception_when_updatedby_field_is_empty()
+        public void Should_throw_argument_null_exception_when_updatedby_field_is_empty()
         {
             var hearing = new VideoHearingBuilder().Build();
             
@@ -60,7 +60,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void should_throw_argument_null_exception_when_updatedby_field_is_null()
+        public void Should_throw_argument_null_exception_when_updatedby_field_is_null()
         {
             var hearing = new VideoHearingBuilder().Build();
 

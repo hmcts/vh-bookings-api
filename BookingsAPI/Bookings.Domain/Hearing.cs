@@ -99,9 +99,11 @@ namespace Bookings.Domain
                 throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
             }
 
-            Participant participant = new Individual(person, hearingRole, caseRole);
-            participant.DisplayName = displayName;
-            participant.CreatedBy = CreatedBy;
+            Participant participant = new Individual(person, hearingRole, caseRole)
+            {
+                DisplayName = displayName,
+                CreatedBy = CreatedBy
+            };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             return participant;
@@ -135,9 +137,11 @@ namespace Bookings.Domain
                 throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
             }
 
-            Participant participant = new Judge(person, hearingRole, caseRole);
-            participant.DisplayName = displayName;
-            participant.CreatedBy = CreatedBy;
+            Participant participant = new Judge(person, hearingRole, caseRole)
+            {
+                DisplayName = displayName,
+                CreatedBy = CreatedBy
+            };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             return participant;
@@ -257,7 +261,7 @@ namespace Bookings.Domain
 
         private void ValidateScheduledDate(DateTime scheduledDateTime)
         {
-            if (scheduledDateTime == default(DateTime))
+            if (scheduledDateTime == default)
             {
                 _validationFailures.AddFailure(nameof(ScheduledDateTime), "ScheduledDateTime is not a valid value");
             }

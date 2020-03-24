@@ -10,7 +10,7 @@ namespace Bookings.UnitTests.DAL.Queries
     public class GetBookingsByCaseTypesQueryTests : TestBase
     {
         [Test]
-        public void should_throw_exception_if_setting_an_invalid_limit()
+        public void Should_throw_exception_if_setting_an_invalid_limit()
         {
             When(() => new GetBookingsByCaseTypesQuery {Limit = 0})
                 .Should().Throw<ArgumentException>();

@@ -1,30 +1,29 @@
-﻿using Bookings.API.Controllers;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using Bookings.Api.Contract.Requests;
+using Bookings.Api.Contract.Responses;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
+using Bookings.Infrastructure.Services.IntegrationEvents;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.Infrastructure.Services.ServiceBusQueue;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using Bookings.Api.Contract.Responses;
-using Bookings.Infrastructure.Services.IntegrationEvents;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
-using Bookings.Api.Contract.Requests;
-using System;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
-namespace Bookings.UnitTests.Controllers
+namespace Bookings.UnitTests.Controllers.HearingsController
 {
     public class HearingsControllerTest
     {
-        protected HearingsController _controller;
+        protected API.Controllers.HearingsController _controller;
         protected Mock<IQueryHandler> _queryHandlerMock;
         protected Mock<ICommandHandler> _commandHandlerMock;
         private IEventPublisher _eventPublisher;
@@ -37,12 +36,12 @@ namespace Bookings.UnitTests.Controllers
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
             _eventPublisher = new EventPublisher(_sbQueueClient);
-            _controller = new HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object,
+            _controller = new API.Controllers.HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object,
                 _eventPublisher);
         }
 
         [Test]
-        public async Task should_return_bad_request_if_invalid_case_types()
+        public async Task Should_return_bad_request_if_invalid_case_types()
         {
             var caseTypes = new List<int> { 44, 78 };
             _queryHandlerMock
@@ -58,7 +57,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_bookings()
+        public async Task Should_return_bookings()
         {
             var caseTypes = new List<int>();
             _queryHandlerMock
@@ -82,7 +81,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_next_and_previous_page_urls()
+        public async Task Should_return_next_and_previous_page_urls()
         {
             var caseTypes = new List<int> { 1, 2 };
             _queryHandlerMock
@@ -101,7 +100,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_change_hearing_status_to_created_and_send_event_notification()
+        public async Task Should_change_hearing_status_to_created_and_send_event_notification()
         {
             var request = new UpdateBookingStatusRequest
             {
@@ -128,7 +127,7 @@ namespace Bookings.UnitTests.Controllers
         }
         
         [Test]
-        public async Task should_change_hearing_status_to_cancelled()
+        public async Task Should_change_hearing_status_to_cancelled()
         {
             var request = new UpdateBookingStatusRequest
             {
@@ -155,7 +154,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_not_update_booking_and_return_badrequest_with_an_invalid_hearingid()
+        public async Task Should_not_update_booking_and_return_badrequest_with_an_invalid_hearingid()
         {
             var request = new UpdateBookingStatusRequest();
             var hearingId = Guid.Empty;
@@ -169,7 +168,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_update_hearing_with_status_created_and_send_event_to_video()
+        public async Task Should_update_hearing_with_status_created_and_send_event_to_video()
         {
             var request = new UpdateHearingRequest
             {
@@ -208,7 +207,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_notfound_when_no_matching_venue_found()
+        public async Task Should_return_notfound_when_no_matching_venue_found()
         {
             var request = new UpdateHearingRequest
             {
@@ -243,7 +242,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_badrequest_with_an_invalid_hearingid()
+        public async Task Should_return_badrequest_with_an_invalid_hearingid()
         {
             var request = new UpdateHearingRequest();
             var hearingId = Guid.Empty;
@@ -257,7 +256,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_remove_hearing_with_status_created_and_send_event_to_video()
+        public async Task Should_remove_hearing_with_status_created_and_send_event_to_video()
         {
             var hearingId = Guid.NewGuid();
             var hearing = GetHearing();
@@ -280,7 +279,7 @@ namespace Bookings.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_not_remove_hearing_and_return_badrequest_with_an_invalid_hearingid()
+        public async Task Should_not_remove_hearing_and_return_badrequest_with_an_invalid_hearingid()
         {
             var hearingId = Guid.Empty;
 

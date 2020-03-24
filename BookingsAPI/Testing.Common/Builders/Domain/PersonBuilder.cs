@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Faker;
 using FizzWare.NBuilder;
 using Bookings.Domain;
@@ -10,8 +8,6 @@ namespace Testing.Common.Builders.Domain
 {
     public class PersonBuilder
     {
-        private static List<Person> _participants;
-        private static int _nextParticipantIndex;
         private readonly Person _person;
         private readonly BuilderSettings _settings;
 
@@ -63,20 +59,6 @@ namespace Testing.Common.Builders.Domain
         public Person Build()
         {
             return _person;
-        }
-
-        public static Person GetNextParticipantWithId()
-        {
-            var numParticipantsToCreate = 10;
-            if (_participants == null || _nextParticipantIndex >= numParticipantsToCreate)
-            {
-                _participants = Builder<Person>.CreateListOfSize(numParticipantsToCreate).All().WithFactory(() =>
-                        new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", $"Automation_{Internet.Email()}")).With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
-                    .Build().ToList();
-                _nextParticipantIndex = 0;
-            }
-
-            return _participants[_nextParticipantIndex++];
         }
     }
 }

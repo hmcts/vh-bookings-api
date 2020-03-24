@@ -33,7 +33,7 @@ namespace Bookings.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task should_be_able_to_save_video_hearing_to_database()
+        public async Task Should_be_able_to_save_video_hearing_to_database()
         {
             var caseTypeName = "Civil Money Claims";
             var caseType = GetCaseTypeFromDb(caseTypeName);

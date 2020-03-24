@@ -23,7 +23,7 @@ namespace Bookings.UnitTests.Validation
 
 
         [Test]
-        public async Task should_pass_validation()
+        public async Task Should_pass_validation()
         {
             var request = BuildRequest();
 
@@ -33,7 +33,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_display_name_error()
+        public async Task Should_return_missing_display_name_error()
         {
             var request = BuildRequest();
             request.DisplayName = string.Empty;
@@ -47,7 +47,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_case_role_name_error()
+        public async Task Should_return_missing_case_role_name_error()
         {
             var request = BuildRequest();
             request.CaseRoleName = string.Empty;
@@ -61,7 +61,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_hearing_role_name_error()
+        public async Task Should_return_missing_hearing_role_name_error()
         {
             var request = BuildRequest();
             request.HearingRoleName = string.Empty;
@@ -75,7 +75,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_first_name_error()
+        public async Task Should_return_missing_first_name_error()
         {
             var request = BuildRequest();
             request.FirstName = string.Empty;
@@ -89,7 +89,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_last_name_error()
+        public async Task Should_return_missing_last_name_error()
         {
             var request = BuildRequest();
             request.LastName = string.Empty;
@@ -103,7 +103,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_username_error()
+        public async Task Should_return_missing_username_error()
         {
             var request = BuildRequest();
             request.Username = string.Empty;
@@ -117,7 +117,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public async Task should_return_missing_contact_email_error()
+        public async Task Should_return_missing_contact_email_error()
         {
             var request = BuildRequest();
             request.ContactEmail = string.Empty;
