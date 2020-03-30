@@ -5,6 +5,7 @@ using AcceptanceTests.Common.Configuration.Users;
 using Bookings.DAL;
 using Microsoft.EntityFrameworkCore;
 using Testing.Common.Configuration;
+using AcceptanceTests.Common.Api;
 
 namespace Bookings.AcceptanceTests.Contexts
 {
@@ -20,7 +21,7 @@ namespace Bookings.AcceptanceTests.Contexts
 
         public RestClient Client()
         {
-            var client = new RestClient(Config.ServicesConfiguration.BookingsApiUrl);
+            var client = new RestClient(Config.ServicesConfiguration.BookingsApiUrl) { Proxy = Zap.WebProxy};
             client.AddDefaultHeader("Accept", "application/json");
             client.AddDefaultHeader("Authorization", $"Bearer {BearerToken}");
             return client;

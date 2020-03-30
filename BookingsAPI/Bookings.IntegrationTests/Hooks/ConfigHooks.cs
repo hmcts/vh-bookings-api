@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿ using System.Collections.Generic;
 using System.Net.Http;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
@@ -44,7 +44,6 @@ namespace Bookings.IntegrationTests.Hooks
             RegisterDefaultData(context);
             RegisterDatabaseSettings(context);
             RegisterServer(context);
-            RegisterZapSettings(context);
             RegisterApiSettings(context);
             GenerateBearerTokens(context, azureOptions);
         }
@@ -113,11 +112,6 @@ namespace Bookings.IntegrationTests.Hooks
         private static void RegisterApiSettings(TestContext context)
         {
             context.Response = new HttpResponseMessage();
-        }
-
-        private void RegisterZapSettings(TestContext context)
-        {
-            context.Config.ZapConfig = Options.Create(_configRoot.GetSection("ZapConfiguration").Get<ZapConfiguration>()).Value;
         }
 
         private static void GenerateBearerTokens(TestContext context, IOptions<AzureAdConfiguration> azureOptions)
