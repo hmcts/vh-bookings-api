@@ -559,6 +559,7 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
+                .With(x => x.AudioRecordingRequired = true)
                 .Build();
         }
 
@@ -578,6 +579,7 @@ namespace Bookings.IntegrationTests.Steps
                 ScheduledDuration = 100,
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
                 OtherInformation = "OtherInfo",
+                AudioRecordingRequired = true,
                 HearingRoomName = "20",
                 UpdatedBy = $"admin{usernameStem}",
                 Cases = caseList
