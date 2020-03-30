@@ -144,6 +144,7 @@ namespace Bookings.IntegrationTests.Steps
                 Context.TestData.UpdateHearingRequest.ScheduledDuration = 0;
                 Context.TestData.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
                 Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = true;
+                Context.TestData.UpdateHearingRequest.AudioRecordingRequired = true;
             }
             UpdateTheHearingRequest();
         }
@@ -341,6 +342,7 @@ namespace Bookings.IntegrationTests.Steps
             model.HearingRoomName.Should().Be(Context.TestData.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(Context.TestData.UpdateHearingRequest.OtherInformation);
             model.QuestionnaireNotRequired.Should().Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired);
+            model.AudioRecordingRequired.Should().Be(Context.TestData.UpdateHearingRequest.AudioRecordingRequired);
 
             var updatedCases = model.Cases;
             var caseRequest = Context.TestData.UpdateHearingRequest.Cases.FirstOrDefault();
@@ -503,6 +505,7 @@ namespace Bookings.IntegrationTests.Steps
             model.OtherInformation.Should().NotBeNullOrEmpty();
             model.CreatedBy.Should().NotBeNullOrEmpty();
             model.QuestionnaireNotRequired.Should().BeFalse();
+            model.AudioRecordingRequired.Should().BeTrue();
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))

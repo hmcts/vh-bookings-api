@@ -184,7 +184,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var hearing = GetHearing();
             hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
-                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true);
+                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
             _queryHandlerMock
             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
             .ReturnsAsync(hearing);
@@ -223,7 +223,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var hearing = GetHearing();
             hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
-                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true);
+                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
             _queryHandlerMock
             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
             .ReturnsAsync(hearing);

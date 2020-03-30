@@ -37,9 +37,10 @@ namespace Bookings.UnitTests.Mappings
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
             const bool questionnaireNotRequired = true;
+            const bool audioRecordingRequired = true;
 
             var hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
-                   otherInformation, createdBy, questionnaireNotRequired);
+                   otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired);
            
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                hearing).Build();

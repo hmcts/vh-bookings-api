@@ -23,7 +23,8 @@ namespace Bookings.Domain
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool questionnaireNotRequired)
+            string otherInformation, string createdBy, bool questionnaireNotRequired, 
+            bool audioRecordingRequired)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -39,6 +40,7 @@ namespace Bookings.Domain
             OtherInformation = otherInformation;
             CreatedBy = createdBy;
             QuestionnaireNotRequired = questionnaireNotRequired;
+            AudioRecordingRequired = audioRecordingRequired;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -61,6 +63,7 @@ namespace Bookings.Domain
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
+        public bool AudioRecordingRequired { get; set; }
 
         public void CancelHearing()
         {
@@ -189,7 +192,7 @@ namespace Bookings.Domain
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
-            List<Case> cases, bool questionnaireNotRequired)
+            List<Case> cases, bool questionnaireNotRequired, bool audioRecordingRequired)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -227,6 +230,7 @@ namespace Bookings.Domain
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
             QuestionnaireNotRequired = questionnaireNotRequired;
+            AudioRecordingRequired = audioRecordingRequired;
         }
 
         private bool DoesParticipantExist(string username)

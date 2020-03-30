@@ -14,7 +14,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => 
                 new VideoHearing(null, null, default(DateTime), 0, 
-                    null, null, null, null, false);
+                    null, null, null, null, false, true);
 
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
