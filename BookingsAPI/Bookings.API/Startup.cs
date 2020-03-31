@@ -18,6 +18,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 using Testing.Common.Configuration;
+using OwaspHeaders.Core.Extensions;
 
 namespace Bookings.API
 {
@@ -144,7 +145,7 @@ namespace Bookings.API
             app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
-            
+            app.UseSecureHeadersMiddleware(SecureHeadersMiddlewareExtensions.BuildDefaultConfiguration());
             app.UseMiddleware<LogResponseBodyMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
         }
