@@ -23,7 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4078E3A9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.AcceptanceTests", "Bookings.AcceptanceTests\Bookings.AcceptanceTests.csproj", "{635E3E43-43BD-4406-A2CE-6A945E4D49D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookings.Infrastructure.Services", "Bookings.Infrastructure.Services\Bookings.Infrastructure.Services.csproj", "{C4D8559C-ADF7-401B-8FAF-6D55463F3DD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Infrastructure.Services", "Bookings.Infrastructure.Services\Bookings.Infrastructure.Services.csproj", "{C4D8559C-ADF7-401B-8FAF-6D55463F3DD7}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{D163D829-C14E-46AA-99B3-63823C0DACA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{C4D8559C-ADF7-401B-8FAF-6D55463F3DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4D8559C-ADF7-401B-8FAF-6D55463F3DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4D8559C-ADF7-401B-8FAF-6D55463F3DD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D163D829-C14E-46AA-99B3-63823C0DACA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D163D829-C14E-46AA-99B3-63823C0DACA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D163D829-C14E-46AA-99B3-63823C0DACA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D163D829-C14E-46AA-99B3-63823C0DACA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
