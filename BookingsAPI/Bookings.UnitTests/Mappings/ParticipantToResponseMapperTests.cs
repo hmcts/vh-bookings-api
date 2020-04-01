@@ -64,7 +64,7 @@ namespace Bookings.UnitTests.Mappings
         public void Should_map_representative()
         {
             var caseRole = new CaseRole(1, "Claimant");
-            var hearingRole = new HearingRole(2, "Solicitor") {UserRole = new UserRole(6, "Representative")};
+            var hearingRole = new HearingRole(2, "Representative") {UserRole = new UserRole(6, "Representative")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
             var representative = new Representative(person, hearingRole, caseRole)

@@ -46,10 +46,10 @@ namespace Bookings.DAL.Commands
                         break;
                     case "Representative":
                     {
-                            var solicitor = hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                            var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
                             participantToAdd.Reference, participantToAdd.Representee);
-                            UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitor);
+                            UpdateAddressAndOrganisationDetails(participantToAdd.Person, representative);
                         break;
                     }
                     case "Judge":

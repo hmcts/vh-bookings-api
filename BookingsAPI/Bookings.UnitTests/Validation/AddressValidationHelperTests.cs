@@ -15,13 +15,13 @@ namespace Bookings.UnitTests.Validation
         [SetUp]
         public void TestInitialize()
         {
-            roles = new List<string> { "Claimant", "Solicitor" };
+            roles = new List<string> { "Claimant", "Representative" };
 
             participantRequests = new List<ParticipantRequest>
             {
                 new ParticipantRequest
                 {
-                    HearingRoleName = "Solicitor",
+                    HearingRoleName = "Representative",
                     HouseNumber = "123A",
                     Street = "Test Street",
                     Postcode = "SW1V 1AB",

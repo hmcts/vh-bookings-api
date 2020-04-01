@@ -75,7 +75,7 @@ namespace Bookings.Api.Contract.Responses
         public string Organisation { get; set; }
 
         /// <summary>
-        /// Gets or sets the person name that solicitor represent.
+        /// Gets or sets the person name that Representative represents.
         /// </summary>
         public string Representee { get; set; }
 

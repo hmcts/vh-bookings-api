@@ -45,7 +45,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 participants[0].Representee = null;
 
                 participants[1].CaseRoleName = "Claimant";
-                participants[1].HearingRoleName = "Solicitor";
+                participants[1].HearingRoleName = "Representative";
                 participants[1].Reference = null;
                 participants[1].Representee = participants[0].DisplayName;
 
@@ -55,7 +55,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 participants[2].Representee = null;
 
                 participants[3].CaseRoleName = "Defendant";
-                participants[3].HearingRoleName = "Solicitor";
+                participants[3].HearingRoleName = "Representative";
                 participants[2].Reference = null;
                 participants[3].Representee = participants[2].DisplayName;
 
@@ -95,11 +95,12 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 .With(x => x.QuestionnaireNotRequired = false)
                 .Build();
 
-        private List<CaseRole> CaseRoles => new List<CaseRole> {
-                                    CreateCaseAndHearingRoles(1, "Claimant",new List<string>{ "Claimant LIP", "Solicitor"}),
-                                    CreateCaseAndHearingRoles(2, "Defendant",new List<string>{ "Defendant LIP", "Solicitor"}),
-                                    CreateCaseAndHearingRoles(3, "Judge", new List<string>{ "Judge"})
-                                };
+        private List<CaseRole> CaseRoles => new List<CaseRole> 
+        {
+            CreateCaseAndHearingRoles(1, "Claimant",new List<string>{ "Claimant LIP", "Representative"}),
+            CreateCaseAndHearingRoles(2, "Defendant",new List<string>{ "Defendant LIP", "Representative"}),
+            CreateCaseAndHearingRoles(3, "Judge", new List<string>{ "Judge"})
+        };
 
         private CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, List<string> roles)
         {

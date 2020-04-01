@@ -22,7 +22,7 @@ namespace Testing.Common.Builders.Api.Request
                 .Build();
         }
 
-        public ParticipantRequestBuilder WithSolicitorDetails(string reference, string representee)
+        public ParticipantRequestBuilder WithRepresentativeDetails(string reference, string representee)
         {
             _participantRequest.Reference = reference;
             _participantRequest.Representee = representee;

@@ -112,7 +112,7 @@ namespace Bookings.Domain
             return participant;
         }
 
-        public Participant AddSolicitor(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
+        public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
             string reference, string representee)
         {
             if (DoesParticipantExist(person.Username))

@@ -44,7 +44,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var venue = new RefDataBuilder().HearingVenues.First();
             
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
@@ -55,7 +55,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             {
                 Person = newPerson,
                 CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
+                HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Reference = string.Empty,
                 Representee = string.Empty

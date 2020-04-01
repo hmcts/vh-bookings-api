@@ -25,7 +25,7 @@ namespace Bookings.UnitTests.Mappings
                         HearingRoles = new List<HearingRole>
                         {
                             new HearingRole(1, "Claimant LIP"),
-                            new HearingRole(2, "Solicitor") { UserRole = new UserRole(1, "individual")}
+                            new HearingRole(2, "Representative") { UserRole = new UserRole(1, "individual")}
                         }
                     },
                     new CaseRole(0, "Respondent")
@@ -33,7 +33,7 @@ namespace Bookings.UnitTests.Mappings
                         HearingRoles = new List<HearingRole>
                         {
                             new HearingRole(1, "Respondent LIP"),
-                            new HearingRole(2, "Solicitor") { UserRole = new UserRole(1, "representative")}
+                            new HearingRole(2, "Representative") { UserRole = new UserRole(1, "representative")}
                         }
                     }
                 }
@@ -46,7 +46,7 @@ namespace Bookings.UnitTests.Mappings
             var request = new ParticipantRequest
             {
                 CaseRoleName = "Missing case role",
-                HearingRoleName = "Solicitor"
+                HearingRoleName = "Representative"
             };
 
             When(() => new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType))
@@ -76,7 +76,7 @@ namespace Bookings.UnitTests.Mappings
                 LastName = "Tester",
                 Username = "TestTester",
                 CaseRoleName = "Claimant",
-                HearingRoleName = "Solicitor",
+                HearingRoleName = "Representative",
                 HouseNumber = "123A",
                 Street = "Test Street",
                 Postcode = "SW1V 1AB",
@@ -102,7 +102,7 @@ namespace Bookings.UnitTests.Mappings
                 LastName = "Tester",
                 Username = "TestTester",
                 CaseRoleName = "Respondent",
-                HearingRoleName = "Solicitor",
+                HearingRoleName = "Representative",
                 OrganisationName = "Test Corp Ltd"
             };
 

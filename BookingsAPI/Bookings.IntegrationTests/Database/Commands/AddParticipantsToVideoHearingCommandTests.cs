@@ -55,14 +55,14 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
                 Person = newPerson,
                 CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
+                HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Reference = string.Empty,
                 Representee = string.Empty
@@ -217,13 +217,13 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newParticipant = new NewParticipant()
             {
                 Person = existingPerson,
                 CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
+                HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{existingPerson.FirstName} {existingPerson.LastName}",
                 Reference = string.Empty,
                 Representee = string.Empty

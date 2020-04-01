@@ -24,7 +24,7 @@ namespace Bookings.UnitTests.Validation
         public async Task Should_return_missing_representee_error()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Solicitor";
+            request.HearingRoleName = "Representative";
             request.Representee = string.Empty;
 
             var result = await _representativeValidator.ValidateAsync(request);
@@ -35,10 +35,10 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         [Test]
-        public async Task Should_return_missing_solicitor_reference_error()
+        public async Task Should_return_missing_representative_reference_error()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Solicitor";
+            request.HearingRoleName = "Representative";
             request.Reference = string.Empty;
 
             var result = await _representativeValidator.ValidateAsync(request);
@@ -52,7 +52,7 @@ namespace Bookings.UnitTests.Validation
         public async Task Should_return_missing_organisation_error()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Solicitor";
+            request.HearingRoleName = "Representative";
             request.OrganisationName = string.Empty;
 
             var result = await _representativeValidator.ValidateAsync(request);
@@ -67,7 +67,7 @@ namespace Bookings.UnitTests.Validation
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Claimant")
-                 .With(x => x.HearingRoleName = "Solicitor")
+                 .With(x => x.HearingRoleName = "Representative")
                  .Build();
         }
     }
