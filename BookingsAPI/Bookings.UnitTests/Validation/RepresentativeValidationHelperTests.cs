@@ -32,7 +32,7 @@ namespace Bookings.UnitTests.Validation
         {
             var invalidParticipantRequest = new ParticipantRequestBuilder("Defendant", "Solicitor").Build();
             invalidParticipantRequest.Representee = string.Empty;
-            invalidParticipantRequest.SolicitorsReference = string.Empty;
+            invalidParticipantRequest.Reference = string.Empty;
 
             var validParticipantRequest = new ParticipantRequestBuilder("Defendant", "Solicitor").WithSolicitorDetails("Test Reference","Test Representee").Build();
 

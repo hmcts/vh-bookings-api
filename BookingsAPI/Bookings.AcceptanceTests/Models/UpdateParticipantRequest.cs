@@ -16,7 +16,7 @@
                 Postcode="ED1 5NR",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
-                SolicitorsReference = "SolRef"
+                Reference = "SolRef"
             };
         }
     }

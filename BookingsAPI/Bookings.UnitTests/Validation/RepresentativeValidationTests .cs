@@ -39,13 +39,13 @@ namespace Bookings.UnitTests.Validation
         {
             var request = BuildRequest();
             request.HearingRoleName = "Solicitor";
-            request.SolicitorsReference = string.Empty;
+            request.Reference = string.Empty;
 
             var result = await _representativeValidator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == RepresentativeValidation.NoSolicitorReference)
+            result.Errors.Any(x => x.ErrorMessage == RepresentativeValidation.NoReference)
                 .Should().BeTrue();
         }
         [Test]

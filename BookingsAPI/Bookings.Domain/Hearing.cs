@@ -113,7 +113,7 @@ namespace Bookings.Domain
         }
 
         public Participant AddSolicitor(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
-            string solicitorsReference, string representee)
+            string reference, string representee)
         {
             if (DoesParticipantExist(person.Username))
             {
@@ -122,7 +122,7 @@ namespace Bookings.Domain
 
             Participant participant = new Representative(person, hearingRole, caseRole)
             {
-                SolicitorsReference = solicitorsReference,
+                Reference = reference,
                 Representee = representee
             };
 

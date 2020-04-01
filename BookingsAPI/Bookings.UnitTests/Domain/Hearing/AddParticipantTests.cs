@@ -37,7 +37,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var beforeAddCount = hearing.GetParticipants().Count;
 
             Action action = () => hearing.AddSolicitor(representative.Person, representative.HearingRole,
-                representative.CaseRole, representative.DisplayName, representative.SolicitorsReference,
+                representative.CaseRole, representative.DisplayName, representative.Reference,
                 representative.Representee);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Any(x => x.Message == "Participant already exists in the hearing").Should().BeTrue();

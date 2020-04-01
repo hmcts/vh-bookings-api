@@ -120,8 +120,8 @@ Scenario: Participant not updated with invalid hearing id
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 
-Scenario: Participant not updated with invalid solicitors reference
-	Given I have an update participant in a hearing request with a invalid solicitors reference
+Scenario: Participant not updated with invalid reference
+	Given I have an update participant in a hearing request with a invalid reference
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
 

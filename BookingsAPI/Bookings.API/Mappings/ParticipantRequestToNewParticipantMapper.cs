@@ -50,7 +50,7 @@ namespace Bookings.API.Mappings
                 HearingRole = hearingRole,
                 DisplayName = requestParticipant.DisplayName,
                 Representee = requestParticipant.Representee,
-                SolicitorsReference = requestParticipant.SolicitorsReference,
+                Reference = requestParticipant.Reference,
             };
         }
     }

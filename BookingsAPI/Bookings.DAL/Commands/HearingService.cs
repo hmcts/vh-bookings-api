@@ -48,7 +48,7 @@ namespace Bookings.DAL.Commands
                     {
                             var solicitor = hearing.AddSolicitor(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
-                            participantToAdd.SolicitorsReference, participantToAdd.Representee);
+                            participantToAdd.Reference, participantToAdd.Representee);
                             UpdateAddressAndOrganisationDetails(participantToAdd.Person, solicitor);
                         break;
                     }

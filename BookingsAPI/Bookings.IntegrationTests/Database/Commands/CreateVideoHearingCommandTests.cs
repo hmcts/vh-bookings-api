@@ -57,7 +57,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = claimantCaseRole,
                 HearingRole = claimantSolicitorHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
             var newJudgeParticipant = new NewParticipant()
@@ -66,7 +66,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = judgeCaseRole,
                 HearingRole = judgeHearingRole,
                 DisplayName = $"{newJudgePerson.FirstName} {newJudgePerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
             var participants = new List<NewParticipant>()
