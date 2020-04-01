@@ -5,7 +5,7 @@ namespace Bookings.Infrastructure.Services.Dtos
     public class HearingDto
     {
         public HearingDto(Guid hearingId, DateTime scheduledDateTime, int scheduledDuration, string caseType,
-            string caseNumber, string caseName, string hearingVenueName)
+            string caseNumber, string caseName, string hearingVenueName, bool recordAudio)
         {
             HearingId = hearingId;
             ScheduledDateTime = scheduledDateTime;
@@ -14,6 +14,7 @@ namespace Bookings.Infrastructure.Services.Dtos
             CaseNumber = caseNumber;
             CaseName = caseName;
             HearingVenueName = hearingVenueName;
+            RecordAudio = recordAudio;
         }
 
         public Guid HearingId { get; }
@@ -23,5 +24,6 @@ namespace Bookings.Infrastructure.Services.Dtos
         public string CaseNumber { get; }
         public string CaseName { get; }
         public string HearingVenueName { get; }
+        public bool RecordAudio { get; set; }
     }
 }
