@@ -9,9 +9,15 @@ namespace Bookings.Infrastructure.Services
         public static HearingDto MapToDto(Hearing hearing)
         {
             var @case = hearing.GetCases().First(); // Does this need to be a lead case?
-            return new HearingDto(hearing.Id, hearing.ScheduledDateTime, hearing.ScheduledDuration,
-                hearing.CaseType.Name, @case.Number, @case.Name, hearing.HearingVenueName)
+            return new HearingDto
             {
+                HearingId = hearing.Id,
+                ScheduledDateTime = hearing.ScheduledDateTime,
+                ScheduledDuration = hearing.ScheduledDuration,
+                CaseType = hearing.CaseType.Name,
+                CaseNumber = @case.Number,
+                CaseName= @case.Name,
+                HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired
             };
         }

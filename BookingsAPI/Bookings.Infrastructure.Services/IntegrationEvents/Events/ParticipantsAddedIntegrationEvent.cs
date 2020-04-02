@@ -21,14 +21,7 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
 
         private void AddParticipant(Participant participant)
         {
-            var representee = participant is Representative representative ? representative.Representee : string.Empty;
-
-            var participantDto = new ParticipantDto(participant.Id,
-                $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
-                participant.Person.Username, participant.DisplayName,
-                participant.HearingRole.Name, participant.HearingRole.UserRole.Name,
-                participant.CaseRole.Group, representee);
-
+            var participantDto = ParticipantDtoMapper.MapToDto(participant);
             Participants.Add(participantDto);
         }
     }
