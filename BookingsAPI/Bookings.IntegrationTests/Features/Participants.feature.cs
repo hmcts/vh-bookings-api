@@ -936,12 +936,12 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [NUnit.Framework.TestCaseAttribute(TestName="Participant not updated with invalid solicitors reference")]
-        [NUnit.Framework.DescriptionAttribute("Participant not updated with invalid solicitors reference")]
-        public virtual void ParticipantNotUpdatedWithInvalidSolicitorsReference()
+        [NUnit.Framework.TestCaseAttribute(TestName="Participant not updated with invalid reference")]
+        [NUnit.Framework.DescriptionAttribute("Participant not updated with invalid reference")]
+        public virtual void ParticipantNotUpdatedWithInvalidReference()
         {
             string[] tagsOfScenario = ((string[])(null));
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant not updated with invalid solicitors reference", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Participant not updated with invalid reference", null, ((string[])(null)));
 #line 123
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -963,8 +963,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 124
- testRunner.Given("I have an update participant in a hearing request with a invalid solicitors refer" +
-                        "ence", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have an update participant in a hearing request with a invalid reference", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 125
  testRunner.When("I send the request to the endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");

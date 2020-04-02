@@ -20,8 +20,8 @@ namespace Testing.Common.Builders.Domain
             var defendantCaseRole = new CaseRole(2, "Defendant");
             var claimantLipHearingRole = new HearingRole(1, "Claimant LIP");
             claimantLipHearingRole.UserRole = new UserRole(5, "Individual");
-            var defendantSolicitorHearingRole = new HearingRole(5, "Solicitor");
-            defendantSolicitorHearingRole.UserRole = new UserRole(6, "Representative");
+            var defendantRepresentativeHearingRole = new HearingRole(5, "Representative");
+            defendantRepresentativeHearingRole.UserRole = new UserRole(6, "Representative");
             var defendantLipHearingRole = new HearingRole(4, "Defendant LIP");
             defendantLipHearingRole.UserRole = new UserRole(5, "Individual");
             var person1 = new PersonBuilder(true).WithAddress().Build();
@@ -46,8 +46,8 @@ namespace Testing.Common.Builders.Domain
             };
             _individualParticipant2.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
-            _representativeParticipant = new Representative(person3, defendantSolicitorHearingRole, defendantCaseRole);
-            _representativeParticipant.HearingRole = defendantSolicitorHearingRole;
+            _representativeParticipant = new Representative(person3, defendantRepresentativeHearingRole, defendantCaseRole);
+            _representativeParticipant.HearingRole = defendantRepresentativeHearingRole;
             _representativeParticipant.Questionnaire = new Questionnaire
             {
                 Participant = _representativeParticipant,

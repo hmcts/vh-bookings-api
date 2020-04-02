@@ -133,7 +133,7 @@ namespace Bookings.UnitTests.Validation
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Claimant")
-                 .With(x => x.HearingRoleName = "Solicitor")
+                 .With(x => x.HearingRoleName = "Representative")
                  .Build();
         }
     }

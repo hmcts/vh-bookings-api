@@ -65,9 +65,9 @@ namespace Bookings.Api.Contract.Responses
         public string Username { get; set; }
         
         /// <summary>
-        /// Gets or sets the solicitor reference
+        /// Gets or sets the reference
         /// </summary>
-        public string SolicitorReference { get; set; }
+        public string Reference { get; set; }
 
         /// <summary>
         /// Gets or sets the organisation name.
@@ -75,7 +75,7 @@ namespace Bookings.Api.Contract.Responses
         public string Organisation { get; set; }
 
         /// <summary>
-        /// Gets or sets the person name that solicitor represent.
+        /// Gets or sets the person name that Representative represents.
         /// </summary>
         public string Representee { get; set; }
 

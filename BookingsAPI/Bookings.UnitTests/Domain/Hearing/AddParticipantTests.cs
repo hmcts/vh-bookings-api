@@ -17,11 +17,11 @@ namespace Bookings.UnitTests.Domain.Hearing
         {
             var hearing = new VideoHearingBuilder().Build();
             var claimantCaseRole = new CaseRole(1, "Claimant");
-            var claimantSolicitorHearingRole = new HearingRole(2, "Solicitor");
+            var claimantRepresentativeHearingRole = new HearingRole(2, "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
-            hearing.AddSolicitor(newPerson, claimantSolicitorHearingRole, claimantCaseRole, "Display Name",
+            hearing.AddRepresentative(newPerson, claimantRepresentativeHearingRole, claimantCaseRole, "Display Name",
                 string.Empty, string.Empty);
 
             var afterAddCount = hearing.GetParticipants().Count;
@@ -36,8 +36,8 @@ namespace Bookings.UnitTests.Domain.Hearing
             var representative = (Representative) hearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
             var beforeAddCount = hearing.GetParticipants().Count;
 
-            Action action = () => hearing.AddSolicitor(representative.Person, representative.HearingRole,
-                representative.CaseRole, representative.DisplayName, representative.SolicitorsReference,
+            Action action = () => hearing.AddRepresentative(representative.Person, representative.HearingRole,
+                representative.CaseRole, representative.DisplayName, representative.Reference,
                 representative.Representee);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Any(x => x.Message == "Participant already exists in the hearing").Should().BeTrue();

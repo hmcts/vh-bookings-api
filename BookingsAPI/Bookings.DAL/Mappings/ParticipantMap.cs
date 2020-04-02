@@ -30,7 +30,7 @@ namespace Bookings.DAL.Mappings
     {
         public void Configure(EntityTypeBuilder<Representative> builder)
         {
-            builder.Property(x => x.SolicitorsReference);
+            builder.Property(x => x.Reference);
             builder.Property(x => x.Representee);
         }
     }

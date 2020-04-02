@@ -15,7 +15,7 @@ namespace Bookings.DAL.Commands
         public Person Person { get; set; }
         public CaseRole CaseRole { get; set; }
         public HearingRole HearingRole { get; set; }
-        public string SolicitorsReference { get; set; }
+        public string Reference { get; set; }
         public string Representee { get; set; }
         public string DisplayName { get; set; }
     }
