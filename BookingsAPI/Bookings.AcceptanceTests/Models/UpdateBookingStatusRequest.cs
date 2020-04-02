@@ -9,7 +9,8 @@ namespace Bookings.AcceptanceTests.Models
             return new Api.Contract.Requests.UpdateBookingStatusRequest
             {
                 UpdatedBy = Faker.Internet.Email(),
-                Status = status
+                Status = status,
+                CancelReason = "Judge decision"
             };
         }
     }

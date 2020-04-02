@@ -607,7 +607,8 @@ namespace Bookings.IntegrationTests.Steps
             var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest
             {
                 Status = status.GetValueOrDefault(),
-                UpdatedBy = updatedBy
+                UpdatedBy = updatedBy,
+                CancelReason = "cancelled due to covid-19"
             });
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);

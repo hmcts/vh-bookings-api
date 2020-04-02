@@ -18,6 +18,12 @@ namespace Bookings.API.Validations
                 if (!Enum.IsDefined(typeof(UpdateBookingStatus), r))
                     context.AddFailure(bookingStatusIsNotRecognised);
             });
+
+            var cancelReasonIsRequired = "Cancel reason is required when a hearing is cancelled";
+            RuleFor(x => x.CancelReason)
+                .NotEmpty()
+                .When(x => x.Status == UpdateBookingStatus.Cancelled)
+                .WithMessage(cancelReasonIsRequired);
         }
     }
 }

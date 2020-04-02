@@ -64,9 +64,11 @@ namespace Bookings.IntegrationTests.Helper
             const string createdBy = "test@integration.com";
             const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
+            var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired);
+                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired, 
+                audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");

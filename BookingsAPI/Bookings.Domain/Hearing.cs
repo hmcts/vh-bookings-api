@@ -24,7 +24,7 @@ namespace Bookings.Domain
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
             string otherInformation, string createdBy, bool questionnaireNotRequired, 
-            bool audioRecordingRequired)
+            bool audioRecordingRequired, string cancelReason)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -41,6 +41,7 @@ namespace Bookings.Domain
             CreatedBy = createdBy;
             QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
+            CancelReason = cancelReason;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -64,6 +65,7 @@ namespace Bookings.Domain
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
+        public string CancelReason { get; set; }
 
         public void CancelHearing()
         {
@@ -275,11 +277,16 @@ namespace Bookings.Domain
             }
         }
 
-        public void UpdateStatus(BookingStatus newStatus, string updatedBy)
+        public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
             if (string.IsNullOrEmpty(updatedBy))
             {
                 throw new ArgumentNullException(nameof(updatedBy));
+            }
+
+            if (newStatus == BookingStatus.Cancelled && string.IsNullOrEmpty(cancelReason))
+            {
+                throw new ArgumentNullException(nameof(cancelReason));
             }
 
             var bookingStatusTransition = new BookingStatusTransition();
@@ -293,6 +300,7 @@ namespace Bookings.Domain
             Status = newStatus;
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
+            CancelReason = cancelReason;
         }
     }
 }

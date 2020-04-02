@@ -38,9 +38,10 @@ namespace Bookings.UnitTests.Mappings
             var createdBy = "User03";
             const bool questionnaireNotRequired = true;
             const bool audioRecordingRequired = true;
+            var cancelReason = "Online abandonment (incomplete registration)";
 
             var hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
-                   otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired);
+                   otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason);
            
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                hearing).Build();

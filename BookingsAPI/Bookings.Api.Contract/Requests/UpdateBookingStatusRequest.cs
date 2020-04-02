@@ -13,6 +13,11 @@ namespace Bookings.Api.Contract.Requests
         ///     New status of the hearing
         /// </summary>
         public UpdateBookingStatus Status { get; set; }
+
+        /// <summary>
+        /// The reason for cancelling the video hearing
+        /// </summary>
+        public string CancelReason { get; set; }
     }
 
 

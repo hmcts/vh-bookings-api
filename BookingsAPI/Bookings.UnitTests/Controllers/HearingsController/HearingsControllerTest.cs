@@ -132,7 +132,8 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var request = new UpdateBookingStatusRequest
             {
                 UpdatedBy = "email@toupdate.com",
-                Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled
+                Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Cancelled,
+                CancelReason = "Adjournment"
             };
             var hearingId = Guid.NewGuid();
             var hearing = GetHearing();
@@ -182,7 +183,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
 
             var hearingId = Guid.NewGuid();
             var hearing = GetHearing();
-            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
+            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
                 15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
             _queryHandlerMock
@@ -221,7 +222,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
 
             var hearingId = Guid.NewGuid();
             var hearing = GetHearing();
-            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
+            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
                 15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
             _queryHandlerMock
@@ -260,7 +261,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             var hearingId = Guid.NewGuid();
             var hearing = GetHearing();
-            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
+            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
             _queryHandlerMock
             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
