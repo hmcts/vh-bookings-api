@@ -93,5 +93,10 @@ namespace Bookings.Api.Contract.Responses
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
 
+        /// <summary>
+        /// Gets or sets the hearing cancel reason
+        /// </summary>
+        public string CancelReason { get; set; }
+
     }
 }
