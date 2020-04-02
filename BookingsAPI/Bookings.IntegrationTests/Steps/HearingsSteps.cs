@@ -535,13 +535,13 @@ namespace Bookings.IntegrationTests.Steps
             participants[0].HearingRoleName = "Claimant LIP";
 
             participants[1].CaseRoleName = "Claimant";
-            participants[1].HearingRoleName = "Solicitor";
+            participants[1].HearingRoleName = "Representative";
 
             participants[2].CaseRoleName = "Defendant";
             participants[2].HearingRoleName = "Defendant LIP";
 
             participants[3].CaseRoleName = "Defendant";
-            participants[3].HearingRoleName = "Solicitor";
+            participants[3].HearingRoleName = "Representative";
 
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";

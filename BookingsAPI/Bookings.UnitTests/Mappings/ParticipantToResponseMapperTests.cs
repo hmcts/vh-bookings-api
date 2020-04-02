@@ -64,12 +64,12 @@ namespace Bookings.UnitTests.Mappings
         public void Should_map_representative()
         {
             var caseRole = new CaseRole(1, "Claimant");
-            var hearingRole = new HearingRole(2, "Solicitor") {UserRole = new UserRole(6, "Representative")};
+            var hearingRole = new HearingRole(2, "Representative") {UserRole = new UserRole(6, "Representative")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
             var representative = new Representative(person, hearingRole, caseRole)
             {
-                SolicitorsReference = "HUHIUHFIH",
+                Reference = "HUHIUHFIH",
                 Representee = "Mr A. Daijif",
                 DisplayName = "I. Vidual",
                 CreatedBy = "unit@test.com"
@@ -131,12 +131,12 @@ namespace Bookings.UnitTests.Mappings
         {
             if (representative == null)
             {
-                response.SolicitorReference.Should().BeNullOrWhiteSpace();
+                response.Reference.Should().BeNullOrWhiteSpace();
                 response.Representee.Should().BeNullOrWhiteSpace();
             }
             else
             {
-                response.SolicitorReference.Should().Be(representative.SolicitorsReference);
+                response.Reference.Should().Be(representative.Reference);
                 response.Representee.Should().Be(representative.Representee);
             }
         }

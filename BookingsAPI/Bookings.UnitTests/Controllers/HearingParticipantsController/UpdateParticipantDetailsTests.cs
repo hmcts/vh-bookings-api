@@ -34,7 +34,7 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
                 Postcode = "ED1 5NR",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
-                SolicitorsReference = "SolRef"
+                Reference = "SolRef"
             };
         }
 
@@ -142,7 +142,7 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
         {
             var hearing = GetVideoHearing();
             hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Representative"), };
-            request.SolicitorsReference = string.Empty;
+            request.Reference = string.Empty;
             participantId = hearing.Participants[0].Id;
 
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);

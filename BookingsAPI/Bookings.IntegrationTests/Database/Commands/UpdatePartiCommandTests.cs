@@ -97,11 +97,11 @@ namespace Bookings.IntegrationTests.Database.Commands
                 County = county,
                 Postcode = postcode
             };
-            var solicitorsReference = "Marvel Comics Division";
+            const string reference = "Marvel Comics Division";
             var representee = "Iron Man Inc.";
             RepresentativeInformation repInfo = new RepresentativeInformation()
             {
-                SolicitorsReference = solicitorsReference,
+                Reference = reference,
                 Representee = representee
             };
             var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, repInfo);
@@ -117,7 +117,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedRepresentative.Person.Address.Should().BeNull();
             updatedRepresentative.Person.Organisation.Should().NotBeNull();
             updatedRepresentative.Person.Organisation.Name.Should().Be(organisationName);
-            updatedRepresentative.SolicitorsReference.Should().Be(repInfo.SolicitorsReference);
+            updatedRepresentative.Reference.Should().Be(repInfo.Reference);
             updatedRepresentative.Representee.Should().Be(repInfo.Representee);
 
 

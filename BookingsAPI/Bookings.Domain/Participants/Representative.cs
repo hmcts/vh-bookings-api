@@ -15,27 +15,27 @@ namespace Bookings.Domain.Participants
         {
         }
 
-        public string SolicitorsReference { get; set; }
+        public string Reference { get; set; }
         public string Representee { get; set; }
 
-        public void UpdateRepresentativeDetails(string solicitorsReference, string representee)
+        public void UpdateRepresentativeDetails(string reference, string representee)
         {
-            ValidateArguments(solicitorsReference, representee);
+            ValidateArguments(reference, representee);
 
             if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);
             }
 
-            SolicitorsReference = solicitorsReference;
+            Reference = reference;
             Representee = representee;
         }
 
-        private void ValidateArguments(string solicitorsReference, string representee)
+        private void ValidateArguments(string reference, string representee)
         {
-            if (string.IsNullOrEmpty(solicitorsReference))
+            if (string.IsNullOrEmpty(reference))
             {
-                _validationFailures.AddFailure("SolicitorsReference", "SolicitorsReference is required");
+                _validationFailures.AddFailure("Reference", "Reference is required");
             }
 
             if (string.IsNullOrEmpty(representee))

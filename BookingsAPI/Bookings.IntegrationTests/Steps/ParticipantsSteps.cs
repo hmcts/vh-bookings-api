@@ -367,15 +367,15 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Put;
         }
 
-        [Given(@"I have an update participant in a hearing request with a invalid solicitors reference")]
-        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidSolicitorsReference()
+        [Given(@"I have an update participant in a hearing request with a invalid reference")]
+        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidReference()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
             var participantId = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.IsRepresentative).Id;
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             var hearingId = seededHearing.Id;
-            updateParticipantRequest.SolicitorsReference = string.Empty;
+            updateParticipantRequest.Reference = string.Empty;
             var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 

@@ -8,9 +8,9 @@
         string OrganisationName { get; set; }
 
         /// <summary>
-        ///     Solicitor Reference
+        ///     Reference
         /// </summary>
-        string SolicitorsReference { get; set; }
+        string Reference { get; set; }
 
         /// <summary>
         ///     Representee

@@ -5,26 +5,13 @@ namespace Bookings.Infrastructure.Services.Dtos
 {
     public class ParticipantDto
     {
-        public ParticipantDto(Guid participantId, string fullname, string username, string displayName,
-            string hearingRole, string userRole, CaseRoleGroup caseGroupType, string representee)
-        {
-            ParticipantId = participantId;
-            Fullname = fullname;
-            Username = username;
-            DisplayName = displayName;
-            HearingRole = hearingRole;
-            UserRole = userRole;
-            CaseGroupType = caseGroupType;
-            Representee = representee;
-        }
-
-        public Guid ParticipantId { get; }
-        public string Fullname { get; }
-        public string Username { get; }
-        public string DisplayName { get; }
-        public string HearingRole { get; }
-        public string UserRole { get; }
-        public CaseRoleGroup CaseGroupType { get; }
-        public string Representee { get; }
+        public Guid ParticipantId { get; set; }
+        public string Fullname { get; set; }
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
+        public string HearingRole { get; set; }
+        public string UserRole { get; set; }
+        public CaseRoleGroup CaseGroupType { get; set; }
+        public string Representee { get; set; }
     }
 }

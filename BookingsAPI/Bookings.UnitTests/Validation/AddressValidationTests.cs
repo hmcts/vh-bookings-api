@@ -97,7 +97,7 @@ namespace Bookings.UnitTests.Validation
         public async Task Should_pass_validation_for_representative()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Solicitor";
+            request.HearingRoleName = "Representative";
             request.HouseNumber = string.Empty;
             request.Street = string.Empty;
             request.City = string.Empty;
@@ -114,7 +114,7 @@ namespace Bookings.UnitTests.Validation
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Claimant")
-                 .With(x => x.HearingRoleName = "Solicitor")
+                 .With(x => x.HearingRoleName = "Representative")
                  .Build();
         }
     }
