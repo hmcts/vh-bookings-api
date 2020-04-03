@@ -100,5 +100,7 @@ namespace Bookings.Api.Contract.Responses
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
+
+        public string CancelReason { get; set; }
     }
 }
