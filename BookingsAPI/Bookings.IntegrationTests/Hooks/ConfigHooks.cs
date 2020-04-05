@@ -19,6 +19,7 @@ using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using TestData = Testing.Common.Configuration.TestData;
+using AcceptanceTests.Common.Api;
 
 namespace Bookings.IntegrationTests.Hooks
 {
@@ -120,6 +121,8 @@ namespace Bookings.IntegrationTests.Hooks
                 azureOptions.Value.ClientId, azureOptions.Value.ClientSecret,
                 context.Config.ServicesConfiguration.BookingsApiResourceId);
             context.BearerToken.Should().NotBeNullOrEmpty();
+
+            Zap.SetAuthToken(context.BearerToken);
         }
     }
 }
