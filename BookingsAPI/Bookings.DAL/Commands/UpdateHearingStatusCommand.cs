@@ -12,11 +12,13 @@ namespace Bookings.DAL.Commands
         public Guid HearingId { get; set; }
         public BookingStatus Status { get; set; }
         public string UpdatedBy { get; set; }
-        public UpdateHearingStatusCommand(Guid hearingId, BookingStatus status, string updatedBy)
+        public string CancelReason { get; set; }
+        public UpdateHearingStatusCommand(Guid hearingId, BookingStatus status, string updatedBy, string cancelReason)
         {
             HearingId = hearingId;
             Status = status;
             UpdatedBy = updatedBy;
+            CancelReason = cancelReason;
         }
     }
 
@@ -38,7 +40,7 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
-            hearing.UpdateStatus(command.Status, command.UpdatedBy);
+            hearing.UpdateStatus(command.Status, command.UpdatedBy, command.CancelReason);
             await _context.SaveChangesAsync();
         }
     }

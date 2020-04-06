@@ -32,6 +32,7 @@ namespace Bookings.UnitTests.Mappings
             firstGroup.Hearings.Count.Should().Be(1);
             firstGroup.Hearings.First().QuestionnaireNotRequired.Should().Be(true);
             firstGroup.Hearings.First().AudioRecordingRequired.Should().Be(true);
+            firstGroup.Hearings.First().CancelReason.Should().Be(hearings[0].CancelReason);
         }
 
         private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired, bool audioRecordingRequired)

@@ -37,6 +37,7 @@ namespace Bookings.DAL.Commands
         public string CreatedBy { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
+        public string CancelReason { get; set; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -54,7 +55,8 @@ namespace Bookings.DAL.Commands
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, command.AudioRecordingRequired);
+                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
+                command.AudioRecordingRequired, command.CancelReason);
 
             _context.VideoHearings.Add(videoHearing);
             

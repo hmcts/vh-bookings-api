@@ -309,7 +309,8 @@ namespace Bookings.API.Controllers
             try
             {
                 var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
-                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
+                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy,
+                    updateBookingStatusRequest.CancelReason);
                 await _commandHandler.Handle(command);
                 switch (bookingStatus)
                 {

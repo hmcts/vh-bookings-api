@@ -242,6 +242,7 @@ namespace Bookings.AcceptanceTests.Steps
             var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
             model.Status.Should().Be(Domain.Enumerations.BookingStatus.Cancelled);
+            model.CancelReason.Should().NotBeNullOrWhiteSpace();
         }
 
         [Then(@"a list of hearing details should be retrieved")]
