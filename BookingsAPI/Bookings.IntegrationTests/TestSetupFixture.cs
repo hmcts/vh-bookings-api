@@ -11,7 +11,7 @@ namespace Bookings.IntegrationTests
         private ServicesConfiguration ServicesConfiguration => new ConfigurationBuilder()
                                                             .AddJsonFile("appsettings.json")
                                                             .Build()
-                                                            .GetSection("VhServices")
+                                                            .GetSection("Services")
                                                             .Get<ServicesConfiguration>();
 
         [OneTimeSetUp]

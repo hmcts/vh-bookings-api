@@ -3,6 +3,7 @@ version: '3.4'
 services:
   bookingsapi:
     container_name: bookingsapi
+    restart: always
     image: ${DOCKER_REGISTRY-}bookingsapi
     build:
       context: .
