@@ -48,9 +48,9 @@ namespace Bookings.Api.Contract.Requests
         public string OrganisationName { get; set; }
 
         /// <summary>
-        ///     Solicitor Reference
+        ///     Reference
         /// </summary>
-        public string SolicitorsReference { get; set; }
+        public string Reference { get; set; }
 
         /// <summary>
         ///     Representee

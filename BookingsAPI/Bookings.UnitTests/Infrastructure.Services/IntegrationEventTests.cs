@@ -48,6 +48,12 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
+            
+            var typedEvent = (HearingDetailsUpdatedIntegrationEvent) @event.IntegrationEvent;
+            typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases().First().Name);
+            typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases().First().Number);
+            typedEvent.Hearing.CaseType.Should().Be(hearing.CaseType.Name);
+            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
         }
 
         [Test]
@@ -115,7 +121,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);
-            representative.HearingRole = new HearingRole(5, "Solicitor"){ UserRole = new UserRole(2, "Solicitor") } ;
+            representative.HearingRole = new HearingRole(5, "Representative"){ UserRole = new UserRole(2, "Representative") } ;
             representative.CaseRole= new CaseRole(3, "test3");
 
             var judge = hearing.GetParticipants().Single(x => x is Judge);
@@ -128,6 +134,9 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+            var typedEvent = (HearingIsReadyForVideoIntegrationEvent) @event.IntegrationEvent;
+            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+            typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
         }
     }
 }

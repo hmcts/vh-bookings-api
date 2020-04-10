@@ -37,6 +37,8 @@ namespace Bookings.API.Mappings
                 UpdatedDate = videoHearing.UpdatedDate,
                 Status = videoHearing.Status,
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
+                AudioRecordingRequired = videoHearing.AudioRecordingRequired,
+                CancelReason = videoHearing.CancelReason
             };
 
             return response;

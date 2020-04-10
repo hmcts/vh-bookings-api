@@ -36,7 +36,7 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
                     if(participant.HearingRole.UserRole.Name == "Representative")
                     {
                         var representative = (Representative)participant;
-                        representative.SolicitorsReference = "Test SolicitorReference";
+                        representative.Reference = "Test Reference";
                         representative.Representee = "Representee";
                     }
                 }
@@ -62,7 +62,7 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
             }
 
             if(createdStatus)
-                hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator");
+                hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
             return hearing; 
         }

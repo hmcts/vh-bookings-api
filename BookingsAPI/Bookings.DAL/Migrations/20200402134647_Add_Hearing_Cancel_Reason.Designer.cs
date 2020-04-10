@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200402134647_Add_Hearing_Cancel_Reason")]
+    partial class Add_Hearing_Cancel_Reason
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -466,10 +468,10 @@ namespace Bookings.DAL.Migrations
                 {
                     b.HasBaseType("Bookings.Domain.Participants.Participant");
 
-                    b.Property<string>("Reference")
+                    b.Property<string>("Representee")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Representee")
+                    b.Property<string>("SolicitorsReference")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Representative");

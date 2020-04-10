@@ -53,9 +53,9 @@ namespace Bookings.Api.Contract.Requests
         public string HearingRoleName { get; set; }
 
         /// <summary>
-        /// The solicitor's reference for a participant
+        /// The reference for a representative participant
         /// </summary>
-        public string SolicitorsReference { get; set; }
+        public string Reference { get; set; }
         
         /// <summary>
         /// The representee of a representative

@@ -23,7 +23,8 @@ namespace Bookings.Domain
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool questionnaireNotRequired)
+            string otherInformation, string createdBy, bool questionnaireNotRequired, 
+            bool audioRecordingRequired, string cancelReason)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -39,6 +40,8 @@ namespace Bookings.Domain
             OtherInformation = otherInformation;
             CreatedBy = createdBy;
             QuestionnaireNotRequired = questionnaireNotRequired;
+            AudioRecordingRequired = audioRecordingRequired;
+            CancelReason = cancelReason;
         }
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
@@ -61,6 +64,8 @@ namespace Bookings.Domain
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
+        public bool AudioRecordingRequired { get; set; }
+        public string CancelReason { get; set; }
 
         public void CancelHearing()
         {
@@ -109,8 +114,8 @@ namespace Bookings.Domain
             return participant;
         }
 
-        public Participant AddSolicitor(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
-            string solicitorsReference, string representee)
+        public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
+            string reference, string representee)
         {
             if (DoesParticipantExist(person.Username))
             {
@@ -119,7 +124,7 @@ namespace Bookings.Domain
 
             Participant participant = new Representative(person, hearingRole, caseRole)
             {
-                SolicitorsReference = solicitorsReference,
+                Reference = reference,
                 Representee = representee
             };
 
@@ -189,7 +194,7 @@ namespace Bookings.Domain
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
-            List<Case> cases, bool questionnaireNotRequired)
+            List<Case> cases, bool questionnaireNotRequired, bool audioRecordingRequired)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -227,6 +232,7 @@ namespace Bookings.Domain
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
             QuestionnaireNotRequired = questionnaireNotRequired;
+            AudioRecordingRequired = audioRecordingRequired;
         }
 
         private bool DoesParticipantExist(string username)
@@ -271,11 +277,16 @@ namespace Bookings.Domain
             }
         }
 
-        public void UpdateStatus(BookingStatus newStatus, string updatedBy)
+        public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
             if (string.IsNullOrEmpty(updatedBy))
             {
                 throw new ArgumentNullException(nameof(updatedBy));
+            }
+
+            if (newStatus == BookingStatus.Cancelled && string.IsNullOrEmpty(cancelReason))
+            {
+                throw new ArgumentNullException(nameof(cancelReason));
             }
 
             var bookingStatusTransition = new BookingStatusTransition();
@@ -289,6 +300,7 @@ namespace Bookings.Domain
             Status = newStatus;
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
+            CancelReason = cancelReason;
         }
     }
 }

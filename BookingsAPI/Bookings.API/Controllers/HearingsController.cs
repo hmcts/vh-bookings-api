@@ -158,7 +158,7 @@ namespace Bookings.API.Controllers
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired)
+                request.QuestionnaireNotRequired, request.AudioRecordingRequired)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,
@@ -225,7 +225,7 @@ namespace Bookings.API.Controllers
 
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, request.QuestionnaireNotRequired);
+                request.UpdatedBy, cases, request.QuestionnaireNotRequired, request.AudioRecordingRequired);
 
             await _commandHandler.Handle(command);
 
@@ -309,7 +309,8 @@ namespace Bookings.API.Controllers
             try
             {
                 var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
-                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy);
+                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy,
+                    updateBookingStatusRequest.CancelReason);
                 await _commandHandler.Handle(command);
                 switch (bookingStatus)
                 {

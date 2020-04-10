@@ -130,14 +130,14 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
         [Test]
         public async Task Should_return_badrequest_for_given_invalid_representative_info()
         {
-            request.Participants[0].SolicitorsReference = string.Empty;
+            request.Participants[0].Reference = string.Empty;
 
             var result = await Controller.AddParticipantsToHearing(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("SolicitorsReference", "Solicitor Reference is required");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Reference", "Reference is required");
         }
 
         [Test]

@@ -13,37 +13,37 @@ namespace Bookings.Api.Contract.Responses
         ///     Hearing Id
         /// </summary>
         public Guid Id { get; set; }
-        
+
         /// <summary>
         ///     The date and time for a hearing
         /// </summary>
         public DateTime ScheduledDateTime { get; set; }
-        
+
         /// <summary>
         ///     The duration of a hearing (number of minutes)
         /// </summary>
         public int ScheduledDuration { get; set; }
-        
+
         /// <summary>
         ///     The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
-        
+
         /// <summary>
         ///     The name of the case type
         /// </summary>
         public string CaseTypeName { get; set; }
-        
+
         /// <summary>
         ///     The name of the hearing type
         /// </summary>
         public string HearingTypeName { get; set; }
-        
+
         /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseResponse> Cases { get; set; }
-        
+
         /// <summary>
         ///     List of participants in hearing
         /// </summary>
@@ -87,5 +87,16 @@ namespace Bookings.Api.Contract.Responses
         /// QuestionnaireNotRequired
         /// </summary>
         public bool QuestionnaireNotRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
+        /// </summary>
+        public bool AudioRecordingRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hearing cancel reason
+        /// </summary>
+        public string CancelReason { get; set; }
+
     }
 }

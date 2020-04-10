@@ -10,6 +10,6 @@
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.2.0.14119" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.6.0.16497" />
   </ItemGroup>
 </Project>

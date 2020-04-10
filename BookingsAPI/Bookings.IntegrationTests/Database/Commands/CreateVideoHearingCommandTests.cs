@@ -44,7 +44,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var venue = new RefDataBuilder().HearingVenues.First();
             
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
@@ -55,9 +55,9 @@ namespace Bookings.IntegrationTests.Database.Commands
             {
                 Person = newPerson,
                 CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
+                HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
             var newJudgeParticipant = new NewParticipant()
@@ -66,7 +66,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = judgeCaseRole,
                 HearingRole = judgeHearingRole,
                 DisplayName = $"{newJudgePerson.FirstName} {newJudgePerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
             var participants = new List<NewParticipant>()
@@ -78,10 +78,11 @@ namespace Bookings.IntegrationTests.Database.Commands
             var otherInformation = "OtherInformation01";
             var createdBy = "User01";
             const bool questionnaireNotRequired = false;
+            const bool audioRecordingRequired = true;
 
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, 
-                    participants, cases, questionnaireNotRequired)
+                    participants, cases, questionnaireNotRequired, audioRecordingRequired)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,

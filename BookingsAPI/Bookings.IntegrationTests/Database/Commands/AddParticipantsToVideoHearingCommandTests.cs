@@ -55,16 +55,16 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
                 Person = newPerson,
                 CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
+                HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
             var participants = new List<NewParticipant>()
@@ -95,7 +95,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
                 DisplayName = representative.DisplayName,
-                SolicitorsReference = representative.SolicitorsReference,
+                Reference = representative.Reference,
                 Representee = representative.Representee
             };
             
@@ -123,7 +123,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
                 DisplayName = representative.DisplayName,
-                SolicitorsReference = representative.SolicitorsReference,
+                Reference = representative.Reference,
                 Representee = representative.Representee
             };
             
@@ -188,7 +188,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = judgeCaseRole,
                 HearingRole = judgeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
             var participants = new List<NewParticipant>()
@@ -217,15 +217,15 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newParticipant = new NewParticipant()
             {
                 Person = existingPerson,
                 CaseRole = claimantCaseRole,
-                HearingRole = claimantSolicitorHearingRole,
+                HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{existingPerson.FirstName} {existingPerson.LastName}",
-                SolicitorsReference = string.Empty,
+                Reference = string.Empty,
                 Representee = string.Empty
             };
 

@@ -27,6 +27,7 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.UpdatedDate);
             builder.Property(x => x.Status).HasColumnName("HearingStatusId");
             builder.Property(x => x.QuestionnaireNotRequired);
+            builder.Property(x => x.CancelReason).HasMaxLength(255);
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
             builder.HasMany<Participant>("Participants").WithOne("Hearing").HasForeignKey(x => x.HearingId);

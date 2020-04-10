@@ -8,18 +8,9 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
     {
         public ParticipantUpdatedIntegrationEvent(Guid hearingId, Participant participant)
         {
-            if (participant != null)
-            {
-
-                HearingId = hearingId;
-                var representee = participant is Representative representative ? representative.Representee : string.Empty;
-
-                Participant = new ParticipantDto(participant.Id,
-                    $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
-                    participant.Person.Username, participant.DisplayName,
-                    participant.HearingRole.Name, participant.HearingRole.UserRole.Name,
-                    participant.CaseRole.Group, representee);
-            }
+            if (participant == null) return;
+            HearingId = hearingId;
+            Participant = ParticipantDtoMapper.MapToDto(participant);
         }
 
         public Guid HearingId { get; }

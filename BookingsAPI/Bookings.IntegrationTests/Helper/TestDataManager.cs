@@ -19,7 +19,7 @@ namespace Bookings.IntegrationTests.Helper
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
         private Guid _individualId;
-        private List<Guid> _participantSolicitorIds;
+        private List<Guid> _participantRepresentativeIds;
         private readonly string _defaultCaseName;
 
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
@@ -45,8 +45,8 @@ namespace Bookings.IntegrationTests.Helper
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
             var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
-            var claimantSolicitorHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
-            var defendantSolicitorHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Solicitor");
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
@@ -63,16 +63,20 @@ namespace Bookings.IntegrationTests.Helper
             const string otherInformation = "OtherInformation02";
             const string createdBy = "test@integration.com";
             const bool questionnaireNotRequired = false;
+            const bool audioRecordingRequired = true;
+            var cancelReason = "Online abandonment (incomplete registration)";
+
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired);
+                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired, 
+                audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
-            videoHearing.AddSolicitor(person2, claimantSolicitorHearingRole, claimantCaseRole,
+            videoHearing.AddRepresentative(person2, claimantRepresentativeHearingRole, claimantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
 
-            videoHearing.AddSolicitor(person3, defendantSolicitorHearingRole, defendantCaseRole,
+            videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", string.Empty, "Ms Y");
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
@@ -92,9 +96,9 @@ namespace Bookings.IntegrationTests.Helper
                 new GetHearingByIdQuery(videoHearing.Id));
             _individualId = hearing.Participants.First(x =>
                 x.HearingRole.Name.ToLower().IndexOf("judge", StringComparison.Ordinal) < 0 &&
-                x.HearingRole.Name.ToLower().IndexOf("solicitor", StringComparison.Ordinal) < 0).Id;
-            _participantSolicitorIds = hearing.Participants
-                .Where(x => x.HearingRole.Name.ToLower().IndexOf("solicitor", StringComparison.Ordinal) >= 0).Select(x => x.Id).ToList();
+                x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) < 0).Id;
+            _participantRepresentativeIds = hearing.Participants
+                .Where(x => x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) >= 0).Select(x => x.Id).ToList();
 
             if (addSuitabilityAnswer)
             {
@@ -130,18 +134,18 @@ namespace Bookings.IntegrationTests.Helper
 
         private void AddRepresentativeQuestionnaire(BookingsDbContext db)
         {
-            foreach (var item in _participantSolicitorIds)
+            foreach (var item in _participantRepresentativeIds)
             {
-                var participantSolicitor = db.Participants
+                var participantRepresentative = db.Participants
                     .Include(x => x.Questionnaire)
                     .FirstOrDefault(x => x.Id == item);
-                participantSolicitor.Questionnaire = new Questionnaire
-                    {Participant = participantSolicitor, ParticipantId = item};
+                participantRepresentative.Questionnaire = new Questionnaire
+                    {Participant = participantRepresentative, ParticipantId = item};
 
-                participantSolicitor.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
-                participantSolicitor.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
-                participantSolicitor.UpdatedDate = DateTime.UtcNow;
-                db.Participants.Update(participantSolicitor);
+                participantRepresentative.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
+                participantRepresentative.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
+                participantRepresentative.UpdatedDate = DateTime.UtcNow;
+                db.Participants.Update(participantRepresentative);
             }
         }
 

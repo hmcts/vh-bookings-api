@@ -30,10 +30,10 @@ namespace Bookings.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder().Build();
             
             var claimantCaseRole = new CaseRole(1, "Claimant");
-            var claimantSolicitorHearingRole = new HearingRole(2, "Solicitor");
+            var claimantRepresentativeHearingRole = new HearingRole(2, "Representative");
             var newPerson = new PersonBuilder(true).Build();
             var participant = Builder<Representative>.CreateNew().WithFactory(() =>
-                new Representative(newPerson, claimantSolicitorHearingRole, claimantCaseRole)
+                new Representative(newPerson, claimantRepresentativeHearingRole, claimantCaseRole)
             ).Build();
             
             Action action = () => hearing.RemoveParticipant(participant);

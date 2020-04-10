@@ -47,10 +47,11 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseNumber = "CaseNumber Update";
             casesToUpdate.Add(new Case(caseNumber, caseName));
             const bool questionnaireNotRequired = false;
+            const bool audioRecordingRequired = true;
 
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, 
                         newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate,
-                        questionnaireNotRequired));
+                        questionnaireNotRequired, audioRecordingRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -61,6 +62,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.OtherInformation.Should().Be(newOtherInformation);
             returnedVideoHearing.GetCases().First().Name.Should().Be(caseName);
             returnedVideoHearing.GetCases().First().Number.Should().Be(caseNumber);
+            returnedVideoHearing.AudioRecordingRequired.Should().BeTrue();
         }
         
         [TearDown]

@@ -15,10 +15,10 @@ namespace Bookings.UnitTests.Domain.Participants
             var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var representative = (Representative)participant;
             string representee = "Representee Edit";
-            string solicitorsReference = "Test Reference Edit";
+            string reference = "Test Reference Edit";
            
-            representative.UpdateRepresentativeDetails(solicitorsReference,representee);
-            representative.SolicitorsReference.Should().Be(solicitorsReference);
+            representative.UpdateRepresentativeDetails(reference,representee);
+            representative.Reference.Should().Be(reference);
             representative.Representee.Should().Be(representee);
                       
         }
@@ -29,13 +29,13 @@ namespace Bookings.UnitTests.Domain.Participants
             var participant = new ParticipantBuilder().RepresentativeParticipantDefendant;
             var representativeParticipant = (Representative)participant;
             string representee = "";
-            string solicitorsReference = "";
+            string reference = "";
             var beforeUpdatedDate = representativeParticipant.UpdatedDate;
 
-            Action action = () => representativeParticipant.UpdateRepresentativeDetails(solicitorsReference, representee);
+            Action action = () => representativeParticipant.UpdateRepresentativeDetails(reference, representee);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
-                .Contain(x => x.Name == "SolicitorsReference").And
+                .Contain(x => x.Name == "Reference").And
                 .Contain(x => x.Name == "Representee");
 
             representativeParticipant.UpdatedDate.Should().Be(beforeUpdatedDate);

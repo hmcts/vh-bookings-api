@@ -28,15 +28,17 @@ namespace Testing.Common.Builders.Domain
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
             const bool questionnaireNotRequired = false;
+            const bool audioRecordingRequired = true;
+            var cancelReason = "Online abandonment (incomplete registration)";
 
             _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
                 new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, 
-                    otherInformation, createdBy, questionnaireNotRequired)).Build();
+                    otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason)).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
             var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };
             var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual")};
-            var defendantSolicitorHearingRole =  new HearingRole(5, "Solicitor") { UserRole = new UserRole(1, "Solicitor") };
+            var defendantRepresentativeHearingRole =  new HearingRole(5, "Representative") { UserRole = new UserRole(1, "Representative") };
 
             var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
@@ -53,7 +55,7 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.AddIndividual(person3, defendantLipHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}");
             
-            _videoHearing.AddSolicitor(person2, defendantSolicitorHearingRole, defendantCaseRole,
+            _videoHearing.AddRepresentative(person2, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
 
             _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
