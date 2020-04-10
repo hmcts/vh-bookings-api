@@ -23,7 +23,7 @@ namespace Bookings.IntegrationTests
         [OneTimeTearDown]
         public void ZapReport()
         {
-            Zap.ReportAndShutDown("BookingsApi-Acceptance", ServicesConfiguration.BookingsApiUrl);
+            Zap.ReportAndShutDown("BookingsApi-Integration", ServicesConfiguration.BookingsApiUrl);
         }
     }
 }
