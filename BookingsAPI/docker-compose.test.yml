@@ -19,6 +19,8 @@ services:
 
   db:
     container_name: db_ac
+    ports:
+      - "1433:1433"
 
   zapapi:
     image: sspublicsbox.azurecr.io/secops/zaproxy
