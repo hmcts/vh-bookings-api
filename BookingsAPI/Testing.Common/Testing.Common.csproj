@@ -20,4 +20,7 @@
     <ProjectReference Include="..\Bookings.Common\Bookings.Common.csproj" />
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
-﻿using AcceptanceTests.Common.Api.Healthchecks;
+﻿using AcceptanceTests.Common.Api;
+using AcceptanceTests.Common.Api.Healthchecks;
 using Bookings.AcceptanceTests.Contexts;
+using System.Net;
 using TechTalk.SpecFlow;
 
 namespace Bookings.AcceptanceTests.Hooks
@@ -14,7 +16,7 @@ namespace Bookings.AcceptanceTests.Hooks
         }
         private static void CheckVideoApiHealth(string apiUrl, string bearerToken)
         {
-            HealthcheckManager.CheckHealthOfBookingsApi(apiUrl, bearerToken);
+            HealthcheckManager.CheckHealthOfBookingsApi(apiUrl, bearerToken, (WebProxy) Zap.WebProxy);
         }
     }
 }

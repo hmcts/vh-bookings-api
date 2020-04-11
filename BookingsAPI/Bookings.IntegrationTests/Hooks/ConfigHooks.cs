@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿ using System.Collections.Generic;
 using System.Net.Http;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
@@ -19,6 +19,7 @@ using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using TestData = Testing.Common.Configuration.TestData;
+using AcceptanceTests.Common.Api;
 
 namespace Bookings.IntegrationTests.Hooks
 {
@@ -44,7 +45,6 @@ namespace Bookings.IntegrationTests.Hooks
             RegisterDefaultData(context);
             RegisterDatabaseSettings(context);
             RegisterServer(context);
-            RegisterZapSettings(context);
             RegisterApiSettings(context);
             GenerateBearerTokens(context, azureOptions);
         }
@@ -115,17 +115,14 @@ namespace Bookings.IntegrationTests.Hooks
             context.Response = new HttpResponseMessage();
         }
 
-        private void RegisterZapSettings(TestContext context)
-        {
-            context.Config.ZapConfig = Options.Create(_configRoot.GetSection("ZapConfiguration").Get<ZapConfiguration>()).Value;
-        }
-
         private static void GenerateBearerTokens(TestContext context, IOptions<AzureAdConfiguration> azureOptions)
         {
             context.BearerToken = new AzureTokenProvider(azureOptions).GetClientAccessToken(
                 azureOptions.Value.ClientId, azureOptions.Value.ClientSecret,
                 context.Config.ServicesConfiguration.BookingsApiResourceId);
             context.BearerToken.Should().NotBeNullOrEmpty();
+
+            Zap.SetAuthToken(context.BearerToken);
         }
     }
 }

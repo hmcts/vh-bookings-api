@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
+using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
 using Bookings.DAL;
 using Bookings.IntegrationTests.Helper;
@@ -22,5 +23,30 @@ namespace Bookings.IntegrationTests.Contexts
         public TestDataManager TestDataManager { get; set; }
         public string Uri { get; set; }
         public List<UserAccount> UserAccounts { get; set; }
+
+        public HttpClient CreateClient()
+        {
+            HttpClient client;
+            if (Zap.SetupProxy)
+            {
+                var handler = new HttpClientHandler
+                {
+                    Proxy = Zap.WebProxy,
+                    UseProxy = true,
+                };
+
+                client = new HttpClient(handler)
+                {
+                    BaseAddress = new System.Uri(Config.ServicesConfiguration.BookingsApiUrl)
+                };
+            }
+            else
+            {
+                client = Server.CreateClient();
+            }
+
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {BearerToken}");
+            return client;
+        }
     }
 }

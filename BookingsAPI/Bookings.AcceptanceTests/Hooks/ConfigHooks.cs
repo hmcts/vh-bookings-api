@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using Bookings.AcceptanceTests.Contexts;
@@ -93,6 +94,8 @@ namespace Bookings.AcceptanceTests.Hooks
             context.BearerToken = await ConfigurationManager.GetBearerToken(
                 azureConfig, context.Config.ServicesConfiguration.BookingsApiResourceId);
             context.BearerToken.Should().NotBeNullOrEmpty();
+
+            Zap.SetAuthToken(context.BearerToken);
         }
     }
 
