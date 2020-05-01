@@ -11,10 +11,10 @@ namespace Bookings.API.Mappings
         {
             if (videoHearing == null) return new HearingByCaseNumberResponse();
 
-            var @case = videoHearing.GetCases().FirstOrDefault(c => c.Number == caseNumber);
+            var @case = videoHearing.GetCases().FirstOrDefault(c => c.Number.ToLower() == caseNumber.ToLower());
             if (@case == null) throw new ArgumentException("Hearing is missing case");
 
-            var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
+            var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
 
             var response = new HearingByCaseNumberResponse
