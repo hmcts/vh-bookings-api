@@ -1,6 +1,5 @@
 ﻿using Bookings.Api.Contract.Responses;
 using Bookings.Domain;
-using Castle.Core.Internal;
 using System;
 using System.Linq;
 

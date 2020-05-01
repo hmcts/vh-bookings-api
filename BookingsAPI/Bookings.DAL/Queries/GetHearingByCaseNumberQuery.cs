@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Bookings.DAL.Queries.Core;
+﻿using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Bookings.DAL.Queries
 {
