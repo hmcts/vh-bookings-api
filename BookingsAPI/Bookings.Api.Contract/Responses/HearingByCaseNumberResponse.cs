@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Bookings.Api.Contract.Responses
+{
+    /// <summary>
+    /// hearing information queried by case number
+    /// </summary>
+    public class HearingByCaseNumberResponse
+    {
+        /// <summary>
+        ///     Hearing Id
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        ///     The date and time for a hearing
+        /// </summary>
+        public DateTime ScheduledDateTime { get; set; }
+
+        /// <summary>
+        ///     The name of the hearing venue
+        /// </summary>
+        public string HearingVenueName { get; set; }
+
+        /// <summary>
+        ///     The case number
+        /// </summary>
+        public string CaseNumber { get; set; }
+
+        /// <summary>
+        ///     The case name
+        /// </summary>
+        public string CaseName { get; set; }
+
+        /// <summary>
+        ///     The courtroom account
+        /// </summary>
+        public string CourtroomAccount { get; set; }
+    }
+}

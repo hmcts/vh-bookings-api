@@ -198,6 +198,18 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have a valid get hearings by case number request")]
+        public async Task GivenIHaveAValidGetHearingsByCaseNumberRequest()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            var caseData = seededHearing.HearingCases.FirstOrDefault();
+            var caseNumber = caseData.Case.Number;
+  
+            Context.Uri = GetHearingByCaseNumber(caseNumber);
+            Context.HttpMethod = HttpMethod.Get;
+        }
+
+
         [Given(@"I have a request to the get booked hearings endpoint")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
         {
@@ -317,6 +329,18 @@ namespace Bookings.IntegrationTests.Steps
             AssertHearingDetailsResponse(response);
             Context.TestData.NewHearingId = response.Id;
         }
+
+        [Then(@"hearing details should be retrieved for the case number")]
+        public async Task ThenHearingDetailsShouldBeRetrievedForTheCaseNumber()
+        {
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingByCaseNumberResponse>(json);
+            response.Should().NotBeNull();
+            AssertHearingByCaseNumberResponse(response);
+            Context.TestData.NewHearingId = response.Id;
+            Context.TestData.CaseName = response.CaseNumber;
+        }
+
 
         [Then(@"a list of hearing details should be retrieved")]
         public async Task ThenAListOfHearingDetailsShouldBeRetrieved()
@@ -513,6 +537,23 @@ namespace Bookings.IntegrationTests.Steps
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             }
 
+            hearingFromDb.Should().NotBeNull();
+        }
+
+        private void AssertHearingByCaseNumberResponse(HearingByCaseNumberResponse model)
+        {
+            _hearingId = model.Id;
+            model.CaseNumber.Should().NotBeNullOrEmpty();
+            model.CaseName.Should().NotBeNullOrEmpty();
+            model.HearingVenueName.Should().NotBeNullOrEmpty();
+            model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
+
+            Hearing hearingFromDb;
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
+            {
+                hearingFromDb = db.VideoHearings.AsNoTracking()
+                    .SingleOrDefault(x => x.HearingCases.Any(c=>c.Case.Number == model.CaseNumber));
+            }
             hearingFromDb.Should().NotBeNull();
         }
 

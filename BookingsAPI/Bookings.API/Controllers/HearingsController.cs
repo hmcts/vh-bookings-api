@@ -16,6 +16,7 @@ using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -443,6 +444,31 @@ namespace Bookings.API.Controllers
             return status == Api.Contract.Requests.Enums.UpdateBookingStatus.Created
                 ? BookingStatus.Created
                 : BookingStatus.Cancelled;
+        }
+
+
+        /// <summary>
+        /// Get a hearing by case number.
+        /// </summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>hearing detail</returns>
+        [HttpGet("audiorecording/casenumber", Name = "GetHearingByCaseNumber")]
+        [SwaggerOperation(OperationId = "GetHearingByCaseNumber")]
+        [ProducesResponseType(typeof(HearingByCaseNumberResponseMapper), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetHearingByCaseNumber([FromQuery]string caseNumber)
+        {
+            if (caseNumber.IsNullOrEmpty())
+            {
+                ModelState.AddModelError(nameof(caseNumber), $"Please provide a valid {nameof(caseNumber)}");
+                return BadRequest(ModelState);
+            }
+            var query = new GetHearingByCaseNumberQuery(caseNumber);
+            var hearings = await _queryHandler.Handle<GetHearingByCaseNumberQuery, VideoHearing>(query);
+
+            var hearingMapper = new HearingByCaseNumberResponseMapper();
+            var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
+            return Ok(response);
         }
     }
 }

@@ -187,3 +187,9 @@ Scenario: Hearing status cannot change for an invalid state transition for given
 	When I send the request to the endpoint
 	Then the response should have the status Conflict and success status False
 	And hearing status should be Cancelled
+
+Scenario: Get hearings by case number
+	Given I have a valid get hearings by case number request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And hearing details should be retrieved for the case number
