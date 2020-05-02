@@ -205,7 +205,7 @@ namespace Bookings.IntegrationTests.Steps
             var caseData = seededHearing.HearingCases.FirstOrDefault();
             var caseNumber = caseData.Case.Number;
   
-            Context.Uri = GetHearingByCaseNumber(caseNumber);
+            Context.Uri = GetHearingsByCaseNumber(caseNumber);
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -334,11 +334,12 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingDetailsShouldBeRetrievedForTheCaseNumber()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingByCaseNumberResponse>(json);
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(json);
             response.Should().NotBeNull();
-            AssertHearingByCaseNumberResponse(response);
-            Context.TestData.NewHearingId = response.Id;
-            Context.TestData.CaseName = response.CaseNumber;
+            foreach (var hearing in response)
+            {
+                AssertHearingByCaseNumberResponse(hearing);
+            }
         }
 
 
@@ -540,7 +541,7 @@ namespace Bookings.IntegrationTests.Steps
             hearingFromDb.Should().NotBeNull();
         }
 
-        private void AssertHearingByCaseNumberResponse(HearingByCaseNumberResponse model)
+        private void AssertHearingByCaseNumberResponse(HearingsByCaseNumberResponse model)
         {
             _hearingId = model.Id;
             model.CaseNumber.Should().NotBeNullOrEmpty();

@@ -4,6 +4,7 @@ using Bookings.Domain.RefData;
 using Bookings.UnitTests.Utilities;
 using FluentAssertions;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Linq;
 using Testing.Common.Builders.Domain;
 
@@ -14,20 +15,21 @@ namespace Bookings.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
-            var hearing = GetHearing();
             var caseNumber = "123";
+            var hearingsByCaseNumber = new List<VideoHearing>() { GetHearing() };
             var hearingMapper = new HearingByCaseNumberResponseMapper();
-            var result = hearingMapper.MapHearingToDetailedResponse(hearing, caseNumber);
+            var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
 
-            var @case = hearing.GetCases().FirstOrDefault(c => c.Number == caseNumber);
-            var judgeParticipant = hearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
+            var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number == caseNumber);
+            var judgeParticipant = hearingsByCaseNumber[0].GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
-            result.CaseName.Should().Be(@case.Name);
-            result.CaseNumber.Should().Be(@case.Number);
-            result.Id.Should().Be(hearing.Id);
-            result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
-            result.HearingVenueName.Should().Be(hearing.HearingVenueName);
-            result.CourtroomAccount.Should().Be(judgeName);
+            result[0].CaseName.Should().Be(@case.Name);
+            result[0].CaseNumber.Should().Be(@case.Number);
+            result[0].Id.Should().Be(hearingsByCaseNumber[0].Id);
+            result[0].ScheduledDateTime.Should().Be(hearingsByCaseNumber[0].ScheduledDateTime);
+            result[0].HearingVenueName.Should().Be(hearingsByCaseNumber[0].HearingVenueName);
+            result[0].CourtroomAccount.Should().Be(judgeName);
+            result[0].HearingRoomName.Should().Be(hearingsByCaseNumber[0].HearingRoomName);
         }
 
         private static VideoHearing GetHearing()

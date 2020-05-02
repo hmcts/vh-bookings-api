@@ -17,6 +17,7 @@ using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -448,23 +449,23 @@ namespace Bookings.API.Controllers
 
 
         /// <summary>
-        /// Get a hearing by case number.
+        /// Gets a list of hearing by case number
         /// </summary>
         /// <param name="caseNumber">case number to search by</param>
-        /// <returns>hearing detail</returns>
-        [HttpGet("audiorecording/casenumber", Name = "GetHearingByCaseNumber")]
-        [SwaggerOperation(OperationId = "GetHearingByCaseNumber")]
-        [ProducesResponseType(typeof(HearingByCaseNumberResponseMapper), (int)HttpStatusCode.OK)]
+        /// <returns>list of hearing by case number</returns>
+        [HttpGet("audiorecording/casenumber", Name = "GetHearingsByCaseNumber")]
+        [SwaggerOperation(OperationId = "GetHearingsByCaseNumber")]
+        [ProducesResponseType(typeof(List<HearingByCaseNumberResponseMapper>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetHearingByCaseNumber([FromQuery]string caseNumber)
+        public async Task<IActionResult> GetHearingsByCaseNumber([FromQuery]string caseNumber)
         {
             if (caseNumber.IsNullOrEmpty())
             {
                 ModelState.AddModelError(nameof(caseNumber), $"Please provide a valid {nameof(caseNumber)}");
                 return BadRequest(ModelState);
             }
-            var query = new GetHearingByCaseNumberQuery(caseNumber);
-            var hearings = await _queryHandler.Handle<GetHearingByCaseNumberQuery, VideoHearing>(query);
+            var query = new GetHearingsByCaseNumberQuery(caseNumber);
+            var hearings = await _queryHandler.Handle<GetHearingsByCaseNumberQuery, List<VideoHearing>>(query);
 
             var hearingMapper = new HearingByCaseNumberResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);

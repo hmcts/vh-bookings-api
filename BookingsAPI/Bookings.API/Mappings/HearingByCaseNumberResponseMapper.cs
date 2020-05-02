@@ -1,32 +1,37 @@
 ﻿using Bookings.Api.Contract.Responses;
 using Bookings.Domain;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Bookings.API.Mappings
 {
     public class HearingByCaseNumberResponseMapper
     {
-        public HearingByCaseNumberResponse MapHearingToDetailedResponse(Hearing videoHearing, string caseNumber)
+        public List<HearingsByCaseNumberResponse> MapHearingToDetailedResponse(IEnumerable<Hearing> videoHearing, string caseNumber)
         {
-            if (videoHearing == null) return new HearingByCaseNumberResponse();
+            if (videoHearing == null || !videoHearing.Any()) return new List<HearingsByCaseNumberResponse>();
 
-            var @case = videoHearing.GetCases().FirstOrDefault(c => c.Number.ToLower() == caseNumber.ToLower());
-            if (@case == null) throw new ArgumentException("Hearing is missing case");
-
-            var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
-            var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
-
-            var response = new HearingByCaseNumberResponse
+            var response = new List<HearingsByCaseNumberResponse>();
+            foreach(var hearing in videoHearing)
             {
-                Id = videoHearing.Id,
-                ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingVenueName = videoHearing.HearingVenueName,
-                CaseName = @case.Name,
-                CaseNumber = @case.Number,
-                CourtroomAccount = judgeName
-            };
+                var judgeParticipant = hearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
+                var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
+                var @case = hearing.GetCases().FirstOrDefault(c => c.Number.ToLower() == caseNumber.ToLower());
+                if (@case == null) throw new ArgumentException("Hearing is missing case");
 
+                var hearingByCaseNumber = new HearingsByCaseNumberResponse()
+                {
+                    Id = hearing.Id,
+                    ScheduledDateTime = hearing.ScheduledDateTime,
+                    HearingVenueName = hearing.HearingVenueName,
+                    HearingRoomName = hearing.HearingRoomName,
+                    CourtroomAccount = judgeName,
+                    CaseName = @case.Name,
+                    CaseNumber = @case.Number
+                };
+                response.Add(hearingByCaseNumber);
+            }
             return response;
         }
     }

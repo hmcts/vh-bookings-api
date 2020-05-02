@@ -5,7 +5,7 @@ namespace Bookings.Api.Contract.Responses
     /// <summary>
     /// hearing information queried by case number
     /// </summary>
-    public class HearingByCaseNumberResponse
+    public class HearingsByCaseNumberResponse
     {
         /// <summary>
         ///     Hearing Id
@@ -36,5 +36,10 @@ namespace Bookings.Api.Contract.Responses
         ///     The courtroom account
         /// </summary>
         public string CourtroomAccount { get; set; }
+
+        /// <summary>
+        ///     The hearing room name at the hearing venue
+        /// </summary>
+        public string HearingRoomName { get; set; }
     }
 }
