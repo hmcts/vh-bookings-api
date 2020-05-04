@@ -22,13 +22,15 @@ namespace Bookings.UnitTests.Mappings
 
             var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number == caseNumber);
             var judgeParticipant = hearingsByCaseNumber[0].GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
-            var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
+            var courtroomAccountName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
+            var courtroomAccount = (judgeParticipant != null && judgeParticipant.Person != null) ? judgeParticipant.Person.Username : string.Empty;
             result[0].CaseName.Should().Be(@case.Name);
             result[0].CaseNumber.Should().Be(@case.Number);
             result[0].Id.Should().Be(hearingsByCaseNumber[0].Id);
             result[0].ScheduledDateTime.Should().Be(hearingsByCaseNumber[0].ScheduledDateTime);
             result[0].HearingVenueName.Should().Be(hearingsByCaseNumber[0].HearingVenueName);
-            result[0].CourtroomAccount.Should().Be(judgeName);
+            result[0].CourtroomAccount.Should().Be(courtroomAccount);
+            result[0].CourtroomAccountName.Should().Be(courtroomAccountName);
             result[0].HearingRoomName.Should().Be(hearingsByCaseNumber[0].HearingRoomName);
         }
 
@@ -38,7 +40,7 @@ namespace Bookings.UnitTests.Mappings
             hearing.AddCase("123", "Case name", true);
             foreach (var participant in hearing.Participants)
             {
-                participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+                participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Judge"), };
                 participant.CaseRole = new CaseRole(1, "Name");
             }
             return hearing;

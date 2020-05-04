@@ -60,3 +60,17 @@ Scenario: Created a hearing
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And hearing should be created
+
+Scenario: Get a hearing for a given case number
+	Given I have a hearing
+	And I have a valid get hearing by casenumber request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And a list of hearing details should be retrieved for the case number
+
+Scenario: Get a hearing for an invalid given case number
+	Given I have a hearing
+	And I have an invalid get hearing by casenumber request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And an empty list of hearing details should be retrieved

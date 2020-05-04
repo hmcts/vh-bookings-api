@@ -16,7 +16,8 @@ namespace Bookings.API.Mappings
             foreach(var hearing in videoHearing)
             {
                 var judgeParticipant = hearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
-                var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
+                var courtroomAccountName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
+                var courtroomAccount = (judgeParticipant != null && judgeParticipant.Person != null) ? judgeParticipant.Person.Username : string.Empty;
                 var @case = hearing.GetCases().FirstOrDefault(c => c.Number.ToLower() == caseNumber.ToLower());
                 if (@case == null) throw new ArgumentException("Hearing is missing case");
 
@@ -26,7 +27,8 @@ namespace Bookings.API.Mappings
                     ScheduledDateTime = hearing.ScheduledDateTime,
                     HearingVenueName = hearing.HearingVenueName,
                     HearingRoomName = hearing.HearingRoomName,
-                    CourtroomAccount = judgeName,
+                    CourtroomAccount = courtroomAccount,
+                    CourtroomAccountName = courtroomAccountName,
                     CaseName = @case.Name,
                     CaseNumber = @case.Number
                 };

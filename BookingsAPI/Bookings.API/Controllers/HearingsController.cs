@@ -17,6 +17,7 @@ using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -24,7 +25,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
 
 namespace Bookings.API.Controllers
 {
@@ -454,7 +454,7 @@ namespace Bookings.API.Controllers
         /// <returns>list of hearing by case number</returns>
         [HttpGet("audiorecording/casenumber", Name = "GetHearingsByCaseNumber")]
         [SwaggerOperation(OperationId = "GetHearingsByCaseNumber")]
-        [ProducesResponseType(typeof(List<HearingByCaseNumberResponseMapper>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingsByCaseNumberResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetHearingsByCaseNumber([FromQuery]string caseNumber)
         {

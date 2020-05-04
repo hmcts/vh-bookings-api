@@ -33,6 +33,10 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             hearing.Should().NotBeNull();
             hearing.Any().Should().BeTrue();
+
+            hearing[0].ScheduledDateTime.Should().Be(seededHearing1.ScheduledDateTime);
+            hearing[0].HearingRoomName.Should().Be(seededHearing1.HearingRoomName);
+            hearing[0].HearingVenueName.Should().Be(seededHearing1.HearingVenueName);
         }
     }
 }
