@@ -19,6 +19,7 @@ namespace Bookings.Domain
             Cases = new List<Case>();
             Participants = new List<Participant>();
             CreatedDate = DateTime.UtcNow;
+            HearingCases = new List<HearingCase>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -60,7 +61,7 @@ namespace Bookings.Domain
         public string UpdatedBy { get; set; }
         public DateTime UpdatedDate { get; protected set; }
         public virtual IList<Participant> Participants { get; }
-        protected virtual IList<HearingCase> HearingCases { get; set; } = new List<HearingCase>();
+        public virtual IList<HearingCase> HearingCases { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }

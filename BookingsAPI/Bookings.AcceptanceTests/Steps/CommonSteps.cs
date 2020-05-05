@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
 using Bookings.AcceptanceTests.Contexts;
@@ -38,6 +39,21 @@ namespace Bookings.AcceptanceTests.Steps
             _context.TestData.Hearing.Id = model.Id;
             _context.TestData.ParticipantsResponses = model.Participants;
         }
+
+        [Given(@"I have a valid get hearing by casenumber request")]
+        public void GivenIHaveAValidGetHearingByCasenumberRequest()
+        {
+            var caseNumber = _context.TestData.Hearing.Cases.FirstOrDefault();
+            _context.Request = _context.Get(GetHearingsByCaseNumber(caseNumber.Number));
+        }
+
+        [Given(@"I have an invalid get hearing by casenumber request")]
+        public void GivenIHaveAnInvalidGetHearingByCasenumberRequest()
+        {
+            var caseNumber = _context.TestData.Hearing.Cases.FirstOrDefault();
+            _context.Request = _context.Get(GetHearingsByCaseNumber(caseNumber.Number + "01"));
+        }
+
 
         [When(@"I send the request to the endpoint")]
         public void WhenISendTheRequestToTheEndpoint()
