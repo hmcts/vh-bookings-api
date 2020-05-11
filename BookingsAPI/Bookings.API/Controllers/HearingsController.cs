@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace Bookings.API.Controllers
 {
@@ -463,6 +464,9 @@ namespace Bookings.API.Controllers
                 ModelState.AddModelError(nameof(caseNumber), $"Please provide a valid {nameof(caseNumber)}");
                 return BadRequest(ModelState);
             }
+
+            caseNumber = WebUtility.UrlDecode(caseNumber);
+            
             var query = new GetHearingsByCaseNumberQuery(caseNumber);
             var hearings = await _queryHandler.Handle<GetHearingsByCaseNumberQuery, List<VideoHearing>>(query);
 
