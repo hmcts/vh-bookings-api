@@ -23,9 +23,10 @@ namespace Bookings.UnitTests.Controllers.HearingsController
 {
     public class HearingsControllerTest
     {
-        protected API.Controllers.HearingsController _controller;
-        protected Mock<IQueryHandler> _queryHandlerMock;
-        protected Mock<ICommandHandler> _commandHandlerMock;
+        protected API.Controllers.HearingsController Controller;
+        protected Mock<IQueryHandler> QueryHandlerMock;
+        protected Mock<ICommandHandler> CommandHandlerMock;
+        
         private IEventPublisher _eventPublisher;
         private ServiceBusQueueClientFake _sbQueueClient;
 
@@ -33,22 +34,21 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         public void Setup()
         {
             _sbQueueClient = new ServiceBusQueueClientFake();
-            _queryHandlerMock = new Mock<IQueryHandler>();
-            _commandHandlerMock = new Mock<ICommandHandler>();
+            QueryHandlerMock = new Mock<IQueryHandler>();
+            CommandHandlerMock = new Mock<ICommandHandler>();
             _eventPublisher = new EventPublisher(_sbQueueClient);
-            _controller = new API.Controllers.HearingsController(_queryHandlerMock.Object, _commandHandlerMock.Object,
-                _eventPublisher);
+            Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object, _eventPublisher);
         }
 
         [Test]
         public async Task Should_return_bad_request_if_invalid_case_types()
         {
             var caseTypes = new List<int> { 44, 78 };
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
              .ReturnsAsync(new List<CaseType> { new CaseType(44, "Financial"), new CaseType(2, "Civil") });
 
-            var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
+            var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
@@ -60,15 +60,15 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         public async Task Should_return_bookings()
         {
             var caseTypes = new List<int>();
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
              .ReturnsAsync(new List<CaseType>());
 
-            _queryHandlerMock
+            QueryHandlerMock
                 .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
 
-            var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
+            var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
@@ -76,7 +76,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var response = (BookingsResponse)((ObjectResult)result.Result).Value;
             response.PrevPageUrl.Should().Be("hearings/types?types=&cursor=0&limit=2");
             response.NextPageUrl.Should().Be("hearings/types?types=&cursor=next cursor&limit=2");
-            _queryHandlerMock.Verify(q => q.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
+            QueryHandlerMock.Verify(q => q.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
                                             (It.Is<GetBookingsByCaseTypesQuery>(g => g.Cursor == null)), Times.Once);
         }
 
@@ -84,14 +84,14 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         public async Task Should_return_next_and_previous_page_urls()
         {
             var caseTypes = new List<int> { 1, 2 };
-            _queryHandlerMock
+            QueryHandlerMock
                 .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
                 .ReturnsAsync(new List<CaseType> { new CaseType(1, "Financial"), new CaseType(2, "Civil") });
 
-            _queryHandlerMock
+            QueryHandlerMock
                 .Setup(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
-            var result = await _controller.GetHearingsByTypes(caseTypes, "0", 2);
+            var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
             var response = (BookingsResponse)((ObjectResult)result.Result).Value;
@@ -108,13 +108,13 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Created
             };
             var hearingId = Guid.NewGuid();
-            var hearing = GetHearing();
+            var hearing = GetHearing("123");
 
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
              .ReturnsAsync(hearing);
 
-            var result = await _controller.UpdateBookingStatus(hearingId, request);
+            var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
@@ -136,13 +136,13 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 CancelReason = "Adjournment"
             };
             var hearingId = Guid.NewGuid();
-            var hearing = GetHearing();
+            var hearing = GetHearing("123");
 
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
              .ReturnsAsync(hearing);
 
-            var result = await _controller.UpdateBookingStatus(hearingId, request);
+            var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
@@ -160,7 +160,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var request = new UpdateBookingStatusRequest();
             var hearingId = Guid.Empty;
 
-            var result = await _controller.UpdateBookingStatus(hearingId, request);
+            var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -182,20 +182,20 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             };
 
             var hearingId = Guid.NewGuid();
-            var hearing = GetHearing();
+            var hearing = GetHearing("123");
             hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
                 15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
-            _queryHandlerMock
+            QueryHandlerMock
             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
             .ReturnsAsync(hearing);
 
             var venues = new List<HearingVenue> { new HearingVenue(1, "venue1"), };
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
            .ReturnsAsync(venues);
 
-              var result = await _controller.UpdateHearingDetails(hearingId, request);
+              var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (OkObjectResult)result;
@@ -221,20 +221,20 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             };
 
             var hearingId = Guid.NewGuid();
-            var hearing = GetHearing();
+            var hearing = GetHearing("123");
             hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
                 15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
-            _queryHandlerMock
+            QueryHandlerMock
             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
             .ReturnsAsync(hearing);
 
             var venues = new List<HearingVenue> { new HearingVenue(1, "venue1"), };
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
            .ReturnsAsync(venues);
 
-            var result = await _controller.UpdateHearingDetails(hearingId, request);
+            var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -248,7 +248,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var request = new UpdateHearingRequest();
             var hearingId = Guid.Empty;
 
-            var result = await _controller.UpdateHearingDetails(hearingId, request);
+            var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -260,14 +260,14 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         public async Task Should_remove_hearing_with_status_created_and_send_event_to_video()
         {
             var hearingId = Guid.NewGuid();
-            var hearing = GetHearing();
+            var hearing = GetHearing("123");
             hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
-            _queryHandlerMock
+            QueryHandlerMock
             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
             .ReturnsAsync(hearing);
 
-            var result = await _controller.RemoveHearing(hearingId);
+            var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
@@ -284,7 +284,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             var hearingId = Guid.Empty;
 
-            var result = await _controller.RemoveHearing(hearingId);
+            var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -292,10 +292,11 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
 
-        protected VideoHearing GetHearing()
+        protected static VideoHearing GetHearing(string caseNumber)
         {
             var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase("123", "Case name", true);
+            hearing.AddCase(caseNumber, "Case name", true);
+            
             foreach (var participant in hearing.Participants)
             {
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };

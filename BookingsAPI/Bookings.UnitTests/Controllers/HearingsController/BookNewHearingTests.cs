@@ -19,7 +19,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
 {
     public class BookNewHearingTests : HearingsControllerTest
     {
-        private List<ParticipantRequest> Participants
+        private static List<ParticipantRequest> Participants
         {
             get
             {
@@ -126,17 +126,17 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 HearingTypes = new List<HearingType> { new HearingType("Application to Set Judgment Aside") }
             };
 
-            _queryHandlerMock
+            QueryHandlerMock
             .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
             .ReturnsAsync(caseType);
 
-            _queryHandlerMock
+            QueryHandlerMock
             .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
             .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham Civil and Family Justice Centre") });
 
-            var hearing = GetHearing();
+            var hearing = GetHearing("123");
 
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
              .ReturnsAsync(hearing);
         }
@@ -145,29 +145,29 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_successfully_book_new_hearing()
         { 
-            var response = await _controller.BookNewHearing(request);
+            var response = await Controller.BookNewHearing(request);
 
             response.Should().NotBeNull();
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            _queryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
 
-            _queryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
-            _queryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<CreateVideoHearingCommand>()), Times.Once);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<CreateVideoHearingCommand>()), Times.Once);
         }
 
         [Test]
         public async Task Should_return_badrequest_without_matching_casetype()
         {
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
            .ReturnsAsync((CaseType)null);
 
-            var result = await _controller.BookNewHearing(request);
+            var result = await Controller.BookNewHearing(request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -184,11 +184,11 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 HearingTypes = new List<HearingType> { new HearingType("Not matching") }
             };
 
-            _queryHandlerMock
+            QueryHandlerMock
             .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
             .ReturnsAsync(caseType);
 
-            var result = await _controller.BookNewHearing(request);
+            var result = await Controller.BookNewHearing(request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -199,11 +199,11 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_return_badrequest_without_matching_hearingvenue()
         {
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
            .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Not matching") });
 
-            var result = await _controller.BookNewHearing(request);
+            var result = await Controller.BookNewHearing(request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;

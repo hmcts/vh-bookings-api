@@ -18,13 +18,13 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         public async Task Should_return_hearing_details_for_given_hearingid()
         {
             var hearingId = Guid.NewGuid();
-             var hearing = GetHearing();
+             var hearing = GetHearing("123");
 
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
              .ReturnsAsync(hearing);
 
-            var result = await _controller.GetHearingDetailsById(hearingId);
+            var result = await Controller.GetHearingDetailsById(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (OkObjectResult)result;
@@ -34,7 +34,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             hearingDetailsResponse.CaseTypeName.Should().Be("Civil Money Claims");
             hearingDetailsResponse.HearingTypeName.Should().Be("Application to Set Judgment Aside");
             hearingDetailsResponse.Cases.Count.Should().Be(1);
-            _queryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
 
         }
 
@@ -43,7 +43,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             var hearingId = Guid.Empty;
 
-            var result = await _controller.GetHearingDetailsById(hearingId);
+            var result = await Controller.GetHearingDetailsById(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -56,16 +56,16 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             var hearingId = Guid.NewGuid();
 
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
              .ReturnsAsync((VideoHearing)null);
 
-            var result = await _controller.GetHearingDetailsById(hearingId);
+            var result = await Controller.GetHearingDetailsById(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            _queryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
         }
     }
 }
