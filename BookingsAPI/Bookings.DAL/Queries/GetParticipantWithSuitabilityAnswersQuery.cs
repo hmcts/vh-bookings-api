@@ -49,14 +49,14 @@ namespace Bookings.DAL.Queries
                 .Include("Questionnaire.SuitabilityAnswers");
 
             participants = participants.Where(x => x.Questionnaire != null && x.Questionnaire.SuitabilityAnswers.Any()).OrderByDescending(x => x.Questionnaire.UpdatedDate).ThenBy(x => x.Id.ToString());
-
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var updatedDateTime, out var id);
                 participants = participants.Where(x => x.Questionnaire.UpdatedDate <= updatedDateTime
-                                               &&  x.Id == Guid.Parse(id));
+                                               &&  x.Id != Guid.Parse(id));
             }
 
+          
             // Add one to the limit to know whether or not we have a next page
             var result = await participants.Take(query.Limit + 1).ToListAsync();
             string nextCursor = null;
@@ -65,7 +65,7 @@ namespace Bookings.DAL.Queries
                 // The next cursor should be built based on the last item in the list
                 result = result.Take(query.Limit).ToList();
                 var lastResult = result.Last();
-                nextCursor = $"{lastResult.UpdatedDate.Ticks}_{lastResult.Id}";
+                nextCursor = $"{lastResult.Questionnaire.UpdatedDate.Ticks}_{lastResult.Id}";
             }
 
             return new CursorPagedResult<Participant, string>(result, nextCursor);
