@@ -7,6 +7,7 @@ using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -28,13 +29,13 @@ namespace Bookings.IntegrationTests.Helper
             _defaultCaseName = defaultCaseName;
         }
 
-        public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false)
+        public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked)
         {
-            return SeedVideoHearing(null, addSuitabilityAnswer);
+            return SeedVideoHearing(null, addSuitabilityAnswer, status);
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -85,6 +86,10 @@ namespace Bookings.IntegrationTests.Helper
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
+            if(status == BookingStatus.Created)
+            {
+                videoHearing.UpdateStatus(BookingStatus.Created, createdBy, null);
+            }
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
             {

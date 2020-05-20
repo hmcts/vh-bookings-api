@@ -1,5 +1,6 @@
 ﻿using Bookings.DAL;
 using Bookings.DAL.Queries;
+using Bookings.Domain.Enumerations;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
@@ -21,7 +22,8 @@ namespace Bookings.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_case_number()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing();
+            var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
+
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
             var caseData = seededHearing1.HearingCases.FirstOrDefault();
             TestContext.WriteLine($"New seeded video caseNumer: { caseData.Case.Number }");

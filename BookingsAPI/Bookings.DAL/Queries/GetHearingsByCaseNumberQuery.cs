@@ -1,5 +1,6 @@
 ﻿using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace Bookings.DAL.Queries
                 .ThenInclude(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)
                 .ThenInclude(x => x.UserRole)
-                .Where(x => x.AudioRecordingRequired && x.HearingCases.Any(c => c.Case.Number.ToLower().Trim() == caseNumber))
+                .Where(x => x.AudioRecordingRequired && x.Status == BookingStatus.Created && x.HearingCases.Any(c => c.Case.Number.ToLower().Trim() == caseNumber))
                 .ToListAsync();
         }
     }
