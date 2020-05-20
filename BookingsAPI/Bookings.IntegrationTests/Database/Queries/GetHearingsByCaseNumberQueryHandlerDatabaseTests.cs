@@ -25,6 +25,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
+
             var caseData = seededHearing1.HearingCases.FirstOrDefault();
             TestContext.WriteLine($"New seeded video caseNumer: { caseData.Case.Number }");
 
