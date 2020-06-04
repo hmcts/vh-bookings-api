@@ -166,6 +166,8 @@ namespace Bookings.API.Controllers
                 OtherInformation = request.OtherInformation,
                 CreatedBy = request.CreatedBy
             };
+            
+            // Hi Valentina !
 
             await _commandHandler.Handle(createVideoHearingCommand);
 
