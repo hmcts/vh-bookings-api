@@ -40,6 +40,7 @@ Examples:
 | Tax                |
 | Family Law Act     |
 | Tribunal           |
+| Civil              |
 
 Scenario Outline: Get hearing roles for a case role of a case type
 	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -70,3 +71,6 @@ Examples:
 | Tribunal           | Applicant  |
 | Tribunal           | Respondent |
 | Tribunal           | Judge      |
+| Civil              | Claimant   |
+| Civil              | Defendant  |
+| Civil              | Judge      |
