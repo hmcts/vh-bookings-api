@@ -62,6 +62,8 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
         {
             var hearing = GetVideoHearing(true);
             request.Participants[0].Username = hearing.Participants[0].Person.Username;
+            request.Participants[0].FirstName = hearing.Participants[0].Person.FirstName;
+            request.Participants[0].LastName = hearing.Participants[0].Person.LastName;
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
             var response = await Controller.AddParticipantsToHearing(hearingId, request);
@@ -70,7 +72,12 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
             QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.Is<ParticipantsAddedIntegrationEvent>(p => p.HearingId == hearing.Id && p.Participants[0].Username == request.Participants[0].Username)), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.Is<ParticipantsAddedIntegrationEvent>
+            (
+                p => p.HearingId == hearing.Id && p.Participants[0].Username == request.Participants[0].Username
+                                               && p.Participants[0].FirstName == request.Participants[0].FirstName
+                                               && p.Participants[0].LastName == request.Participants[0].LastName
+            )), Times.Once);
         }
 
 

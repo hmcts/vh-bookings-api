@@ -38,6 +38,8 @@ namespace Bookings.UnitTests.Mappings
             result.ParticipantId.Should().Be(participant.Id);
             result.Fullname.Should().Be(fullname);
             result.Username.Should().Be(participant.Person.Username);
+            result.FirstName.Should().Be(participant.Person.FirstName);
+            result.LastName.Should().Be(participant.Person.LastName);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
@@ -56,6 +58,8 @@ namespace Bookings.UnitTests.Mappings
             result.ParticipantId.Should().Be(participant.Id);
             result.Fullname.Should().Be(fullname);
             result.Username.Should().Be(participant.Person.Username);
+            result.FirstName.Should().Be(participant.Person.FirstName);
+            result.LastName.Should().Be(participant.Person.LastName);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);

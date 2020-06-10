@@ -12,9 +12,10 @@ namespace Bookings.Infrastructure.Services
                 new ParticipantDto
                 {
                     ParticipantId = participant.Id,
-                    Fullname =
-                        $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
+                    Fullname = $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
                     Username = participant.Person.Username,
+                    FirstName = participant.Person.FirstName,
+                    LastName = participant.Person.LastName,
                     DisplayName = participant.DisplayName,
                     HearingRole = participant.HearingRole.Name,
                     UserRole = participant.HearingRole.UserRole.Name,
