@@ -33,3 +33,43 @@ The commit message will be validated by prepare-commit-msg hook.
 The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters description of commit, otherwise the warning message will be presented.
 
 ```
+
+## Run Zap scan locally
+
+To run Zap scan locally update the following settings and run acceptance\integration tests
+
+Update following configuration under appsettings.json under VideoApi.AcceptanceTests or  VideoApi.IntegrationTests
+
+- "Services:BookingsApiUrl": "https://BookingsApi_AC/"
+- "ZapConfiguration:ZapScan": true
+- "ConnectionStrings:VhBookings": "Server=localhost,1433;Database=VhBookings;User=sa;Password=VeryStrongPassword!;" (IntegrationTest alone)
+
+Note: Ensure you have Docker desktop engine installed and setup
+
+## Run Stryker
+
+To run stryker mutation test, go to UnitTest folder under command prompt and run the following command
+
+```bash
+dotnet stryker
+```
+
+From the results look for line(s) of code highlighted with Survived\No Coverage and fix them.
+
+
+If in case you have not installed stryker previously, please use one of the following commands
+
+### Global
+```bash
+dotnet tool install -g dotnet-stryker
+```
+### Local
+```bash
+dotnet tool install dotnet-stryker
+```
+
+To update latest version of stryker please use the following command
+
+```bash
+dotnet tool update --global dotnet-stryker
+```
