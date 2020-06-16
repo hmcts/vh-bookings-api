@@ -38,8 +38,11 @@ namespace Bookings.API.Controllers
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> CheckServiceHealth()
         {
-            var response = new BookingsApiHealthResponse();
-            response.AppVersion = GetApplicationVersion();
+            var response = new BookingsApiHealthResponse
+            {
+                AppVersion = GetApplicationVersion()
+            };
+
             try
             {
                 var query = new GetHearingVenuesQuery();

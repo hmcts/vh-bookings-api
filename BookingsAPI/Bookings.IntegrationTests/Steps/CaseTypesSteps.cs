@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using Bookings.Api.Contract.Responses;
 using Bookings.IntegrationTests.Contexts;
+using Bookings.IntegrationTests.Models;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.CaseTypesEndpoints;
@@ -59,6 +61,21 @@ namespace Bookings.IntegrationTests.Steps
                 }
             }
         }
+
+        [Then(@"a list of case types should be contain")]
+        public async Task ThenAListOfCaseTypesShouldContain(IDictionary<string, IEnumerable<string>> caseHearingTypes)
+        {
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var models = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
+
+            models.Select(x => x.Name).Should().Contain(caseHearingTypes.Keys);
+            foreach (var model in models)
+            {
+                caseHearingTypes[model.Name].Should().Contain(model.HearingTypes.Select(x => x.Name));
+                model.HearingTypes.Select(x => x.Name).Should().Contain(caseHearingTypes[model.Name]);
+            }
+        }
+
         [Then(@"a list of hearing roles should be retrieved")]
         [Then(@"a list of case roles should be retrieved")]
         public async Task ThenAListOfCaseRolesShouldBeRetrieved()
