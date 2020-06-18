@@ -22,7 +22,11 @@ namespace Bookings.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DeleteData("HearingVenue", "Id", 4);
+            migrationBuilder.DeleteData("HearingVenue", "Id", 5);
+            migrationBuilder.DeleteData("HearingVenue", "Id", 6);
+            migrationBuilder.DeleteData("HearingVenue", "Id", 7);
+            migrationBuilder.DeleteData("HearingVenue", "Id", 8);
         }
     }
 }
