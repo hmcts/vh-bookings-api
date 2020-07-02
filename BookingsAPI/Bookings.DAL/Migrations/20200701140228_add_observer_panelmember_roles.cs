@@ -1,7 +1,6 @@
 ﻿using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System.Linq;
 
 namespace Bookings.DAL.Migrations
 {
