@@ -6,6 +6,8 @@ namespace Bookings.Domain.Enumerations
         Claimant = 1,
         Defendant = 2,
         Applicant = 3,
-        Respondent = 4
+        Respondent = 4,
+        Observer = 5,
+        PanelMember = 6
     }
 }
