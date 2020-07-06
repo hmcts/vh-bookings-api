@@ -18,7 +18,7 @@ namespace Bookings.API.Mappings
                 var judgeParticipant = hearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
                 var courtroomAccountName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
                 var courtroomAccount = (judgeParticipant != null && judgeParticipant.Person != null) ? judgeParticipant.Person.Username : string.Empty;
-                var @case = hearing.GetCases().FirstOrDefault(c => c.Number.ToLower() == caseNumber.ToLower());
+                var @case = hearing.GetCases().FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
                 if (@case == null) throw new ArgumentException("Hearing is missing case");
 
                 var hearingByCaseNumber = new HearingsByCaseNumberResponse()

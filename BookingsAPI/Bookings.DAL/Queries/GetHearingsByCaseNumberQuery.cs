@@ -39,7 +39,8 @@ namespace Bookings.DAL.Queries
                 .ThenInclude(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)
                 .ThenInclude(x => x.UserRole)
-                .Where(x => x.AudioRecordingRequired && x.Status == BookingStatus.Created && x.HearingCases.Any(c => c.Case.Number.ToLower().Trim() == caseNumber))
+                .Where(x => x.AudioRecordingRequired && x.Status == BookingStatus.Created 
+                    && x.HearingCases.Any(c => c.Case.Number.ToLower().Trim() == caseNumber.ToLower().Trim()))
                 .ToListAsync();
         }
     }

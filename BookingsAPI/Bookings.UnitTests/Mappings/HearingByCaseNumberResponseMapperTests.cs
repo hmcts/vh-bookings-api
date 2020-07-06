@@ -12,15 +12,17 @@ namespace Bookings.UnitTests.Mappings
 {
     public class HearingByCaseNumberResponseMapperTests : TestBase
     {
-        [Test]
-        public void Should_map_all_properties()
+        [TestCase("Test 001")]
+        [TestCase(" Test 001")]
+        [TestCase("Test 001 ")]
+        public void Should_map_all_properties(string caseNumber)
         {
-            var caseNumber = "123";
             var hearingsByCaseNumber = new List<VideoHearing>() { GetHearing() };
             var hearingMapper = new HearingByCaseNumberResponseMapper();
-            var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
+            var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
 
-            var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number == caseNumber);
+            var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
+           
             var judgeParticipant = hearingsByCaseNumber[0].GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var courtroomAccountName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
             var courtroomAccount = (judgeParticipant != null && judgeParticipant.Person != null) ? judgeParticipant.Person.Username : string.Empty;
@@ -37,7 +39,7 @@ namespace Bookings.UnitTests.Mappings
         private static VideoHearing GetHearing()
         {
             var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase("123", "Case name", true);
+            hearing.AddCase("Test 001 ", "Case name", true);
             foreach (var participant in hearing.Participants)
             {
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Judge"), };
