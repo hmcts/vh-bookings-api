@@ -25,9 +25,8 @@ namespace Bookings.API.Mappings
             Person person;
             if(hearingRole.UserRole.IsIndividual)
             {
-                var address = new Address(requestParticipant.HouseNumber, requestParticipant.Street, requestParticipant.Postcode, requestParticipant.City, requestParticipant.County);
                 person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username, address);
+                requestParticipant.Username);
             }
             else
             {

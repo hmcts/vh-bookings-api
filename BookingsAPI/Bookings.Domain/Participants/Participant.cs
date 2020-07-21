@@ -39,7 +39,7 @@ namespace Bookings.Domain.Participants
         public string UpdatedBy { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
 
-        protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
+        protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
             ValidateArguments(displayName);
 
@@ -49,9 +49,9 @@ namespace Bookings.Domain.Participants
             }
         }
 
-        public virtual void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string street, string houseNumber, string city, string county, string postcode, string organisationName)
+        public virtual void UpdateParticipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
-            ValidatePartipantDetails(title, displayName, telephoneNumber, street, houseNumber, city, county, postcode, organisationName);
+            ValidatePartipantDetails(title, displayName, telephoneNumber, organisationName);
 
             DisplayName = displayName;
             Person.Title = title;

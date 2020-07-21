@@ -118,11 +118,6 @@ namespace Bookings.AcceptanceTests.Steps
             model.DisplayName.Should().Be(updateParticipantRequest.DisplayName);
             model.TelephoneNumber.Should().Be(updateParticipantRequest.TelephoneNumber);
             if (!participant.Equals("Representative")) return;
-            model.HouseNumber.Should().BeNull();
-            model.Street.Should().BeNull();
-            model.City.Should().BeNull();
-            model.County.Should().BeNull();
-            model.Postcode.Should().BeNull();
         }
 
         [Given(@"I have an update participant suitability answers with a valid user '(.*)'")]

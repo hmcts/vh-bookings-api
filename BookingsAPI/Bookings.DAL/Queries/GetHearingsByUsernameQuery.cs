@@ -31,7 +31,6 @@ namespace Bookings.DAL.Queries
             var username = query.Username.ToLower().Trim();
             return await _context.VideoHearings
                 .Include("Participants.Person")
-                .Include("Participants.Person.Address")
                 .Include("Participants.Questionnaire")
                 .Include("Participants.Questionnaire.SuitabilityAnswers")
                 .Include("HearingCases.Case")

@@ -1,6 +1,6 @@
 namespace Bookings.Api.Contract.Requests
 {
-    public class UpdateParticipantRequest : IAddressRequest, IRepresentativeInfoRequest
+    public class UpdateParticipantRequest : IRepresentativeInfoRequest
     {
         /// <summary>
         ///     Participant Title.
@@ -16,31 +16,6 @@ namespace Bookings.Api.Contract.Requests
         ///     Participant Display Name
         /// </summary>
         public string DisplayName { get; set; }
-
-        /// <summary>
-        /// House number of an Individual
-        /// </summary>
-        public string HouseNumber { get; set; }
-
-        /// <summary>
-        /// Stree number of an Individual
-        /// </summary>
-        public string Street { get; set; }
-
-        /// <summary>
-        /// Postcode of an Individual
-        /// </summary>
-        public string Postcode { get; set; }
-
-        /// <summary>
-        /// City/Town of an Individual
-        /// </summary>
-        public string City { get; set; }
-
-        /// <summary>
-        /// County of an Individual
-        /// </summary>
-        public string County { get; set; }
 
         /// <summary>
         ///     Participant Organisation
