@@ -54,7 +54,6 @@ Examples:
 | Tax				        | Judge                   |
 | Tax                       | Observer                |
 | Tax                       | Panel Member            |
-| Tax                       | Schedule 36 Application | 
 | Tribunal                  | Applicant               |
 | Tribunal                  | Respondent              |
 | Tribunal                  | Judge                   |
