@@ -17,6 +17,7 @@ using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -27,7 +28,6 @@ using System.Threading.Tasks;
 
 namespace Bookings.API.Controllers
 {
-
     [Produces("application/json")]
     [Route("hearings")]
     [ApiController]
@@ -381,6 +381,21 @@ namespace Bookings.API.Controllers
             };
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Anonymises the Hearings, Case, Person and Participant data.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("anonymisehearings")]
+        [SwaggerOperation(OperationId = "AnonymiseHearings")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [AllowAnonymous]
+        public async Task<IActionResult> AnonymiseHearingsAsync()
+        {
+            var anonymiseConferenceCommand = new AnonymiseHearingsCommand();
+            await _commandHandler.Handle(anonymiseConferenceCommand);
+            return NoContent();
         }
 
         private async Task<Hearing> GetHearingToPublish(Guid hearingId)

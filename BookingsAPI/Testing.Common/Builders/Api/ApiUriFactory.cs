@@ -30,6 +30,7 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
             public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
             public static string GetHearingsByCaseNumber(string caseNumber) => $"{ApiRoot}/audiorecording/casenumber?caseNumber={caseNumber}";
+            public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
         }
 
         public static class HearingVenueEndpoints
