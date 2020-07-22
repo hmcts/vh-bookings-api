@@ -30,7 +30,6 @@ namespace Bookings.DAL.Commands
 				"@conferenceId AS uniqueidentifier, " +
 				"@participantId AS uniqueidentifier, " +
 				"@personId AS uniqueidentifier, " +
-				"@addressId AS INT, " +
 				"@organisationId as INT, " +
 				"@caseId AS INT " +
 			"SET @months = -3 " +
@@ -62,11 +61,10 @@ namespace Bookings.DAL.Commands
 			"DEALLOCATE case_cursor; " +
 
 			"DECLARE participant_cursor CURSOR FOR " +
-			"SELECT pr.Id, pr.AddressId, pr.OrganisationId " +
+			"SELECT pr.Id, pr.OrganisationId " +
 			"FROM [dbo].[Participant] p " +
 			"JOIN [dbo].[Hearing] h ON p.HearingId = h.Id " +
 			"JOIN [dbo].[Person] pr on pr.Id = p.PersonId " +
-			"LEFT JOIN [dbo].[Address] a on a.Id = pr.AddressId " +
 			"LEFT JOIN [dbo].[Organisation] o on o.Id = pr.OrganisationId " +
 			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
 			"and pr.Id not IN ( " +
@@ -79,7 +77,7 @@ namespace Bookings.DAL.Commands
 
 			"OPEN participant_cursor " +
 			"FETCH NEXT FROM participant_cursor " +
-			"INTO @personId, @addressId, @organisationId " +
+			"INTO @personId, @organisationId " +
 
 			"WHILE @@FETCH_STATUS = 0 " +
 			"BEGIN " +
@@ -102,7 +100,7 @@ namespace Bookings.DAL.Commands
 				"END " +
 
 				"FETCH NEXT FROM participant_cursor " +
-				"INTO @personId, @addressId, @organisationId " +
+				"INTO @personId, @organisationId " +
 			"END " +
 			"CLOSE participant_cursor; " +
 			"DEALLOCATE participant_cursor; ";

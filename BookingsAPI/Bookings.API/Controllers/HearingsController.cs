@@ -391,8 +391,8 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> AnonymiseHearingsAsync()
         {
-            var anonymiseConferenceCommand = new AnonymiseHearingsCommand();
-            await _commandHandler.Handle(anonymiseConferenceCommand);
+            var anonymiseHearingsCommand = new AnonymiseHearingsCommand();
+            await _commandHandler.Handle(anonymiseHearingsCommand);
             return NoContent();
         }
 
