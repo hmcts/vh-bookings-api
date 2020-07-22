@@ -1,5 +1,4 @@
 using Bookings.Api.Contract.Requests;
-using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
 using Bookings.API.Helpers;
@@ -283,7 +282,7 @@ namespace Bookings.API.Controllers
         /// Update booking status
         /// </summary>
         /// <param name="hearingId">Id of the hearing to update the status for</param>
-        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <param name="request">Status of the hearing to change to</param>
         /// <returns>Success status</returns>
         [HttpPatch("{hearingId}")]
         [SwaggerOperation(OperationId = "UpdateBookingStatus")]
@@ -291,7 +290,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
+        public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest request)
         {
             if (hearingId == Guid.Empty)
             {
@@ -299,7 +298,7 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = new UpdateBookingStatusRequestValidation().Validate(updateBookingStatusRequest);
+            var result = new UpdateBookingStatusRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
@@ -308,23 +307,22 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var bookingStatus = MapUpdateBookingStatus(updateBookingStatusRequest.Status);
-                var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updateBookingStatusRequest.UpdatedBy,
-                    updateBookingStatusRequest.CancelReason);
-                await _commandHandler.Handle(command);
+                var bookingStatus = Enum.IsDefined(typeof(BookingStatus), request.Status.ToString())
+                    ? Enum.Parse<BookingStatus>(request.Status.ToString(), true)
+                    : throw new Exception($"Could not find enum value: {nameof(UpdateBookingStatus)}.{request.Status} in the other enum: {nameof(BookingStatus)}");
+                
                 switch (bookingStatus)
                 {
-                    case BookingStatus.Booked:
-                        break;
                     case BookingStatus.Created:
-                        var queriedVideoHearing = await GetHearingToPublish(hearingId);
-                        var createVideoHearingEvent = new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing);
-                        await _eventPublisher.PublishAsync(createVideoHearingEvent);
+                        await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
+                        var queriedVideoHearing = await GetHearingToPublishAsync(hearingId);
+                        await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing));
                         break;
                     case BookingStatus.Cancelled:
                         await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
                         break;
-                    default:
+                    case BookingStatus.Failed:
+                        await UpdateHearingStatusAsync(hearingId, BookingStatus.Failed, request.UpdatedBy, request.CancelReason);
                         break;
                 }
 
@@ -339,6 +337,13 @@ namespace Bookings.API.Controllers
                 exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
                 return Conflict(ModelState);
             }
+        }
+
+        private async Task UpdateHearingStatusAsync(Guid hearingId, BookingStatus bookingStatus, string updatedBy, string cancelReason)
+        {
+            var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
+
+            await _commandHandler.Handle(command);
         }
 
         /// <summary>
@@ -383,7 +388,7 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
-        private async Task<Hearing> GetHearingToPublish(Guid hearingId)
+        private async Task<Hearing> GetHearingToPublishAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
@@ -436,13 +441,6 @@ namespace Bookings.API.Controllers
                 mappedList.Add(new Case(caseRequest.Number, caseRequest.Name));
             }
             return mappedList;
-        }
-
-        private BookingStatus MapUpdateBookingStatus(UpdateBookingStatus status)
-        {
-            return status == Api.Contract.Requests.Enums.UpdateBookingStatus.Created
-                ? BookingStatus.Created
-                : BookingStatus.Cancelled;
         }
 
 
