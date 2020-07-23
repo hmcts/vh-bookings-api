@@ -384,27 +384,6 @@ namespace Bookings.IntegrationTests.Steps
         }
 
 
-        [Given(@"I have an update participant in a hearing request with a invalid address")]
-        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidAddress()
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.TestData.NewHearingId = seededHearing.Id;
-            var participantId = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsIndividual).Id;
-            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
-            var hearingId = seededHearing.Id;
-            updateParticipantRequest.Street = string.Empty;
-            updateParticipantRequest.HouseNumber = string.Empty;
-            updateParticipantRequest.Postcode = string.Empty;
-            updateParticipantRequest.City = string.Empty;
-            updateParticipantRequest.County = string.Empty;
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            Context.Uri = UpdateParticipantDetails(hearingId, participantId);
-            Context.HttpMethod = HttpMethod.Put;
-        }
-
-
         private static AddParticipantsToHearingRequest BuildRequest()
         {
             var newParticipant = new ParticipantRequestBuilder("Defendant", "Defendant LIP").Build();

@@ -54,7 +54,7 @@ namespace Bookings.IntegrationTests.Helper
 
             var venues = new RefDataBuilder().HearingVenues;
 
-            var person1 = new PersonBuilder(true).WithOrganisation().WithAddress().Build();
+            var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
@@ -202,12 +202,10 @@ namespace Bookings.IntegrationTests.Helper
             {
                 await using var db = new BookingsDbContext(_dbContextOptions);
                 var person = await db.Persons
-                    .Include(x => x.Address)
                     .Include(x => x.Organisation)
                     .SingleOrDefaultAsync(x => x.ContactEmail == personEmail);
 
                 if (person == null) return;
-                if(person.Address != null)db.Remove(person.Address);
                 if(person.Organisation != null)db.Remove(person.Organisation);
                 db.Remove(person);
 

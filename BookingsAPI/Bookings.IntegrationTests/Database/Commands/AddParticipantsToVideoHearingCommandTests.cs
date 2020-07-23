@@ -139,21 +139,20 @@ namespace Bookings.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_use_existing_representative_when_adding_to_video_hearing()
         {
-            var seededRepresentative = await SeedPerson(true, false);
+            var seededRepresentative = await SeedPerson(true);
             var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
             var personsListAfter = await GetPersonsInDb();
             personsListAfter.Count.Should().Be(personListBefore.Count);
 
             var existingPersonInDb = personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
             existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
-            existingPersonInDb.Address.Should().BeNull();
             CheckPersonDetails(existingPersonInDb, seededRepresentative);
         }
 
         [Test]
         public async Task Should_use_existing_individual_when_adding_to_video_hearing()
         {
-            var seededRepresentative = await SeedPerson(true, true);
+            var seededRepresentative = await SeedPerson(true);
             var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
             var personsListAfter = await GetPersonsInDb();
             personsListAfter.Count.Should().Be(personListBefore.Count);
@@ -162,8 +161,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             existingPersonInDb.Organisation.Should().NotBeNull();
             existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
             CheckPersonDetails(existingPersonInDb, seededRepresentative);
-            existingPersonInDb.Address.Should().NotBeNull();
-            CheckAddressDetails(existingPersonInDb.Address, seededRepresentative.Address);
+            
         }
 
         [Test]
@@ -250,32 +248,18 @@ namespace Bookings.IntegrationTests.Database.Commands
             existingPersonInDb.TelephoneNumber.Should().Be(seededPerson.TelephoneNumber);
         }
 
-        private void CheckAddressDetails(Address existingPersonAddressInDb, Address seededPersonAddress)
-        {
-            existingPersonAddressInDb.HouseNumber.Should().Be(seededPersonAddress.HouseNumber);
-            existingPersonAddressInDb.Street.Should().Be(seededPersonAddress.Street);
-            existingPersonAddressInDb.County.Should().Be(seededPersonAddress.County);
-            existingPersonAddressInDb.City.Should().Be(seededPersonAddress.City);
-            existingPersonAddressInDb.Postcode.Should().Be(seededPersonAddress.Postcode);
-        }
-
         private async Task<List<Person>> GetPersonsInDb()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             return await db.Persons
                 .Include(p => p.Organisation)
-                .Include(p => p.Address)
                 .ToListAsync();
         }
         
-        private async Task<Person> SeedPerson(bool withOrganisation = false, bool withAddress = false)
+        private async Task<Person> SeedPerson(bool withOrganisation = false)
         {
             var builder = new PersonBuilder(true);
             
-            if(withAddress)
-            {
-                builder.WithAddress();
-            }
             if (withOrganisation)
             {
                 builder.WithOrganisation();

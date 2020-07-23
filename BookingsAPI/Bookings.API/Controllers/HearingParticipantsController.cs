@@ -165,14 +165,6 @@ namespace Bookings.API.Controllers
 
             var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
 
-            var addressValidationResult = AddressValidationHelper.ValidateAddress(individualRoles, request.Participants);
-
-            if (!addressValidationResult.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(addressValidationResult.Errors);
-                return BadRequest(ModelState);
-            }
-
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
             var reprensentatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
 
@@ -325,18 +317,10 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            if (participant.HearingRole.UserRole.IsIndividual)
-            {
-                var addressValidationResult = new AddressValidation().Validate(request);
-                if (!addressValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(result.Errors);
-                    return BadRequest(ModelState);
-                }
-            }
-
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
+                var test = new RepresentativeValidation();
+                test.Validate(request);
                 var repValidationResult = new RepresentativeValidation().Validate(request);
                 if (!repValidationResult.IsValid)
                 {
@@ -345,14 +329,11 @@ namespace Bookings.API.Controllers
                 }
             }
 
-            var mapper = new UpdateParticipantRequestToNewAddressMapper();
-            var address = mapper.MapRequestToNewAddress(request);
-
             var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
             var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
 
             var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title,
-                request.DisplayName, request.TelephoneNumber, address,
+                request.DisplayName, request.TelephoneNumber,
                 request.OrganisationName, videoHearing, representative);
 
             await _commandHandler.Handle(updateParticipantCommand);

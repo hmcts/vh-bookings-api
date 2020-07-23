@@ -12,13 +12,11 @@ namespace Bookings.UnitTests.Validation
     public class ParticipantRequestValidationTests
     {
         private ParticipantRequestValidation _validator;
-        private AddressValidation _addressValidator;
-
+        
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             _validator = new ParticipantRequestValidation();
-            _addressValidator = new AddressValidation();
         }
 
 

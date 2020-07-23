@@ -116,25 +116,7 @@ namespace Bookings.IntegrationTests.Steps
                         request.HearingVenueName = "Random";
                         break;
                     }
-                case "address":
-
-                    {
-                        var individualRoles = Context.TestDataManager.GetIndividualHearingRoles;
-                        foreach (ParticipantRequest participantRequest in request.Participants)
-                        {
-                            if (individualRoles.Contains(participantRequest.HearingRoleName))
-                            {
-                                participantRequest.County = string.Empty;
-                                participantRequest.Street = string.Empty;
-                                participantRequest.City = string.Empty;
-                                participantRequest.HouseNumber = string.Empty;
-                                participantRequest.Postcode = string.Empty;
-                            }
-                        }
-
-
-                        break;
-                    }
+                
                 default: throw new ArgumentOutOfRangeException(invalidType, invalidType, null);
             }
             CreateTheNewHearingRequest(request);
@@ -529,14 +511,6 @@ namespace Bookings.IntegrationTests.Steps
                 participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.UserRoleName.Should().NotBeNullOrEmpty();
-                if (participant.UserRoleName.Equals("Individual"))
-                {
-                    participant.HouseNumber.Should().NotBeNullOrEmpty();
-                    participant.Street.Should().NotBeNullOrEmpty();
-                    participant.City.Should().NotBeNullOrEmpty();
-                    participant.County.Should().NotBeNullOrEmpty();
-                    participant.Postcode.Should().NotBeNullOrEmpty();
-                }
             }
 
             model.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);

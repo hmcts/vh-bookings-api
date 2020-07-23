@@ -118,16 +118,6 @@ Scenario: Hearing not deleted with a nonexistent hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NotFound and success status False
 
-Scenario: Hearing not created with an invalid address
-	Given I have a book a new hearing request with an invalid address
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-	And the error response message should contain 'HouseNumber is required'
-	And the error response message should also contain 'Street is required'
-	And the error response message should also contain 'City is required'
-	And the error response message should also contain 'County is required'
-	And the error response message should also contain 'Postcode is required'
-
 Scenario: Get a paged list of booked hearings
 	Given I have a request to the get booked hearings endpoint
 	When I send the request to the endpoint

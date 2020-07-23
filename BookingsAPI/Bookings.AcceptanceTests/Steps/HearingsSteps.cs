@@ -92,11 +92,6 @@ namespace Bookings.AcceptanceTests.Steps
         {
             expected.Should().BeEquivalentTo(actual, o =>
             {
-                o.Excluding(address => address.HouseNumber);
-                o.Excluding(address => address.Street);
-                o.Excluding(address => address.City);
-                o.Excluding(address => address.County);
-                o.Excluding(address => address.Postcode);
                 o.ExcludingMissingMembers();
                 return o;
             });
@@ -128,22 +123,6 @@ namespace Bookings.AcceptanceTests.Steps
                 participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.UserRoleName.Should().NotBeNullOrEmpty();
-
-                if (participant.UserRoleName.Equals("Individual"))
-                {
-                    participant.HouseNumber.Should().NotBeNullOrEmpty();
-                    participant.Street.Should().NotBeNullOrEmpty();
-                    participant.City.Should().NotBeNullOrEmpty();
-                    participant.County.Should().NotBeNullOrEmpty();
-                    participant.Postcode.Should().NotBeNullOrEmpty();
-                }
-
-                if (!participant.UserRoleName.Equals("Representative")) continue;
-                participant.HouseNumber.Should().BeNull();
-                participant.Street.Should().BeNull();
-                participant.City.Should().BeNull();
-                participant.County.Should().BeNull();
-                participant.Postcode.Should().BeNull();
             }
         }
 
@@ -275,22 +254,6 @@ namespace Bookings.AcceptanceTests.Steps
                     participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                     participant.Title.Should().NotBeNullOrEmpty();
                     participant.UserRoleName.Should().NotBeNullOrEmpty();
-
-                    if (participant.UserRoleName.Equals("Individual"))
-                    {
-                        participant.HouseNumber.Should().NotBeNullOrEmpty();
-                        participant.Street.Should().NotBeNullOrEmpty();
-                        participant.City.Should().NotBeNullOrEmpty();
-                        participant.County.Should().NotBeNullOrEmpty();
-                        participant.Postcode.Should().NotBeNullOrEmpty();
-                    }
-
-                    if (!participant.UserRoleName.Equals("Representative")) continue;
-                    participant.HouseNumber.Should().BeNull();
-                    participant.Street.Should().BeNull();
-                    participant.City.Should().BeNull();
-                    participant.County.Should().BeNull();
-                    participant.Postcode.Should().BeNull();
                 }
                 hearing.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
                 hearing.ScheduledDuration.Should().BePositive();

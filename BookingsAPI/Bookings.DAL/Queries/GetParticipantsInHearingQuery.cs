@@ -31,7 +31,6 @@ namespace Bookings.DAL.Queries
         public async Task<List<Participant>> Handle(GetParticipantsInHearingQuery query)
         {
             var hearing = await _context.VideoHearings
-                .Include("Participants.Person.Address")
                 .Include("Participants.Person.Organisation")
                 .Include("Participants.HearingRole.UserRole")
                 .Include("Participants.CaseRole")
