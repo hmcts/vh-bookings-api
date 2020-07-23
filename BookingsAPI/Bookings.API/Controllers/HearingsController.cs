@@ -298,22 +298,17 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var bookingStatus = Enum.IsDefined(typeof(BookingStatus), request.Status.ToString())
-                    ? Enum.Parse<BookingStatus>(request.Status.ToString(), true)
-                    : throw new Exception($"Could not find enum value: {nameof(UpdateBookingStatus)}.{request.Status} in the other enum: {nameof(BookingStatus)}");
+                var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString(), true);
+                await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
                 
                 switch (bookingStatus)
                 {
                     case BookingStatus.Created:
-                        await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
                         var queriedVideoHearing = await GetHearingToPublishAsync(hearingId);
                         await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing));
                         break;
                     case BookingStatus.Cancelled:
                         await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
-                        break;
-                    case BookingStatus.Failed:
-                        await UpdateHearingStatusAsync(hearingId, BookingStatus.Failed, request.UpdatedBy, request.CancelReason);
                         break;
                 }
 
