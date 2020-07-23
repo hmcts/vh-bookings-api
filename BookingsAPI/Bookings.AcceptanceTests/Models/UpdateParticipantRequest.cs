@@ -9,11 +9,6 @@
                 Title = "Mr",
                 DisplayName="Update Display Name",
                 TelephoneNumber="11112222333",
-                HouseNumber="Update 1",
-                Street="Update Street",
-                City="Update City",
-                County="Update County",
-                Postcode="ED1 5NR",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
                 Reference = "SolRef"

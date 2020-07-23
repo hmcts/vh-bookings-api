@@ -24,8 +24,8 @@ namespace Testing.Common.Builders.Domain
             defendantRepresentativeHearingRole.UserRole = new UserRole(6, "Representative");
             var defendantLipHearingRole = new HearingRole(4, "Defendant LIP");
             defendantLipHearingRole.UserRole = new UserRole(5, "Individual");
-            var person1 = new PersonBuilder(true).WithAddress().Build();
-            var person2 = new PersonBuilder(true).WithAddress().Build();
+            var person1 = new PersonBuilder(true).Build();
+            var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
 
             _individualParticipant1 = new Individual(person1, claimantLipHearingRole, claimantCaseRole);

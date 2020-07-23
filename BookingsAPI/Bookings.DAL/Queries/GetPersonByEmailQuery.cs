@@ -27,7 +27,6 @@ namespace Bookings.DAL.Queries
         public async Task<Person> Handle(GetPersonByContactEmailQuery query)
         {
             return await _context.Persons
-                .Include(x => x.Address)
                 .Include(x => x.Organisation)
                 .SingleOrDefaultAsync(x => x.ContactEmail == query.Email);   
             

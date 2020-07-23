@@ -22,11 +22,6 @@ namespace Bookings.AcceptanceTests.Models
                 .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.OrganisationName = $"{Faker.Company.Name()}")
-                .With(x => x.HouseNumber = $"{Faker.RandomNumber.Next(0, 999)}")
-                .With(x => x.Street = $"{Faker.Address.StreetName()}")
-                .With(x => x.Postcode = $"{Faker.Address.UkPostCode()}")
-                .With(x => x.City = $"{Faker.Address.City()}")
-                .With(x => x.County = $"{Faker.Address.UkCounty()}")
                 .Build().ToList();
 
             participants[0].CaseRoleName = "Claimant";

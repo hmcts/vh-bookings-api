@@ -25,12 +25,6 @@ Feature: Persons
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And person details should be retrieved
-	
-  Scenario: Get person address by a valid contact email
-    Given I have a get individual by contact email request with a valid contact email
-    When I send the request to the endpoint
-    Then the response should have the status OK and success status True
-    And person address should be retrieved
 
   Scenario: Get person by an invalid contact email
     Given I have a get person by contact email request with an invalid contact email

@@ -20,11 +20,6 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
         }
 
-        public Person(string title, string firstName, string lastName, string username, Address address) : this(title, firstName, lastName, username)
-        {
-            Address = address;
-        }
-
         public string Title { get; set; }
         public string FirstName { get; protected set; }
         public string LastName { get; protected set; }
@@ -34,16 +29,8 @@ namespace Bookings.Domain
         public string TelephoneNumber { get; set; }
         protected long? OrganisationId { get; set; }
         public virtual Organisation Organisation { get; set; }
-        protected long? AddressId { get; set; }
-        public virtual Address Address { get; private set; }
         public DateTime CreatedDate { get; private set; }
         public DateTime UpdatedDate { get; private set; }
-
-        public void UpdateAddress(Address address)
-        {
-            Address = address;
-            UpdatedDate = DateTime.UtcNow;
-        }
 
         public void UpdateOrganisation(Organisation organisation)
         {

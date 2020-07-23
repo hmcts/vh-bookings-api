@@ -119,22 +119,6 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
         }
 
         [Test]
-        public async Task Should_return_badrequest_for_given_invalid_participant_address()
-        {
-            var caseType = new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { CreateCaseAndHearingRoles(1, "Individual", "Individual", new List<string> { "Claimant LIP" }) } };
-            QueryHandler.Setup(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>())).ReturnsAsync(caseType);
-
-            request.Participants[0].Postcode = string.Empty;
-
-            var result = await Controller.AddParticipantsToHearing(hearingId, request);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Postcode", "Postcode is required");
-        }
-
-        [Test]
         public async Task Should_return_badrequest_for_given_invalid_representative_info()
         {
             request.Participants[0].Reference = string.Empty;
