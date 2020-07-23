@@ -36,12 +36,12 @@ namespace Bookings.DAL.Commands
 			"SET @anonymiseBeforeDate = (SELECT DATEADD(MONTH, @months, GETDATE())) " +
 
 			"DECLARE case_cursor CURSOR FOR " +
-			"select c.Id, p.Id from [dbo].[Hearing] h JOIN [dbo].[HearingCase] hc on h.Id = hc.HearingId JOIN [dbo].[Case] c on hc.CaseId = c.Id JOIN [dbo].[Participant] p on p.HearingId = h.Id " +
+			"select c.Id from [dbo].[Hearing] h JOIN [dbo].[HearingCase] hc on h.Id = hc.HearingId JOIN [dbo].[Case] c on hc.CaseId = c.Id " +
 			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
 
 			"OPEN case_cursor " +
 			"FETCH NEXT FROM case_cursor " +
-			"INTO @caseId, @participantId " +
+			"INTO @caseId " +
 
 			"WHILE @@FETCH_STATUS = 0 " +
 			"BEGIN " +
@@ -49,16 +49,34 @@ namespace Bookings.DAL.Commands
 
 				"UPDATE [dbo].[Case] SET [Name] = @randomString WHERE Id = @caseId " +
 
+				"FETCH NEXT FROM case_cursor " +
+				"INTO @caseId " +
+			"END " +
+			"CLOSE case_cursor; " +
+			"DEALLOCATE case_cursor; " +
+
+			"DECLARE participant_cursor CURSOR FOR " +
+			"select distinct p.Id from [dbo].[Hearing] h JOIN [dbo].[HearingCase] hc on h.Id = hc.HearingId JOIN [dbo].[Participant] p on p.HearingId = h.Id " +
+			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
+
+			"OPEN participant_cursor " +
+			"FETCH NEXT FROM participant_cursor " +
+			"INTO @participantId " +
+
+			"WHILE @@FETCH_STATUS = 0 " +
+			"BEGIN " +
+				"SELECT @randomString = SUBSTRING(CONVERT(varchar(40), NEWID()),0,9); " +
+
 				"UPDATE [dbo].[Participant] " +
 				"SET [DisplayName] = @randomString, " +
 					"[Representee] = CASE WHEN Representee = '' THEN '' WHEN Representee IS NULL THEN NULL ELSE @randomString END " +
 				"WHERE Id = @participantId " +
 
-				"FETCH NEXT FROM case_cursor " +
-				"INTO @caseId, @participantId " +
+				"FETCH NEXT FROM participant_cursor " +
+				"INTO @participantId " +
 			"END " +
-			"CLOSE case_cursor; " +
-			"DEALLOCATE case_cursor; " +
+			"CLOSE participant_cursor; " +
+			"DEALLOCATE participant_cursor; " +
 
 			"DECLARE participant_cursor CURSOR FOR " +
 			"SELECT pr.Id, pr.OrganisationId " +
@@ -67,6 +85,53 @@ namespace Bookings.DAL.Commands
 			"JOIN [dbo].[Person] pr on pr.Id = p.PersonId " +
 			"LEFT JOIN [dbo].[Organisation] o on o.Id = pr.OrganisationId " +
 			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
+			"AND pr.Username NOT LIKE '%JUDGE%' " +
+			"AND pr.Username NOT LIKE '%TaylorHousecourt%' " +
+			"AND pr.Username NOT LIKE '%ManchesterCFJCcourt%' " +
+			"AND pr.Username NOT LIKE '%BirminghamCFJCcourt%' " +
+			"AND pr.Username NOT LIKE '%ManchesterCFJCDDJretiringroom%' " +
+			"AND pr.Username NOT LIKE '%ManchesterCFJCcourtGen%' " +
+			"AND pr.Username NOT LIKE '%BirminghamCFJCcourtGen%' " +
+			"AND pr.Username NOT LIKE '%BirminghamCJC.Judge%' " +
+			"AND pr.Username NOT LIKE '%holdingroom%' " +
+			"AND pr.Username NOT LIKE '%Property.Judge%' " +
+			"AND pr.Username NOT LIKE '%TaylorHousecourt%' " +
+			"AND pr.Username NOT LIKE '%TaylorHousecourtGen%' " +
+
+			"AND pr.Username NOT LIKE '%Automation01%' " +
+			"AND pr.Username NOT LIKE '%auto.%' " +
+			"AND pr.Username NOT LIKE '%UserApiTestUser%' " +
+			"AND pr.Username NOT LIKE '%Manual0%' " +
+			"AND pr.Username NOT LIKE '%performance%' " +
+			"AND pr.Username NOT LIKE '%atif.%' " +
+			"AND pr.Username NOT LIKE '%y''test.%' " +
+			"AND pr.Username NOT LIKE 'ferdinand.porsche%' " +
+			"AND pr.Username NOT LIKE 'enzo.ferrari%' " +
+			"AND pr.Username NOT LIKE 'mike.tyson%' " +
+			"AND pr.Username NOT LIKE 'george.foreman%' " +
+			"AND pr.Username NOT LIKE 'rocky.marciano%' " +
+			"AND pr.Username NOT LIKE 'cassius.clay%' " +
+			"AND pr.Username NOT LIKE 'george.clinton%' " +
+			"AND pr.Username NOT LIKE 'metalface.doom%' " +
+			"AND pr.Username NOT LIKE 'karl.benz%' " +
+			"AND pr.Username NOT LIKE 'henry.ford%' " +
+			"AND pr.Username NOT LIKE 'feuer.frei%' " +
+			"AND pr.Username NOT LIKE 'wasser.kalt%' " +
+			"AND pr.Username NOT LIKE 'dan.brown%' " +
+			"AND pr.Username NOT LIKE 'tom.clancy%' " +
+			"AND pr.Username NOT LIKE 'stephen.king%' " +
+			"AND pr.Username NOT LIKE 'Manual01VideoHearingsOfficer01%' " +
+			"AND pr.Username NOT LIKE 'sue.burke%' " +
+			"AND pr.Username NOT LIKE 'yeliz.admin%' " +
+			"AND pr.Username NOT LIKE 'yeliz.judge%' " +
+			"AND pr.Username NOT LIKE 'yeliz.judge2%' " +
+			"AND pr.Username NOT LIKE 'one.three%' " +
+			"AND pr.Username NOT LIKE 'one.four%' " +
+			"AND pr.Username NOT LIKE 'michael.jordan%' " +
+			"AND pr.Username NOT LIKE 'scottie.pippen%' " +
+			"AND pr.Username NOT LIKE 'steve.kerr%' " +
+			"AND pr.Username NOT LIKE 'dennis.rodman%' " +
+
 			"and pr.Id not IN ( " +
 				"SELECT pr.Id " +
 				"FROM [dbo].[Participant] p  " +
@@ -86,7 +151,7 @@ namespace Bookings.DAL.Commands
 				"SET [FirstName] = @randomString, " +
 					"[LastName] = @randomString, " +
 					"[MiddleNames] = @randomString, " +
-					"[Username] = @randomString + '@hearings.reform.hmcts.net', " +
+					"[Username] = @randomString + '@email.net', " +
 					"[ContactEmail] = @randomString + '@email.com', " +
 					"[TelephoneNumber] = '00000000000' " +
 				"WHERE Id = @personId " +

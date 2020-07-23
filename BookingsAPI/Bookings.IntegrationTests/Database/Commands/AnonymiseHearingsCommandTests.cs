@@ -38,7 +38,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var command = new AnonymiseHearingsCommand();
             await _commandHandler.Handle(command);
-            command.RecordsUpdated.Should().Be(21);
+            command.RecordsUpdated.Should().Be(11);
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().NotBeNull();
 
