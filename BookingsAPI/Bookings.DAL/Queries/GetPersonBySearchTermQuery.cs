@@ -29,7 +29,6 @@ namespace Bookings.DAL.Queries
         public async Task<List<Person>> Handle(GetPersonBySearchTermQuery query)
         {
             return await _context.Persons
-                .Include(x => x.Address)
                 .Include(x => x.Organisation)
                 .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLower()))
                 .ToListAsync();

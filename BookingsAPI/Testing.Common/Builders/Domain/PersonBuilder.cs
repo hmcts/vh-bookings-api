@@ -2,7 +2,6 @@
 using Faker;
 using FizzWare.NBuilder;
 using Bookings.Domain;
-using Address = Bookings.Domain.Address;
 
 namespace Testing.Common.Builders.Domain
 {
@@ -16,7 +15,6 @@ namespace Testing.Common.Builders.Domain
             _settings = new BuilderSettings();
             if (ignoreId)
             {
-                _settings.DisablePropertyNamingFor<Address, long>(x => x.Id);
                 _settings.DisablePropertyNamingFor<Organisation, long>(x => x.Id);
                 
             }
@@ -33,21 +31,7 @@ namespace Testing.Common.Builders.Domain
                     new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", userId)).With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
                 .Build();
         }
-
-        public PersonBuilder WithAddress()
-        {
-           var address = new Builder(_settings).CreateNew<Address>()
-                .WithFactory(() => new Address())
-                .With(x => x.Street = Faker.Address.StreetAddress())
-                .With(x => x.Postcode = Faker.Address.UkPostCode())
-                .With(x => x.City = Faker.Address.City())
-                .With(x => x.County = Faker.Address.Country())
-                .With(x => x.HouseNumber = Faker.Address.StreetAddress())
-                .Build();
-           _person.UpdateAddress(address);
-            return this;
-        }
-        
+       
         public PersonBuilder WithOrganisation()
         {
             _person.Organisation = new Builder(_settings).CreateNew<Organisation>()

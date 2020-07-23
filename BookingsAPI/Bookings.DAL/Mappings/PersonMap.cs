@@ -23,7 +23,6 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.CreatedDate);
             builder.Property(x => x.UpdatedDate);
 
-            builder.Property("AddressId").IsRequired(false);
             builder.Property("OrganisationId").IsRequired(false);
         }
     }

@@ -2,7 +2,6 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Requests.Enums;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Extensions;
-using Bookings.API.Helpers;
 using Bookings.API.Mappings;
 using Bookings.API.Validations;
 using Bookings.DAL.Commands;
@@ -127,14 +126,6 @@ namespace Bookings.API.Controllers
             }
 
             var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
-
-            var addressValidationResult = AddressValidationHelper.ValidateAddress(individualRoles, request.Participants);
-
-            if (!addressValidationResult.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(addressValidationResult.Errors);
-                return BadRequest(ModelState);
-            }
 
             var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
             if (hearingType == null)

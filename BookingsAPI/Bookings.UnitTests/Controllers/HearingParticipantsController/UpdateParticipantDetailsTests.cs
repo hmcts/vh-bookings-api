@@ -27,11 +27,6 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
                 Title = "Mr",
                 DisplayName = "Update Display Name",
                 TelephoneNumber = "11112222333",
-                HouseNumber = "Update 1",
-                Street = "Update Street",
-                City = "Update City",
-                County = "Update County",
-                Postcode = "ED1 5NR",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
                 Reference = "SolRef"
@@ -118,23 +113,6 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
             var objectResult = (OkObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.Once);
-        }
-
-        [Test]
-        public async Task Should_return_badrequest_for_given_request_with_invalid_address()
-        {
-            var hearing = GetVideoHearing();
-            hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Individual"), };
-            request.Street = string.Empty;
-            request.Postcode = string.Empty;
-            participantId = hearing.Participants[0].Id;
-
-            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
-            var result = await Controller.UpdateParticipantDetails(hearingId, participantId, request);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
         [Test]
