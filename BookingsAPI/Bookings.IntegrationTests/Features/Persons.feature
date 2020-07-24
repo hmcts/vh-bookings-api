@@ -64,3 +64,10 @@ Feature: Persons
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And suitability answers retrieved should 'be empty'
+
+Scenario: Get a list od usernames for hearings older than 3 months
+	Given I have an hearing older than 3 months
+	And I have a request to get the usernames for old hearings
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And a list of hearing usernames should be retrieved

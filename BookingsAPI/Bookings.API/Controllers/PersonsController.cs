@@ -5,6 +5,7 @@ using Bookings.API.Validations;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -129,6 +130,21 @@ namespace Bookings.API.Controllers
             var personSuitabilityAnswers = hearings.Select(hearing => BuildResponse(hearing, username)).Where(s => s != null).ToList();
 
             return Ok(personSuitabilityAnswers);
+        }
+
+        /// <summary>
+        /// Get list of person from the old hearings
+        /// </summary>
+        /// <returns>list of usernames</returns>
+        [HttpGet("userswithclosedhearings", Name = "GetPersonByClosedHearings")]
+        [SwaggerOperation(OperationId = "GetPersonByClosedHearings")]
+        [ProducesResponseType(typeof(UserWithClosedConferencesResponse), (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPersonByClosedHearings()
+        {
+            var query = new GetPersonsByClosedHearingsQuery();
+            var person = await _queryHandler.Handle<GetPersonsByClosedHearingsQuery, List<string>>(query);
+            return Ok(new UserWithClosedConferencesResponse { Username = person });
         }
 
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)

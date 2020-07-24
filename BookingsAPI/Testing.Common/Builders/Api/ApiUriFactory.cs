@@ -57,6 +57,7 @@ namespace Testing.Common.Builders.Api
             public static string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
             public static string PostPersonBySearchTerm => $"{ApiRoot}";
             public static string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
+            public static string GetPersonByClosedHearings() => $"{ApiRoot}/userswithclosedhearings";
         }
 
         public static class SuitabilityAnswerEndpoints
