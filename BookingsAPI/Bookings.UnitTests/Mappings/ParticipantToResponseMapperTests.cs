@@ -32,7 +32,6 @@ namespace Bookings.UnitTests.Mappings
             
             AssertParticipantCommonDetails(response, judge, caseRole, hearingRole);
             AssertRepresentativeResponse(response, null);
-            AssertAddressMapping(response, null);
             response.Organisation.Should().BeNullOrWhiteSpace();
             
         }
@@ -43,7 +42,7 @@ namespace Bookings.UnitTests.Mappings
             var caseRole = new CaseRole(1, "Claimant");
             var hearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(5, "Individual")};
 
-            var person = new PersonBuilder().WithAddress().WithOrganisation().Build();
+            var person = new PersonBuilder().WithOrganisation().Build();
             var individual = new Individual(person, hearingRole, caseRole)
             {
                 DisplayName = "I. Vidual",
@@ -56,7 +55,6 @@ namespace Bookings.UnitTests.Mappings
 
             AssertParticipantCommonDetails(response, individual, caseRole, hearingRole);
             AssertRepresentativeResponse(response, null);
-            AssertAddressMapping(response, person);
             response.Organisation.Should().Be(person.Organisation.Name);
         }
         
@@ -81,7 +79,6 @@ namespace Bookings.UnitTests.Mappings
 
             AssertParticipantCommonDetails(response, representative, caseRole, hearingRole);
             AssertRepresentativeResponse(response, representative);
-            AssertAddressMapping(response, null);
             response.Organisation.Should().Be(person.Organisation.Name);
         }
 
@@ -104,27 +101,6 @@ namespace Bookings.UnitTests.Mappings
             response.ContactEmail.Should().Be(person.ContactEmail);
             response.TelephoneNumber.Should().Be(person.TelephoneNumber);
             response.Username.Should().Be(person.Username);
-        }
-
-        private static void AssertAddressMapping(ParticipantResponse response, Person person)
-        {
-            if (person == null)
-            {
-                response.HouseNumber.Should().BeNullOrWhiteSpace();
-                response.Street.Should().BeNullOrWhiteSpace();
-                response.Postcode.Should().BeNullOrWhiteSpace();
-                response.City.Should().BeNullOrWhiteSpace();
-                response.County.Should().BeNullOrWhiteSpace();
-            }
-            else
-            {
-                response.HouseNumber.Should().Be(person.Address.HouseNumber);
-                response.Street.Should().Be(person.Address.Street);
-                response.Postcode.Should().Be(person.Address.Postcode);
-                response.City.Should().Be(person.Address.City);
-                response.County.Should().Be(person.Address.County);
-                
-            }
         }
 
         private static void AssertRepresentativeResponse(ParticipantResponse response, Representative representative)

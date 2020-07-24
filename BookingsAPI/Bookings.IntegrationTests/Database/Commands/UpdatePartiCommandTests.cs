@@ -40,22 +40,9 @@ namespace Bookings.IntegrationTests.Database.Commands
             var title = individualParticipant.Person.Title + editPrefix;
             var displayName = individualParticipant.DisplayName + editPrefix;
             var telephoneNumber = "11112222333";
-            var houseNumber = individualParticipant.Person.Address?.HouseNumber + editPrefix;
-            var street = individualParticipant.Person.Address?.Street + editPrefix;
-            var postcode = individualParticipant.Person.Address?.Postcode + editPrefix;
-            var city = "City" + editPrefix;
-            var county = "County" + editPrefix;
             var organisationName = "Organisation" + editPrefix;
-            NewAddress address = new NewAddress()
-            {
-                HouseNumber = houseNumber,
-                Street = street,
-                City = city,
-                County = county,
-                Postcode = postcode
-            };
-            
-            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, null);
+
+            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, organisationName, seededHearing, null);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -65,9 +52,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedIndividual.Person.Title.Should().Be(title);
             updatedIndividual.DisplayName.Should().Be(displayName);
             updatedIndividual.Person.TelephoneNumber.Should().Be(telephoneNumber);
-            updatedIndividual.Person.Address.HouseNumber.Should().Be(houseNumber);
-            updatedIndividual.Person.Address.Street.Should().Be(street);
-            updatedIndividual.Person.Address.Postcode.Should().Be(postcode);
         }
 
         [Test]
@@ -83,20 +67,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var title = representativeParticipant.Person.Title + editPrefix;
             var displayName = representativeParticipant.DisplayName + editPrefix;
             var telephoneNumber = "11112222333";
-            var houseNumber = "HouseNumber" + editPrefix;
-            var street = "Street" + editPrefix;
-            var postcode = "ED1 5NR";
-            var city = "City" + editPrefix;
-            var county = "County" + editPrefix;
             var organisationName = "Organisation" + editPrefix;
-            NewAddress address = new NewAddress()
-            {
-                HouseNumber = houseNumber,
-                Street = street,
-                City = city,
-                County = county,
-                Postcode = postcode
-            };
+            
             const string reference = "Marvel Comics Division";
             var representee = "Iron Man Inc.";
             RepresentativeInformation repInfo = new RepresentativeInformation()
@@ -104,7 +76,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 Reference = reference,
                 Representee = representee
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, address, organisationName, seededHearing, repInfo);
+            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, seededHearing, repInfo);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedRepresentative=(Representative) updateParticipantCommand.UpdatedParticipant;
@@ -114,13 +86,10 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedRepresentative.Person.Title.Should().Be(title);
             updatedRepresentative.DisplayName.Should().Be(displayName);
             updatedRepresentative.Person.TelephoneNumber.Should().Be(telephoneNumber);
-            updatedRepresentative.Person.Address.Should().BeNull();
             updatedRepresentative.Person.Organisation.Should().NotBeNull();
             updatedRepresentative.Person.Organisation.Name.Should().Be(organisationName);
             updatedRepresentative.Reference.Should().Be(repInfo.Reference);
             updatedRepresentative.Representee.Should().Be(repInfo.Representee);
-
-
         }
 
         [TearDown]

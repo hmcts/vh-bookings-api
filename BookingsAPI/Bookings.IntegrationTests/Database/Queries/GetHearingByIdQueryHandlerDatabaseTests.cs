@@ -54,15 +54,6 @@ namespace Bookings.IntegrationTests.Database.Queries
             hearing.HearingRoomName.Should().NotBeEmpty();
             hearing.OtherInformation.Should().NotBeEmpty();
             hearing.CreatedBy.Should().NotBeNullOrEmpty();
-
-            foreach (var individual in individuals)
-            {
-                var address = individual.Person.Address;
-                address.Should().NotBeNull();
-                address.HouseNumber.Should().NotBeNullOrEmpty();
-                address.Street.Should().NotBeNullOrEmpty();
-                address.Postcode.Should().NotBeNullOrEmpty();
-            }
         }
     }
 }

@@ -78,30 +78,5 @@ namespace Bookings.Api.Contract.Responses
         /// Gets or sets the person name that Representative represents.
         /// </summary>
         public string Representee { get; set; }
-
-        /// <summary>
-        /// House number of an Individual
-        /// </summary>
-        public string HouseNumber { get; set; }
-
-        /// <summary>
-        /// Street number of an Individual
-        /// </summary>
-        public string Street { get; set; }
-
-        /// <summary>
-        /// Postcode of an Individual
-        /// </summary>
-        public string Postcode { get; set; }
-
-        /// <summary>
-        /// City/Town of an Individual
-        /// </summary>
-        public string City { get; set; }
-
-        /// <summary>
-        /// County of an Individual
-        /// </summary>
-        public string County { get; set; }
     }
 }

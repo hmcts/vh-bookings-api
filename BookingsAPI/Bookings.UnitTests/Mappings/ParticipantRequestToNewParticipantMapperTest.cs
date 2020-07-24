@@ -67,32 +67,6 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
-        public void Should_map_and_return_newparticipant_with_address_and_organistaion()
-        {
-            var request = new ParticipantRequest
-            {
-                Title = "Mr",
-                FirstName = "Test",
-                LastName = "Tester",
-                Username = "TestTester",
-                CaseRoleName = "Claimant",
-                HearingRoleName = "Representative",
-                HouseNumber = "123A",
-                Street = "Test Street",
-                Postcode = "SW1V 1AB",
-                City = "Westminister",
-                County = "London"
-            };
-
-            var newParticipant = new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType);
-            newParticipant.Should().NotBeNull();
-            var person = newParticipant.Person;
-            person.Should().NotBeNull();
-            person.Address.Should().NotBeNull();
-            person.Organisation.Should().BeNull();
-        }
-
-        [Test]
         public void Should_map_and_return_newparticipant_with_organistaion()
         {
             var request = new ParticipantRequest
@@ -110,7 +84,6 @@ namespace Bookings.UnitTests.Mappings
             newParticipant.Should().NotBeNull();
             var person = newParticipant.Person;
             person.Should().NotBeNull();
-            person.Address.Should().BeNull();
             person.Organisation.Should().NotBeNull();
         }
     }

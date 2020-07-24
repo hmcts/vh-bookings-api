@@ -21,11 +21,6 @@ namespace Bookings.API.Mappings
                 Username = participant.Person.Username,
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
-                HouseNumber = participant.Person.Address?.HouseNumber,
-                Street = participant.Person.Address?.Street,
-                City = participant.Person.Address?.City,
-                County = participant.Person.Address?.County,
-                Postcode = participant.Person.Address?.Postcode,
                 Organisation = participant.Person.Organisation?.Name
                 
             };

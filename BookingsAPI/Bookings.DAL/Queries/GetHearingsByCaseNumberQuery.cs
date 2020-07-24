@@ -32,7 +32,6 @@ namespace Bookings.DAL.Queries
             var caseNumber  = query.CaseNumber.ToLower().Trim();
             return  await _context.VideoHearings
                 .Include("Participants.Person")
-                .Include("Participants.Person.Address")
                 .Include("HearingCases.Case")
                 .Include("Participants.Person.Organisation")
                 .Include(x => x.CaseType)

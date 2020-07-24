@@ -137,22 +137,7 @@ namespace Bookings.IntegrationTests.Steps
             model.Username.Should().NotBeNullOrEmpty();
         }
 
-        [Then(@"person address should be retrieved")]
-        public async Task ThenPersonAddressShouldBeRetrieved()
-        {
-            var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
-            model.Should().NotBeNull();
-            model.Organisation.Should().NotBeNullOrEmpty();
-            model.Id.Should().NotBeEmpty();
-            model.HouseNumber.Should().NotBeNullOrEmpty();
-            model.Street.Should().NotBeNullOrEmpty();
-            model.City.Should().NotBeNullOrEmpty();
-            model.County.Should().NotBeNullOrEmpty();
-            model.Postcode.Should().NotBeNullOrEmpty();
-        }
-
-
+        
         [Then(@"persons details should be retrieved")]
         public async Task ThenPersonsDetailsShouldBeRetrieved()
         {
