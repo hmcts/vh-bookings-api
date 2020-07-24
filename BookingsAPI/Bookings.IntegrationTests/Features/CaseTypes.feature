@@ -10,23 +10,23 @@ Scenario: Get available case types
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And a list of case types should be contain
-	| CaseTypeName              | HearingTypeName                                                                                                   |
-	| Civil Money Claims        | Application to Set Judgment Aside,First Application,Directions Hearing,Case Management Hearing,Final Hearing      |
-	| Financial Remedy          | First Directions Appointment,First Application,Directions Hearing,Case Management Hearing,Hearing,Final Hearing   |
-	| Generic                   | Hearing                                                                                                           |
-	| Children Act              | Hearing                                                                                                           |
-	| Tax                       | First Hearing,Substantive Hearing,Case Management,Directions Hearing,Hearing,Final Hearing,Basic,Standard,Complex |
-	| Family Law Act            | Hearing                                                                                                           |
-	| Tribunal                  | Hearing                                                                                                           |
-	| Civil                     | Fast Track Trial                                                                                                  |
-	| Land Registration         | Case Management,Substantive hearing,Mediation                                                                     |
-	| Housing Act               | Case Management,Substantive hearing,Mediation                                                                     |
-	| Housing & Planning Act    | Case Management,Substantive hearing,Mediation                                                                     |
-	| Leasehold Enfranchisement | Case Management,Substantive hearing,Mediation                                                                     |
-	| Leasehold Management      | Case Management,Substantive hearing,Mediation                                                                     |
-	| Park Homes                | Case Management,Substantive hearing,Mediation                                                                     |
-	| Rents                     | Case Management,Substantive hearing,Mediation                                                                     |
-	| Right to buy              | Case Management,Substantive hearing,Mediation                                                                     |
+	| CaseTypeName              | HearingTypeName                                                                                                                           |
+	| Civil Money Claims        | Application to Set Judgment Aside,First Application,Directions Hearing,Case Management Hearing,Final Hearing                              |
+	| Financial Remedy          | First Directions Appointment,First Application,Directions Hearing,Case Management Hearing,Hearing,Final Hearing                           |
+	| Generic                   | Hearing                                                                                                                                   |
+	| Children Act              | Hearing                                                                                                                                   |
+	| Tax                       | First Hearing,Substantive Hearing,Case Management,Directions Hearing,Hearing,Final Hearing,Basic,Standard,Complex,Schedule 36 Application |
+	| Family Law Act            | Hearing                                                                                                                                   |
+	| Tribunal                  | Hearing                                                                                                                                   |
+	| Civil                     | Fast Track Trial                                                                                                                          |
+	| Land Registration         | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Housing Act               | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Housing & Planning Act    | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Leasehold Enfranchisement | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Leasehold Management      | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Park Homes                | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Rents                     | Case Management,Substantive hearing,Mediation                                                                                             |
+	| Right to buy              | Case Management,Substantive hearing,Mediation                                                                                             |
 
 
 Scenario: Get case roles for a case type with nonexistent case type
