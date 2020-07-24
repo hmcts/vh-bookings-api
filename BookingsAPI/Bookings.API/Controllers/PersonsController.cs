@@ -5,7 +5,6 @@ using Bookings.API.Validations;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -139,7 +138,6 @@ namespace Bookings.API.Controllers
         [HttpGet("userswithclosedhearings", Name = "GetPersonByClosedHearings")]
         [SwaggerOperation(OperationId = "GetPersonByClosedHearings")]
         [ProducesResponseType(typeof(UserWithClosedConferencesResponse), (int)HttpStatusCode.OK)]
-        [AllowAnonymous]
         public async Task<IActionResult> GetPersonByClosedHearings()
         {
             var query = new GetPersonsByClosedHearingsQuery();
