@@ -35,6 +35,8 @@ namespace Bookings.API.Mappings
                 CreatedDate = videoHearing.CreatedDate,
                 UpdatedBy = videoHearing.UpdatedBy,
                 UpdatedDate = videoHearing.UpdatedDate,
+                ConfirmedBy = videoHearing.ConfirmedBy,
+                ConfirmedDate = videoHearing.ConfirmedDate,
                 Status = videoHearing.Status,
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,

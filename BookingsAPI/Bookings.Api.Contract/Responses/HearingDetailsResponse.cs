@@ -79,6 +79,16 @@ namespace Bookings.Api.Contract.Responses
         public DateTime UpdatedDate { get; set; }
 
         /// <summary>
+        ///     The VH admin username that confirmed the hearing
+        /// </summary>
+        public string ConfirmedBy { get; set; }
+
+        /// <summary>
+        ///     The date and time when the hearing was confirmed
+        /// </summary>
+        public DateTime? ConfirmedDate { get; set; }
+
+        /// <summary>
         /// Gets or sets the booking status of the hearing
         /// </summary>
         public BookingStatus Status { get; set; }
