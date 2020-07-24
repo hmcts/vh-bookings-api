@@ -196,6 +196,13 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingStatusRequest);
         }
 
+        [When(@"I have a failed confirmation hearing request with a valid hearing id")]
+        public void GivenIHaveAFailedConfirmationHearingRequestWithAValidHearingId()
+        {
+            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest(UpdateBookingStatus.Failed);
+            _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingStatusRequest);
+        }
+
         [Given(@"I have a created hearing request with a valid hearing id")]
         public void GivenIHaveACreatedHearingRequestWithAValidHearingId()
         {
@@ -203,25 +210,14 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingStatusRequest);
         }
 
-        [Then(@"hearing should be created")]
-        public void ThenHearingShouldBeCreated()
+        [Then(@"hearing should be (.*)")]
+        public void ThenHearingShouldBe(Domain.Enumerations.BookingStatus status)
         {
             _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
-            model.Status.Should().Be(Domain.Enumerations.BookingStatus.Created);
-        }
-
-        [Then(@"hearing should be cancelled")]
-        public void ThenHearingShouldBeCancelled()
-        {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
-            _context.Response = _context.Client().Execute(_context.Request);
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
-            model.UpdatedBy.Should().NotBeNullOrEmpty();
-            model.Status.Should().Be(Domain.Enumerations.BookingStatus.Cancelled);
-            model.CancelReason.Should().NotBeNullOrWhiteSpace();
+            model.Status.Should().Be(status);
         }
 
         [Then(@"a list of hearing details should be retrieved")]
