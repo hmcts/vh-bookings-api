@@ -298,24 +298,17 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a (.*) hearing cancellation request")]
         public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.TestData.NewHearingId = seededHearing.Id;
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                    _hearingId = seededHearing.Id;
-                    break;
-                case Scenario.Invalid:
-                    _hearingId = Guid.Empty;
-                    break;
-                case Scenario.Nonexistent:
-                    _hearingId = Guid.NewGuid();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
+            await SeedHearingForScenarioAsync(scenario);
+
             UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
+        }
+
+        [Given(@"I have a (.*) hearing failed confirmation request")]
+        public async Task GivenIHaveAHearingFailedConfirmationRequest(Scenario scenario)
+        {
+            await SeedHearingForScenarioAsync(scenario);
+
+            UpdateTheHearingStatus(UpdateBookingStatus.Failed);
         }
 
         [Then(@"hearing details should be retrieved")]
@@ -462,6 +455,27 @@ namespace Bookings.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName); 
         }
 
+        private async Task SeedHearingForScenarioAsync(Scenario scenario)
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.TestData.NewHearingId = seededHearing.Id;
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    break;
+                case Scenario.Invalid:
+                    _hearingId = Guid.Empty;
+                    break;
+                case Scenario.Nonexistent:
+                    _hearingId = Guid.NewGuid();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+        }
+
         private void ThenHearingBookingStatusIs(BookingStatus status)
         {
             Hearing hearingFromDb;
@@ -481,6 +495,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 UpdateBookingStatus.Created => BookingStatus.Created,
                 UpdateBookingStatus.Cancelled => BookingStatus.Cancelled,
+                UpdateBookingStatus.Failed => BookingStatus.Failed,
                 _ => throw new ArgumentException("Invalid booking status type")
             };
         }
