@@ -18,6 +18,8 @@ namespace Bookings.UnitTests.Domain.Hearing
             hearing.UpdateStatus(BookingStatus.Cancelled, "testuser", "cancel reason");
             hearing.UpdatedDate.Should().BeAfter(updatedDate);
             hearing.Status.Should().Be(BookingStatus.Cancelled);
+            hearing.ConfirmedBy.Should().BeNull();
+            hearing.ConfirmedDate.Should().BeNull();
         }
 
         [Test]
@@ -90,6 +92,19 @@ namespace Bookings.UnitTests.Domain.Hearing
             Action action = () => hearing.UpdateStatus(newStatus, "user", null);
             action.Should().Throw<ArgumentNullException>();
             hearing.Status.Should().Be(BookingStatus.Booked);
+        }
+
+        [Test]
+        public void Should_update_hearing_status_to_created()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var updatedDate = hearing.UpdatedDate;
+            var updatedBy = "testuser";
+            hearing.UpdateStatus(BookingStatus.Created, updatedBy, "");
+            hearing.UpdatedDate.Should().BeAfter(updatedDate);
+            hearing.Status.Should().Be(BookingStatus.Created);
+            hearing.ConfirmedBy.Should().Be(updatedBy);
+            hearing.ConfirmedDate.Should().NotBeNull();
         }
     }
 }
