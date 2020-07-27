@@ -39,8 +39,7 @@ namespace Bookings.DAL.Queries
                 .Where(h => h.Hearing.ScheduledDateTime < cutOffDate)
                 .Where(p => !personsInFutureHearings.Contains(p.Person.Username))
 
-                .Where(p => !p.Person.Username.Contains("Manual"))
-                .Where(p => !p.Person.Username.Contains("Automation"))
+                .Where(p => !p.Person.Username.Contains("Automation0"))
                 .Where(p => !p.Person.Username.Contains("Birmingham"))
                 .Where(p => !p.Person.Username.Contains("Manchester"))
                 .Where(p => !p.Person.Username.Contains("TaylorHouse"))
