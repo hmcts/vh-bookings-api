@@ -121,7 +121,7 @@ namespace Bookings.UnitTests.Controllers.Persons
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             var response = (UserWithClosedConferencesResponse)(objectResult.Value);
-            response.Username.Count.Should().Be(3);
+            response.Usernames.Count.Should().Be(3);
             _queryHandlerMock
                 .Verify(x => x.Handle<GetPersonsByClosedHearingsQuery, List<string>>(It.IsAny<GetPersonsByClosedHearingsQuery>()), Times.Once);
         }

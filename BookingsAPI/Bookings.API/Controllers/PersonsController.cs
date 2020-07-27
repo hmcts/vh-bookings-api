@@ -142,7 +142,7 @@ namespace Bookings.API.Controllers
         {
             var query = new GetPersonsByClosedHearingsQuery();
             var person = await _queryHandler.Handle<GetPersonsByClosedHearingsQuery, List<string>>(query);
-            return Ok(new UserWithClosedConferencesResponse { Username = person });
+            return Ok(new UserWithClosedConferencesResponse { Usernames = person });
         }
 
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)

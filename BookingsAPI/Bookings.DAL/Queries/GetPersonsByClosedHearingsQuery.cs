@@ -1,5 +1,6 @@
 ﻿using Bookings.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,24 +40,19 @@ namespace Bookings.DAL.Queries
                 .Where(p => !personsInFutureHearings.Contains(p.Person.Username))
 
                 .Where(p => !p.Person.Username.Contains("Manual"))
+                .Where(p => !p.Person.Username.Contains("Automation"))
+                .Where(p => !p.Person.Username.Contains("Birmingham"))
+                .Where(p => !p.Person.Username.Contains("Manchester"))
+                .Where(p => !p.Person.Username.Contains("TaylorHouse"))
                 .Where(p => !p.Person.Username.Contains("JUDGE"))
-                .Where(p => !p.Person.Username.Contains("TaylorHousecourt"))
-                .Where(p => !p.Person.Username.Contains("ManchesterCFJCcourt"))
-                .Where(p => !p.Person.Username.Contains("BirminghamCFJCcourt"))
-                .Where(p => !p.Person.Username.Contains("ManchesterCFJCDDJretiringroom"))
-                .Where(p => !p.Person.Username.Contains("ManchesterCFJCcourtGen"))
-                .Where(p => !p.Person.Username.Contains("BirminghamCFJCcourtGen"))
-                .Where(p => !p.Person.Username.Contains("BirminghamCJC.Judge"))
+                .Where(p => !p.Person.Username.Contains("auto"))
+                .Where(p => !p.Person.Username.Contains("performance"))
+                .Where(p => !p.Person.Username.Contains("UserApiTestUser"))
                 .Where(p => !p.Person.Username.Contains("holdingroom"))
                 .Where(p => !p.Person.Username.Contains("Property.Judge"))
-                .Where(p => !p.Person.Username.Contains("TaylorHousecourt"))
-                .Where(p => !p.Person.Username.Contains("TaylorHousecourtGen"))
-                .Where(p => !p.Person.Username.Contains("Automation01"))
-                .Where(p => !p.Person.Username.Contains("auto."))
-                .Where(p => !p.Person.Username.Contains("UserApiTestUser"))
-                .Where(p => !p.Person.Username.Contains("Manual0"))
-                .Where(p => !p.Person.Username.Contains("performance"))
-                .Where(p => !p.Person.Username.Contains("atif."))
+
+                .Where(p => !p.Person.Username.Contains("atif"))
+                .Where(p => !p.Person.Username.Contains("yeliz"))
                 .Where(p => !p.Person.Username.Contains("y''test."))
                 .Where(p => !p.Person.Username.Contains("ferdinand.porsche"))
                 .Where(p => !p.Person.Username.Contains("enzo.ferrari"))
@@ -73,17 +69,17 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("dan.brown"))
                 .Where(p => !p.Person.Username.Contains("tom.clancy"))
                 .Where(p => !p.Person.Username.Contains("stephen.king"))
-                .Where(p => !p.Person.Username.Contains("Manual01VideoHearingsOfficer01"))
                 .Where(p => !p.Person.Username.Contains("sue.burke"))
-                .Where(p => !p.Person.Username.Contains("yeliz.admin"))
-                .Where(p => !p.Person.Username.Contains("yeliz.judge"))
-                .Where(p => !p.Person.Username.Contains("yeliz.judge2"))
                 .Where(p => !p.Person.Username.Contains("one.three"))
                 .Where(p => !p.Person.Username.Contains("one.four"))
                 .Where(p => !p.Person.Username.Contains("michael.jordan"))
                 .Where(p => !p.Person.Username.Contains("scottie.pippen"))
                 .Where(p => !p.Person.Username.Contains("steve.kerr"))
                 .Where(p => !p.Person.Username.Contains("dennis.rodman"))
+                .Where(p => !p.Person.Username.Contains("Jane.Doe"))
+                .Where(p => !p.Person.Username.Contains("John.Doe"))
+                .Where(p => !p.Person.Username.Contains("Chris.Green"))
+                .Where(p => !p.Person.Username.Contains("James.Green"))
 
                 .Select(p => p.Person.Username)
                 .ToListAsync();

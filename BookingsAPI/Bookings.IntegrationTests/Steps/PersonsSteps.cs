@@ -160,8 +160,8 @@ namespace Bookings.IntegrationTests.Steps
             var json = await Context.Response.Content.ReadAsStringAsync();
             var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<UserWithClosedConferencesResponse>(json);
             model.Should().NotBeNull();
-            model.Username.Should().NotBeNull();
-            model.Username.Count.Should().Be(4);
+            model.Usernames.Should().NotBeNull();
+            model.Usernames.Count.Should().Be(4);
         }
 
 

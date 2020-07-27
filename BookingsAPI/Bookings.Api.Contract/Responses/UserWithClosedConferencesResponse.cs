@@ -4,7 +4,7 @@ namespace Bookings.Api.Contract.Responses
 {
     public class UserWithClosedConferencesResponse
     {
-        public IList<string> Username { get; set; }
+        public IList<string> Usernames { get; set; }
     }
 }
 
