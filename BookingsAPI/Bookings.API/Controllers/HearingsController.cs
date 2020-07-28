@@ -25,7 +25,6 @@ using System.Threading.Tasks;
 
 namespace Bookings.API.Controllers
 {
-
     [Produces("application/json")]
     [Route("hearings")]
     [ApiController]
@@ -372,6 +371,20 @@ namespace Bookings.API.Controllers
             };
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Anonymises the Hearings, Case, Person and Participant data.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPatch("anonymisehearings")]
+        [SwaggerOperation(OperationId = "AnonymiseHearings")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> AnonymiseHearingsAsync()
+        {
+            var anonymiseHearingsCommand = new AnonymiseHearingsCommand();
+            await _commandHandler.Handle(anonymiseHearingsCommand);
+            return NoContent();
         }
 
         private async Task<Hearing> GetHearingToPublishAsync(Guid hearingId)

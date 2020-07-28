@@ -193,3 +193,15 @@ Feature: Hearings
     When I send the request to the endpoint
     Then the response should have the status NoContent and success status True
     And hearing status should be Failed
+    
+Scenario: Hearings older than 3 months to be anonymised
+	Given I have an hearing older than 3 months
+	And I have a request to anonymise the data
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+
+Scenario: Hearings within 3 months not to be anonymised
+	Given I have an hearing older than 2 months
+	And I have a request to anonymise the data    
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True

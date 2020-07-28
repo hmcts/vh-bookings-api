@@ -216,5 +216,96 @@ namespace Bookings.IntegrationTests.Helper
 
         public string[] GetIndividualHearingRoles =>
             new[] {"Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP"};
+
+        public Task<VideoHearing> SeedPastHearings(DateTime scheduledDate)
+        {
+            return SeedPastVideoHearing(scheduledDate, null, false, BookingStatus.Booked);
+        }
+
+        public async Task<VideoHearing> SeedPastVideoHearing(DateTime pastScheduledDate, Action<SeedVideoHearingOptions> configureOptions,
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked)
+        {
+            var options = new SeedVideoHearingOptions();
+            configureOptions?.Invoke(options);
+            var caseType = GetCaseTypeFromDb(options.CaseTypeName);
+
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ClaimantRole);
+            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
+            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
+
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+
+            var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
+
+            var venues = new RefDataBuilder().HearingVenues;
+
+            var person1 = new PersonBuilder(true).WithOrganisation().Build();
+            var person2 = new PersonBuilder(true).Build();
+            var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder(true).Build();
+
+            var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            const int duration = 45;
+            const string hearingRoomName = "Room02";
+            const string otherInformation = "OtherInformation02";
+            const string createdBy = "test@integration.com";
+            const bool questionnaireNotRequired = false;
+            const bool audioRecordingRequired = true;
+            var cancelReason = "Online abandonment (incomplete registration)";
+
+            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
+                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                audioRecordingRequired, cancelReason);
+
+            videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+                $"{person1.FirstName} {person1.LastName}");
+
+            videoHearing.AddRepresentative(person2, claimantRepresentativeHearingRole, claimantCaseRole,
+                $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
+
+            videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
+                $"{person3.FirstName} {person3.LastName}", string.Empty, "Ms Y");
+
+            videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
+
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
+                $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
+                $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
+            if (status == BookingStatus.Created)
+            {
+                videoHearing.UpdateStatus(BookingStatus.Created, createdBy, null);
+            }
+
+            var videohearingType = typeof(VideoHearing);
+            videohearingType.GetProperty("ScheduledDateTime").SetValue(videoHearing, pastScheduledDate);
+
+            await using (var db = new BookingsDbContext(_dbContextOptions))
+            {
+                await db.VideoHearings.AddAsync(videoHearing);
+                await db.SaveChangesAsync();
+            }
+
+            var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+                new GetHearingByIdQuery(videoHearing.Id));
+            _individualId = hearing.Participants.First(x =>
+                x.HearingRole.Name.ToLower().IndexOf("judge", StringComparison.Ordinal) < 0 &&
+                x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) < 0).Id;
+            _participantRepresentativeIds = hearing.Participants
+                .Where(x => x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) >= 0).Select(x => x.Id).ToList();
+
+            if (addSuitabilityAnswer)
+            {
+                await AddQuestionnaire();
+            }
+
+            hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+                new GetHearingByIdQuery(videoHearing.Id));
+            _seededHearings.Add(hearing.Id);
+            return hearing;
+        }
     }
 }

@@ -116,6 +116,13 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have a request to get the usernames for old hearings")]
+        public void GivenIHaveARequestToGetTheUsernamesForOldHearings()
+        {
+            Context.Uri = GetPersonByClosedHearings();
+            Context.HttpMethod = HttpMethod.Get;
+        }
+
         [Then(@"person details should be retrieved")]
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {
@@ -146,6 +153,17 @@ namespace Bookings.IntegrationTests.Steps
             model[0].Should().NotBeNull();
             ValidatePersonData(model[0]);
         }
+
+        [Then(@"a list of hearing usernames should be retrieved")]
+        public async Task ThenAListOfHearingUsernamesShouldBeRetrieved()
+        {
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<UserWithClosedConferencesResponse>(json);
+            model.Should().NotBeNull();
+            model.Usernames.Should().NotBeNull();
+            model.Usernames.Count.Should().Be(4);
+        }
+
 
         [Then(@"suitability answers retrieved should '(.*)'")]
         public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved(string scenario)
