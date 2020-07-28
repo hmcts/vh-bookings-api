@@ -90,7 +90,7 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("Chris.Green"))
                 .Where(p => !p.Person.Username.Contains("James.Green"))
 
-                .Select(p => p.Person.Username)
+                .Select(p => p.Person.Username).Distinct()
                 .ToListAsync();
 
             return personsInPastHearings;
