@@ -109,5 +109,21 @@ namespace Bookings.UnitTests.Controllers.Persons
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
+        [Test]
+        public async Task Should_return_list_of_usernames_for_old_hearings()
+        {
+            var usernameList = new List<string> { "testUser1@email.com", "testUser2@email.com", "testUser3@email.com" };
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetPersonsByClosedHearingsQuery, List<string>>(It.IsAny<GetPersonsByClosedHearingsQuery>()))
+                .ReturnsAsync(usernameList);
+
+            var result = await _controller.GetPersonByClosedHearings();
+            result.Should().NotBeNull();
+            var objectResult = result as ObjectResult;
+            var response = (UserWithClosedConferencesResponse)(objectResult.Value);
+            response.Usernames.Count.Should().Be(3);
+            _queryHandlerMock
+                .Verify(x => x.Handle<GetPersonsByClosedHearingsQuery, List<string>>(It.IsAny<GetPersonsByClosedHearingsQuery>()), Times.Once);
+        }
     }
 }

@@ -60,6 +60,16 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have an hearing older than (.*) months")]
+        public async Task GivenIHaveAnHearingOlderThanMonths(int p0)
+        {
+            var seededHearing = await Context.TestDataManager.SeedPastHearings(DateTime.UtcNow.AddMonths(-p0));
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _hearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
+        }
+
+
         [Given(@"I have a (.*) book a new hearing request")]
         [Given(@"I have an (.*) book a new hearing request")]
         public void GivenIHaveAValidBookANewHearingRequest(Scenario scenario)
@@ -191,6 +201,12 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have a request to anonymise the data")]
+        public void GivenIHaveARequestToAnonymiseTheData()
+        {
+            Context.Uri = AnonymiseHearings();
+            Context.HttpMethod = HttpMethod.Patch;
+        }
 
         [Given(@"I have a request to the get booked hearings endpoint")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
@@ -282,24 +298,17 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a (.*) hearing cancellation request")]
         public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.TestData.NewHearingId = seededHearing.Id;
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                    _hearingId = seededHearing.Id;
-                    break;
-                case Scenario.Invalid:
-                    _hearingId = Guid.Empty;
-                    break;
-                case Scenario.Nonexistent:
-                    _hearingId = Guid.NewGuid();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
+            await SeedHearingForScenarioAsync(scenario);
+
             UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
+        }
+
+        [Given(@"I have a (.*) hearing failed confirmation request")]
+        public async Task GivenIHaveAHearingFailedConfirmationRequest(Scenario scenario)
+        {
+            await SeedHearingForScenarioAsync(scenario);
+
+            UpdateTheHearingStatus(UpdateBookingStatus.Failed);
         }
 
         [Then(@"hearing details should be retrieved")]
@@ -323,7 +332,6 @@ namespace Bookings.IntegrationTests.Steps
                 AssertHearingByCaseNumberResponse(hearing);
             }
         }
-
 
         [Then(@"a list of hearing details should be retrieved")]
         public async Task ThenAListOfHearingDetailsShouldBeRetrieved()
@@ -447,6 +455,27 @@ namespace Bookings.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName); 
         }
 
+        private async Task SeedHearingForScenarioAsync(Scenario scenario)
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.TestData.NewHearingId = seededHearing.Id;
+            switch (scenario)
+            {
+                case Scenario.Valid:
+                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    break;
+                case Scenario.Invalid:
+                    _hearingId = Guid.Empty;
+                    break;
+                case Scenario.Nonexistent:
+                    _hearingId = Guid.NewGuid();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
+            }
+        }
+
         private void ThenHearingBookingStatusIs(BookingStatus status)
         {
             Hearing hearingFromDb;
@@ -466,6 +495,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 UpdateBookingStatus.Created => BookingStatus.Created,
                 UpdateBookingStatus.Cancelled => BookingStatus.Cancelled,
+                UpdateBookingStatus.Failed => BookingStatus.Failed,
                 _ => throw new ArgumentException("Invalid booking status type")
             };
         }

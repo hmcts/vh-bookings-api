@@ -131,6 +131,20 @@ namespace Bookings.API.Controllers
             return Ok(personSuitabilityAnswers);
         }
 
+        /// <summary>
+        /// Get list of person from the old hearings
+        /// </summary>
+        /// <returns>list of usernames</returns>
+        [HttpGet("userswithclosedhearings", Name = "GetPersonByClosedHearings")]
+        [SwaggerOperation(OperationId = "GetPersonByClosedHearings")]
+        [ProducesResponseType(typeof(UserWithClosedConferencesResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetPersonByClosedHearings()
+        {
+            var query = new GetPersonsByClosedHearingsQuery();
+            var person = await _queryHandler.Handle<GetPersonsByClosedHearingsQuery, List<string>>(query);
+            return Ok(new UserWithClosedConferencesResponse { Usernames = person });
+        }
+
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)
         {
             PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;

@@ -30,6 +30,7 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
             public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
             public static string GetHearingsByCaseNumber(string caseNumber) => $"{ApiRoot}/audiorecording/casenumber?caseNumber={caseNumber}";
+            public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
         }
 
         public static class HearingVenueEndpoints
@@ -56,6 +57,7 @@ namespace Testing.Common.Builders.Api
             public static string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
             public static string PostPersonBySearchTerm => $"{ApiRoot}";
             public static string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
+            public static string GetPersonByClosedHearings() => $"{ApiRoot}/userswithclosedhearings";
         }
 
         public static class SuitabilityAnswerEndpoints

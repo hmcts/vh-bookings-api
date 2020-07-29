@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
+using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
@@ -290,6 +291,28 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+        }
+
+        [Test]
+        public async Task Should_change_hearing_status_to_failed()
+        {
+            var request = new UpdateBookingStatusRequest
+            {
+                UpdatedBy = "email@toupdate.com",
+                Status = Api.Contract.Requests.Enums.UpdateBookingStatus.Failed,
+                CancelReason = ""
+            };
+            var hearingId = Guid.NewGuid();
+
+            CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
+
+            var result = await Controller.UpdateBookingStatus(hearingId, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
+
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
         protected static VideoHearing GetHearing(string caseNumber)
