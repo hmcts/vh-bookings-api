@@ -1,6 +1,7 @@
 ﻿using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System.Collections.Generic;
 
 namespace Bookings.DAL.Migrations
 {
@@ -32,13 +33,11 @@ namespace Bookings.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData("HearingRole", "Id", 117);
-            migrationBuilder.DeleteData("HearingRole", "Id", 118);
-            migrationBuilder.DeleteData("HearingRole", "Id", 119);
-            migrationBuilder.DeleteData("HearingRole", "Id", 120);
+            var hearingRoleIds = new List<int> { 117, 118, 119, 120 };
+            hearingRoleIds.ForEach(x => migrationBuilder.DeleteData("HearingRole", "Id", x));
 
-            migrationBuilder.DeleteData("CaseRole", "Id", 81);
-            migrationBuilder.DeleteData("CaseRole", "Id", 82);
-        }
+            var caseRoleIds = new List<int> { 81, 82 };
+            caseRoleIds.ForEach(x => migrationBuilder.DeleteData("CaseRole", "Id", x));
+       }
     }
 }
