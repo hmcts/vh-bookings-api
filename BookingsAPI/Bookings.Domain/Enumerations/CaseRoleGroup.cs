@@ -8,6 +8,8 @@ namespace Bookings.Domain.Enumerations
         Applicant = 3,
         Respondent = 4,
         Observer = 5,
-        PanelMember = 6
+        PanelMember = 6,
+        Appellant = 7,
+        State = 8
     }
 }

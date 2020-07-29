@@ -54,6 +54,8 @@ Examples:
 | Tax                       | Judge        |
 | Tax                       | Observer     |
 | Tax                       | Panel Member |
+| Tax                       | Appellant    |
+| Tax                       | State        |
 | Tribunal                  | Applicant    |
 | Tribunal                  | Respondent   |
 | Tribunal                  | Judge        |
