@@ -37,7 +37,7 @@ namespace Bookings.DAL.Commands
 
 			"DECLARE case_cursor CURSOR FOR " +
 			"select c.Id from [dbo].[Hearing] h JOIN [dbo].[HearingCase] hc on h.Id = hc.HearingId JOIN [dbo].[Case] c on hc.CaseId = c.Id " +
-			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
+			"where h.[ScheduledDateTime] < @anonymiseBeforeDate and c.Name not like '%@email.net%' " +
 
 			"OPEN case_cursor " +
 			"FETCH NEXT FROM case_cursor " +
@@ -47,7 +47,7 @@ namespace Bookings.DAL.Commands
 			"BEGIN " +
 				"SELECT @randomString = SUBSTRING(CONVERT(varchar(40), NEWID()),0,9); " +
 
-				"UPDATE [dbo].[Case] SET [Name] = @randomString WHERE Id = @caseId " +
+				"UPDATE [dbo].[Case] SET [Name] = @randomString + '@email.net' WHERE Id = @caseId " +
 
 				"FETCH NEXT FROM case_cursor " +
 				"INTO @caseId " +
@@ -57,7 +57,7 @@ namespace Bookings.DAL.Commands
 
 			"DECLARE participant_cursor CURSOR FOR " +
 			"select distinct p.Id from [dbo].[Hearing] h JOIN [dbo].[HearingCase] hc on h.Id = hc.HearingId JOIN [dbo].[Participant] p on p.HearingId = h.Id " +
-			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
+			"where h.[ScheduledDateTime] < @anonymiseBeforeDate and p.DisplayName not like '%@email.net%' " +
 
 			"OPEN participant_cursor " +
 			"FETCH NEXT FROM participant_cursor " +
@@ -68,7 +68,7 @@ namespace Bookings.DAL.Commands
 				"SELECT @randomString = SUBSTRING(CONVERT(varchar(40), NEWID()),0,9); " +
 
 				"UPDATE [dbo].[Participant] " +
-				"SET [DisplayName] = @randomString, " +
+				"SET [DisplayName] = @randomString + '@email.net', " +
 					"[Representee] = CASE WHEN Representee = '' THEN '' WHEN Representee IS NULL THEN NULL ELSE @randomString END " +
 				"WHERE Id = @participantId " +
 
@@ -85,6 +85,7 @@ namespace Bookings.DAL.Commands
 			"JOIN [dbo].[Person] pr on pr.Id = p.PersonId " +
 			"LEFT JOIN [dbo].[Organisation] o on o.Id = pr.OrganisationId " +
 			"where h.[ScheduledDateTime] < @anonymiseBeforeDate " +
+			"AND pr.Username NOT LIKE '%@email.net%' " +
 			"AND pr.Username NOT LIKE '%JUDGE%' " +
 			"AND pr.Username NOT LIKE '%TaylorHousecourt%' " +
 			"AND pr.Username NOT LIKE '%ManchesterCFJCcourt%' " +
@@ -131,6 +132,10 @@ namespace Bookings.DAL.Commands
 			"AND pr.Username NOT LIKE 'scottie.pippen%' " +
 			"AND pr.Username NOT LIKE 'steve.kerr%' " +
 			"AND pr.Username NOT LIKE 'dennis.rodman%' " +
+			"AND pr.Username NOT LIKE 'john.doe%' " +
+			"AND pr.Username NOT LIKE 'jane.doe%' " +
+			"AND pr.Username NOT LIKE 'chris.green%' " +
+			"AND pr.Username NOT LIKE 'james.green%' " +
 
 			"and pr.Id not IN ( " +
 				"SELECT pr.Id " +
