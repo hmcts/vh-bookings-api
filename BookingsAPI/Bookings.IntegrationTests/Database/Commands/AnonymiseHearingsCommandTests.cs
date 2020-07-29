@@ -96,6 +96,49 @@ namespace Bookings.IntegrationTests.Database.Commands
             }
         }
 
+        [Test]
+        public async Task Should_not_anonymise_hearings_and_participant_data_that_have_been_anonymised()
+        {
+            var seededHearing = await Hooks.SeedPastHearings(DateTime.Today.AddMonths(-3));
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var command = new AnonymiseHearingsCommand();
+            await _commandHandler.Handle(command);
+            command.RecordsUpdated.Should().Be(11);
+            var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            returnedVideoHearing.Should().NotBeNull();
+
+            var hearingData = returnedVideoHearing.HearingCases[0];
+            hearingData.Case.Name.Should().NotBe(seededHearing.HearingCases[0].Case.Name);
+
+            foreach (var participant in seededHearing.Participants)
+            {
+                var updatedParticipant = returnedVideoHearing.Participants.FirstOrDefault(p => p.Id == participant.Id);
+                updatedParticipant.DisplayName.Should().NotBe(participant.DisplayName);
+            }
+            foreach (var person in seededHearing.GetPersons())
+            {
+                var updatedPerson = returnedVideoHearing.GetPersons().FirstOrDefault(p => p.Id == person.Id);
+                updatedPerson.FirstName.Should().NotBe(person.FirstName);
+                updatedPerson.LastName.Should().NotBe(person.LastName);
+                updatedPerson.MiddleNames.Should().NotBe(person.MiddleNames);
+                updatedPerson.Username.Should().NotBe(person.Username);
+                updatedPerson.ContactEmail.Should().NotBe(person.ContactEmail);
+                updatedPerson.TelephoneNumber.Should().NotBe(person.TelephoneNumber);
+            }
+
+            command = new AnonymiseHearingsCommand();
+            await _commandHandler.Handle(command);
+            command.RecordsUpdated.Should().Be(-1);
+
+            var notAnonymisedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            notAnonymisedVideoHearing.Should().NotBeNull();
+
+            var notAnonymisedHearingData = notAnonymisedVideoHearing.HearingCases[0];
+            notAnonymisedHearingData.Case.Name.Should().Be(hearingData.Case.Name);
+        }
+
         [TearDown]
         public new async Task TearDown()
         {
