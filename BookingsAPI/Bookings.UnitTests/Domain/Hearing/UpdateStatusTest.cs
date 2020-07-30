@@ -91,5 +91,18 @@ namespace Bookings.UnitTests.Domain.Hearing
             action.Should().Throw<ArgumentNullException>();
             hearing.Status.Should().Be(BookingStatus.Booked);
         }
+
+        [Test]
+        public void Should_update_hearing_status_to_created()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var updatedDate = hearing.UpdatedDate;
+            var updatedBy = "testuser";
+            hearing.UpdateStatus(BookingStatus.Created, updatedBy, "");
+            hearing.UpdatedDate.Should().BeAfter(updatedDate);
+            hearing.Status.Should().Be(BookingStatus.Created);
+            hearing.ConfirmedBy.Should().Be(updatedBy);
+            hearing.ConfirmedDate.Should().NotBeNull();
+        }
     }
 }

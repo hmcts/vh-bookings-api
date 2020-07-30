@@ -74,6 +74,15 @@ namespace Bookings.Api.Contract.Responses
         /// Gets or sets the last edited date of hearing.
         /// </summary>
         public DateTime? LastEditDate { get; set; }
+        /// <summary>
+        ///     The VH admin username that confirmed the hearing
+        /// </summary>
+        public string ConfirmedBy { get; set; }
+
+        /// <summary>
+        ///     The date and time when the hearing was confirmed
+        /// </summary>
+        public DateTime? ConfirmedDate { get; set; }
 
         /// <summary>
         /// Gets the scheduled date without time.

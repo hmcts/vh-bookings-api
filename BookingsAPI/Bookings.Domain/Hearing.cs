@@ -60,6 +60,8 @@ namespace Bookings.Domain
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedDate { get; protected set; }
+        public string ConfirmedBy { get; set; }
+        public DateTime? ConfirmedDate { get; protected set; }
         public virtual IList<Participant> Participants { get; }
         public virtual IList<HearingCase> HearingCases { get; }
         public string HearingRoomName { get; set; }
@@ -302,6 +304,12 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
             CancelReason = cancelReason;
+            if(newStatus == BookingStatus.Created)
+            {
+                // Booking confirmed
+                ConfirmedBy = updatedBy;
+                ConfirmedDate = DateTime.UtcNow;
+            }
         }
     }
 }
