@@ -18,8 +18,6 @@ namespace Bookings.UnitTests.Domain.Hearing
             hearing.UpdateStatus(BookingStatus.Cancelled, "testuser", "cancel reason");
             hearing.UpdatedDate.Should().BeAfter(updatedDate);
             hearing.Status.Should().Be(BookingStatus.Cancelled);
-            hearing.ConfirmedBy.Should().BeNull();
-            hearing.ConfirmedDate.Should().BeNull();
         }
 
         [Test]
