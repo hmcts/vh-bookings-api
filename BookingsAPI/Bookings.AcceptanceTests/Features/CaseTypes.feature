@@ -106,3 +106,8 @@ Examples:
 | Right to buy              | Judge        |
 | Right to buy              | Observer     |
 | Right to buy              | Panel Member |
+| Employment Tribunal       | Claimant     |
+| Employment Tribunal       | Respondent   |
+| Employment Tribunal       | Judge        |
+| Employment Tribunal       | Observer     |
+| Employment Tribunal       | Panel Member |
