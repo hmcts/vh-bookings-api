@@ -10,6 +10,8 @@ namespace Bookings.Infrastructure.Services.Dtos
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string ContactEmail { get; set; }
+        public string ContactTelephone { get; set; }
         public string DisplayName { get; set; }
         public string HearingRole { get; set; }
         public string UserRole { get; set; }

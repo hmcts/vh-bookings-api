@@ -64,6 +64,8 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
             request.Participants[0].Username = hearing.Participants[0].Person.Username;
             request.Participants[0].FirstName = hearing.Participants[0].Person.FirstName;
             request.Participants[0].LastName = hearing.Participants[0].Person.LastName;
+            request.Participants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+            request.Participants[0].TelephoneNumber = hearing.Participants[0].Person.TelephoneNumber;
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
             var response = await Controller.AddParticipantsToHearing(hearingId, request);
@@ -77,6 +79,8 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
                 p => p.HearingId == hearing.Id && p.Participants[0].Username == request.Participants[0].Username
                                                && p.Participants[0].FirstName == request.Participants[0].FirstName
                                                && p.Participants[0].LastName == request.Participants[0].LastName
+                                               && p.Participants[0].ContactEmail == request.Participants[0].ContactEmail
+                                               && p.Participants[0].ContactTelephone == request.Participants[0].TelephoneNumber
             )), Times.Once);
         }
 
