@@ -82,8 +82,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             
             var endpoints = new List<Endpoint>
             {
-                new Endpoint("display 1", "sip", "pin"),
-                new Endpoint("display 2", "sip", "pin")
+                new Endpoint("display 1", "sip", 1234),
+                new Endpoint("display 2", "sip", 5678)
             };
 
             var command =

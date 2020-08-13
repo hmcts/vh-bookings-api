@@ -14,7 +14,7 @@ namespace Bookings.DAL.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     DisplayName = table.Column<string>(nullable: false),
                     Sip = table.Column<string>(nullable: false),
-                    Pin = table.Column<string>(nullable: false),
+                    Pin = table.Column<int>(nullable: false),
                     HearingId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
