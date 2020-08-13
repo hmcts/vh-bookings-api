@@ -123,8 +123,6 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
-
             var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
             if (hearingType == null)
             {
@@ -147,7 +145,7 @@ namespace Bookings.API.Controllers
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired)
+                request.QuestionnaireNotRequired, request.AudioRecordingRequired, request.Endpoints)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,

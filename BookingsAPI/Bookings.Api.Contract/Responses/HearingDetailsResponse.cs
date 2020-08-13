@@ -108,5 +108,10 @@ namespace Bookings.Api.Contract.Responses
         /// </summary>
         public string CancelReason { get; set; }
 
+        /// <summary>
+        /// Gets the endpoints for a hearing
+        /// </summary>
+        public List<EndpointResponse> Endpoints { get; set; }
+
     }
 }

@@ -101,6 +101,19 @@ namespace Bookings.Domain
                 AddCase(newCase.Number, newCase.Name, newCase.IsLeadCase);
             }
         }
+        
+        public void AddEndpoints(List<Endpoint> endpoints)
+        {
+            endpoints.ForEach(x =>
+            {
+                var ep = new Endpoint(x.DisplayName, x.Sip, x.Pin)
+                {
+                    Hearing = this, HearingId = Id
+                };
+                
+                Endpoints.Add(ep);
+            }); 
+        }
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
@@ -187,6 +200,11 @@ namespace Bookings.Domain
         public IList<Case> GetCases()
         {
             return HearingCases.Select(x => x.Case).ToList();
+        }
+
+        public IList<Endpoint> GetEndpoints()
+        {
+            return Endpoints;
         }
 
         public virtual void UpdateCase(Case @case)

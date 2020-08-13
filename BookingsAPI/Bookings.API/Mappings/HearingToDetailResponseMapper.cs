@@ -10,6 +10,7 @@ namespace Bookings.API.Mappings
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
+            var endpointMapper = new EndpointResponseMapper();
             
             var cases = videoHearing.GetCases()
                 .Select(x => caseMapper.MapCaseToResponse(x))
@@ -17,6 +18,10 @@ namespace Bookings.API.Mappings
 
             var participants = videoHearing.GetParticipants()
                 .Select(x => participantMapper.MapParticipantToResponse(x))
+                .ToList();
+
+            var endpoints = videoHearing.GetEndpoints()
+                .Select(x => endpointMapper.MapEndpointToResponse(x))
                 .ToList();
 
             var response = new HearingDetailsResponse
@@ -40,7 +45,8 @@ namespace Bookings.API.Mappings
                 Status = videoHearing.Status,
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
-                CancelReason = videoHearing.CancelReason
+                CancelReason = videoHearing.CancelReason,
+                Endpoints = endpoints
             };
 
             return response;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bookings.Domain;
 
 namespace Bookings.Api.Contract.Requests
 {
@@ -9,6 +10,7 @@ namespace Bookings.Api.Contract.Requests
         {
             Cases = new List<CaseRequest>();
             Participants = new List<ParticipantRequest>();
+            Endpoints = new List<Endpoint>();
         }
 
         /// <summary>
@@ -70,5 +72,7 @@ namespace Bookings.Api.Contract.Requests
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
+
+        public List<Endpoint> Endpoints { get; set; }
     }
 }

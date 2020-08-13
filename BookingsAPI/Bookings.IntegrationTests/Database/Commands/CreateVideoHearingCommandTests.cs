@@ -79,10 +79,16 @@ namespace Bookings.IntegrationTests.Database.Commands
             var createdBy = "User01";
             const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
+            
+            var endpoints = new List<Endpoint>
+            {
+                new Endpoint("display 1", "sip", "pin"),
+                new Endpoint("display 2", "sip", "pin")
+            };
 
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, 
-                    participants, cases, questionnaireNotRequired, audioRecordingRequired)
+                    participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,
@@ -102,6 +108,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             
             returnedVideoHearing.GetParticipants().Any().Should().BeTrue();
             returnedVideoHearing.GetCases().Any().Should().BeTrue();
+            returnedVideoHearing.GetEndpoints().Any().Should().BeTrue();
         }
         
         private CaseType GetCaseTypeFromDb(string caseTypeName)

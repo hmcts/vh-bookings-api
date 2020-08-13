@@ -13,7 +13,6 @@ namespace Bookings.Domain
 
         public Endpoint(string displayName, string sip, string pin)
         {
-            Id = Guid.NewGuid();
             DisplayName = displayName;
             Sip = sip;
             Pin = pin;
