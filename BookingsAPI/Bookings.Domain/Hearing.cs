@@ -20,6 +20,7 @@ namespace Bookings.Domain
             Participants = new List<Participant>();
             CreatedDate = DateTime.UtcNow;
             HearingCases = new List<HearingCase>();
+            Endpoints = new List<Endpoint>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -63,6 +64,7 @@ namespace Bookings.Domain
         public string ConfirmedBy { get; set; }
         public DateTime? ConfirmedDate { get; protected set; }
         public virtual IList<Participant> Participants { get; }
+        public virtual IList<Endpoint> Endpoints { get; }
         public virtual IList<HearingCase> HearingCases { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
