@@ -17,7 +17,7 @@ namespace Bookings.API.Mappings
             };
         }
 
-        public static Endpoint MapRequestToEndpoint(EndpointRequest request, string sip, int pin)
+        public static Endpoint MapRequestToEndpoint(EndpointRequest request, string sip, string pin)
         {
             return new Endpoint(request.DisplayName, sip, pin);
         }

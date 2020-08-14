@@ -11,7 +11,7 @@ namespace Bookings.Common.Services
         {
             _clock = clock;
         }
-        
+
         public string GetRandomFromTicks(uint skip, uint take)
         {
             return GetRandomFromTicks(_clock.UtcNow, skip, take);
@@ -26,7 +26,8 @@ namespace Bookings.Common.Services
                 throw new ArgumentOutOfRangeException($"skip and take values are wrong: {skip}:{take}");
             }
 
-            return string.Concat(ticks.Skip((int) skip).Take((int) take));
+            var randomFromTicks = string.Concat(ticks.Skip((int) skip).Take((int) take));
+            return randomFromTicks;
         }
     }
 }

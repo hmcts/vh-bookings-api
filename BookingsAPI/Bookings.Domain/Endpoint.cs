@@ -7,11 +7,11 @@ namespace Bookings.Domain
     {
         public string DisplayName { get; set; }
         public string Sip { get; set; }
-        public int Pin { get; set; }
+        public string Pin { get; set; }
         public Guid HearingId { get; set; }
         public Hearing Hearing { get; set; }
 
-        public Endpoint(string displayName, string sip, int pin)
+        public Endpoint(string displayName, string sip, string pin)
         {
             DisplayName = displayName;
             Sip = sip;

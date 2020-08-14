@@ -9,9 +9,8 @@ namespace Bookings.UnitTests.Services
     [TestFixture]
     public class RandomGeneratorTests
     {
-        private Mock<IClock> _clock;
-
-        private RandomGenerator _randomGenerator;
+        private readonly Mock<IClock> _clock;
+        private readonly RandomGenerator _randomGenerator;
 
         public RandomGeneratorTests()
         {
@@ -39,7 +38,9 @@ namespace Bookings.UnitTests.Services
         [TestCase("637330171125319309", 0u, 18u, "637330171125319309")]
         [TestCase("637330171125319309", 0u, 17u, "63733017112531930")]
         [TestCase("637330171125319309", 3u, 10u, "3301711253")]
+        [TestCase("637030171125319309", 3u, 10u, "0301711253")]
         [TestCase("637330171125319309", 13u, 4u, "1930")]
+        [TestCase("637330171125309309", 13u, 4u, "0930")]
         public void Should_return_correct_ticks(string source, uint skip, uint take, string expected)
         {
             _clock.Setup(x => x.UtcNow).Returns(new DateTime(long.Parse(source)));

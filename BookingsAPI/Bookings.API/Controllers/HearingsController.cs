@@ -149,9 +149,12 @@ namespace Bookings.API.Controllers
             var endpoints = new List<Endpoint>();
             if (request.Endpoints != null && request.Endpoints.Count > 0)
             {
-                var sip = _randomGenerator.GetRandomFromTicks(3, 10);
-                var pin = _randomGenerator.GetRandomFromTicks(13, 4);
-                endpoints = request.Endpoints.Select(x => EndpointMapper.MapRequestToEndpoint(x, sip, int.Parse(pin))).ToList();
+                endpoints = request.Endpoints.Select((x, index) =>
+                {
+                    var sip = $"{_randomGenerator.GetRandomFromTicks(3, 9)}{index.ToString()}";
+                    var pin = $"{_randomGenerator.GetRandomFromTicks(13, 3)}{index.ToString()}";
+                    return EndpointMapper.MapRequestToEndpoint(x, sip, pin);
+                }).ToList();
             }
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
