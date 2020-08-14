@@ -21,7 +21,7 @@ namespace Bookings.Common.Services
         {
             var ticks = dateTime.Ticks.ToString();
 
-            if (skip >= ticks.Length - 1 || take > ticks.Length - skip)
+            if (skip >= ticks.Length || take > ticks.Length - skip)
             {
                 throw new ArgumentOutOfRangeException($"skip and take values are wrong: {skip}:{take}");
             }
