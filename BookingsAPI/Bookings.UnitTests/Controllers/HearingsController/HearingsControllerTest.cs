@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
+using Bookings.Common.Services;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
@@ -27,6 +28,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         protected API.Controllers.HearingsController Controller;
         protected Mock<IQueryHandler> QueryHandlerMock;
         protected Mock<ICommandHandler> CommandHandlerMock;
+        protected Mock<IRandomGenerator> RandomGenerator;
         
         private IEventPublisher _eventPublisher;
         private ServiceBusQueueClientFake _sbQueueClient;
@@ -37,8 +39,12 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             _sbQueueClient = new ServiceBusQueueClientFake();
             QueryHandlerMock = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
+            RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(_sbQueueClient);
-            Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object, _eventPublisher);
+            
+            Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object,
+                CommandHandlerMock.Object,
+                _eventPublisher, RandomGenerator.Object);
         }
 
         [Test]

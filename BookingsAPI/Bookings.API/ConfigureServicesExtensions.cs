@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Bookings.Common;
+using Bookings.Common.Services;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries.Core;
@@ -76,6 +77,8 @@ namespace Bookings.API
             services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
             services.AddScoped<ICommandHandler, CommandHandler>();
             services.AddScoped<IHearingService, HearingService>();
+            services.AddScoped<IClock, Clock>();
+            services.AddScoped<IRandomGenerator, RandomGenerator>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
             

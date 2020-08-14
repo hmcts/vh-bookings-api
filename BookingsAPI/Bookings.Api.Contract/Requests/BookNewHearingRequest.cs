@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Bookings.Domain;
 
 namespace Bookings.Api.Contract.Requests
 {
@@ -10,7 +9,7 @@ namespace Bookings.Api.Contract.Requests
         {
             Cases = new List<CaseRequest>();
             Participants = new List<ParticipantRequest>();
-            Endpoints = new List<Endpoint>();
+            Endpoints = new List<EndpointRequest>();
         }
 
         /// <summary>
@@ -73,6 +72,6 @@ namespace Bookings.Api.Contract.Requests
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
 
-        public List<Endpoint> Endpoints { get; set; }
+        public List<EndpointRequest> Endpoints { get; set; }
     }
 }

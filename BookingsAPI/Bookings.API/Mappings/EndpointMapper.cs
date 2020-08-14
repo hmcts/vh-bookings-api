@@ -1,11 +1,12 @@
+using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.Domain;
 
 namespace Bookings.API.Mappings
 {
-    public class EndpointResponseMapper
+    public static class EndpointMapper
     {
-        public EndpointResponse MapEndpointToResponse(Endpoint endpoint)
+        public static EndpointResponse MapEndpointToResponse(Endpoint endpoint)
         {
             return new EndpointResponse
             {
@@ -14,6 +15,11 @@ namespace Bookings.API.Mappings
                 Sip = endpoint.Sip,
                 Pin = endpoint.Pin
             };
+        }
+
+        public static Endpoint MapRequestToEndpoint(EndpointRequest request, string sip, int pin)
+        {
+            return new Endpoint(request.DisplayName, sip, pin);
         }
     }
 }

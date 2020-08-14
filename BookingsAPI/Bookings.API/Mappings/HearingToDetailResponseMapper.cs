@@ -10,7 +10,6 @@ namespace Bookings.API.Mappings
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
-            var endpointMapper = new EndpointResponseMapper();
             
             var cases = videoHearing.GetCases()
                 .Select(x => caseMapper.MapCaseToResponse(x))
@@ -21,7 +20,7 @@ namespace Bookings.API.Mappings
                 .ToList();
 
             var endpoints = videoHearing.GetEndpoints()
-                .Select(x => endpointMapper.MapEndpointToResponse(x))
+                .Select(EndpointMapper.MapEndpointToResponse)
                 .ToList();
 
             var response = new HearingDetailsResponse

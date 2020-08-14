@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Common.Services;
 
 namespace Bookings.API.Controllers
 {
@@ -36,13 +37,15 @@ namespace Bookings.API.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IRandomGenerator _randomGenerator;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher, IRandomGenerator randomGenerator)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
+            _randomGenerator = randomGenerator;
         }
 
         /// <summary>
@@ -143,9 +146,17 @@ namespace Bookings.API.Controllers
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
+            var endpoints = new List<Endpoint>();
+            if (request.Endpoints != null && request.Endpoints.Count > 0)
+            {
+                var sip = _randomGenerator.GetRandomFromTicks(3, 10);
+                var pin = _randomGenerator.GetRandomFromTicks(13, 4);
+                endpoints = request.Endpoints.Select(x => EndpointMapper.MapRequestToEndpoint(x, sip, int.Parse(pin))).ToList();
+            }
+
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired, request.Endpoints)
+                request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,
