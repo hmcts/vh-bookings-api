@@ -22,7 +22,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Common.Configuration;
 using Bookings.Common.Services;
+using Microsoft.Extensions.Options;
 
 namespace Bookings.API.Controllers
 {
@@ -38,14 +40,16 @@ namespace Bookings.API.Controllers
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
         private readonly IRandomGenerator _randomGenerator;
+        private readonly KinlyConfiguration _kinlyConfiguration;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher, IRandomGenerator randomGenerator)
+            IEventPublisher eventPublisher, IRandomGenerator randomGenerator, IOptions<KinlyConfiguration> kinlyConfiguration)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
             _randomGenerator = randomGenerator;
+            _kinlyConfiguration = kinlyConfiguration.Value;
         }
 
         /// <summary>
@@ -149,11 +153,11 @@ namespace Bookings.API.Controllers
             var endpoints = new List<Endpoint>();
             if (request.Endpoints != null && request.Endpoints.Count > 0)
             {
-                endpoints = request.Endpoints.Select((x, index) =>
+                endpoints = request.Endpoints.Select(x =>
                 {
-                    var sip = $"{_randomGenerator.GetRandomFromTicks(3, 9)}{index.ToString()}";
-                    var pin = $"{_randomGenerator.GetRandomFromTicks(13, 3)}{index.ToString()}";
-                    return EndpointMapper.MapRequestToEndpoint(x, sip, pin);
+                    var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
+                    var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
+                    return EndpointMapper.MapRequestToEndpoint(x, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
                 }).ToList();
             }
 

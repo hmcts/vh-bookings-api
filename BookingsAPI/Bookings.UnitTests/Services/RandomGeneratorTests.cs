@@ -1,7 +1,6 @@
 using System;
 using Bookings.Common.Services;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 
 namespace Bookings.UnitTests.Services
@@ -9,43 +8,36 @@ namespace Bookings.UnitTests.Services
     [TestFixture]
     public class RandomGeneratorTests
     {
-        private readonly Mock<IClock> _clock;
         private readonly RandomGenerator _randomGenerator;
 
         public RandomGeneratorTests()
         {
-            _clock = new Mock<IClock>();
-            
-            _randomGenerator = new RandomGenerator(_clock.Object);
+            _randomGenerator = new RandomGenerator();
         }
 
         [Test]
         public void Should_throw_exception_on_skip_greater_than_ticks_length()
         {
-            _clock.Setup(x => x.UtcNow).Returns(DateTime.UtcNow);
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => _randomGenerator.GetRandomFromTicks(999, 999));
+            Assert.Throws<ArgumentOutOfRangeException>(() => 
+                _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 999, 999));
         }
 
         [Test]
         public void Should_throw_exception_on_taking_more_than_available()
         {
-            _clock.Setup(x => x.UtcNow).Returns(DateTime.UtcNow);
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => _randomGenerator.GetRandomFromTicks(2, 999));
+            Assert.Throws<ArgumentOutOfRangeException>(() => 
+                _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 2, 999));
         }
 
-        [TestCase("637330171125319309", 0u, 18u, "637330171125319309")]
-        [TestCase("637330171125319309", 0u, 17u, "63733017112531930")]
-        [TestCase("637330171125319309", 3u, 10u, "3301711253")]
-        [TestCase("637030171125319309", 3u, 10u, "0301711253")]
-        [TestCase("637330171125319309", 13u, 4u, "1930")]
-        [TestCase("637330171125309309", 13u, 4u, "0930")]
+        [TestCase("637330171125319309", 0u, 18u, "903913521171033736")]
+        [TestCase("637330171125319309", 0u, 17u, "90391352117103373")]
+        [TestCase("637330171125319309", 3u, 10u, "9135211710")]
+        [TestCase("637030171125319309", 3u, 10u, "9135211710")]
+        [TestCase("637330171125319309", 13u, 4u, "3373")]
+        [TestCase("607330171125309309", 13u, 4u, "3370")]
         public void Should_return_correct_ticks(string source, uint skip, uint take, string expected)
         {
-            _clock.Setup(x => x.UtcNow).Returns(new DateTime(long.Parse(source)));
-
-            var result = _randomGenerator.GetRandomFromTicks(skip, take);
+            var result = _randomGenerator.GetWeakDeterministic(long.Parse(source), skip, take);
 
             result.Should().NotBeNullOrWhiteSpace();
             result.Should().Be(expected);

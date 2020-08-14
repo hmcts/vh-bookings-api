@@ -5,29 +5,16 @@ namespace Bookings.Common.Services
 {
     public class RandomGenerator : IRandomGenerator
     {
-        private readonly IClock _clock;
-
-        public RandomGenerator(IClock clock)
+        public string GetWeakDeterministic(long ticks, uint skip, uint take)
         {
-            _clock = clock;
-        }
+            var ticksString = ticks.ToString();
 
-        public string GetRandomFromTicks(uint skip, uint take)
-        {
-            return GetRandomFromTicks(_clock.UtcNow, skip, take);
-        }
-
-        public string GetRandomFromTicks(DateTime dateTime, uint skip, uint take)
-        {
-            var ticks = dateTime.Ticks.ToString();
-
-            if (skip >= ticks.Length || take > ticks.Length - skip)
+            if (skip >= ticksString.Length || take > ticksString.Length - skip)
             {
                 throw new ArgumentOutOfRangeException($"skip and take values are wrong: {skip}:{take}");
             }
 
-            var randomFromTicks = string.Concat(ticks.Skip((int) skip).Take((int) take));
-            return randomFromTicks;
+            return string.Concat(ticksString.Reverse().Skip((int) skip).Take((int) take));
         }
     }
 }
