@@ -86,6 +86,7 @@ namespace Bookings.AcceptanceTests.Steps
             var expectedJudge = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Judge"));
             var actualJudge = model.Participants.FindAll(x => x.HearingRoleName.Contains("Judge"));
             ParticipantsDetailsMatch(expectedJudge, actualJudge);
+            _context.TestData.CreateHearingRequest.Endpoints.Should().BeEquivalentTo(model.Endpoints, x => x.ExcludingMissingMembers());
         }
 
         private static void ParticipantsDetailsMatch(IEnumerable<ParticipantRequest> expected, IEnumerable<ParticipantResponse> actual)
@@ -260,6 +261,14 @@ namespace Bookings.AcceptanceTests.Steps
                 hearing.HearingRoomName.Should().NotBeNullOrEmpty();
                 hearing.OtherInformation.Should().NotBeNullOrEmpty();
                 hearing.CreatedBy.Should().NotBeNullOrEmpty();
+                hearing.Endpoints.Should().NotBeNullOrEmpty();
+                foreach (var endpoint in hearing.Endpoints)
+                {
+                    endpoint.Id.Should().NotBeEmpty();
+                    endpoint.DisplayName.Should().NotBeNullOrEmpty();
+                    endpoint.Sip.Should().NotBeNullOrEmpty();
+                    endpoint.Pin.Should().NotBeNullOrEmpty();
+                }
             }          
         }
 

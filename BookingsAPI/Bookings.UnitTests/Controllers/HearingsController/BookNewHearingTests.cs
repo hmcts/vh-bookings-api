@@ -88,6 +88,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 .With(x => x.Cases = Cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.QuestionnaireNotRequired = false)
+                .With(x => x.Endpoints = new List<EndpointRequest> {new EndpointRequest{DisplayName = "Cool endpoint 1"}})
                 .Build();
 
         private List<CaseRole> CaseRoles => new List<CaseRole> 
@@ -152,6 +153,8 @@ namespace Bookings.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
 
+            RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
+            
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<CreateVideoHearingCommand>()), Times.Once);
         }
 

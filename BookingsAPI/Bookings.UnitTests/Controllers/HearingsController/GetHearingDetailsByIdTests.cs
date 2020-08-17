@@ -34,6 +34,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             hearingDetailsResponse.CaseTypeName.Should().Be("Civil Money Claims");
             hearingDetailsResponse.HearingTypeName.Should().Be("Application to Set Judgment Aside");
             hearingDetailsResponse.Cases.Count.Should().Be(1);
+            hearingDetailsResponse.Endpoints.Count.Should().Be(1);
             QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
 
         }
