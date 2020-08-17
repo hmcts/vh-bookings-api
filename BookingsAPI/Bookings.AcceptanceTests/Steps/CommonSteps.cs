@@ -38,6 +38,7 @@ namespace Bookings.AcceptanceTests.Steps
             _context.TestData.Hearing = model;
             _context.TestData.Hearing.Id = model.Id;
             _context.TestData.ParticipantsResponses = model.Participants;
+            _context.TestData.EndPointResponses = model.Endpoints;
         }
 
         [Given(@"I have a valid get hearing by casenumber request")]

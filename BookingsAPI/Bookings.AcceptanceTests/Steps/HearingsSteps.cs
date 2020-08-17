@@ -23,6 +23,7 @@ namespace Bookings.AcceptanceTests.Steps
     public sealed class HearingsSteps
     {
         private readonly TestContext _context;
+        private Guid _removedEndPointId;
 
         public HearingsSteps(TestContext context)
         {
@@ -295,6 +296,22 @@ namespace Bookings.AcceptanceTests.Steps
             var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             model.Count.Should().Be(0);
+        }
+
+        [Given(@"I have a remove endpoint from a hearing with a valid hearing id")]
+        public void GivenIHaveARemoveEndPointFromAHearingWithAValidHearingId()
+        {
+            _removedEndPointId = _context.TestData.EndPointResponses[^1].Id;
+            _context.Request = _context.Delete(RemoveEndPointFromHearing(_context.TestData.Hearing.Id, _removedEndPointId));
+        }
+
+        [Then(@"the endpoint should be removed")]
+        public void ThenTheParticipantShouldBeRemoved()
+        {
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Response = _context.Client().Execute(_context.Request);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Response.Content);
+            model.Exists(x => x.Id == _removedEndPointId).Should().BeFalse();
         }
     }
 }

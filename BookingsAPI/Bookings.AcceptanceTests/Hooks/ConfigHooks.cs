@@ -6,6 +6,7 @@ using AcceptanceTests.Common.Configuration.Users;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using Bookings.Common.Configuration;
+using Bookings.Domain;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -76,7 +77,9 @@ namespace Bookings.AcceptanceTests.Hooks
             context.TestData = new TestData()
             {
                 CaseName = "Bookings Api Automated Test",
-                ParticipantsResponses = new List<ParticipantResponse>()
+                ParticipantsResponses = new List<ParticipantResponse>(),
+                EndPointResponses = new List<EndpointResponse>(),
+                EndPoints= new List<Endpoint>()
             };
             context.TestData.CaseName.Should().NotBeNullOrEmpty();
         }

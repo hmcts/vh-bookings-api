@@ -86,3 +86,10 @@ Feature: Hearings
     And I send the request to the endpoint
     Then the response should have the status NoContent and success status True
     And hearing should be failed
+
+  Scenario: Remove endpoint from a hearing
+    Given I have a hearing
+    And I have a remove endpoint from a hearing with a valid hearing id
+    When I send the request to the endpoint
+    Then the response should have the status NoContent and success status True
+    And the endpoint should be removed
