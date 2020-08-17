@@ -90,6 +90,7 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("John.Doe"))
                 .Where(p => !p.Person.Username.Contains("Chris.Green"))
                 .Where(p => !p.Person.Username.Contains("James.Green"))
+                .Where(p => !p.Person.Username.Contains("kinly.clerk"))
 
                 .Select(p => p.Person.Username).Distinct()
                 .ToListAsync();
