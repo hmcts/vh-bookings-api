@@ -207,6 +207,12 @@ namespace Bookings.Domain
             return Endpoints;
         }
 
+        public void RemoveEndpoint(Endpoint endpoint)
+        {
+            Endpoints.Remove(endpoint);
+            UpdatedDate = DateTime.UtcNow;
+        }
+
         public virtual void UpdateCase(Case @case)
         {
             //It has been assumed that only one case exists for a given hearing, for now.

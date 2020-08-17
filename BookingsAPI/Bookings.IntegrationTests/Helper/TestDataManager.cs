@@ -82,6 +82,13 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
+            var endpoints = new List<Endpoint>
+            {
+                new Endpoint("display 1", "sip", "1234"),
+                new Endpoint("display 2", "sip", "5678")
+            };
+            videoHearing.AddEndpoints(endpoints);
+
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
