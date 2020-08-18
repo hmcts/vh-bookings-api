@@ -16,6 +16,8 @@ namespace Bookings.Infrastructure.Services
                     Username = participant.Person.Username,
                     FirstName = participant.Person.FirstName,
                     LastName = participant.Person.LastName,
+                    ContactEmail = participant.Person.ContactEmail,
+                    ContactTelephone = participant.Person.TelephoneNumber,
                     DisplayName = participant.DisplayName,
                     HearingRole = participant.HearingRole.Name,
                     UserRole = participant.HearingRole.UserRole.Name,
