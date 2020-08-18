@@ -136,6 +136,7 @@ namespace Bookings.DAL.Commands
 			"AND pr.Username NOT LIKE 'jane.doe%' " +
 			"AND pr.Username NOT LIKE 'chris.green%' " +
 			"AND pr.Username NOT LIKE 'james.green%' " +
+			"AND pr.Username NOT LIKE 'kinly.clerk%' " +
 
 			"and pr.Id not IN ( " +
 				"SELECT pr.Id " +
