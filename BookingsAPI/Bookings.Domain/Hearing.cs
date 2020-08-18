@@ -20,6 +20,7 @@ namespace Bookings.Domain
             Participants = new List<Participant>();
             CreatedDate = DateTime.UtcNow;
             HearingCases = new List<HearingCase>();
+            Endpoints = new List<Endpoint>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -63,6 +64,7 @@ namespace Bookings.Domain
         public string ConfirmedBy { get; set; }
         public DateTime? ConfirmedDate { get; protected set; }
         public virtual IList<Participant> Participants { get; }
+        public virtual IList<Endpoint> Endpoints { get; }
         public virtual IList<HearingCase> HearingCases { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
@@ -98,6 +100,19 @@ namespace Bookings.Domain
             {
                 AddCase(newCase.Number, newCase.Name, newCase.IsLeadCase);
             }
+        }
+        
+        public void AddEndpoints(List<Endpoint> endpoints)
+        {
+            endpoints.ForEach(x =>
+            {
+                var ep = new Endpoint(x.DisplayName, x.Sip, x.Pin)
+                {
+                    Hearing = this, HearingId = Id
+                };
+                
+                Endpoints.Add(ep);
+            }); 
         }
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
@@ -185,6 +200,11 @@ namespace Bookings.Domain
         public IList<Case> GetCases()
         {
             return HearingCases.Select(x => x.Case).ToList();
+        }
+
+        public IList<Endpoint> GetEndpoints()
+        {
+            return Endpoints;
         }
 
         public virtual void UpdateCase(Case @case)

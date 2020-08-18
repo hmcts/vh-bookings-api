@@ -28,9 +28,6 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Update="appsettings.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
         <None Update="useraccounts.json">
           <Generator></Generator>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -39,5 +36,9 @@
 
     <ItemGroup>
         <Content Include="Features\*.feature" />
+        <None Remove="appsettings.json" />
+        <Content Include="appsettings.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 </Project>

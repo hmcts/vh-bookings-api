@@ -9,6 +9,7 @@ namespace Bookings.Api.Contract.Requests
         {
             Cases = new List<CaseRequest>();
             Participants = new List<ParticipantRequest>();
+            Endpoints = new List<EndpointRequest>();
         }
 
         /// <summary>
@@ -70,5 +71,7 @@ namespace Bookings.Api.Contract.Requests
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
+
+        public List<EndpointRequest> Endpoints { get; set; }
     }
 }

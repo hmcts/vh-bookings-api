@@ -39,6 +39,7 @@ namespace Bookings.DAL.Queries
                 .ThenInclude(x=>x.UserRole)
                 .Include(x => x.HearingType)
                 .Include(x => x.HearingVenue)
+                .Include(x => x.Endpoints)
                 .SingleOrDefaultAsync(x => x.Id == query.HearingId);
         }
     }

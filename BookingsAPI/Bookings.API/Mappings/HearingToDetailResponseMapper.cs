@@ -19,6 +19,10 @@ namespace Bookings.API.Mappings
                 .Select(x => participantMapper.MapParticipantToResponse(x))
                 .ToList();
 
+            var endpoints = videoHearing.GetEndpoints()
+                .Select(EndpointMapper.MapEndpointToResponse)
+                .ToList();
+
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,
@@ -40,7 +44,8 @@ namespace Bookings.API.Mappings
                 Status = videoHearing.Status,
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
-                CancelReason = videoHearing.CancelReason
+                CancelReason = videoHearing.CancelReason,
+                Endpoints = endpoints
             };
 
             return response;

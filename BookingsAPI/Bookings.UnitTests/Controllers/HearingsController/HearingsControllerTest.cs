@@ -4,6 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
+using Bookings.Common.Configuration;
+using Bookings.Common.Services;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries;
@@ -15,6 +17,7 @@ using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Assertions;
@@ -27,6 +30,8 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         protected API.Controllers.HearingsController Controller;
         protected Mock<IQueryHandler> QueryHandlerMock;
         protected Mock<ICommandHandler> CommandHandlerMock;
+        protected Mock<IRandomGenerator> RandomGenerator;
+        protected KinlyConfiguration KinlyConfiguration;
         
         private IEventPublisher _eventPublisher;
         private ServiceBusQueueClientFake _sbQueueClient;
@@ -37,8 +42,12 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             _sbQueueClient = new ServiceBusQueueClientFake();
             QueryHandlerMock = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
+            KinlyConfiguration = new KinlyConfiguration{SipAddressStem = "@WhereAreYou.com"};
+            RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(_sbQueueClient);
-            Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object, _eventPublisher);
+
+            Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object, 
+                _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration));
         }
 
         [Test]
@@ -325,6 +334,8 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
                 participant.CaseRole = new CaseRole(1, "Name");
             }
+            
+            hearing.AddEndpoints(new List<Endpoint> {new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin")});
 
             return hearing;
         }

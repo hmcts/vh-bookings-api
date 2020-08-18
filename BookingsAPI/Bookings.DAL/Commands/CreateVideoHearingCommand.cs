@@ -11,7 +11,7 @@ namespace Bookings.DAL.Commands
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired)
+            bool questionnaireNotRequired, bool audioRecordingRequired, List<Endpoint> endpoints)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -22,6 +22,7 @@ namespace Bookings.DAL.Commands
             Cases = cases;
             QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
+            Endpoints = endpoints;
         }
 
         public Guid NewHearingId { get; set; }
@@ -37,6 +38,7 @@ namespace Bookings.DAL.Commands
         public string CreatedBy { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
+        public List<Endpoint> Endpoints { get; }
         public string CancelReason { get; set; }
     }
 
@@ -63,6 +65,11 @@ namespace Bookings.DAL.Commands
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
             videoHearing.AddCases(command.Cases);
+
+            if (command.Endpoints != null && command.Endpoints.Count > 0)
+            {
+                videoHearing.AddEndpoints(command.Endpoints);
+            }
 
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;

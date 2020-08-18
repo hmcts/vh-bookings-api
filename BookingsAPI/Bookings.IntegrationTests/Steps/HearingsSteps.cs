@@ -535,6 +535,14 @@ namespace Bookings.IntegrationTests.Steps
             model.CreatedBy.Should().NotBeNullOrEmpty();
             model.QuestionnaireNotRequired.Should().BeFalse();
             model.AudioRecordingRequired.Should().BeTrue();
+            model.Endpoints.Should().NotBeNullOrEmpty();
+            foreach (var endpointResponse in model.Endpoints)
+            {
+                endpointResponse.Id.Should().NotBeEmpty();
+                endpointResponse.DisplayName.Should().NotBeNullOrEmpty();
+                endpointResponse.Sip.Should().NotBeNullOrEmpty();
+                endpointResponse.Pin.Should().NotBeNullOrEmpty();
+            }
 
             Hearing hearingFromDb;
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
@@ -606,6 +614,7 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.AudioRecordingRequired = true)
+                .With(x => x.Endpoints = new List<EndpointRequest> {new EndpointRequest {DisplayName = "Cool endpoint 1"}})
                 .Build();
         }
 

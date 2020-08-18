@@ -22,6 +22,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Common.Configuration;
+using Bookings.Common.Services;
+using Microsoft.Extensions.Options;
 
 namespace Bookings.API.Controllers
 {
@@ -36,13 +39,17 @@ namespace Bookings.API.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IRandomGenerator _randomGenerator;
+        private readonly KinlyConfiguration _kinlyConfiguration;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher, IRandomGenerator randomGenerator, IOptions<KinlyConfiguration> kinlyConfiguration)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
+            _randomGenerator = randomGenerator;
+            _kinlyConfiguration = kinlyConfiguration.Value;
         }
 
         /// <summary>
@@ -123,8 +130,6 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var individualRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsIndividual).Select(x => x.Name).ToList();
-
             var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
             if (hearingType == null)
             {
@@ -145,9 +150,20 @@ namespace Bookings.API.Controllers
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
+            var endpoints = new List<Endpoint>();
+            if (request.Endpoints != null && request.Endpoints.Count > 0)
+            {
+                endpoints = request.Endpoints.Select(x =>
+                {
+                    var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
+                    var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
+                    return EndpointMapper.MapRequestToEndpoint(x, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
+                }).ToList();
+            }
+
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired)
+                request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,

@@ -54,6 +54,7 @@ namespace Bookings.IntegrationTests.Database.Queries
             hearing.HearingRoomName.Should().NotBeEmpty();
             hearing.OtherInformation.Should().NotBeEmpty();
             hearing.CreatedBy.Should().NotBeNullOrEmpty();
+            hearing.Endpoints.Should().NotBeNullOrEmpty();
         }
     }
 }

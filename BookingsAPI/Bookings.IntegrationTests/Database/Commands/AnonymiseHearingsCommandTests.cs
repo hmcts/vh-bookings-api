@@ -1,9 +1,6 @@
-﻿using AcceptanceTests.Common.Model.Hearing;
-using AcceptanceTests.Common.Model.UserRole;
-using Bookings.DAL;
+﻿using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Queries;
-using Bookings.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 using System;

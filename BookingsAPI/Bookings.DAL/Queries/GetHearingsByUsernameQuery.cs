@@ -41,6 +41,7 @@ namespace Bookings.DAL.Queries
                 .ThenInclude(x=>x.UserRole)
                 .Include(x => x.HearingType)
                 .Include(x => x.HearingVenue)
+                .Include(x => x.Endpoints)
                 .Where(x => x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
                 .ToListAsync();
         }
