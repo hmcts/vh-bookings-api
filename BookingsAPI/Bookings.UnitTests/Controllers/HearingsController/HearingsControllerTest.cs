@@ -335,7 +335,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 participant.CaseRole = new CaseRole(1, "Name");
             }
             
-            hearing.AddEndpoints(new List<Endpoint> {new Endpoint("new endpoint", "sip", "pin")});
+            hearing.AddEndpoints(new List<Endpoint> {new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin")});
 
             return hearing;
         }

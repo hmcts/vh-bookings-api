@@ -13,8 +13,8 @@ namespace Bookings.DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     DisplayName = table.Column<string>(nullable: false),
-                    Sip = table.Column<string>(nullable: false),
-                    Pin = table.Column<string>(nullable: false),
+                    SIP = table.Column<string>(nullable: false, type: "NVARCHAR(450)"),
+                    PIN = table.Column<string>(nullable: false),
                     HearingId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
@@ -32,6 +32,13 @@ namespace Bookings.DAL.Migrations
                 name: "IX_Endpoint_HearingId",
                 table: "Endpoint",
                 column: "HearingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Endpoint_SIP",
+                table: "Endpoint",
+                column: "SIP",
+                unique: true,
+                filter: "[SIP] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

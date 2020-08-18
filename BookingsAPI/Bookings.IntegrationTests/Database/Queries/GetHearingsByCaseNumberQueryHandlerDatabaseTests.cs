@@ -29,9 +29,6 @@ namespace Bookings.IntegrationTests.Database.Queries
             var caseData = seededHearing1.HearingCases.FirstOrDefault();
             TestContext.WriteLine($"New seeded video caseNumer: { caseData.Case.Number }");
 
-            var seededHearing2 = await Hooks.SeedVideoHearing();
-            var seededHearing3 = await Hooks.SeedVideoHearing();
-
             var hearing = await _handler.Handle(new GetHearingsByCaseNumberQuery(caseData.Case.Number));
 
             hearing.Should().NotBeNull();

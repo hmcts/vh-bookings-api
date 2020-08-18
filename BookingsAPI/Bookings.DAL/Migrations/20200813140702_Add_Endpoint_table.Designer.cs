@@ -59,7 +59,7 @@ namespace Bookings.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Sip")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
