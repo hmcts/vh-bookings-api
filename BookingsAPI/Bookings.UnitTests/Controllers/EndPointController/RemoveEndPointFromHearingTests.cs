@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands;
-using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
-using Bookings.DAL.Queries;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Bookings.UnitTests.Controllers.EndPointController;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -17,7 +13,7 @@ using Testing.Common.Assertions;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class RemoveEndPointFromHearingTests : HearingsControllerTest
+    public class RemoveEndPointFromHearingTests : EndPointsControllerTests
     {
         [Test]
         public async Task Should_remove_endpoint_from_hearing_for_given_hearing_and_endpointid()

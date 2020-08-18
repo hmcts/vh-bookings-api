@@ -205,9 +205,3 @@ Scenario: Hearings within 3 months not to be anonymised
 	And I have a request to anonymise the data    
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
-
-Scenario: Remove endpoint from a hearing
-	Given I have a remove endpoint from a hearing request with a valid hearing id
-	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
-	And the endpoint should be removed

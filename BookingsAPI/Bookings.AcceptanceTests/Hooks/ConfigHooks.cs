@@ -78,8 +78,7 @@ namespace Bookings.AcceptanceTests.Hooks
             {
                 CaseName = "Bookings Api Automated Test",
                 ParticipantsResponses = new List<ParticipantResponse>(),
-                EndPointResponses = new List<EndpointResponse>(),
-                EndPoints= new List<Endpoint>()
+                EndPointResponses = new List<EndpointResponse>()
             };
             context.TestData.CaseName.Should().NotBeNullOrEmpty();
         }

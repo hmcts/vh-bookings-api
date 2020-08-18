@@ -455,59 +455,6 @@ namespace Bookings.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName); 
         }
 
-        [Given(@"I have a remove endpoint from a hearing request with a (.*) hearing id")]
-        [Given(@"I have a remove endpoint from a hearing request with an (.*) hearing id")]
-        public async Task GivenIHaveARemoveParticipantFromAHearingWithAValidHearingId(Scenario scenario)
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            Context.TestData.NewHearingId = seededHearing.Id;
-            
-            Context.HttpMethod = HttpMethod.Delete;
-            var endPoints = seededHearing.GetEndpoints().ToList();
-            Context.TestData.EndPoints = endPoints;
-            var endpointToRemove = endPoints.First();
-            var endpointId = endpointToRemove.Id;
-            
-            Guid hearingId;
-
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    {
-                        hearingId = Context.TestData.NewHearingId;
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    {
-                        hearingId = Guid.NewGuid();
-                        break;
-                    }
-                case Scenario.Invalid:
-                    {
-                        hearingId = Guid.Empty;
-                        break;
-                    }
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
-            Context.Uri = RemoveEndPointFromHearing(hearingId, endpointId);
-        }
-
-        [Then(@"the endpoint should be removed")]
-        public void ThenTheParticipantShouldBeAddedOrRemoved()
-        {
-            Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
-            {
-                hearingFromDb = db.VideoHearings
-                    .Include(hearing => hearing.Endpoints)
-                    .AsNoTracking()
-                    .Single(x => x.Id == Context.TestData.NewHearingId);
-            }
-            
-            Context.TestData.EndPoints.Count.Should().BeGreaterThan(hearingFromDb.GetEndpoints().Count);
-        }
-
         private async Task SeedHearingForScenarioAsync(Scenario scenario)
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
