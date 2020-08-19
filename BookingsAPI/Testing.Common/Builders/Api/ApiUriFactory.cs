@@ -70,7 +70,7 @@ namespace Testing.Common.Builders.Api
         public static class JVEndPointEndpoints
         {
             private static string ApiRoot => "hearings";
-            public static string AddEndpointsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/endpoints";
+            public static string AddEndpointToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/endpoints";
             public static string RemoveEndPointFromHearing(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
         }
     }
