@@ -1,14 +1,15 @@
-﻿using Bookings.DAL;
+﻿using AcceptanceTests.Common.Api.Helpers;
+using Bookings.Api.Contract.Requests;
+using Bookings.DAL;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
-using Bookings.IntegrationTests.Contexts;
-using Bookings.IntegrationTests.Helper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JVEndPointEndpoints;
@@ -20,6 +21,8 @@ namespace Bookings.IntegrationTests.Steps
     {
         private Guid _hearingId;
         private Guid _removedEndPointId;
+        private static string ExistingEndPoints = "ExistingEndPoints";
+
         public EndPointSteps(Contexts.TestContext context) : base(context)
         {
             _hearingId = Guid.Empty;
@@ -30,16 +33,14 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAHearingWithEndpoints()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3);
-            _hearingId = seededHearing.Id;
-            Context.TestData.NewHearingId = seededHearing.Id;
+            PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing without endpoints")]
         public async Task GivenIHaveAHearingWithoutEndpoints()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            _hearingId = seededHearing.Id;
-            Context.TestData.NewHearingId = seededHearing.Id;
+            PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have remove non-existent endpoint from a hearing request")]
@@ -57,12 +58,39 @@ namespace Bookings.IntegrationTests.Steps
             Context.Uri = RemoveEndPointFromHearing(_hearingId, hearing.Endpoints.First().Id);
         }
 
+        [Given(@"I have add endpoint to a hearing request")]
+        public void GivenIHaveAddEndpointToAHearingRequest()
+        {
+            PrepareAddEndpointRequest(_hearingId, new AddEndpointRequest()
+            {
+                DisplayName = "Test",
+            });
+        }
+
+        private void PrepareAddEndpointRequest(Guid hearingId, AddEndpointRequest request)
+        {
+            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            Context.Uri = AddEndpointToHearing(hearingId);
+            Context.HttpMethod = HttpMethod.Post;
+        }
+
         [Then(@"the endpoint should be removed")]
         public void ThenTheEndpointShouldBeAddedOrRemoved()
         {
             var hearingFromDb = GetHearingFromDb();
             hearingFromDb.GetEndpoints().Any(ep => ep.Id == _removedEndPointId).Should().BeFalse();
         }
+
+        [Then(@"the endpoint should be added")]
+        public void ThenTheEndpointShouldBeAdded()
+        {
+            var hearingFromDb = GetHearingFromDb();
+            var endpointsAdded = (IList<Endpoint>)Context.TestData.TestContextData[EndPointSteps.ExistingEndPoints];
+            hearingFromDb.GetEndpoints().Count.Should().BeGreaterThan(endpointsAdded.Count);
+        }
+
         private Hearing GetHearingFromDb()
         {
             Hearing hearingFromDb;
@@ -74,6 +102,13 @@ namespace Bookings.IntegrationTests.Steps
                     .Single(x => x.Id == Context.TestData.NewHearingId);
             }
             return hearingFromDb;
+        }
+
+        private void PersistTestHearingData(VideoHearing seededHearing)
+        {
+            _hearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.TestData.TestContextData.Add(EndPointSteps.ExistingEndPoints, seededHearing.GetEndpoints());
         }
     }
 

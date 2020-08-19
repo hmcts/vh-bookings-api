@@ -101,7 +101,13 @@ namespace Bookings.Domain
                 AddCase(newCase.Number, newCase.Name, newCase.IsLeadCase);
             }
         }
-        
+
+        public void AddEndpoint(Endpoint endpoint)
+        {
+            Endpoints.Add(endpoint);
+            UpdatedDate = DateTime.UtcNow;
+        }
+
         public void AddEndpoints(List<Endpoint> endpoints)
         {
             endpoints.ForEach(x =>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
-using Bookings.Domain;
 using Bookings.Domain.Participants;
 
 namespace Testing.Common.Configuration
@@ -21,5 +20,6 @@ namespace Testing.Common.Configuration
         public List<EndpointResponse> EndPointResponses { get; set; }
         public List<string> RemovedPersons { get; set; }
         public UpdateHearingRequest UpdateHearingRequest { get; set; }
+        public Dictionary<string, dynamic> TestContextData { get; set; }
     }
 }
