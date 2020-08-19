@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Bookings.Domain;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;

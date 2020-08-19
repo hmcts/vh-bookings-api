@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
-using Bookings.Domain;
 using Bookings.Domain.Participants;
 
 namespace Testing.Common.Configuration
