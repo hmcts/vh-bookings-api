@@ -66,5 +66,12 @@ namespace Testing.Common.Builders.Api
             public static string GetSuitabilityAnswers(string cursor) => $"{ApiRoot}/{cursor}";
             public static string GetSuitabilityAnswerWithLimit(string cursor = "", int limit = 100) => $"{ApiRoot}/?cursor={cursor}&limit={limit}";
         }
+            
+        public static class JVEndPointEndpoints
+        {
+            private static string ApiRoot => "hearings";
+            public static string AddEndpointsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/endpoints";
+            public static string RemoveEndPointFromHearing(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
+        }
     }
 }

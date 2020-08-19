@@ -23,7 +23,7 @@ namespace Bookings.AcceptanceTests.Steps
     public sealed class HearingsSteps
     {
         private readonly TestContext _context;
-
+        
         public HearingsSteps(TestContext context)
         {
             _context = context;

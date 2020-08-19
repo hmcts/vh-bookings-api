@@ -55,6 +55,10 @@ namespace Bookings.AcceptanceTests.Models
             cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
             cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
+            var endpoints = Builder<EndpointRequest>.CreateListOfSize(3)
+                                .All()
+                                .Build().ToList();
+
             const string createdBy = "caseAdmin@emailaddress.com";
 
             _request = Builder<BookNewHearingRequest>.CreateNew()
@@ -64,6 +68,7 @@ namespace Bookings.AcceptanceTests.Models
                 .With(x => x.ScheduledDateTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1))
                 .With(x => x.ScheduledDuration = 5)
                 .With(x => x.Participants = participants)
+                .With(x => x.Endpoints = endpoints)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.QuestionnaireNotRequired = false)

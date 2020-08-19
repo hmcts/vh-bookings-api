@@ -61,6 +61,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
+            result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types", "Invalid value for hearing types");

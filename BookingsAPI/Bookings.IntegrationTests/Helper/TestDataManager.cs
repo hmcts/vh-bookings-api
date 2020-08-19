@@ -35,7 +35,7 @@ namespace Bookings.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -82,6 +82,18 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
+            if(endPointsToAdd > 0)
+            {
+                for (int i = 0; i < endPointsToAdd; i++)
+                {
+                    videoHearing.AddEndpoints(new List<Endpoint> { 
+                        new Endpoint(
+                            $"new endpoint {i}",
+                            Guid.NewGuid().ToString(),
+                            new Random().Next(1111, 9999).ToString()) });
+                }
+            }
+            
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
