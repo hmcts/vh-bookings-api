@@ -114,5 +114,50 @@ namespace Bookings.API.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        ///  Update display name of an endpoint of a given hearing
+        /// </summary>
+        /// <param name="hearingId">The hearing id</param>
+        /// <param name="endpointId">The endpoint id</param>
+        /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
+        /// <returns></returns>
+        [HttpPatch("{hearingId}/endpoints/{endpointId}/displayName")]
+        [SwaggerOperation(OperationId = "UpdateDisplayNameForEndpoint")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> UpdateDisplayNameForEndpoint(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new UpdateEndpointRequestValidation().Validate(updateEndpointRequest);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var command = new UpdateEndPointOfHearingCommand(hearingId, endpointId, updateEndpointRequest.DisplayName);
+                await _commandHandler.Handle(command);
+            }
+            catch (HearingNotFoundException exception)
+            {
+                return NotFound(exception.Message);
+            }
+            catch (EndPointNotFoundException exception)
+            {
+                return NotFound(exception.Message);
+            }
+
+            return NoContent();
+        }
     }
 }

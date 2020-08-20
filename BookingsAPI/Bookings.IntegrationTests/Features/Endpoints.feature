@@ -29,3 +29,10 @@ Scenario: Add an endpoint to a hearing that doesnt have any endpoints
     When I send the request to the endpoint
     Then the response should have the status NoContent and success status True
     And the endpoint should be added
+    
+ Scenario: Upddate an endpoint display name
+    Given I have a hearing with endpoints
+    And I have update display name of an endpoint request
+    When I send the request to the endpoint
+    Then the response should have the status NoContent and success status True
+    And the endpoint should be updated

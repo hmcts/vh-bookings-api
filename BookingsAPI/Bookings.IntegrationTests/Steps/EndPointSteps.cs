@@ -22,6 +22,7 @@ namespace Bookings.IntegrationTests.Steps
         private Guid _hearingId;
         private Guid _removedEndPointId;
         private static string ExistingEndPoints = "ExistingEndPoints";
+        private static string UpdatedEndPointId = "UpdatedEndPointId";
 
         public EndPointSteps(Contexts.TestContext context) : base(context)
         {
@@ -58,6 +59,19 @@ namespace Bookings.IntegrationTests.Steps
             Context.Uri = RemoveEndPointFromHearing(_hearingId, hearing.Endpoints.First().Id);
         }
 
+        [Given(@"I have update display name of an endpoint request")]
+        public void GivenIHaveUpdateDisplayNameOfAnEndpointRequest()
+        {
+            var hearing = GetHearingFromDb();
+            var updatedEndPointId = hearing.Endpoints.First().Id;
+            PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
+            {
+                DisplayName = "UpdatedDisplayName",
+            });
+            
+            Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
+        }
+
         [Given(@"I have add endpoint to a hearing request")]
         public void GivenIHaveAddEndpointToAHearingRequest()
         {
@@ -76,6 +90,15 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Post;
         }
 
+        private void PrepareUpdateEndpointRequest(Guid hearingId, Guid endpointId, UpdateEndpointRequest request)
+        {
+            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            Context.Uri = UpdateEndpointDisplayName(hearingId, endpointId);
+            Context.HttpMethod = HttpMethod.Patch;
+        }
+
         [Then(@"the endpoint should be removed")]
         public void ThenTheEndpointShouldBeAddedOrRemoved()
         {
@@ -89,6 +112,15 @@ namespace Bookings.IntegrationTests.Steps
             var hearingFromDb = GetHearingFromDb();
             var endpointsAdded = (IList<Endpoint>)Context.TestData.TestContextData[EndPointSteps.ExistingEndPoints];
             hearingFromDb.GetEndpoints().Count.Should().BeGreaterThan(endpointsAdded.Count);
+        }
+
+        [Then(@"the endpoint should be updated")]
+        public void ThenTheEndpointShouldBeUpdated()
+        {
+            var hearingFromDb = GetHearingFromDb();
+            var endpointsUpdated = (Guid)Context.TestData.TestContextData[EndPointSteps.UpdatedEndPointId];
+
+            hearingFromDb.GetEndpoints().First(ep => ep.Id == endpointsUpdated).DisplayName.Should().Be("UpdatedDisplayName");
         }
 
         private Hearing GetHearingFromDb()
