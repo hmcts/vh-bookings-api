@@ -71,6 +71,7 @@ namespace Testing.Common.Builders.Api
         {
             private static string ApiRoot => "hearings";
             public static string AddEndpointToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/endpoints";
+            public static string UpdateEndpointDisplayName(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}/displayName";
             public static string RemoveEndPointFromHearing(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
         }
     }

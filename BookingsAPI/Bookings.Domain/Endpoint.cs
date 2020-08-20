@@ -17,5 +17,15 @@ namespace Bookings.Domain
             Sip = sip;
             Pin = pin;
         }
+        
+        public void UpdateDisplayName(string displayName)
+        {
+            if (string.IsNullOrEmpty(displayName))
+            {
+                throw new ArgumentNullException(nameof(displayName));
+            }
+
+            DisplayName = displayName;
+        }
     }
 }
