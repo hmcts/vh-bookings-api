@@ -1,4 +1,5 @@
-﻿Feature: Endpoints
+﻿@VIH-6330
+Feature: Endpoints
   In order to manage endpoints in a hearing
   As an api service
   I want to get, set, update or delete endpoint data
