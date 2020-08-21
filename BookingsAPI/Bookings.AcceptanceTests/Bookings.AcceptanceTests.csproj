@@ -41,5 +41,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Features\EndPoints.feature.cs">
+      <DependentUpon>EndPoints.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
   
 </Project>
