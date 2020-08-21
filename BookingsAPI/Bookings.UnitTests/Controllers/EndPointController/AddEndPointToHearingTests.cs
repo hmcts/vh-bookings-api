@@ -4,21 +4,21 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
-using Bookings.UnitTests.Controllers.EndPointController;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Assertions;
 
-namespace Bookings.UnitTests.Controllers.HearingsController
+namespace Bookings.UnitTests.Controllers.EndPointController
 {
     public class AddEndPointToHearingTests : EndPointsControllerTests
     {
         [Test]
         public async Task Should_add_endpoint_to_hearing()
         {
-            var response = await Controller.AddEndPointToHearing(_hearingId, _request);
+            var response = await Controller.AddEndPointToHearing(HearingId, Request);
 
             response.Should().NotBeNull();
             var result = (NoContentResult)response;
@@ -30,7 +30,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         public async Task Should_return_badrequest_for_given_invalid_hearingid()
         {
             var hearingId = Guid.Empty;
-            var result = await Controller.AddEndPointToHearing(Guid.Empty, _request);
+            var result = await Controller.AddEndPointToHearing(Guid.Empty, Request);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -41,7 +41,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_return_badrequest_for_given_invalid_request()
         {
-            var result = await Controller.AddEndPointToHearing(_hearingId, new AddEndpointRequest());
+            var result = await Controller.AddEndPointToHearing(HearingId, new AddEndpointRequest());
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -54,11 +54,23 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             CommandHandlerMock.Setup(c => c.Handle(It.IsAny<AddEndPointFromHearingCommand>())).ThrowsAsync(new HearingNotFoundException(Guid.NewGuid()));
 
-            var result = await Controller.AddEndPointToHearing(_hearingId, _request);
+            var result = await Controller.AddEndPointToHearing(HearingId, Request);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task Should_add_endpoint_and_send_event()
+        {
+            var response = await Controller.AddEndPointToHearing(HearingId, Request);
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult) response;
+            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointFromHearingCommand>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointAddedIntegrationEvent>()), Times.Once);
         }
     }
 }

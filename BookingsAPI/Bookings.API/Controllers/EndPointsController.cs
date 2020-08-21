@@ -11,8 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
+using Bookings.Domain;
+using Bookings.Infrastructure.Services.IntegrationEvents;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace Bookings.API.Controllers
 {
@@ -24,13 +30,17 @@ namespace Bookings.API.Controllers
     {
         private readonly ICommandHandler _commandHandler;
         private readonly IRandomGenerator _randomGenerator;
+        private readonly IEventPublisher _eventPublisher;
+        private readonly IQueryHandler _queryHandler;
         private readonly KinlyConfiguration _kinlyConfiguration;
 
         public EndPointsController(ICommandHandler commandHandler, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfiguration)
+            IOptions<KinlyConfiguration> kinlyConfiguration, IEventPublisher eventPublisher, IQueryHandler queryHandler)
         {
             _commandHandler = commandHandler;
             _randomGenerator = randomGenerator;
+            _eventPublisher = eventPublisher;
+            _queryHandler = queryHandler;
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
 
@@ -63,12 +73,18 @@ namespace Bookings.API.Controllers
 
             var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
             var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-            var endPoint = EndpointMapper.MapRequestToEndpoint(addEndpointRequest, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
+            var endPoint = EndpointToResponseMapper.MapRequestToEndpoint(addEndpointRequest, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
 
             try
             {
                 var command = new AddEndPointFromHearingCommand(hearingId, endPoint);
                 await _commandHandler.Handle(command);
+
+                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+                {
+                    await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endPoint));
+                }
             }
             catch (HearingNotFoundException exception)
             {
@@ -102,6 +118,12 @@ namespace Bookings.API.Controllers
             {
                 var command = new RemoveEndPointFromHearingCommand(hearingId, endpointId);
                 await _commandHandler.Handle(command);
+
+                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+                {
+                    await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, endpointId));
+                }
             }
             catch (HearingNotFoundException exception)
             {
@@ -147,6 +169,17 @@ namespace Bookings.API.Controllers
             {
                 var command = new UpdateEndPointOfHearingCommand(hearingId, endpointId, updateEndpointRequest.DisplayName);
                 await _commandHandler.Handle(command);
+
+                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+                {
+                    var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
+
+                    if (endpoint != null)
+                    {
+                        await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint));
+                    }
+                }
             }
             catch (HearingNotFoundException exception)
             {

@@ -20,7 +20,7 @@ namespace Bookings.API.Mappings
                 .ToList();
 
             var endpoints = videoHearing.GetEndpoints()
-                .Select(EndpointMapper.MapEndpointToResponse)
+                .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
 
             var response = new HearingDetailsResponse

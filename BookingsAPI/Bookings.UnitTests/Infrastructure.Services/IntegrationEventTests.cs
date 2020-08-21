@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents;
@@ -128,6 +129,12 @@ namespace Bookings.UnitTests.Infrastructure.Services
             judge.HearingRole = new HearingRole(5, "Judge") { UserRole = new UserRole(2, "Judge") };
             judge.CaseRole = new CaseRole(3, "test4");
             
+            hearing.AddEndpoints(new List<Endpoint>
+            {
+                new Endpoint("one", Guid.NewGuid().ToString(), "1234"),
+                new Endpoint("two", Guid.NewGuid().ToString(), "1234")
+            });
+            
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
             _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
@@ -137,6 +144,8 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var typedEvent = (HearingIsReadyForVideoIntegrationEvent) @event.IntegrationEvent;
             typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
+            typedEvent.Endpoints.Should().NotBeNull();
+            typedEvent.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
         }
     }
 }
