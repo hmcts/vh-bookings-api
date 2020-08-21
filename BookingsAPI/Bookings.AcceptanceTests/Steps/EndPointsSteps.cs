@@ -17,7 +17,6 @@ namespace Bookings.AcceptanceTests.Steps
     {
         private readonly TestContext _context;
         private static string AddEndPointRequest = "AddEndPointRequest";
-        private static string UodateEndPointRequest = "AddEndPointRequest";
         private static string RemovedEndPointId = "RemovedEndPointId";
         private static string UpdatedEndPointId = "UpdatedEndPointId";
         private static string UpdateEndPointRequest = "UpdateEndPointRequest";
@@ -110,9 +109,9 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"the endpoint should be added")]
         public void ThenTheEndpointShouldBeAdded()
         {
-            var model = GetHearing();
+            var hearing = GetHearing();
             var requestUsed = (AddEndpointRequest)_context.TestData.TestContextData[AddEndPointRequest];
-            var endpointAdded = model.Endpoints.FirstOrDefault(ep => ep.DisplayName == requestUsed.DisplayName);
+            var endpointAdded = hearing.Endpoints.FirstOrDefault(ep => ep.DisplayName == requestUsed.DisplayName);
 
             endpointAdded.Should().NotBeNull();
             endpointAdded.Pin.Should().NotBeNull();
@@ -122,11 +121,11 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"the endpoint should be updated")]
         public void ThenTheEndpointShouldBeUpdated()
         {
-            var model = GetHearing();
+            var hearing = GetHearing();
             var updatedEndPointId = (Guid)_context.TestData.TestContextData[UpdatedEndPointId];
             var requestUsed = (UpdateEndpointRequest)_context.TestData.TestContextData[UpdateEndPointRequest];
 
-            var endpointUpdated = model.Endpoints.FirstOrDefault(ep => ep.Id == updatedEndPointId);
+            var endpointUpdated = hearing.Endpoints.FirstOrDefault(ep => ep.Id == updatedEndPointId);
 
             endpointUpdated.Should().NotBeNull();
             endpointUpdated.Pin.Should().NotBeNull();
@@ -137,9 +136,9 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"the endpoint should be deleted")]
         public void ThenTheEndpointShouldBeDeleted()
         {
-            var model = GetHearing();
+            var hearing = GetHearing();
             var removedEndpointId = (Guid)_context.TestData.TestContextData[RemovedEndPointId];
-            model.Endpoints.Exists(ep => ep.Id == removedEndpointId).Should().BeFalse();
+            hearing.Endpoints.Exists(ep => ep.Id == removedEndpointId).Should().BeFalse();
         }
 
         private HearingDetailsResponse GetHearing()

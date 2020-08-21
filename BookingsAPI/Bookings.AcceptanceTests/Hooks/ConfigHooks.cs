@@ -6,7 +6,6 @@ using AcceptanceTests.Common.Configuration.Users;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using Bookings.Common.Configuration;
-using Bookings.Domain;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
