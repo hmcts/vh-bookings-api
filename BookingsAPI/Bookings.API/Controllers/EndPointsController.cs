@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.DAL.Queries;
@@ -173,12 +172,7 @@ namespace Bookings.API.Controllers
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
-                    var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
-
-                    if (endpoint != null)
-                    {
-                        await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint));
-                    }
+                    await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpointId, updateEndpointRequest.DisplayName));
                 }
             }
             catch (HearingNotFoundException exception)

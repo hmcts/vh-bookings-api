@@ -113,21 +113,5 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointUpdatedIntegrationEvent>()), Times.Once);
         }
-
-        [Test]
-        public async Task Should_update_endpoint_and_not_send_event_when_cannot_find_endpoint()
-        {
-            var response = await Controller.UpdateDisplayNameForEndpoint(HearingId, Guid.NewGuid(),
-                new UpdateEndpointRequest
-                {
-                    DisplayName = "Test"
-                });
-
-            response.Should().NotBeNull();
-            var result = (NoContentResult) response;
-            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
-            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointUpdatedIntegrationEvent>()), Times.Never);
-        }
     }
 }

@@ -13,7 +13,6 @@ using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
 using FizzWare.NBuilder;
-using FizzWare.NBuilder.Extensions;
 using Testing.Common.Builders.Domain;
 using IRandomGenerator = Bookings.Common.Services.IRandomGenerator;
 

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using Bookings.Api.Contract.Responses;
 using Bookings.IntegrationTests.Contexts;
-using Bookings.IntegrationTests.Models;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.CaseTypesEndpoints;

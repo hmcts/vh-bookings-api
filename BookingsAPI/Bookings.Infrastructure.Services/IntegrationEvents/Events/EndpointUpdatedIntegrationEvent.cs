@@ -1,18 +1,18 @@
 using System;
-using Bookings.Domain;
-using Bookings.Infrastructure.Services.Dtos;
 
 namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
 {
     public class EndpointUpdatedIntegrationEvent : IIntegrationEvent
     {
-        public EndpointUpdatedIntegrationEvent(Guid hearingId, Endpoint endpoint)
+        public EndpointUpdatedIntegrationEvent(Guid hearingId, Guid endpointId, string displayName)
         {
             HearingId = hearingId;
-            Endpoint = EndpointDtoMapper.MapToDto(endpoint);
+            EndpointId = endpointId;
+            DisplayName = displayName;
         }
         
         public Guid HearingId { get; }
-        public EndpointDto Endpoint { get; }
+        public Guid EndpointId { get; }
+        public string DisplayName { get; }
     }
 }
