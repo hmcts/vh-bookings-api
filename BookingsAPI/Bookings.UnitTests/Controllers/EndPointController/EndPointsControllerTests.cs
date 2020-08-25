@@ -1,26 +1,33 @@
 ﻿using Bookings.Api.Contract.Requests;
 using Bookings.API.Controllers;
 using Bookings.Common.Configuration;
-using Bookings.Common.Services;
 using Bookings.DAL.Commands.Core;
 using Bookings.Infrastructure.Services.IntegrationEvents;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using Bookings.DAL.Queries;
+using Bookings.DAL.Queries.Core;
+using Bookings.Domain;
+using Bookings.Domain.RefData;
+using FizzWare.NBuilder;
+using Testing.Common.Builders.Domain;
+using IRandomGenerator = Bookings.Common.Services.IRandomGenerator;
 
 namespace Bookings.UnitTests.Controllers.EndPointController
 {
     public class EndPointsControllerTests
     {
-        protected AddEndpointRequest _request;
-        protected Guid _hearingId;
+        protected AddEndpointRequest Request;
+        protected Guid HearingId;
+        protected Guid EndpointId;
 
+        protected Mock<IQueryHandler> QueryHandler;
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
-        private IEventPublisher _eventPublisher;
-        private ServiceBusQueueClientFake _sbQueueClient;
+        protected Mock<IEventPublisher> EventPublisher;
         protected KinlyConfiguration KinlyConfiguration;
 
         protected EndPointsController Controller;
@@ -28,16 +35,64 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [SetUp]
         public void TestInitialize()
         {
-            _hearingId = Guid.NewGuid();
-            _request = new AddEndpointRequest { DisplayName = "DisplayNameAdded" };
+            HearingId = Guid.NewGuid();
+            EndpointId = Guid.NewGuid();
+            Request = new AddEndpointRequest { DisplayName = "DisplayNameAdded" };
 
-            _sbQueueClient = new ServiceBusQueueClientFake();
+            QueryHandler = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
             RandomGenerator = new Mock<IRandomGenerator>();
-            _eventPublisher = new EventPublisher(_sbQueueClient);
+            EventPublisher = new Mock<IEventPublisher>();
             KinlyConfiguration = new KinlyConfiguration { SipAddressStem = "@videohearings.com" };
 
-            Controller = new EndPointsController(CommandHandlerMock.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration));
+            Controller = new EndPointsController(
+                CommandHandlerMock.Object,
+                RandomGenerator.Object,
+                new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
+                EventPublisher.Object, QueryHandler.Object);
+
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(GetVideoHearing(true));
+        }
+
+        protected VideoHearing GetVideoHearing(bool createdStatus = false)
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("123", "Case name", true);
+            hearing.CaseType = CaseType;
+            foreach (var participant in hearing.Participants)
+            {
+                participant.HearingRole = new HearingRole(1, "Name") {UserRole = new UserRole(1, "User"),};
+                participant.CaseRole = new CaseRole(1, "Civil Money Claims");
+            }
+
+            if (createdStatus)
+                hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
+
+            var endpoint = new Builder(new BuilderSettings())
+                .CreateNew<Endpoint>()
+                .WithFactory(() => new Endpoint("one", Guid.NewGuid().ToString(), "1234"))
+                .With(x => x.Id, EndpointId)
+                .Build();
+
+            hearing.AddEndpoint(endpoint);
+            
+            return hearing;
+        }
+
+        private CaseType CaseType => new CaseType(1, "Civil") {CaseRoles = new List<CaseRole> {CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> {"Claimant LIP"})}};
+
+        protected CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, string userRole, List<string> roles)
+        {
+            var hearingRoles = new List<HearingRole>();
+
+            foreach (var role in roles)
+            {
+                hearingRoles.Add(new HearingRole(1, role) {UserRole = new UserRole(1, userRole)});
+            }
+
+            var caseRole = new CaseRole(caseId, caseRoleName) {HearingRoles = hearingRoles};
+
+            return caseRole;
         }
     }
 }

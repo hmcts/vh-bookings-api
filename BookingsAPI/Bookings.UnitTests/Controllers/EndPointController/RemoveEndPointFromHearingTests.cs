@@ -3,14 +3,14 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
-using Bookings.UnitTests.Controllers.EndPointController;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Assertions;
 
-namespace Bookings.UnitTests.Controllers.HearingsController
+namespace Bookings.UnitTests.Controllers.EndPointController
 {
     public class RemoveEndPointFromHearingTests : EndPointsControllerTests
     {
@@ -69,6 +69,18 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task Should_remove_endpoint_and_send_event()
+        {
+            var response = await Controller.RemoveEndPointFromHearing(HearingId, EndpointId);
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult) response;
+            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<RemoveEndPointFromHearingCommand>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointRemovedIntegrationEvent>()), Times.Once);
         }
     }
 }

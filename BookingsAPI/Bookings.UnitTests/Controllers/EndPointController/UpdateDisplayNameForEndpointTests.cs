@@ -9,6 +9,7 @@ using System.Net;
 using Testing.Common.Assertions;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace Bookings.UnitTests.Controllers.EndPointController
 {
@@ -95,6 +96,22 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        }
+
+        [Test]
+        public async Task Should_update_endpoint_and_send_event()
+        {
+            var response = await Controller.UpdateDisplayNameForEndpoint(HearingId, EndpointId,
+                new UpdateEndpointRequest
+                {
+                    DisplayName = "Test"
+                });
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult) response;
+            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointUpdatedIntegrationEvent>()), Times.Once);
         }
     }
 }

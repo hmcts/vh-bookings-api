@@ -4,7 +4,7 @@ using Bookings.Domain;
 
 namespace Bookings.API.Mappings
 {
-    public static class EndpointMapper
+    public static class EndpointToResponseMapper
     {
         public static EndpointResponse MapEndpointToResponse(Endpoint endpoint)
         {
