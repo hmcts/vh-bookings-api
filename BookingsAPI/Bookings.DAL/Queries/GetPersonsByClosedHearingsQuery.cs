@@ -29,7 +29,7 @@ namespace Bookings.DAL.Queries
                 .Include("HearingRole")
                 .Include("Hearing.HearingCases.Case")
                 .Where(h => h.Hearing.ScheduledDateTime >= cutOffDate)
-                .Select(p => p.Person.Username)
+                .Select(p => p.Person.Username).Distinct()
                 .ToListAsync();
 
             var personsInPastHearings = await _context.Participants
