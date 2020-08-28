@@ -147,5 +147,38 @@ namespace Bookings.UnitTests.Infrastructure.Services
             typedEvent.Endpoints.Should().NotBeNull();
             typedEvent.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
         }
+
+        [Test]
+        public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
+        {
+            var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234"));
+            _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<EndpointAddedIntegrationEvent>();
+        }
+
+        [Test]
+        public void Should_publish_message_to_queue_when_EndpointRemovedIntegrationEvent_is_raised()
+        {
+            var endpointRemovedIntegrationEvent = new EndpointRemovedIntegrationEvent(Guid.NewGuid(), "sip");
+            _eventPublisher.PublishAsync(endpointRemovedIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<EndpointRemovedIntegrationEvent>();
+        }
+
+        [Test]
+        public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
+        {
+            var endpointUpdatedIntegrationEvent = new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name");
+            _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<EndpointUpdatedIntegrationEvent>();
+        }
     }
 }
