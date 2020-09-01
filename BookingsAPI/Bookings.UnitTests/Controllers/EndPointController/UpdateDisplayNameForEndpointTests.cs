@@ -16,12 +16,11 @@ namespace Bookings.UnitTests.Controllers.EndPointController
     public class UpdateDisplayNameForEndpointTests : EndPointsControllerTests
     {
         [Test]
-        public async Task Should_update_endpoint_for_given_hearing_and_endpointid()
+        public async Task Should_update_endpoint_for_given_hearing_and_endpoint_id()
         {
             var hearingId = Guid.NewGuid();
-            var endpointId = Guid.NewGuid();
 
-            var response = await Controller.UpdateDisplayNameForEndpoint(hearingId, endpointId,
+            var response = await Controller.UpdateDisplayNameForEndpoint(hearingId, EndpointId,
                 new UpdateEndpointRequest { 
                     DisplayName = "Test"
                     });

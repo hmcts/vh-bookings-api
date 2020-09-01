@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
+using Bookings.DAL.Queries;
+using Bookings.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +19,11 @@ namespace Bookings.UnitTests.Controllers.EndPointController
     public class RemoveEndPointFromHearingTests : EndPointsControllerTests
     {
         [Test]
-        public async Task Should_remove_endpoint_from_hearing_for_given_hearing_and_endpointid()
+        public async Task Should_remove_endpoint_from_hearing_for_given_hearing_and_endpoint_id()
         {
             var hearingId = Guid.NewGuid();
-            var endpointId = Guid.NewGuid();
 
-            var response = await Controller.RemoveEndPointFromHearing(hearingId, endpointId);
+            var response = await Controller.RemoveEndPointFromHearing(hearingId, EndpointId);
 
             response.Should().NotBeNull();
             var result = (NoContentResult)response;
@@ -54,6 +57,22 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task Should_return_notfound_for_given_invalid_endpoint_id()
+        {
+            var videoHearing = GetVideoHearing(true);
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(videoHearing);
+
+            var hearingId = Guid.NewGuid();
+
+            var result = await Controller.RemoveEndPointFromHearing(hearingId, Guid.NewGuid());
+
+            result.Should().NotBeNull();
+            var objectResult = (NotFoundObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
         }
 
         [Test]

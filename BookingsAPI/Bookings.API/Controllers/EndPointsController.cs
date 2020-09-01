@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.DAL.Queries;
@@ -115,13 +116,21 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var command = new RemoveEndPointFromHearingCommand(hearingId, endpointId);
+                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
+
+                if (endpoint == null)
+                {
+                    return NotFound($"Can not find endpoint to delete with id: {endpointId}");
+                }
+                
+                var command = new RemoveEndPointFromHearingCommand(hearingId, endpoint.Id);
                 await _commandHandler.Handle(command);
 
-                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                
                 if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
-                    await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, endpointId));
+                    await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, endpoint.Sip));
                 }
             }
             catch (HearingNotFoundException exception)
@@ -172,7 +181,9 @@ namespace Bookings.API.Controllers
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
-                    await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpointId, updateEndpointRequest.DisplayName));
+                    var endpoint = hearing.GetEndpoints().Single(x => x.Id == endpointId);
+                    
+                    await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip, updateEndpointRequest.DisplayName));
                 }
             }
             catch (HearingNotFoundException exception)
