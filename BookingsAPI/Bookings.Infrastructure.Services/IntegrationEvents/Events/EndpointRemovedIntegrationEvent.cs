@@ -4,13 +4,13 @@ namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
 {
     public class EndpointRemovedIntegrationEvent : IIntegrationEvent
     {
-        public EndpointRemovedIntegrationEvent(Guid hearingId, Guid endpointId)
+        public EndpointRemovedIntegrationEvent(Guid hearingId, string sip)
         {
             HearingId = hearingId;
-            EndpointId = endpointId;
+            Sip = sip;
         } 
         
         public Guid HearingId { get; }
-        public Guid EndpointId { get; }
+        public string Sip { get; }
     }
 }
