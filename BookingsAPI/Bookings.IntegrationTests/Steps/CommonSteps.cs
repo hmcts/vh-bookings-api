@@ -46,5 +46,14 @@ namespace Bookings.IntegrationTests.Steps
         {
             Context.Response.Content.ReadAsStringAsync().Result.Should().Contain(errorMessage);
         }
+
+        [Given(@"I have a hearing")]
+        public async Task GivenIHaveAHearing()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.TestData.SeededHearing = seededHearing;
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+        }
     }
 }

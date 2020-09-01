@@ -37,7 +37,7 @@ Feature: Persons
     Then the response should have the status NotFound and success status False
 
   Scenario: Get person by contact email search term
-    Given I have a get person by contact email search term request 
+    Given I have a get person by contact email search term request
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And persons details should be retrieved
@@ -65,9 +65,23 @@ Feature: Persons
     Then the response should have the status OK and success status True
     And suitability answers retrieved should 'be empty'
 
-Scenario: Get a list of usernames for hearings older than 3 months
-	Given I have an hearing older than 3 months
-	And I have a request to get the usernames for old hearings
-	When I send the request to the endpoint
-	Then the response should have the status OK and success status True
-	And a list of hearing usernames should be retrieved
+  Scenario: Get a list of usernames for hearings older than 3 months
+    Given I have an hearing older than 3 months
+    And I have a request to get the usernames for old hearings
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And a list of hearing usernames should be retrieved
+
+  Scenario: Get list of hearings for judge username for deletion
+    Given I have a hearing
+    And I have a search for hearings using a judge username request
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And a list of hearings for deletion is 0
+
+  Scenario: Get list of hearings for non-judge username for deletion
+    Given I have a hearing
+    And I have a search for hearings using a non-judge username request
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And a list of hearings for deletion is 1

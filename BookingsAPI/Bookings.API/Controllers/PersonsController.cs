@@ -58,6 +58,24 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
+        /// Get all hearings for a person by username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        [HttpGet("username/hearings", Name = "GetHearingsByUsernameForDeletion")]
+        [SwaggerOperation(OperationId = "GetHearingsByUsernameForDeletion")]
+        [ProducesResponseType(typeof(List<HearingsByUsernameForDeletionResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsByUsernameForDeletion([FromQuery] string username)
+        {
+            var query = new GetHearingsByUsernameForDeletionQuery(username);
+            var hearings = await _queryHandler.Handle<GetHearingsByUsernameForDeletionQuery, List<VideoHearing>>(query);
+
+            var response = hearings.Select(HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse).ToList();
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Get a person by contact email
         /// </summary>
         /// <param name="contactEmail">The contact email of the person</param>

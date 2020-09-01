@@ -43,12 +43,6 @@ namespace Bookings.DAL.Queries
                 .AsNoTracking().ToListAsync();
 
             var filteredHearings = FilterHearingsWithoutUserAsJudge(allHearings, query.Username);
-
-            // foreach (var videoHearing in filteredHearings)
-            // {
-            //     RemoveOtherParticipants(videoHearing);
-            // }
-
             return filteredHearings.ToList();
         }
 
