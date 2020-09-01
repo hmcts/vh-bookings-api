@@ -34,13 +34,6 @@ namespace Bookings.IntegrationTests.Database.Queries
             result.Any(x => x.Id == hearing2.Id).Should().BeTrue();
             result.Any(x => x.Id == hearing1.Id).Should().BeFalse();
             result.Any(x => x.Id == hearing3.Id).Should().BeFalse();
-
-            result.SelectMany(x => x.GetParticipants()).Any(x => x.HearingRole.UserRole.IsJudge).Should().BeFalse();
-            foreach (var hearing in result)
-            {
-                hearing.GetParticipants().Count.Should().Be(1);
-                hearing.GetCases().First().Should().NotBeNull();
-            }
         }
         
         [Test]

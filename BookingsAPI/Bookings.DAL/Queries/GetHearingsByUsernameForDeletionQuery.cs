@@ -46,17 +46,6 @@ namespace Bookings.DAL.Queries
             return filteredHearings.ToList();
         }
 
-        private static void RemoveOtherParticipants(VideoHearing videoHearing)
-        {
-            var participants = videoHearing.GetParticipants();
-            var participantsToRemove = participants.Where(p =>
-                !(p.HearingRole.UserRole.IsIndividual || p.HearingRole.UserRole.IsRepresentative)).ToList();
-            foreach (var participant in participantsToRemove)
-            {
-                videoHearing.RemoveParticipant(participant);
-            }
-        }
-
         private IEnumerable<VideoHearing> FilterHearingsWithoutUserAsJudge(List<VideoHearing> allHearings,
             string username)
         {
@@ -66,7 +55,6 @@ namespace Bookings.DAL.Queries
                     x.Person.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
                 if (!p.HearingRole.UserRole.IsJudge)
                 {
-                    RemoveOtherParticipants(hearing);
                     yield return hearing;
                 }
             }
