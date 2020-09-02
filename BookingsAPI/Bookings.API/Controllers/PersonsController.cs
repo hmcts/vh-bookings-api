@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.DAL.Exceptions;
 
 namespace Bookings.API.Controllers
 {
@@ -69,10 +70,19 @@ namespace Bookings.API.Controllers
         public async Task<IActionResult> GetHearingsByUsernameForDeletion([FromQuery] string username)
         {
             var query = new GetHearingsByUsernameForDeletionQuery(username);
-            var hearings = await _queryHandler.Handle<GetHearingsByUsernameForDeletionQuery, List<VideoHearing>>(query);
+            try
+            {
+                var hearings =
+                    await _queryHandler.Handle<GetHearingsByUsernameForDeletionQuery, List<VideoHearing>>(query);
 
-            var response = hearings.Select(HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse).ToList();
-            return Ok(response);
+                var response = hearings.Select(HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse)
+                    .ToList();
+                return Ok(response);
+            }
+            catch (PersonNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>

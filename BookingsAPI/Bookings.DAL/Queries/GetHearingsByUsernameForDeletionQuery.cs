@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,13 @@ namespace Bookings.DAL.Queries
         {
             var username = query.Username.ToLower().Trim();
 
+            var person = await _context.Persons.SingleOrDefaultAsync(x => x.Username.ToLower().Trim() == username);
+
+            if (person == null)
+            {
+                throw new PersonNotFoundException(username);
+            }
+            
             var allHearings = await _context.VideoHearings
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.Person)
