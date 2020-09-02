@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;
@@ -31,7 +32,16 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have a get a person by contact email request with a valid email")]
         public void GivenIHaveAGetAPersonByContactEmailRequestWithAValidEmail()
         {
-            _context.Request = _context.Get(GetPersonByContactEmail(_context.TestData.ParticipantsResponses[0].ContactEmail));
+            _context.Request =
+                _context.Get(GetPersonByContactEmail(_context.TestData.ParticipantsResponses[0].ContactEmail));
+        }
+        
+        [Given(@"I have a search for hearings by username for removal request")]
+        public void GivenIHaveASearchForHearingsByUsernameForRemovalRequest()
+        {
+            var participant = _context.TestData.ParticipantsResponses.First(x => x.UserRoleName.ToLower() != "judge");
+            _context.Request =
+                _context.Get(GetHearingsByUsernameForDeletion(participant.Username));
         }
 
         [Then(@"a person should be retrieved")]
@@ -48,6 +58,7 @@ namespace Bookings.AcceptanceTests.Steps
             model.Title.Should().Be(_context.TestData.ParticipantsResponses[0].Title);
             model.Username.Should().Be(_context.TestData.ParticipantsResponses[0].Username);
         }
+
         [Given(@"I have a get a person by search term request with a valid search term")]
         public void GivenIHaveAGetAPersonBySearchTermRequestWithAValidSearchTerm()
         {
@@ -55,10 +66,12 @@ namespace Bookings.AcceptanceTests.Steps
             var searchTerm = new SearchTermRequest(contactEmail.Substring(0, 3));
             _context.Request = _context.Post(PostPersonBySearchTerm, searchTerm);
         }
+
         [Then(@"persons details should be retrieved")]
         public void ThenPersonsDetailsShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_context.Response.Content);
+            var model =
+                RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_context.Response.Content);
             var expected = _context.TestData.ParticipantsResponses[0];
             var actual = model.Single(u => u.ContactEmail == expected.ContactEmail);
             actual.Should().NotBeNull();
@@ -75,12 +88,16 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"suitability answers for '(.*)' should be updated")]
         public void ThenSuitabilityAnswersForShouldBeUpdated(string participant)
         {
-            var username = _context.TestData.ParticipantsResponses.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Username;
-            var participantId = _context.TestData.ParticipantsResponses.FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
+            var username = _context.TestData.ParticipantsResponses
+                .FirstOrDefault(x => x.UserRoleName.Equals(participant)).Username;
+            var participantId = _context.TestData.ParticipantsResponses
+                .FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
             _context.Request = _context.Get(GetPersonSuitabilityAnswers(username));
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(_context.Response.Content);
+            var model =
+                RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(
+                    _context.Response.Content);
             var expectedResult = _context.TestData.Answers;
 
             expectedResult[0].Key.Should().Be(model[0].Answers[0].Key);
@@ -94,6 +111,28 @@ namespace Bookings.AcceptanceTests.Steps
             model[0].ParticipantId.Should().Be(participantId);
             model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
             model[0].QuestionnaireNotRequired.Should().Be(false);
+        }
+
+        [Then(@"a list of hearings for deletion is (.*)")]
+        public void ThenAListOfHearingsForDeletionIs(int expectedNumOfHearings)
+        {
+            var response =
+                RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByUsernameForDeletionResponse>>(
+                    _context.Response.Content);
+
+            response.Count.Should().Be(expectedNumOfHearings);
+
+            if (expectedNumOfHearings == 1)
+            {
+                var result = response[0];
+                var hearing = _context.TestData.Hearing;
+                var leadCase = hearing.Cases.FirstOrDefault(x => x.IsLeadCase) ?? hearing.Cases.First();
+                result.HearingId.Should().Be(hearing.Id);
+                result.Venue.Should().Be(hearing.HearingVenueName);
+                result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+                result.CaseName.Should().Be(leadCase.Name);
+                result.CaseNumber.Should().Be(leadCase.Number);
+            }
         }
     }
 }

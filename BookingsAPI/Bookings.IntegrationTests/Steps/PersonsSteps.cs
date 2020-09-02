@@ -123,6 +123,26 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have a search for hearings using a judge username request")]
+        public void GivenIHaveASearchForHearingsUsingAJudgeUsernameRequest()
+        {
+            var judge = Context.TestData.SeededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsJudge);
+            SetupGetHearingsByUsernameForDeletionRequest(judge.Person.Username);
+        }
+        
+        [Given(@"I have a search for hearings using a non-judge username request")]
+        public void GivenIHaveASearchForHearingsUsingANonJudgeUsernameRequest()
+        {
+            var nonJudge = Context.TestData.SeededHearing.GetParticipants().First(x => !x.HearingRole.UserRole.IsJudge);
+            SetupGetHearingsByUsernameForDeletionRequest(nonJudge.Person.Username);
+        }
+
+        private void SetupGetHearingsByUsernameForDeletionRequest(string username)
+        {
+            Context.Uri = GetHearingsByUsernameForDeletion(username);
+            Context.HttpMethod = HttpMethod.Get;
+        }
+        
         [Then(@"person details should be retrieved")]
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {
@@ -223,6 +243,27 @@ namespace Bookings.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
 
+        }
+        
+        [Then(@"a list of hearings for deletion is (.*)")]
+        public async Task ThenAListOfHearingsForDeletionIs(int expectedNumOfHearings)
+        {
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByUsernameForDeletionResponse>>(json);
+
+            response.Count.Should().Be(expectedNumOfHearings);
+            
+            if (expectedNumOfHearings == 1)
+            {
+                var result = response[0];
+                var hearing = Context.TestData.SeededHearing;
+                var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases().First();
+                result.HearingId.Should().Be(hearing.Id);
+                result.Venue.Should().Be(hearing.HearingVenueName);
+                result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+                result.CaseName.Should().Be(leadCase.Name);
+                result.CaseNumber.Should().Be(leadCase.Number);
+            }
         }
     }
 }

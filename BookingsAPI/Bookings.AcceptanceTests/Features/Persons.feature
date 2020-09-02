@@ -23,3 +23,10 @@ Scenario: Get person by search term
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And persons details should be retrieved
+
+Scenario: Get persons hearings by username for deletion
+	Given I have a hearing
+	And I have a search for hearings by username for removal request
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+	And a list of hearings for deletion is 1
