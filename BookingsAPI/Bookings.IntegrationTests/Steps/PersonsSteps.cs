@@ -137,6 +137,12 @@ namespace Bookings.IntegrationTests.Steps
             SetupGetHearingsByUsernameForDeletionRequest(nonJudge.Person.Username);
         }
 
+        [Given(@"I have a search for hearings using non-existent username request")]
+        public void GivenIHaveASearchForHearingsUsingANonExistentUsernameRequest()
+        {
+            SetupGetHearingsByUsernameForDeletionRequest("does.not.exist@test.net");
+        }
+        
         private void SetupGetHearingsByUsernameForDeletionRequest(string username)
         {
             Context.Uri = GetHearingsByUsernameForDeletion(username);

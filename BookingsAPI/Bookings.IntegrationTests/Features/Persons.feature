@@ -85,3 +85,8 @@ Feature: Persons
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And a list of hearings for deletion is 1
+
+  Scenario: Get Not Found for non-existent username for deletion
+    Given I have a search for hearings using non-existent username request
+    When I send the request to the endpoint
+    Then the response should have the status NotFound and success status False

@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
@@ -49,6 +50,14 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             var result = await _handler.Handle(query);
             result.Any().Should().BeFalse();
+        }
+
+        [Test]
+        public void should_throw_person_not_found_exception_if_username_not_found()
+        {
+            var username = "do_not_exist@test.com";
+            var query = new GetHearingsByUsernameForDeletionQuery(username);
+            Assert.ThrowsAsync<PersonNotFoundException>(() => _handler.Handle(query));
         }
     }
 }
