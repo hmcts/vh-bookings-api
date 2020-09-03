@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.DAL.Commands;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
 
 namespace Bookings.API.Controllers
@@ -22,10 +24,12 @@ namespace Bookings.API.Controllers
     public class PersonsController : Controller
     {
         private readonly IQueryHandler _queryHandler;
+        private readonly ICommandHandler _commandHandler;
 
-        public PersonsController(IQueryHandler queryHandler)
+        public PersonsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
         {
             _queryHandler = queryHandler;
+            _commandHandler = commandHandler;
         }
 
         /// <summary>
@@ -173,6 +177,29 @@ namespace Bookings.API.Controllers
             return Ok(new UserWithClosedConferencesResponse { Usernames = person });
         }
 
+        /// <summary>
+        /// Anonymise a person
+        /// </summary>
+        /// <param name="username">username of person</param>
+        /// <returns></returns>
+        [HttpPatch("username/{username}/anonymise", Name = "AnonymisePersonWithUsername")]
+        [SwaggerOperation(OperationId = "AnonymisePersonWithUsername")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AnonymisePerson(string username)
+        {
+            var command = new AnonymisePersonCommand(username);
+            try
+            {
+                await _commandHandler.Handle(command);
+                return Ok();
+            }
+            catch (PersonNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+        
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)
         {
             PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;

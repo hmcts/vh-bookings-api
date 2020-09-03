@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Bookings.DAL.Commands
 {
-    public class AnonymiseHearingsCommand : ICommand
+	public class AnonymiseHearingsCommand : ICommand
     {
         public int RecordsUpdated { get; set; }
         public AnonymiseHearingsCommand()

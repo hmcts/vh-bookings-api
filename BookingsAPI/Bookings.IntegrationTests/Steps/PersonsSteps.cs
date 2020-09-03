@@ -111,7 +111,7 @@ namespace Bookings.IntegrationTests.Steps
         [Given(@"I have a get person without suitability answers by username request with an (.*) username")]
         public async Task GivenIHaveAGetPersonWithoutSuitabilityAnswersByUsernameRequest(Scenario scenario)
         {
-            await SetUserNameForGivenScenario(scenario, false);
+            await SetUserNameForGivenScenario(scenario);
             Context.Uri = GetPersonSuitabilityAnswers(_username);
             Context.HttpMethod = HttpMethod.Get;
         }
@@ -143,10 +143,29 @@ namespace Bookings.IntegrationTests.Steps
             SetupGetHearingsByUsernameForDeletionRequest("does.not.exist@test.net");
         }
         
+        [Given(@"I have a valid anonymise person request")]
+        public void GivenIHaveAValidAnonymisePersonRequest()
+        {
+            var participant = Context.TestData.SeededHearing.GetParticipants().First(x => !x.HearingRole.UserRole.IsJudge);
+            SetupAnonymisePersonRequest(participant.Person.Username);
+        }
+        
+        [Given(@"I have a non-existent anonymise person request")]
+        public void GivenIHaveANonExistentAnonymisePersonRequest()
+        {
+            SetupAnonymisePersonRequest("does.not.exist@test.net");
+        }
+        
         private void SetupGetHearingsByUsernameForDeletionRequest(string username)
         {
             Context.Uri = GetHearingsByUsernameForDeletion(username);
             Context.HttpMethod = HttpMethod.Get;
+        }
+
+        private void SetupAnonymisePersonRequest(string username)
+        {
+            Context.Uri = AnonymisePerson(username);
+            Context.HttpMethod = HttpMethod.Patch;
         }
         
         [Then(@"person details should be retrieved")]

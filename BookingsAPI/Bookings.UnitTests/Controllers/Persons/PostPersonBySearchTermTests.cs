@@ -21,11 +21,11 @@ namespace Bookings.UnitTests.Controllers.Persons
             var persons = new List<Person> { 
                                 new Person("Mr", "Test", "Tester", "T Tester") { ContactEmail = "test@tester.com" },
                                 new Person("Mr", "Tester", "Test", "T Test") { ContactEmail = "atest@tester.com" }};
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetPersonBySearchTermQuery, List<Person>>(It.IsAny<GetPersonBySearchTermQuery>()))
            .ReturnsAsync(persons);
 
-            var result = await _controller.PostPersonBySearchTerm(searchTermRequest);
+            var result = await Controller.PostPersonBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result;
@@ -33,7 +33,7 @@ namespace Bookings.UnitTests.Controllers.Persons
             var personResponses = (List<PersonResponse>)objectResult.Value;
             personResponses.Count.Should().Be(2);
             personResponses[0].LastName.Should().Be("Test");
-            _queryHandlerMock.Verify(x => x.Handle<GetPersonBySearchTermQuery, List<Person>>(It.IsAny<GetPersonBySearchTermQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetPersonBySearchTermQuery, List<Person>>(It.IsAny<GetPersonBySearchTermQuery>()), Times.Once);
         }
     }
 }

@@ -38,6 +38,26 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
+        public void AnonymisePerson()
+        {
+            var firstname = RandomString(10);
+            var lastName = RandomString(10);
+            var newUsername = $"{firstname}.{lastName}@hearings.reform.hmcts.net";
+            var contactEmail = $"{RandomString(10)}@randomdomain.com";
+
+            FirstName = firstname;
+            LastName = lastName;
+            Username = newUsername;
+            ContactEmail = contactEmail;
+        }
+        
+        private string RandomString(int length)
+        {
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         private void ValidateArguments(string firstName, string lastName, string username)
         {
             if (string.IsNullOrEmpty(firstName))

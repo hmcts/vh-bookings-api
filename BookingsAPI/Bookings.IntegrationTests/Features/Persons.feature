@@ -90,3 +90,15 @@ Feature: Persons
     Given I have a search for hearings using non-existent username request
     When I send the request to the endpoint
     Then the response should have the status NotFound and success status False
+    
+  Scenario: Successfully anonymise a person
+    Given I have a hearing
+    And I have a valid anonymise person request
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+
+  Scenario: Anonymise a non-existent person
+    Given I have a hearing
+    And I have a non-existent anonymise person request
+    When I send the request to the endpoint
+    Then the response should have the status NotFound and success status False

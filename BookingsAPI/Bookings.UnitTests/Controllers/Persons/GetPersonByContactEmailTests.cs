@@ -18,7 +18,7 @@ namespace Bookings.UnitTests.Controllers.Persons
         {
             var contactEmail = string.Empty;
 
-            var result = await _controller.GetPersonByContactEmail(contactEmail);
+            var result = await Controller.GetPersonByContactEmail(contactEmail);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -30,27 +30,27 @@ namespace Bookings.UnitTests.Controllers.Persons
         public async Task Should_return_notfound_with_no_matching_person()
         {
             var contactEmail = "test@user.com";
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()))
            .ReturnsAsync((Person) null);
 
-            var result = await _controller.GetPersonByContactEmail(contactEmail);
+            var result = await Controller.GetPersonByContactEmail(contactEmail);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            _queryHandlerMock.Verify(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()), Times.Once);
         }
 
         [Test]
         public async Task Should_return_PersonResponse_successfully()
         {
             var contactEmail = "test@user.com";
-            _queryHandlerMock
+            QueryHandlerMock
            .Setup(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()))
            .ReturnsAsync(new Person("Mr","Test","Tester","T Tester"));
 
-            var result = await _controller.GetPersonByContactEmail(contactEmail);
+            var result = await Controller.GetPersonByContactEmail(contactEmail);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result;
@@ -58,7 +58,7 @@ namespace Bookings.UnitTests.Controllers.Persons
             var personResponse = (PersonResponse)objectResult.Value;
             personResponse.Should().NotBeNull();
             personResponse.LastName.Should().Be("Tester");
-            _queryHandlerMock.Verify(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()), Times.Once);
         }
     }
 }
