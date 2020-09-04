@@ -22,11 +22,11 @@ namespace Bookings.UnitTests.Controllers.Persons
         public async Task Should_return_empty_list_of_suitability_answers_if_no_hearings()
         {
             var userName = "userName@hearings.reform.net";
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
              .ReturnsAsync(new List<VideoHearing>());
 
-            var result = await _controller.GetPersonSuitabilityAnswers(userName);
+            var result = await Controller.GetPersonSuitabilityAnswers(userName);
 
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
@@ -39,11 +39,11 @@ namespace Bookings.UnitTests.Controllers.Persons
         public async Task Should_return_empty_list_of_suitability_answers_if_not_found_username()
         {
             var videoHearing = TestData(false);
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
              .ReturnsAsync(new List<VideoHearing> { videoHearing });
             var userName = videoHearing.Participants.First(p => p is Individual).Person.Username;
-            var result = await _controller.GetPersonSuitabilityAnswers(userName);
+            var result = await Controller.GetPersonSuitabilityAnswers(userName);
 
             result.Should().NotBeNull();
 
@@ -59,11 +59,11 @@ namespace Bookings.UnitTests.Controllers.Persons
         {
             var hearing = TestData();
             var userName = hearing.Participants[0].Person.Username;
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
              .ReturnsAsync(new List<VideoHearing> { hearing });
 
-            var result = await _controller.GetPersonSuitabilityAnswers(userName);
+            var result = await Controller.GetPersonSuitabilityAnswers(userName);
 
             result.Should().NotBeNull();
 
@@ -81,7 +81,7 @@ namespace Bookings.UnitTests.Controllers.Persons
         {
             var username = string.Empty;
 
-            var result = await _controller.GetPersonSuitabilityAnswers(username);
+            var result = await Controller.GetPersonSuitabilityAnswers(username);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -95,11 +95,11 @@ namespace Bookings.UnitTests.Controllers.Persons
             var hearing = TestData();
             var userName = "some@new.com";
             
-            _queryHandlerMock
+            QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
              .ReturnsAsync(new List<VideoHearing> { hearing });
 
-            var result = await _controller.GetPersonSuitabilityAnswers(userName);
+            var result = await Controller.GetPersonSuitabilityAnswers(userName);
 
             result.Should().NotBeNull();
 
@@ -113,16 +113,16 @@ namespace Bookings.UnitTests.Controllers.Persons
         public async Task Should_return_list_of_usernames_for_old_hearings()
         {
             var usernameList = new List<string> { "testUser1@email.com", "testUser2@email.com", "testUser3@email.com" };
-            _queryHandlerMock
+            QueryHandlerMock
                 .Setup(x => x.Handle<GetPersonsByClosedHearingsQuery, List<string>>(It.IsAny<GetPersonsByClosedHearingsQuery>()))
                 .ReturnsAsync(usernameList);
 
-            var result = await _controller.GetPersonByClosedHearings();
+            var result = await Controller.GetPersonByClosedHearings();
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             var response = (UserWithClosedConferencesResponse)(objectResult.Value);
             response.Usernames.Count.Should().Be(3);
-            _queryHandlerMock
+            QueryHandlerMock
                 .Verify(x => x.Handle<GetPersonsByClosedHearingsQuery, List<string>>(It.IsAny<GetPersonsByClosedHearingsQuery>()), Times.Once);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Bookings.API.Controllers;
+using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
@@ -12,17 +13,18 @@ namespace Bookings.UnitTests.Controllers.Persons
 {
     public class PersonsControllerTest
     {
-        protected PersonsController _controller;
-        protected Mock<IQueryHandler> _queryHandlerMock;
+        protected PersonsController Controller;
+        protected Mock<IQueryHandler> QueryHandlerMock;
+        protected Mock<ICommandHandler> CommandHandlerMock;
 
         [SetUp]
         public void Setup()
         {
-            _queryHandlerMock = new Mock<IQueryHandler>();
-            _controller = new PersonsController(_queryHandlerMock.Object);
+            QueryHandlerMock = new Mock<IQueryHandler>();
+            CommandHandlerMock = new Mock<ICommandHandler>();
+            Controller = new PersonsController(QueryHandlerMock.Object, CommandHandlerMock.Object);
         }
-
-
+        
         protected VideoHearing TestData(bool addSuitability = true)
         {
             var builder = new VideoHearingBuilder();
