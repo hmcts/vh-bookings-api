@@ -272,7 +272,7 @@ namespace Bookings.API.Controllers
         /// <returns></returns>
         [HttpPut("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
         [SwaggerOperation(OperationId = "UpdateParticipantDetails")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequest request)
