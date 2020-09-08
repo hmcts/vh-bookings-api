@@ -71,6 +71,7 @@ namespace Bookings.API.Controllers
         [SwaggerOperation(OperationId = "GetHearingsByUsernameForDeletion")]
         [ProducesResponseType(typeof(List<HearingsByUsernameForDeletionResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> GetHearingsByUsernameForDeletion([FromQuery] string username)
         {
             var query = new GetHearingsByUsernameForDeletionQuery(username);
@@ -86,6 +87,10 @@ namespace Bookings.API.Controllers
             catch (PersonNotFoundException)
             {
                 return NotFound();
+            }
+            catch (PersonIsAJudgeException)
+            {
+                return Unauthorized();
             }
         }
 

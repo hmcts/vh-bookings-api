@@ -38,7 +38,7 @@ namespace Bookings.IntegrationTests.Database.Queries
         }
         
         [Test]
-        public async Task Should_return_no_hearings_for_judge_username()
+        public async Task Should_throw_exception_when_searching_with_judge_username()
         {
             var hearing = await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
@@ -48,8 +48,7 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             var query = new GetHearingsByUsernameForDeletionQuery(username);
 
-            var result = await _handler.Handle(query);
-            result.Any().Should().BeFalse();
+            Assert.ThrowsAsync<PersonIsAJudgeException>(() => _handler.Handle(query)).Message.Should().Contain("is a judge");
         }
 
         [Test]
