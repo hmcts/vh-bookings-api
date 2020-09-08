@@ -333,3 +333,4 @@ ASALocalRun/
 *.feature.cs
 
 .sonarqube/
+.DS_Store
