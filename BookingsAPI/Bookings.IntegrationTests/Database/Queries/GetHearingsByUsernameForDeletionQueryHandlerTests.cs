@@ -26,7 +26,8 @@ namespace Bookings.IntegrationTests.Database.Queries
             var hearing2 = await Hooks.SeedVideoHearing();
             var hearing3 = await Hooks.SeedVideoHearing();
 
-            var username = hearing2.GetPersons().First().Username;
+            var individual = hearing2.GetParticipants().First(x => x.HearingRole.UserRole.IsIndividual);
+            var username = individual.Person.Username;
 
             var query = new GetHearingsByUsernameForDeletionQuery(username);
 
