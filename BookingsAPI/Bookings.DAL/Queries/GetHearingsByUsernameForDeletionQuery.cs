@@ -50,21 +50,23 @@ namespace Bookings.DAL.Queries
                 .Where(x => x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
                 .AsNoTracking().ToListAsync();
 
-            var filteredHearings = FilterHearingsWithoutUserAsJudge(allHearings, query.Username);
+            var filteredHearings = FilterHearingsWithRoleAsRepOrIndividual(allHearings, query.Username);
             return filteredHearings.ToList();
         }
 
-        private IEnumerable<VideoHearing> FilterHearingsWithoutUserAsJudge(List<VideoHearing> allHearings,
+        private IEnumerable<VideoHearing> FilterHearingsWithRoleAsRepOrIndividual(List<VideoHearing> allHearings,
             string username)
         {
             foreach (var hearing in allHearings)
             {
                 var p = hearing.GetParticipants().First(x =>
                     x.Person.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
-                if (!p.HearingRole.UserRole.IsJudge)
+                if (p.HearingRole.UserRole.IsJudge)
                 {
-                    yield return hearing;
+                    throw new PersonIsAJudgeException(username);
                 }
+
+                yield return hearing;
             }
         }
     }

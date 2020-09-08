@@ -87,6 +87,10 @@ namespace Bookings.API.Controllers
             {
                 return NotFound();
             }
+            catch (PersonIsAJudgeException)
+            {
+                return Unauthorized();
+            }
         }
 
         /// <summary>

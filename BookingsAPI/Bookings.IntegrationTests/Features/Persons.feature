@@ -76,8 +76,7 @@ Feature: Persons
     Given I have a hearing
     And I have a search for hearings using a judge username request
     When I send the request to the endpoint
-    Then the response should have the status OK and success status True
-    And a list of hearings for deletion is 0
+    Then the response should have the status Unauthorized and success status False
 
   Scenario: Get list of hearings for non-judge username for deletion
     Given I have a hearing
