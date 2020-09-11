@@ -24,6 +24,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Common.Configuration;
 using Bookings.Common.Services;
+using Bookings.Domain.Participants;
 using Microsoft.Extensions.Options;
 
 namespace Bookings.API.Controllers
@@ -155,9 +156,12 @@ namespace Bookings.API.Controllers
             {
                 endpoints = request.Endpoints.Select(x =>
                 {
+                    Participant defenceAdvocate = x.DefenceAdvocateId.HasValue
+                        ? Representative.CreateRepresentativeWithId(x.DefenceAdvocateId.Value)
+                        : null; 
                     var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
                     var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                    return EndpointToResponseMapper.MapRequestToEndpoint(x, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
+                    return EndpointToResponseMapper.MapRequestToEndpoint(x, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin, defenceAdvocate);
                 }).ToList();
             }
 

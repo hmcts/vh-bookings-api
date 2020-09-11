@@ -1,6 +1,7 @@
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 
 namespace Bookings.API.Mappings
 {
@@ -17,9 +18,10 @@ namespace Bookings.API.Mappings
             };
         }
 
-        public static Endpoint MapRequestToEndpoint(EndpointRequest request, string sip, string pin)
+        public static Endpoint MapRequestToEndpoint(EndpointRequest request, string sip, string pin,
+            Participant defenceAdvocate)
         {
-            return new Endpoint(request.DisplayName, sip, pin, null);
+            return new Endpoint(request.DisplayName, sip, pin, defenceAdvocate);
         }
     }
 }

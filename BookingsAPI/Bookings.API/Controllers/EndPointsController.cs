@@ -14,6 +14,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.API.Helpers;
 using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
@@ -56,7 +57,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> AddEndPointToHearing(Guid hearingId, AddEndpointRequest addEndpointRequest)
+        public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
             if (hearingId == Guid.Empty)
             {
@@ -71,16 +72,22 @@ namespace Bookings.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-            var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-            var endPoint = EndpointToResponseMapper.MapRequestToEndpoint(addEndpointRequest, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
-
             try
             {
+                var hearing =
+                    await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+
+                var defenceAdvocate =
+                    DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(addEndpointRequest, hearing.GetParticipants());
+                var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
+                var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
+                var endPoint = EndpointToResponseMapper.MapRequestToEndpoint(addEndpointRequest,
+                    $"{sip}{_kinlyConfiguration.SipAddressStem}", pin, defenceAdvocate);
+
+
                 var command = new AddEndPointToHearingCommand(hearingId, endPoint);
                 await _commandHandler.Handle(command);
 
-                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
                     await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endPoint));
@@ -106,7 +113,7 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> RemoveEndPointFromHearing(Guid hearingId, Guid endpointId)
+        public async Task<IActionResult> RemoveEndPointFromHearingAsync(Guid hearingId, Guid endpointId)
         {
             if (hearingId == Guid.Empty)
             {
@@ -115,22 +122,13 @@ namespace Bookings.API.Controllers
             }
 
             try
-            {
-                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-                var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
-
-                if (endpoint == null)
-                {
-                    return NotFound($"Can not find endpoint to delete with id: {endpointId}");
-                }
-                
-                var command = new RemoveEndPointFromHearingCommand(hearingId, endpoint.Id);
+            {   
+                var command = new RemoveEndPointFromHearingCommand(hearingId, endpointId);
                 await _commandHandler.Handle(command);
-
-                
+                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
-                    await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, endpoint.Sip));
+                    await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, command.RemoveSip));
                 }
             }
             catch (HearingNotFoundException exception)
@@ -146,19 +144,19 @@ namespace Bookings.API.Controllers
         }
 
         /// <summary>
-        ///  Update display name of an endpoint of a given hearing
+        ///  Update an endpoint of a given hearing
         /// </summary>
         /// <param name="hearingId">The hearing id</param>
         /// <param name="endpointId">The endpoint id</param>
         /// <param name="updateEndpointRequest">Details of the endpoint to be updated</param>
         /// <returns></returns>
-        [HttpPatch("{hearingId}/endpoints/{endpointId}/displayName")]
+        [HttpPatch("{hearingId}/endpoints/{endpointId}")]
         [SwaggerOperation(OperationId = "UpdateDisplayNameForEndpoint")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> UpdateDisplayNameForEndpoint(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
+        public async Task<IActionResult> UpdateDisplayNameForEndpointAsync(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
         {
             if (hearingId == Guid.Empty)
             {
@@ -175,15 +173,18 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var command = new UpdateEndPointOfHearingCommand(hearingId, endpointId, updateEndpointRequest.DisplayName);
+                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+                var defenceAdvocate =
+                    DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(updateEndpointRequest, hearing.GetParticipants());
+                var command = new UpdateEndPointOfHearingCommand(hearingId, endpointId, updateEndpointRequest.DisplayName, defenceAdvocate);
                 await _commandHandler.Handle(command);
 
-                var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
                     var endpoint = hearing.GetEndpoints().Single(x => x.Id == endpointId);
-                    
-                    await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip, updateEndpointRequest.DisplayName));
+
+                    await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip,
+                        updateEndpointRequest.DisplayName, defenceAdvocate?.Person.Username));
                 }
             }
             catch (HearingNotFoundException exception)

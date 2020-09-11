@@ -51,7 +51,7 @@ namespace Bookings.AcceptanceTests.Steps
             var updatedEndPointId = _context.TestData.EndPointResponses.First().Id;
             _context.TestData.TestContextData.Add(UpdatedEndPointId, updatedEndPointId);
             _context.TestData.TestContextData.Add(UpdateEndPointRequest, updateEndpointRequest);
-            _context.Request = _context.Patch(UpdateEndpointDisplayName(hearingId, updatedEndPointId), updateEndpointRequest);
+            _context.Request = _context.Patch(UpdateEndpoint(hearingId, updatedEndPointId), updateEndpointRequest);
         }
 
 
@@ -75,7 +75,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveUpdateNonexistentEndpointToAHearingRequestWithAValidHearingId(Scenario scenario)
         {
             var hearingId = GetHearingIdForTest(scenario);
-            _context.Request = _context.Patch(UpdateEndpointDisplayName(hearingId, Guid.NewGuid()), new UpdateEndpointRequest()
+            _context.Request = _context.Patch(UpdateEndpoint(hearingId, Guid.NewGuid()), new UpdateEndpointRequest()
             {
                 DisplayName = "Test",
             });
@@ -99,7 +99,7 @@ namespace Bookings.AcceptanceTests.Steps
             var hearingId = GetHearingIdForTest(scenario);
 
             var updatedEndPointId = _context.TestData.EndPointResponses.First().Id;
-            _context.Request = _context.Patch(UpdateEndpointDisplayName(hearingId, updatedEndPointId), new UpdateEndpointRequest()
+            _context.Request = _context.Patch(UpdateEndpoint(hearingId, updatedEndPointId), new UpdateEndpointRequest()
             {
                 DisplayName = string.Empty,
             });

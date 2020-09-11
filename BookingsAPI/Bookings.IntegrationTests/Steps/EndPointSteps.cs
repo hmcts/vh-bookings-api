@@ -50,6 +50,13 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Delete;
             Context.Uri = RemoveEndPointFromHearing(_hearingId, Guid.NewGuid());
         }
+        
+        [Given(@"I have remove endpoint from a non-existent hearing request")]
+        public void GivenIHaveRemoveEndpointFromANonExistentHearingRequest()
+        {
+            Context.HttpMethod = HttpMethod.Delete;
+            Context.Uri = RemoveEndPointFromHearing(Guid.NewGuid(), Guid.NewGuid());
+        }
 
         [Given(@"I have remove endpoint from a hearing request")]
         public void GivenIHaveRemoveEndpointFromAHearingRequest()
@@ -67,6 +74,21 @@ namespace Bookings.IntegrationTests.Steps
             PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
             {
                 DisplayName = "UpdatedDisplayName",
+            });
+            
+            Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
+        }
+        
+        [Given(@"I have update an endpoint request with a defence advocate")]
+        public void GivenIHaveUpdateEndpointWithDefenceAdvocateRequest()
+        {
+            var hearing = GetHearingFromDb();
+            var updatedEndPointId = hearing.Endpoints.First().Id;
+            var rep = hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
+            PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
+            {
+                DisplayName = "UpdatedDisplayName",
+                DefenceAdvocateId = rep.Id
             });
             
             Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
@@ -95,7 +117,7 @@ namespace Bookings.IntegrationTests.Steps
             var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            Context.Uri = UpdateEndpointDisplayName(hearingId, endpointId);
+            Context.Uri = UpdateEndpoint(hearingId, endpointId);
             Context.HttpMethod = HttpMethod.Patch;
         }
 
@@ -117,10 +139,26 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the endpoint should be updated")]
         public void ThenTheEndpointShouldBeUpdated()
         {
-            var hearingFromDb = GetHearingFromDb();
-            var endpointsUpdated = (Guid)Context.TestData.TestContextData[EndPointSteps.UpdatedEndPointId];
+            AssertEndpointUpdated();
+        }
 
-            hearingFromDb.GetEndpoints().First(ep => ep.Id == endpointsUpdated).DisplayName.Should().Be("UpdatedDisplayName");
+        [Then(@"the endpoint should be updated with a defence advocate")]
+        public void ThenTheEndpointShouldBeUpdatedWithADefenceAdvocate()
+        {
+            AssertEndpointUpdated(true);
+        }
+        
+        private void AssertEndpointUpdated(bool checkForDefenceAdvocate = false)
+        {
+            var hearingFromDb = GetHearingFromDb();
+            var endpointId = (Guid) Context.TestData.TestContextData[UpdatedEndPointId];
+
+            var updatedEndpoint = hearingFromDb.GetEndpoints().First(ep => ep.Id == endpointId);
+            updatedEndpoint.DisplayName.Should().Be("UpdatedDisplayName");
+
+            if (!checkForDefenceAdvocate) return;
+            var rep = hearingFromDb.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
+            updatedEndpoint.DefenceAdvocate.Id.Should().Be(rep.Id);
         }
 
         private Hearing GetHearingFromDb()
@@ -129,10 +167,13 @@ namespace Bookings.IntegrationTests.Steps
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings
-                    .Include(hearing => hearing.Endpoints)
+                    .Include(x => x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x => x.UserRole)
+                    .Include(h => h.Participants).ThenInclude(x => x.Person)
+                    .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                     .AsNoTracking()
                     .Single(x => x.Id == Context.TestData.NewHearingId);
             }
+
             return hearingFromDb;
         }
 
@@ -140,7 +181,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             _hearingId = seededHearing.Id;
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.TestData.TestContextData.Add(EndPointSteps.ExistingEndPoints, seededHearing.GetEndpoints());
+            Context.TestData.TestContextData.Add(ExistingEndPoints, seededHearing.GetEndpoints());
         }
     }
 

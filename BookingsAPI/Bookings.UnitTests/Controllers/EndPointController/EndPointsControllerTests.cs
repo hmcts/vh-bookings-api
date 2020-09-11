@@ -12,7 +12,6 @@ using Bookings.DAL.Queries;
 using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
-using FizzWare.NBuilder;
 using Testing.Common.Builders.Domain;
 using IRandomGenerator = Bookings.Common.Services.IRandomGenerator;
 
@@ -61,11 +60,6 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             Hearing = new VideoHearingBuilder().Build();
             Hearing.AddCase("123", "Case name", true);
             Hearing.CaseType = CaseType;
-            foreach (var participant in Hearing.Participants)
-            {
-                participant.HearingRole = new HearingRole(1, "Name") {UserRole = new UserRole(1, "User"),};
-                participant.CaseRole = new CaseRole(1, "Civil Money Claims");
-            }
 
             if (createdStatus)
                 Hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);

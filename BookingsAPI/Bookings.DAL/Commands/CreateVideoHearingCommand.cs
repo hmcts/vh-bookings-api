@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
-using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
 {
@@ -71,7 +69,6 @@ namespace Bookings.DAL.Commands
             if (command.Endpoints != null && command.Endpoints.Count > 0)
             {
                 videoHearing.AddEndpoints(command.Endpoints);
-                _context.Entry(videoHearing.Endpoints.Last()).State = EntityState.Added;
             }
             
             await _context.SaveChangesAsync();

@@ -96,6 +96,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             newlyAddedEndPointInDb.DisplayName.Should().Be(displayName);
             newlyAddedEndPointInDb.Pin.Should().Be(pin);
             newlyAddedEndPointInDb.Sip.Should().Be(sip);
+            newlyAddedEndPointInDb.DefenceAdvocate.Should().NotBeNull();
+            newlyAddedEndPointInDb.DefenceAdvocate.Id.Should().Be(dA.Id);
         }
 
         [TearDown]
