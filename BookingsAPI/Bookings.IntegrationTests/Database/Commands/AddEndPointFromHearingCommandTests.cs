@@ -6,6 +6,7 @@ using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -64,6 +65,36 @@ namespace Bookings.IntegrationTests.Database.Commands
             newlyAddedEndPointInDb.DisplayName.Should().Be(displayName);
             newlyAddedEndPointInDb.Pin.Should().Be(pin);
             newlyAddedEndPointInDb.Sip.Should().Be(sip);
+        }
+        [Test]
+        public async Task Should_add_endpoint_with_defence_advocate_to_hearing()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var beforeCount = seededHearing.GetEndpoints().Count;
+
+            var displayName = "newDisplayName";
+            var sip = "newSIP";
+            var pin = "9999";
+            var newEndpoint = new Endpoint(displayName, sip, pin);
+
+            var representative = (Representative)seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+            await _commandHandler.Handle(new AddEndPointFromHearingCommand(_newHearingId, representative.Id, newEndpoint));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+
+            var newEndPointList = returnedVideoHearing.GetEndpoints();
+            var afterCount = newEndPointList.Count;
+
+            afterCount.Should().BeGreaterThan(beforeCount);
+
+            var newlyAddedEndPointInDb = newEndPointList.Single(ep => ep.DisplayName.Equals(displayName));
+            newlyAddedEndPointInDb.DisplayName.Should().Be(displayName);
+            newlyAddedEndPointInDb.Pin.Should().Be(pin);
+            newlyAddedEndPointInDb.Sip.Should().Be(sip);
+            newlyAddedEndPointInDb.DefenceAdvocate.Id.Should().Be(representative.Id);
         }
 
         [TearDown]

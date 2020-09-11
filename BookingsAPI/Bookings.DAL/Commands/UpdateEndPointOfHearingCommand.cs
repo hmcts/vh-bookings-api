@@ -17,10 +17,19 @@ namespace Bookings.DAL.Commands
             DisplayName = displayName;
         }
 
+        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, Guid participantId)
+        {
+            HearingId = hearingId;
+            EndpointId = endpointId;
+            DisplayName = displayName;
+            ParticipantId = participantId;
+        }
+
         public Guid HearingId { get; set; }
         public Guid EndpointId { get; set; }
         public string DisplayName { get; set; }
-}
+        public Guid? ParticipantId { get; set; }
+    }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
     {
@@ -33,9 +42,13 @@ namespace Bookings.DAL.Commands
 
         public async Task Handle(UpdateEndPointOfHearingCommand command)
         {
-            var hearing = await _context.VideoHearings
-                .Include(hearing => hearing.Endpoints)
-                .SingleOrDefaultAsync(x => x.Id == command.HearingId);
+            IQueryable<VideoHearing> query = _context.VideoHearings;
+            if (command.ParticipantId.HasValue)
+            {
+                query = query.Include(h => h.Participants);
+            }
+            query = query.Include(h => h.Endpoints);
+            var hearing = await query.SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
             {
@@ -49,6 +62,19 @@ namespace Bookings.DAL.Commands
             }
 
             endpoint.UpdateDisplayName(command.DisplayName);
+            if (command.ParticipantId.HasValue)
+            {
+                var participant = hearing.Participants.SingleOrDefault(e => e.Id == command.ParticipantId);
+                if (participant == null)
+                {
+                    throw new ParticipantNotFoundException(command.ParticipantId.Value);
+                }
+                endpoint.AssignDefenceAdvocate(participant);
+            }
+            else
+            {
+                endpoint.AssignDefenceAdvocate(null);
+            }
             await _context.SaveChangesAsync();
         }
     }

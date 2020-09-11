@@ -104,6 +104,16 @@ namespace Bookings.Domain
 
         public void AddEndpoint(Endpoint endpoint)
         {
+            if (DoesEndpointExist(endpoint.Sip))
+            {
+                throw new DomainRuleException(nameof(endpoint), "Endpoint already exists in hearing");
+            }
+            if (DoesDefenceAdvocateExist(endpoint.DefenceAdvocate))
+            {
+                throw new DomainRuleException(nameof(endpoint), "Defence advocate already exists for this endpoint");
+            }
+            //endpoint.Hearing = this;
+            //endpoint.HearingId = this.Id;
             Endpoints.Add(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
@@ -112,12 +122,7 @@ namespace Bookings.Domain
         {
             endpoints.ForEach(x =>
             {
-                var ep = new Endpoint(x.DisplayName, x.Sip, x.Pin)
-                {
-                    Hearing = this, HearingId = Id
-                };
-                
-                Endpoints.Add(ep);
+                AddEndpoint(x);
             }); 
         }
 
@@ -274,7 +279,14 @@ namespace Bookings.Domain
         {
             return Participants.Any(x => x.Person.Username == username);
         }
-
+        private bool DoesEndpointExist(string sip)
+        {
+            return Endpoints.Any(x => x.Sip == sip);
+        }
+        private bool DoesDefenceAdvocateExist(Participant defenceAdvocate)
+        {
+            return Endpoints.Any(x => x.DefenceAdvocate == defenceAdvocate && defenceAdvocate != null);
+        }
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
             HearingType hearingType)
         {

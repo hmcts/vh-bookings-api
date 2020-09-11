@@ -5,6 +5,7 @@ using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
+using Bookings.Domain.Participants;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -82,8 +83,53 @@ namespace Bookings.IntegrationTests.Database.Commands
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+        }
 
+        [Test]
+        public async Task Should_update_endpoint_defence_advocate()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
 
+            var endpoint = seededHearing.GetEndpoints().First();
+            var updatedDisplayName = "updatedDisplayName";
+            var representative = (Representative)seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, representative.Id));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
+            updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+        }
+
+        [Test]
+        public async Task Should_update_endpoint_defence_advocate_to_null()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var endpoint = seededHearing.GetEndpoints().First();
+            var updatedDisplayName = "updatedDisplayName";
+            var representative = (Representative)seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, representative.Id));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
+            updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+            updatedEndPoint.DefenceAdvocate.Id.Should().Be(representative.Id);
+
+            endpoint = seededHearing.GetEndpoints().First();
+            updatedDisplayName = "updatedDisplayName - reset";
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName));
+
+            returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
+            updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+            updatedEndPoint.DefenceAdvocate.Should().BeNull();
         }
     }
 }

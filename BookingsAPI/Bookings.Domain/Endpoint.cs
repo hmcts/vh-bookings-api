@@ -1,5 +1,6 @@
 using System;
 using Bookings.Domain.Ddd;
+using Bookings.Domain.Participants;
 
 namespace Bookings.Domain
 {
@@ -10,6 +11,7 @@ namespace Bookings.Domain
         public string Pin { get; set; }
         public Guid HearingId { get; set; }
         public Hearing Hearing { get; set; }
+        public Participant DefenceAdvocate { get; private set; }
 
         public Endpoint(string displayName, string sip, string pin)
         {
@@ -17,7 +19,10 @@ namespace Bookings.Domain
             Sip = sip;
             Pin = pin;
         }
-        
+        public void AssignDefenceAdvocate(Participant defenceAdvocate)
+        {
+            DefenceAdvocate = defenceAdvocate;
+        }
         public void UpdateDisplayName(string displayName)
         {
             if (string.IsNullOrEmpty(displayName))

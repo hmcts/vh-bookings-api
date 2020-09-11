@@ -34,6 +34,7 @@ namespace Bookings.DAL.Commands
                 .Include("Participants.Person.Organisation")
                 .Include("Participants.Questionnaire")
                 .Include("Participants.Questionnaire.SuitabilityAnswers")
+                .Include("Endpoints")
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
