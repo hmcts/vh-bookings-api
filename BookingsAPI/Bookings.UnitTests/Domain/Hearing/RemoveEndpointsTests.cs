@@ -14,10 +14,12 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void Should_remove_endpoint_from_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
-            hearing.AddEndpoints(new List<Endpoint> 
-                {   new Endpoint("new endpoint1", Guid.NewGuid().ToString(), "pin"),
-                    new Endpoint("new endpoint2", Guid.NewGuid().ToString(), "pin"),
-                    new Endpoint("new endpoint2", Guid.NewGuid().ToString(), "pin")});
+            hearing.AddEndpoints(new List<Endpoint>
+            {
+                new Endpoint("new endpoint1", Guid.NewGuid().ToString(), "pin", null),
+                new Endpoint("new endpoint2", Guid.NewGuid().ToString(), "pin", null),
+                new Endpoint("new endpoint2", Guid.NewGuid().ToString(), "pin", null)
+            });
             
             var beforeRemoveCount = hearing.GetEndpoints().Count;
             hearing.RemoveEndpoint(hearing.GetEndpoints().First());

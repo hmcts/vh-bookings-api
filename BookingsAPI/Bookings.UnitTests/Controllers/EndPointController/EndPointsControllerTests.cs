@@ -22,6 +22,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
     {
         protected AddEndpointRequest Request;
         protected Guid HearingId;
+        protected VideoHearing Hearing;
         protected Guid EndpointId;
 
         protected Mock<IQueryHandler> QueryHandler;
@@ -37,13 +38,13 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             HearingId = Guid.NewGuid();
             EndpointId = Guid.NewGuid();
-            Request = new AddEndpointRequest { DisplayName = "DisplayNameAdded" };
+            Request = new AddEndpointRequest {DisplayName = "DisplayNameAdded"};
 
             QueryHandler = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
             RandomGenerator = new Mock<IRandomGenerator>();
             EventPublisher = new Mock<IEventPublisher>();
-            KinlyConfiguration = new KinlyConfiguration { SipAddressStem = "@videohearings.com" };
+            KinlyConfiguration = new KinlyConfiguration {SipAddressStem = "@videohearings.com"};
 
             Controller = new EndPointsController(
                 CommandHandlerMock.Object,
@@ -51,37 +52,39 @@ namespace Bookings.UnitTests.Controllers.EndPointController
                 new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
                 EventPublisher.Object, QueryHandler.Object);
 
-            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(GetVideoHearing(true));
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(GetVideoHearing(true));
         }
 
         protected VideoHearing GetVideoHearing(bool createdStatus = false)
         {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase("123", "Case name", true);
-            hearing.CaseType = CaseType;
-            foreach (var participant in hearing.Participants)
+            Hearing = new VideoHearingBuilder().Build();
+            Hearing.AddCase("123", "Case name", true);
+            Hearing.CaseType = CaseType;
+            foreach (var participant in Hearing.Participants)
             {
                 participant.HearingRole = new HearingRole(1, "Name") {UserRole = new UserRole(1, "User"),};
                 participant.CaseRole = new CaseRole(1, "Civil Money Claims");
             }
 
             if (createdStatus)
-                hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
+                Hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
-            var endpoint = new Builder(new BuilderSettings())
-                .CreateNew<Endpoint>()
-                .WithFactory(() => new Endpoint("one", Guid.NewGuid().ToString(), "1234"))
-                .With(x => x.Id, EndpointId)
-                .Build();
-
-            hearing.AddEndpoint(endpoint);
-            
-            return hearing;
+            var endpoint = new Endpoint("one", Guid.NewGuid().ToString(), "1234", null);
+            Hearing.AddEndpoint(endpoint);
+            return Hearing;
         }
 
-        private CaseType CaseType => new CaseType(1, "Civil") {CaseRoles = new List<CaseRole> {CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> {"Claimant LIP"})}};
+        private CaseType CaseType => new CaseType(1, "Civil")
+        {
+            CaseRoles = new List<CaseRole>
+            {
+                CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> {"Claimant LIP"})
+            }
+        };
 
-        protected CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, string userRole, List<string> roles)
+        protected CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, string userRole,
+            List<string> roles)
         {
             var hearingRoles = new List<HearingRole>();
 

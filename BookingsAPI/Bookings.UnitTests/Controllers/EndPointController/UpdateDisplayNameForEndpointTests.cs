@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Net;
 using Testing.Common.Assertions;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         public async Task Should_update_endpoint_for_given_hearing_and_endpoint_id()
         {
             var hearingId = Guid.NewGuid();
-
+            EndpointId = Hearing.Endpoints.First().Id;
             var response = await Controller.UpdateDisplayNameForEndpoint(hearingId, EndpointId,
                 new UpdateEndpointRequest { 
                     DisplayName = "Test"
@@ -100,6 +101,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_update_endpoint_and_send_event()
         {
+            EndpointId = Hearing.Endpoints.First().Id;
             var response = await Controller.UpdateDisplayNameForEndpoint(HearingId, EndpointId,
                 new UpdateEndpointRequest
                 {

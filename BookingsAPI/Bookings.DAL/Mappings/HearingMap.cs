@@ -30,7 +30,7 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.CancelReason).HasMaxLength(255);
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
-            builder.HasMany<Endpoint>("Endpoints").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
+            builder.HasMany<Endpoint>("Endpoints");
             builder.HasMany<Participant>("Participants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
 
             builder.HasOne(x => x.CaseType).WithMany().HasForeignKey(x => x.CaseTypeId).IsRequired();

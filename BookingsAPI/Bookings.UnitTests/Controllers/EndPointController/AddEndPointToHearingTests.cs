@@ -23,7 +23,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             response.Should().NotBeNull();
             var result = (NoContentResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointFromHearingCommand>()), Times.Once);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_return_notfound_for_given_invalid_hearingId()
         {
-            CommandHandlerMock.Setup(c => c.Handle(It.IsAny<AddEndPointFromHearingCommand>())).ThrowsAsync(new HearingNotFoundException(Guid.NewGuid()));
+            CommandHandlerMock.Setup(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>())).ThrowsAsync(new HearingNotFoundException(Guid.NewGuid()));
 
             var result = await Controller.AddEndPointToHearing(HearingId, Request);
 
@@ -69,7 +69,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             response.Should().NotBeNull();
             var result = (NoContentResult) response;
             result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
-            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointFromHearingCommand>()), Times.Once);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointAddedIntegrationEvent>()), Times.Once);
         }
     }
