@@ -10,10 +10,6 @@ namespace Bookings.Domain
         public string Sip { get; set; }
         public string Pin { get; set; }
         public Participant DefenceAdvocate { get; private set; }
-        // private Endpoint()
-        // {
-        //     Id = Guid.NewGuid();
-        // }
         
         protected Endpoint(){}
 
