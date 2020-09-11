@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200911124945_add_field_zipSuccess_to_hearing_table")]
+    partial class add_field_zipSuccess_to_hearing_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,14 +49,11 @@ namespace Bookings.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DefenceAdvocateId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("HearingId")
+                    b.Property<Guid>("HearingId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Pin")
@@ -65,8 +64,6 @@ namespace Bookings.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DefenceAdvocateId");
 
                     b.HasIndex("HearingId");
 
@@ -494,13 +491,11 @@ namespace Bookings.DAL.Migrations
 
             modelBuilder.Entity("Bookings.Domain.Endpoint", b =>
                 {
-                    b.HasOne("Bookings.Domain.Participants.Participant", "DefenceAdvocate")
-                        .WithMany()
-                        .HasForeignKey("DefenceAdvocateId");
-
-                    b.HasOne("Bookings.Domain.Hearing", null)
+                    b.HasOne("Bookings.Domain.Hearing", "Hearing")
                         .WithMany("Endpoints")
-                        .HasForeignKey("HearingId");
+                        .HasForeignKey("HearingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Bookings.Domain.Hearing", b =>
