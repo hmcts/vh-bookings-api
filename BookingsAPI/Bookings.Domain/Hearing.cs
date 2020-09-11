@@ -71,6 +71,7 @@ namespace Bookings.Domain
         public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
+        public bool? ZipSuccess { get; set; }
 
         public void CancelHearing()
         {
