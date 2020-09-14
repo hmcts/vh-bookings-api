@@ -41,7 +41,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var hearingId = Guid.NewGuid();
 
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
-                new UpdateEndPointOfHearingCommand(hearingId, Guid.NewGuid(), "DP")));
+                new UpdateEndPointOfHearingCommand(hearingId, Guid.NewGuid(), "DP", null)));
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
 
             Assert.ThrowsAsync<EndPointNotFoundException>(() => _commandHandler.Handle(
-                new UpdateEndPointOfHearingCommand(seededHearing.Id, Guid.NewGuid(), "DP")));
+                new UpdateEndPointOfHearingCommand(seededHearing.Id, Guid.NewGuid(), "DP", null)));
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
 
             Assert.ThrowsAsync<ArgumentNullException>(() => _commandHandler.Handle(
-                new UpdateEndPointOfHearingCommand(seededHearing.Id, seededHearing.GetEndpoints().First().Id, string.Empty)));
+                new UpdateEndPointOfHearingCommand(seededHearing.Id, seededHearing.GetEndpoints().First().Id, string.Empty, null)));
         }
 
         [Test]
@@ -75,15 +75,34 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var endpoint = seededHearing.GetEndpoints().First();
             var updatedDisplayName = "updatedDisplayName";
-            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName));
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, null));
 
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+        }
+        
+        [Test]
+        public async Task Should_update_endpoint_with_defence_advocate()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var endpoint = seededHearing.GetEndpoints().First();
+            var dA = seededHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
+            var updatedDisplayName = "updatedDisplayName";
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, dA));
 
 
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
+            updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+            updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
+            updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
         }
     }
 }

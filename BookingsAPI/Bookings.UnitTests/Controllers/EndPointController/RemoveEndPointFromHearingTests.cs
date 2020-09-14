@@ -22,7 +22,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             var hearingId = Guid.NewGuid();
             EndpointId = Hearing.Endpoints.First().Id;
-            var response = await Controller.RemoveEndPointFromHearing(hearingId, EndpointId);
+            var response = await Controller.RemoveEndPointFromHearingAsync(hearingId, EndpointId);
 
             response.Should().NotBeNull();
             var result = (NoContentResult)response;
@@ -35,7 +35,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             var hearingId = Guid.Empty;
 
-            var result = await Controller.RemoveEndPointFromHearing(hearingId, Guid.NewGuid());
+            var result = await Controller.RemoveEndPointFromHearingAsync(hearingId, Guid.NewGuid());
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -51,7 +51,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             var hearingId = Guid.NewGuid();
             var endpointId = Guid.NewGuid();
 
-            var result = await Controller.RemoveEndPointFromHearing(hearingId, endpointId);
+            var result = await Controller.RemoveEndPointFromHearingAsync(hearingId, endpointId);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
@@ -61,13 +61,13 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_return_notfound_for_given_invalid_endpoint_id()
         {
-            var videoHearing = GetVideoHearing(true);
+            var endpointId = Guid.NewGuid();
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(videoHearing);
+                .ThrowsAsync(new EndPointNotFoundException(endpointId));
 
             var hearingId = Guid.NewGuid();
 
-            var result = await Controller.RemoveEndPointFromHearing(hearingId, Guid.NewGuid());
+            var result = await Controller.RemoveEndPointFromHearingAsync(hearingId, endpointId);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult) result;
@@ -82,7 +82,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             var hearingId = Guid.NewGuid();
             var endpointId = Guid.Empty;
 
-            var result = await Controller.RemoveEndPointFromHearing(hearingId, endpointId);
+            var result = await Controller.RemoveEndPointFromHearingAsync(hearingId, endpointId);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
@@ -92,14 +92,18 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_remove_endpoint_and_send_event()
         {
-            EndpointId = Hearing.Endpoints.First().Id;
-            var response = await Controller.RemoveEndPointFromHearing(HearingId, EndpointId);
+            var endpoint = Hearing.Endpoints.First();
+            EndpointId = endpoint.Id;
+            var response = await Controller.RemoveEndPointFromHearingAsync(HearingId, EndpointId);
 
             response.Should().NotBeNull();
             var result = (NoContentResult) response;
             result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<RemoveEndPointFromHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointRemovedIntegrationEvent>()), Times.Once);
+            EventPublisher.Verify(
+                e => e.PublishAsync(
+                    It.Is<EndpointRemovedIntegrationEvent>(r => r.HearingId == HearingId && r.Sip == endpoint.Sip)),
+                Times.Once);
         }
     }
 }

@@ -3,20 +3,29 @@ using Bookings.Domain;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
+using Bookings.DAL.Helper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
 {
+    public class NewEndpoint
+    {
+        public string DisplayName { get; set; }
+        public string Sip { get; set; }
+        public string Pin { get; set; }
+        public string DefenceAdvocateUsername { get; set; } 
+    }
+    
     public class AddEndPointToHearingCommand : ICommand
     {
-        public AddEndPointToHearingCommand(Guid hearingId, Endpoint endpoint)
+        public AddEndPointToHearingCommand(Guid hearingId, NewEndpoint endpoint)
         {
             HearingId = hearingId;
             Endpoint = endpoint;
         }
 
         public Guid HearingId { get; }
-        public Endpoint Endpoint { get; }
+        public NewEndpoint Endpoint { get; }
     }
 
     public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToHearingCommand>
@@ -40,7 +49,10 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
-            hearing.AddEndpoint(command.Endpoint);
+            var dto = command.Endpoint;
+            var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.DefenceAdvocateUsername, hearing.GetParticipants());
+            var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
+            hearing.AddEndpoint(endpoint);
             await _context.SaveChangesAsync();
         }
     }

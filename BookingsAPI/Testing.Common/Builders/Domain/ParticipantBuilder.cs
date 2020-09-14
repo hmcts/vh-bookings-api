@@ -69,8 +69,8 @@ namespace Testing.Common.Builders.Domain
             return new List<SuitabilityAnswer> { answer1, answer2, answer3 };
         }
 
-        public Participant IndividualPrticipantClaimant => _individualParticipant1;
-        public Participant IndividualPrticipantDefendant => _individualParticipant2;
+        public Participant IndividualParticipantClaimant => _individualParticipant1;
+        public Participant IndividualParticipantDefendant => _individualParticipant2;
         public Participant RepresentativeParticipantDefendant => _representativeParticipant;
         public List<Participant> Build() => _participants;
     }

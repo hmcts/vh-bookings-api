@@ -41,13 +41,13 @@ namespace Bookings.IntegrationTests.Steps
             switch (scenario)
             {
                 case Scenario.Valid:
-                    {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-                        TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _hearingId = seededHearing.Id;
-                        Context.TestData.NewHearingId = seededHearing.Id;
-                        break;
-                    }
+                {
+                    var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    Context.TestData.NewHearingId = seededHearing.Id;
+                    break;
+                }
                 case Scenario.Nonexistent:
                     _hearingId = Guid.NewGuid();
                     break;
@@ -56,6 +56,7 @@ namespace Bookings.IntegrationTests.Steps
                     break;
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
+
             Context.Uri = GetHearingDetailsById(_hearingId);
             Context.HttpMethod = HttpMethod.Get;
         }
@@ -102,26 +103,27 @@ namespace Bookings.IntegrationTests.Steps
             switch (invalidType)
             {
                 case "case type":
-                    {
-                        request.CaseTypeName = "Random";
-                        break;
-                    }
+                {
+                    request.CaseTypeName = "Random";
+                    break;
+                }
                 case "hearing type":
-                    {
-                        request.HearingTypeName = "A nonexistent hearing type";
-                        break;
-                    }
+                {
+                    request.HearingTypeName = "A nonexistent hearing type";
+                    break;
+                }
                 case "venue name":
-                    {
-                        request.HearingVenueName = "Random";
-                        break;
-                    }
-                
+                {
+                    request.HearingVenueName = "Random";
+                    break;
+                }
+
                 default: throw new ArgumentOutOfRangeException(invalidType, invalidType, null);
             }
+
             CreateTheNewHearingRequest(request);
         }
-        
+
         [Given(@"I have a (.*) update hearing request")]
         [Given(@"I have an (.*) update hearing request")]
         public async Task GivenIHaveAUpdateHearingRequest(Scenario scenario)
@@ -129,7 +131,8 @@ namespace Bookings.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             _hearingId = seededHearing.Id;
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName,
+                Context.Config.TestSettings.UsernameStem);
             if (scenario == Scenario.Invalid)
             {
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
@@ -138,6 +141,7 @@ namespace Bookings.IntegrationTests.Steps
                 Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = true;
                 Context.TestData.UpdateHearingRequest.AudioRecordingRequired = true;
             }
+
             UpdateTheHearingRequest();
         }
 
@@ -145,7 +149,8 @@ namespace Bookings.IntegrationTests.Steps
         public void GivenIHaveAUpdateHearingRequestWithANonexistentHearingId()
         {
             _hearingId = Guid.NewGuid();
-            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName,
+                Context.Config.TestSettings.UsernameStem);
             UpdateTheHearingRequest();
         }
 
@@ -155,11 +160,13 @@ namespace Bookings.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = invalidType.Equals("hearing id") ? Guid.Empty : seededHearing.Id;
-            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName, Context.Config.TestSettings.UsernameStem);
+            Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName,
+                Context.Config.TestSettings.UsernameStem);
             if (invalidType.Equals("venue"))
             {
                 Context.TestData.UpdateHearingRequest.HearingVenueName = "Random";
             }
+
             UpdateTheHearingRequest();
         }
 
@@ -196,7 +203,7 @@ namespace Bookings.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var caseData = seededHearing.HearingCases.FirstOrDefault();
             var caseNumber = caseData.Case.Number;
-  
+
             Context.Uri = GetHearingsByCaseNumber(caseNumber);
             Context.HttpMethod = HttpMethod.Get;
         }
@@ -254,10 +261,10 @@ namespace Bookings.IntegrationTests.Steps
         {
             var firstHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.OldHearingId = firstHearing.Id;
-            
+
             var secondHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = secondHearing.Id;
-            
+
             Context.Uri = GetHearingsByAnyCaseType(1);
             Context.HttpMethod = HttpMethod.Get;
             var response = await SendGetRequestAsync(Context);
@@ -361,7 +368,8 @@ namespace Bookings.IntegrationTests.Steps
 
             model.ScheduledDuration.Should().Be(Context.TestData.UpdateHearingRequest.ScheduledDuration);
             model.HearingVenueName.Should().Be(Context.TestData.UpdateHearingRequest.HearingVenueName);
-            model.ScheduledDateTime.Should().Be(Context.TestData.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
+            model.ScheduledDateTime.Should()
+                .Be(Context.TestData.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
             model.HearingRoomName.Should().Be(Context.TestData.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(Context.TestData.UpdateHearingRequest.OtherInformation);
             model.QuestionnaireNotRequired.Should().Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired);
@@ -381,6 +389,7 @@ namespace Bookings.IntegrationTests.Steps
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             }
+
             hearingFromDb.Should().BeNull();
         }
 
@@ -449,7 +458,8 @@ namespace Bookings.IntegrationTests.Steps
         [Then(@"the service bus should have been queued with a new bookings message")]
         public async Task ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
         {
-            var serviceBusQueueClient = (ServiceBusQueueClientFake)Context.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
+            var serviceBusQueueClient =
+                (ServiceBusQueueClientFake) Context.Server.Host.Services.GetRequiredService<IServiceBusQueueClient>();
             var eventMessage = serviceBusQueueClient.ReadMessageFromQueue();
             eventMessage.Should().NotBeNull();
             eventMessage.Timestamp.Should().NotBeBefore(DateTime.Today);
@@ -466,7 +476,7 @@ namespace Bookings.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.CaseType.Should().Be(response.CaseTypeName);
             hearingReadyForVideoEvent.Hearing.ScheduledDuration.Should().Be(response.ScheduledDuration);
             hearingReadyForVideoEvent.Hearing.ScheduledDateTime.Should().Be(response.ScheduledDateTime);
-            hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName); 
+            hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName);
         }
 
         private async Task SeedHearingForScenarioAsync(Scenario scenario)
@@ -592,8 +602,9 @@ namespace Bookings.IntegrationTests.Steps
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings.AsNoTracking()
-                    .SingleOrDefault(x => x.HearingCases.Any(c=>c.Case.Number == model.CaseNumber));
+                    .SingleOrDefault(x => x.HearingCases.Any(c => c.Case.Number == model.CaseNumber));
             }
+
             hearingFromDb.Should().NotBeNull();
         }
 
@@ -633,6 +644,12 @@ namespace Bookings.IntegrationTests.Steps
 
             const string createdBy = "UserAdmin";
 
+            var endpoints = new List<EndpointRequest>
+            {
+                new EndpointRequest {DisplayName = "Cool endpoint 1"},
+                new EndpointRequest
+                    {DisplayName = "Cool endpoint 2", DefenceAdvocateUsername = participants[3].Username}
+            };
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
                 .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
@@ -641,7 +658,7 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.AudioRecordingRequired = true)
-                .With(x => x.Endpoints = new List<EndpointRequest> {new EndpointRequest {DisplayName = "Cool endpoint 1"}})
+                .With(x => x.Endpoints = endpoints)
                 .Build();
         }
 
@@ -709,13 +726,13 @@ namespace Bookings.IntegrationTests.Steps
             switch (scenario)
             {
                 case Scenario.Valid:
-                    {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
-                        TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        _hearingId = seededHearing.Id;
-                        Context.TestData.NewHearingId = seededHearing.Id;
-                        break;
-                    }
+                {
+                    var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
+                    TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+                    _hearingId = seededHearing.Id;
+                    Context.TestData.NewHearingId = seededHearing.Id;
+                    break;
+                }
                 case Scenario.Nonexistent:
                     _hearingId = Guid.NewGuid();
                     break;

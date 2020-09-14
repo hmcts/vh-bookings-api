@@ -5,5 +5,6 @@ namespace Bookings.Infrastructure.Services.Dtos
         public string DisplayName { get; set; }
         public string Sip { get; set; }
         public string Pin { get; set; }
+        public string DefenceAdvocateUsername { get; set; }
     }
 }

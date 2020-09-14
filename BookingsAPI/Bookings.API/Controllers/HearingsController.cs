@@ -150,15 +150,12 @@ namespace Bookings.API.Controllers
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
-            var endpoints = new List<Endpoint>();
+            var endpoints = new List<NewEndpoint>();
             if (request.Endpoints != null && request.Endpoints.Count > 0)
             {
                 endpoints = request.Endpoints.Select(x =>
-                {
-                    var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-                    var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                    return EndpointToResponseMapper.MapRequestToEndpoint(x, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
-                }).ToList();
+                    EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
+                        _kinlyConfiguration.SipAddressStem)).ToList();
             }
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,

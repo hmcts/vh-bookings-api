@@ -1,25 +1,27 @@
 ﻿using System;
-using Bookings.Domain;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Bookings.Domain.Participants;
 
 namespace Bookings.DAL.Commands
 {
     public class UpdateEndPointOfHearingCommand : ICommand
     {
-        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName)
+        public UpdateEndPointOfHearingCommand(Guid hearingId, Guid endpointId, string displayName, Participant defenceAdvocate)
         {
             HearingId = hearingId;
             EndpointId = endpointId;
             DisplayName = displayName;
+            DefenceAdvocate = defenceAdvocate;
         }
 
-        public Guid HearingId { get; set; }
-        public Guid EndpointId { get; set; }
-        public string DisplayName { get; set; }
+        public Guid HearingId { get; }
+        public Guid EndpointId { get;  }
+        public string DisplayName { get;  }
+        public Participant DefenceAdvocate { get; }
 }
 
     public class UpdateEndPointOfHearingCommandHandler : ICommandHandler<UpdateEndPointOfHearingCommand>
@@ -34,7 +36,8 @@ namespace Bookings.DAL.Commands
         public async Task Handle(UpdateEndPointOfHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include(hearing => hearing.Endpoints)
+                .Include(h => h.Participants).ThenInclude(x => x.Person)
+                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -48,7 +51,13 @@ namespace Bookings.DAL.Commands
                 throw new EndPointNotFoundException(command.EndpointId);
             }
 
-            endpoint.UpdateDisplayName(command.DisplayName);
+            if (!string.IsNullOrWhiteSpace(endpoint.DisplayName)) endpoint.UpdateDisplayName(command.DisplayName);
+            if (command.DefenceAdvocate != null)
+            {
+                var defenceAdvocate = hearing.GetParticipants().Single(x => x.Id == command.DefenceAdvocate.Id);
+                endpoint.AssignDefenceAdvocate(defenceAdvocate);
+            }
+
             await _context.SaveChangesAsync();
         }
     }
