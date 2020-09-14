@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
+using Bookings.DAL.Queries;
+using Bookings.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +21,49 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_add_endpoint_to_hearing()
         {
+            var updatedHearing = GetVideoHearing(true);
+            updatedHearing.AddEndpoint(new Endpoint(Request.DisplayName, "sip", "pin", null));
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(updatedHearing);
+            
             var response = await Controller.AddEndPointToHearingAsync(HearingId, Request);
 
             response.Should().NotBeNull();
             var result = (NoContentResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
+
+            EventPublisher.Verify(x => x.PublishAsync(
+                    It.Is<EndpointAddedIntegrationEvent>(r =>
+                        r.HearingId == HearingId && r.Endpoint.Pin == "pin" && r.Endpoint.Sip == "sip" &&
+                        r.Endpoint.DisplayName == Request.DisplayName && r.Endpoint.DefenceAdvocateUsername == null)),
+                Times.Once);
         }
 
+        [Test]
+        public async Task Should_add_endpoint_wth_defence_advocate_and_send_event()
+        {
+            var updatedHearing = GetVideoHearing(true);
+            var rep = updatedHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
+            Request.DefenceAdvocateUsername = rep.Person.Username;
+            
+            updatedHearing.AddEndpoint(new Endpoint(Request.DisplayName, "sip", "pin", rep));
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(updatedHearing);
+
+            var response = await Controller.AddEndPointToHearingAsync(HearingId, Request);
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult) response;
+            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
+            EventPublisher.Verify(x => x.PublishAsync(
+                    It.Is<EndpointAddedIntegrationEvent>(r =>
+                        r.HearingId == HearingId && r.Endpoint.Pin == "pin" && r.Endpoint.Sip == "sip" &&
+                        r.Endpoint.DisplayName == Request.DisplayName && r.Endpoint.DefenceAdvocateUsername == Request.DefenceAdvocateUsername)),
+                Times.Once);
+        }
+        
         [Test]
         public async Task Should_return_badrequest_for_given_invalid_hearingid()
         {
@@ -60,32 +97,6 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-        }
-
-        [Test]
-        public async Task Should_add_endpoint_and_send_event()
-        {
-            var response = await Controller.AddEndPointToHearingAsync(HearingId, Request);
-
-            response.Should().NotBeNull();
-            var result = (NoContentResult) response;
-            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
-            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointAddedIntegrationEvent>()), Times.Once);
-        }
-        
-        [Test]
-        public async Task Should_add_endpoint_wth_defence_advocate_and_send_event()
-        {
-            var rep = Hearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
-            Request.DefenceAdvocateId = rep.Id;
-            var response = await Controller.AddEndPointToHearingAsync(HearingId, Request);
-
-            response.Should().NotBeNull();
-            var result = (NoContentResult) response;
-            result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
-            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointAddedIntegrationEvent>()), Times.Once);
         }
     }
 }

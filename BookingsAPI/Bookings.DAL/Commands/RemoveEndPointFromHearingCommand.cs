@@ -17,7 +17,6 @@ namespace Bookings.DAL.Commands
 
         public Guid HearingId { get; }
         public Guid EndpointId { get; }
-        public string RemoveSip { get; protected internal set; }
     }
 
     public class RemoveEndPointFromHearingCommandHandler : ICommandHandler<RemoveEndPointFromHearingCommand>
@@ -47,7 +46,6 @@ namespace Bookings.DAL.Commands
             }
 
             hearing.RemoveEndpoint(endpoint);
-            command.RemoveSip = endpoint.Sip;
             await _context.SaveChangesAsync();
         }
     }

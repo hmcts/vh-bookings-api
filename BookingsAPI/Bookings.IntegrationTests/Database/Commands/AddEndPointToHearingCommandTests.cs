@@ -5,7 +5,6 @@ using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
-using Bookings.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -30,10 +29,15 @@ namespace Bookings.IntegrationTests.Database.Commands
         public void Should_throw_exception_when_hearing_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
-            var endpoint = new Endpoint("displayName", "sip", "123", null);
-
+            var newEndpoint = new NewEndpoint
+            {
+                DisplayName = "displayName",
+                Sip = "sip",
+                Pin = "pin",
+                DefenceAdvocateUsername = null
+            };
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
-                new AddEndPointToHearingCommand(hearingId, endpoint)));
+                new AddEndPointToHearingCommand(hearingId, newEndpoint)));
         }
 
         [Test]
@@ -48,7 +52,13 @@ namespace Bookings.IntegrationTests.Database.Commands
             var displayName = "newDisplayName";
             var sip = "newSIP";
             var pin = "9999";
-            var newEndpoint = new Endpoint(displayName, sip, pin, null);
+            var newEndpoint = new NewEndpoint
+            {
+                DisplayName = displayName,
+                Sip = sip,
+                Pin = pin,
+                DefenceAdvocateUsername = null
+            };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
 
@@ -79,8 +89,13 @@ namespace Bookings.IntegrationTests.Database.Commands
             var displayName = "newDisplayName";
             var sip = "newSIP";
             var pin = "9999";
-            var newEndpoint = new Endpoint(displayName, sip, pin, dA);
-            newEndpoint.AssignDefenceAdvocate(dA);
+            var newEndpoint = new NewEndpoint
+            {
+                DisplayName = displayName,
+                Sip = sip,
+                Pin = pin,
+                DefenceAdvocateUsername = dA.Person.Username
+            };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
 

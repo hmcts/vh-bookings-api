@@ -88,7 +88,7 @@ namespace Bookings.IntegrationTests.Steps
             PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
             {
                 DisplayName = "UpdatedDisplayName",
-                DefenceAdvocateId = rep.Id
+                DefenceAdvocateUsername = rep.Person.Username
             });
             
             Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);

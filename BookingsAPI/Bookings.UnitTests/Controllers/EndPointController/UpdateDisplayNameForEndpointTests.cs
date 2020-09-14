@@ -21,7 +21,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             var hearingId = Guid.NewGuid();
             EndpointId = Hearing.Endpoints.First().Id;
-            var response = await Controller.UpdateDisplayNameForEndpointAsync(hearingId, EndpointId,
+            var response = await Controller.UpdateEndpointAsync(hearingId, EndpointId,
                 new UpdateEndpointRequest { 
                     DisplayName = "Test"
                     });
@@ -37,7 +37,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             var hearingId = Guid.Empty;
 
-            var result = await Controller.UpdateDisplayNameForEndpointAsync(hearingId, Guid.NewGuid(), new UpdateEndpointRequest
+            var result = await Controller.UpdateEndpointAsync(hearingId, Guid.NewGuid(), new UpdateEndpointRequest
             {
                 DisplayName = "Test"
             });
@@ -56,7 +56,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             var hearingId = Guid.NewGuid();
             var endpointId = Guid.NewGuid();
 
-            var result = await Controller.UpdateDisplayNameForEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest
+            var result = await Controller.UpdateEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest
             {
                 DisplayName = "Test"
             });
@@ -75,7 +75,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             var hearingId = Guid.NewGuid();
             var endpointId = Guid.Empty;
 
-            var result = await Controller.UpdateDisplayNameForEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest
+            var result = await Controller.UpdateEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest
             {
                 DisplayName = "Test"
             });
@@ -91,7 +91,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             var hearingId = Guid.NewGuid();
             var endpointId = Guid.Empty;
 
-            var result = await Controller.UpdateDisplayNameForEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest());
+            var result = await Controller.UpdateEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest());
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -102,7 +102,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         public async Task Should_update_endpoint_and_send_event()
         {
             EndpointId = Hearing.Endpoints.First().Id;
-            var response = await Controller.UpdateDisplayNameForEndpointAsync(HearingId, EndpointId,
+            var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId,
                 new UpdateEndpointRequest
                 {
                     DisplayName = "Test"
@@ -120,11 +120,11 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             EndpointId = Hearing.Endpoints.First().Id;
             var rep = Hearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
-            var response = await Controller.UpdateDisplayNameForEndpointAsync(HearingId, EndpointId,
+            var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId,
                 new UpdateEndpointRequest
                 {
                     DisplayName = "Test",
-                    DefenceAdvocateId = rep.Id
+                    DefenceAdvocateUsername = rep.Person.Username
                 });
 
             response.Should().NotBeNull();
