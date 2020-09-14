@@ -316,7 +316,7 @@ namespace Bookings.API.Controllers
             {
                 var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString(), true);
                 await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
-                
+
                 switch (bookingStatus)
                 {
                     case BookingStatus.Created:
@@ -478,7 +478,7 @@ namespace Bookings.API.Controllers
             }
 
             caseNumber = WebUtility.UrlDecode(caseNumber);
-            
+
             var query = new GetHearingsByCaseNumberQuery(caseNumber);
             var hearings = await _queryHandler.Handle<GetHearingsByCaseNumberQuery, List<VideoHearing>>(query);
 
@@ -486,5 +486,38 @@ namespace Bookings.API.Controllers
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
         }
+
+        /// <summary>
+        /// Update zip success flag
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="zipStatus">Zip status for audio recording</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}/audiorecordingzipsatus/{status}")]
+        [SwaggerOperation(OperationId = "UpdateAudiorecordingZipStatus")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateAudiorecordingZipStatus(Guid hearingId, bool zipStatus)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var command = new UpdateZipStatusCommand(hearingId, zipStatus);
+
+                await _commandHandler.Handle(command);
+                return NoContent();
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+        }
     }
+
 }

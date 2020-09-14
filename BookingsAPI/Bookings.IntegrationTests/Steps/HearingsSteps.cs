@@ -311,6 +311,14 @@ namespace Bookings.IntegrationTests.Steps
             UpdateTheHearingStatus(UpdateBookingStatus.Failed);
         }
 
+        [Given(@"I have a (.*) hearing zip status request")]
+        public async Task GivenIHaveAHearingZipStatusRequest(Scenario scenario)
+        {
+            await SeedHearingForScenarioAsync(scenario);
+
+            UpdateTheHearingAuduorecordingZipStatus(true);
+        }
+
         [Then(@"hearing details should be retrieved")]
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
@@ -408,6 +416,12 @@ namespace Bookings.IntegrationTests.Steps
             ThenHearingBookingStatusIs(BookingStatus.Booked);
         }
 
+        [Then(@"hearing zip status should be (.*)")]
+        public void ThenHearingZipStatusShouldBeX(bool zipStatus)
+        {
+            ThenHearingZipStatusIs(zipStatus);
+        }
+
         [Then(@"the response should be an empty list")]
         public async Task ThenTheResponseShouldBeAnEmptyList()
         {
@@ -487,6 +501,19 @@ namespace Bookings.IntegrationTests.Steps
             hearingFromDb.Should().NotBeNull();
 
             hearingFromDb.Status.Should().Be(status);
+        }
+
+        private void ThenHearingZipStatusIs(bool zipStatus)
+        {
+            Hearing hearingFromDb;
+            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
+            {
+                hearingFromDb = db.VideoHearings.AsNoTracking().Single(x => x.Id == Context.TestData.NewHearingId);
+            }
+
+            hearingFromDb.Should().NotBeNull();
+
+            hearingFromDb.ZipSuccess.Should().Be(zipStatus);
         }
 
         private static BookingStatus GetMappedBookingStatus(UpdateBookingStatus status)
@@ -667,6 +694,13 @@ namespace Bookings.IntegrationTests.Steps
             });
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);
+            Context.HttpMethod = HttpMethod.Patch;
+        }
+
+        private void UpdateTheHearingAuduorecordingZipStatus(bool? zipStatus)
+        {
+            Context.TestData.ZipStatus = zipStatus;
+            Context.Uri = UpdateAudiorecordingZipStatus(_hearingId, zipStatus);
             Context.HttpMethod = HttpMethod.Patch;
         }
 
