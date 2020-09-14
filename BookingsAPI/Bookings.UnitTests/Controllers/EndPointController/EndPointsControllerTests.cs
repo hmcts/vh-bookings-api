@@ -19,7 +19,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
 {
     public class EndPointsControllerTests
     {
-        protected AddEndpointRequest Request;
+        protected AddEndpointRequest AddEndpointRequest;
         protected Guid HearingId;
         protected VideoHearing Hearing;
         protected Guid EndpointId;
@@ -37,7 +37,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             HearingId = Guid.NewGuid();
             EndpointId = Guid.NewGuid();
-            Request = new AddEndpointRequest {DisplayName = "DisplayNameAdded"};
+            AddEndpointRequest = new AddEndpointRequest {DisplayName = "DisplayNameAdded"};
 
             QueryHandler = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
@@ -64,7 +64,8 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             if (createdStatus)
                 Hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
-            var endpoint = new Endpoint("one", Guid.NewGuid().ToString(), "1234", null);
+            var endpoint = new Endpoint("one", $"{Guid.NewGuid().ToString()}{KinlyConfiguration.SipAddressStem}",
+                "1234", null);
             Hearing.AddEndpoint(endpoint);
             return Hearing;
         }

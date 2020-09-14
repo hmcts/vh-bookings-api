@@ -14,24 +14,8 @@ using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace Bookings.UnitTests.Controllers.EndPointController
 {
-    public class UpdateDisplayNameForEndpointTests : EndPointsControllerTests
+    public class UpdateEndpointTests : EndPointsControllerTests
     {
-        [Test]
-        public async Task Should_update_endpoint_for_given_hearing_and_endpoint_id()
-        {
-            var hearingId = Guid.NewGuid();
-            EndpointId = Hearing.Endpoints.First().Id;
-            var response = await Controller.UpdateEndpointAsync(hearingId, EndpointId,
-                new UpdateEndpointRequest { 
-                    DisplayName = "Test"
-                    });
-
-            response.Should().NotBeNull();
-            var result = (NoContentResult)response;
-            result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
-        }
-
         [Test]
         public async Task Should_return_badrequest_for_given_empty_hearingid()
         {
@@ -101,37 +85,48 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_update_endpoint_and_send_event()
         {
-            EndpointId = Hearing.Endpoints.First().Id;
-            var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId,
-                new UpdateEndpointRequest
-                {
-                    DisplayName = "Test"
-                });
+            var endpoint = Hearing.Endpoints.First();
+            EndpointId = endpoint.Id;
+            var request = new UpdateEndpointRequest
+            {
+                DisplayName = "Updated Display Name With Defence Advocate Test",
+                DefenceAdvocateUsername = null
+            };
+            var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId, request);
 
             response.Should().NotBeNull();
             var result = (NoContentResult) response;
             result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointUpdatedIntegrationEvent>()), Times.Once);
+
+            EventPublisher.Verify(
+                x => x.PublishAsync(It.Is<EndpointUpdatedIntegrationEvent>(r =>
+                    r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
+                    r.DefenceAdvocateUsername == request.DefenceAdvocateUsername)), Times.Once);
         }
         
         [Test]
         public async Task Should_update_endpoint_with_defence_advocate_and_send_event()
         {
-            EndpointId = Hearing.Endpoints.First().Id;
+            var endpoint = Hearing.Endpoints.First();
+            EndpointId = endpoint.Id;
             var rep = Hearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
-            var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId,
-                new UpdateEndpointRequest
-                {
-                    DisplayName = "Test",
-                    DefenceAdvocateUsername = rep.Person.Username
-                });
+            var request = new UpdateEndpointRequest
+            {
+                DisplayName = "Updated Display Name With Defence Advocate Test",
+                DefenceAdvocateUsername = rep.Person.Username
+            };
+            var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId, request);
 
             response.Should().NotBeNull();
             var result = (NoContentResult) response;
             result.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
-            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointUpdatedIntegrationEvent>()), Times.Once);
+
+            EventPublisher.Verify(
+                x => x.PublishAsync(It.Is<EndpointUpdatedIntegrationEvent>(r =>
+                    r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
+                    r.DefenceAdvocateUsername == request.DefenceAdvocateUsername)), Times.Once);
         }
     }
 }

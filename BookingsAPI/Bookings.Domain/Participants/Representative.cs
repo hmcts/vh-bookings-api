@@ -7,10 +7,6 @@ namespace Bookings.Domain.Participants
 {
     public class Representative : Participant
     {
-        public static Representative CreateRepresentativeWithId(Guid id)
-        {
-            return new Representative {Id = id};
-        }
         protected Representative()
         {
         }

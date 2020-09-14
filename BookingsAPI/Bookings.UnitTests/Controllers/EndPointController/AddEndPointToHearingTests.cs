@@ -22,11 +22,11 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         public async Task Should_add_endpoint_to_hearing()
         {
             var updatedHearing = GetVideoHearing(true);
-            updatedHearing.AddEndpoint(new Endpoint(Request.DisplayName, "sip", "pin", null));
+            updatedHearing.AddEndpoint(new Endpoint(AddEndpointRequest.DisplayName, "sip", "pin", null));
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(updatedHearing);
             
-            var response = await Controller.AddEndPointToHearingAsync(HearingId, Request);
+            var response = await Controller.AddEndPointToHearingAsync(HearingId, AddEndpointRequest);
 
             response.Should().NotBeNull();
             var result = (NoContentResult)response;
@@ -36,7 +36,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(x => x.PublishAsync(
                     It.Is<EndpointAddedIntegrationEvent>(r =>
                         r.HearingId == HearingId && r.Endpoint.Pin == "pin" && r.Endpoint.Sip == "sip" &&
-                        r.Endpoint.DisplayName == Request.DisplayName && r.Endpoint.DefenceAdvocateUsername == null)),
+                        r.Endpoint.DisplayName == AddEndpointRequest.DisplayName && r.Endpoint.DefenceAdvocateUsername == null)),
                 Times.Once);
         }
 
@@ -45,13 +45,13 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             var updatedHearing = GetVideoHearing(true);
             var rep = updatedHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
-            Request.DefenceAdvocateUsername = rep.Person.Username;
+            AddEndpointRequest.DefenceAdvocateUsername = rep.Person.Username;
             
-            updatedHearing.AddEndpoint(new Endpoint(Request.DisplayName, "sip", "pin", rep));
+            updatedHearing.AddEndpoint(new Endpoint(AddEndpointRequest.DisplayName, "sip", "pin", rep));
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(updatedHearing);
 
-            var response = await Controller.AddEndPointToHearingAsync(HearingId, Request);
+            var response = await Controller.AddEndPointToHearingAsync(HearingId, AddEndpointRequest);
 
             response.Should().NotBeNull();
             var result = (NoContentResult) response;
@@ -60,7 +60,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(x => x.PublishAsync(
                     It.Is<EndpointAddedIntegrationEvent>(r =>
                         r.HearingId == HearingId && r.Endpoint.Pin == "pin" && r.Endpoint.Sip == "sip" &&
-                        r.Endpoint.DisplayName == Request.DisplayName && r.Endpoint.DefenceAdvocateUsername == Request.DefenceAdvocateUsername)),
+                        r.Endpoint.DisplayName == AddEndpointRequest.DisplayName && r.Endpoint.DefenceAdvocateUsername == AddEndpointRequest.DefenceAdvocateUsername)),
                 Times.Once);
         }
         
@@ -68,7 +68,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         public async Task Should_return_badrequest_for_given_invalid_hearingid()
         {
             var hearingId = Guid.Empty;
-            var result = await Controller.AddEndPointToHearingAsync(hearingId, Request);
+            var result = await Controller.AddEndPointToHearingAsync(hearingId, AddEndpointRequest);
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
@@ -92,7 +92,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             CommandHandlerMock.Setup(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>())).ThrowsAsync(new HearingNotFoundException(Guid.NewGuid()));
 
-            var result = await Controller.AddEndPointToHearingAsync(HearingId, Request);
+            var result = await Controller.AddEndPointToHearingAsync(HearingId, AddEndpointRequest);
 
             result.Should().NotBeNull();
             var objectResult = (NotFoundObjectResult)result;
