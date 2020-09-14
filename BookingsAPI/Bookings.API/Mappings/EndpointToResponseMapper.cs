@@ -4,7 +4,6 @@ using Bookings.Api.Contract.Responses;
 using Bookings.Common.Services;
 using Bookings.DAL.Commands;
 using Bookings.Domain;
-using Bookings.Domain.Participants;
 
 namespace Bookings.API.Mappings
 {
@@ -20,12 +19,6 @@ namespace Bookings.API.Mappings
                 Pin = endpoint.Pin,
                 DefenceAdvocateId = endpoint.DefenceAdvocate?.Id
             };
-        }
-
-        public static Endpoint MapRequestToEndpoint(EndpointRequest request, string sip, string pin,
-            Participant defenceAdvocate)
-        {
-            return new Endpoint(request.DisplayName, sip, pin, defenceAdvocate);
         }
 
         public static NewEndpoint MapRequestToNewEndpointDto(EndpointRequest request, IRandomGenerator randomGenerator, string sipAddressStem)

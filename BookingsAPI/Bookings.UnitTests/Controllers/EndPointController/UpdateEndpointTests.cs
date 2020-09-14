@@ -10,6 +10,8 @@ using System.Net;
 using Testing.Common.Assertions;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
+using Bookings.DAL.Queries;
+using Bookings.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace Bookings.UnitTests.Controllers.EndPointController
@@ -50,6 +52,24 @@ namespace Bookings.UnitTests.Controllers.EndPointController
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
         }
 
+        [Test]
+        public async Task Should_return_notfound_hearing_not_found()
+        {
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync((VideoHearing) null);
+            var hearingId = Guid.NewGuid();
+            var endpointId = Guid.Empty;
+
+            var result = await Controller.UpdateEndpointAsync(hearingId, endpointId, new UpdateEndpointRequest
+            {
+                DisplayName = "Test"
+            });
+
+            result.Should().NotBeNull();
+            var objectResult = (NotFoundObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+        
         [Test]
         public async Task Should_return_notfound_for_given_invalid_endpointId()
         {
