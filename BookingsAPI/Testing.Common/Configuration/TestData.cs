@@ -13,6 +13,7 @@ namespace Testing.Common.Configuration
         {
             TestContextData = new Dictionary<string, dynamic>();
         }
+        
         public List<SuitabilityAnswersRequest> Answers { get; set; }
         public string CaseName { get; set; }
         public BookNewHearingRequest CreateHearingRequest { get; set; }
