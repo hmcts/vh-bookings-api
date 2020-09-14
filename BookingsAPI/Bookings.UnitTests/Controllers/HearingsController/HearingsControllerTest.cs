@@ -325,6 +325,40 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
+        [Test]
+        public async Task Should_update_zip_status_for_audiorecording()
+        {
+            var zipStatus = true;
+            var hearingId = Guid.NewGuid();
+            var hearing = GetHearing("123");
+
+            QueryHandlerMock
+             .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+             .ReturnsAsync(hearing);
+
+            var result = await Controller.UpdateAudiorecordingZipStatus(hearingId, zipStatus);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+        }
+
+
+        [Test]
+        public async Task Should_on_update_zip_status_for_audiorecording_return_badrequest_with_an_invalid_hearing()
+        {
+            var zipStatus = true;
+            var hearingId = Guid.Empty;
+
+            var result = await Controller.UpdateAudiorecordingZipStatus(hearingId, zipStatus);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+
+        }
+
         protected static VideoHearing GetHearing(string caseNumber)
         {
             var hearing = new VideoHearingBuilder().Build();

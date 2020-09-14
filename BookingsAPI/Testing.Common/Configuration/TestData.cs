@@ -23,5 +23,6 @@ namespace Testing.Common.Configuration
         public List<string> RemovedPersons { get; set; }
         public UpdateHearingRequest UpdateHearingRequest { get; set; }
         public Dictionary<string, dynamic> TestContextData { get; set; }
+        public bool? ZipStatus { get; set; }
     }
 }
