@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         public async Task Should_remove_endpoint_from_hearing_for_given_hearing_and_endpoint_id()
         {
             var hearingId = Guid.NewGuid();
-
+            EndpointId = Hearing.Endpoints.First().Id;
             var response = await Controller.RemoveEndPointFromHearing(hearingId, EndpointId);
 
             response.Should().NotBeNull();
@@ -93,6 +92,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         [Test]
         public async Task Should_remove_endpoint_and_send_event()
         {
+            EndpointId = Hearing.Endpoints.First().Id;
             var response = await Controller.RemoveEndPointFromHearing(HearingId, EndpointId);
 
             response.Should().NotBeNull();

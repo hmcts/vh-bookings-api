@@ -34,6 +34,7 @@ namespace Bookings.DAL.Commands
                 .Include("Participants.Person.Organisation")
                 .Include("Participants.Questionnaire")
                 .Include("Participants.Questionnaire.SuitabilityAnswers")
+                .Include(x => x.Endpoints).ThenInclude(x=> x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -41,6 +42,7 @@ namespace Bookings.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
             
+            _context.RemoveRange(hearing.GetEndpoints());
             _context.RemoveRange(hearing.GetCases());
             _context.Remove(hearing);
 

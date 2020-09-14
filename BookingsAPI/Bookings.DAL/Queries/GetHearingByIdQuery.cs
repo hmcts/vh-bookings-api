@@ -28,9 +28,10 @@ namespace Bookings.DAL.Queries
         public async Task<VideoHearing> Handle(GetHearingByIdQuery query)
         {
             return await _context.VideoHearings
-                .Include("Participants.Person")
+                .Include(x => x.Participants).ThenInclude(x=> x.Person).ThenInclude(x => x.Organisation)
+                .Include(x => x.Participants).ThenInclude(x=> x.CaseRole)
+                .Include(x => x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include("HearingCases.Case")
-                .Include("Participants.Person.Organisation")
                 .Include("Participants.Questionnaire")
                 .Include("Participants.Questionnaire.SuitabilityAnswers")
                 .Include(x => x.CaseType)
@@ -39,7 +40,8 @@ namespace Bookings.DAL.Queries
                 .ThenInclude(x=>x.UserRole)
                 .Include(x => x.HearingType)
                 .Include(x => x.HearingVenue)
-                .Include(x => x.Endpoints)
+                .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate).ThenInclude(x => x.Person)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(x => x.Id == query.HearingId);
         }
     }

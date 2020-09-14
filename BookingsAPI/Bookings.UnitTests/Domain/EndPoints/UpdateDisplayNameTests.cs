@@ -8,10 +8,11 @@ namespace Bookings.UnitTests.Domain.EndPoints
     public class UpdateDisplayNameTests
     {
         private Endpoint _endpoint;
+
         [SetUp]
         public void Initialise()
         {
-            _endpoint = new Endpoint("Original DisplayName", "sip@videohearings.net", "1234");
+            _endpoint = new Endpoint("Original DisplayName", "sip@videohearings.net", "1234", null);
         }
 
         [Test]
