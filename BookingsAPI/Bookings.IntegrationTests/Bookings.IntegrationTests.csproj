@@ -37,7 +37,6 @@
     <ItemGroup>
         <Content Include="Features\*.feature" />
         <None Remove="appsettings.json" />
-        <SpecFlowFeatureFiles Remove="Features\Endpoints.feature" />
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>

@@ -235,7 +235,8 @@ namespace Bookings.API.Controllers
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
+            var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var response = hearingMapper.MapHearingToDetailedResponse(updatedHearing);
 
             if (videoHearing.Status == BookingStatus.Created)
             {

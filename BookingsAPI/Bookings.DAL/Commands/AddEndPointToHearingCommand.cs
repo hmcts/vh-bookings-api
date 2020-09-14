@@ -7,31 +7,32 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bookings.DAL.Commands
 {
-    public class AddEndPointFromHearingCommand : ICommand
+    public class AddEndPointToHearingCommand : ICommand
     {
-        public AddEndPointFromHearingCommand(Guid hearingId, Endpoint endpoint)
+        public AddEndPointToHearingCommand(Guid hearingId, Endpoint endpoint)
         {
             HearingId = hearingId;
             Endpoint = endpoint;
         }
 
-        public Guid HearingId { get; set; }
-        public Endpoint Endpoint { get; set; }
+        public Guid HearingId { get; }
+        public Endpoint Endpoint { get; }
     }
 
-    public class AddEndPointFromHearingCommandHandler : ICommandHandler<AddEndPointFromHearingCommand>
+    public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToHearingCommand>
     {
         private readonly BookingsDbContext _context;
 
-        public AddEndPointFromHearingCommandHandler(BookingsDbContext context)
+        public AddEndPointToHearingCommandHandler(BookingsDbContext context)
         {
             _context = context;
         }
 
-        public async Task Handle(AddEndPointFromHearingCommand command)
+        public async Task Handle(AddEndPointToHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include(hearing => hearing.Endpoints)
+                .Include(h => h.Participants).ThenInclude(x => x.Person)
+                .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

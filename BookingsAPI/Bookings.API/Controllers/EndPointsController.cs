@@ -77,7 +77,7 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var command = new AddEndPointFromHearingCommand(hearingId, endPoint);
+                var command = new AddEndPointToHearingCommand(hearingId, endPoint);
                 await _commandHandler.Handle(command);
 
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));

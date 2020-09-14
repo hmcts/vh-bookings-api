@@ -140,7 +140,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             _hearingId = seededHearing.Id;
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.TestData.TestContextData.Add(EndPointSteps.ExistingEndPoints, seededHearing.GetEndpoints());
+            Context.TestData.TestContextData.Add(ExistingEndPoints, seededHearing.GetEndpoints());
         }
     }
 

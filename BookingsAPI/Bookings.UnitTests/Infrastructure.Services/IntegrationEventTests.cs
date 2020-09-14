@@ -131,8 +131,8 @@ namespace Bookings.UnitTests.Infrastructure.Services
             
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint("one", Guid.NewGuid().ToString(), "1234"),
-                new Endpoint("two", Guid.NewGuid().ToString(), "1234")
+                new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
+                new Endpoint("two", Guid.NewGuid().ToString(), "1234", null)
             });
             
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
@@ -151,7 +151,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
         [Test]
         public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
         {
-            var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234"));
+            var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", null));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
