@@ -1,4 +1,5 @@
 ﻿using Bookings.DAL.Queries.Core;
+using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,22 +23,24 @@ namespace Bookings.DAL.Queries
 
         public async Task<List<string>> Handle(GetPersonsByClosedHearingsQuery query)
         {
-            var cutOffDate = DateTime.UtcNow.AddMonths(-3);
-            var personsInFutureHearings = await _context.Participants
-                .Include("Person")
-                .Include("HearingRole")
-                .Include("Hearing.HearingCases.Case")
-                .Where(h => h.Hearing.ScheduledDateTime >= cutOffDate)
-                .Select(p => p.Person.Username).Distinct()
-                .ToListAsync();
+            var cutOffDate = DateTime.UtcNow.AddMonths(-3); 
+            
 
+            var personsInFutureHearings = _context.Participants
+                .Include(p => p.Person)
+                .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
+                .Where(h => h.Hearing.ScheduledDateTime >= cutOffDate
+                            && (h.HearingRole.UserRole.Name.ToLower().Equals("individual")
+                            || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
+                .Select(p => p.Person.Username).Distinct();
+            
             var personsInPastHearings = await _context.Participants
-                .Include("Person")
-                .Include("HearingRole")
-                .Include("Hearing.HearingCases.Case")
-                .Where(h => h.Hearing.ScheduledDateTime < cutOffDate)
-                .Where(p => !personsInFutureHearings.Contains(p.Person.Username))
-
+                .Include(p => p.Person)
+                .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
+                .Where(h => h.Hearing.ScheduledDateTime < cutOffDate
+                            && (h.HearingRole.UserRole.Name.ToLower().Equals("individual")
+                            || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
+                .Where(p => !personsInFutureHearings.Any( pf => pf == p.Person.Username))
                 .Where(p => !p.Person.Username.Contains("@email.net"))
                 .Where(p => !p.Person.Username.Contains("Manual"))
                 .Where(p => !p.Person.Username.Contains("JUDGE"))
@@ -90,7 +93,6 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("Chris.Green"))
                 .Where(p => !p.Person.Username.Contains("James.Green"))
                 .Where(p => !p.Person.Username.Contains("kinly.clerk"))
-
                 .Select(p => p.Person.Username).Distinct()
                 .ToListAsync();
 
