@@ -57,6 +57,10 @@ namespace Bookings.DAL.Commands
                 var defenceAdvocate = hearing.GetParticipants().Single(x => x.Id == command.DefenceAdvocate.Id);
                 endpoint.AssignDefenceAdvocate(defenceAdvocate);
             }
+            else
+            {
+                endpoint.AssignDefenceAdvocate(null);
+            }
 
             await _context.SaveChangesAsync();
         }
