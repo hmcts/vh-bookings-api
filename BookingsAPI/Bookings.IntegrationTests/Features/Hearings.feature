@@ -205,3 +205,14 @@ Scenario: Hearings within 3 months not to be anonymised
 	And I have a request to anonymise the data    
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
+
+Scenario: Hearing audiorecording zip status changes to true for a given hearing id
+    Given I have a valid hearing zip status request
+    When I send the request to the endpoint
+    Then the response should have the status NoContent and success status True
+    And hearing zip status should be true
+
+    Scenario: Hearing audiorecording zip status does not change for an invalid hearing id
+    Given I have a invalid hearing zip status request
+    When I send the request to the endpoint
+    Then the response should have the status BadRequest and success status False

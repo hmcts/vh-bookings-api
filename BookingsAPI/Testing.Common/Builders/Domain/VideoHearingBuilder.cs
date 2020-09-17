@@ -51,15 +51,23 @@ namespace Testing.Common.Builders.Domain
 
             _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
+            var indClaimant =_videoHearing?.Participants.Last();
+            indClaimant.SetProtected(nameof(indClaimant.HearingRole), claimantLipHearingRole);
 
             _videoHearing.AddIndividual(person3, defendantLipHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}");
+            var indDefendant =_videoHearing?.Participants.Last();
+            indDefendant.SetProtected(nameof(indDefendant.HearingRole), defendantLipHearingRole);
             
             _videoHearing.AddRepresentative(person2, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
-
+            var repDefendant =_videoHearing?.Participants.Last();
+            repDefendant.SetProtected(nameof(repDefendant.HearingRole), defendantRepresentativeHearingRole);
+            
             _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                 $"{_judgePerson.FirstName} {_judgePerson.LastName}");
+            var judge =_videoHearing?.Participants.Last();
+            judge.SetProtected(nameof(judge.HearingRole), judgeHearingRole);
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);

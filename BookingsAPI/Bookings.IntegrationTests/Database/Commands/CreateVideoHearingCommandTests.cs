@@ -79,11 +79,23 @@ namespace Bookings.IntegrationTests.Database.Commands
             var createdBy = "User01";
             const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
-            
-            var endpoints = new List<Endpoint>
+
+            var endpoints = new List<NewEndpoint>
             {
-                new Endpoint("display 1", Guid.NewGuid().ToString(), "1234"),
-                new Endpoint("display 2", Guid.NewGuid().ToString(), "5678")
+                new NewEndpoint
+                {
+                    DisplayName = "display 1",
+                    Sip = Guid.NewGuid().ToString(),
+                    Pin = "1234",
+                    DefenceAdvocateUsername = null
+                },
+                new NewEndpoint
+                {
+                    DisplayName = "display 2",
+                    Sip = Guid.NewGuid().ToString(),
+                    Pin = "5678",
+                    DefenceAdvocateUsername = null
+                }
             };
 
             var command =

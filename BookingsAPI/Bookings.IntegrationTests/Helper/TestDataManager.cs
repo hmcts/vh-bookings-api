@@ -86,11 +86,13 @@ namespace Bookings.IntegrationTests.Helper
             {
                 for (int i = 0; i < endPointsToAdd; i++)
                 {
-                    videoHearing.AddEndpoints(new List<Endpoint> { 
+                    videoHearing.AddEndpoints(new List<Endpoint>
+                    {
                         new Endpoint(
                             $"new endpoint {i}",
                             Guid.NewGuid().ToString(),
-                            new Random().Next(1111, 9999).ToString()) });
+                            new Random().Next(1111, 9999).ToString(), null)
+                    });
                 }
             }
             
@@ -98,8 +100,9 @@ namespace Bookings.IntegrationTests.Helper
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
-            
-            videoHearing.AddEndpoints(new List<Endpoint>{new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin")});
+
+            videoHearing.AddEndpoints(new List<Endpoint>
+                {new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null)});
             
             if(status == BookingStatus.Created)
             {
@@ -114,11 +117,9 @@ namespace Bookings.IntegrationTests.Helper
 
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            _individualId = hearing.Participants.First(x =>
-                x.HearingRole.Name.ToLower().IndexOf("judge", StringComparison.Ordinal) < 0 &&
-                x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) < 0).Id;
+            _individualId = hearing.Participants.First(x => x.HearingRole.UserRole.IsIndividual).Id;
             _participantRepresentativeIds = hearing.Participants
-                .Where(x => x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) >= 0).Select(x => x.Id).ToList();
+                .Where(x => x.HearingRole.UserRole.IsRepresentative).Select(x => x.Id).ToList();
 
             if (addSuitabilityAnswer)
             {
@@ -143,8 +144,7 @@ namespace Bookings.IntegrationTests.Helper
         private void AddIndividualQuestionnaire(BookingsDbContext db)
         {
             var participant = db.Participants
-                .Include(x => x.Questionnaire)
-                .FirstOrDefault(x => x.Id == _individualId);
+                .Include(x => x.Questionnaire).First(x => x.Id == _individualId);
             participant.Questionnaire = new Questionnaire {Participant = participant, ParticipantId = _individualId};
             participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
             participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
@@ -157,8 +157,7 @@ namespace Bookings.IntegrationTests.Helper
             foreach (var item in _participantRepresentativeIds)
             {
                 var participantRepresentative = db.Participants
-                    .Include(x => x.Questionnaire)
-                    .FirstOrDefault(x => x.Id == item);
+                    .Include(x => x.Questionnaire).First(x => x.Id == item);
                 participantRepresentative.Questionnaire = new Questionnaire
                     {Participant = participantRepresentative, ParticipantId = item};
 

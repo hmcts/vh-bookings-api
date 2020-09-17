@@ -49,7 +49,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
             _serviceBusQueueClient.Count.Should().Be(1);
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
-            
+
             var typedEvent = (HearingDetailsUpdatedIntegrationEvent) @event.IntegrationEvent;
             typedEvent.Hearing.CaseName.Should().Be(hearing.GetCases().First().Name);
             typedEvent.Hearing.CaseNumber.Should().Be(hearing.GetCases().First().Number);
@@ -66,10 +66,11 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
             var individual1 = individuals.First();
-            individual1.HearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
+            individual1.HearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var participantAddedIntegrationEvent = new ParticipantsAddedIntegrationEvent(hearing.Id, new List<Participant>{ individual1});
+            var participantAddedIntegrationEvent =
+                new ParticipantsAddedIntegrationEvent(hearing.Id, new List<Participant> {individual1});
             _eventPublisher.PublishAsync(participantAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -80,7 +81,8 @@ namespace Bookings.UnitTests.Infrastructure.Services
         [Test]
         public void Should_publish_message_to_queue_when_ParticipantRemovedIntegrationEvent_is_raised()
         {
-            var participantRemovedIntegrationEvent = new ParticipantRemovedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid());
+            var participantRemovedIntegrationEvent =
+                new ParticipantRemovedIntegrationEvent(Guid.NewGuid(), Guid.NewGuid());
             _eventPublisher.PublishAsync(participantRemovedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -94,10 +96,11 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var hearing = new VideoHearingBuilder().Build();
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
             var individual1 = individuals.First();
-            individual1.HearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
+            individual1.HearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
-            var participantUpdatedIntegrationEvent = new ParticipantUpdatedIntegrationEvent(Guid.NewGuid(), individual1);
+            var participantUpdatedIntegrationEvent =
+                new ParticipantUpdatedIntegrationEvent(Guid.NewGuid(), individual1);
             _eventPublisher.PublishAsync(participantUpdatedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -114,27 +117,23 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
             var individual1 = individuals.First();
-            individual1.HearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
             individual1.CaseRole = new CaseRole(1, "test");
 
             var individual2 = individuals.Last();
-            individual2.HearingRole = new HearingRole(2, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
             individual2.CaseRole = new CaseRole(2, "test2");
 
             var representative = hearing.GetParticipants().Single(x => x is Representative);
-            representative.HearingRole = new HearingRole(5, "Representative"){ UserRole = new UserRole(2, "Representative") } ;
-            representative.CaseRole= new CaseRole(3, "test3");
+            representative.CaseRole = new CaseRole(3, "test3");
 
             var judge = hearing.GetParticipants().Single(x => x is Judge);
-            judge.HearingRole = new HearingRole(5, "Judge") { UserRole = new UserRole(2, "Judge") };
             judge.CaseRole = new CaseRole(3, "test4");
-            
+
             hearing.AddEndpoints(new List<Endpoint>
             {
-                new Endpoint("one", Guid.NewGuid().ToString(), "1234"),
-                new Endpoint("two", Guid.NewGuid().ToString(), "1234")
+                new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
+                new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
             });
-            
+
             var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
             _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
@@ -151,7 +150,21 @@ namespace Bookings.UnitTests.Infrastructure.Services
         [Test]
         public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised()
         {
-            var endpointAddedIntegrationEvent = new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234"));
+            var endpointAddedIntegrationEvent =
+                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", null));
+            _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<EndpointAddedIntegrationEvent>();
+        }
+
+        [Test]
+        public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised_with_defence_advocate()
+        {
+            var dA = new ParticipantBuilder().RepresentativeParticipantDefendant;
+            var endpointAddedIntegrationEvent =
+                new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", dA));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -173,7 +186,8 @@ namespace Bookings.UnitTests.Infrastructure.Services
         [Test]
         public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
         {
-            var endpointUpdatedIntegrationEvent = new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name");
+            var endpointUpdatedIntegrationEvent =
+                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@test.com");
             _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

@@ -150,15 +150,12 @@ namespace Bookings.API.Controllers
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
-            var endpoints = new List<Endpoint>();
+            var endpoints = new List<NewEndpoint>();
             if (request.Endpoints != null && request.Endpoints.Count > 0)
             {
                 endpoints = request.Endpoints.Select(x =>
-                {
-                    var sip = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-                    var pin = _randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                    return EndpointToResponseMapper.MapRequestToEndpoint(x, $"{sip}{_kinlyConfiguration.SipAddressStem}", pin);
-                }).ToList();
+                    EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
+                        _kinlyConfiguration.SipAddressStem)).ToList();
             }
 
             var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
@@ -235,7 +232,8 @@ namespace Bookings.API.Controllers
             await _commandHandler.Handle(command);
 
             var hearingMapper = new HearingToDetailResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
+            var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var response = hearingMapper.MapHearingToDetailedResponse(updatedHearing);
 
             if (videoHearing.Status == BookingStatus.Created)
             {
@@ -315,7 +313,7 @@ namespace Bookings.API.Controllers
             {
                 var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString(), true);
                 await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
-                
+
                 switch (bookingStatus)
                 {
                     case BookingStatus.Created:
@@ -477,7 +475,7 @@ namespace Bookings.API.Controllers
             }
 
             caseNumber = WebUtility.UrlDecode(caseNumber);
-            
+
             var query = new GetHearingsByCaseNumberQuery(caseNumber);
             var hearings = await _queryHandler.Handle<GetHearingsByCaseNumberQuery, List<VideoHearing>>(query);
 
@@ -485,5 +483,38 @@ namespace Bookings.API.Controllers
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
         }
+
+        /// <summary>
+        /// Update zip success flag
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="zipStatus">Zip status for audio recording</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}/audiorecordingzipsatus/{status}")]
+        [SwaggerOperation(OperationId = "UpdateAudiorecordingZipStatus")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateAudiorecordingZipStatus(Guid hearingId, bool zipStatus)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var command = new UpdateZipStatusCommand(hearingId, zipStatus);
+
+                await _commandHandler.Handle(command);
+                return NoContent();
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+        }
     }
+
 }
