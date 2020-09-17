@@ -26,7 +26,7 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             var usernamesList = await _handler.Handle(new GetPersonsByClosedHearingsQuery());
             usernamesList.Should().NotBeNull();
-            usernamesList.Count.Should().Be(4);
+            usernamesList.Count.Should().Be(3); // Individual & Representative participants
         }
     }
 }

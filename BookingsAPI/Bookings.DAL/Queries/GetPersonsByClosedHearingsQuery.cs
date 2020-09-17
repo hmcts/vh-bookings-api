@@ -1,4 +1,5 @@
 ﻿using Bookings.DAL.Queries.Core;
+using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,43 +23,26 @@ namespace Bookings.DAL.Queries
 
         public async Task<List<string>> Handle(GetPersonsByClosedHearingsQuery query)
         {
-            var cutOffDate = DateTime.UtcNow.AddMonths(-3);
-            var personsInFutureHearings = await _context.Participants
-                .Include("Person")
-                .Include("HearingRole")
-                .Include("Hearing.HearingCases.Case")
-                .Where(h => h.Hearing.ScheduledDateTime >= cutOffDate)
-                .Select(p => p.Person.Username).Distinct()
-                .ToListAsync();
+            var cutOffDate = DateTime.UtcNow.AddMonths(-3); 
+            
 
+            var personsInFutureHearings = _context.Participants
+                .Include(p => p.Person)
+                .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
+                .Where(h => h.Hearing.ScheduledDateTime >= cutOffDate
+                            && (h.HearingRole.UserRole.Name.ToLower().Equals("individual")
+                            || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
+                .Select(p => p.Person.Username).Distinct();
+            
             var personsInPastHearings = await _context.Participants
-                .Include("Person")
-                .Include("HearingRole")
-                .Include("Hearing.HearingCases.Case")
-                .Where(h => h.Hearing.ScheduledDateTime < cutOffDate)
-                .Where(p => !personsInFutureHearings.Contains(p.Person.Username))
-
+                .Include(p => p.Person)
+                .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
+                .Where(h => h.Hearing.ScheduledDateTime < cutOffDate
+                            && (h.HearingRole.UserRole.Name.ToLower().Equals("individual")
+                            || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
+                .Where(p => !personsInFutureHearings.Any( pf => pf == p.Person.Username))
                 .Where(p => !p.Person.Username.Contains("@email.net"))
-                .Where(p => !p.Person.Username.Contains("Manual"))
-                .Where(p => !p.Person.Username.Contains("JUDGE"))
-                .Where(p => !p.Person.Username.Contains("TaylorHousecourt"))
-                .Where(p => !p.Person.Username.Contains("ManchesterCFJCcourt"))
-                .Where(p => !p.Person.Username.Contains("BirminghamCFJCcourt"))
-                .Where(p => !p.Person.Username.Contains("ManchesterCFJCDDJretiringroom"))
-                .Where(p => !p.Person.Username.Contains("ManchesterCFJCcourtGen"))
-                .Where(p => !p.Person.Username.Contains("BirminghamCFJCcourtGen"))
-                .Where(p => !p.Person.Username.Contains("BirminghamCJC.Judge"))
-                .Where(p => !p.Person.Username.Contains("holdingroom"))
-                .Where(p => !p.Person.Username.Contains("Property.Judge"))
-                .Where(p => !p.Person.Username.Contains("TaylorHousecourt"))
-                .Where(p => !p.Person.Username.Contains("TaylorHousecourtGen"))
-                .Where(p => !p.Person.Username.Contains("Automation01"))
-                .Where(p => !p.Person.Username.Contains("auto."))
-                .Where(p => !p.Person.Username.Contains("UserApiTestUser"))
-                .Where(p => !p.Person.Username.Contains("Manual0"))
-                .Where(p => !p.Person.Username.Contains("performance"))
                 .Where(p => !p.Person.Username.Contains("atif."))
-                .Where(p => !p.Person.Username.Contains("y''test."))
                 .Where(p => !p.Person.Username.Contains("ferdinand.porsche"))
                 .Where(p => !p.Person.Username.Contains("enzo.ferrari"))
                 .Where(p => !p.Person.Username.Contains("mike.tyson"))
@@ -74,13 +58,7 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("dan.brown"))
                 .Where(p => !p.Person.Username.Contains("tom.clancy"))
                 .Where(p => !p.Person.Username.Contains("stephen.king"))
-                .Where(p => !p.Person.Username.Contains("Manual01VideoHearingsOfficer01"))
                 .Where(p => !p.Person.Username.Contains("sue.burke"))
-                .Where(p => !p.Person.Username.Contains("yeliz.admin"))
-                .Where(p => !p.Person.Username.Contains("yeliz.judge"))
-                .Where(p => !p.Person.Username.Contains("yeliz.judge2"))
-                .Where(p => !p.Person.Username.Contains("one.three"))
-                .Where(p => !p.Person.Username.Contains("one.four"))
                 .Where(p => !p.Person.Username.Contains("michael.jordan"))
                 .Where(p => !p.Person.Username.Contains("scottie.pippen"))
                 .Where(p => !p.Person.Username.Contains("steve.kerr"))
@@ -89,8 +67,17 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("John.Doe"))
                 .Where(p => !p.Person.Username.Contains("Chris.Green"))
                 .Where(p => !p.Person.Username.Contains("James.Green"))
-                .Where(p => !p.Person.Username.Contains("kinly.clerk"))
-
+                .Where(p => !p.Person.Username.Contains("yeliz.admin"))
+                .Where(p => !p.Person.Username.StartsWith("Automation01"))
+                .Where(p => !p.Person.Username.StartsWith("auto."))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("auto_")) // Used by testAPI
+                .Where(p => !p.Person.Username.ToLower().StartsWith("userapitestuser"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("manual"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("ithc")) //Used by ITHC
+                .Where(p => !p.Person.Username.ToLower().StartsWith("performance")) //Used for perfomance testing
+                .Where(p => !p.Person.Username.ToLower().Contains("test"))
+                .Where(p => !p.Person.Username.ToLower().Contains("kinly.clerk"))
+                .Where(p => !p.Person.ContactEmail.ToLower().EndsWith("testusersdomain.net"))
                 .Select(p => p.Person.Username).Distinct()
                 .ToListAsync();
 
