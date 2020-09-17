@@ -42,9 +42,7 @@ namespace Bookings.DAL.Queries
                             || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
                 .Where(p => !personsInFutureHearings.Any( pf => pf == p.Person.Username))
                 .Where(p => !p.Person.Username.Contains("@email.net"))
-                
                 .Where(p => !p.Person.Username.Contains("atif."))
-                .Where(p => !p.Person.Username.Contains("y''test."))
                 .Where(p => !p.Person.Username.Contains("ferdinand.porsche"))
                 .Where(p => !p.Person.Username.Contains("enzo.ferrari"))
                 .Where(p => !p.Person.Username.Contains("mike.tyson"))
@@ -70,7 +68,9 @@ namespace Bookings.DAL.Queries
                 .Where(p => !p.Person.Username.Contains("Chris.Green"))
                 .Where(p => !p.Person.Username.Contains("James.Green"))
                 .Where(p => !p.Person.Username.Contains("yeliz.admin"))
-                .Where(p => !p.Person.Username.ToLower().StartsWith("auto")) // Used by testAPI
+                .Where(p => !p.Person.Username.StartsWith("Automation01"))
+                .Where(p => !p.Person.Username.StartsWith("auto."))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("auto_")) // Used by testAPI
                 .Where(p => !p.Person.Username.ToLower().StartsWith("userapitestuser"))
                 .Where(p => !p.Person.Username.ToLower().StartsWith("manual"))
                 .Where(p => !p.Person.Username.ToLower().StartsWith("ithc")) //Used by ITHC
