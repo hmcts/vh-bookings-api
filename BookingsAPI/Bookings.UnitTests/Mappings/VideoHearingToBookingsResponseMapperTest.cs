@@ -105,6 +105,8 @@ namespace Bookings.UnitTests.Mappings
         public void Should_set_judge_name_to_missing_if_empty()
         {
             var mockedHearing = MockHearingWithCase();
+            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
 
             var target = new VideoHearingsToBookingsResponseMapper();

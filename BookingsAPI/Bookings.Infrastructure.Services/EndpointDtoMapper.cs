@@ -11,7 +11,8 @@ namespace Bookings.Infrastructure.Services
             {
                 DisplayName = source.DisplayName,
                 Sip = source.Sip,
-                Pin = source.Pin
+                Pin = source.Pin,
+                DefenceAdvocateUsername = source.DefenceAdvocate?.Person.Username
             };
         }
     }

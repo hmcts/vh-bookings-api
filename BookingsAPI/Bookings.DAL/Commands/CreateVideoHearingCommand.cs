@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
+using Bookings.DAL.Helper;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
 
@@ -11,7 +13,7 @@ namespace Bookings.DAL.Commands
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<Endpoint> endpoints)
+            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -38,7 +40,7 @@ namespace Bookings.DAL.Commands
         public string CreatedBy { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
-        public List<Endpoint> Endpoints { get; }
+        public List<NewEndpoint> Endpoints { get; }
         public string CancelReason { get; set; }
     }
 
@@ -60,7 +62,7 @@ namespace Bookings.DAL.Commands
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
                 command.AudioRecordingRequired, command.CancelReason);
 
-            _context.VideoHearings.Add(videoHearing);
+            await _context.VideoHearings.AddAsync(videoHearing);
             
             await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
@@ -68,7 +70,14 @@ namespace Bookings.DAL.Commands
 
             if (command.Endpoints != null && command.Endpoints.Count > 0)
             {
-                videoHearing.AddEndpoints(command.Endpoints);
+                var dtos = command.Endpoints;
+                var newEndpoints = (from dto in dtos
+                    let defenceAdvocate =
+                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.DefenceAdvocateUsername,
+                            videoHearing.GetParticipants())
+                    select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
+
+                videoHearing.AddEndpoints(newEndpoints);
             }
 
             await _context.SaveChangesAsync();

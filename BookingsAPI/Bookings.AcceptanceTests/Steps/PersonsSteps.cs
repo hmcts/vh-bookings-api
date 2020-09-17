@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;

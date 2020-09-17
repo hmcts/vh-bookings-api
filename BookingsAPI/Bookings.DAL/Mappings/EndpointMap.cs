@@ -14,7 +14,7 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.DisplayName).IsRequired();
             builder.HasIndex(x => x.Sip).IsUnique();
             builder.Property(x => x.Pin).IsRequired();
-            builder.HasOne(x => x.Hearing).WithMany("Endpoints").HasForeignKey(x => x.HearingId);
+            builder.HasOne(x => x.DefenceAdvocate);
         }
     }
 }

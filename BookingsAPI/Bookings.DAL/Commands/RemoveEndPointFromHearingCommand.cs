@@ -15,8 +15,8 @@ namespace Bookings.DAL.Commands
             EndpointId = endpointId;
         }
 
-        public Guid HearingId { get; set; }
-        public Guid EndpointId { get; set; }
+        public Guid HearingId { get; }
+        public Guid EndpointId { get; }
     }
 
     public class RemoveEndPointFromHearingCommandHandler : ICommandHandler<RemoveEndPointFromHearingCommand>
@@ -31,7 +31,7 @@ namespace Bookings.DAL.Commands
         public async Task Handle(RemoveEndPointFromHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include(hearing => hearing.Endpoints)
+                .Include(h => h.Endpoints).ThenInclude(x=> x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
