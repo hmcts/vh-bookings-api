@@ -104,5 +104,22 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
             updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
         }
+
+        [Test]
+        public async Task Should_update_endpoint_with_defence_advocate_as_null_for_none()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.DefenceAdvocate != null);
+            var updatedDisplayName = "updatedDisplayName";
+            await _commandHandler.Handle(new UpdateEndPointOfHearingCommand(seededHearing.Id, endpoint.Id, updatedDisplayName, null));
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var updatedEndPoint = returnedVideoHearing.GetEndpoints().First(ep => ep.Id == endpoint.Id);
+            updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
+            updatedEndPoint.DefenceAdvocate.Should().BeNull();
+        }
     }
 }

@@ -101,8 +101,12 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
 
-            videoHearing.AddEndpoints(new List<Endpoint>
-                {new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null)});
+            var dA = videoHearing.Participants[1];
+            videoHearing.AddEndpoints(
+                new List<Endpoint> {
+                    new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null),
+                    new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", dA)
+                });
             
             if(status == BookingStatus.Created)
             {
