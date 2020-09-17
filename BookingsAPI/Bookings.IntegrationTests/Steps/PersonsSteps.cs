@@ -206,7 +206,7 @@ namespace Bookings.IntegrationTests.Steps
             var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<UserWithClosedConferencesResponse>(json);
             model.Should().NotBeNull();
             model.Usernames.Should().NotBeNull();
-            model.Usernames.Count.Should().Be(4);
+            model.Usernames.Count.Should().Be(3); // Individual & Representative participants
         }
 
 
