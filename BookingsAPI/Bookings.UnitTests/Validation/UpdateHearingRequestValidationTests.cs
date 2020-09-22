@@ -67,6 +67,19 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
+        
+        [Test]
+        public async Task Should_return_missing_updated_by_error()
+        {
+            var request = BuildRequest();
+            request.UpdatedBy = string.Empty;
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoUpdatedByErrorMessage)
+                .Should().BeTrue();
+        }
 
         private UpdateHearingRequest BuildRequest()
         {
@@ -76,7 +89,8 @@ namespace Bookings.UnitTests.Validation
                 ScheduledDuration = 60,
                 ScheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30),
                 HearingRoomName = "RoomUpdate",
-                OtherInformation = "OtherInformationUpdate"
+                OtherInformation = "OtherInformationUpdate",
+                UpdatedBy = "test@auto.com"
             };
         }
     }

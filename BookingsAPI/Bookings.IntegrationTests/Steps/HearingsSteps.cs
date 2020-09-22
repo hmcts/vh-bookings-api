@@ -364,8 +364,10 @@ namespace Bookings.IntegrationTests.Steps
                 .Be(Context.TestData.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
             model.HearingRoomName.Should().Be(Context.TestData.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(Context.TestData.UpdateHearingRequest.OtherInformation);
-            model.QuestionnaireNotRequired.Should().Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired);
-            model.AudioRecordingRequired.Should().Be(Context.TestData.UpdateHearingRequest.AudioRecordingRequired);
+            model.QuestionnaireNotRequired.Should()
+                .Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired.GetValueOrDefault());
+            model.AudioRecordingRequired.Should()
+                .Be(Context.TestData.UpdateHearingRequest.AudioRecordingRequired.GetValueOrDefault());
 
             var updatedCases = model.Cases;
             var caseRequest = Context.TestData.UpdateHearingRequest.Cases.FirstOrDefault();
