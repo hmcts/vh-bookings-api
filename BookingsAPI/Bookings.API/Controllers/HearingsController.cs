@@ -225,9 +225,15 @@ namespace Bookings.API.Controllers
 
             var cases = MapCase(request.Cases);
 
+            // use existing video hearing values here when request properties are null
+            request.AudioRecordingRequired ??= videoHearing.AudioRecordingRequired;
+            request.QuestionnaireNotRequired ??= videoHearing.QuestionnaireNotRequired;
+            request.HearingRoomName ??= videoHearing.HearingRoomName;
+            request.OtherInformation ??= videoHearing.OtherInformation;
+            
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, request.QuestionnaireNotRequired, request.AudioRecordingRequired);
+                request.UpdatedBy, cases, request.QuestionnaireNotRequired.Value, request.AudioRecordingRequired.Value);
 
             await _commandHandler.Handle(command);
 
@@ -448,12 +454,8 @@ namespace Bookings.API.Controllers
 
         private List<Case> MapCase(List<CaseRequest> caseRequestList)
         {
-            var mappedList = new List<Case>();
-            foreach (var caseRequest in caseRequestList)
-            {
-                mappedList.Add(new Case(caseRequest.Number, caseRequest.Name));
-            }
-            return mappedList;
+            var cases = caseRequestList ?? new List<CaseRequest>();
+            return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
         }
 
 

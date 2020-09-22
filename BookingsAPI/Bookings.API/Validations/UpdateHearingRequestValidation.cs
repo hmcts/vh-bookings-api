@@ -9,6 +9,7 @@ namespace Bookings.API.Validations
         public static readonly string NoHearingNameErrorMessage = "Hearing name cannot not be blank";
         public static readonly string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public static readonly string NoScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
+        public static readonly string NoUpdatedByErrorMessage = "UpdatedBy is missing";
         
         public UpdateHearingRequestValidation()
         {
@@ -20,6 +21,9 @@ namespace Bookings.API.Validations
             
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
+            
+            RuleFor(x => x.UpdatedBy)
+                .NotEmpty().WithMessage(NoUpdatedByErrorMessage);
         }
     }
 }
