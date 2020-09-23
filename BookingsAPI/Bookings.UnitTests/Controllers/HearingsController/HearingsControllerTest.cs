@@ -34,17 +34,17 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         protected KinlyConfiguration KinlyConfiguration;
 
         private IEventPublisher _eventPublisher;
-        private ServiceBusQueueClientFake _sbQueueClient;
+        protected ServiceBusQueueClientFake SbQueueClient;
 
         [SetUp]
         public void Setup()
         {
-            _sbQueueClient = new ServiceBusQueueClientFake();
+            SbQueueClient = new ServiceBusQueueClientFake();
             QueryHandlerMock = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
             KinlyConfiguration = new KinlyConfiguration {SipAddressStem = "@WhereAreYou.com"};
             RandomGenerator = new Mock<IRandomGenerator>();
-            _eventPublisher = new EventPublisher(_sbQueueClient);
+            _eventPublisher = new EventPublisher(SbQueueClient);
 
             Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration));
@@ -136,7 +136,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var objectResult = (NoContentResult) result;
             objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
-            var message = _sbQueueClient.ReadMessageFromQueue();
+            var message = SbQueueClient.ReadMessageFromQueue();
             var typedMessage = (HearingIsReadyForVideoIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
@@ -164,7 +164,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var objectResult = (NoContentResult) result;
             objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
-            var message = _sbQueueClient.ReadMessageFromQueue();
+            var message = SbQueueClient.ReadMessageFromQueue();
             var typedMessage = (HearingCancelledIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.HearingId.Should().Be(hearingId);
@@ -219,7 +219,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var objectResult = (OkObjectResult) result;
             objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
 
-            var message = _sbQueueClient.ReadMessageFromQueue();
+            var message = SbQueueClient.ReadMessageFromQueue();
             var typedMessage = (HearingDetailsUpdatedIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.Hearing.CaseName.Should().Be("name");
@@ -294,7 +294,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var objectResult = (NoContentResult) result;
             objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
-            var message = _sbQueueClient.ReadMessageFromQueue();
+            var message = SbQueueClient.ReadMessageFromQueue();
             var typedMessage = (HearingCancelledIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.HearingId.Should().Be(hearingId);
