@@ -224,6 +224,7 @@ namespace Bookings.Domain
 
         public void RemoveEndpoint(Endpoint endpoint)
         {
+            endpoint.AssignDefenceAdvocate(null);
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
         }
