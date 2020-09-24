@@ -193,6 +193,11 @@ namespace Bookings.Domain
             }
 
             var existingParticipant = Participants.Single(x => x.Person.Username == participant.Person.Username);
+            var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
+            if (endpoint != null)
+            {
+                endpoint.AssignDefenceAdvocate(null);
+            }
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
         }
