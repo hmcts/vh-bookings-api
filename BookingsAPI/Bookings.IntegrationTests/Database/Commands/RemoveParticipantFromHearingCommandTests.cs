@@ -82,5 +82,23 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             afterCount.Should().BeLessThan(beforeCount);
         }
+
+        [Test]
+        public async Task Should_remove_participant_with_endpoint_from_hearing()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var beforeCount = seededHearing.GetParticipants().Count;
+
+            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.DefenceAdvocate != null);
+            await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var afterCount = returnedVideoHearing.GetParticipants().Count;
+
+            afterCount.Should().BeLessThan(beforeCount);
+        }
     }
 }

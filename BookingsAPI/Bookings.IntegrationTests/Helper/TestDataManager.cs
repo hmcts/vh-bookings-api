@@ -105,6 +105,7 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddEndpoints(
                 new List<Endpoint> {
                     new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null),
+                    new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", dA),
                 });
             
             if(status == BookingStatus.Created)
