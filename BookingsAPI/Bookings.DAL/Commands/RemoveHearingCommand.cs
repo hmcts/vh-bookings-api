@@ -44,12 +44,13 @@ namespace Bookings.DAL.Commands
             
             _context.RemoveRange(hearing.GetEndpoints());
             _context.RemoveRange(hearing.GetCases());
-            _context.Remove(hearing);
 
             var persons = hearing.Participants.Select(x => x.Person).ToList();
             var organisations = persons.Where(p => p.Organisation != null).Select(x => x.Organisation).ToList();
             _context.RemoveRange(organisations);
             _context.RemoveRange(persons);
+
+            _context.Remove(hearing);
 
             await _context.SaveChangesAsync();
         }
