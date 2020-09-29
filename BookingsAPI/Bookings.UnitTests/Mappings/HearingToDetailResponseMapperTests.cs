@@ -58,6 +58,9 @@ namespace Bookings.UnitTests.Mappings
             party.SetProtected(nameof(party.CaseRole), claimantCaseRole);
             party.SetProtected(nameof(party.HearingRole), claimantLipHearingRole);
 
+            var endpoints = new Endpoint("displayName", "333", "200", null);
+            _videoHearing.AddEndpoint(endpoints);
+
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
             _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
