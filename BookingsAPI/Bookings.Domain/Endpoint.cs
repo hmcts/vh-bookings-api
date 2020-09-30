@@ -10,7 +10,8 @@ namespace Bookings.Domain
         public string Sip { get; set; }
         public string Pin { get; set; }
         public Participant DefenceAdvocate { get; private set; }
-        
+        public Guid HearingId { get; set; }
+        public virtual Hearing Hearing { get; protected set; }
         protected Endpoint(){}
 
         public Endpoint(string displayName, string sip, string pin, Participant defenceAdvocate)
