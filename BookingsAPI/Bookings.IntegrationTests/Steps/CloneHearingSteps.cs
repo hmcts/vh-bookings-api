@@ -71,7 +71,8 @@ namespace Bookings.IntegrationTests.Steps
             await using var db = new BookingsDbContext(Context.BookingsDbContextOptions);
             var hearingsFromDb =
                 await db.VideoHearings.Include(x => x.HearingCases).ThenInclude(h => h.Case).AsNoTracking()
-                    .Where(x => x.SourceId == hearingId).ToListAsync();
+                    .Where(x => x.SourceId == hearingId)
+                    .OrderBy(x => x.ScheduledDateTime).ToListAsync();
             hearingsFromDb.Count.Should().Be(_cloneRequest.Dates.Count + 1); // +1 to include the original hearing
 
             var totalDays = hearingsFromDb.Count;
