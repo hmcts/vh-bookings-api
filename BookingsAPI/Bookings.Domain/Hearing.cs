@@ -21,6 +21,7 @@ namespace Bookings.Domain
             CreatedDate = DateTime.UtcNow;
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
+            SourceId = Id;
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,

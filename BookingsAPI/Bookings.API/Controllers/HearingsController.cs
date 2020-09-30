@@ -24,6 +24,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Common.Configuration;
 using Bookings.Common.Services;
+using Bookings.DAL.Helper;
 using Microsoft.Extensions.Options;
 
 namespace Bookings.API.Controllers
@@ -41,14 +42,16 @@ namespace Bookings.API.Controllers
         private readonly IEventPublisher _eventPublisher;
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
+        private readonly IHearingService _hearingService;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher, IRandomGenerator randomGenerator, IOptions<KinlyConfiguration> kinlyConfiguration)
+            IEventPublisher eventPublisher, IRandomGenerator randomGenerator, IOptions<KinlyConfiguration> kinlyConfiguration, IHearingService hearingService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
             _randomGenerator = randomGenerator;
+            _hearingService = hearingService;
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
 
@@ -180,6 +183,65 @@ namespace Bookings.API.Controllers
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
 
+        /// <summary>
+        /// Create a new hearing with the details of a given hearing on given dates
+        /// </summary>
+        /// <param name="hearingId">Original hearing to clone</param>
+        /// <param name="request">List of dates to create a new hearing on</param>
+        /// <returns></returns>
+        [HttpPost("{hearingId}/clone")]
+        [SwaggerOperation(OperationId = "CloneHearing")]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
+            [FromBody] CloneHearingRequest request)
+        {
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            var validationResult =
+                new CloneHearingRequestValidation(videoHearing)
+                    .ValidateDates(request);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var orderedDates = request.Dates.OrderBy(x => x).ToList();
+            var totalDays = orderedDates.Count + 1; // include original hearing
+            var commands = orderedDates.Select((newDate, index) =>
+            {
+                var hearingDay = index + 2; // zero index including original hearing
+                return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, _randomGenerator,
+                    _kinlyConfiguration.SipAddressStem, totalDays, hearingDay);
+            }).ToList();
+            foreach (var command in commands)
+            {
+                // dbcontext is not thread safe. loop one at a time
+                await _commandHandler.Handle(command);
+            }
+
+            var existingCase = videoHearing.GetCases().First();
+            await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
+            
+            // // update original hearing case name
+            // var updatedCases = videoHearing.GetCases().Select(c => new Case(c.Number, $"{c.Name} Day {1} of {totalDays}")
+            // {
+            //     IsLeadCase = c.IsLeadCase
+            // }).ToList();
+            // var updateCommand = new UpdateHearingCommand(videoHearing.Id, videoHearing.ScheduledDateTime,
+            //     videoHearing.ScheduledDuration, videoHearing.HearingVenue, videoHearing.HearingRoomName,
+            //     videoHearing.OtherInformation, videoHearing.UpdatedBy, updatedCases,
+            //     videoHearing.QuestionnaireNotRequired, videoHearing.AudioRecordingRequired);
+            // await _commandHandler.Handle(updateCommand);
+            return NoContent();
+        }
 
         /// <summary>
         /// Update the details of a hearing such as venue, time and duration
@@ -273,7 +335,7 @@ namespace Bookings.API.Controllers
 
             if (videoHearing == null)
             {
-                return NotFound();
+                return NotFound($"{hearingId} does not exist");
             }
 
             var command = new RemoveHearingCommand(hearingId);

@@ -31,6 +31,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         protected Mock<IQueryHandler> QueryHandlerMock;
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
+        protected Mock<IHearingService> HearingServiceMock;
         protected KinlyConfiguration KinlyConfiguration;
 
         private IEventPublisher _eventPublisher;
@@ -42,12 +43,14 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             SbQueueClient = new ServiceBusQueueClientFake();
             QueryHandlerMock = new Mock<IQueryHandler>();
             CommandHandlerMock = new Mock<ICommandHandler>();
+            HearingServiceMock = new Mock<IHearingService>();
             KinlyConfiguration = new KinlyConfiguration {SipAddressStem = "@WhereAreYou.com"};
             RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(SbQueueClient);
 
             Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
-                _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration));
+                _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
+                HearingServiceMock.Object);
         }
 
         [Test]

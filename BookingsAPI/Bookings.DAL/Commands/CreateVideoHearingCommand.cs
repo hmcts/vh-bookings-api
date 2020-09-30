@@ -42,6 +42,7 @@ namespace Bookings.DAL.Commands
         public bool AudioRecordingRequired { get; set; }
         public List<NewEndpoint> Endpoints { get; }
         public string CancelReason { get; set; }
+        public Guid SourceId { get; set; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -60,7 +61,10 @@ namespace Bookings.DAL.Commands
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
-                command.AudioRecordingRequired, command.CancelReason);
+                command.AudioRecordingRequired, command.CancelReason)
+            {
+                SourceId = command.SourceId
+            };
 
             await _context.VideoHearings.AddAsync(videoHearing);
             
