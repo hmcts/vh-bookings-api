@@ -5,14 +5,16 @@ using Bookings.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200930092707_AddSourceId")]
+    partial class AddSourceId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +56,7 @@ namespace Bookings.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("HearingId")
+                    b.Property<Guid?>("HearingId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Pin")
@@ -498,11 +500,9 @@ namespace Bookings.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("DefenceAdvocateId");
 
-                    b.HasOne("Bookings.Domain.Hearing", "Hearing")
+                    b.HasOne("Bookings.Domain.Hearing", null)
                         .WithMany("Endpoints")
-                        .HasForeignKey("HearingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HearingId");
                 });
 
             modelBuilder.Entity("Bookings.Domain.Hearing", b =>
