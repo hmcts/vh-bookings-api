@@ -230,16 +230,6 @@ namespace Bookings.API.Controllers
             var existingCase = videoHearing.GetCases().First();
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
             
-            // // update original hearing case name
-            // var updatedCases = videoHearing.GetCases().Select(c => new Case(c.Number, $"{c.Name} Day {1} of {totalDays}")
-            // {
-            //     IsLeadCase = c.IsLeadCase
-            // }).ToList();
-            // var updateCommand = new UpdateHearingCommand(videoHearing.Id, videoHearing.ScheduledDateTime,
-            //     videoHearing.ScheduledDuration, videoHearing.HearingVenue, videoHearing.HearingRoomName,
-            //     videoHearing.OtherInformation, videoHearing.UpdatedBy, updatedCases,
-            //     videoHearing.QuestionnaireNotRequired, videoHearing.AudioRecordingRequired);
-            // await _commandHandler.Handle(updateCommand);
             return NoContent();
         }
 
