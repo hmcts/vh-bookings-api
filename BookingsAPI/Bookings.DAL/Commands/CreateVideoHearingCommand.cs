@@ -61,10 +61,7 @@ namespace Bookings.DAL.Commands
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
-                command.AudioRecordingRequired, command.CancelReason)
-            {
-                SourceId = command.SourceId
-            };
+                command.AudioRecordingRequired, command.CancelReason);
 
             await _context.VideoHearings.AddAsync(videoHearing);
             

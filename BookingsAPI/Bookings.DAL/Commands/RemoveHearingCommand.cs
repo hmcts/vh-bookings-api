@@ -36,7 +36,7 @@ namespace Bookings.DAL.Commands
                 .Include("Participants.Questionnaire")
                 .Include("Participants.Questionnaire.SuitabilityAnswers")
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
-                .Where(x => x.SourceId == command.HearingId).ToListAsync();
+                .Where(x =>  x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
             
             if (hearingsIncCloned.IsNullOrEmpty())
             {
