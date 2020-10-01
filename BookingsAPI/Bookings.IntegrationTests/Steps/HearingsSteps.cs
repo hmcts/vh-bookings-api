@@ -525,6 +525,7 @@ namespace Bookings.IntegrationTests.Steps
 
             model.HearingTypeName.Should().NotBeNullOrEmpty();
             model.HearingVenueName.Should().NotBeNullOrEmpty();
+            model.GroupId.Should().NotBeEmpty();
             foreach (var participant in model.Participants)
             {
                 participant.CaseRoleName.Should().NotBeNullOrEmpty();

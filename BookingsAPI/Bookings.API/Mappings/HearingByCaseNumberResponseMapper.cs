@@ -30,7 +30,8 @@ namespace Bookings.API.Mappings
                     CourtroomAccount = courtroomAccount,
                     CourtroomAccountName = courtroomAccountName,
                     CaseName = @case.Name,
-                    CaseNumber = @case.Number
+                    CaseNumber = @case.Number,
+                    GroupId = hearing.SourceId
                 };
                 response.Add(hearingByCaseNumber);
             }

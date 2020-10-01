@@ -23,6 +23,7 @@ namespace Testing.Common.Builders.Api
             private const string ApiRoot = "hearings";
             public static string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string BookNewHearing => $"{ApiRoot}";
+            public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetHearingsByCaseType(int caseType) => $"{ApiRoot}/types?types={caseType}";

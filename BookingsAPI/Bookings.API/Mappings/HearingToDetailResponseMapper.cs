@@ -45,6 +45,7 @@ namespace Bookings.API.Mappings
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
+                GroupId = videoHearing.SourceId,
                 Endpoints = endpoints
             };
 

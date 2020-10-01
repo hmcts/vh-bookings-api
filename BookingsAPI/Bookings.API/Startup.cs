@@ -61,7 +61,8 @@ namespace Bookings.API
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddFluentValidation(fv =>
-                    fv.RegisterValidatorsFromAssemblyContaining<BookNewHearingRequestValidation>());
+                    fv.RegisterValidatorsFromAssemblyContaining<BookNewHearingRequestValidation>()
+                        );
             services.AddCors();
             
             services.AddDbContextPool<BookingsDbContext>(options =>

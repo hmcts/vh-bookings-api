@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bookings.Common.Services;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
@@ -84,14 +85,14 @@ namespace Bookings.IntegrationTests.Helper
 
             if(endPointsToAdd > 0)
             {
+                var r = new RandomGenerator();
                 for (int i = 0; i < endPointsToAdd; i++)
                 {
+                    var sip = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
+                    var pin = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
                     videoHearing.AddEndpoints(new List<Endpoint>
                     {
-                        new Endpoint(
-                            $"new endpoint {i}",
-                            Guid.NewGuid().ToString(),
-                            new Random().Next(1111, 9999).ToString(), null)
+                        new Endpoint($"new endpoint {i}", $"{sip}@test.com", pin, null)
                     });
                 }
             }
@@ -213,7 +214,7 @@ namespace Bookings.IntegrationTests.Helper
                 TestContext.WriteLine(@$"Ignoring cleanup for: ${hearingId}. Does not exist.");
             }
         }
-        
+
         public async Task ClearUnattachedPersons(IEnumerable<string> removedPersons)
         {
             foreach (var personEmail in removedPersons)

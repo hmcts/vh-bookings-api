@@ -50,7 +50,8 @@ namespace Bookings.DAL.Commands
         public async Task Handle(UpdateHearingCommand command)
         {
             var hearing = await _context.VideoHearings
-                .Include("HearingCases.Case")
+                .Include(x=>x.HearingCases).ThenInclude(x=> x.Case)
+                // .Include(x=>x.HearingVenue)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)

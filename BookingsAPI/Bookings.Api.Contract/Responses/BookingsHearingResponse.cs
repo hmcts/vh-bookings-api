@@ -111,5 +111,10 @@ namespace Bookings.Api.Contract.Responses
         public bool AudioRecordingRequired { get; set; }
 
         public string CancelReason { get; set; }
+        
+        /// <summary>
+        /// The group id for a hearing
+        /// </summary>
+        public Guid? GroupId { get; set; }
     }
 }

@@ -31,9 +31,10 @@ namespace Testing.Common.Builders.Domain
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
-            _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, 
-                    otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason)).Build();
+            _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
+                    new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
+                        otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
+                .Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
             var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };
@@ -52,29 +53,31 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
             var indClaimant =_videoHearing?.Participants.Last();
+            indClaimant.SetProtected(nameof(indClaimant.CaseRole), claimantCaseRole);
             indClaimant.SetProtected(nameof(indClaimant.HearingRole), claimantLipHearingRole);
 
             _videoHearing.AddIndividual(person3, defendantLipHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}");
             var indDefendant =_videoHearing?.Participants.Last();
+            indDefendant.SetProtected(nameof(indClaimant.CaseRole), defendantCaseRole);
             indDefendant.SetProtected(nameof(indDefendant.HearingRole), defendantLipHearingRole);
             
             _videoHearing.AddRepresentative(person2, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
             var repDefendant =_videoHearing?.Participants.Last();
+            repDefendant.SetProtected(nameof(indClaimant.CaseRole), defendantCaseRole);
             repDefendant.SetProtected(nameof(repDefendant.HearingRole), defendantRepresentativeHearingRole);
             
             _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                 $"{_judgePerson.FirstName} {_judgePerson.LastName}");
             var judge =_videoHearing?.Participants.Last();
+            judge.SetProtected(nameof(indClaimant.CaseRole), judgeCaseRole);
             judge.SetProtected(nameof(judge.HearingRole), judgeHearingRole);
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
             _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
             _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
-
-            
         }
 
         public Person Judge => _judgePerson;
