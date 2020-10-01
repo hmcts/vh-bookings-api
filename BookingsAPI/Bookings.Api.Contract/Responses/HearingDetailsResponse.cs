@@ -112,6 +112,11 @@ namespace Bookings.Api.Contract.Responses
         /// Gets the endpoints for a hearing
         /// </summary>
         public List<EndpointResponse> Endpoints { get; set; }
+        
+        /// <summary>
+        /// The group id for a hearing
+        /// </summary>
+        public Guid? GroupId { get; set; }
 
     }
 }

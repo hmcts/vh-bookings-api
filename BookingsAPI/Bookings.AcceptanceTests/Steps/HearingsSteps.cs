@@ -270,6 +270,8 @@ namespace Bookings.AcceptanceTests.Steps
                     endpoint.Sip.Should().NotBeNullOrEmpty();
                     endpoint.Pin.Should().NotBeNullOrEmpty();
                 }
+
+                hearing.GroupId.Should().Be(hearing.Id);
             }          
         }
 

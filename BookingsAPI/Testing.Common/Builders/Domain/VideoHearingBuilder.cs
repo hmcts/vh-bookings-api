@@ -31,10 +31,10 @@ namespace Testing.Common.Builders.Domain
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
-            _videoHearing =  Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName, 
-                    otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
-                .With(x=> x.SourceId = null).Build();
+            _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
+                    new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
+                        otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
+                .Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
             var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };

@@ -46,5 +46,10 @@ namespace Bookings.Api.Contract.Responses
         ///     The hearing room name at the hearing venue
         /// </summary>
         public string HearingRoomName { get; set; }
+        
+        /// <summary>
+        /// The group id for a hearing
+        /// </summary>
+        public Guid? GroupId { get; set; }
     }
 }
