@@ -7,6 +7,7 @@ using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Model.Case;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Models;
+using Bookings.Api.Contract.Queries;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using FluentAssertions;
@@ -298,6 +299,28 @@ namespace Bookings.AcceptanceTests.Steps
             var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             model.Count.Should().Be(0);
+        }
+        
+        [Given(@"I have a valid search for recorded hearings by case number request")]
+        public void GivenIHaveAValidSearchForHearingByCaseNumberRequest()
+        {
+            var caseResponse = _context.TestData.Hearing.Cases.First();
+            var query =  new SearchForHearingsQuery
+            {
+                CaseNumber = caseResponse.Number
+            };
+            _context.Request = _context.Get(SearchForHearings(query));
+        }
+
+        [Given(@"I have an invalid search for recorded hearings by case number request")]
+        public void GivenIHaveAnInvalidSearchForHearingByCaseNumberRequest()
+        {
+            var caseResponse = _context.TestData.Hearing.Cases.First();
+            var query =  new SearchForHearingsQuery
+            {
+                CaseNumber = caseResponse.Number + "01"
+            };
+            _context.Request = _context.Get(SearchForHearings(query));
         }
     }
 }

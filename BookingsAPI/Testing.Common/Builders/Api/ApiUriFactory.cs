@@ -1,4 +1,5 @@
 ﻿using System;
+using Bookings.Api.Contract.Queries;
 
 namespace Testing.Common.Builders.Api
 {
@@ -30,7 +31,9 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsByAnyCaseType(int limit = 100) => $"{ApiRoot}/types?limit={limit}";
             public static string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
             public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
-            public static string GetHearingsByCaseNumber(string caseNumber) => $"{ApiRoot}/audiorecording/casenumber?caseNumber={caseNumber}";
+
+            public static string SearchForHearings(SearchForHearingsQuery query) =>
+                $"{ApiRoot}/audiorecording/search?{QueryStringBuilder.ConvertToQueryString(query)}";
             public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
             public static string UpdateAudiorecordingZipStatus(Guid hearingId, bool? zipStatus) => $"{ApiRoot}/{hearingId}/audiorecordingzipsatus/zipStatus?zipstatus={zipStatus}";
         }

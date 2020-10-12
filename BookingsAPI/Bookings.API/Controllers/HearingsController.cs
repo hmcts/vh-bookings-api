@@ -14,7 +14,6 @@ using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -22,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.Api.Contract.Queries;
 using Bookings.Common.Configuration;
 using Bookings.Common.Services;
 using Bookings.DAL.Helper;
@@ -512,26 +512,20 @@ namespace Bookings.API.Controllers
 
 
         /// <summary>
-        /// Gets a list of hearing by case number
+        /// Search for hearings by case number. Search will apply fuzzy matching
         /// </summary>
-        /// <param name="caseNumber">case number to search by</param>
-        /// <returns>list of hearing by case number</returns>
-        [HttpGet("audiorecording/casenumber", Name = "GetHearingsByCaseNumber")]
+        /// <param name="searchQuery">Search criteria</param>
+        /// <returns>list of hearings matching search criteria</returns>
+        [HttpGet("audiorecording/search", Name = "SearchForHearings")]
         [SwaggerOperation(OperationId = "GetHearingsByCaseNumber")]
         [ProducesResponseType(typeof(List<HearingsByCaseNumberResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetHearingsByCaseNumber([FromQuery]string caseNumber)
+        public async Task<IActionResult> SearchForHearingsAsync([FromQuery]SearchForHearingsQuery searchQuery)
         {
-            if (caseNumber.IsNullOrEmpty())
-            {
-                ModelState.AddModelError(nameof(caseNumber), $"Please provide a valid {nameof(caseNumber)}");
-                return BadRequest(ModelState);
-            }
+            var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
 
-            caseNumber = WebUtility.UrlDecode(caseNumber);
-
-            var query = new GetHearingsByCaseNumberQuery(caseNumber);
-            var hearings = await _queryHandler.Handle<GetHearingsByCaseNumberQuery, List<VideoHearing>>(query);
+            var query = new GetHearingsBySearchQuery(caseNumber, searchQuery.Date);
+            var hearings = await _queryHandler.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(query);
 
             var hearingMapper = new HearingByCaseNumberResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
