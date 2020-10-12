@@ -517,7 +517,7 @@ namespace Bookings.API.Controllers
         /// <param name="searchQuery">Search criteria</param>
         /// <returns>list of hearings matching search criteria</returns>
         [HttpGet("audiorecording/search", Name = "SearchForHearings")]
-        [SwaggerOperation(OperationId = "GetHearingsByCaseNumber")]
+        [SwaggerOperation(OperationId = "SearchForHearings")]
         [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SearchForHearingsAsync([FromQuery]SearchForHearingsQuery searchQuery)
