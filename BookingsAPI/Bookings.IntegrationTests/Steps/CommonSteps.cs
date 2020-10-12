@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Bookings.Domain.Enumerations;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 
@@ -51,6 +52,15 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAHearing()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.TestData.SeededHearing = seededHearing;
+            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+        }
+        
+        [Given(@"I have a confirmed hearing")]
+        public async Task GivenIHaveAConfirmedHearing()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(false,BookingStatus.Created);
             Context.TestData.NewHearingId = seededHearing.Id;
             Context.TestData.SeededHearing = seededHearing;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");

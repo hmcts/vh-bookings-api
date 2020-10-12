@@ -10,7 +10,7 @@ using Testing.Common.Builders.Domain;
 
 namespace Bookings.UnitTests.Mappings
 {
-    public class HearingByCaseNumberResponseMapperTests : TestBase
+    public class AudioRecordedHearingsBySearchResponseMapperTests : TestBase
     {
         [TestCase("Test 001")]
         [TestCase(" Test 001")]
@@ -18,7 +18,7 @@ namespace Bookings.UnitTests.Mappings
         public void Should_map_all_properties(string caseNumber)
         {
             var hearingsByCaseNumber = new List<VideoHearing>() { GetHearing() };
-            var hearingMapper = new HearingByCaseNumberResponseMapper();
+            var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
             var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
