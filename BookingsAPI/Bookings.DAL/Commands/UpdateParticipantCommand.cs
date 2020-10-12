@@ -16,24 +16,24 @@ namespace Bookings.DAL.Commands
     }
     public class UpdateParticipantCommand : ICommand
     {
+        public Guid HearingId { get; set; }
         public Guid ParticipantId { get; set; }
         public string Title { get; set; }
         public string DisplayName { get; set; }
         public string TelephoneNumber { get; set; }
         public string OrganisationName { get; set; }
         public Participant UpdatedParticipant { get; set; }
-        public VideoHearing VideoHearing { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; set; }
 
-        public UpdateParticipantCommand(Guid participantId, string title, string displayName, string telphoneNumber, 
-            string organisationName, VideoHearing videoHearing, RepresentativeInformation representativeInformation)
+        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telphoneNumber, 
+            string organisationName, RepresentativeInformation representativeInformation)
         {
+            HearingId = hearingId;
             ParticipantId = participantId;
             Title = title;
             DisplayName = displayName;
             TelephoneNumber = telphoneNumber;
             OrganisationName = organisationName;
-            VideoHearing = videoHearing;
             RepresentativeInformation = representativeInformation;
         }
     }
@@ -49,7 +49,18 @@ namespace Bookings.DAL.Commands
 
         public async Task Handle(UpdateParticipantCommand command)
         {
-            var participants = command.VideoHearing.GetParticipants().ToList();
+            var hearing = await _context.VideoHearings
+                .Include(x => x.Participants).ThenInclude(x => x.Person.Organisation)
+                .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
+                .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
+                .SingleOrDefaultAsync(x => x.Id == command.HearingId);
+
+            if (hearing == null)
+            {
+                throw new HearingNotFoundException(command.HearingId);
+            }
+
+            var participants = hearing.GetParticipants().ToList();
 
             var participant = participants.FirstOrDefault(x => x.Id == command.ParticipantId);
 

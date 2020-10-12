@@ -42,7 +42,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var telephoneNumber = "11112222333";
             var organisationName = "Organisation" + editPrefix;
 
-            var updateParticipantCommand = new UpdateParticipantCommand(individualParticipant.Id, title, displayName, telephoneNumber, organisationName, seededHearing, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -76,7 +76,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 Reference = reference,
                 Representee = representee
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, seededHearing, repInfo);
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, repInfo);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedRepresentative=(Representative) updateParticipantCommand.UpdatedParticipant;
