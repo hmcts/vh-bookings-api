@@ -5,7 +5,7 @@ namespace Bookings.Api.Contract.Responses
     /// <summary>
     /// hearing information queried by case number
     /// </summary>
-    public class HearingsByCaseNumberResponse
+    public class AudioRecordedHearingsBySearchResponse
     {
         /// <summary>
         ///     Hearing Id

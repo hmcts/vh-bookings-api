@@ -518,7 +518,7 @@ namespace Bookings.API.Controllers
         /// <returns>list of hearings matching search criteria</returns>
         [HttpGet("audiorecording/search", Name = "SearchForHearings")]
         [SwaggerOperation(OperationId = "GetHearingsByCaseNumber")]
-        [ProducesResponseType(typeof(List<HearingsByCaseNumberResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SearchForHearingsAsync([FromQuery]SearchForHearingsQuery searchQuery)
         {
@@ -527,7 +527,7 @@ namespace Bookings.API.Controllers
             var query = new GetHearingsBySearchQuery(caseNumber, searchQuery.Date);
             var hearings = await _queryHandler.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(query);
 
-            var hearingMapper = new HearingByCaseNumberResponseMapper();
+            var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
         }

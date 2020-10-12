@@ -35,7 +35,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             
-            var hearingDetailsResponse = (List<HearingsByCaseNumberResponse>)objectResult.Value;
+            var hearingDetailsResponse = (List<AudioRecordedHearingsBySearchResponse>)objectResult.Value;
             
             hearingDetailsResponse.Should().NotBeNull();
 
@@ -67,7 +67,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             
-            var hearingDetailsResponse = (List<HearingsByCaseNumberResponse>)objectResult.Value;
+            var hearingDetailsResponse = (List<AudioRecordedHearingsBySearchResponse>)objectResult.Value;
             
             hearingDetailsResponse.Should().NotBeNull();
             

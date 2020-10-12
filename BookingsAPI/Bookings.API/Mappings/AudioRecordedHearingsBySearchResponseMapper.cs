@@ -7,14 +7,14 @@ using Castle.Core.Internal;
 
 namespace Bookings.API.Mappings
 {
-    public class HearingByCaseNumberResponseMapper
+    public class AudioRecordedHearingsBySearchResponseMapper
     {
-        public List<HearingsByCaseNumberResponse> MapHearingToDetailedResponse(IEnumerable<Hearing> videoHearing,
+        public List<AudioRecordedHearingsBySearchResponse> MapHearingToDetailedResponse(IEnumerable<Hearing> videoHearing,
             string caseNumber)
         {
-            if (videoHearing == null || !videoHearing.Any()) return new List<HearingsByCaseNumberResponse>();
+            if (videoHearing == null || !videoHearing.Any()) return new List<AudioRecordedHearingsBySearchResponse>();
 
-            var response = new List<HearingsByCaseNumberResponse>();
+            var response = new List<AudioRecordedHearingsBySearchResponse>();
             foreach (var hearing in videoHearing)
             {
                 var judgeParticipant = hearing.GetParticipants()
@@ -30,7 +30,7 @@ namespace Bookings.API.Mappings
 
                 if (@case == null) throw new ArgumentException("Hearing is missing case");
 
-                var hearingByCaseNumber = new HearingsByCaseNumberResponse()
+                var hearingByCaseNumber = new AudioRecordedHearingsBySearchResponse()
                 {
                     Id = hearing.Id,
                     ScheduledDateTime = hearing.ScheduledDateTime,

@@ -102,7 +102,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingSearchResponseShouldContainTheGivenHearing()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(json);
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(json);
             
             var seededHearing = Context.TestData.SeededHearing;
             response.Should().NotBeNullOrEmpty();
@@ -115,11 +115,11 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingSearchResponseShouldBeEmpty()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(json);
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(json);
             response.Should().BeEmpty();
         }
         
-        private void AssertHearingByCaseNumberResponse(HearingsByCaseNumberResponse model, Hearing seededHearing)
+        private void AssertHearingByCaseNumberResponse(AudioRecordedHearingsBySearchResponse model, Hearing seededHearing)
         {
             var @case = seededHearing.GetCases()[0];
             model.CaseNumber.Should().Be(@case.Number);

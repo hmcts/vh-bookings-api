@@ -279,7 +279,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of hearing details should be retrieved for the case number")]
         public void ThenAListOfHearingDetailsShouldBeRetrievedForTheCaseNumber()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             foreach (var hearing in model)
             {
@@ -296,7 +296,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"an empty list of hearing details should be retrieved")]
         public void ThenAnEmptyListOfHearingDetailsShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByCaseNumberResponse>>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             model.Count.Should().Be(0);
         }
