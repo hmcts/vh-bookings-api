@@ -330,9 +330,9 @@ namespace Bookings.API.Controllers
             var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
             var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
 
-            var updateParticipantCommand = new UpdateParticipantCommand(participantId, request.Title,
+            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
                 request.DisplayName, request.TelephoneNumber,
-                request.OrganisationName, videoHearing, representative);
+                request.OrganisationName, representative);
 
             await _commandHandler.Handle(updateParticipantCommand);
 
