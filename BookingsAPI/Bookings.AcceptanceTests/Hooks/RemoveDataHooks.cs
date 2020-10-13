@@ -27,9 +27,13 @@ namespace Bookings.AcceptanceTests.Hooks
             context.Request = context.Get(GetHearingsByAnyCaseType(HearingsLimit));
             context.Response = context.Client().Execute(context.Request);
             var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(context.Response.Content);
-            foreach (var hearing in hearings.Hearings.SelectMany(hearingsListResponse => hearingsListResponse.Hearings.Where(hearing => hearing.HearingName.Contains(context.TestData.CaseName))))
+            var hearingIds = hearings.Hearings.SelectMany(hearingsListResponse =>
+                hearingsListResponse.Hearings.Where(hearing =>
+                    hearing.HearingName.Contains(context.TestData.CaseName)))
+                .Select(x=> x.GroupId).Distinct().ToList();
+            foreach (var id in hearingIds.Where(id => id.HasValue))
             {
-                DeleteTheHearing(context, hearing.HearingId);
+                DeleteTheHearing(context, id.Value);
             }
         }
 
