@@ -145,7 +145,7 @@ namespace Bookings.Domain
         }
 
         public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
-            string reference, string representee)
+            string representee)
         {
             if (DoesParticipantExist(person.Username))
             {
@@ -154,7 +154,6 @@ namespace Bookings.Domain
 
             Participant participant = new Representative(person, hearingRole, caseRole)
             {
-                Reference = reference,
                 Representee = representee
             };
 

@@ -57,7 +57,7 @@ namespace Bookings.DAL.Commands
                     {
                             var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
-                            participantToAdd.Reference, participantToAdd.Representee);
+                            participantToAdd.Representee);
                             UpdateOrganisationDetails(participantToAdd.Person, representative);
                         break;
                     }

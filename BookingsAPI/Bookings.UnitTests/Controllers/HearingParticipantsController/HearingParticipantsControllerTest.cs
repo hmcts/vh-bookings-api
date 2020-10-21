@@ -36,7 +36,6 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
                     if(participant.HearingRole.UserRole.Name == "Representative")
                     {
                         var representative = (Representative)participant;
-                        representative.Reference = "Test Reference";
                         representative.Representee = "Representee";
                     }
                 }

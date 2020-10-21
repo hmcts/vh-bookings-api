@@ -8,11 +8,6 @@
         string OrganisationName { get; set; }
 
         /// <summary>
-        ///     Reference
-        /// </summary>
-        string Reference { get; set; }
-
-        /// <summary>
         ///     Representee
         /// </summary>
         string Representee { get; set; }        

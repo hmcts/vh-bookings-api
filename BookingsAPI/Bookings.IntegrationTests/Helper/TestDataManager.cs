@@ -69,21 +69,21 @@ namespace Bookings.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired, 
+                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
             videoHearing.AddRepresentative(person2, claimantRepresentativeHearingRole, claimantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
+                $"{person2.FirstName} {person2.LastName}", "Ms X");
 
             videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
-                $"{person3.FirstName} {person3.LastName}", string.Empty, "Ms Y");
+                $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 
-            if(endPointsToAdd > 0)
+            if (endPointsToAdd > 0)
             {
                 var r = new RandomGenerator();
                 for (int i = 0; i < endPointsToAdd; i++)
@@ -96,7 +96,7 @@ namespace Bookings.IntegrationTests.Helper
                     });
                 }
             }
-            
+
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
@@ -108,8 +108,8 @@ namespace Bookings.IntegrationTests.Helper
                     new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null),
                     new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", dA),
                 });
-            
-            if(status == BookingStatus.Created)
+
+            if (status == BookingStatus.Created)
             {
                 videoHearing.UpdateStatus(BookingStatus.Created, createdBy, null);
             }
@@ -150,7 +150,7 @@ namespace Bookings.IntegrationTests.Helper
         {
             var participant = db.Participants
                 .Include(x => x.Questionnaire).First(x => x.Id == _individualId);
-            participant.Questionnaire = new Questionnaire {Participant = participant, ParticipantId = _individualId};
+            participant.Questionnaire = new Questionnaire { Participant = participant, ParticipantId = _individualId };
             participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
             participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
             participant.UpdatedDate = DateTime.UtcNow;
@@ -164,7 +164,7 @@ namespace Bookings.IntegrationTests.Helper
                 var participantRepresentative = db.Participants
                     .Include(x => x.Questionnaire).First(x => x.Id == item);
                 participantRepresentative.Questionnaire = new Questionnaire
-                    {Participant = participantRepresentative, ParticipantId = item};
+                { Participant = participantRepresentative, ParticipantId = item };
 
                 participantRepresentative.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
                 participantRepresentative.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
@@ -225,7 +225,7 @@ namespace Bookings.IntegrationTests.Helper
                     .SingleOrDefaultAsync(x => x.ContactEmail == personEmail);
 
                 if (person == null) return;
-                if(person.Organisation != null)db.Remove(person.Organisation);
+                if (person.Organisation != null) db.Remove(person.Organisation);
                 db.Remove(person);
 
                 await db.SaveChangesAsync();
@@ -234,7 +234,7 @@ namespace Bookings.IntegrationTests.Helper
         }
 
         public string[] GetIndividualHearingRoles =>
-            new[] {"Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP"};
+            new[] { "Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP" };
 
         public Task<VideoHearing> SeedPastHearings(DateTime scheduledDate)
         {
@@ -283,10 +283,10 @@ namespace Bookings.IntegrationTests.Helper
                 $"{person1.FirstName} {person1.LastName}");
 
             videoHearing.AddRepresentative(person2, claimantRepresentativeHearingRole, claimantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", string.Empty, "Ms X");
+                $"{person2.FirstName} {person2.LastName}", "Ms X");
 
             videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
-                $"{person3.FirstName} {person3.LastName}", string.Empty, "Ms Y");
+                $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
 

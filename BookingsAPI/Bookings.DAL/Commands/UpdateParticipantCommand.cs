@@ -11,7 +11,6 @@ namespace Bookings.DAL.Commands
 {
     public class RepresentativeInformation
     {
-        public string Reference { get; set; }
         public string Representee { get; set; }
     }
     public class UpdateParticipantCommand : ICommand
@@ -74,7 +73,6 @@ namespace Bookings.DAL.Commands
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
                 ((Representative)participant).UpdateRepresentativeDetails(
-                    command.RepresentativeInformation.Reference,
                     command.RepresentativeInformation.Representee);
             }
             await _context.SaveChangesAsync();

@@ -23,11 +23,6 @@ namespace Bookings.Api.Contract.Requests
         public string OrganisationName { get; set; }
 
         /// <summary>
-        ///     Reference
-        /// </summary>
-        public string Reference { get; set; }
-
-        /// <summary>
         ///     Representee
         /// </summary>
         public string Representee { get; set; }

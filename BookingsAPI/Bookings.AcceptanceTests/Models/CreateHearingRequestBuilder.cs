@@ -27,27 +27,22 @@ namespace Bookings.AcceptanceTests.Models
 
             participants[0].CaseRoleName = "Claimant";
             participants[0].HearingRoleName = "Claimant LIP";
-            participants[0].Reference = participants[1].DisplayName;
             participants[0].Representee = null;
 
             participants[1].CaseRoleName = "Claimant";
             participants[1].HearingRoleName = "Representative";
-            participants[1].Reference = null;
             participants[1].Representee = participants[0].DisplayName;
 
             participants[2].CaseRoleName = "Defendant";
             participants[2].HearingRoleName = "Defendant LIP";
-            participants[2].Reference = participants[3].DisplayName;
             participants[2].Representee = null;
 
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Representative";
-            participants[2].Reference = null;
             participants[3].Representee = participants[2].DisplayName;
 
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
-            participants[4].Reference = null;
             participants[4].Representee = null;
 
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();

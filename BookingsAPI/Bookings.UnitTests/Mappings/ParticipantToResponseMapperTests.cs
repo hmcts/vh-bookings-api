@@ -67,7 +67,6 @@ namespace Bookings.UnitTests.Mappings
             var person = new PersonBuilder().WithOrganisation().Build();
             var representative = new Representative(person, hearingRole, caseRole)
             {
-                Reference = "HUHIUHFIH",
                 Representee = "Mr A. Daijif",
                 DisplayName = "I. Vidual",
                 CreatedBy = "unit@test.com"
@@ -107,12 +106,10 @@ namespace Bookings.UnitTests.Mappings
         {
             if (representative == null)
             {
-                response.Reference.Should().BeNullOrWhiteSpace();
                 response.Representee.Should().BeNullOrWhiteSpace();
             }
             else
             {
-                response.Reference.Should().Be(representative.Reference);
                 response.Representee.Should().Be(representative.Representee);
             }
         }

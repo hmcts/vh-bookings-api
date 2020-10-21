@@ -11,7 +11,6 @@
                 TelephoneNumber="11112222333",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
-                Reference = "SolRef"
             };
         }
     }

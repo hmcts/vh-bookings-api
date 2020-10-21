@@ -69,11 +69,9 @@ namespace Bookings.IntegrationTests.Database.Commands
             var telephoneNumber = "11112222333";
             var organisationName = "Organisation" + editPrefix;
             
-            const string reference = "Marvel Comics Division";
             var representee = "Iron Man Inc.";
             RepresentativeInformation repInfo = new RepresentativeInformation()
             {
-                Reference = reference,
                 Representee = representee
             };
             var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, repInfo);
@@ -88,7 +86,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedRepresentative.Person.TelephoneNumber.Should().Be(telephoneNumber);
             updatedRepresentative.Person.Organisation.Should().NotBeNull();
             updatedRepresentative.Person.Organisation.Name.Should().Be(organisationName);
-            updatedRepresentative.Reference.Should().Be(repInfo.Reference);
             updatedRepresentative.Representee.Should().Be(repInfo.Representee);
         }
 

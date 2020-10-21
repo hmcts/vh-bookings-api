@@ -13,7 +13,6 @@ namespace Bookings.API.Mappings
         {
             return new RepresentativeInformation
             {
-                Reference = requestParticipant.Reference,
                 Representee = requestParticipant.Representee
             };
         }

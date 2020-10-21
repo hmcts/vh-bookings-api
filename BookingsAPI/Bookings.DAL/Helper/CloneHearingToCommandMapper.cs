@@ -30,7 +30,6 @@ namespace Bookings.DAL.Helper
             participants.AddRange(reps.Select(r => new NewParticipant
             {
                 Person = r.Person,
-                Reference = r.Reference,
                 Representee = r.Representee,
                 CaseRole = r.CaseRole,
                 DisplayName = r.DisplayName,

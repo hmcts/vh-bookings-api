@@ -22,7 +22,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
             hearing.AddRepresentative(newPerson, claimantRepresentativeHearingRole, claimantCaseRole, "Display Name",
-                string.Empty, string.Empty);
+                string.Empty);
 
             var afterAddCount = hearing.GetParticipants().Count;
 
@@ -33,15 +33,15 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void Should_not_add_existing_participant_to_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
-            var representative = (Representative) hearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+            var representative = (Representative)hearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
             var beforeAddCount = hearing.GetParticipants().Count;
 
             Action action = () => hearing.AddRepresentative(representative.Person, representative.HearingRole,
-                representative.CaseRole, representative.DisplayName, representative.Reference,
+                representative.CaseRole, representative.DisplayName,
                 representative.Representee);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Any(x => x.Message == "Participant already exists in the hearing").Should().BeTrue();
-            
+
             var afterAddCount = hearing.GetParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
         }
@@ -68,7 +68,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             var hearingBuilder = new VideoHearingBuilder();
             var hearing = hearingBuilder.Build();
             var existingJudge = hearingBuilder.Judge;
-            
+
             var judgeCaseRole = new CaseRole(5, "Judge");
             var judgeHearingRole = new HearingRole(13, "Judge");
             var newPerson = new PersonBuilder(existingJudge.Username).Build();
