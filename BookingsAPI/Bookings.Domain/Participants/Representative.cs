@@ -20,7 +20,7 @@ namespace Bookings.Domain.Participants
 
         public void UpdateRepresentativeDetails(string representee)
         {
-            ValidateArguments(representee);
+            ValidateArgumentsRepresentative(representee);
 
             if (_validationFailures.Any())
             {
@@ -30,7 +30,7 @@ namespace Bookings.Domain.Participants
             Representee = representee;
         }
 
-        private void ValidateArguments(string representee)
+        private void ValidateArgumentsRepresentative(string representee)
         {
             if (string.IsNullOrEmpty(representee))
             {
