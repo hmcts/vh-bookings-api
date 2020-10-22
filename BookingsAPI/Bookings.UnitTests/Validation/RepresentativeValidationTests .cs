@@ -34,20 +34,7 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == RepresentativeValidation.NoRepresentee)
                 .Should().BeTrue();
         }
-        [Test]
-        public async Task Should_return_missing_representative_reference_error()
-        {
-            var request = BuildRequest();
-            request.HearingRoleName = "Representative";
-            request.Reference = string.Empty;
-
-            var result = await _representativeValidator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == RepresentativeValidation.NoReference)
-                .Should().BeTrue();
-        }
+     
         [Test]
         public async Task Should_return_missing_organisation_error()
         {

@@ -63,7 +63,6 @@ namespace Bookings.UnitTests.Mappings
 
                 if (existingPat.GetType() != typeof(Representative)) continue;
                 var rep = (Representative) existingPat; 
-                newParticipant.Reference.Should().Be(rep.Reference);
                 newParticipant.Representee.Should().Be(rep.Representee);
             }
             

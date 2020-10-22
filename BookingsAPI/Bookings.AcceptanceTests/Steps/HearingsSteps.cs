@@ -78,7 +78,7 @@ namespace Bookings.AcceptanceTests.Steps
             var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));
             expectedIndividuals.Should().BeEquivalentTo(actualIndividuals, o =>
             {
-                return o.Excluding(x => x.Reference).Excluding(x => x.Representee).ExcludingMissingMembers();
+                return o.Excluding(x => x.Representee).ExcludingMissingMembers();
             });
 
             var expectedRepresentatives = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Representative"));

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
+using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using FizzWare.NBuilder;
@@ -29,7 +30,6 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
                 TelephoneNumber = "11112222333",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
-                Reference = "SolRef"
             };
         }
 
@@ -120,11 +120,10 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
         {
             var hearing = GetVideoHearing();
             hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Representative"), };
-            request.Reference = string.Empty;
             participantId = hearing.Participants[0].Id;
 
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
-
+            request.Representee = string.Empty;
             var result = await Controller.UpdateParticipantDetails(hearingId, participantId, request);
 
             result.Should().NotBeNull();

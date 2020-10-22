@@ -16,29 +16,22 @@ namespace Bookings.Domain.Participants
         {
         }
 
-        public string Reference { get; set; }
         public string Representee { get; set; }
 
-        public void UpdateRepresentativeDetails(string reference, string representee)
+        public void UpdateRepresentativeDetails(string representee)
         {
-            ValidateArguments(reference, representee);
+            ValidateArgumentsRepresentative(representee);
 
             if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);
             }
 
-            Reference = reference;
             Representee = representee;
         }
 
-        private void ValidateArguments(string reference, string representee)
+        private void ValidateArgumentsRepresentative(string representee)
         {
-            if (string.IsNullOrEmpty(reference))
-            {
-                _validationFailures.AddFailure("Reference", "Reference is required");
-            }
-
             if (string.IsNullOrEmpty(representee))
             {
                 _validationFailures.AddFailure("Representee", "Representee is required");

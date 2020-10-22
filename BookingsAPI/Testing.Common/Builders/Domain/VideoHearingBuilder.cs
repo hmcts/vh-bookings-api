@@ -63,7 +63,7 @@ namespace Testing.Common.Builders.Domain
             indDefendant.SetProtected(nameof(indDefendant.HearingRole), defendantLipHearingRole);
             
             _videoHearing.AddRepresentative(person2, defendantRepresentativeHearingRole, defendantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", string.Empty, string.Empty);
+                $"{person2.FirstName} {person2.LastName}", string.Empty);
             var repDefendant =_videoHearing?.Participants.Last();
             repDefendant.SetProtected(nameof(indClaimant.CaseRole), defendantCaseRole);
             repDefendant.SetProtected(nameof(repDefendant.HearingRole), defendantRepresentativeHearingRole);

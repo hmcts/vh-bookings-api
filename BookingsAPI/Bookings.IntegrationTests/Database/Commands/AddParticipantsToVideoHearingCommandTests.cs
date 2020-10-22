@@ -64,7 +64,6 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = claimantCaseRole,
                 HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                Reference = string.Empty,
                 Representee = string.Empty
             };
             var participants = new List<NewParticipant>()
@@ -95,7 +94,6 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
                 DisplayName = representative.DisplayName,
-                Reference = representative.Reference,
                 Representee = representative.Representee
             };
             
@@ -123,7 +121,6 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = representative.CaseRole,
                 HearingRole = representative.HearingRole,
                 DisplayName = representative.DisplayName,
-                Reference = representative.Reference,
                 Representee = representative.Representee
             };
             
@@ -186,7 +183,6 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = judgeCaseRole,
                 HearingRole = judgeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
-                Reference = string.Empty,
                 Representee = string.Empty
             };
             var participants = new List<NewParticipant>()
@@ -223,7 +219,6 @@ namespace Bookings.IntegrationTests.Database.Commands
                 CaseRole = claimantCaseRole,
                 HearingRole = claimantRepresentativeHearingRole,
                 DisplayName = $"{existingPerson.FirstName} {existingPerson.LastName}",
-                Reference = string.Empty,
                 Representee = string.Empty
             };
 

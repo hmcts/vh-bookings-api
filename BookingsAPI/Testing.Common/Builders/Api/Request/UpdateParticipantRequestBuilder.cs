@@ -16,7 +16,6 @@ namespace Testing.Common.Builders.Api.Request
                 .With(x => x.DisplayName = Name.FullName())
                 .With(x=>x.OrganisationName = Company.Name())
                 .With(x=>x.Representee = Name.FullName())
-                .With(x=>x.Reference = Company.Name())
                 .Build();
         }
 

@@ -29,7 +29,6 @@ namespace Bookings.API.Mappings
             {
                 case "Representative":
                     var representative = (Representative)participant;
-                    participantResponse.Reference = representative.Reference;
                     participantResponse.Representee = representative.Representee;
                     break;
                 case "Individual":

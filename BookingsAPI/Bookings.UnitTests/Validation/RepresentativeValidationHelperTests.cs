@@ -20,7 +20,7 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
-        public void Should_fail_validaion_with_empty_representative_refernce_and_representee()
+        public void Should_fail_validaion_with_empty_representative_representee()
         {
             var request = BuildRequest(true);
             var result = RepresentativeValidationHelper.ValidateRepresentativeInfo(request);
@@ -32,9 +32,8 @@ namespace Bookings.UnitTests.Validation
         {
             var invalidParticipantRequest = new ParticipantRequestBuilder("Defendant", "Representative").Build();
             invalidParticipantRequest.Representee = string.Empty;
-            invalidParticipantRequest.Reference = string.Empty;
 
-            var validParticipantRequest = new ParticipantRequestBuilder("Defendant", "Representative").WithRepresentativeDetails("Test Reference","Test Representee").Build();
+            var validParticipantRequest = new ParticipantRequestBuilder("Defendant", "Representative").WithRepresentativeDetails("Test Representee").Build();
 
             var participantRequests = new List<ParticipantRequest>() { validParticipantRequest };
             
