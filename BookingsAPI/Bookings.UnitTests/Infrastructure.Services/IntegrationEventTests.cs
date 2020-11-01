@@ -66,7 +66,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
 
             var individual1 = individuals.First();
-            individual1.HearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(1, "Individual")};
+            individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
             var participantAddedIntegrationEvent =
@@ -96,7 +96,7 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var hearing = new VideoHearingBuilder().Build();
             var individuals = hearing.GetParticipants().Where(x => x is Individual).ToList();
             var individual1 = individuals.First();
-            individual1.HearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(1, "Individual")};
+            individual1.HearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(1, "Individual")};
             individual1.CaseRole = new CaseRole(1, "test");
 
             var participantUpdatedIntegrationEvent =

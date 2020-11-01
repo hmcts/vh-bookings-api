@@ -24,8 +24,6 @@ namespace Bookings.IntegrationTests.Helper
             ? "Defendant"
             : "Respondent";
 
-        public string ClaimantHearingRole => CaseTypeName == CivilMoneyClaimsType
-            ? "Claimant LIP"
-            : "Applicant LIP";
+        public string ClaimantHearingRole => "Litigant in person";
     }
 }

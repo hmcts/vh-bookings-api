@@ -103,7 +103,7 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            var response = caseRole.HearingRoles.Select(x => new HearingRoleResponse()
+            var response = caseRole.HearingRoles.Where(hr => hr.Live).Select(x => new HearingRoleResponse()
             {
                 Name = x.Name
             }).ToList();

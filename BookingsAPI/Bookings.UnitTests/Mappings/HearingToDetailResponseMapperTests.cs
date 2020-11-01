@@ -47,7 +47,7 @@ namespace Bookings.UnitTests.Mappings
                hearing).Build();
 
             var claimantCaseRole = new CaseRole(1, "Claimant");
-            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual") };
+            var claimantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             _videoHearing.AddCase("0875", "Test Case Add", false);
 
             var person1 = new PersonBuilder(true).Build();

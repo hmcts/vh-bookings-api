@@ -561,13 +561,13 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.OrganisationName = "Automation Organisation")
                 .Build().ToList();
             participants[0].CaseRoleName = "Claimant";
-            participants[0].HearingRoleName = "Claimant LIP";
+            participants[0].HearingRoleName = "Litigant in person";
 
             participants[1].CaseRoleName = "Claimant";
             participants[1].HearingRoleName = "Representative";
 
             participants[2].CaseRoleName = "Defendant";
-            participants[2].HearingRoleName = "Defendant LIP";
+            participants[2].HearingRoleName = "Litigant in person";
 
             participants[3].CaseRoleName = "Defendant";
             participants[3].HearingRoleName = "Representative";

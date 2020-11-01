@@ -38,7 +38,7 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
             participants.ForEach(x =>
             {
                 x.CaseRoleName = "Civil Money Claims";
-                x.HearingRoleName = "Claimant LIP";
+                x.HearingRoleName = "Litigant in person";
                 x.FirstName = "Automation_Added Participant";
             });
 
