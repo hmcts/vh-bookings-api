@@ -66,7 +66,7 @@ namespace Bookings.UnitTests.Controllers.HearingParticipantsController
             return hearing; 
         }
 
-        private CaseType CaseType => new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> { "Claimant LIP" }) } };
+        private CaseType CaseType => new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> { "Litigant in person" }) } };
 
         [SetUp]
         public void Intialize()

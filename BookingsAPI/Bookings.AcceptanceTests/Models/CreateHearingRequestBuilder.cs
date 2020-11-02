@@ -26,7 +26,7 @@ namespace Bookings.AcceptanceTests.Models
                 .Build().ToList();
 
             participants[0].CaseRoleName = "Claimant";
-            participants[0].HearingRoleName = "Claimant LIP";
+            participants[0].HearingRoleName = "Litigant in person";
             participants[0].Representee = null;
 
             participants[1].CaseRoleName = "Claimant";
@@ -34,7 +34,7 @@ namespace Bookings.AcceptanceTests.Models
             participants[1].Representee = participants[0].DisplayName;
 
             participants[2].CaseRoleName = "Defendant";
-            participants[2].HearingRoleName = "Defendant LIP";
+            participants[2].HearingRoleName = "Litigant in person";
             participants[2].Representee = null;
 
             participants[3].CaseRoleName = "Defendant";

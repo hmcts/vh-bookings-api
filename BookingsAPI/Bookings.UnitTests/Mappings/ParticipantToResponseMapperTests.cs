@@ -40,7 +40,7 @@ namespace Bookings.UnitTests.Mappings
         public void Should_map_individual()
         {
             var caseRole = new CaseRole(1, "Claimant");
-            var hearingRole = new HearingRole(1, "Claimant LIP") {UserRole = new UserRole(5, "Individual")};
+            var hearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(5, "Individual")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
             var individual = new Individual(person, hearingRole, caseRole)

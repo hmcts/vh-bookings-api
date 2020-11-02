@@ -18,11 +18,11 @@ namespace Testing.Common.Builders.Domain
         {
             var claimantCaseRole = new CaseRole(1, "Claimant");
             var defendantCaseRole = new CaseRole(2, "Defendant");
-            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP");
+            var claimantLipHearingRole = new HearingRole(1, "Litigant in person");
             claimantLipHearingRole.UserRole = new UserRole(5, "Individual");
             var defendantRepresentativeHearingRole = new HearingRole(5, "Representative");
             defendantRepresentativeHearingRole.UserRole = new UserRole(6, "Representative");
-            var defendantLipHearingRole = new HearingRole(4, "Defendant LIP");
+            var defendantLipHearingRole = new HearingRole(4, "Litigant in person");
             defendantLipHearingRole.UserRole = new UserRole(5, "Individual");
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();

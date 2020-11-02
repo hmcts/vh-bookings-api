@@ -58,7 +58,7 @@ namespace Bookings.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder(true).Build();
+            var judgePerson = new PersonBuilder(true).Build();
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
             const string hearingRoomName = "Room02";
@@ -81,7 +81,7 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
-            videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
+            videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
 
             if (endPointsToAdd > 0)
             {
@@ -233,8 +233,7 @@ namespace Bookings.IntegrationTests.Helper
 
         }
 
-        public string[] GetIndividualHearingRoles =>
-            new[] { "Claimant LIP", "Defendant LIP", "Applicant LIP", "Respondent LIP" };
+        public string[] GetIndividualHearingRoles => new[] { "Litigant in person" };
 
         public Task<VideoHearing> SeedPastHearings(DateTime scheduledDate)
         {

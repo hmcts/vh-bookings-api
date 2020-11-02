@@ -15,6 +15,7 @@ namespace Bookings.DAL.Mappings.RefData
             builder.Property(x => x.UserRoleId);
 
             builder.HasOne(x => x.UserRole);
+            builder.Property(x => x.Live).HasDefaultValue(true);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Bookings.UnitTests.Mappings
                     {
                         HearingRoles = new List<HearingRole>
                         {
-                            new HearingRole(1, "Claimant LIP"),
+                            new HearingRole(1, "Litigant in person"),
                             new HearingRole(2, "Representative") { UserRole = new UserRole(1, "individual")}
                         }
                     },
@@ -32,7 +32,7 @@ namespace Bookings.UnitTests.Mappings
                     {
                         HearingRoles = new List<HearingRole>
                         {
-                            new HearingRole(1, "Respondent LIP"),
+                            new HearingRole(1, "Litigant in person"),
                             new HearingRole(2, "Representative") { UserRole = new UserRole(1, "representative")}
                         }
                     }

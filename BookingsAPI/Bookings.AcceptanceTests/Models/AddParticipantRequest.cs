@@ -13,7 +13,7 @@ namespace Bookings.AcceptanceTests.Models
                 .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
                 .Build().ToList();
             participants[0].CaseRoleName = "Claimant";
-            participants[0].HearingRoleName = "Claimant LIP";
+            participants[0].HearingRoleName = "Litigant in person";
             participants[0].FirstName = "Automation_Added Participant";
             var request = new AddParticipantsToHearingRequest{Participants = participants};
             return request;

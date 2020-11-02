@@ -74,7 +74,7 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         {
             CaseRoles = new List<CaseRole>
             {
-                CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> {"Claimant LIP"})
+                CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> {"Litigant in person"})
             }
         };
 

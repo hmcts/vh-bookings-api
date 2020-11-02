@@ -38,10 +38,10 @@ namespace Testing.Common.Builders.Domain
 
             var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
             var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };
-            var claimantLipHearingRole = new HearingRole(1, "Claimant LIP") { UserRole = new UserRole(1, "Individual")};
+            var claimantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
             var defendantRepresentativeHearingRole =  new HearingRole(5, "Representative") { UserRole = new UserRole(1, "Representative") };
 
-            var defendantLipHearingRole =  new HearingRole(4, "Defendant LIP") { UserRole = new UserRole(1, "Individual") };
+            var defendantLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
             var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
 
