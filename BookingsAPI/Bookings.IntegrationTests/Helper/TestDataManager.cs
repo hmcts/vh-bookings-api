@@ -81,7 +81,6 @@ namespace Bookings.IntegrationTests.Helper
             videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
-            judgePerson.ContactEmail = string.Empty;
             videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
 
             if (endPointsToAdd > 0)
