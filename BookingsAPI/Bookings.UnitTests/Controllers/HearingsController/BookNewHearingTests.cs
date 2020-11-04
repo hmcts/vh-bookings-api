@@ -17,7 +17,7 @@ using Testing.Common.Assertions;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class BookNewHearingTests : HearingsControllerTest
+    public class BookNewHearingTests : HearingsControllerTests
     {
         private static List<ParticipantRequest> Participants
         {
@@ -202,6 +202,22 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
+        }
+
+        [Test]
+        public async Task Should_return_badrequest_without_judge()
+        {
+            // TO DO: QueryHandlerMock Setup
+
+            // Remove judge participant from the request
+            request.Participants.RemoveAt(4);
+            var result = await Controller.BookNewHearing(request);
+
+            result.Should().NotBeNull();
+
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "A judge must be included in a hearing");
         }
     }
 }

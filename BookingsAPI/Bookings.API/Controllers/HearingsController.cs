@@ -144,7 +144,7 @@ namespace Bookings.API.Controllers
             if (venue == null)
             {
                 ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
-                return BadRequest(ModelState);
+                return BadRequest(ModelState); 
             }
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
@@ -152,6 +152,13 @@ namespace Bookings.API.Controllers
                 .ToList();
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+
+            var isJudgePresent = newParticipants.Where(x => x.HearingRole.UserRole.IsJudge);
+            if (isJudgePresent)
+            {
+                ModelState.AddModelError(nameof(request.Participants.Contains());, "A judge must be included in a hearing");
+                return BadRequest(ModelState);
+            }
 
             var endpoints = new List<NewEndpoint>();
             if (request.Endpoints != null && request.Endpoints.Count > 0)
