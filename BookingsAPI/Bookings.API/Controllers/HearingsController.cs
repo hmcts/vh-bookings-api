@@ -153,10 +153,10 @@ namespace Bookings.API.Controllers
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
-            var isJudgePresent = newParticipants.Where(x => x.HearingRole.UserRole.IsJudge);
-            if (isJudgePresent)
+            var isJudgePresent = newParticipants.Where(x => x.HearingRole.Name.Equals("Judge"));
+            if (!isJudgePresent.Any())
             {
-                ModelState.AddModelError(nameof(request.Participants.Contains());, "A judge must be included in a hearing");
+                ModelState.AddModelError(nameof(request.Participants), "A judge must be included in a hearing");
                 return BadRequest(ModelState);
             }
 

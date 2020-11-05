@@ -207,17 +207,14 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_return_badrequest_without_judge()
         {
-            // TO DO: QueryHandlerMock Setup
-
-            // Remove judge participant from the request
-            request.Participants.RemoveAt(4);
+            request.Participants.RemoveAll(x => x.CaseRoleName == "Judge");
             var result = await Controller.BookNewHearing(request);
 
             result.Should().NotBeNull();
 
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "A judge must be included in a hearing");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.Participants), "A judge must be included in a hearing");
         }
     }
 }
