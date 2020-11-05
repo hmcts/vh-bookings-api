@@ -22,10 +22,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Queries;
+using Bookings.Common;
 using Bookings.Common.Configuration;
 using Bookings.Common.Services;
 using Bookings.DAL.Helper;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Bookings.API.Controllers
 {
@@ -43,15 +45,22 @@ namespace Bookings.API.Controllers
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
+        private readonly ILogger _logger;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher, IRandomGenerator randomGenerator, IOptions<KinlyConfiguration> kinlyConfiguration, IHearingService hearingService)
+            IEventPublisher eventPublisher,
+            IRandomGenerator randomGenerator,
+            IOptions<KinlyConfiguration> kinlyConfiguration,
+            IHearingService hearingService,
+            ILogger logger)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
+            _logger = logger;
+            
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
 
@@ -116,71 +125,128 @@ namespace Bookings.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> BookNewHearing(BookNewHearingRequest request)
         {
-            var result = new BookNewHearingRequestValidation().Validate(request);
-            if (!result.IsValid)
+            try
             {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                if (request == null)
+                {
+                    ModelState.AddModelError(nameof(BookNewHearingRequest), "BookNewHearingRequest is null");
+                    _logger.TrackEvent("BookNewHearing Error: BookNewHearingRequest is null");
+                    return BadRequest(ModelState);
+                }
+                
+                var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
+                if (!result.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(result.Errors);
+                    var dictionary = result.Errors.ToDictionary(x => $"{x.PropertyName}-{Guid.NewGuid()}", x => x.ErrorMessage);
+                    var payload = JsonConvert.SerializeObject(request);
+                    dictionary.Add("payload", !string.IsNullOrWhiteSpace(payload) ? payload : "Empty Payload");
+                    _logger.TrackEvent("BookNewHearing Validation Errors", dictionary);
+                    return BadRequest(ModelState);
+                }
+
+                var query = new GetCaseTypeQuery(request.CaseTypeName);
+                var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+                
+                if (caseType == null)
+                {
+                    ModelState.AddModelError(nameof(request.CaseTypeName), "Case type does not exist");
+                    _logger.TrackEvent("BookNewHearing Error: Case type does not exist", new Dictionary<string, string>{{"CaseTypeName", request?.CaseTypeName}});
+                    return BadRequest(ModelState);
+                }
+
+                var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
+                if (hearingType == null)
+                {
+                    ModelState.AddModelError(nameof(request.HearingTypeName), "Hearing type does not exist");
+                    _logger.TrackEvent("BookNewHearing Error: Hearing type does not exist", new Dictionary<string, string>{{"HearingTypeName", request?.HearingTypeName}});
+                    return BadRequest(ModelState);
+                }
+
+                var venue = await GetVenue(request.HearingVenueName);
+                if (venue == null)
+                {
+                    ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
+                    _logger.TrackEvent("BookNewHearing Error: Hearing venue does not exist", new Dictionary<string, string>{{"HearingVenueName", request?.HearingVenueName}});
+                    return BadRequest(ModelState);
+                }
+
+                var mapper = new ParticipantRequestToNewParticipantMapper();
+                var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
+                _logger.TrackEvent("BookNewHearing mapped participants", new Dictionary<string, string>
+                {
+                    {"Participants", string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
+                });
+                
+                var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+                _logger.TrackEvent("BookNewHearing got cases", new Dictionary<string, string>
+                {
+                    {"Cases", string.Join(", ", cases?.Select(x => new {x.Name, x.Number}))}
+                });
+
+                var endpoints = new List<NewEndpoint>();
+                if (request.Endpoints != null && request.Endpoints.Count > 0)
+                {
+                    endpoints = request.Endpoints.Select(x =>
+                        EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
+                            _kinlyConfiguration.SipAddressStem)).ToList();
+                    
+                    _logger.TrackEvent("BookNewHearing mapped endpoints", new Dictionary<string, string>
+                    {
+                        {"Endpoints", string.Join(", ", endpoints?.Select(x => new {x?.Sip, x?.DisplayName, x?.DefenceAdvocateUsername}))}
+                    });
+                }
+
+                var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
+                    request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
+                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
+                {
+                    HearingRoomName = request.HearingRoomName,
+                    OtherInformation = request.OtherInformation,
+                    CreatedBy = request.CreatedBy
+                };
+
+                _logger.TrackEvent("BookNewHearing Calling DB...", new Dictionary<string, string>{{"createVideoHearingCommand", JsonConvert.SerializeObject(createVideoHearingCommand)}});
+                await _commandHandler.Handle(createVideoHearingCommand);
+                _logger.TrackEvent("BookNewHearing DB Save Success", new Dictionary<string, string>{{"NewHearingId", createVideoHearingCommand.NewHearingId.ToString()}});
+                
+                var videoHearingId = createVideoHearingCommand.NewHearingId;
+
+                var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
+                var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+                _logger.TrackEvent("BookNewHearing Retrieved new hearing from DB", new Dictionary<string, string>
+                {
+                    {"HearingId", queriedVideoHearing.Id.ToString()},
+                    {"CaseType", queriedVideoHearing.CaseType?.Name},
+                    {"Participants.Count", queriedVideoHearing.Participants.Count.ToString()},
+                });
+
+                var hearingMapper = new HearingToDetailResponseMapper();
+                var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
+                _logger.TrackEvent("BookNewHearing Finished, returning response", new Dictionary<string, string> {{"response", JsonConvert.SerializeObject(response)}});
+                return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
             }
-
-            var query = new GetCaseTypeQuery(request.CaseTypeName);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
-
-
-            if (caseType == null)
+            catch (Exception ex)
             {
-                ModelState.AddModelError(nameof(request.CaseTypeName), "Case type does not exist");
-                return BadRequest(ModelState);
+                if (request != null)
+                {
+                    var payload = JsonConvert.SerializeObject(request);
+                    _logger.TrackError(ex, new Dictionary<string, string>
+                    {
+                        {"payload", !string.IsNullOrWhiteSpace(payload) ? payload : "Empty Payload"},
+                        {"ScheduledDateTime", request.ScheduledDateTime.ToString("s")},
+                        {"ScheduledDuration", request.ScheduledDuration.ToString()},
+                        {"CaseTypeName", request.CaseTypeName},
+                        {"HearingTypeName", request.HearingTypeName}
+                    });
+                }
+                else
+                {
+                    _logger.TrackError(ex, new Dictionary<string, string> {{"payload", "BookNewHearingRequest is null"}});
+                }
+
+                throw;
             }
-
-            var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
-            if (hearingType == null)
-            {
-                ModelState.AddModelError(nameof(request.HearingTypeName), "Hearing type does not exist");
-                return BadRequest(ModelState);
-            }
-
-            var venue = await GetVenue(request.HearingVenueName);
-            if (venue == null)
-            {
-                ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
-                return BadRequest(ModelState);
-            }
-
-            var mapper = new ParticipantRequestToNewParticipantMapper();
-            var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType))
-                .ToList();
-
-            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-
-            var endpoints = new List<NewEndpoint>();
-            if (request.Endpoints != null && request.Endpoints.Count > 0)
-            {
-                endpoints = request.Endpoints.Select(x =>
-                    EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
-                        _kinlyConfiguration.SipAddressStem)).ToList();
-            }
-
-            var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
-            {
-                HearingRoomName = request.HearingRoomName,
-                OtherInformation = request.OtherInformation,
-                CreatedBy = request.CreatedBy
-            };
-
-            await _commandHandler.Handle(createVideoHearingCommand);
-
-            var videoHearingId = createVideoHearingCommand.NewHearingId;
-
-            var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
-
-            var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-
-            var hearingMapper = new HearingToDetailResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
-            return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
 
         /// <summary>
