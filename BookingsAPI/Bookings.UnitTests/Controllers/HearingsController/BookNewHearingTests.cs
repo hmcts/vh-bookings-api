@@ -203,30 +203,5 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
         }
-
-        [Test]
-        public async Task Should_return_badrequest_without_judge()
-        {
-            var judgelessRequest = Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.CaseTypeName = "Civil Money Claims")
-                .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
-                .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
-                .With(x => x.ScheduledDateTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1))
-                .With(x => x.ScheduledDuration = 5)
-                .With(x => x.Participants = Participants.Where(participant => participant.HearingRoleName != "Judge").ToList())
-                .With(x => x.Cases = Cases)
-                .With(x => x.CreatedBy = createdBy)
-                .With(x => x.QuestionnaireNotRequired = false)
-                .With(x => x.Endpoints = new List<EndpointRequest> { new EndpointRequest { DisplayName = "Cool endpoint 1" } })
-                .Build();
-
-            var result = await Controller.BookNewHearing(judgelessRequest);
-
-            result.Should().NotBeNull();
-
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.Participants), "A judge must be included in a hearing");
-        }
     }
 }

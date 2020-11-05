@@ -153,13 +153,6 @@ namespace Bookings.API.Controllers
 
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
 
-            var isJudgePresent = newParticipants.Any(x => x.HearingRole.Name.Equals("Judge"));
-            if (!isJudgePresent)
-            {
-                ModelState.AddModelError(nameof(request.Participants), "A judge must be included in a hearing");
-                return BadRequest(ModelState);
-            }
-
             var endpoints = new List<NewEndpoint>();
             if (request.Endpoints != null && request.Endpoints.Count > 0)
             {
