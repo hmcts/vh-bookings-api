@@ -207,8 +207,20 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_return_badrequest_without_judge()
         {
-            request.Participants.RemoveAll(x => x.CaseRoleName == "Judge");
-            var result = await Controller.BookNewHearing(request);
+            var judgelessRequest = Builder<BookNewHearingRequest>.CreateNew()
+                .With(x => x.CaseTypeName = "Civil Money Claims")
+                .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
+                .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
+                .With(x => x.ScheduledDateTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1))
+                .With(x => x.ScheduledDuration = 5)
+                .With(x => x.Participants = Participants.Where(participant => participant.HearingRoleName != "Judge").ToList())
+                .With(x => x.Cases = Cases)
+                .With(x => x.CreatedBy = createdBy)
+                .With(x => x.QuestionnaireNotRequired = false)
+                .With(x => x.Endpoints = new List<EndpointRequest> { new EndpointRequest { DisplayName = "Cool endpoint 1" } })
+                .Build();
+
+            var result = await Controller.BookNewHearing(judgelessRequest);
 
             result.Should().NotBeNull();
 
