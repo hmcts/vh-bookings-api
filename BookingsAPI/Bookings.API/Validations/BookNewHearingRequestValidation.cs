@@ -50,8 +50,9 @@ namespace Bookings.API.Validations
             RuleForEach(x => x.Cases)
                 .SetValidator(new CaseRequestValidation());
 
-            RuleFor(x => x.Participants.Any(x => x.HearingRoleName == "Judge"))
-                .NotEmpty().WithMessage(JudgeAbsenceErrorMessage);
+            RuleFor(x => x.Participants)
+                .Must(participant => participant.Any(x => x.HearingRoleName == "Judge"))
+                .WithMessage(JudgeAbsenceErrorMessage);
         }
     }
 }

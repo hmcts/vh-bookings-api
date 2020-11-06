@@ -19,4 +19,7 @@
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
     <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\HearingsController\Helpers\" />
+  </ItemGroup>
 </Project>
