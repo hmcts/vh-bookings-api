@@ -144,7 +144,7 @@ namespace Bookings.API.Controllers
             if (venue == null)
             {
                 ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
-                return BadRequest(ModelState); 
+                return BadRequest(ModelState);
             }
 
             var mapper = new ParticipantRequestToNewParticipantMapper();
