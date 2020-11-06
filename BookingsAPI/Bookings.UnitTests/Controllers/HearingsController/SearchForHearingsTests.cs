@@ -12,7 +12,7 @@ using Bookings.Api.Contract.Queries;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class SearchForHearingsTests : HearingsControllerTest
+    public class SearchForHearingsTests : HearingsControllerTests
     {
         [Test]
         public async Task Should_return_an_empty_list_if_no_records_found_for_the_give_case_number()

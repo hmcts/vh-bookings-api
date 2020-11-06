@@ -12,7 +12,7 @@ using Testing.Common.Assertions;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class GetHearingDetailsByIdTests : HearingsControllerTest
+    public class GetHearingDetailsByIdTests : HearingsControllerTests
     {
         [Test]
         public async Task Should_return_hearing_details_for_given_hearingid()

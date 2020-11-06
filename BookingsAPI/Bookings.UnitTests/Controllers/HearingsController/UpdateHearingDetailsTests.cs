@@ -16,7 +16,7 @@ using Testing.Common.Builders.Domain;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class UpdateHearingDetailsTests : HearingsControllerTest
+    public class UpdateHearingDetailsTests : HearingsControllerTests
     {
         [Test]
         public async Task should_send_message_to_bqs_with_updated_hearing()

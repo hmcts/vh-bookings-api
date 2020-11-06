@@ -26,7 +26,7 @@ using Testing.Common.Builders.Domain;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class HearingsControllerTest
+    public class HearingsControllerTests
     {
         protected API.Controllers.HearingsController Controller;
         protected Mock<IQueryHandler> QueryHandlerMock;
