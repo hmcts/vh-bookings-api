@@ -23,8 +23,13 @@ namespace Bookings.DAL.Queries
 
         public async Task<List<string>> Handle(GetPersonsByClosedHearingsQuery query)
         {
-            var cutOffDate = DateTime.UtcNow.AddMonths(-3); 
-            
+            var cutOffDate = DateTime.UtcNow.AddMonths(-3);
+
+            var lastRunDate = _context.JobHistory.FirstOrDefault()?.LastRunDate;
+
+            var cutOffDateFrom = lastRunDate.HasValue 
+                                        ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1) 
+                                        : cutOffDate.AddDays(-30);
 
             var personsInFutureHearings = _context.Participants
                 .Include(p => p.Person)
@@ -37,37 +42,38 @@ namespace Bookings.DAL.Queries
             var personsInPastHearings = await _context.Participants
                 .Include(p => p.Person)
                 .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
-                .Where(h => h.Hearing.ScheduledDateTime < cutOffDate
+                .Where(h => (h.Hearing.ScheduledDateTime >= cutOffDateFrom
+                            && h.Hearing.ScheduledDateTime < cutOffDate)
                             && (h.HearingRole.UserRole.Name.ToLower().Equals("individual")
                             || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
                 .Where(p => !personsInFutureHearings.Any( pf => pf == p.Person.Username))
-                .Where(p => !p.Person.Username.Contains("@email.net"))
+                .Where(p => !p.Person.Username.ToLower().EndsWith("@email.net"))
                 .Where(p => !p.Person.Username.Contains("atif."))
-                .Where(p => !p.Person.Username.Contains("ferdinand.porsche"))
-                .Where(p => !p.Person.Username.Contains("enzo.ferrari"))
-                .Where(p => !p.Person.Username.Contains("mike.tyson"))
-                .Where(p => !p.Person.Username.Contains("george.foreman"))
-                .Where(p => !p.Person.Username.Contains("rocky.marciano"))
-                .Where(p => !p.Person.Username.Contains("cassius.clay"))
-                .Where(p => !p.Person.Username.Contains("george.clinton"))
-                .Where(p => !p.Person.Username.Contains("metalface.doom"))
-                .Where(p => !p.Person.Username.Contains("karl.benz"))
-                .Where(p => !p.Person.Username.Contains("henry.ford"))
-                .Where(p => !p.Person.Username.Contains("feuer.frei"))
-                .Where(p => !p.Person.Username.Contains("wasser.kalt"))
-                .Where(p => !p.Person.Username.Contains("dan.brown"))
-                .Where(p => !p.Person.Username.Contains("tom.clancy"))
-                .Where(p => !p.Person.Username.Contains("stephen.king"))
-                .Where(p => !p.Person.Username.Contains("sue.burke"))
-                .Where(p => !p.Person.Username.Contains("michael.jordan"))
-                .Where(p => !p.Person.Username.Contains("scottie.pippen"))
-                .Where(p => !p.Person.Username.Contains("steve.kerr"))
-                .Where(p => !p.Person.Username.Contains("dennis.rodman"))
-                .Where(p => !p.Person.Username.Contains("Jane.Doe"))
-                .Where(p => !p.Person.Username.Contains("John.Doe"))
-                .Where(p => !p.Person.Username.Contains("Chris.Green"))
-                .Where(p => !p.Person.Username.Contains("James.Green"))
-                .Where(p => !p.Person.Username.Contains("yeliz.admin"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("ferdinand.porsche"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("enzo.ferrari"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("mike.tyson"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("george.foreman"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("rocky.marciano"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("cassius.clay"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("george.clinton"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("metalface.doom"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("karl.benz"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("henry.ford"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("feuer.frei"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("wasser.kalt"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("dan.brown"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("tom.clancy"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("stephen.king"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("sue.burke"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("michael.jordan"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("scottie.pippen"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("steve.kerr"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("dennis.rodman"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("Jane.Doe"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("John.Doe"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("Chris.Green"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("James.Green"))
+                .Where(p => !p.Person.Username.ToLower().StartsWith("yeliz.admin"))
                 .Where(p => !p.Person.Username.StartsWith("Automation01"))
                 .Where(p => !p.Person.Username.StartsWith("auto."))
                 .Where(p => !p.Person.Username.ToLower().StartsWith("auto_")) // Used by testAPI

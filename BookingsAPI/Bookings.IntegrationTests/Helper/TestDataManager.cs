@@ -194,6 +194,17 @@ namespace Bookings.IntegrationTests.Helper
             return caseType;
         }
 
+        public DateTime? GetJobLastRunDateTime()
+        {
+            DateTime? lastUpdateDateTime;
+            using (var db = new BookingsDbContext(_dbContextOptions))
+            {
+                lastUpdateDateTime = db.JobHistory.FirstOrDefault()?.LastRunDate;
+            }
+        
+            return lastUpdateDateTime;
+        }
+
         public async Task ClearSeededHearings()
         {
             foreach (var hearingId in _seededHearings)

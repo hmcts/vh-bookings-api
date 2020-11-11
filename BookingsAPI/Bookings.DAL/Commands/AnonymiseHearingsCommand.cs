@@ -1,5 +1,6 @@
 using Bookings.DAL.Commands.Core;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 
 namespace Bookings.DAL.Commands
@@ -7,7 +8,8 @@ namespace Bookings.DAL.Commands
 	public class AnonymiseHearingsCommand : ICommand
     {
         public int RecordsUpdated { get; set; }
-        public AnonymiseHearingsCommand()
+		public DateTime UpdatedDate { get; set; }
+		public AnonymiseHearingsCommand()
         {
         }
     }
@@ -176,6 +178,15 @@ namespace Bookings.DAL.Commands
 			"CLOSE participant_cursor; " +
 			"DEALLOCATE participant_cursor; ";
 			command.RecordsUpdated = await _context.Database.ExecuteSqlRawAsync(query);
-        }
+
+			var updatedDate = DateTime.UtcNow;
+			
+			var updateQuery = @$"IF EXISTS(select * from JobHistory)
+								Update JobHistory Set LastRunDate= '{updatedDate}'
+							ELSE
+							  Insert into JobHistory values (NEWID(), '{updatedDate}')";
+			await _context.Database.ExecuteSqlRawAsync(updateQuery);
+			command.UpdatedDate = updatedDate;
+		}
     }
 }
