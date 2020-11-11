@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
+using Bookings.Common;
 using Bookings.Common.Configuration;
 using Bookings.Common.Services;
 using Bookings.DAL.Commands;
@@ -25,7 +26,7 @@ using Testing.Common.Builders.Domain;
 
 namespace Bookings.UnitTests.Controllers.HearingsController
 {
-    public class HearingsControllerTest
+    public class HearingsControllerTests
     {
         protected API.Controllers.HearingsController Controller;
         protected Mock<IQueryHandler> QueryHandlerMock;
@@ -33,6 +34,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         protected Mock<IRandomGenerator> RandomGenerator;
         protected Mock<IHearingService> HearingServiceMock;
         protected KinlyConfiguration KinlyConfiguration;
+        protected Mock<ILogger> Logger;
 
         private IEventPublisher _eventPublisher;
         protected ServiceBusQueueClientFake SbQueueClient;
@@ -47,10 +49,11 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             KinlyConfiguration = new KinlyConfiguration {SipAddressStem = "@WhereAreYou.com"};
             RandomGenerator = new Mock<IRandomGenerator>();
             _eventPublisher = new EventPublisher(SbQueueClient);
+            Logger = new Mock<ILogger>();
 
             Controller = new API.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object);
+                HearingServiceMock.Object, Logger.Object);
         }
 
         [Test]
