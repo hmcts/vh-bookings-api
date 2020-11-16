@@ -180,11 +180,11 @@ namespace Bookings.DAL.Commands
 			command.RecordsUpdated = await _context.Database.ExecuteSqlRawAsync(query);
 
 			var updatedDate = DateTime.UtcNow;
-			
+
 			var updateQuery = @$"IF EXISTS(select * from JobHistory)
-								Update JobHistory Set LastRunDate= '{updatedDate}'
+								Update JobHistory Set LastRunDate= '{updatedDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
 							ELSE
-							  Insert into JobHistory values (NEWID(), '{updatedDate}')";
+							  Insert into JobHistory values (NEWID(), '{updatedDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}')";
 			await _context.Database.ExecuteSqlRawAsync(updateQuery);
 			command.UpdatedDate = updatedDate;
 		}
