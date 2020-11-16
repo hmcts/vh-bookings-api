@@ -75,6 +75,7 @@ namespace Bookings.UnitTests.Mappings
             mapped.CaseTypeName.Should().Be("Civil Money Claims");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
+            mapped.CourtRoomAccount.Should().NotBeNullOrEmpty();
         }
 
         [Test]
