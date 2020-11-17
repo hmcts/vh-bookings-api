@@ -116,5 +116,10 @@ namespace Bookings.Api.Contract.Responses
         /// The group id for a hearing
         /// </summary>
         public Guid? GroupId { get; set; }
+
+        /// <summary>
+        /// Gets or sets Judge/Court account (username).
+        /// </summary>
+        public string CourtRoomAccount { get; set; }
     }
 }

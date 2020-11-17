@@ -33,7 +33,8 @@ namespace Bookings.API.Mappings
             
             var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
-            
+            var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : "";
+
             var response = new BookingsHearingResponse
             {
                 HearingId = videoHearing.Id,
@@ -56,7 +57,8 @@ namespace Bookings.API.Mappings
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
-                GroupId = videoHearing.SourceId
+                GroupId = videoHearing.SourceId,
+                CourtRoomAccount = courtRoomAccount
             };
 
             return response;
