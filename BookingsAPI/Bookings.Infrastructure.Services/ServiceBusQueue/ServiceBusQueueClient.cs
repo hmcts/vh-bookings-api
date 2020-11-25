@@ -35,7 +35,7 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
 
         public async Task PublishMessageAsync(EventMessage eventMessage)
         {
-            var queueClient = new QueueClient(_serviceBusSettings.ConnectionString, _serviceBusSettings.QueueName);
+            var queueClient = new QueueClient(_serviceBusSettings.ConnectionString, _serviceBusSettings.QueueName, retryPolicy: new NoRetry());
             var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
 
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
