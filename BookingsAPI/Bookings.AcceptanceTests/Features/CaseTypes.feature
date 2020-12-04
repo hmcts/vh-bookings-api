@@ -177,3 +177,7 @@ Examples:
 | GRC - Welfare of Animals          | Judge        |
 | GRC - Welfare of Animals          | Panel Member |
 | GRC - Welfare of Animals          | Observer     |
+| Immigration and Asylum            | Appellant    |
+| Immigration and Asylum            | Home Office  |
+| Immigration and Asylum            | Observer     |
+| Immigration and Asylum            | Panel Member |

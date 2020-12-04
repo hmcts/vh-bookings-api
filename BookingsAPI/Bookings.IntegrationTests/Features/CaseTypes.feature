@@ -42,7 +42,8 @@ Scenario: Get available case types
 	| GRC - Professional Regulations    | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
 	| GRC - Query Jurisdiction          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
 	| GRC - Welfare of Animals          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
-
+	| Immigration and Asylum            | Appeals - Substantive Statutory,Bail Hearing,Case Management Appointment,Case Management Review,Costs Hearing,Payment Liability Hearing,Preliminary Hearing                                                                                                                                                                                                |
+	
 Scenario: Get case roles for a case type with nonexistent case type
 	Given I have a get case roles for a case type of 'nonexistent' request
 	When I send the request to the endpoint
@@ -96,7 +97,7 @@ Examples:
 | GRC - Professional Regulations    |
 | GRC - Query Jurisdiction          |
 | GRC - Welfare of Animals          |
-
+| Immigration and Asylum            |
 
 Scenario Outline: Get hearing roles for a case role of a case type
 	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -245,3 +246,7 @@ Examples:
 | GRC - Welfare of Animals          | Judge        |
 | GRC - Welfare of Animals          | Panel Member |
 | GRC - Welfare of Animals          | Observer     |
+| Immigration and Asylum            | Appellant    |
+| Immigration and Asylum            | Home Office  |
+| Immigration and Asylum            | Observer     |
+| Immigration and Asylum            | Panel Member |
