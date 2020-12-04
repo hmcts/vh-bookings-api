@@ -13,7 +13,7 @@ namespace Bookings.DAL.Migrations
                 new[] { "Id", "Name" },
                 new object[,]
                 {
-                    { 19, "Immigration and Asylum" }
+                    { 32, "Immigration and Asylum" }
                 });
             
             migrationBuilder.InsertData(
@@ -21,13 +21,13 @@ namespace Bookings.DAL.Migrations
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
-                    { 75, "Appeals - Substantive Statutory", 19 },
-                    { 76, "Bail Hearing", 19 },
-                    { 77, "Payment Liability Hearing", 19 },
-                    { 78, "Costs Hearing", 19 },
-                    { 79, "Case Management Review", 19 },
-                    { 80, "Preliminary Hearing", 19 },
-                    { 81, "Case Management Appointment", 19 },
+                    { 114, "Appeals - Substantive Statutory", 32 },
+                    { 115, "Bail Hearing", 32 },
+                    { 116, "Payment Liability Hearing", 32 },
+                    { 117, "Costs Hearing", 32 },
+                    { 118, "Case Management Review", 32 },
+                    { 119, "Preliminary Hearing", 32 },
+                    { 120, "Case Management Appointment", 32 },
                 });
             
             migrationBuilder.InsertData(
@@ -35,10 +35,10 @@ namespace Bookings.DAL.Migrations
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
                 new object[,]
                 {
-                    { 90, "Appellant", (int) CaseRoleGroup.Appellant, 19 },
-                    { 91, "Home Office", (int) CaseRoleGroup.HomeOffice, 19 },
-                    { 92, "Observer", (int) CaseRoleGroup.Observer, 19 },
-                    { 93, "Panel Member", (int) CaseRoleGroup.PanelMember, 19 },
+                    { 155, "Appellant", (int) CaseRoleGroup.Appellant, 32 },
+                    { 156, "Home Office", (int) CaseRoleGroup.HomeOffice, 32 },
+                    { 157, "Observer", (int) CaseRoleGroup.Observer, 32 },
+                    { 158, "Panel Member", (int) CaseRoleGroup.PanelMember, 32 },
                 });
             
             migrationBuilder.InsertData(
@@ -47,40 +47,40 @@ namespace Bookings.DAL.Migrations
                 new object[,]
                 {
                     // Appellant
-                    { 214, "Litigant in person", 5, 90 },
-                    { 215, "Representative", 6, 90 },
-                    { 216, "Witness", 5, 90 },
+                    { 331, "Litigant in person", 5, 155 },
+                    { 332, "Representative", 6, 155 },
+                    { 333, "Witness", 5, 155 },
                     
                     // Home office
-                    { 217, "Presenting Officer", 6, 91 },
-                    { 218, "Witness", 5, 91 },
+                    { 334, "Presenting Officer", 6, 156 },
+                    { 335, "Witness", 5, 156 },
                     
                     // Observer
-                    { 219, "Observer", 5, 92 },
+                    { 336, "Observer", 5, 157 },
                     
                     //Panel member
-                    { 220, "Panel Member", 5, 93 },
+                    { 337, "Panel Member", 5, 158 },
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            for (var hearingRoleId = 214; hearingRoleId <= 220; hearingRoleId++)
+            for (var hearingRoleId = 331; hearingRoleId <= 337; hearingRoleId++)
             {
                 migrationBuilder.DeleteData("HearingRole", "Id", hearingRoleId);
             }
             
-            for (var caseRoleRoleId = 90; caseRoleRoleId <= 93; caseRoleRoleId++)
+            for (var caseRoleRoleId = 155; caseRoleRoleId <= 158; caseRoleRoleId++)
             {
                 migrationBuilder.DeleteData("CaseRole", "Id", caseRoleRoleId);
             }
             
-            for (var hearingTypeId = 75; hearingTypeId <= 81; hearingTypeId++)
+            for (var hearingTypeId = 114; hearingTypeId <= 120; hearingTypeId++)
             {
                 migrationBuilder.DeleteData("HearingType", "Id", hearingTypeId);
             }
             
-            migrationBuilder.DeleteData("CaseType", "Id", 19);
+            migrationBuilder.DeleteData("CaseType", "Id", 32);
         }
     }
 }
