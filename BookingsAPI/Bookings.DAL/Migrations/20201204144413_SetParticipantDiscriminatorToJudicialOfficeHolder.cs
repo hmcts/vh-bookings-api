@@ -15,8 +15,7 @@ namespace Bookings.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"UPDATE Participant SET Discriminator = 'Individual' 
-                WHERE Id = 'bb4a09d2-447e-4669-a0db-bec363419f34'");
+            // Method left empty intentionally
         }
     }
 }
