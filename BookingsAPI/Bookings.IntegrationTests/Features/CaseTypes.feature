@@ -29,7 +29,21 @@ Scenario: Get available case types
 	| Right to buy                      | Case Management,Substantive hearing,Mediation                                                                                                                                                                                                                                                                                                              |
 	| Employment Tribunal               | Public Preliminary Hearing,Private Preliminary Hearing,Mediation Hearing,Interim Relief Hearing,Substantive Hearing (Judge sit alone),Substantive Hearing (Full Panel),Costs Hearing                                                                                                                                                                       |
 	| Court of Appeal Criminal Division | FC Appeal,FC Application,Directions,Appn to treat abandonment as a nullity,Section 13,PII on notice,PII not on notice,Costs application,SC pronouncement,Reserved Judgment,Reasons for Judgment,Hand down Judgment,Appn to reopen case,Appn for leave to appeal to SC,Order of SC to be made order of CACD,Ref for summary dismissal under S20,For mention |
-
+	| GRC - Charity                     | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - CRB                         | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - DVSA                        | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Estate Agents               | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Food                        | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Environment                 | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Gambling                    | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Immigration Services        | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Information Rights          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Pensions Regulation         | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Professional Regulations    | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Query Jurisdiction          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| GRC - Welfare of Animals          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+	| Immigration and Asylum            | Appeals - Substantive Statutory,Bail Hearing,Case Management Appointment,Case Management Review,Costs Hearing,Payment Liability Hearing,Preliminary Hearing                                                                                                                                                                                                |
+	
 Scenario: Get case roles for a case type with nonexistent case type
 	Given I have a get case roles for a case type of 'nonexistent' request
 	When I send the request to the endpoint
@@ -70,6 +84,20 @@ Examples:
 | Right to buy                      |
 | Employment Tribunal               |
 | Court of Appeal Criminal Division |
+| GRC - Charity                     |
+| GRC - CRB                         |
+| GRC - DVSA                        |
+| GRC - Estate Agents               |
+| GRC - Food                        |
+| GRC - Environment                 |
+| GRC - Gambling                    |
+| GRC - Immigration Services        |
+| GRC - Information Rights          |
+| GRC - Pensions Regulation         |
+| GRC - Professional Regulations    |
+| GRC - Query Jurisdiction          |
+| GRC - Welfare of Animals          |
+| Immigration and Asylum            |
 
 Scenario Outline: Get hearing roles for a case role of a case type
 	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -153,3 +181,72 @@ Examples:
 | Employment Tribunal               | Observer     |
 | Employment Tribunal               | Panel Member |
 | Court of Appeal Criminal Division | None         |
+| GRC - Charity                     | Applicant    |
+| GRC - Charity                     | Respondent   |
+| GRC - Charity                     | Judge        |
+| GRC - Charity                     | Panel Member |
+| GRC - Charity                     | Observer     |
+| GRC - CRB                         | Applicant    |
+| GRC - CRB                         | Respondent   |
+| GRC - CRB                         | Judge        |
+| GRC - CRB                         | Panel Member |
+| GRC - CRB                         | Observer     |
+| GRC - DVSA                        | Applicant    |
+| GRC - DVSA                        | Respondent   |
+| GRC - DVSA                        | Judge        |
+| GRC - DVSA                        | Panel Member |
+| GRC - DVSA                        | Observer     |
+| GRC - Estate Agents               | Applicant    |
+| GRC - Estate Agents               | Respondent   |
+| GRC - Estate Agents               | Judge        |
+| GRC - Estate Agents               | Panel Member |
+| GRC - Estate Agents               | Observer     |
+| GRC - Food                        | Applicant    |
+| GRC - Food                        | Respondent   |
+| GRC - Food                        | Judge        |
+| GRC - Food                        | Panel Member |
+| GRC - Food                        | Observer     |
+| GRC - Environment                 | Applicant    |
+| GRC - Environment                 | Respondent   |
+| GRC - Environment                 | Judge        |
+| GRC - Environment                 | Panel Member |
+| GRC - Environment                 | Observer     |
+| GRC - Gambling                    | Applicant    |
+| GRC - Gambling                    | Respondent   |
+| GRC - Gambling                    | Judge        |
+| GRC - Gambling                    | Panel Member |
+| GRC - Gambling                    | Observer     |
+| GRC - Immigration Services        | Applicant    |
+| GRC - Immigration Services        | Respondent   |
+| GRC - Immigration Services        | Judge        |
+| GRC - Immigration Services        | Panel Member |
+| GRC - Immigration Services        | Observer     |
+| GRC - Information Rights          | Applicant    |
+| GRC - Information Rights          | Respondent   |
+| GRC - Information Rights          | Judge        |
+| GRC - Information Rights          | Panel Member |
+| GRC - Information Rights          | Observer     |
+| GRC - Pensions Regulation         | Applicant    |
+| GRC - Pensions Regulation         | Respondent   |
+| GRC - Pensions Regulation         | Judge        |
+| GRC - Pensions Regulation         | Panel Member |
+| GRC - Pensions Regulation         | Observer     |
+| GRC - Professional Regulations    | Applicant    |
+| GRC - Professional Regulations    | Respondent   |
+| GRC - Professional Regulations    | Judge        |
+| GRC - Professional Regulations    | Panel Member |
+| GRC - Professional Regulations    | Observer     |
+| GRC - Query Jurisdiction          | Applicant    |
+| GRC - Query Jurisdiction          | Respondent   |
+| GRC - Query Jurisdiction          | Judge        |
+| GRC - Query Jurisdiction          | Panel Member |
+| GRC - Query Jurisdiction          | Observer     |
+| GRC - Welfare of Animals          | Applicant    |
+| GRC - Welfare of Animals          | Respondent   |
+| GRC - Welfare of Animals          | Judge        |
+| GRC - Welfare of Animals          | Panel Member |
+| GRC - Welfare of Animals          | Observer     |
+| Immigration and Asylum            | Appellant    |
+| Immigration and Asylum            | Home Office  |
+| Immigration and Asylum            | Observer     |
+| Immigration and Asylum            | Panel Member |
