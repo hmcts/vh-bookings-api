@@ -112,3 +112,68 @@ Examples:
 | Employment Tribunal               | Observer     |
 | Employment Tribunal               | Panel Member |
 | Court of Appeal Criminal Division | None         |
+| GRC - Charity                     | Applicant    |
+| GRC - Charity                     | Respondent   |
+| GRC - Charity                     | Judge        |
+| GRC - Charity                     | Panel Member |
+| GRC - Charity                     | Observer     |
+| GRC - CRB                         | Applicant    |
+| GRC - CRB                         | Respondent   |
+| GRC - CRB                         | Judge        |
+| GRC - CRB                         | Panel Member |
+| GRC - CRB                         | Observer     |
+| GRC - DVSA                        | Applicant    |
+| GRC - DVSA                        | Respondent   |
+| GRC - DVSA                        | Judge        |
+| GRC - DVSA                        | Panel Member |
+| GRC - DVSA                        | Observer     |
+| GRC - Estate Agents               | Applicant    |
+| GRC - Estate Agents               | Respondent   |
+| GRC - Estate Agents               | Judge        |
+| GRC - Estate Agents               | Panel Member |
+| GRC - Estate Agents               | Observer     |
+| GRC - Food                        | Applicant    |
+| GRC - Food                        | Respondent   |
+| GRC - Food                        | Judge        |
+| GRC - Food                        | Panel Member |
+| GRC - Food                        | Observer     |
+| GRC - Environment                 | Applicant    |
+| GRC - Environment                 | Respondent   |
+| GRC - Environment                 | Judge        |
+| GRC - Environment                 | Panel Member |
+| GRC - Environment                 | Observer     |
+| GRC - Gambling                    | Applicant    |
+| GRC - Gambling                    | Respondent   |
+| GRC - Gambling                    | Judge        |
+| GRC - Gambling                    | Panel Member |
+| GRC - Gambling                    | Observer     |
+| GRC - Immigration Services        | Applicant    |
+| GRC - Immigration Services        | Respondent   |
+| GRC - Immigration Services        | Judge        |
+| GRC - Immigration Services        | Panel Member |
+| GRC - Immigration Services        | Observer     |
+| GRC - Information Rights          | Applicant    |
+| GRC - Information Rights          | Respondent   |
+| GRC - Information Rights          | Judge        |
+| GRC - Information Rights          | Panel Member |
+| GRC - Information Rights          | Observer     |
+| GRC - Pensions Regulation         | Applicant    |
+| GRC - Pensions Regulation         | Respondent   |
+| GRC - Pensions Regulation         | Judge        |
+| GRC - Pensions Regulation         | Panel Member |
+| GRC - Pensions Regulation         | Observer     |
+| GRC - Professional Regulations    | Applicant    |
+| GRC - Professional Regulations    | Respondent   |
+| GRC - Professional Regulations    | Judge        |
+| GRC - Professional Regulations    | Panel Member |
+| GRC - Professional Regulations    | Observer     |
+| GRC - Query Jurisdiction          | Applicant    |
+| GRC - Query Jurisdiction          | Respondent   |
+| GRC - Query Jurisdiction          | Judge        |
+| GRC - Query Jurisdiction          | Panel Member |
+| GRC - Query Jurisdiction          | Observer     |
+| GRC - Welfare of Animals          | Applicant    |
+| GRC - Welfare of Animals          | Respondent   |
+| GRC - Welfare of Animals          | Judge        |
+| GRC - Welfare of Animals          | Panel Member |
+| GRC - Welfare of Animals          | Observer     |
