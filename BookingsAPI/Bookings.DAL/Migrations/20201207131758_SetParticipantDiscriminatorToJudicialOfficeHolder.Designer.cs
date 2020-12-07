@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookings.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    [Migration("20201204144413_SetParticipantDiscriminatorToJudicialOfficeHolder")]
+    [Migration("20201207131758_SetParticipantDiscriminatorToJudicialOfficeHolder")]
     partial class SetParticipantDiscriminatorToJudicialOfficeHolder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
