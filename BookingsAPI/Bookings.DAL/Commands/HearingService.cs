@@ -62,9 +62,8 @@ namespace Bookings.DAL.Commands
                         break;
                     }
                     case "JudicialOfficeHolder":
-                        var judicialOfficeHolder = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person, 
+                        hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person, 
                             participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
-                            UpdateOrganisationDetails(participantToAdd.Person, judicialOfficeHolder);
                         break;
                     case "Judge":
                        hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
