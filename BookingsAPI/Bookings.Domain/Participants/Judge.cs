@@ -9,7 +9,6 @@ namespace Bookings.Domain.Participants
         public Judge(Person person, HearingRole hearingRole, CaseRole caseRole)
             : base(person, hearingRole, caseRole)
         {
-
         }
     }
 }

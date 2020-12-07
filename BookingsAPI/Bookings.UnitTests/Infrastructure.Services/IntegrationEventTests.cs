@@ -128,6 +128,9 @@ namespace Bookings.UnitTests.Infrastructure.Services
             var judge = hearing.GetParticipants().Single(x => x is Judge);
             judge.CaseRole = new CaseRole(3, "test4");
 
+            var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
+            joh.CaseRole = new CaseRole(4, "test5");
+
             hearing.AddEndpoints(new List<Endpoint>
             {
                 new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
