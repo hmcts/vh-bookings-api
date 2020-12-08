@@ -235,6 +235,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var afterCount = returnedVideoHearing.GetParticipants().Count;
 
             afterCount.Should().BeGreaterThan(beforeCount);
+            returnedVideoHearing.GetParticipants()
+                .Any(x => x is JudicialOfficeHolder && x.Person.Username == newPerson.Username).Should().BeTrue();
         }
 
         private async Task<List<Person>> AddExistingPersonToAHearing(Person existingPerson)
