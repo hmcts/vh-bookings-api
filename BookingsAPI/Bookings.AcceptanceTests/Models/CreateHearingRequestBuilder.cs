@@ -78,6 +78,28 @@ namespace Bookings.AcceptanceTests.Models
             return this;
         }
 
+        public CreateHearingRequestBuilder WithParticipant(string caseRoleName, string hearingRoleName)
+        {
+            var participant = Builder<ParticipantRequest>.CreateNew()
+                .With(x => x.Title = "Mrs")
+                .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
+                .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
+                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.TelephoneNumber = Faker.Phone.Number())
+                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
+                .With(x => x.OrganisationName = $"{Faker.Company.Name()}")
+                .Build();
+
+            participant.CaseRoleName = "Claimant";
+            participant.HearingRoleName = "Litigant in person";
+            participant.Representee = null;
+
+            _request.Participants.Add(participant);
+            
+            return this;
+        }
+
         public BookNewHearingRequest Build()
         {
             _context.TestData.CreateHearingRequest = _request;

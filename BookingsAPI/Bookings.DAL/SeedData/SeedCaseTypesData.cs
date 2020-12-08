@@ -41,8 +41,7 @@ namespace Bookings.DAL.SeedData
                     {3, "Hearing facilitation support (CTRT Clerk)"},
                     {4, "Judge"},
                     {5, "Individual"},
-                    {6, "Representative"},
-                    {7, "Judicial Office Holder"}
+                    {6, "Representative"}
                 });
         }
         

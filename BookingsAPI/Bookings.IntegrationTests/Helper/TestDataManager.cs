@@ -45,11 +45,13 @@ namespace Bookings.IntegrationTests.Helper
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ClaimantRole);
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
+            var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Judicial Office Holder");
 
             var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+            var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Judicial Office Holder");
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
@@ -59,6 +61,7 @@ namespace Bookings.IntegrationTests.Helper
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var judgePerson = new PersonBuilder(true).Build();
+            var johPerson = new PersonBuilder(true).Build();
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
             const string hearingRoomName = "Room02";
@@ -82,6 +85,9 @@ namespace Bookings.IntegrationTests.Helper
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
             videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
+
+            videoHearing.AddJudicialOfficeHolder(johPerson, johHearingRole, johCaseRole,
+                $"{johPerson.FirstName} {johPerson.LastName}");
 
             if (endPointsToAdd > 0)
             {
