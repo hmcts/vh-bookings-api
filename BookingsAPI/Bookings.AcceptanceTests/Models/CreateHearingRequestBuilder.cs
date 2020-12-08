@@ -88,12 +88,11 @@ namespace Bookings.AcceptanceTests.Models
                 .With(x => x.TelephoneNumber = Faker.Phone.Number())
                 .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
+                .With(x => x.CaseRoleName = caseRoleName)
+                .With(x => x.HearingRoleName = hearingRoleName)
+                .With(x => x.Representee = null)
                 .With(x => x.OrganisationName = $"{Faker.Company.Name()}")
                 .Build();
-
-            participant.CaseRoleName = "Claimant";
-            participant.HearingRoleName = "Litigant in person";
-            participant.Representee = null;
 
             _request.Participants.Add(participant);
             
