@@ -14,5 +14,6 @@ namespace Bookings.Domain.RefData
         public bool IsIndividual => Name.ToLower().Equals("individual");
         public bool IsRepresentative => Name.ToLower().Equals("representative");
         public bool IsJudge => Name.ToLower().Equals("judge");
+        public bool IsJudicialOfficeHolder => Name.ToLower().Equals("judicial office holder");
     }
 }

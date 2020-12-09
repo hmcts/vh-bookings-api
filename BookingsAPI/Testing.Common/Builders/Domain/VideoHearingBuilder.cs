@@ -15,6 +15,7 @@ namespace Testing.Common.Builders.Domain
         
         private readonly VideoHearing _videoHearing;
         private readonly Person _judgePerson;
+        private readonly Person _johPerson;
 
         public VideoHearingBuilder()
         {
@@ -44,11 +45,14 @@ namespace Testing.Common.Builders.Domain
             var defendantLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
             var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
+            var johHearingRole = new HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole( 7, "Judicial Office Holder")};
+            var johCaseRole = new CaseRole(11, "Winger") { Group = CaseRoleGroup.Winger };
 
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             _judgePerson = new PersonBuilder(true).Build();
+            _johPerson = new PersonBuilder(true).Build();
 
             _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -74,6 +78,12 @@ namespace Testing.Common.Builders.Domain
             judge.SetProtected(nameof(indClaimant.CaseRole), judgeCaseRole);
             judge.SetProtected(nameof(judge.HearingRole), judgeHearingRole);
 
+            _videoHearing.AddJudicialOfficeHolder(_johPerson, johHearingRole, johCaseRole,
+                $"{_johPerson.FirstName} {_johPerson.LastName}");
+            var joh = _videoHearing?.Participants.Last();
+            joh.SetProtected(nameof(indClaimant.CaseRole), johCaseRole);
+            joh.SetProtected(nameof(joh.HearingRole), johHearingRole);
+
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
             _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
@@ -81,6 +91,8 @@ namespace Testing.Common.Builders.Domain
         }
 
         public Person Judge => _judgePerson;
+
+        public Person JudicialOfficeHolder => _johPerson;
         
         public VideoHearing Build() => _videoHearing;
     }
