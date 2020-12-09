@@ -22,7 +22,6 @@ namespace Bookings.API.Mappings
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name
-                
             };
 
             switch (participant.HearingRole.UserRole.Name)
@@ -33,6 +32,7 @@ namespace Bookings.API.Mappings
                     break;
                 case "Individual":
                 case "Judge":
+                case "JudicialOfficeHolder":
                     break;
             }
 

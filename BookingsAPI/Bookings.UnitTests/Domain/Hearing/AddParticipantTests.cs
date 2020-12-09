@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Bookings.Domain;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
@@ -61,6 +62,22 @@ namespace Bookings.UnitTests.Domain.Hearing
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
         }
+        
+        [Test]
+        public void Should_add_judicial_office_holder_to_hearing()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var johCaseRole = new CaseRole(7, "Judicial Office Holder");
+            var johHearingRole = new HearingRole(14, "Judicial Office Holder");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var beforeAddCount = hearing.GetParticipants().Count;
+
+            hearing.AddJudicialOfficeHolder(newPerson, johHearingRole, johCaseRole, "Joh Display Name");
+            var afterAddCount = hearing.GetParticipants().Count;
+
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
+        }
 
         [Test]
         public void Should_raise_exception_if_adding_judge_twice()
@@ -75,6 +92,22 @@ namespace Bookings.UnitTests.Domain.Hearing
 
             When(() => hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Dredd"))
                 .Should().Throw<DomainRuleException>().WithMessage("Judge with given username already exists in the hearing");
+
+        }
+        
+        [Test]
+        public void Should_raise_exception_if_adding_judicial_office_holder_twice()
+        {
+            var hearingBuilder = new VideoHearingBuilder();
+            var hearing = hearingBuilder.Build();
+            var existingJoh = hearingBuilder.JudicialOfficeHolder;
+
+            var johCaseRole = new CaseRole(7, "Judicial Office Holder");
+            var johHearingRole = new HearingRole(14, "Judicial Office Holder");
+            var newPerson = new PersonBuilder(existingJoh.Username).Build();
+
+            When(() => hearing.AddJudicialOfficeHolder(newPerson, johHearingRole, johCaseRole, "Joh"))
+                .Should().Throw<DomainRuleException>().WithMessage("Judicial office holder already exists in the hearing");
 
         }
     }

@@ -40,6 +40,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void GivenIHaveAValidBookANewHearingRequest()
         {
             var bookNewHearingRequest = new CreateHearingRequestBuilder(_context.TestData.CaseName)
+                .WithParticipant("Judicial Office Holder", "Judicial Office Holder")
                 .WithContext(_context)
                 .Build();
 

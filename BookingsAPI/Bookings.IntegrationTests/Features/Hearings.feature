@@ -26,6 +26,12 @@ Feature: Hearings
     Then the response should have the status Created and success status True
     And hearing details should be retrieved
 
+  Scenario: Create a new hearing with a judical office holder
+    Given I have a valid book a new hearing request with a judicial office holder
+    When I send the request to the endpoint
+    Then the response should have the status Created and success status True
+    And hearing details should be retrieved
+
   Scenario: Hearing not created with an invalid request
     Given I have an invalid book a new hearing request
     When I send the request to the endpoint

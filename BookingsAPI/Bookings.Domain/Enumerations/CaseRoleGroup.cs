@@ -12,6 +12,7 @@ namespace Bookings.Domain.Enumerations
         Appellant = 7,
         State = 8,
         None = 9,
-        HomeOffice = 10
+        HomeOffice = 10,
+        Winger = 11
     }
 }
