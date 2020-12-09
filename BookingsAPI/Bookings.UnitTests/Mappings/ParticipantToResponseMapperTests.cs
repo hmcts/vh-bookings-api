@@ -80,6 +80,28 @@ namespace Bookings.UnitTests.Mappings
             AssertRepresentativeResponse(response, representative);
             response.Organisation.Should().Be(person.Organisation.Name);
         }
+        
+        [Test]
+        public void Should_map_judicial_office_holder()
+        {
+            var caseRole = new CaseRole(7, "Judicial Office Holder");
+            var hearingRole = new HearingRole(14, "Judicial Office Holder") {UserRole = new UserRole(7, "Judicial Office Holder")};
+
+            var person = new PersonBuilder().Build();
+            var joh = new JudicialOfficeHolder(person, hearingRole, caseRole)
+            {
+                DisplayName = "JOH",
+                CreatedBy = "unit@test.com"
+            };
+            joh.SetProtected(nameof(joh.CaseRole), caseRole);
+            joh.SetProtected(nameof(joh.HearingRole), hearingRole);
+
+            var response = _mapper.MapParticipantToResponse(joh);
+            
+            AssertParticipantCommonDetails(response, joh, caseRole, hearingRole);
+            AssertRepresentativeResponse(response, null);
+            response.Organisation.Should().BeNullOrWhiteSpace();
+        }
 
         private static void AssertParticipantCommonDetails(ParticipantResponse response, Participant participant,
             CaseRole caseRole, HearingRole hearingRole)

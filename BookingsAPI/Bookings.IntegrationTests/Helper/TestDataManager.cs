@@ -36,7 +36,7 @@ namespace Bookings.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, bool addJoh = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -45,7 +45,7 @@ namespace Bookings.IntegrationTests.Helper
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ClaimantRole);
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
-
+            
             var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
             var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
@@ -59,6 +59,7 @@ namespace Bookings.IntegrationTests.Helper
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var judgePerson = new PersonBuilder(true).Build();
+            var johPerson = new PersonBuilder(true).Build();
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
             const string hearingRoomName = "Room02";
@@ -83,6 +84,14 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
 
+            if (addJoh)
+            {
+                var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Judicial Office Holder");
+                var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Judicial Office Holder");
+                videoHearing.AddJudicialOfficeHolder(johPerson, johHearingRole, johCaseRole,
+                    $"{johPerson.FirstName} {johPerson.LastName}");
+            }
+            
             if (endPointsToAdd > 0)
             {
                 var r = new RandomGenerator();

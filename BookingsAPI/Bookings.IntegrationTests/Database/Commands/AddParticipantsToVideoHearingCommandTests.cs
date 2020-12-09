@@ -198,6 +198,46 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             afterCount.Should().BeGreaterThan(beforeCount);
         }
+        
+        [Test]
+        public async Task Should_add_judicial_office_holder_to_video_hearing()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            var beforeCount = seededHearing.GetParticipants().Count;
+
+            var caseTypeName = "Civil Money Claims";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Judicial Office Holder");
+            var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Judicial Office Holder");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var newParticipant = new NewParticipant()
+            {
+                Person = newPerson,
+                CaseRole = johCaseRole,
+                HearingRole = johHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
+            };
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var afterCount = returnedVideoHearing.GetParticipants().Count;
+
+            afterCount.Should().BeGreaterThan(beforeCount);
+            returnedVideoHearing.GetParticipants()
+                .Any(x => x is JudicialOfficeHolder && x.Person.Username == newPerson.Username).Should().BeTrue();
+        }
 
         private async Task<List<Person>> AddExistingPersonToAHearing(Person existingPerson)
         {

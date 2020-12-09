@@ -24,7 +24,8 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             CreateCaseAndHearingRoles(1, "Claimant",new List<string>{ "Litigant in person", "Representative"}),
             CreateCaseAndHearingRoles(2, "Defendant",new List<string>{ "Litigant in person", "Representative"}),
-            CreateCaseAndHearingRoles(3, "Judge", new List<string>{ "Judge"})
+            CreateCaseAndHearingRoles(3, "Judge", new List<string>{ "Judge"}),
+            CreateCaseAndHearingRoles(4, "Judicial Office Holder", new List<string> { "Judicial Office Holder" })
         };
 
         private CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, List<string> roles)

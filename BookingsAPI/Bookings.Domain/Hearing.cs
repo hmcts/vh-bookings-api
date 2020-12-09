@@ -180,6 +180,22 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
             return participant;
         }
+        
+        public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        {
+            if (DoesParticipantExist(person.Username))
+            {
+                throw new DomainRuleException(nameof(person), "Judicial office holder already exists in the hearing");
+            }
+
+            var participant = new JudicialOfficeHolder(person, hearingRole, caseRole)
+            {
+                DisplayName = displayName
+            };
+            Participants.Add(participant);
+            UpdatedDate = DateTime.Now;
+            return participant;
+        }
 
         public void RemoveParticipant(Participant participant)
         {

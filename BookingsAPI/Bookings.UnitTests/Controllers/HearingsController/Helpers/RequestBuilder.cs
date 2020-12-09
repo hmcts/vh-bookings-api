@@ -29,12 +29,11 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
                 .Build();
 
             return request;
-
         }
 
         private static List<ParticipantRequest> ParticipantsBuilder()
         {
-            var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
+            var participants = Builder<ParticipantRequest>.CreateListOfSize(6).All()
                 .With(x => x.Title = "Mrs")
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
@@ -64,6 +63,10 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
             participants[4].Representee = null;
+            
+            participants[5].CaseRoleName = "Judicial Office Holder";
+            participants[5].HearingRoleName = "Judicial Office Holder";
+            participants[5].Representee = participants[5].DisplayName;
 
             return participants;
         }
