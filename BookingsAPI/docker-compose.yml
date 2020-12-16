@@ -2,22 +2,7 @@ version: '3.4'
 
 services:
   bookingsapi:
-    container_name: bookingsapi
-    restart: always
-    image: ${DOCKER_REGISTRY-}bookingsapi
+    image: ${DOCKER_REGISTRY-}bookingsapi:latest
     build:
       context: .
       dockerfile: Bookings.API/Dockerfile
-    depends_on:
-      - "db"
-    environment:
-      SQLCONNSTR_VhBookings: 'Server=db;Database=VhBookings;User ID=sa;Password=VeryStrongPassword!;'
-
-  db:
-    container_name: db
-    image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
-    expose:
-      - "1433"
-    environment:
-      ACCEPT_EULA: 'yes'
-      SA_PASSWORD: 'VeryStrongPassword!'
