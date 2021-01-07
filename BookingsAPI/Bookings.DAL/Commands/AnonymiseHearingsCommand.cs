@@ -106,39 +106,16 @@ namespace Bookings.DAL.Commands
 			"AND pr.Username NOT LIKE '%UserApiTestUser%' " +
 			"AND pr.Username NOT LIKE '%Manual0%' " +
 			"AND pr.Username NOT LIKE '%performance%' " +
-			"AND pr.Username NOT LIKE '%atif.%' " +
-			"AND pr.Username NOT LIKE '%y''test.%' " +
-			"AND pr.Username NOT LIKE 'ferdinand.porsche%' " +
-			"AND pr.Username NOT LIKE 'enzo.ferrari%' " +
-			"AND pr.Username NOT LIKE 'mike.tyson%' " +
-			"AND pr.Username NOT LIKE 'george.foreman%' " +
-			"AND pr.Username NOT LIKE 'rocky.marciano%' " +
-			"AND pr.Username NOT LIKE 'cassius.clay%' " +
-			"AND pr.Username NOT LIKE 'george.clinton%' " +
-			"AND pr.Username NOT LIKE 'metalface.doom%' " +
-			"AND pr.Username NOT LIKE 'karl.benz%' " +
-			"AND pr.Username NOT LIKE 'henry.ford%' " +
-			"AND pr.Username NOT LIKE 'feuer.frei%' " +
-			"AND pr.Username NOT LIKE 'wasser.kalt%' " +
-			"AND pr.Username NOT LIKE 'dan.brown%' " +
-			"AND pr.Username NOT LIKE 'tom.clancy%' " +
-			"AND pr.Username NOT LIKE 'stephen.king%' " +
-			"AND pr.Username NOT LIKE 'Manual01VideoHearingsOfficer01%' " +
-			"AND pr.Username NOT LIKE 'sue.burke%' " +
-			"AND pr.Username NOT LIKE 'yeliz.admin%' " +
-			"AND pr.Username NOT LIKE 'yeliz.judge%' " +
-			"AND pr.Username NOT LIKE 'yeliz.judge2%' " +
-			"AND pr.Username NOT LIKE 'one.three%' " +
-			"AND pr.Username NOT LIKE 'one.four%' " +
-			"AND pr.Username NOT LIKE 'michael.jordan%' " +
-			"AND pr.Username NOT LIKE 'scottie.pippen%' " +
-			"AND pr.Username NOT LIKE 'steve.kerr%' " +
-			"AND pr.Username NOT LIKE 'dennis.rodman%' " +
-			"AND pr.Username NOT LIKE 'john.doe%' " +
-			"AND pr.Username NOT LIKE 'jane.doe%' " +
-			"AND pr.Username NOT LIKE 'chris.green%' " +
-			"AND pr.Username NOT LIKE 'james.green%' " +
-			"AND pr.Username NOT LIKE 'kinly.clerk%' " +
+            "AND pr.Username NOT LIKE 'kinly.clerk%' " +
+			"AND pr.Username NOT LIKE 'Test%' " +
+            "AND pr.Username NOT LIKE 'TP%' " +
+            "AND pr.Username NOT LIKE 'Auto_%' " +
+            "AND pr.Username NOT LIKE 'CACD%' " +
+            "AND pr.Username NOT LIKE 'Employment%' " +
+            "AND pr.Username NOT LIKE 'GRC%' " +
+            "AND pr.Username NOT LIKE 'IAC%' " +
+            "AND pr.Username NOT LIKE 'Judge%' " +
+            "AND pr.Username NOT LIKE 'Property%' " +
 
 			"and pr.Id not IN ( " +
 				"SELECT pr.Id " +
