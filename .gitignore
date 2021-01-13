@@ -334,3 +334,6 @@ ASALocalRun/
 
 .sonarqube/
 .DS_Store
+
+# Local environment settings files
+/BookingsAPI/Bookings.AcceptanceTests/Configuration/Environments/

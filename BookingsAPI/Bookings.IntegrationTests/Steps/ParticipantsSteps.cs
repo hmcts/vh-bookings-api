@@ -60,7 +60,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             var request = BuildRequest();
             Context.TestData.Participants = request.Participants;
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Guid hearingId;
             switch (scenario)
@@ -101,7 +101,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task GivenIHaveAnAddParticipantToAHearingRequestWithAParticipantId()
         {
             var request = new InvalidRequest();
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request.BuildRequest());
+            var jsonBody = RequestHelper.Serialise(request.BuildRequest());
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
@@ -222,7 +222,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfHearingParticipantsShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(json);
+            var model = RequestHelper.Deserialise<List<ParticipantResponse>>(json);
             CheckParticipantData(model);
         }
 
@@ -278,7 +278,7 @@ namespace Bookings.IntegrationTests.Steps
             Context.Uri = UpdateSuitabilityAnswers(hearingId, participantId);
             Context.HttpMethod = HttpMethod.Put;
             var request = UpdateSuitabilityAnswersRequest();
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
 
@@ -305,7 +305,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAHearingParticipantShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = new List<ParticipantResponse> { RequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(json) };
+            var model = new List<ParticipantResponse> { RequestHelper.Deserialise<ParticipantResponse>(json) };
             CheckParticipantData(model);
         }
 
@@ -344,7 +344,7 @@ namespace Bookings.IntegrationTests.Steps
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             Guid hearingId;
 
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
+            var jsonBody = RequestHelper.Serialise(updateParticipantRequest);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             switch (scenario)
@@ -377,7 +377,7 @@ namespace Bookings.IntegrationTests.Steps
             var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
             updateParticipantRequest.Representee = string.Empty;
             var hearingId = seededHearing.Id;
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(updateParticipantRequest);
+            var jsonBody = RequestHelper.Serialise(updateParticipantRequest);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             Context.Uri = UpdateParticipantDetails(hearingId, participantId);

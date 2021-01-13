@@ -28,7 +28,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingVenuesShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(json);
+            var model = RequestHelper.Deserialise<List<HearingVenueResponse>>(json);
             foreach (var venue in model)
             {
                 venue.Id.Should().BePositive();

@@ -39,7 +39,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of case types should be retrieved")]
         public void ThenAListOfCaseTypesShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<List<CaseTypeResponse>>(_context.Response.Content);
             model.Should().NotBeEmpty();
             foreach (var caseType in model)
             {
@@ -57,7 +57,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of hearing roles should be retrieved")]
         public void ThenAListOfRolesShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<List<CaseRoleResponse>>(_context.Response.Content);
             model.Should().NotBeEmpty();
             model[0].Name.Should().NotBeNullOrEmpty();
         }
