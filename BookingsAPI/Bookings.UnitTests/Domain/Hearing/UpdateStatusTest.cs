@@ -14,7 +14,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void Should_update_hearing_status()
         {
             var hearing = new VideoHearingBuilder().Build();
-            var updatedDate = hearing.UpdatedDate;
+            var updatedDate = DateTime.UtcNow;
             hearing.UpdateStatus(BookingStatus.Cancelled, "testuser", "cancel reason");
             hearing.UpdatedDate.Should().BeAfter(updatedDate);
             hearing.Status.Should().Be(BookingStatus.Cancelled);
@@ -96,7 +96,7 @@ namespace Bookings.UnitTests.Domain.Hearing
         public void Should_update_hearing_status_to_created()
         {
             var hearing = new VideoHearingBuilder().Build();
-            var updatedDate = hearing.UpdatedDate;
+            var updatedDate = DateTime.UtcNow;
             var updatedBy = "testuser";
             hearing.UpdateStatus(BookingStatus.Created, updatedBy, "");
             hearing.UpdatedDate.Should().BeAfter(updatedDate);

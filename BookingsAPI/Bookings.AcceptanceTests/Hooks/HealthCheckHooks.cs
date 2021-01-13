@@ -1,8 +1,9 @@
 ﻿using AcceptanceTests.Common.Api;
-using AcceptanceTests.Common.Api.Healthchecks;
 using Bookings.AcceptanceTests.Contexts;
 using System.Net;
+using FluentAssertions;
 using TechTalk.SpecFlow;
+using static Testing.Common.Builders.Api.ApiUriFactory;
 
 namespace Bookings.AcceptanceTests.Hooks
 {
@@ -12,11 +13,10 @@ namespace Bookings.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int)HooksSequence.HealthCheckHooks)]
         public static void CheckApiHealth(TestContext context)
         {
-            CheckVideoApiHealth(context.Config.ServicesConfiguration.BookingsApiUrl, context.BearerToken);
-        }
-        private static void CheckVideoApiHealth(string apiUrl, string bearerToken)
-        {
-            HealthcheckManager.CheckHealthOfBookingsApi(apiUrl, bearerToken, (WebProxy) Zap.WebProxy);
+            context.Request = context.Get(HealthCheckEndpoints.HealthCheck);
+            var response = context.Client().Execute(context.Request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.IsSuccessful.Should().BeTrue();
         }
     }
 }
