@@ -1,4 +1,4 @@
-﻿namespace Bookings.AcceptanceTests.Helpers
+﻿namespace Bookings.AcceptanceTests.Configuration
 {
     internal class AcceptanceTestConfiguration
     {

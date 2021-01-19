@@ -35,7 +35,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var command = new AnonymiseHearingsCommand();
             await _commandHandler.Handle(command);
-            command.RecordsUpdated.Should().Be(11);
+            command.RecordsUpdated.Should().Be(6);
             command.UpdatedDate.Date.Should().Be(DateTime.UtcNow.Date);
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().NotBeNull();
@@ -51,12 +51,12 @@ namespace Bookings.IntegrationTests.Database.Commands
             foreach (var person in seededHearing.GetPersons())
             {
                 var updatedPerson = returnedVideoHearing.GetPersons().FirstOrDefault(p => p.Id == person.Id);
-                updatedPerson.FirstName.Should().NotBe(person.FirstName);
-                updatedPerson.LastName.Should().NotBe(person.LastName);
-                updatedPerson.MiddleNames.Should().NotBe(person.MiddleNames);
-                updatedPerson.Username.Should().NotBe(person.Username);
-                updatedPerson.ContactEmail.Should().NotBe(person.ContactEmail);
-                updatedPerson.TelephoneNumber.Should().NotBe(person.TelephoneNumber);
+                updatedPerson.FirstName.Should().Be(person.FirstName);
+                updatedPerson.LastName.Should().Be(person.LastName);
+                updatedPerson.MiddleNames.Should().Be(person.MiddleNames);
+                updatedPerson.Username.Should().Be(person.Username);
+                updatedPerson.ContactEmail.Should().Be(person.ContactEmail);
+                updatedPerson.TelephoneNumber.Should().Be(person.TelephoneNumber);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var command = new AnonymiseHearingsCommand();
             await _commandHandler.Handle(command);
-            command.RecordsUpdated.Should().Be(11);
+            command.RecordsUpdated.Should().Be(6);
             command.UpdatedDate.Date.Should().Be(DateTime.UtcNow.Date);
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().NotBeNull();
@@ -120,12 +120,12 @@ namespace Bookings.IntegrationTests.Database.Commands
             foreach (var person in seededHearing.GetPersons())
             {
                 var updatedPerson = returnedVideoHearing.GetPersons().FirstOrDefault(p => p.Id == person.Id);
-                updatedPerson.FirstName.Should().NotBe(person.FirstName);
-                updatedPerson.LastName.Should().NotBe(person.LastName);
-                updatedPerson.MiddleNames.Should().NotBe(person.MiddleNames);
-                updatedPerson.Username.Should().NotBe(person.Username);
-                updatedPerson.ContactEmail.Should().NotBe(person.ContactEmail);
-                updatedPerson.TelephoneNumber.Should().NotBe(person.TelephoneNumber);
+                updatedPerson.FirstName.Should().Be(person.FirstName);
+                updatedPerson.LastName.Should().Be(person.LastName);
+                updatedPerson.MiddleNames.Should().Be(person.MiddleNames);
+                updatedPerson.Username.Should().Be(person.Username);
+                updatedPerson.ContactEmail.Should().Be(person.ContactEmail);
+                updatedPerson.TelephoneNumber.Should().Be(person.TelephoneNumber);
             }
 
             command = new AnonymiseHearingsCommand();

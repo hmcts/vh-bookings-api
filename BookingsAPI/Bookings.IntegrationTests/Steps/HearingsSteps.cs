@@ -96,25 +96,6 @@ namespace Bookings.IntegrationTests.Steps
             CreateTheNewHearingRequest(request);
         }
         
-        [Given(@"I have a valid book a new hearing request with a judicial office holder")]
-        public void GivenIHaveAValidBookANewHearingRequestWithAJudicialOfficeHolder()
-        {
-            var request = BuildRequest(Context.TestData.CaseName);
-            var participant = Builder<ParticipantRequest>.CreateNew()
-                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
-                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
-                .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
-                .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
-                .With(x => x.OrganisationName = "Automation Organisation")
-                .Build();
-            participant.CaseRoleName = "Judicial Office Holder";
-            participant.HearingRoleName = "Judicial Office Holder";
-
-            request.Participants.Add(participant);
-            
-            CreateTheNewHearingRequest(request);
-        }
-
         [Given(@"I have a book a new hearing request with an invalid (.*)")]
         public void GivenIHaveABookANewHearingRequestWithAnInvalidHearingType(string invalidType)
         {
@@ -277,7 +258,7 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
             var response = await SendGetRequestAsync(Context);
             var json = await response.Content.ReadAsStringAsync();
-            var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
+            var bookings = RequestHelper.Deserialise<BookingsResponse>(json);
 
             Context.Uri = GetHearingsByAnyCaseTypeAndCursor(bookings.NextCursor);
         }
@@ -330,7 +311,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAHearingDetailsShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            var response = RequestHelper.Deserialise<HearingDetailsResponse>(json);
             response.Should().NotBeNull();
             AssertHearingDetailsResponse(response);
             Context.TestData.NewHearingId = response.Id;
@@ -342,7 +323,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfHearingDetailsShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(json);
+            var response = RequestHelper.Deserialise<List<HearingDetailsResponse>>(json);
             response.Should().NotBeNull();
             foreach (var hearingDetailsResponse in response)
             {
@@ -354,7 +335,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingDetailsShouldBeUpdated()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            var model = RequestHelper.Deserialise<HearingDetailsResponse>(json);
 
             model.ScheduledDuration.Should().Be(Context.TestData.UpdateHearingRequest.ScheduledDuration);
             model.HearingVenueName.Should().Be(Context.TestData.UpdateHearingRequest.HearingVenueName);
@@ -389,7 +370,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenTheResponseShouldContainAListOfBookedHearings()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
+            var model = RequestHelper.Deserialise<BookingsResponse>(json);
             model.Hearings.Count.Should().BeGreaterThan(0);
 
             var aHearing = model.Hearings.First().Hearings.First();
@@ -401,7 +382,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenTheResponseShouldContainAListOfOneBookedHearing()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(json);
+            var model = RequestHelper.Deserialise<BookingsResponse>(json);
             model.Hearings.Count.Should().Be(1);
         }
 
@@ -428,7 +409,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingSuitabilityAnswersShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingSuitabilityAnswerResponse>>(json);
+            var model = RequestHelper.Deserialise<List<HearingSuitabilityAnswerResponse>>(json);
             model[0].Should().NotBeNull();
             model[0].ParticipantId.Should().NotBeEmpty();
             model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
@@ -453,7 +434,7 @@ namespace Bookings.IntegrationTests.Steps
             eventMessage.Id.Should().NotBeEmpty();
 
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(json);
+            var response = RequestHelper.Deserialise<HearingDetailsResponse>(json);
 
             var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
             hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(response.Id);
@@ -643,7 +624,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private void CreateTheNewHearingRequest(BookNewHearingRequest request)
         {
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = BookNewHearing;
             Context.HttpMethod = HttpMethod.Post;
@@ -651,7 +632,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private void UpdateTheHearingRequest()
         {
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(Context.TestData.UpdateHearingRequest);
+            var jsonBody = RequestHelper.Serialise(Context.TestData.UpdateHearingRequest);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);
             Context.HttpMethod = HttpMethod.Put;
@@ -659,7 +640,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private void UpdateTheHearingStatus(UpdateBookingStatus? status, string updatedBy = "testuser")
         {
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(new UpdateBookingStatusRequest
+            var jsonBody = RequestHelper.Serialise(new UpdateBookingStatusRequest
             {
                 Status = status.GetValueOrDefault(),
                 UpdatedBy = updatedBy,
