@@ -54,7 +54,6 @@ namespace Bookings.API.Mappings
                 ConfirmedDate = videoHearing.ConfirmedDate,
                 JudgeName = judgeName,
                 Status = videoHearing.Status,
-                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,

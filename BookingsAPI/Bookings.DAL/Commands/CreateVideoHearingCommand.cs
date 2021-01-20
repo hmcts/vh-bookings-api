@@ -22,7 +22,6 @@ namespace Bookings.DAL.Commands
             Venue = venue;
             Participants = participants;
             Cases = cases;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
             Endpoints = endpoints;
         }
@@ -38,7 +37,6 @@ namespace Bookings.DAL.Commands
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public string CreatedBy { get; set; }
-        public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
         public List<NewEndpoint> Endpoints { get; }
         public string CancelReason { get; set; }
@@ -60,7 +58,7 @@ namespace Bookings.DAL.Commands
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
+                command.OtherInformation, command.CreatedBy, 
                 command.AudioRecordingRequired, command.CancelReason);
             
             // denotes this hearing is cloned

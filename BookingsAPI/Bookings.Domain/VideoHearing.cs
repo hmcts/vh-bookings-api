@@ -9,9 +9,9 @@ namespace Bookings.Domain
         protected VideoHearing() { }
         public VideoHearing(CaseType caseType,HearingType hearingType, DateTime scheduledDateTime, int scheduledDuration,
             HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string createdBy,
-            bool questionnaireNotRequired, bool audioRecordingRequired, string cancelReason) : 
+            bool audioRecordingRequired, string cancelReason) : 
             base(caseType, hearingType, scheduledDateTime, scheduledDuration, hearingVenue, hearingRoomName, 
-                otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason)
+                otherInformation, createdBy, audioRecordingRequired, cancelReason)
         {
         }
 

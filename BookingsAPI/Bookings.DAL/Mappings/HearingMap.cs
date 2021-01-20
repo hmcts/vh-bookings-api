@@ -26,7 +26,6 @@ namespace Bookings.DAL.Mappings
             builder.Property(x => x.CreatedDate);
             builder.Property(x => x.UpdatedDate);
             builder.Property(x => x.Status).HasColumnName("HearingStatusId");
-            builder.Property(x => x.QuestionnaireNotRequired);
             builder.Property(x => x.CancelReason).HasMaxLength(255);
             builder.Property(x => x.SourceId);
 

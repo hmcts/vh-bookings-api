@@ -34,7 +34,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             };
 
             hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,
-                hearingRoomName, otherInformation, updatedBy, casesToUpdate, questionnaireNotRequired, audioRecordingRequired);
+                hearingRoomName, otherInformation, updatedBy, casesToUpdate, audioRecordingRequired);
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
             var updatedCases = hearing.GetCases();
@@ -57,7 +57,7 @@ namespace Bookings.UnitTests.Domain.Hearing
             const bool audioRecordingRequired = true;
 
             Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,
-                string.Empty, string.Empty, updatedBy, cases, questionnaireNotRequired, audioRecordingRequired);
+                string.Empty, string.Empty, updatedBy, cases, audioRecordingRequired);
             action.Should().Throw<DomainRuleException>()
                 .And.ValidationFailures.Should()
                 .Contain(x => x.Name == "ScheduledDuration")

@@ -157,7 +157,6 @@ namespace Bookings.IntegrationTests.Steps
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
                 Context.TestData.UpdateHearingRequest.ScheduledDuration = 0;
                 Context.TestData.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
-                Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = true;
                 Context.TestData.UpdateHearingRequest.AudioRecordingRequired = true;
             }
 
@@ -362,8 +361,6 @@ namespace Bookings.IntegrationTests.Steps
                 .Be(Context.TestData.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
             model.HearingRoomName.Should().Be(Context.TestData.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(Context.TestData.UpdateHearingRequest.OtherInformation);
-            model.QuestionnaireNotRequired.Should()
-                .Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired.GetValueOrDefault());
             model.AudioRecordingRequired.Should()
                 .Be(Context.TestData.UpdateHearingRequest.AudioRecordingRequired.GetValueOrDefault());
 
@@ -544,7 +541,6 @@ namespace Bookings.IntegrationTests.Steps
             model.HearingRoomName.Should().NotBeNullOrEmpty();
             model.OtherInformation.Should().NotBeNullOrEmpty();
             model.CreatedBy.Should().NotBeNullOrEmpty();
-            model.QuestionnaireNotRequired.Should().BeFalse();
             model.AudioRecordingRequired.Should().BeTrue();
             model.Endpoints.Should().NotBeNullOrEmpty();
             foreach (var endpointResponse in model.Endpoints)

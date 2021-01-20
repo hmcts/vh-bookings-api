@@ -219,8 +219,7 @@ namespace Bookings.API.Controllers
                         ParticipantId = participant.Id,
                         UpdatedAt = participant.Questionnaire?.UpdatedDate ?? DateTime.MinValue,
                         ScheduledAt = hearing.ScheduledDateTime,
-                        Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
-                        QuestionnaireNotRequired = hearing.QuestionnaireNotRequired
+                        Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers)
                     };
                 }
             }

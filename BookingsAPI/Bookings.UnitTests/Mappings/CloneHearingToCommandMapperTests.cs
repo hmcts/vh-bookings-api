@@ -82,7 +82,6 @@ namespace Bookings.UnitTests.Mappings
                     x.DefenceAdvocate?.Person?.Username == ep.DefenceAdvocateUsername).Should().NotBeNull();
             }
 
-            command.QuestionnaireNotRequired.Should().BeTrue();
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
         }
     }

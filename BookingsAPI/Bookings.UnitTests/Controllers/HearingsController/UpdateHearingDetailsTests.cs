@@ -31,7 +31,6 @@ namespace Bookings.UnitTests.Controllers.HearingsController
                 ScheduledDateTime = DateTime.Today.AddDays(2),
                 HearingRoomName = "Updated room name",
                 HearingVenueName = "Updated venue name",
-                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,
                 Cases = null
             };
@@ -41,7 +40,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             updatedHearing.SetProtected(nameof(updatedHearing.Id), videoHearing.Id);
             updatedHearing.UpdateHearingDetails(newVenue,
                 request.ScheduledDateTime, request.ScheduledDuration, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, new List<Case>(), request.QuestionnaireNotRequired.Value,
+                request.UpdatedBy, new List<Case>(),
                 request.AudioRecordingRequired.Value);
 
             QueryHandlerMock

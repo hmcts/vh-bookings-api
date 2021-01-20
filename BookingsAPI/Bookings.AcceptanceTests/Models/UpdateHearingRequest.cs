@@ -22,7 +22,6 @@ namespace Bookings.AcceptanceTests.Models
                 OtherInformation = "OtherInformation12345",
                 UpdatedBy = "admin@madeupemail.com",
                 Cases = caseList,
-                QuestionnaireNotRequired = true,
                 AudioRecordingRequired = true
             };
         }

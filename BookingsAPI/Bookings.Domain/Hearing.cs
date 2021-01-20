@@ -26,7 +26,7 @@ namespace Bookings.Domain
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool questionnaireNotRequired, 
+            string otherInformation, string createdBy,
             bool audioRecordingRequired, string cancelReason)
             : this()
         {
@@ -42,7 +42,6 @@ namespace Bookings.Domain
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
             CreatedBy = createdBy;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
             CancelReason = cancelReason;
         }
@@ -69,7 +68,6 @@ namespace Bookings.Domain
         public virtual IList<HearingCase> HearingCases { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
-        public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
@@ -256,7 +254,7 @@ namespace Bookings.Domain
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
-            List<Case> cases, bool questionnaireNotRequired, bool audioRecordingRequired)
+            List<Case> cases, bool audioRecordingRequired)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -293,7 +291,6 @@ namespace Bookings.Domain
             OtherInformation = otherInformation;
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
         }
 

@@ -18,12 +18,11 @@ namespace Bookings.DAL.Commands
         public string OtherInformation { get; set; }
         public string UpdatedBy { get; set; }
         public List<Case> Cases { get; set; }
-        public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
 
         public UpdateHearingCommand(Guid hearingId, DateTime scheduledDateTime, int scheduledDuration,
             HearingVenue hearingVenue, string hearingRoomName, string otherInformation, string updatedBy,
-            List<Case> cases, bool questionnaireNotRequired, bool audioRecordingRequired)
+            List<Case> cases, bool audioRecordingRequired)
         {
             HearingId = hearingId;
             ScheduledDateTime = scheduledDateTime;
@@ -33,7 +32,6 @@ namespace Bookings.DAL.Commands
             OtherInformation = otherInformation;
             UpdatedBy = updatedBy;
             Cases = cases;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
         }
     }
@@ -61,7 +59,7 @@ namespace Bookings.DAL.Commands
 
             hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime,
                 command.ScheduledDuration, command.HearingRoomName, command.OtherInformation,
-                command.UpdatedBy, command.Cases, command.QuestionnaireNotRequired, command.AudioRecordingRequired);
+                command.UpdatedBy, command.Cases, command.AudioRecordingRequired);
 
             await _context.SaveChangesAsync();
         }

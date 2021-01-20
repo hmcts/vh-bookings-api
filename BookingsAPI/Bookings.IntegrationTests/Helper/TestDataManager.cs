@@ -65,12 +65,11 @@ namespace Bookings.IntegrationTests.Helper
             const string hearingRoomName = "Room02";
             const string otherInformation = "OtherInformation02";
             const string createdBy = "test@integration.com";
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venues.First(), hearingRoomName, otherInformation, createdBy, 
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
@@ -290,12 +289,11 @@ namespace Bookings.IntegrationTests.Helper
             const string hearingRoomName = "Room02";
             const string otherInformation = "OtherInformation02";
             const string createdBy = "test@integration.com";
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venues.First(), hearingRoomName, otherInformation, createdBy,
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,

@@ -53,7 +53,6 @@ namespace Bookings.UnitTests.Mappings
                 mockedHearing.OtherInformation,
                 "admin@madeupemail.com",
                 updatedCases,
-                questionnaireNotRequired,
                 audioRecordingRequired
             );
             return mockedHearing;
