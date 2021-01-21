@@ -25,7 +25,6 @@ namespace Bookings.UnitTests.Domain.Hearing
             var updatedBy = "testuser";
             var caseName = "CaseName Update";
             var caseNumber = "CaseNumber Update";
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
 
             var casesToUpdate = new List<Case>
@@ -53,7 +52,6 @@ namespace Bookings.UnitTests.Domain.Hearing
             var newDuration = -10;
             var updatedBy = "testuser";
             var cases = new List<Case>();
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
 
             Action action = () => hearing.UpdateHearingDetails(newVenue, newDateTime, newDuration,

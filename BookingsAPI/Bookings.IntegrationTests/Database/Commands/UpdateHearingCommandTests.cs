@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using FluentAssertions;
@@ -62,7 +63,36 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.GetCases().First().Number.Should().Be(caseNumber);
             returnedVideoHearing.AudioRecordingRequired.Should().BeTrue();
         }
-        
+
+        [Test]
+        public async Task Should_throw_exception_as_the_hearing_id_does_not_exist()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+
+            var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
+            var newVenue = allVenues.Last();
+            var newDuration = seededHearing.ScheduledDuration + 10;
+            var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
+            var newHearingRoomName = "Room02 edit";
+            var newOtherInformation = "OtherInformation02 edit";
+            var updatedBy = "testuser";
+            var casesToUpdate = new List<Case>();
+            var caseName = "CaseName Update";
+            var caseNumber = "CaseNumber Update";
+            casesToUpdate.Add(new Case(caseNumber, caseName));
+            const bool audioRecordingRequired = true;
+
+            Func<Task> act = async () =>
+            {
+                await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration,
+                    newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate,
+                    audioRecordingRequired));
+            };
+
+            await act.Should().ThrowAsync<HearingNotFoundException>("the hearing id could not be found");
+        }
+
         [TearDown]
         public new async Task TearDown()
         {
