@@ -13,7 +13,7 @@ namespace Bookings.DAL.Commands
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints)
+            bool audioRecordingRequired, List<NewEndpoint> endpoints)
         {
             CaseType = caseType;
             HearingType = hearingType;

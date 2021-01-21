@@ -63,7 +63,7 @@ namespace Bookings.DAL.Helper
 
             var duration = 480;
             var command = new CreateVideoHearingCommand(hearing.CaseType, hearing.HearingType, newDate,
-                duration, hearing.HearingVenue, participants, cases, true,
+                duration, hearing.HearingVenue, participants, cases,
                 hearing.AudioRecordingRequired, newEndpoints)
             {
                 HearingRoomName = hearing.HearingRoomName,

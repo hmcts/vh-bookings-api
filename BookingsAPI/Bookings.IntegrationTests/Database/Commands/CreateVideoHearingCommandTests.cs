@@ -75,7 +75,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             var hearingRoomName = "Room01";
             var otherInformation = "OtherInformation01";
             var createdBy = "User01";
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
 
             var endpoints = new List<NewEndpoint>
@@ -98,7 +97,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, 
-                    participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints)
+                    participants, cases, audioRecordingRequired, endpoints)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,

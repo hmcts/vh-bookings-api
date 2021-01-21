@@ -200,7 +200,7 @@ namespace Bookings.API.Controllers
 
                 var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                     request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
+                    request.AudioRecordingRequired, endpoints)
                 {
                     HearingRoomName = request.HearingRoomName,
                     OtherInformation = request.OtherInformation,
