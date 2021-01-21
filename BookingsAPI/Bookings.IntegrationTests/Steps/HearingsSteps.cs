@@ -96,25 +96,6 @@ namespace Bookings.IntegrationTests.Steps
             CreateTheNewHearingRequest(request);
         }
         
-        [Given(@"I have a valid book a new hearing request with a judicial office holder")]
-        public void GivenIHaveAValidBookANewHearingRequestWithAJudicialOfficeHolder()
-        {
-            var request = BuildRequest(Context.TestData.CaseName);
-            var participant = Builder<ParticipantRequest>.CreateNew()
-                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
-                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
-                .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
-                .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
-                .With(x => x.OrganisationName = "Automation Organisation")
-                .Build();
-            participant.CaseRoleName = "Judicial Office Holder";
-            participant.HearingRoleName = "Judicial Office Holder";
-
-            request.Participants.Add(participant);
-            
-            CreateTheNewHearingRequest(request);
-        }
-
         [Given(@"I have a book a new hearing request with an invalid (.*)")]
         public void GivenIHaveABookANewHearingRequestWithAnInvalidHearingType(string invalidType)
         {
