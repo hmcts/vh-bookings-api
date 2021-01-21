@@ -109,7 +109,6 @@ namespace Bookings.AcceptanceTests.Steps
             model[0].HearingId.Should().Be(_context.TestData.Hearing.Id);
             model[0].ParticipantId.Should().Be(participantId);
             model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
-            model[0].QuestionnaireNotRequired.Should().Be(false);
         }
 
         [Then(@"a list of hearings for deletion is (.*)")]

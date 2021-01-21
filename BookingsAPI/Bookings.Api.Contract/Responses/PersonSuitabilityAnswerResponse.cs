@@ -9,7 +9,6 @@ namespace Bookings.Api.Contract.Responses
         public Guid ParticipantId { get; set; }
         public DateTime ScheduledAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public bool QuestionnaireNotRequired { get; set; }
         public IList<SuitabilityAnswerResponse> Answers { get; set; }
     }
 }

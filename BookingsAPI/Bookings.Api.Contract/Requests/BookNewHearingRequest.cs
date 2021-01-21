@@ -63,11 +63,6 @@ namespace Bookings.Api.Contract.Requests
         public string CreatedBy { get; set; }
 
         /// <summary>
-        /// QuestionnaireNotRequired
-        /// </summary>
-        public bool QuestionnaireNotRequired { get; set; }
-
-        /// <summary>
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
