@@ -105,7 +105,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private void PrepareAddEndpointRequest(Guid hearingId, AddEndpointRequest request)
         {
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             Context.Uri = AddEndpointToHearing(hearingId);
@@ -114,7 +114,7 @@ namespace Bookings.IntegrationTests.Steps
 
         private void PrepareUpdateEndpointRequest(Guid hearingId, Guid endpointId, UpdateEndpointRequest request)
         {
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             Context.Uri = UpdateEndpoint(hearingId, endpointId);

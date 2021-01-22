@@ -68,7 +68,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"hearing details should be retrieved")]
         public void ThenAHearingDetailsShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.Should().NotBeNull();
             _context.TestData.Hearing = model;
             model.Should().BeEquivalentTo(_context.TestData.CreateHearingRequest,
@@ -103,7 +103,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"hearing details should be updated")]
         public void ThenHearingDetailsShouldBeUpdated()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.Should().NotBeNull();
             model.ScheduledDuration.Should().Be(100);
             model.ScheduledDateTime.Should().Be(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45).ToUniversalTime());
@@ -145,7 +145,7 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Request = _context.Post(BookNewHearing, request);
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.Should().NotBeNull();
             _context.TestData.Hearing = model;
         }
@@ -160,7 +160,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"hearing details should be retrieved for the case type")]
         public void ThenHearingDetailsShouldBeRetrievedForTheCaseType()
         {
-            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(_context.Response.Content);
+            var response = RequestHelper.Deserialise<BookingsResponse>(_context.Response.Content);
             response.PrevPageUrl.Should().Contain(response.Limit.ToString());
             response.Hearings.Count.Should().BeGreaterThan(0);
             var hearing = HearingInResponse(response);
@@ -217,7 +217,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
             _context.Response = _context.Client().Execute(_context.Request);
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
             model.Status.Should().Be(status);
             if(status == Domain.Enumerations.BookingStatus.Created)
@@ -229,7 +229,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of hearing details should be retrieved")]
         public void ThenAListOfHearingDetailsShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<List<HearingDetailsResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             _context.TestData.Hearing.Id = model.First().Id;
 
@@ -278,7 +278,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of hearing details should be retrieved for the case number")]
         public void ThenAListOfHearingDetailsShouldBeRetrievedForTheCaseNumber()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<List<AudioRecordedHearingsBySearchResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             foreach (var hearing in model)
             {
@@ -295,7 +295,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"an empty list of hearing details should be retrieved")]
         public void ThenAnEmptyListOfHearingDetailsShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<List<AudioRecordedHearingsBySearchResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
             model.Count.Should().Be(0);
         }

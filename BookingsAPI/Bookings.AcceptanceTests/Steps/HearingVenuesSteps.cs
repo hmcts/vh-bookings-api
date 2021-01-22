@@ -27,7 +27,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"hearing venues should be retrieved")]
         public void ThenHearingVenuesShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingVenueResponse>>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<List<HearingVenueResponse>>(_context.Response.Content);
             model.Should().NotBeNullOrEmpty();
         }
     }

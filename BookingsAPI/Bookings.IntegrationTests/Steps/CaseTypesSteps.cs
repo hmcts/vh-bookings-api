@@ -47,7 +47,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfCaseTypesShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
+            var model = RequestHelper.Deserialise<List<CaseTypeResponse>>(json);
             model.Should().NotBeEmpty();
             foreach (var caseType in model)
             {
@@ -65,7 +65,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfCaseTypesShouldContain(IDictionary<string, IEnumerable<string>> caseHearingTypes)
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var models = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseTypeResponse>>(json);
+            var models = RequestHelper.Deserialise<List<CaseTypeResponse>>(json);
 
             models.Select(x => x.Name).Should().Contain(caseHearingTypes.Keys);
             foreach (var model in models)
@@ -80,7 +80,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfCaseRolesShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<CaseRoleResponse>>(json);
+            var model = RequestHelper.Deserialise<List<CaseRoleResponse>>(json);
             model.Should().NotBeEmpty();
             model[0].Name.Should().NotBeNullOrEmpty();
         }
