@@ -46,7 +46,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a person should be retrieved")]
         public void ThenAPersonShouldBeRetrieved()
         {
-            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(_context.Response.Content);
+            var model = RequestHelper.Deserialise<PersonResponse>(_context.Response.Content);
             model.Should().NotBeNull();
             model.ContactEmail.Should().Be(_context.TestData.ParticipantsResponses[0].ContactEmail);
             model.FirstName.Should().Be(_context.TestData.ParticipantsResponses[0].FirstName);
@@ -70,7 +70,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void ThenPersonsDetailsShouldBeRetrieved()
         {
             var model =
-                RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(_context.Response.Content);
+                RequestHelper.Deserialise<List<PersonResponse>>(_context.Response.Content);
             var expected = _context.TestData.ParticipantsResponses[0];
             var actual = model.Single(u => u.ContactEmail == expected.ContactEmail);
             actual.Should().NotBeNull();
@@ -95,7 +95,7 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.OK);
             var model =
-                RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(
+                RequestHelper.Deserialise<List<PersonSuitabilityAnswerResponse>>(
                     _context.Response.Content);
             var expectedResult = _context.TestData.Answers;
 
@@ -116,7 +116,7 @@ namespace Bookings.AcceptanceTests.Steps
         public void ThenAListOfHearingsForDeletionIs(int expectedNumOfHearings)
         {
             var response =
-                RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByUsernameForDeletionResponse>>(
+                RequestHelper.Deserialise<List<HearingsByUsernameForDeletionResponse>>(
                     _context.Response.Content);
 
             response.Count.Should().Be(expectedNumOfHearings);
