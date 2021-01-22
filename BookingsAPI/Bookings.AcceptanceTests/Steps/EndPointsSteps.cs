@@ -145,7 +145,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
             _context.Response = _context.Client().Execute(_context.Request);
-            var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
             return model;
         }
 

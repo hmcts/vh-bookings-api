@@ -28,7 +28,7 @@ namespace Bookings.AcceptanceTests.Steps
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-            var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Response.Content);
             model.Should().NotBeNull();                 
             model.ScheduledDuration.Should().NotBe(100);
             model.ScheduledDateTime.Should().NotBe(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));

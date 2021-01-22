@@ -102,7 +102,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingSearchResponseShouldContainTheGivenHearing()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.Deserialise<List<AudioRecordedHearingsBySearchResponse>>(json);
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(json);
             
             var seededHearing = Context.TestData.SeededHearing;
             response.Should().NotBeNullOrEmpty();
@@ -115,7 +115,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenHearingSearchResponseShouldBeEmpty()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.Deserialise<List<AudioRecordedHearingsBySearchResponse>>(json);
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<AudioRecordedHearingsBySearchResponse>>(json);
             response.Should().BeEmpty();
         }
         
