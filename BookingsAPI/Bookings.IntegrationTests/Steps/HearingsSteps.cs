@@ -138,7 +138,7 @@ namespace Bookings.IntegrationTests.Steps
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
                 Context.TestData.UpdateHearingRequest.ScheduledDuration = 0;
                 Context.TestData.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
-                Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = true;
+                Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = false;
                 Context.TestData.UpdateHearingRequest.AudioRecordingRequired = true;
             }
 
@@ -595,6 +595,7 @@ namespace Bookings.IntegrationTests.Steps
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.AudioRecordingRequired = true)
+                .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.Endpoints = endpoints)
                 .Build();
         }
@@ -615,6 +616,7 @@ namespace Bookings.IntegrationTests.Steps
                 ScheduledDuration = 100,
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
                 OtherInformation = "OtherInfo",
+                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,
                 HearingRoomName = "20",
                 UpdatedBy = $"admin{usernameStem}",
