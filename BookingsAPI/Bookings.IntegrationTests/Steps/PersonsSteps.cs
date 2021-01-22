@@ -75,7 +75,7 @@ namespace Bookings.IntegrationTests.Steps
             Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
-            var searchTerm = RequestHelper.Serialise(
+            var searchTerm = RequestHelper.SerialiseRequestToSnakeCaseJson(
                 new SearchTermRequest(email.Substring(0, 3))
                 );
 
@@ -92,7 +92,7 @@ namespace Bookings.IntegrationTests.Steps
             Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var email = seededHearing.GetParticipants().First().Person.ContactEmail;
-            var searchTerm = RequestHelper.Serialise(
+            var searchTerm = RequestHelper.SerialiseRequestToSnakeCaseJson(
                 new SearchTermRequest(email.Substring(0, 3).ToUpperInvariant())
                 );
             Context.Uri = PostPersonBySearchTerm;
@@ -172,7 +172,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenThePersonDetailsShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<PersonResponse>(json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<PersonResponse>(json);
             model.Should().NotBeNull();
             ValidatePersonData(model);
         }
@@ -194,7 +194,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenPersonsDetailsShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<List<PersonResponse>>(json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonResponse>>(json);
             model[0].Should().NotBeNull();
             ValidatePersonData(model[0]);
         }
@@ -203,7 +203,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfHearingUsernamesShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<UserWithClosedConferencesResponse>(json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<UserWithClosedConferencesResponse>(json);
             model.Should().NotBeNull();
             model.Usernames.Should().NotBeNull();
             model.Usernames.Count.Should().Be(3); // Individual & Representative participants
@@ -214,7 +214,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved(string scenario)
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<List<PersonSuitabilityAnswerResponse>>(json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<PersonSuitabilityAnswerResponse>>(json);
 
             model[0].Should().NotBeNull();
             model[0].HearingId.Should().NotBeEmpty();
@@ -274,7 +274,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenAListOfHearingsForDeletionIs(int expectedNumOfHearings)
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var response = RequestHelper.Deserialise<List<HearingsByUsernameForDeletionResponse>>(json);
+            var response = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingsByUsernameForDeletionResponse>>(json);
 
             response.Count.Should().Be(expectedNumOfHearings);
             

@@ -26,7 +26,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"the application version should be retrieved")]
         public void ThenTheApplicationVersionShouldBeRetrieved()
         {
-            var model = RequestHelper.Deserialise<BookingsApiHealthResponse>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsApiHealthResponse>(_context.Response.Content);
             model.Should().NotBeNull();
             model.AppVersion.Should().NotBeNull();
             model.AppVersion.FileVersion.Should().NotBeNull();

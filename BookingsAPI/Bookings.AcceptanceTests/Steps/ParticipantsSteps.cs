@@ -51,14 +51,14 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"a list of hearing participants should be retrieved")]
         public void ThenAListOfHearingParticipantsShouldBeRetrieved()
         {
-            var model = RequestHelper.Deserialise<List<ParticipantResponse>>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Response.Content);
             CheckParticipantDetailsAreReturned(model);
         }        
 
         [Then(@"a hearing participant should be retrieved")]
         public void ThenAHearingParticipantShouldBeRetrieved()
         {
-            var model = new List<ParticipantResponse>{RequestHelper.Deserialise<ParticipantResponse>(_context.Response.Content)};
+            var model = new List<ParticipantResponse>{RequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_context.Response.Content)};
             CheckParticipantDetailsAreReturned(model);
         }
 
@@ -67,7 +67,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             _context.Request = _context.Get(GetAllParticipantsInHearing(_context.TestData.Hearing.Id));
             _context.Response = _context.Client().Execute(_context.Request);
-            var model = RequestHelper.Deserialise<List<ParticipantResponse>>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Response.Content);
             model.Exists(x => x.FirstName == "Automation_Added Participant").Should().BeTrue();
         }
 
@@ -76,7 +76,7 @@ namespace Bookings.AcceptanceTests.Steps
         {
             _context.Request = _context.Get(GetAllParticipantsInHearing(_context.TestData.Hearing.Id));
             _context.Response = _context.Client().Execute(_context.Request);
-            var model = RequestHelper.Deserialise<List<ParticipantResponse>>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ParticipantResponse>>(_context.Response.Content);
             model.Exists(x => x.Id == _removedParticipantId).Should().BeFalse();
         }
 
@@ -111,7 +111,7 @@ namespace Bookings.AcceptanceTests.Steps
         [Then(@"'(.*)' details should be updated")]
         public void ThenIndividualDetailsShouldBeUpdated(string participant)
         {
-            var model = RequestHelper.Deserialise<ParticipantResponse>(_context.Response.Content);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ParticipantResponse>(_context.Response.Content);
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
             model.Should().NotBeNull();
             model.Title.Should().Be(updateParticipantRequest.Title);

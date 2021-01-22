@@ -87,7 +87,7 @@ namespace Bookings.IntegrationTests.Steps
         {
             var request = new CloneHearingRequest {Dates = dates};
             _cloneRequest = request;
-            var jsonBody = RequestHelper.Serialise(request);
+            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = ApiUriFactory.HearingsEndpoints.CloneHearing(hearingId);
             Context.HttpMethod = HttpMethod.Post;

@@ -45,7 +45,7 @@ namespace Bookings.IntegrationTests.Hooks
             using var client = context.Server.CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {context.BearerToken}");
             var response = await client.GetAsync(context.Uri);
-            var hearings = RequestHelper.Deserialise<BookingsResponse>(await response.Content.ReadAsStringAsync());
+            var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(await response.Content.ReadAsStringAsync());
             foreach (var hearing in hearings.Hearings.SelectMany(hearingsListResponse => hearingsListResponse.Hearings.Where(hearing => hearing.HearingName.Contains(context.TestData.CaseName))))
             {
                 await context.TestDataManager.RemoveVideoHearing(hearing.HearingId);

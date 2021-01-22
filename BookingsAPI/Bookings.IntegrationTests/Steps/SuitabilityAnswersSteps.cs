@@ -29,7 +29,7 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenSuitableAnswersShouldBeRetrieved()
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<SuitabilityAnswersResponse>(json);
+            var model = RequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
             model.Should().NotBeNull();
             model.PrevPageUrl.Should().NotBe(model.NextPageUrl);
             model.ParticipantSuitabilityAnswerResponse.Should().NotBeNull();
@@ -56,7 +56,7 @@ namespace Bookings.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
             var response = await SendGetRequestAsync(Context);
             var json = await response.Content.ReadAsStringAsync();
-            var bookings = RequestHelper.Deserialise<SuitabilityAnswersResponse>(json);
+            var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<SuitabilityAnswersResponse>(json);
 
             Context.Uri = GetSuitabilityAnswerWithLimit(bookings.NextCursor, 1);
         }
