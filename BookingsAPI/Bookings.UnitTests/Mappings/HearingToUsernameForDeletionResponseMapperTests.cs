@@ -38,7 +38,20 @@ namespace Bookings.UnitTests.Mappings
             result.CaseName.Should().Be(firstCase.Name);
             result.CaseNumber.Should().Be(firstCase.Number);
         }
-        
+
+        [Test]
+        public void should_map_hearing_to_response_model_without_case()
+        {
+            var hearing = new VideoHearingBuilder().Build(); 
+
+            var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
+
+            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+            result.CaseName.Should().BeNullOrEmpty();
+            result.CaseNumber.Should().BeNullOrEmpty();
+        }
+
         private static VideoHearing BuildHearing(bool leadCase)
         {
             var hearing = new VideoHearingBuilder().Build();

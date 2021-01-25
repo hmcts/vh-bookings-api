@@ -24,7 +24,7 @@ namespace Bookings.API.Mappings
                     (judgeParticipant?.Person != null) ? judgeParticipant.Person.Username : string.Empty;
 
                 var @case = caseNumber.IsNullOrEmpty()
-                    ? hearing.GetCases().First()
+                    ? hearing.GetCases().FirstOrDefault()
                     : hearing.GetCases()
                         .FirstOrDefault(c => c.Number.ToLower().Trim().Contains(caseNumber.ToLower().Trim()));
 

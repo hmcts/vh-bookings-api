@@ -64,7 +64,6 @@ namespace Bookings.UnitTests.Mappings
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
-            mockedHearing.GetParticipants()[2].HearingRole = new HearingRole(5, "Judge") { UserRole = new UserRole(5, "Judge") };
 
             var mapped = _mapper.MapHearingResponse(mockedHearing);
             mapped.Should().NotBeNull();
@@ -76,6 +75,25 @@ namespace Bookings.UnitTests.Mappings
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
             mapped.CourtRoomAccount.Should().NotBeNullOrEmpty();
+        }
+
+        [Test]
+        public void Should_map_properties_without_judge()
+        {
+            var mockedHearing = MockHearingWithCase();
+            mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
+            mockedHearing.GetParticipants()[3].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
+
+            var mapped = _mapper.MapHearingResponse(mockedHearing);
+            mapped.Should().NotBeNull();
+            mapped.ScheduledDuration.Should().Be(80);
+            mapped.JudgeName.Should().BeNullOrEmpty();
+            mapped.HearingNumber.Should().Be("234");
+            mapped.HearingName.Should().Be("X vs Y");
+            mapped.CaseTypeName.Should().Be("Civil Money Claims");
+            mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
+            mapped.CourtRoom.Should().Be("Roome03");
+            mapped.CourtRoomAccount.Should().BeNullOrEmpty();
         }
 
         [Test]

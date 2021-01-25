@@ -29,7 +29,7 @@
         "!Program.cs",
         "!ConfigureServicesExtensions.cs",
         "!Swagger/AuthResponsesOperationFilter.cs",
-        "!Extensions/CloudRoleNameInitializer.cs"
+        "!Extensions/*.cs"
       ]
     }
 }

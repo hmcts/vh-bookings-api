@@ -32,8 +32,8 @@ namespace Bookings.API.Mappings
             if (videoHearing.HearingType == null) throw new ArgumentException("Hearing is missing hearing type");
             
             var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
-            var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : "";
-            var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : "";
+            var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
+            var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : string.Empty;
 
             var response = new BookingsHearingResponse
             {
