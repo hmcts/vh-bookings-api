@@ -29,13 +29,6 @@
         <ProjectReference Include="..\Bookings.DAL\Bookings.DAL.csproj" />
         <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-        <None Update="useraccounts.json">
-          <Generator></Generator>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>       
-    </ItemGroup>
 
     <ItemGroup>
         <Content Include="Features\*.feature.cs" />
@@ -43,5 +36,12 @@
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="useraccounts.json">
+        <Generator></Generator>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

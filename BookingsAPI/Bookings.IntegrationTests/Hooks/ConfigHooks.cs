@@ -1,6 +1,9 @@
 ﻿ using System.Collections.Generic;
-using System.Net.Http;
-using AcceptanceTests.Common.Configuration;
+ using System.IO;
+ using System.Linq;
+ using System.Net.Http;
+ using System.Reflection;
+ using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using Bookings.API;
 using Bookings.Api.Contract.Requests;
@@ -20,8 +23,9 @@ using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using TestData = Testing.Common.Configuration.TestData;
 using AcceptanceTests.Common.Api;
+ using Newtonsoft.Json;
 
-namespace Bookings.IntegrationTests.Hooks
+ namespace Bookings.IntegrationTests.Hooks
 {
     [Binding]
     public class ConfigHooks
@@ -71,7 +75,14 @@ namespace Bookings.IntegrationTests.Hooks
 
         private void RegisterTestUsers(TestContext context)
         {
-            context.UserAccounts = Options.Create(_configRoot.GetSection("UserAccounts").Get<List<UserAccount>>()).Value;
+
+            var userConfiguration  = new ConfigurationBuilder()
+            .AddJsonFile("useraccounts.json", optional: true)
+            .Build()
+            .GetSection("UserAccounts")
+            .Get<List<UserAccount>>();
+
+            context.UserAccounts = userConfiguration;
             context.UserAccounts.Should().NotBeNullOrEmpty();
             foreach (var user in context.UserAccounts)
             {
@@ -124,5 +135,21 @@ namespace Bookings.IntegrationTests.Hooks
 
             Zap.SetAuthToken(context.BearerToken);
         }
+    }
+
+    public class UserAccounts
+    {
+        public IList<UserAccount> Users { get; set; }
+    }
+
+    public class FileUserAccount
+    {
+        public string Role { get; set; }
+
+        public string AlternativeEmail { get; set; }
+
+        public string Firstname { get; set; }
+
+        public string Lastname { get; set; }
     }
 }
