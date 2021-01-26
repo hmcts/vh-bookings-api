@@ -22,7 +22,9 @@
         "*LogTrace",
         "*LogError",
         "*LogInformation",
-        "*TraceException"
+        "*TrackTrace",
+        "*TraceException",
+        "*AddTrace"
       ],
       "mutate": [
         "!Startup.cs",

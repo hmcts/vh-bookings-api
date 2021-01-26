@@ -29,6 +29,7 @@ using Bookings.DAL.Helper;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Bookings.API.Helpers;
 
 namespace Bookings.API.Controllers
 {
@@ -115,6 +116,7 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
+        
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
@@ -139,10 +141,7 @@ namespace Bookings.API.Controllers
                 if (!result.IsValid)
                 {
                     ModelState.AddFluentValidationErrors(result.Errors);
-                    var dictionary = result.Errors.ToDictionary(x => $"{x.PropertyName}-{Guid.NewGuid()}", x => x.ErrorMessage);
-                    var payload = JsonConvert.SerializeObject(request);
-                    dictionary.Add("payload", !string.IsNullOrWhiteSpace(payload) ? payload : "Empty Payload");
-                    _logger.TrackTrace("BookNewHearing Validation Errors", SeverityLevel.Error, dictionary);
+                    _logger.TrackTrace("BookNewHearing Validation Errors", SeverityLevel.Error, HearingControlLogHelper.ErrorMessages(result,request));
                     return BadRequest(ModelState);
                 }
 
@@ -152,7 +151,7 @@ namespace Bookings.API.Controllers
                 if (caseType == null)
                 {
                     ModelState.AddModelError(nameof(request.CaseTypeName), "Case type does not exist");
-                    _logger.TrackTrace("BookNewHearing Error: Case type does not exist", SeverityLevel.Error, new Dictionary<string, string>{{"CaseTypeName", request?.CaseTypeName}});
+                    _logger.TrackTrace("BookNewHearing Error: Case type does not exist", SeverityLevel.Error, HearingControlLogHelper.AddTrace("CaseTypeName", request?.CaseTypeName));
                     return BadRequest(ModelState);
                 }
 
@@ -160,7 +159,7 @@ namespace Bookings.API.Controllers
                 if (hearingType == null)
                 {
                     ModelState.AddModelError(nameof(request.HearingTypeName), "Hearing type does not exist");
-                    _logger.TrackTrace("BookNewHearing Error: Hearing type does not exist", SeverityLevel.Error, new Dictionary<string, string>{{"HearingTypeName", request?.HearingTypeName}});
+                    _logger.TrackTrace("BookNewHearing Error: Hearing type does not exist", SeverityLevel.Error, HearingControlLogHelper.AddTrace("HearingTypeName", request?.HearingTypeName));
                     return BadRequest(ModelState);
                 }
 
@@ -168,34 +167,25 @@ namespace Bookings.API.Controllers
                 if (venue == null)
                 {
                     ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
-                    _logger.TrackTrace("BookNewHearing Error: Hearing venue does not exist", SeverityLevel.Error, new Dictionary<string, string>{{"HearingVenueName", request?.HearingVenueName}});
+                    _logger.TrackTrace("BookNewHearing Error: Hearing venue does not exist", SeverityLevel.Error, HearingControlLogHelper.AddTrace("HearingVenueName", request?.HearingVenueName));
                     return BadRequest(ModelState);
                 }
 
                 var mapper = new ParticipantRequestToNewParticipantMapper();
                 var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
-                _logger.TrackTrace("BookNewHearing mapped participants", SeverityLevel.Information, new Dictionary<string, string>
-                {
-                    {"Participants", string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
-                });
+               _logger.TrackTrace("BookNewHearing mapped participants", SeverityLevel.Information, HearingControlLogHelper.AddTrace("Participants", newParticipants?.Select(x => x?.Person?.Username)));
                 
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-                _logger.TrackTrace("BookNewHearing got cases", SeverityLevel.Information, new Dictionary<string, string>
-                {
-                    {"Cases", string.Join(", ", cases?.Select(x => new {x.Name, x.Number}))}
-                });
+                _logger.TrackTrace("BookNewHearing got cases", SeverityLevel.Information, HearingControlLogHelper.AddTrace("Cases", cases?.Select(x => new {x.Name, x.Number})));
 
                 var endpoints = new List<NewEndpoint>();
-                if (request.Endpoints != null && request.Endpoints.Count > 0)
+                if (request.Endpoints != null)
                 {
                     endpoints = request.Endpoints.Select(x =>
                         EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
                             _kinlyConfiguration.SipAddressStem)).ToList();
                     
-                    _logger.TrackTrace("BookNewHearing mapped endpoints", SeverityLevel.Information, new Dictionary<string, string>
-                    {
-                        {"Endpoints", string.Join(", ", endpoints?.Select(x => new {x?.Sip, x?.DisplayName, x?.DefenceAdvocateUsername}))}
-                    });
+                    _logger.TrackTrace("BookNewHearing mapped endpoints", SeverityLevel.Information, HearingControlLogHelper.AddTrace("Endpoints", endpoints?.Select(x => new {x?.Sip, x?.DisplayName, x?.DefenceAdvocateUsername})));
                 }
 
                 var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
@@ -207,45 +197,24 @@ namespace Bookings.API.Controllers
                     CreatedBy = request.CreatedBy
                 };
 
-                _logger.TrackTrace("BookNewHearing Calling DB...", SeverityLevel.Information, new Dictionary<string, string>{{"createVideoHearingCommand", JsonConvert.SerializeObject(createVideoHearingCommand)}});
+                _logger.TrackTrace("BookNewHearing Calling DB...", SeverityLevel.Information, HearingControlLogHelper.AddTrace("createVideoHearingCommand", JsonConvert.SerializeObject(createVideoHearingCommand)));
                 await _commandHandler.Handle(createVideoHearingCommand);
-                _logger.TrackTrace("BookNewHearing DB Save Success", SeverityLevel.Information, new Dictionary<string, string>{{"NewHearingId", createVideoHearingCommand.NewHearingId.ToString()}});
+                _logger.TrackTrace("BookNewHearing DB Save Success", SeverityLevel.Information, HearingControlLogHelper.AddTrace("NewHearingId", createVideoHearingCommand.NewHearingId.ToString()));
                 
                 var videoHearingId = createVideoHearingCommand.NewHearingId;
 
                 var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
                 var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-                _logger.TrackTrace("BookNewHearing Retrieved new hearing from DB", SeverityLevel.Information, new Dictionary<string, string>
-                {
-                    {"HearingId", queriedVideoHearing.Id.ToString()},
-                    {"CaseType", queriedVideoHearing.CaseType?.Name},
-                    {"Participants.Count", queriedVideoHearing.Participants.Count.ToString()},
-                });
+                _logger.TrackTrace("BookNewHearing Retrieved new hearing from DB", SeverityLevel.Information, HearingControlLogHelper.LogInfo(queriedVideoHearing));
 
                 var hearingMapper = new HearingToDetailResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
-                _logger.TrackTrace("BookNewHearing Finished, returning response", SeverityLevel.Information, new Dictionary<string, string> {{"response", JsonConvert.SerializeObject(response)}});
+                _logger.TrackTrace("BookNewHearing Finished, returning response", SeverityLevel.Information, HearingControlLogHelper.AddTrace("response", JsonConvert.SerializeObject(response)));
                 return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
             }
             catch (Exception ex)
-            {
-                if (request != null)
-                {
-                    var payload = JsonConvert.SerializeObject(request);
-                    _logger.TrackError(ex, new Dictionary<string, string>
-                    {
-                        {"payload", !string.IsNullOrWhiteSpace(payload) ? payload : "Empty Payload"},
-                        {"ScheduledDateTime", request.ScheduledDateTime.ToString("s")},
-                        {"ScheduledDuration", request.ScheduledDuration.ToString()},
-                        {"CaseTypeName", request.CaseTypeName},
-                        {"HearingTypeName", request.HearingTypeName}
-                    });
-                }
-                else
-                {
-                    _logger.TrackError(ex, new Dictionary<string, string> {{"payload", "BookNewHearingRequest is null"}});
-                }
-
+            { 
+                _logger.TrackError(ex, HearingControlLogHelper.ErrorMessages(request));      
                 throw;
             }
         }
@@ -436,7 +405,7 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString(), true);
+                var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString());
                 await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
 
                 switch (bookingStatus)
