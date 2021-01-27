@@ -38,7 +38,22 @@ namespace Bookings.UnitTests.Mappings
             result.CaseName.Should().Be(firstCase.Name);
             result.CaseNumber.Should().Be(firstCase.Number);
         }
-        
+
+        [Test]
+        public void should_map_hearing_to_response_model_with_first_case_from_multiple_cases()
+        {
+            var hearing = BuildHearing(false);
+            hearing.AddCase("Test 002 ", "Case name 2", false);
+            var firstCase = hearing.GetCases().First();
+
+            var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
+
+            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+            result.CaseName.Should().Be(firstCase.Name);
+            result.CaseNumber.Should().Be(firstCase.Number);
+        }
+
         private static VideoHearing BuildHearing(bool leadCase)
         {
             var hearing = new VideoHearingBuilder().Build();

@@ -9,6 +9,8 @@ namespace Bookings.API.Mappings
 {
     public class AudioRecordedHearingsBySearchResponseMapper
     {
+        private const string ErrorMessage = "Hearing is missing case";
+
         public List<AudioRecordedHearingsBySearchResponse> MapHearingToDetailedResponse(IEnumerable<Hearing> videoHearing,
             string caseNumber)
         {
@@ -19,16 +21,20 @@ namespace Bookings.API.Mappings
             {
                 var judgeParticipant = hearing.GetParticipants()
                     .FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
-                var courtroomAccountName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
-                var courtroomAccount =
-                    (judgeParticipant?.Person != null) ? judgeParticipant.Person.Username : string.Empty;
+
+                var courtroomAccountName = judgeParticipant != null 
+                    ? judgeParticipant.DisplayName 
+                    : string.Empty;
+                var courtroomAccount = (judgeParticipant?.Person != null) 
+                    ? judgeParticipant.Person.Username 
+                    : string.Empty;
 
                 var @case = caseNumber.IsNullOrEmpty()
-                    ? hearing.GetCases().First()
+                    ? hearing.GetCases()[0]
                     : hearing.GetCases()
                         .FirstOrDefault(c => c.Number.ToLower().Trim().Contains(caseNumber.ToLower().Trim()));
 
-                if (@case == null) throw new ArgumentException("Hearing is missing case");
+                if (@case == null) throw new ArgumentException(ErrorMessage);
 
                 var hearingByCaseNumber = new AudioRecordedHearingsBySearchResponse()
                 {

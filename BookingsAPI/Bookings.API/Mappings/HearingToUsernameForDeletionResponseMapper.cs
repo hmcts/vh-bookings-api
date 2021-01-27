@@ -8,7 +8,7 @@ namespace Bookings.API.Mappings
     {
         public static HearingsByUsernameForDeletionResponse MapToDeletionResponse(Hearing hearing)
         {
-            var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases().First();
+            var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases()[0];
             return new HearingsByUsernameForDeletionResponse
             {
                 HearingId = hearing.Id,
