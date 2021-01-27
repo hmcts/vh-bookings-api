@@ -103,9 +103,9 @@ namespace Bookings.API.Controllers
                 return NotFound();
             }
 
-            var response = caseRole.HearingRoles.Where(hr => hr.Live).Select(x => new HearingRoleResponse()
+            var response = caseRole.HearingRoles.Where(hr => hr.Live).Select(x => new HearingRoleResponse
             {
-                Name = x.Name
+                Name = x.Name, UserRole = x.UserRole?.Name.ToString()
             }).ToList();
 
             return Ok(response);
