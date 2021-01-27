@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Bookings.Domain;
 using Testing.Common.Builders.Domain;
 using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
 
 namespace Bookings.UnitTests.Helpers
 {
@@ -50,7 +51,7 @@ namespace Bookings.UnitTests.Helpers
 
             result.Should().NotBeNull();
             result.Count.Should().Be(5);
-            result["payload"].Should().NotBe("Empty Payload");
+            result["payload"].Should().Be(JsonConvert.SerializeObject(request));
             result["ScheduledDateTime"].Should().Be(request.ScheduledDateTime.ToString("s"));
             result["ScheduledDuration"].Should().Be(request.ScheduledDuration.ToString());
             result["CaseTypeName"].Should().Be(request.CaseTypeName);
@@ -68,7 +69,7 @@ namespace Bookings.UnitTests.Helpers
 
             result.Should().NotBeNull();
             result.Count.Should().Be(2);
-            result["payload"].Should().NotBe("Empty Payload"); 
+            result["payload"].Should().Be(JsonConvert.SerializeObject(request)); 
             result.Keys.FirstOrDefault().StartsWith("TestProp-");
             result.Keys.FirstOrDefault().Length.Should().Be(45);
             result.ContainsValue("Test Error Message").Should().BeTrue();
