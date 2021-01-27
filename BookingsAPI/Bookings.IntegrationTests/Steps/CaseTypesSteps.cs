@@ -75,7 +75,6 @@ namespace Bookings.IntegrationTests.Steps
             }
         }
 
-        [Then(@"a list of hearing roles should be retrieved")]
         [Then(@"a list of case roles should be retrieved")]
         public async Task ThenAListOfCaseRolesShouldBeRetrieved()
         {
@@ -83,6 +82,16 @@ namespace Bookings.IntegrationTests.Steps
             var model = RequestHelper.Deserialise<List<CaseRoleResponse>>(json);
             model.Should().NotBeEmpty();
             model[0].Name.Should().NotBeNullOrEmpty();
+        }
+        
+        [Then(@"a list of hearing roles should be retrieved")]
+        public async Task ThenAListOfHearingRolesShouldBeRetrieved()
+        {
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            var model = RequestHelper.Deserialise<List<CaseRoleResponse>>(json);
+            model.Should().NotBeEmpty();
+            model[0].Name.Should().NotBeNullOrEmpty();
+            model[0].UserRole.Should().NotBeNullOrEmpty();
         }
     }
 }

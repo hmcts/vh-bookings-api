@@ -54,12 +54,20 @@ namespace Bookings.AcceptanceTests.Steps
         }
 
         [Then(@"a list of case roles should be retrieved")]
-        [Then(@"a list of hearing roles should be retrieved")]
-        public void ThenAListOfRolesShouldBeRetrieved()
+        public void ThenAListOfCaseRolesShouldBeRetrieved()
         {
             var model = RequestHelper.Deserialise<List<CaseRoleResponse>>(_context.Response.Content);
             model.Should().NotBeEmpty();
             model[0].Name.Should().NotBeNullOrEmpty();
+        }
+        
+        [Then(@"a list of hearing roles should be retrieved")]
+        public void ThenAListOfHearingRolesShouldBeRetrieved()
+        {
+            var model = RequestHelper.Deserialise<List<CaseRoleResponse>>(_context.Response.Content);
+            model.Should().NotBeEmpty();
+            model[0].Name.Should().NotBeNullOrEmpty();
+            model[0].UserRole.Should().NotBeNullOrEmpty();
         }
     }
 }

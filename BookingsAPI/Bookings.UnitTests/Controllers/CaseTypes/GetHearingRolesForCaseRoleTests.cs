@@ -18,8 +18,19 @@ namespace Bookings.UnitTests.Controllers.CaseTypes
         {
             var caseTypeName = "test";
             var caseRoleName = "TestRole";
-            var caseRole = new CaseRole(1, "TestRole") { HearingRoles = new List<HearingRole> { new HearingRole(1,"HearingRoleTest") } };
-            var caseType = new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { caseRole } };
+            var caseRole = new CaseRole(1, "TestRole")
+            {
+                HearingRoles = new List<HearingRole>
+                {
+                    new HearingRole(1,"HearingRoleTest") {UserRole = new UserRole(1, "judicial office holder")}
+                }
+            };
+            
+            var caseType = new CaseType(1, "Civil")
+            {
+                CaseRoles = new List<CaseRole> { caseRole }
+            };
+            
             QueryHandler.Setup(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>())).ReturnsAsync(caseType);
 
             var result = await Controller.GetHearingRolesForCaseRole(caseTypeName, caseRoleName);
@@ -30,6 +41,7 @@ namespace Bookings.UnitTests.Controllers.CaseTypes
             var response = (List<HearingRoleResponse>)objectResult.Value;
             response.Count.Should().Be(1);
             response[0].Name.Should().Be("HearingRoleTest");
+            response[0].UserRole.Should().Be("judicial office holder");
         }
 
         [Test]
