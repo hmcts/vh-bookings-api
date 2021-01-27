@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.API.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;
-using FluentValidation;
 using NUnit.Framework;
 
 namespace Bookings.UnitTests.Validation

@@ -38,6 +38,14 @@ namespace Bookings.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
+        public void UpdatePerson(string firstName, string lastName, string username)
+        {
+            ValidateArguments(firstName, lastName, username);
+            FirstName = firstName;
+            LastName = lastName;
+            Username = username;
+        }
+
         public void AnonymisePerson()
         {
             var firstname = RandomString(10);

@@ -21,6 +21,11 @@ namespace Bookings.DAL.Exceptions
             $"Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
         {
         }
+        
+        public PersonNotFoundException(Guid personId) : base(
+            $"Person with id {personId} does not exist")
+        {
+        }
     }
 
     public class PersonIsAJudgeException : PersonException
