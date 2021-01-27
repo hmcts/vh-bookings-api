@@ -57,6 +57,27 @@ namespace Bookings.UnitTests.Validation
         }
 
         [Test]
+        public void should_fail_validation_when_dates_are_same_as_original_hearing()
+        {
+            var originalHearing = new VideoHearingBuilder().Build();
+            var request = new CloneHearingRequest
+            {
+                Dates = new List<DateTime>
+                {
+                    originalHearing.ScheduledDateTime
+                }
+            };
+
+            var validator = new CloneHearingRequestValidation(originalHearing);
+            var result = validator.ValidateDates(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == CloneHearingRequestValidation.InvalidDateRangeErrorMessage)
+                .Should().BeTrue();
+        }
+
+        [Test]
         public void should_fail_validation_when_list_contains_duplicate_dates()
         {
             var originalHearing = new VideoHearingBuilder().Build();

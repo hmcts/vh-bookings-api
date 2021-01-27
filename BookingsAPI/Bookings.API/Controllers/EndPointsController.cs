@@ -20,6 +20,7 @@ using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Bookings.API.Controllers
 {
@@ -82,8 +83,8 @@ namespace Bookings.API.Controllers
 
                 var hearing =
                     await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-                var endpoint = hearing.GetEndpoints().First(x => x.DisplayName.Equals(addEndpointRequest.DisplayName));
-                if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+                var endpoint = hearing.GetEndpoints().FirstOrDefault(x => x.DisplayName.Equals(addEndpointRequest.DisplayName));
+                if (endpoint != null && hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
                     await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endpoint));
                 }
@@ -122,8 +123,8 @@ namespace Bookings.API.Controllers
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
                 var command = new RemoveEndPointFromHearingCommand(hearingId, endpointId);
                 await _commandHandler.Handle(command);
-                var ep = hearing.GetEndpoints().First(x => x.Id == endpointId);
-                if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+                var ep = hearing.GetEndpoints().FirstOrDefault(x => x.Id == endpointId);
+                if (ep != null && hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
                     await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, ep.Sip));
                 }
@@ -178,9 +179,10 @@ namespace Bookings.API.Controllers
                 var command = new UpdateEndPointOfHearingCommand(hearingId, endpointId, updateEndpointRequest.DisplayName, defenceAdvocate);
                 await _commandHandler.Handle(command);
 
-                if (hearing.Status == Domain.Enumerations.BookingStatus.Created)
+                var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
+
+                if (endpoint != null && hearing.Status == Domain.Enumerations.BookingStatus.Created)
                 {
-                    var endpoint = hearing.GetEndpoints().Single(x => x.Id == endpointId);
 
                     await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip,
                         updateEndpointRequest.DisplayName, defenceAdvocate?.Person.Username));

@@ -105,5 +105,17 @@ namespace Bookings.UnitTests.Controllers.EndPointController
                     It.Is<EndpointRemovedIntegrationEvent>(r => r.HearingId == HearingId && r.Sip == endpoint.Sip)),
                 Times.Once);
         }
+
+        [Test]
+        public async Task Should_remove_endpoint_and_not_send_event()
+        { 
+            var response = await Controller.RemoveEndPointFromHearingAsync(HearingId, Guid.NewGuid());
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<RemoveEndPointFromHearingCommand>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<EndpointRemovedIntegrationEvent>()), Times.Never);
+        }
     }
 }
