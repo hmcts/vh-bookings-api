@@ -30,7 +30,7 @@ namespace Bookings.API.Mappings
                     : string.Empty;
 
                 var @case = caseNumber.IsNullOrEmpty()
-                    ? hearing.GetCases()[0]
+                    ? hearing.GetCases().FirstOrDefault()
                     : hearing.GetCases()
                         .FirstOrDefault(c => c.Number.ToLower().Trim().Contains(caseNumber.ToLower().Trim()));
 
