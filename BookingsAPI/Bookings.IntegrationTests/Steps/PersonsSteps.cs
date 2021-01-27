@@ -168,7 +168,7 @@ namespace Bookings.IntegrationTests.Steps
                 LastName = "Me"
             };
             Context.HttpMethod = HttpMethod.Put;
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
         
@@ -184,7 +184,7 @@ namespace Bookings.IntegrationTests.Steps
             };
             Context.Uri = UpdatePersonDetails(person.Id);
             Context.HttpMethod = HttpMethod.Put;
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
         
@@ -201,7 +201,7 @@ namespace Bookings.IntegrationTests.Steps
             };
             Context.Uri = UpdatePersonDetails(person.Id);
             Context.HttpMethod = HttpMethod.Put;
-            var jsonBody = RequestHelper.SerialiseRequestToSnakeCaseJson(request);
+            var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
         
