@@ -22,14 +22,16 @@
         "*LogTrace",
         "*LogError",
         "*LogInformation",
-        "*TraceException"
+        "*TrackTrace",
+        "*TraceException",
+        "*AddTrace"
       ],
       "mutate": [
         "!Startup.cs",
         "!Program.cs",
         "!ConfigureServicesExtensions.cs",
         "!Swagger/AuthResponsesOperationFilter.cs",
-        "!Extensions/CloudRoleNameInitializer.cs"
+        "!Extensions/*.cs"
       ]
     }
 }

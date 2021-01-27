@@ -41,6 +41,23 @@ namespace Bookings.UnitTests.Controllers.EndPointController
         }
 
         [Test]
+        public async Task Should_add_endpoint_without_matching_advocate_and_no_send_event()
+        {
+            var updatedHearing = GetVideoHearing(true); 
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(updatedHearing);
+
+            var response = await Controller.AddEndPointToHearingAsync(HearingId, AddEndpointRequest);
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<AddEndPointToHearingCommand>()), Times.Once);
+
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<EndpointAddedIntegrationEvent>()), Times.Never);
+        }
+
+        [Test]
         public async Task Should_add_endpoint_wth_defence_advocate_and_send_event()
         {
             var updatedHearing = GetVideoHearing(true);

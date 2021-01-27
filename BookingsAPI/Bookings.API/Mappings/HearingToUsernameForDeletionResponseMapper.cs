@@ -12,8 +12,8 @@ namespace Bookings.API.Mappings
             return new HearingsByUsernameForDeletionResponse
             {
                 HearingId = hearing.Id,
-                CaseName = leadCase.Name,
-                CaseNumber = leadCase.Number,
+                CaseName = leadCase?.Name,
+                CaseNumber = leadCase?.Number,
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 Venue = hearing.HearingVenueName
             };

@@ -40,6 +40,20 @@ namespace Bookings.UnitTests.Mappings
         }
 
         [Test]
+        public void should_map_hearing_to_response_model_without_case()
+        {
+            var hearing = new VideoHearingBuilder().Build(); 
+
+            var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
+
+            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+            result.CaseName.Should().BeNullOrEmpty();
+            result.CaseNumber.Should().BeNullOrEmpty();
+        }
+
+
+        [Test]
         public void should_map_hearing_to_response_model_with_first_case_from_multiple_cases()
         {
             var hearing = BuildHearing(false);

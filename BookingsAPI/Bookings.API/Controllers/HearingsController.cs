@@ -29,6 +29,7 @@ using Bookings.DAL.Helper;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Bookings.API.Helpers;
 
 namespace Bookings.API.Controllers
 {
@@ -115,6 +116,7 @@ namespace Bookings.API.Controllers
             return Ok(response);
         }
 
+        
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
@@ -196,7 +198,7 @@ namespace Bookings.API.Controllers
                 });
 
                 var endpoints = new List<NewEndpoint>();
-                if (request.Endpoints != null && request.Endpoints.Count > 0)
+                if (request.Endpoints != null)
                 {
                     endpoints = request.Endpoints.Select(x =>
                         EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
@@ -478,7 +480,7 @@ namespace Bookings.API.Controllers
 
             try
             {
-                var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString(), true);
+                var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString());
                 await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
 
                 switch (bookingStatus)

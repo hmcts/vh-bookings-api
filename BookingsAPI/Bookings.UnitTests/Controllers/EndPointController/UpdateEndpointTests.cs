@@ -124,7 +124,26 @@ namespace Bookings.UnitTests.Controllers.EndPointController
                     r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
                     r.DefenceAdvocateUsername == request.DefenceAdvocateUsername)), Times.Once);
         }
-        
+
+        [Test]
+        public async Task Should_update_endpoint_and_not_send_event()
+        { 
+            var request = new UpdateEndpointRequest
+            {
+                DisplayName = "Updated Display Name With Defence Advocate Test",
+                DefenceAdvocateUsername = null
+            };
+            var response = await Controller.UpdateEndpointAsync(HearingId, Guid.NewGuid(), request);
+
+            response.Should().NotBeNull();
+            var result = (NoContentResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateEndPointOfHearingCommand>()), Times.Once);
+
+            EventPublisher.Verify(
+                x => x.PublishAsync(It.IsAny<EndpointUpdatedIntegrationEvent>()), Times.Never);
+        }
+
         [Test]
         public async Task Should_update_endpoint_with_defence_advocate_and_send_event()
         {

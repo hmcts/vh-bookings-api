@@ -16,6 +16,7 @@ using Bookings.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;
+using Castle.Core.Internal;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -314,10 +315,29 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult) result;
-            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
-            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
                 $"Please provide a valid {nameof(hearingId)}");
+        }
+
+        [Test]
+        public async Task Should_not_remove_hearing_and_return_badrequest_without_VideoHearing()
+        {         
+            var hearingId = Guid.NewGuid();
+            var hearing = GetHearing("123");
+            hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
+
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync((VideoHearing)null);
+
+            var result = await Controller.RemoveHearing(hearingId);
+
+            result.Should().NotBeNull();
+            var objectResult = (NotFoundObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+            objectResult.Value.Should().Be($"{hearingId} does not exist");
         }
 
         [Test]
@@ -342,10 +362,15 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
+
         protected static VideoHearing GetHearing(string caseNumber)
         {
             var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase(caseNumber, "Case name", true);
+
+            if(!caseNumber.IsNullOrEmpty())
+            {
+                hearing.AddCase(caseNumber, "Case name", true);
+            }
 
             foreach (var participant in hearing.Participants)
             {
