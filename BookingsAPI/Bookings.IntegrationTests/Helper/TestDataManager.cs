@@ -9,6 +9,7 @@ using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
+using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -106,6 +107,11 @@ namespace Bookings.IntegrationTests.Helper
                 }
             }
 
+            var interpretee = videoHearing.Participants[0];
+            var interpreter = videoHearing.Participants[1];
+            var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
+            await CreateParticipantLinks(interpretee, interpreter, participantLink);
+
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
@@ -202,6 +208,23 @@ namespace Bookings.IntegrationTests.Helper
 
             return caseType;
         }
+        
+        private async Task CreateParticipantLinks(Participant interpretee, Participant interpreter, LinkedParticipant participantLink)
+        {
+            await using (var db = new BookingsDbContext(_dbContextOptions))
+            {
+                await db.LinkedParticipant.AddAsync(participantLink);
+
+                var interpreteeLink = new LinkedParticipant(participantLink.LinkedParticipantId, 
+                    participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+
+                await db.LinkedParticipant.AddAsync(interpreteeLink);
+            }
+            
+            interpretee.LinkedParticipant = participantLink;
+            interpreter.LinkedParticipant = new LinkedParticipant(participantLink.LinkedParticipantId,
+                participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+        }
 
         public DateTime? GetJobLastRunDateTime()
         {
@@ -250,7 +273,6 @@ namespace Bookings.IntegrationTests.Helper
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public string[] GetIndividualHearingRoles => new[] { "Litigant in person" };

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Bookings.Api.Contract.Requests;
 using Bookings.Common;

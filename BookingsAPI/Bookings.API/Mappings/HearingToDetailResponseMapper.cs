@@ -22,7 +22,7 @@ namespace Bookings.API.Mappings
             var endpoints = videoHearing.GetEndpoints()
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
-
+            
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,

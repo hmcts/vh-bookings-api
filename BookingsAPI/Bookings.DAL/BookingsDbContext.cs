@@ -19,6 +19,7 @@ namespace Bookings.DAL
         public DbSet<CaseType> CaseTypes { get; set; }
         public DbSet<HearingVenue> Venues { get; set; }
         public DbSet<Participant> Participants { get; set; }
+        public DbSet<LinkedParticipant> LinkedParticipant { get; set; }
         public DbSet<JobHistory> JobHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

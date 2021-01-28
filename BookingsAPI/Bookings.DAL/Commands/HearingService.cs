@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bookings.DAL.Dtos;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.Participants;
 using Bookings.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
@@ -12,21 +14,29 @@ namespace Bookings.DAL.Commands
     public interface IHearingService
     {
         /// <summary>
-        /// Add a participant to a hearing service. This will re-use existing personnel entries before attempting to
-        /// create a new one.
+        /// Add a participant to a hearing service and returns a list of all participants.
+        /// This will re-use existing personnel entries before attempting to create a new one.
         /// </summary>
         /// <param name="hearing">Hearing to amend</param>
         /// <param name="participants">List of participants to add</param>
         /// <returns></returns>
-        Task AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants);
+        Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants);
 
         /// <summary>
         /// Update the case name of a hearing directly
         /// </summary>
         /// <param name="hearingId">Id of hearing</param>
-        /// <param name="caseName">new case name</param>
+        /// <param name="caseName">New case name</param>
         /// <returns></returns>
         Task UpdateHearingCaseName(Guid hearingId, string caseName);
+        
+        /// <summary>
+        /// Create links between participants if any exist
+        /// </summary>
+        /// <param name="participants">List of participants in the hearing</param>
+        /// <param name="requests">List of requests containing information of any participant links</param>
+        /// <returns></returns>
+        Task<List<LinkedParticipant>> CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos);
     }
     public class HearingService : IHearingService
     {
@@ -37,8 +47,9 @@ namespace Bookings.DAL.Commands
             _context = context;
         }
         
-        public async Task AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants)
+        public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants)
         {
+            var participantList = new List<Participant>();
             foreach (var participantToAdd in participants)
             {
                 var existingPerson = await _context.Persons
@@ -50,30 +61,45 @@ namespace Bookings.DAL.Commands
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
-
+            
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
+                        participantList.Add(individual);
                         break;
                     case "Representative":
                     {
-                            var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                        var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person,
+                            participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName,
                             participantToAdd.Representee);
-                            UpdateOrganisationDetails(participantToAdd.Person, representative);
+
+                        UpdateOrganisationDetails(participantToAdd.Person, representative);
+                        participantList.Add(representative);
                         break;
                     }
                     case "Judicial Office Holder":
-                        hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person, 
+                    {
+                        var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
                             participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
+
+                        participantList.Add(joh);
                         break;
+                    }
                     case "Judge":
-                       hearing.AddJudge(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
+                    {
+                        var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person,
+                            participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
-                       break;
+
+                        participantList.Add(judge);
+                        break;
+                    }
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
                 }
             }
+
+            return participantList;
         }
 
         public async Task UpdateHearingCaseName(Guid hearingId, string caseName)
@@ -86,6 +112,39 @@ namespace Bookings.DAL.Commands
                 IsLeadCase = existingCase.IsLeadCase
             });
             await _context.SaveChangesAsync();
+        }
+
+        public Task<List<LinkedParticipant>> CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos)
+        {
+            var linkedParticipants = new List<LinkedParticipant>();
+
+            foreach (var linkedParticipantDto in linkedParticipantDtos)
+            {
+                var interpretee =
+                    participants.Single(x => x.Person.ContactEmail.Equals(linkedParticipantDto.ParticipantContactEmail));
+                var interpreter =
+                    participants.Single(x => x.Person.ContactEmail.Equals(linkedParticipantDto.LinkedParticipantContactEmail));
+
+                if (interpretee != null && interpreter != null)
+                {
+                    var linkedParticipant = new LinkedParticipant(interpretee.Id, interpreter.Id,
+                        LinkedParticipantType.Interpreter);
+
+                    UpdateParticipantsWithLinks(interpretee, interpreter, linkedParticipant);
+                
+                    linkedParticipants.Add(linkedParticipant);
+                }
+            }
+
+            return Task.FromResult(linkedParticipants);
+        }
+
+        private void UpdateParticipantsWithLinks(Participant interpretee, Participant interpreter,
+            LinkedParticipant linkedParticipant)
+        {
+            interpretee.LinkedParticipant = linkedParticipant;
+            interpreter.LinkedParticipant = new LinkedParticipant(linkedParticipant.LinkedParticipantId,
+                linkedParticipant.ParticipantId, LinkedParticipantType.Interpretee);
         }
 
         private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)

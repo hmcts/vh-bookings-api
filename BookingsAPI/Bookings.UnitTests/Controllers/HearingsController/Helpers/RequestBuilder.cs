@@ -12,16 +12,18 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
         {
             var participants = ParticipantsBuilder();
             var cases = CasesBuilder();
+            var linkedParticipants = LinkedParticipantsBuilder(participants);
 
             const string createdBy = "caseAdmin@emailaddress.com";
 
-            BookNewHearingRequest request = Builder<BookNewHearingRequest>.CreateNew()
+            var request = Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Civil Money Claims")
                 .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.ScheduledDateTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1))
                 .With(x => x.ScheduledDuration = 5)
                 .With(x => x.Participants = participants)
+                .With(x => x.LinkedParticipants = linkedParticipants)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.QuestionnaireNotRequired = false)
@@ -29,6 +31,17 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
                 .Build();
 
             return request;
+        }
+
+        private static List<LinkedParticipantRequest> LinkedParticipantsBuilder(List<ParticipantRequest> participants)
+        {
+            var request = new LinkedParticipantRequest
+            {
+                ParticipantContactEmail = participants[0].ContactEmail,
+                LinkedParticipantContactEmail = participants[1].ContactEmail
+            };
+
+            return new List<LinkedParticipantRequest> {request};
         }
 
         private static List<ParticipantRequest> ParticipantsBuilder()
@@ -43,7 +56,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.OrganisationName = $"{Faker.Company.Name()}")
                 .Build().ToList();
-
+            
             participants[0].CaseRoleName = "Claimant";
             participants[0].HearingRoleName = "Litigant in person";
             participants[0].Representee = null;

@@ -21,7 +21,8 @@ namespace Bookings.API.Mappings
                 Username = participant.Person.Username,
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
-                Organisation = participant.Person.Organisation?.Name
+                Organisation = participant.Person.Organisation?.Name,
+                LinkedParticipants = participant.LinkedParticipant
             };
 
             switch (participant.HearingRole.UserRole.Name)

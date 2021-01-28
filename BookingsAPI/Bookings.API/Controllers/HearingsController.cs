@@ -188,7 +188,7 @@ namespace Bookings.API.Controllers
                 {
                     {keyParticipants, string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
                 });
-                
+               
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
                 const string logHasCases = "BookNewHearing got cases";
                 const string keyCases = "Cases";
@@ -212,9 +212,11 @@ namespace Bookings.API.Controllers
                     });
                 }
 
+                var linkedParticipants = request.LinkedParticipants.MapToDto();
+
                 var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                     request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
+                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints, linkedParticipants)
                 {
                     HearingRoomName = request.HearingRoomName,
                     OtherInformation = request.OtherInformation,
@@ -244,7 +246,7 @@ namespace Bookings.API.Controllers
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},
                     {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
                 });
-
+                
                 var hearingMapper = new HearingToDetailResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";

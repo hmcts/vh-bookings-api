@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
+using Bookings.DAL.Dtos;
 using Bookings.DAL.Helper;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 
 namespace Bookings.DAL.Commands
@@ -13,7 +15,7 @@ namespace Bookings.DAL.Commands
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints)
+            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints, List<LinkedParticipantDto> linkedParticipants)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -25,6 +27,7 @@ namespace Bookings.DAL.Commands
             QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
             Endpoints = endpoints;
+            LinkedParticipants = linkedParticipants;
         }
 
         public Guid NewHearingId { get; set; }
@@ -43,6 +46,7 @@ namespace Bookings.DAL.Commands
         public List<NewEndpoint> Endpoints { get; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
+        public List<LinkedParticipantDto> LinkedParticipants { get; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -71,7 +75,18 @@ namespace Bookings.DAL.Commands
 
             await _context.VideoHearings.AddAsync(videoHearing);
             
-            await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+
+            var participantLinks = await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+            foreach (var participantLink in participantLinks)
+            {
+                await _context.LinkedParticipant.AddAsync(participantLink);
+
+                var interpreteeLink = new LinkedParticipant(participantLink.LinkedParticipantId, 
+                    participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+
+                await _context.LinkedParticipant.AddAsync(interpreteeLink);
+            }
 
             videoHearing.AddCases(command.Cases);
 

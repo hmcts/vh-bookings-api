@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bookings.Common.Services;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Dtos;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
 
@@ -61,10 +62,30 @@ namespace Bookings.DAL.Helper
                 };
             }).ToList();
 
+            var participantsWithLinks = hearing.Participants
+                .Where(x => x.LinkedParticipant != null).ToList();
+
+            var linkedParticipants = new List<LinkedParticipantDto>();
+            foreach (var participant in participantsWithLinks)
+            {
+                var participantContactEmail = participant.Person.ContactEmail;
+
+                var linkedParticipantId = participant.LinkedParticipant.LinkedParticipantId;
+                var linkedParticipantContactEmail = participantsWithLinks
+                    .Single(x => x.Person.Id.Equals(linkedParticipantId)).Person.ContactEmail;
+                var dto = new LinkedParticipantDto
+                {
+                    ParticipantContactEmail = participantContactEmail,
+                    LinkedParticipantContactEmail = linkedParticipantContactEmail
+                };
+                
+                linkedParticipants.Add(dto);
+            }
+
             var duration = 480;
             var command = new CreateVideoHearingCommand(hearing.CaseType, hearing.HearingType, newDate,
                 duration, hearing.HearingVenue, participants, cases, true,
-                hearing.AudioRecordingRequired, newEndpoints)
+                hearing.AudioRecordingRequired, newEndpoints, linkedParticipants)
             {
                 HearingRoomName = hearing.HearingRoomName,
                 OtherInformation = hearing.OtherInformation,
