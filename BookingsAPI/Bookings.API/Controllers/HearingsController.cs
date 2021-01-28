@@ -271,10 +271,6 @@ namespace Bookings.API.Controllers
                         {keyHearingTypeName, request.HearingTypeName}
                     });
                 }
-                else
-                {
-                    _logger.TrackError(ex, new Dictionary<string, string> {{keyPayload, "BookNewHearingRequest is null"}});
-                }
 
                 throw;
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
@@ -178,6 +179,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         {
             var newRequest = RequestBuilder.Build();
             newRequest.CaseTypeName = string.Empty;
+
             var result = await Controller.BookNewHearing(newRequest);
 
             result.Should().NotBeNull();
@@ -186,6 +188,16 @@ namespace Bookings.UnitTests.Controllers.HearingsController
             var errors = (Dictionary<string, object>) ((SerializableError)objectResult.Value);
             errors.Should().ContainKey("CaseTypeName");
             ((string[])errors["CaseTypeName"])[0].Should().Be("Please provide a case type name");
+        }
+
+        [Test]
+        public async Task Should_log_exception_when_thrown_with_request_details()
+        {
+            var newRequest = RequestBuilder.Build();
+            QueryHandlerMock.Setup(qh => qh.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
+                .Throws<Exception>();
+
+            Assert.ThrowsAsync<Exception>(async () => await Controller.BookNewHearing(newRequest));
         }
     }
 }
