@@ -2,7 +2,7 @@ using System;
 using Bookings.Domain.Ddd;
 using Bookings.Domain.Enumerations;
 
-namespace Bookings.Domain.Participants
+namespace Bookings.Domain
 {
     public sealed class LinkedParticipant  : Entity<Guid>
     {

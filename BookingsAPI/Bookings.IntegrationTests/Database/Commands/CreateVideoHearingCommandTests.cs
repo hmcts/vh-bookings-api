@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Dtos;
 using Bookings.DAL.Queries;
 using Bookings.Domain;
 using Bookings.Domain.RefData;
@@ -95,10 +96,19 @@ namespace Bookings.IntegrationTests.Database.Commands
                     DefenceAdvocateUsername = null
                 }
             };
+            
+            var linkedParticipants = new List<LinkedParticipantDto>
+            {
+                new LinkedParticipantDto
+                {
+                    ParticipantContactEmail = newParticipant.Person.ContactEmail,
+                    LinkedParticipantContactEmail = newJudgeParticipant.Person.ContactEmail
+                }
+            };
 
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, 
-                    participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints)
+                    participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints, linkedParticipants)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,

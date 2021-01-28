@@ -9,6 +9,7 @@ namespace Bookings.Api.Contract.Requests
         {
             Cases = new List<CaseRequest>();
             Participants = new List<ParticipantRequest>();
+            LinkedParticipants = new List<LinkedParticipantRequest>();
             Endpoints = new List<EndpointRequest>();
         }
 
@@ -73,5 +74,7 @@ namespace Bookings.Api.Contract.Requests
         public bool AudioRecordingRequired { get; set; }
 
         public List<EndpointRequest> Endpoints { get; set; }
+        
+        public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
     }
 }

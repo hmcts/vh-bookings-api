@@ -178,7 +178,7 @@ namespace Bookings.API.Controllers
                 {
                     {"Participants", string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
                 });
-                
+               
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
                 _logger.TrackTrace("BookNewHearing got cases", SeverityLevel.Information, new Dictionary<string, string>
                 {
@@ -198,9 +198,11 @@ namespace Bookings.API.Controllers
                     });
                 }
 
+                var linkedParticipants = request.LinkedParticipants.MapToDto();
+
                 var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                     request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
+                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints, linkedParticipants)
                 {
                     HearingRoomName = request.HearingRoomName,
                     OtherInformation = request.OtherInformation,
@@ -221,7 +223,7 @@ namespace Bookings.API.Controllers
                     {"CaseType", queriedVideoHearing.CaseType?.Name},
                     {"Participants.Count", queriedVideoHearing.Participants.Count.ToString()},
                 });
-
+                
                 var hearingMapper = new HearingToDetailResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 _logger.TrackTrace("BookNewHearing Finished, returning response", SeverityLevel.Information, new Dictionary<string, string> {{"response", JsonConvert.SerializeObject(response)}});

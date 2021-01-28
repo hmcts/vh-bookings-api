@@ -1,4 +1,8 @@
-$HEADER$namespace $NAMESPACE$
+namespace Bookings.Domain.Enumerations
 {
-  public class $CLASS$ {$END$}
+    public enum LinkedParticipantType
+    {
+        Interpreter = 0,
+        Interpretee = 1
+    }
 }

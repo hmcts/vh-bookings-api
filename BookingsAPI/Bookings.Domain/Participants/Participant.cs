@@ -2,6 +2,7 @@
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Bookings.Domain.Participants
@@ -38,6 +39,8 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
+        public virtual LinkedParticipant LinkedParticipant { get; set; }
+
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {

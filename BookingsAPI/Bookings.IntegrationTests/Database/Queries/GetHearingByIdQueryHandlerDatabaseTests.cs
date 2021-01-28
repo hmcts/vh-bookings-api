@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             var judges = participants.Where(x => x.GetType() == typeof(Judge));
             judges.Should().NotBeNullOrEmpty();
-
+            
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);
             persons[0].Title.Should().NotBeEmpty();

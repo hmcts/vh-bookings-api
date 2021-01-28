@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Bookings.Domain;
+
 namespace Bookings.Api.Contract.Requests
 {
     public class UpdateParticipantRequest : IRepresentativeInfoRequest
@@ -26,5 +29,10 @@ namespace Bookings.Api.Contract.Requests
         ///     Representee
         /// </summary>
         public string Representee { get; set; }
+        
+        /// <summary>
+        ///     List of linked participants
+        /// </summary>
+        public List<LinkedParticipant> LinkedParticipants { get; set; }
     }
 }
