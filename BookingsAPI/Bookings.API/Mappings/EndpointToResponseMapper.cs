@@ -25,10 +25,11 @@ namespace Bookings.API.Mappings
         {
             var sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
             var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
+            var sipComplete = sip + sipAddressStem;
             return new NewEndpoint
             {
                 Pin = pin,
-                Sip = $"{sip}{sipAddressStem}",
+                Sip = sipComplete,
                 DisplayName = request.DisplayName,
                 DefenceAdvocateUsername = request.DefenceAdvocateUsername
             };
