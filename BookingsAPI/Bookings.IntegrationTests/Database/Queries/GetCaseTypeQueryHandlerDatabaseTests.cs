@@ -59,6 +59,24 @@ namespace Bookings.IntegrationTests.Database.Queries
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
 
+        [Test]
+        public async Task Should_have_sorted_user_roles_and_hearing_roles_for_financial_remedy()
+        {
+            var caseTypeName = "Financial Remedy";
+            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            caseType.Should().NotBeNull();
+            AssertCaseRolesAndHearingRolesAreSortedAscendingByName(caseType);
+        }
+
+        private void AssertCaseRolesAndHearingRolesAreSortedAscendingByName(CaseType caseType)
+        {
+            caseType.CaseRoles.Should().BeInAscendingOrder();
+            foreach (var caseRole in caseType.CaseRoles)
+            {
+                caseRole.HearingRoles.Should().BeInAscendingOrder();
+            }
+        }
+
         private void AssertUserRolesForCaseRole(CaseType caseType, string caseRoleName)
         {
             var caseRole = caseType.CaseRoles.First(x => x.Name == caseRoleName);
