@@ -36,7 +36,7 @@ namespace Bookings.UnitTests.Mappings
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
-            const bool questionnaireNotRequired = true;
+            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 

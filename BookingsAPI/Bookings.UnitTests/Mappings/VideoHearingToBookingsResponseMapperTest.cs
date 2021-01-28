@@ -20,9 +20,9 @@ namespace Bookings.UnitTests.Mappings
         {
             var hearings = new[]
             {
-                MockHearingAtDate(DateTime.Now.AddDays(1), true, true),
-                MockHearingAtDate(DateTime.Now.AddDays(2), false, true),
-                MockHearingAtDate(DateTime.Now.AddDays(3), false, false)
+                MockHearingAtDate(DateTime.Now.AddDays(1), true),
+                MockHearingAtDate(DateTime.Now.AddDays(2), true),
+                MockHearingAtDate(DateTime.Now.AddDays(3), false)
             };
             var mappedHearings = _mapper.MapHearingResponses(hearings);
             mappedHearings.Count.Should().Be(3);
@@ -30,13 +30,13 @@ namespace Bookings.UnitTests.Mappings
             var firstGroup = mappedHearings[0];
             firstGroup.ScheduledDate.Should().Be(hearings[0].ScheduledDateTime.Date);
             firstGroup.Hearings.Count.Should().Be(1);
-            firstGroup.Hearings.First().QuestionnaireNotRequired.Should().Be(true);
-            firstGroup.Hearings.First().AudioRecordingRequired.Should().Be(true);
+            firstGroup.Hearings.First().QuestionnaireNotRequired.Should().BeFalse();
+            firstGroup.Hearings.First().AudioRecordingRequired.Should().BeTrue();
             firstGroup.Hearings.First().CancelReason.Should().Be(hearings[0].CancelReason);
             firstGroup.Hearings.First().GroupId.Should().Be(hearings[0].Id);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime, bool questionnaireNotRequired, bool audioRecordingRequired)
+        private VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired)
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
@@ -45,6 +45,7 @@ namespace Bookings.UnitTests.Mappings
             {
                 caseToUpdate
             };
+
             mockedHearing.UpdateHearingDetails(
                 mockedHearing.HearingVenue,
                 datetime,
@@ -53,7 +54,7 @@ namespace Bookings.UnitTests.Mappings
                 mockedHearing.OtherInformation,
                 "admin@madeupemail.com",
                 updatedCases,
-                questionnaireNotRequired,
+                false,
                 audioRecordingRequired
             );
             return mockedHearing;
