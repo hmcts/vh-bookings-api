@@ -62,7 +62,13 @@ namespace Bookings.AcceptanceTests.Hooks
 
         private void RegisterTestUsers(TestContext context)
         {
-            context.UserAccounts = Options.Create(_configRoot.GetSection("UserAccounts").Get<List<UserAccount>>()).Value;
+            List<UserAccount> userAccounts = new ConfigurationBuilder()
+                .AddJsonFile("useraccounts.json")
+                .Build()
+                .GetSection("UserAccounts")
+                .Get<List<UserAccount>>();
+
+            context.UserAccounts = userAccounts;
             context.UserAccounts.Should().NotBeNullOrEmpty();
             foreach (var user in context.UserAccounts)
             {
