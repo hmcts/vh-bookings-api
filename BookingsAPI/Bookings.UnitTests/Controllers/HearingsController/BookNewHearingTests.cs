@@ -191,7 +191,7 @@ namespace Bookings.UnitTests.Controllers.HearingsController
         }
 
         [Test]
-        public async Task Should_log_exception_when_thrown_with_request_details()
+        public void Should_log_exception_when_thrown_with_request_details()
         {
             var newRequest = RequestBuilder.Build();
             QueryHandlerMock.Setup(qh => qh.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
