@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
+using AcceptanceTests.Common.Exceptions;
 using Bookings.AcceptanceTests.Contexts;
 using Bookings.Api.Contract.Responses;
 using Bookings.Common.Configuration;
@@ -21,13 +22,8 @@ namespace Bookings.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = ConfigurationManager.BuildConfig("D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F", GetTargetEnvironment());
+            _configRoot = ConfigurationManager.BuildConfig("D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F", "1600292d-7269-4724-8a03-108544edbbc6");
             context.Config = new Config();
-        }
-
-        private static string GetTargetEnvironment()
-        {
-            return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigHooks)]
@@ -50,7 +46,10 @@ namespace Bookings.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            context.Config.ServicesConfiguration = Options.Create(_configRoot.GetSection("Services").Get<ServicesConfiguration>()).Value;
+            context.Config.ServicesConfiguration = GetTargetTestEnvironment() == string.Empty
+                ? Options.Create(_configRoot.GetSection("Services").Get<ServicesConfiguration>()).Value
+                : Options.Create(_configRoot.GetSection($"Testing.{GetTargetTestEnvironment()}.Services").Get<ServicesConfiguration>()).Value;
+            if (context.Config.ServicesConfiguration == null && GetTargetTestEnvironment() != string.Empty) throw new TestSecretsFileMissingException(GetTargetTestEnvironment());
             ConfigurationManager.VerifyConfigValuesSet(context.Config.ServicesConfiguration);
         }
 
@@ -87,6 +86,11 @@ namespace Bookings.AcceptanceTests.Hooks
                 TestContextData = new Dictionary<string, dynamic>()
             };
             context.TestData.CaseName.Should().NotBeNullOrEmpty();
+        }
+
+        private static string GetTargetTestEnvironment()
+        {
+            return NUnit.Framework.TestContext.Parameters["TargetTestEnvironment"] ?? string.Empty;
         }
 
         private static async Task GenerateBearerTokens(TestContext context)
