@@ -1,15 +1,11 @@
 ﻿using Bookings.Api.Contract.Requests;
 using Bookings.API.Helpers;
-using Bookings.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Linq;
 using FluentValidation.Results;
-using System.Collections.Generic;
-using Bookings.Domain;
 using Testing.Common.Builders.Domain;
-using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 
 namespace Bookings.UnitTests.Helpers
@@ -29,7 +25,7 @@ namespace Bookings.UnitTests.Helpers
         [TestCase]
         public void Should_return_dictionary_with_given_key_objects()
         {
-            var testValues = new string[] { "TestVal1", "TestVal2" };
+            var testValues = new[] { "TestVal1", "TestVal2" };
             var result = HearingControlLogHelper.AddTrace("TestKey", testValues);
 
             result.Should().NotBeNull();
@@ -70,8 +66,8 @@ namespace Bookings.UnitTests.Helpers
             result.Should().NotBeNull();
             result.Count.Should().Be(2);
             result["payload"].Should().Be(JsonConvert.SerializeObject(request)); 
-            result.Keys.FirstOrDefault().StartsWith("TestProp-");
-            result.Keys.FirstOrDefault().Length.Should().Be(45);
+            result.Keys.First().Should().StartWith("TestProp-");
+            result.Keys.First().Length.Should().Be(45);
             result.ContainsValue("Test Error Message").Should().BeTrue();
            
         }
@@ -96,7 +92,7 @@ namespace Bookings.UnitTests.Helpers
             var result = HearingControlLogHelper.LogInfo(videoHearing);
 
             result.Should().NotBeNull();
-            result.Count().Should().Be(3);
+            result.Count.Should().Be(3);
             result["HearingId"].Should().Be(videoHearing.Id.ToString());
             result["CaseType"].Should().Be(videoHearing.CaseType?.Name);
             result["Participants.Count"].Should().Be(videoHearing.Participants.Count.ToString());

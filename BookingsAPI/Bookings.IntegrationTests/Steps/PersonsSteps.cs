@@ -155,6 +155,55 @@ namespace Bookings.IntegrationTests.Steps
         {
             SetupAnonymisePersonRequest("does.not.exist@test.net");
         }
+
+        [Given(@"I have a non-existent update person details request")]
+        public void GivenIHaveANonExistentUpdatePersonDetailsRequest()
+        {
+            Context.Uri = UpdatePersonDetails(Guid.NewGuid());
+            Context.HttpMethod = HttpMethod.Put;
+            var request = new UpdatePersonDetailsRequest
+            {
+                Username = "new.me@test.com",
+                FirstName = "New",
+                LastName = "Me"
+            };
+            Context.HttpMethod = HttpMethod.Put;
+            var jsonBody = RequestHelper.Serialise(request);
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        }
+        
+        [Given(@"I have a malformed update person details request")]
+        public void GivenIHaveAMalformedUpdatePersonDetailsRequest()
+        {
+            var hearing = Context.TestData.SeededHearing;
+            var person = hearing.GetPersons().First();
+            var request = new UpdatePersonDetailsRequest
+            {
+                Username = String.Empty,
+                FirstName = "New"
+            };
+            Context.Uri = UpdatePersonDetails(person.Id);
+            Context.HttpMethod = HttpMethod.Put;
+            var jsonBody = RequestHelper.Serialise(request);
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        }
+        
+        [Given(@"I have a valid update person details request")]
+        public void GivenIHaveAValidUpdatePersonDetailsRequest()
+        {
+            var hearing = Context.TestData.SeededHearing;
+            var person = hearing.GetPersons().First();
+            var request = new UpdatePersonDetailsRequest
+            {
+                Username = "new.me@test.com",
+                FirstName = "New",
+                LastName = "Me"
+            };
+            Context.Uri = UpdatePersonDetails(person.Id);
+            Context.HttpMethod = HttpMethod.Put;
+            var jsonBody = RequestHelper.Serialise(request);
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        }
         
         private void SetupGetHearingsByUsernameForDeletionRequest(string username)
         {

@@ -5,7 +5,6 @@ using Bookings.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 using Bookings.DAL.Exceptions;
 using System.Linq;
-using Bookings.Domain;
 
 namespace Bookings.DAL.Commands
 {

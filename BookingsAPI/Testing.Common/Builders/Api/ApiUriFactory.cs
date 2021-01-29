@@ -65,6 +65,7 @@ namespace Testing.Common.Builders.Api
             public static string GetPersonByClosedHearings() => $"{ApiRoot}/userswithclosedhearings";
             public static string GetHearingsByUsernameForDeletion(string username) => $"{ApiRoot}/username/hearings?username={username}";
             public static string AnonymisePerson(string username) => $"{ApiRoot}/username/{username}/anonymise";
+            public static string UpdatePersonDetails(Guid personId) => $"{ApiRoot}/{personId}";
         }
 
         public static class SuitabilityAnswerEndpoints
