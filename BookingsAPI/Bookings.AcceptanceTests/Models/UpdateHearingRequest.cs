@@ -1,6 +1,7 @@
 ﻿using Bookings.Api.Contract.Requests;
 using System;
 using System.Collections.Generic;
+using Microsoft.Azure.ServiceBus;
 
 namespace Bookings.AcceptanceTests.Models
 {
@@ -22,7 +23,7 @@ namespace Bookings.AcceptanceTests.Models
                 OtherInformation = "OtherInformation12345",
                 UpdatedBy = "admin@madeupemail.com",
                 Cases = caseList,
-                QuestionnaireNotRequired = true,
+                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true
             };
         }

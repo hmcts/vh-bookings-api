@@ -10,6 +10,7 @@ namespace Bookings.API.Extensions
     public class LogResponseBodyMiddleware
     {
         private readonly RequestDelegate _next;
+        private const string ItemOfInterest = "responseBody";
 
 
         public LogResponseBodyMiddleware(RequestDelegate next)
@@ -37,7 +38,7 @@ namespace Bookings.API.Extensions
                     await memStream.CopyToAsync(originalBody);
 
                     // Stow away the response body
-                    context.Items["responseBody"] = responseBody;
+                    context.Items[ItemOfInterest] = responseBody;
                 }
             }
             finally
