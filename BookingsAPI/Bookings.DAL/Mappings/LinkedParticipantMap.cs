@@ -19,9 +19,8 @@ namespace Bookings.DAL.Mappings
             builder.HasOne<Participant>("Participant")
                 .WithMany("LinkedParticipant")
                 .HasForeignKey(x => x.ParticipantId);
-            
             builder.HasOne<Participant>("Participant")
-                .WithMany("LinkedParticipant")
+                .WithMany()
                 .HasForeignKey(x => x.LinkedParticipantId);
         }
     }

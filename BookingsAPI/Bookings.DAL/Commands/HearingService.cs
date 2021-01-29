@@ -128,7 +128,7 @@ namespace Bookings.DAL.Commands
                 if (interpretee != null && interpreter != null)
                 {
                     var linkedParticipant = new LinkedParticipant(interpretee.Id, interpreter.Id,
-                        LinkedParticipantType.Interpreter);
+                        (int)LinkedParticipantType.Interpreter);
 
                     UpdateParticipantsWithLinks(interpretee, interpreter, linkedParticipant);
                 

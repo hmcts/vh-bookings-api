@@ -21,9 +21,7 @@ namespace Bookings.DAL.Mappings
             builder.HasOne(x => x.CaseRole).WithMany().HasForeignKey(x => x.CaseRoleId);
             builder.HasOne(x => x.HearingRole).WithMany().HasForeignKey(x => x.HearingRoleId);
 
-            builder.HasOne<Hearing>("Hearing").WithMany("Participants").HasForeignKey(x => x.HearingId);
-            builder.HasMany<LinkedParticipant>("LinkedParticipant").WithOne("Participant").HasForeignKey(x => x.ParticipantId);
-            builder.HasMany<LinkedParticipant>("LinkedParticipant").WithOne("Participant").HasForeignKey(x => x.LinkedParticipantId);
+            builder.HasOne<Hearing>("Hearing").WithMany("Participants").HasForeignKey(x => x.HearingId); 
         }
     }
 
