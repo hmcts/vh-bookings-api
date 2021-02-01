@@ -121,30 +121,30 @@ namespace Bookings.DAL.Commands
             foreach (var linkedParticipantDto in linkedParticipantDtos)
             {
                 var interpretee =
-                    participants.Single(x => x.Person.ContactEmail.Equals(linkedParticipantDto.ParticipantContactEmail));
+                    participants.Single(x => 
+                        x.Person.ContactEmail.Equals(linkedParticipantDto.ParticipantContactEmail,
+                            StringComparison.CurrentCultureIgnoreCase));
                 var interpreter =
-                    participants.Single(x => x.Person.ContactEmail.Equals(linkedParticipantDto.LinkedParticipantContactEmail));
-
-                if (interpretee != null && interpreter != null)
-                {
-                    var linkedParticipant = new LinkedParticipant(interpretee.Id, interpreter.Id,
-                        (int)LinkedParticipantType.Interpreter);
-
-                    UpdateParticipantsWithLinks(interpretee, interpreter, linkedParticipant);
+                    participants.Single(x =>
+                        x.Person.ContactEmail.Equals(linkedParticipantDto.LinkedParticipantContactEmail,
+                            StringComparison.CurrentCultureIgnoreCase));
                 
-                    linkedParticipants.Add(linkedParticipant);
-                }
+                var linkedParticipant = new LinkedParticipant(interpretee.Id, interpreter.Id,
+                    (int) LinkedParticipantType.Interpreter);
+
+                linkedParticipants.Add(linkedParticipant);
+
+                UpdateParticipantsWithLinks(interpretee, interpreter);
+
             }
 
             return Task.FromResult(linkedParticipants);
         }
 
-        private void UpdateParticipantsWithLinks(Participant interpretee, Participant interpreter,
-            LinkedParticipant linkedParticipant)
+        private void UpdateParticipantsWithLinks(Participant interpretee, Participant interpreter)
         {
-            interpretee.LinkedParticipant = linkedParticipant;
-            interpreter.LinkedParticipant = new LinkedParticipant(linkedParticipant.LinkedParticipantId,
-                linkedParticipant.ParticipantId, LinkedParticipantType.Interpretee);
+            interpretee.AddLink(interpreter.Id, LinkedParticipantType.Interpreter);
+            interpreter.AddLink(interpretee.Id, LinkedParticipantType.Interpretee);
         }
 
         private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)

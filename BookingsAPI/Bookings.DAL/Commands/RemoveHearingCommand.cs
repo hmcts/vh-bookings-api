@@ -30,12 +30,11 @@ namespace Bookings.DAL.Commands
         public async Task Handle(RemoveHearingCommand command)
         {
             var hearingsIncCloned = await _context.VideoHearings
-                .Include("HearingCases.Case")
-                .Include("Participants.Person")
-                .Include("Participants.Person.Organisation")
-                .Include("Participants.Questionnaire")
-                .Include("Participants.Questionnaire.SuitabilityAnswers")
+                .Include(x => x.HearingCases).ThenInclude(x => x.Case)
+                .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
+                .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Where(x =>  x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
             
             if (hearingsIncCloned.IsNullOrEmpty())

@@ -82,7 +82,7 @@ namespace Bookings.DAL.Commands
             {
                 await _context.LinkedParticipant.AddAsync(participantLink);
 
-                var interpreteeLink = new LinkedParticipant(participantLink.LinkedParticipantId, 
+                var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
                     participantLink.ParticipantId, LinkedParticipantType.Interpretee);
 
                 await _context.LinkedParticipant.AddAsync(interpreteeLink);

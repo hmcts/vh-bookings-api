@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
@@ -33,6 +34,7 @@ namespace Bookings.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(h => h.Participants).ThenInclude(x => x.Person)
+                .Include(h => h.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
@@ -40,7 +42,7 @@ namespace Bookings.DAL.Commands
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-            
+
             hearing.RemoveParticipant(command.Participant);
             await _context.SaveChangesAsync();
         }

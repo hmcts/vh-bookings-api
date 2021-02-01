@@ -62,30 +62,18 @@ namespace Bookings.DAL.Helper
                 };
             }).ToList();
 
-            var participantsWithLinks = hearing.Participants
-                .Where(x => x.LinkedParticipant != null).ToList();
-
-            var linkedParticipants = new List<LinkedParticipantDto>();
-            foreach (var participant in participantsWithLinks)
-            {
-                var participantContactEmail = participant.Person.ContactEmail;
-
-                var linkedParticipantId = participant.LinkedParticipant.LinkedParticipantId;
-                var linkedParticipantContactEmail = participantsWithLinks
-                    .Single(x => x.Person.Id.Equals(linkedParticipantId)).Person.ContactEmail;
-                var dto = new LinkedParticipantDto
-                {
-                    ParticipantContactEmail = participantContactEmail,
-                    LinkedParticipantContactEmail = linkedParticipantContactEmail
-                };
-                
-                linkedParticipants.Add(dto);
-            }
-
+            var linkedParticipantDtos = hearing.Participants
+                .Where(x => x.LinkedParticipants.Any())
+                .SelectMany(p => p.LinkedParticipants
+                    .Select(lp => 
+                        new LinkedParticipantDto { LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail, 
+                            ParticipantContactEmail = p.Person.ContactEmail}))
+                .ToList();
+            
             var duration = 480;
             var command = new CreateVideoHearingCommand(hearing.CaseType, hearing.HearingType, newDate,
                 duration, hearing.HearingVenue, participants, cases, true,
-                hearing.AudioRecordingRequired, newEndpoints, linkedParticipants)
+                hearing.AudioRecordingRequired, newEndpoints, linkedParticipantDtos)
             {
                 HearingRoomName = hearing.HearingRoomName,
                 OtherInformation = hearing.OtherInformation,

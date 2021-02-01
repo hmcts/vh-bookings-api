@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bookings.DAL.Commands.Core;
+using Bookings.DAL.Dtos;
 using Bookings.DAL.Exceptions;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +23,16 @@ namespace Bookings.DAL.Commands
     
     public class AddParticipantsToVideoHearingCommand : ICommand
     {
-        public AddParticipantsToVideoHearingCommand(Guid hearingId, List<NewParticipant> participants)
+        public AddParticipantsToVideoHearingCommand(Guid hearingId, List<NewParticipant> participants, List<LinkedParticipantDto> linkedParticipants)
         {
             HearingId = hearingId;
             Participants = participants;
+            LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
         }
 
         public List<NewParticipant> Participants { get; set; }
         public Guid HearingId { get; set; }
+        public List<LinkedParticipantDto> LinkedParticipants { get; set; }
     }
     
     public class AddParticipantsToVideoHearingCommandHandler : ICommandHandler<AddParticipantsToVideoHearingCommand>
@@ -48,6 +52,7 @@ namespace Bookings.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x=> x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
@@ -56,7 +61,19 @@ namespace Bookings.DAL.Commands
             }
 
             _context.Update(hearing);
-            await _hearingService.AddParticipantToService(hearing, command.Participants);
+            
+            var participants = await _hearingService.AddParticipantToService(hearing, command.Participants);
+
+            var participantLinks = await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+            
+            foreach (var participantLink in participantLinks)
+            {
+                var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
+                    participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+
+                await _context.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
+            }
+            
             await _context.SaveChangesAsync();
         }
     }

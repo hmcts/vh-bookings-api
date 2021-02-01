@@ -13,36 +13,35 @@ namespace Bookings.DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     ParticipantId = table.Column<Guid>(nullable: false),
-                    LinkedParticipantId = table.Column<Guid>(nullable: false),
+                    LinkedId = table.Column<Guid>(nullable: false),
                     Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LinkedParticipant", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LinkedParticipant_Participant_LinkedParticipantId",
-                        column: x => x.LinkedParticipantId,
+                        name: "FK_LinkedParticipant_Participant_LinkedId",
+                        column: x => x.LinkedId,
                         principalTable: "Participant",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LinkedParticipant_Participant_ParticipantId",
                         column: x => x.ParticipantId,
                         principalTable: "Participant",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LinkedParticipant_LinkedParticipantId",
+                name: "IX_LinkedParticipant_LinkedId",
                 table: "LinkedParticipant",
-                column: "LinkedParticipantId");
+                column: "LinkedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LinkedParticipant_ParticipantId",
                 table: "LinkedParticipant",
-                column: "ParticipantId",
-                unique: true);
+                column: "ParticipantId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

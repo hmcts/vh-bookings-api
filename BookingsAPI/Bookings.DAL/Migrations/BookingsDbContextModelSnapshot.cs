@@ -211,7 +211,7 @@ namespace Bookings.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("LinkedParticipantId")
+                    b.Property<Guid>("LinkedId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ParticipantId")
@@ -222,10 +222,9 @@ namespace Bookings.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LinkedParticipantId");
+                    b.HasIndex("LinkedId");
 
-                    b.HasIndex("ParticipantId")
-                        .IsUnique();
+                    b.HasIndex("ParticipantId");
 
                     b.ToTable("LinkedParticipant");
                 });
@@ -589,16 +588,16 @@ namespace Bookings.DAL.Migrations
 
             modelBuilder.Entity("Bookings.Domain.LinkedParticipant", b =>
                 {
-                    b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
+                    b.HasOne("Bookings.Domain.Participants.Participant", "Linked")
                         .WithMany()
-                        .HasForeignKey("LinkedParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("LinkedId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.Participants.Participant", null)
-                        .WithOne("LinkedParticipant")
-                        .HasForeignKey("Bookings.Domain.LinkedParticipant", "ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
+                        .WithMany("LinkedParticipants")
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
