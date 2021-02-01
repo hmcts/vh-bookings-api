@@ -81,7 +81,7 @@ namespace Bookings.DAL.Commands
             foreach (var participantLink in participantLinks)
             {
                 var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
-                    participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+                    participantLink.ParticipantId, participantLink.Type);
 
                 await _context.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
             }

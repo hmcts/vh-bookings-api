@@ -180,7 +180,18 @@ namespace Bookings.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.JudgeAbsenceErrorMessage)
                 .Should().BeTrue();
         }
+        
+        [Test]
+        public async Task Should_Pass_When_Linked_Participant_Is_Empty()
+        {
+            var request = BuildRequest();
+            request.LinkedParticipants = new List<LinkedParticipantRequest>();
 
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeTrue();
+        }
+        
         private BookNewHearingRequest BuildRequest()
         {
             return RequestBuilder.Build();

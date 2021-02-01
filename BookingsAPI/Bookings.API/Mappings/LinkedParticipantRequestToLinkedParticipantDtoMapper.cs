@@ -6,7 +6,6 @@ namespace Bookings.API.Mappings
 {
     /// <summary>
     /// This class is used to map a linked participant request object to a linked participant dto
-    /// used by the CloneHearingToCommandMapper.
     /// </summary>
     public static class LinkedParticipantRequestToLinkedParticipantDtoMapper
     {
@@ -21,7 +20,8 @@ namespace Bookings.API.Mappings
                     var dto = new LinkedParticipantDto
                     {
                         ParticipantContactEmail = request.ParticipantContactEmail,
-                        LinkedParticipantContactEmail = request.LinkedParticipantContactEmail
+                        LinkedParticipantContactEmail = request.LinkedParticipantContactEmail,
+                        Type = request.Type
                     };
                 
                     listOfDtos.Add(dto);

@@ -64,7 +64,8 @@ namespace Bookings.AcceptanceTests.Steps
             var linkedParticipant = new LinkedParticipantRequest
             {
                 LinkedParticipantContactEmail = interpreter.ContactEmail, 
-                ParticipantContactEmail = interpretee.ContactEmail
+                ParticipantContactEmail = interpretee.ContactEmail,
+                Type = LinkedParticipantType.Interpreter
             };
             
             var request = new UpdateParticipantRequestBuilder().Build();

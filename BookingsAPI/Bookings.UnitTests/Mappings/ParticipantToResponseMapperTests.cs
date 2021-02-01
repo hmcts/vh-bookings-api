@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Bookings.Api.Contract.Responses;
 using Bookings.API.Mappings;
 using Bookings.Domain;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using FluentAssertions;
@@ -101,6 +105,36 @@ namespace Bookings.UnitTests.Mappings
             AssertParticipantCommonDetails(response, joh, caseRole, hearingRole);
             AssertRepresentativeResponse(response, null);
             response.Organisation.Should().BeNullOrWhiteSpace();
+        }
+        
+        [Test]
+        public void Should_Map_Individual_With_Linked_Participants()
+        {
+            var caseRole = new CaseRole(1, "Claimant");
+            var hearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(5, "Individual")};
+
+            var person = new PersonBuilder().Build();
+            var linkedId = Guid.NewGuid();
+            var link = new List<LinkedParticipant>
+            {
+                new LinkedParticipant(Guid.NewGuid(), linkedId, LinkedParticipantType.Interpreter)
+            };
+            
+            var individual = new Individual(person, hearingRole, caseRole)
+            {
+                DisplayName = "Individual guy",
+                CreatedBy = "unit@test.com",
+                LinkedParticipants = link
+            };
+            individual.SetProtected(nameof(individual.CaseRole), caseRole);
+            individual.SetProtected(nameof(individual.HearingRole), hearingRole);
+            
+            var response = _mapper.MapParticipantToResponse(individual);
+            
+            AssertParticipantCommonDetails(response, individual, caseRole, hearingRole);
+            AssertRepresentativeResponse(response, null);
+            response.LinkedParticipants.Should().NotContainNulls();
+            response.LinkedParticipants.Select(x => x.LinkedId).Should().BeEquivalentTo(linkedId);
         }
 
         private static void AssertParticipantCommonDetails(ParticipantResponse response, Participant participant,

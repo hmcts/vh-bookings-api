@@ -130,21 +130,20 @@ namespace Bookings.DAL.Commands
                             StringComparison.CurrentCultureIgnoreCase));
                 
                 var linkedParticipant = new LinkedParticipant(interpretee.Id, interpreter.Id,
-                    (int) LinkedParticipantType.Interpreter);
+                    linkedParticipantDto.Type);
 
                 linkedParticipants.Add(linkedParticipant);
 
-                UpdateParticipantsWithLinks(interpretee, interpreter);
-
+                UpdateParticipantsWithLinks(interpretee, interpreter, linkedParticipantDto.Type);
             }
 
             return Task.FromResult(linkedParticipants);
         }
 
-        private void UpdateParticipantsWithLinks(Participant interpretee, Participant interpreter)
+        private void UpdateParticipantsWithLinks(Participant interpretee, Participant interpreter, LinkedParticipantType linkType)
         {
-            interpretee.AddLink(interpreter.Id, LinkedParticipantType.Interpreter);
-            interpreter.AddLink(interpretee.Id, LinkedParticipantType.Interpretee);
+            interpretee.AddLink(interpreter.Id, linkType);
+            interpreter.AddLink(interpretee.Id, linkType);
         }
 
         private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)

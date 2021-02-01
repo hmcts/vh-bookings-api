@@ -11,6 +11,7 @@ namespace Bookings.DAL.Mappings
             builder.ToTable(nameof(LinkedParticipant));
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).IsRequired().ValueGeneratedNever();
             builder.Property(x => x.ParticipantId).IsRequired();
             builder.Property(x => x.LinkedId).IsRequired();
             builder.Property(x => x.Type);

@@ -319,8 +319,8 @@ namespace Bookings.API.Controllers
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
                 var test = new RepresentativeValidation();
-                test.Validate(request);
-                var repValidationResult = new RepresentativeValidation().Validate(request);
+                await test.ValidateAsync(request);
+                var repValidationResult = await new RepresentativeValidation().ValidateAsync(request);
                 if (!repValidationResult.IsValid)
                 {
                     ModelState.AddFluentValidationErrors(result.Errors);
@@ -331,7 +331,6 @@ namespace Bookings.API.Controllers
             var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
             var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
 
-            var mapper = new ParticipantRequestToNewParticipantMapper();
             var linkedParticipants = request.LinkedParticipants.MapToDto();
             
             var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,

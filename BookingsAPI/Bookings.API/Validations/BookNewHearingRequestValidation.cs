@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Bookings.Api.Contract.Requests;
+using Castle.Core.Internal;
 using FluentValidation;
 
 namespace Bookings.API.Validations
@@ -39,7 +40,7 @@ namespace Bookings.API.Validations
 
             RuleFor(x => x.Cases).NotEmpty()
                 .NotEmpty().WithMessage(CasesErrorMessage);
-
+            
             RuleFor(x => x.Cases)
                 .Must(cases => !cases.GroupBy(i => new {i.Number, i.Name}).Any(i => i.Count() > 1))
                 .WithMessage(CaseDuplicationErrorMessage);
@@ -49,9 +50,9 @@ namespace Bookings.API.Validations
 
             RuleForEach(x => x.Cases)
                 .SetValidator(new CaseRequestValidation());
-            
+
             RuleForEach(x => x.LinkedParticipants)
-                .SetValidator(new LinkedParticipantRequestValidation());
+                .SetValidator(new LinkedParticipantRequestValidation()).When(x => !x.LinkedParticipants.IsNullOrEmpty());
 
             RuleFor(x => x.Participants)
                 .Must(participant => participant.Any(x => x.HearingRoleName == "Judge"))

@@ -80,12 +80,10 @@ namespace Bookings.DAL.Commands
             var participantLinks = await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
             foreach (var participantLink in participantLinks)
             {
-                await _context.LinkedParticipant.AddAsync(participantLink);
-
                 var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
-                    participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+                    participantLink.ParticipantId, participantLink.Type);
 
-                await _context.LinkedParticipant.AddAsync(interpreteeLink);
+                await _context.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
             }
 
             videoHearing.AddCases(command.Cases);

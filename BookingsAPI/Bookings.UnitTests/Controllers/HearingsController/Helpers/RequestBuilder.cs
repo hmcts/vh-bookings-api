@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bookings.Api.Contract.Requests;
+using Bookings.Domain.Enumerations;
 using FizzWare.NBuilder;
 
 namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
@@ -38,7 +39,8 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
             var request = new LinkedParticipantRequest
             {
                 ParticipantContactEmail = participants[0].ContactEmail,
-                LinkedParticipantContactEmail = participants[1].ContactEmail
+                LinkedParticipantContactEmail = participants[1].ContactEmail,
+                Type = LinkedParticipantType.Interpreter
             };
 
             return new List<LinkedParticipantRequest> {request};

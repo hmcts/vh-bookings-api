@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bookings.Api.Contract.Requests;
 using Bookings.API.Validations;
+using Bookings.Domain.Enumerations;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -54,11 +55,25 @@ namespace Bookings.UnitTests.Validation
                 .Should().BeTrue();
         }
         
+        [Test]
+        public async Task Should_Return_Invalid_LinkedParticipant_Type_Error()
+        {
+            _request.Type = (LinkedParticipantType)456789;
+
+            var result = await _validator.ValidateAsync(_request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidation.InvalidType)
+                .Should().BeTrue();
+        }
+        
         private LinkedParticipantRequest BuildRequest()
         {
             return Builder<LinkedParticipantRequest>.CreateNew()
                 .With(x => x.ParticipantContactEmail = "interpretee@test.com")
                 .With(x => x.LinkedParticipantContactEmail = "interpreter@test.com")
+                .With(x => x.Type = LinkedParticipantType.Interpreter)
                 .Build();
         }
     }

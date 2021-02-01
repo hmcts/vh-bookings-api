@@ -230,17 +230,15 @@ namespace Bookings.IntegrationTests.Helper
         {
             await using (var db = new BookingsDbContext(_dbContextOptions))
             {
-                await db.LinkedParticipant.AddAsync(participantLink);
-
                 var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
-                    participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+                    participantLink.ParticipantId, participantLink.Type);
 
-                await db.LinkedParticipant.AddAsync(interpreteeLink);
+                await db.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
             }
             
             interpretee.LinkedParticipants.Add(participantLink);
             interpreter.LinkedParticipants.Add(new LinkedParticipant(participantLink.LinkedId,
-                participantLink.ParticipantId, LinkedParticipantType.Interpretee));
+                participantLink.ParticipantId, participantLink.Type));
         }
 
         public DateTime? GetJobLastRunDateTime()
