@@ -88,6 +88,23 @@ namespace Bookings.Domain.Participants
             LinkedParticipants.Add(new LinkedParticipant(Id, linkedId, linkType));
         }
 
+        public void RemoveLink(LinkedParticipant linkedParticipant)
+        {
+            var link = LinkedParticipants.SingleOrDefault(
+                x => x.LinkedId == linkedParticipant.LinkedId && x.Type == linkedParticipant.Type);
+            if (link == null)
+            {
+                throw new DomainRuleException("LinkedParticipant", "Link does not exist");
+            }
+
+            LinkedParticipants.Remove(linkedParticipant);
+        }
+
+        public virtual IList<LinkedParticipant> GetLinkedParticipants()
+        {
+            return LinkedParticipants;
+        }
+
         protected void ValidateArguments(string displayName)
         {
             if (string.IsNullOrEmpty(displayName))

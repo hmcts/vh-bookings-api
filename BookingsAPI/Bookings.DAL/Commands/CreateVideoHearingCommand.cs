@@ -6,7 +6,6 @@ using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Dtos;
 using Bookings.DAL.Helper;
 using Bookings.Domain;
-using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 
 namespace Bookings.DAL.Commands
@@ -102,7 +101,6 @@ namespace Bookings.DAL.Commands
 
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
-            
         }
     }
 }

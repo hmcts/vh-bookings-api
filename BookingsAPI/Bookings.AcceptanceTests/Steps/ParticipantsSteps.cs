@@ -6,7 +6,6 @@ using Bookings.AcceptanceTests.Contexts;
 using Bookings.AcceptanceTests.Models;
 using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
-using Bookings.Domain;
 using Bookings.Domain.Enumerations;
 using FluentAssertions;
 using TechTalk.SpecFlow;

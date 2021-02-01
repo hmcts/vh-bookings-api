@@ -5,7 +5,6 @@ using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Dtos;
 using Bookings.DAL.Exceptions;
 using Bookings.Domain;
-using Bookings.Domain.Enumerations;
 using Bookings.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,7 +69,7 @@ namespace Bookings.DAL.Commands
             {
                 var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
                     participantLink.ParticipantId, participantLink.Type);
-
+                
                 await _context.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
             }
             

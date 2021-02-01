@@ -34,7 +34,7 @@ namespace Bookings.DAL.Commands
         /// Create links between participants if any exist
         /// </summary>
         /// <param name="participants">List of participants in the hearing</param>
-        /// <param name="requests">List of requests containing information of any participant links</param>
+        /// <param name="linkedParticipantDtos">List linked participants dtos containing the linking data</param>
         /// <returns></returns>
         Task<List<LinkedParticipant>> CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos);
     }

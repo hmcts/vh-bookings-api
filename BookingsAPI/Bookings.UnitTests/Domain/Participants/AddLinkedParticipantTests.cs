@@ -1,7 +1,7 @@
-using System;
 using System.Linq;
 using Bookings.Domain.Enumerations;
 using Bookings.Domain.Participants;
+using Bookings.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -32,7 +32,10 @@ namespace Bookings.UnitTests.Domain.Participants
         [Test]
         public void Should_Throw_Exception_When_Link_Already_Exists()
         {
-            //TODO: Complete
+            _individual.AddLink(_linkedIndividual.Id, LinkedParticipantType.Interpreter);
+
+            _individual.Invoking(x => x.AddLink(_linkedIndividual.Id, LinkedParticipantType.Interpreter)).Should()
+                .Throw<DomainRuleException>();
         }
     }
 }

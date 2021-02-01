@@ -36,10 +36,11 @@ namespace Bookings.UnitTests.Controllers.HearingsController.Helpers
 
         private static List<LinkedParticipantRequest> LinkedParticipantsBuilder(List<ParticipantRequest> participants)
         {
+            var claimants = participants.Where(x => x.CaseRoleName == "Claimant").ToList();
             var request = new LinkedParticipantRequest
             {
-                ParticipantContactEmail = participants[0].ContactEmail,
-                LinkedParticipantContactEmail = participants[1].ContactEmail,
+                ParticipantContactEmail = claimants[0].ContactEmail,
+                LinkedParticipantContactEmail = claimants[1].ContactEmail,
                 Type = LinkedParticipantType.Interpreter
             };
 

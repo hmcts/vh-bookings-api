@@ -123,6 +123,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             
             updatedRepresentative.Should().NotBeNull();
             updatedRepresentative.LinkedParticipants.Should().NotBeNull();
+            updatedRepresentative.GetLinkedParticipants().Should().NotBeEmpty();
         }
 
         [TearDown]

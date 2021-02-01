@@ -167,9 +167,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-
-            var beforeCount = seededHearing.GetParticipants().Count;
-
+            
             const string caseTypeName = "Civil Money Claims";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
