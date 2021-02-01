@@ -160,6 +160,15 @@ namespace Bookings.IntegrationTests.Helper
             return hearing;
         }
 
+        public async Task SeedVideoHearing(VideoHearing videoHearing)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            await db.VideoHearings.AddAsync(videoHearing);
+            await db.SaveChangesAsync();
+            
+            _seededHearings.Add(videoHearing.Id);
+        }
+        
         private async Task AddQuestionnaire()
         {
             await using var db = new BookingsDbContext(_dbContextOptions);

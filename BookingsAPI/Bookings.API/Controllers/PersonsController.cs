@@ -12,9 +12,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Bookings.API.Extensions;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Commands.Core;
 using Bookings.DAL.Exceptions;
+using Bookings.Domain.Enumerations;
+using Bookings.Infrastructure.Services.IntegrationEvents;
+using Bookings.Infrastructure.Services.IntegrationEvents.Events;
+using Microsoft.Extensions.Logging;
 
 namespace Bookings.API.Controllers
 {
@@ -25,11 +30,16 @@ namespace Bookings.API.Controllers
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
+        private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger<PersonsController> _logger;
 
-        public PersonsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
+        public PersonsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
+            IEventPublisher eventPublisher, ILogger<PersonsController> logger)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
+            _logger = logger;
+            _eventPublisher = eventPublisher;
         }
 
         /// <summary>
@@ -202,6 +212,54 @@ namespace Bookings.API.Controllers
             {
                 return NotFound();
             }
+        }
+        
+        /// <summary>
+        /// Update the personal details
+        /// </summary>
+        /// <param name="personId">The id of the person to update</param>
+        /// <param name="payload">Updated details of the person</param>
+        /// <returns></returns>
+        [HttpPut("{personId}")]
+        [SwaggerOperation(OperationId = "UpdatePersonDetails")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult<IList<PersonResponse>>> UpdatePersonDetails([FromRoute] Guid personId, [FromBody] UpdatePersonDetailsRequest payload)
+        {
+            var validation = await new UpdatePersonDetailsRequestValidation().ValidateAsync(payload);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var command = new UpdatePersonCommand(personId, payload.FirstName, payload.LastName, payload.Username);
+                await _commandHandler.Handle(command);
+            }
+            catch (PersonNotFoundException e)
+            {
+                _logger.LogError(e, "Failed to update a person because the person {Person} does not exist", personId);
+                return NotFound($"{personId} does not exist");
+            }
+
+            // get all hearings for user
+            var query = new GetHearingsByUsernameQuery(payload.Username);
+            var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
+            
+            
+            // raise an update event for each hearing to ensure consistency between video and bookings api
+            var createdHearings = hearings.Where(x => x.Status == BookingStatus.Created).ToList();
+            foreach(var hearing in createdHearings)
+            {
+                var participant = hearing.Participants.First(x => x.PersonId == personId);
+                // map to updated participant event
+                await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
+            }
+     
+            return Accepted();
         }
         
         private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)

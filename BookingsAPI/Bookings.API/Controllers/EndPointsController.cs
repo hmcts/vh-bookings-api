@@ -20,7 +20,6 @@ using Bookings.DAL.Queries.Core;
 using Bookings.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Bookings.API.Controllers
 {

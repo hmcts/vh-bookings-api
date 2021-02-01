@@ -101,3 +101,21 @@ Feature: Persons
     And I have a non-existent anonymise person request
     When I send the request to the endpoint
     Then the response should have the status NotFound and success status False
+
+  Scenario: Update details for a non-existent person
+    Given I have a hearing
+    And I have a non-existent update person details request
+    When I send the request to the endpoint
+    Then the response should have the status NotFound and success status False
+
+  Scenario: Update details for a person with missing details
+    Given I have a hearing
+    And I have a malformed update person details request
+    When I send the request to the endpoint
+    Then the response should have the status BadRequest and success status False
+
+  Scenario: Update details for a person with valid details
+    Given I have a hearing
+    And I have a valid update person details request
+    When I send the request to the endpoint
+    Then the response should have the status Accepted and success status True

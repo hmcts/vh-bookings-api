@@ -3,6 +3,24 @@ using Bookings.Domain;
 
 namespace Bookings.Api.Contract.Requests
 {
+    public class UpdatePersonDetailsRequest
+    {
+        /// <summary>
+        ///     Participant first name.
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        ///     Participant last name.
+        /// </summary>
+        public string LastName { get; set; }
+        
+        /// <summary>
+        ///     Participant Username
+        /// </summary>
+        public string Username { get; set; }
+    }
+    
     public class UpdateParticipantRequest : IRepresentativeInfoRequest
     {
         /// <summary>
