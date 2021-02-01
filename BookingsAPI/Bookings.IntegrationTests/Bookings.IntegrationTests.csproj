@@ -44,19 +44,4 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
-
-    <ItemGroup>
-      <SpecFlowFeatureFiles Update="Features\SearchForPersons.feature">
-        <CodeBehindFile>Features/Persons.feature.cs</CodeBehindFile>
-      </SpecFlowFeatureFiles>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Features\SearchForPersons.feature.cs">
-        <DependentUpon>SearchForPersons.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-    </ItemGroup>
 </Project>
