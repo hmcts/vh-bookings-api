@@ -1,4 +1,11 @@
-$HEADER$namespace $NAMESPACE$
+using System;
+using Bookings.Domain.Enumerations;
+
+namespace Bookings.Api.Contract.Responses
 {
-  public class $CLASS$ {$END$}
+    public class LinkedParticipantResponse
+    {
+        public Guid LinkedId { get; set; }
+        public LinkedParticipantType Type { get; set; }
+    }
 }

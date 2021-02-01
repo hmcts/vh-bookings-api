@@ -1,3 +1,4 @@
+using System.Linq;
 using Bookings.Api.Contract.Responses;
 using Bookings.Domain.Participants;
 
@@ -22,7 +23,7 @@ namespace Bookings.API.Mappings
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
-                LinkedParticipants = participant.LinkedParticipant
+                LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponse { LinkedId = x.LinkedId, Type = x.Type}).ToList()
             };
 
             switch (participant.HearingRole.UserRole.Name)

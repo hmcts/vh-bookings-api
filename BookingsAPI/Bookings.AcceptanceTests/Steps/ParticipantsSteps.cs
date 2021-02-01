@@ -8,9 +8,9 @@ using Bookings.Api.Contract.Requests;
 using Bookings.Api.Contract.Responses;
 using Bookings.Domain;
 using Bookings.Domain.Enumerations;
-using Bookings.Domain.Participants;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using Testing.Common.Builders.Api.Request;
 using static Testing.Common.Builders.Api.ApiUriFactory.ParticipantsEndpoints;
 using UpdateParticipantRequest = Bookings.AcceptanceTests.Models.UpdateParticipantRequest;
 
@@ -56,12 +56,21 @@ namespace Bookings.AcceptanceTests.Steps
         [Given(@"I have an interpreter linked to a participant")]
         public void GivenIHaveAnInterpreterLinkedToAParticipant()
         {
-            var interpretee = _context.TestData.Hearing.Participants[0];
-            var interpreter = _context.TestData.Hearing.Participants[1];
+            var participants = _context.TestData.Hearing.Participants
+                .Where(x => x.UserRoleName.ToLower() == "individual" || x.UserRoleName.ToLower() == "representative").ToList();
+            var interpretee = participants[0];
+            var interpreter = participants[1];
             
-            var linkedParticipant = new LinkedParticipant(interpreter.Id, interpretee.Id, 
-                LinkedParticipantType.Interpreter);
-            _context.TestData.Participant.LinkedParticipant = linkedParticipant;
+            var linkedParticipant = new LinkedParticipantRequest
+            {
+                LinkedParticipantContactEmail = interpreter.ContactEmail, 
+                ParticipantContactEmail = interpretee.ContactEmail
+            };
+            
+            var request = new UpdateParticipantRequestBuilder().Build();
+            request.LinkedParticipants = new List<LinkedParticipantRequest> {linkedParticipant};
+
+            _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, interpretee.Id), request);
         }
 
         [Then(@"a list of hearing participants should be retrieved")]

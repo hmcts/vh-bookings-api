@@ -173,12 +173,13 @@ namespace Bookings.API.Controllers
                 ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
                 return BadRequest(ModelState);
             }
-
-
+            
             var mapper = new ParticipantRequestToNewParticipantMapper();
             var participants = request.Participants
                 .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
-            var command = new AddParticipantsToVideoHearingCommand(hearingId, participants);
+            var linkedParticipants = request.LinkedParticipants.MapToDto();
+            
+            var command = new AddParticipantsToVideoHearingCommand(hearingId, participants, linkedParticipants);
 
             try
             {
@@ -330,9 +331,12 @@ namespace Bookings.API.Controllers
             var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
             var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
 
+            var mapper = new ParticipantRequestToNewParticipantMapper();
+            var linkedParticipants = request.LinkedParticipants.MapToDto();
+            
             var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
                 request.DisplayName, request.TelephoneNumber,
-                request.OrganisationName, representative);
+                request.OrganisationName, representative, linkedParticipants);
 
             await _commandHandler.Handle(updateParticipantCommand);
 

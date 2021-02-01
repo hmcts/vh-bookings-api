@@ -5,10 +5,12 @@ using Bookings.DAL;
 using Bookings.DAL.Commands;
 using Bookings.DAL.Exceptions;
 using Bookings.DAL.Queries;
+using Bookings.Domain.Enumerations;
 using Bookings.Domain.Participants;
 using Bookings.Domain.RefData;
 using Bookings.Domain.Validations;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
@@ -74,8 +76,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             var participant = seededHearing.GetParticipants().First();
             await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant));
-
-
+            
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var afterCount = returnedVideoHearing.GetParticipants().Count;
@@ -99,6 +100,28 @@ namespace Bookings.IntegrationTests.Database.Commands
             var afterCount = returnedVideoHearing.GetParticipants().Count;
 
             afterCount.Should().BeLessThan(beforeCount);
+        }
+
+        [Test]
+        public async Task Should_Remove_ParticipantLink_When_Participant_Is_Removed()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 0, false, true);
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+
+            var participantWithALink = seededHearing.Participants.First(x => x.LinkedParticipants.Any());
+            await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participantWithALink));
+            
+            await using (var db = new BookingsDbContext(BookingsDbContextOptions))
+            {
+                var links = db.LinkedParticipant
+                    .AsNoTracking()
+                    .Include(x => x.Participant)
+                    .Include(x => x.Linked)
+                    .Where(x => x.ParticipantId == participantWithALink.Id)
+                    .ToList();
+
+                links.Should().BeNullOrEmpty();
+            }
         }
     }
 }

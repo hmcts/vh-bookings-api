@@ -33,6 +33,6 @@ namespace Bookings.Api.Contract.Requests
         /// <summary>
         ///     List of linked participants
         /// </summary>
-        public List<LinkedParticipant> LinkedParticipants { get; set; }
+        public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
     }
 }

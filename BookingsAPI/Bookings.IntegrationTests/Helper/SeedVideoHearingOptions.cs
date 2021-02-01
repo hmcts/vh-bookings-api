@@ -24,6 +24,6 @@ namespace Bookings.IntegrationTests.Helper
             ? "Defendant"
             : "Respondent";
 
-        public string ClaimantHearingRole => "Litigant in person";
+        public string LipHearingRole => "Litigant in person";
     }
 }

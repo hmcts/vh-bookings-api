@@ -37,7 +37,7 @@ namespace Bookings.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, bool addJoh = false)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, bool addJoh = false, bool withLinkedParticipants = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -47,9 +47,10 @@ namespace Bookings.IntegrationTests.Helper
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var defendantLipHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
@@ -59,6 +60,7 @@ namespace Bookings.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder(true).Build();
             var judgePerson = new PersonBuilder(true).Build();
             var johPerson = new PersonBuilder(true).Build();
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
@@ -76,12 +78,15 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
-
+            
             videoHearing.AddRepresentative(person2, claimantRepresentativeHearingRole, claimantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", "Ms X");
 
             videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
+            
+            videoHearing.AddIndividual(person4, defendantLipHearingRole, defendantCaseRole,
+                $"{person4.FirstName} {person4.LastName}");
 
             videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
 
@@ -107,10 +112,13 @@ namespace Bookings.IntegrationTests.Helper
                 }
             }
 
-            var interpretee = videoHearing.Participants[0];
-            var interpreter = videoHearing.Participants[1];
-            var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
-            await CreateParticipantLinks(interpretee, interpreter, participantLink);
+            if (withLinkedParticipants)
+            {
+                var interpretee = videoHearing.Participants[0];
+                var interpreter = videoHearing.Participants[1];
+                var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, (int)LinkedParticipantType.Interpreter);
+                await CreateParticipantLinks(interpretee, interpreter, participantLink);   
+            }
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
@@ -215,15 +223,15 @@ namespace Bookings.IntegrationTests.Helper
             {
                 await db.LinkedParticipant.AddAsync(participantLink);
 
-                var interpreteeLink = new LinkedParticipant(participantLink.LinkedParticipantId, 
+                var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
                     participantLink.ParticipantId, LinkedParticipantType.Interpretee);
 
                 await db.LinkedParticipant.AddAsync(interpreteeLink);
             }
             
-            interpretee.LinkedParticipant = participantLink;
-            interpreter.LinkedParticipant = new LinkedParticipant(participantLink.LinkedParticipantId,
-                participantLink.ParticipantId, LinkedParticipantType.Interpretee);
+            interpretee.LinkedParticipants.Add(participantLink);
+            interpreter.LinkedParticipants.Add(new LinkedParticipant(participantLink.LinkedId,
+                participantLink.ParticipantId, LinkedParticipantType.Interpretee));
         }
 
         public DateTime? GetJobLastRunDateTime()
@@ -293,7 +301,7 @@ namespace Bookings.IntegrationTests.Helper
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");

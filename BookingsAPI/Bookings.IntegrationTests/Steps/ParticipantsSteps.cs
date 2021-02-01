@@ -92,7 +92,7 @@ namespace Bookings.IntegrationTests.Steps
             Context.TestData.OldHearingId = Context.TestData.NewHearingId;
             Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            seededHearing.GetParticipants().Count.Should().Be(4);
+            seededHearing.GetParticipants().Count.Should().Be(5);
             Context.Uri = AddParticipantsToHearing(Context.TestData.NewHearingId);
             Context.Response = await SendPostRequestAsync(Context);
         }

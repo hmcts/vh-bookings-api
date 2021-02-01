@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings.DAL;
 using Bookings.DAL.Commands;
+using Bookings.DAL.Dtos;
 using Bookings.DAL.Queries;
 using Bookings.Domain.Participants;
 using FluentAssertions;
@@ -23,7 +25,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
             _getHearingVenuesQueryHandler = new GetHearingVenuesQueryHandler(context);
-            _commandHandler = new UpdateParticipantCommandHandler(context);
+            var hearingService = new HearingService(context);
+            _commandHandler = new UpdateParticipantCommandHandler(context, hearingService);
             _newHearingId = Guid.Empty;
         }
         
@@ -35,14 +38,14 @@ namespace Bookings.IntegrationTests.Database.Commands
             var beforeUpdatedDate = seededHearing.UpdatedDate;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var individualParticipant = seededHearing.GetParticipants().SingleOrDefault(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+            var individualParticipant = seededHearing.GetParticipants().FirstOrDefault(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
 
             var title = individualParticipant.Person.Title + editPrefix;
             var displayName = individualParticipant.DisplayName + editPrefix;
             var telephoneNumber = "11112222333";
             var organisationName = "Organisation" + editPrefix;
 
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null);
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null, null);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
@@ -62,7 +65,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             var beforeUpdatedDate = seededHearing.UpdatedDate;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var representativeParticipant = seededHearing.GetParticipants().FirstOrDefault(x => x.HearingRole.UserRole.Name.Equals("Representative"));
+            var representativeParticipant = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.Name.Equals("Representative"));
 
             var title = representativeParticipant.Person.Title + editPrefix;
             var displayName = representativeParticipant.DisplayName + editPrefix;
@@ -74,7 +77,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             {
                 Representee = representee
             };
-            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, repInfo);
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, representativeParticipant.Id, title, displayName, telephoneNumber, organisationName, repInfo, null);
             await _commandHandler.Handle(updateParticipantCommand);
 
             var updatedRepresentative=(Representative) updateParticipantCommand.UpdatedParticipant;
@@ -87,6 +90,39 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedRepresentative.Person.Organisation.Should().NotBeNull();
             updatedRepresentative.Person.Organisation.Name.Should().Be(organisationName);
             updatedRepresentative.Representee.Should().Be(repInfo.Representee);
+        }
+
+        [Test]
+        public async Task Should_Update_Participant_With_Links()
+        {
+            var editPrefix = " _Edit";
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+
+            var individuals = seededHearing.GetParticipants()
+                .Where(x => x.HearingRole.UserRole.Name.Equals("Individual")).ToList();
+            var interpretee = individuals[0];
+            var interpreter = individuals[1];
+            
+            var link = new LinkedParticipantDto
+            {
+                LinkedParticipantContactEmail = interpreter.Person.ContactEmail, 
+                ParticipantContactEmail = interpretee.Person.ContactEmail
+            };
+
+            var title = interpreter.Person.Title + editPrefix;
+            var displayName = interpreter.DisplayName + editPrefix;
+            var telephoneNumber = "11112222333";
+
+            var links = new List<LinkedParticipantDto> {link};
+            var updateParticipantCommand = new UpdateParticipantCommand(seededHearing.Id, interpreter.Id,
+                title, displayName, telephoneNumber, null, null, links);
+            await _commandHandler.Handle(updateParticipantCommand);
+            
+            var updatedRepresentative = updateParticipantCommand.UpdatedParticipant;
+            
+            updatedRepresentative.Should().NotBeNull();
+            updatedRepresentative.LinkedParticipants.Should().NotBeNull();
         }
 
         [TearDown]

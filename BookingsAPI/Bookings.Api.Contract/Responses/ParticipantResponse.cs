@@ -1,5 +1,5 @@
 using System;
-using Bookings.Domain;
+using System.Collections.Generic;
 
 namespace Bookings.Api.Contract.Responses
 {
@@ -78,6 +78,6 @@ namespace Bookings.Api.Contract.Responses
         /// <summary>
         ///     The participant linked to this participant response
         /// </summary>
-        public LinkedParticipant LinkedParticipants { get; set; }
+        public List<LinkedParticipantResponse> LinkedParticipants { get; set; }
     }
 }

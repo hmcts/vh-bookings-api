@@ -4,6 +4,7 @@ using Bookings.Domain.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bookings.Domain.Enumerations;
 
 namespace Bookings.Domain.Participants
 {
@@ -15,6 +16,7 @@ namespace Bookings.Domain.Participants
         {
             Id = Guid.NewGuid();
             CreatedDate = DateTime.UtcNow;
+            LinkedParticipants = new List<LinkedParticipant>();
         }
 
         protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
@@ -39,7 +41,7 @@ namespace Bookings.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
-        public virtual LinkedParticipant LinkedParticipant { get; set; }
+        public virtual IList<LinkedParticipant> LinkedParticipants { get; set; }
 
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
@@ -74,6 +76,16 @@ namespace Bookings.Domain.Participants
                 }
                 Person.UpdateOrganisation(organisation);
             }
+        }
+
+        public void AddLink(Guid linkedId, LinkedParticipantType linkType)
+        {
+            var existingLink = LinkedParticipants.SingleOrDefault(x => x.LinkedId == linkedId && x.Type == linkType);
+            if (existingLink != null)
+            {
+                throw new DomainRuleException("LinkedParticipant", "Participant is already linked with the same link type");
+            }
+            LinkedParticipants.Add(new LinkedParticipant(Id, linkedId, linkType));
         }
 
         protected void ValidateArguments(string displayName)

@@ -13,17 +13,21 @@ namespace Bookings.API.Mappings
         public static List<LinkedParticipantDto> MapToDto(this List<LinkedParticipantRequest> requests)
         {
             var listOfDtos = new List<LinkedParticipantDto>();
-            foreach (var request in requests)
+            
+            if (requests != null)
             {
-                var dto = new LinkedParticipantDto
+                foreach (var request in requests)
                 {
-                    ParticipantContactEmail = request.ParticipantContactEmail,
-                    LinkedParticipantContactEmail = request.LinkedParticipantContactEmail
-                };
+                    var dto = new LinkedParticipantDto
+                    {
+                        ParticipantContactEmail = request.ParticipantContactEmail,
+                        LinkedParticipantContactEmail = request.LinkedParticipantContactEmail
+                    };
                 
-                listOfDtos.Add(dto);
+                    listOfDtos.Add(dto);
+                }
             }
-
+            
             return listOfDtos;
         }
     }

@@ -49,6 +49,9 @@ namespace Bookings.API.Validations
 
             RuleForEach(x => x.Cases)
                 .SetValidator(new CaseRequestValidation());
+            
+            RuleForEach(x => x.LinkedParticipants)
+                .SetValidator(new LinkedParticipantRequestValidation());
 
             RuleFor(x => x.Participants)
                 .Must(participant => participant.Any(x => x.HearingRoleName == "Judge"))
