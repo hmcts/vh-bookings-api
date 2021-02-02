@@ -64,15 +64,5 @@ namespace Bookings.IntegrationTests.Database.Commands
             returnedVideoHearing.GetCases().First().Number.Should().Be(caseNumber);
             returnedVideoHearing.AudioRecordingRequired.Should().BeTrue();
         }
-        
-        [TearDown]
-        public new async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-        }
     }
 }

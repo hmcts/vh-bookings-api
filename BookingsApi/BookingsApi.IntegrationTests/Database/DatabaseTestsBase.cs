@@ -13,7 +13,6 @@ namespace Bookings.IntegrationTests.Database
     {
         private string _databaseConnectionString;
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
-        protected readonly BuilderSettings BuilderSettings = new BuilderSettings();
         protected TestDataManager Hooks { get; private set; }
         
         [OneTimeSetUp]

@@ -285,15 +285,5 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             return caseType;
         }
-
-        [TearDown]
-        public new async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-        }
     }
 }

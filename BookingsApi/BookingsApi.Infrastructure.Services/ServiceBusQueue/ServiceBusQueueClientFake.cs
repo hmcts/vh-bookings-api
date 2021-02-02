@@ -21,7 +21,7 @@ namespace Bookings.Infrastructure.Services.ServiceBusQueue
                 Formatting = Formatting.Indented,
                 TypeNameHandling = TypeNameHandling.Objects
             };
-            SerializerSettings.Converters.Add(new StringEnumConverter(true));
+            SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
         }
         
         public Task PublishMessageAsync(EventMessage eventMessage)

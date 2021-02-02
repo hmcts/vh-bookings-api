@@ -19,7 +19,6 @@ namespace Bookings.IntegrationTests.Database.Commands
         private GetHearingByIdQueryHandler _queryHandler;
         private CreateVideoHearingCommandHandler _commandHandler;
         private Guid _newHearingId;
-        private Guid _secondHearingId;
         
         [SetUp]
         public void Setup()
@@ -29,7 +28,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             var hearingService = new HearingService(context);
             _commandHandler = new CreateVideoHearingCommandHandler(context, hearingService);
             _newHearingId = Guid.Empty;
-            _secondHearingId = Guid.Empty;
         }
 
         [Test]
@@ -107,7 +105,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;
-            
+            Hooks.AddHearingForCleanup(_newHearingId);
             var returnedVideoHearing = await  _queryHandler.Handle(new GetHearingByIdQuery(_newHearingId));
 
             returnedVideoHearing.Should().NotBeNull();
@@ -135,22 +133,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             }
 
             return caseType;
-        }
-        
-        [TearDown]
-        public new async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-            
-            if (_secondHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_secondHearingId}");
-                await Hooks.RemoveVideoHearing(_secondHearingId);
-            }
         }
     }
 }

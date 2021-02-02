@@ -24,16 +24,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             _newHearingId = Guid.Empty;
         }
 
-        [TearDown]
-        public new async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-        }
-
         [Test]
         public void Should_throw_exception_when_hearing_does_not_exist()
         {
