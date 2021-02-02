@@ -9,7 +9,7 @@ namespace Bookings.API.Mappings
     /// </summary>
     public static class LinkedParticipantRequestToLinkedParticipantDtoMapper
     {
-        public static List<LinkedParticipantDto> MapToDto(this List<LinkedParticipantRequest> requests)
+        public static List<LinkedParticipantDto> MapToDto(List<LinkedParticipantRequest> requests)
         {
             var listOfDtos = new List<LinkedParticipantDto>();
             

@@ -212,7 +212,8 @@ namespace Bookings.API.Controllers
                     });
                 }
 
-                var linkedParticipants = request.LinkedParticipants.MapToDto();
+                var linkedParticipants =
+                    LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
                 var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
                     request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
@@ -236,11 +237,11 @@ namespace Bookings.API.Controllers
 
                 var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
                 var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-                const string logRetreiveNewHearing = "BookNewHearing Retrieved new hearing from DB";
+                const string logRetrieveNewHearing = "BookNewHearing Retrieved new hearing from DB";
                 const string keyHearingId = "HearingId";
                 const string keyCaseType = "CaseType";
                 const string keyParticipantCount = "Participants.Count";
-                _logger.TrackTrace(logRetreiveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
+                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
                 {
                     {keyHearingId, queriedVideoHearing.Id.ToString()},
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},

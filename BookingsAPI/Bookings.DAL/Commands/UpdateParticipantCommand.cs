@@ -76,16 +76,8 @@ namespace Bookings.DAL.Commands
                 throw new ParticipantNotFoundException(command.ParticipantId);
             }
             
-            var participantLinks = await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
-            foreach (var participantLink in participantLinks)
-            {
-                var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
-                    participantLink.ParticipantId, participantLink.Type);
-
-                await _context.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
-            }
-            
             participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
                 command.OrganisationName);
 

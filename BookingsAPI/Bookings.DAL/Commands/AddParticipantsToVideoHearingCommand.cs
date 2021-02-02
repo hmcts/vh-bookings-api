@@ -63,15 +63,7 @@ namespace Bookings.DAL.Commands
             
             var participants = await _hearingService.AddParticipantToService(hearing, command.Participants);
 
-            var participantLinks = await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
-            
-            foreach (var participantLink in participantLinks)
-            {
-                var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
-                    participantLink.ParticipantId, participantLink.Type);
-                
-                await _context.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
-            }
+            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
             
             await _context.SaveChangesAsync();
         }

@@ -177,7 +177,8 @@ namespace Bookings.API.Controllers
             var mapper = new ParticipantRequestToNewParticipantMapper();
             var participants = request.Participants
                 .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
-            var linkedParticipants = request.LinkedParticipants.MapToDto();
+            var linkedParticipants =
+                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants, linkedParticipants);
 
@@ -328,10 +329,11 @@ namespace Bookings.API.Controllers
                 }
             }
 
-            var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
-            var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
+            var representative =
+                UpdateParticipantRequestToNewRepresentativeMapper.MapRequestToNewRepresentativeInfo(request);
 
-            var linkedParticipants = request.LinkedParticipants.MapToDto();
+            var linkedParticipants =
+                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
             var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
                 request.DisplayName, request.TelephoneNumber,

@@ -36,7 +36,7 @@ namespace Bookings.DAL.Commands
         /// <param name="participants">List of participants in the hearing</param>
         /// <param name="linkedParticipantDtos">List linked participants dtos containing the linking data</param>
         /// <returns></returns>
-        Task<List<LinkedParticipant>> CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos);
+        Task CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos);
     }
     public class HearingService : IHearingService
     {
@@ -114,7 +114,7 @@ namespace Bookings.DAL.Commands
             await _context.SaveChangesAsync();
         }
 
-        public Task<List<LinkedParticipant>> CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos)
+        public Task CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos)
         {
             var linkedParticipants = new List<LinkedParticipant>();
 

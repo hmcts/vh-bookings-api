@@ -39,7 +39,7 @@ namespace Bookings.API.Mappings
                 CaseRole = caseRole,
                 HearingRole = hearingRole,
                 DisplayName = requestParticipant.DisplayName,
-                Representee = requestParticipant.Representee,
+                Representee = requestParticipant.Representee
             };
         }
     }
