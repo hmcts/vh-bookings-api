@@ -125,6 +125,8 @@ extends:
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     testParameters:
       baseAgent: windows-latest
+      coreProjectPath: BookingsApi/BookingsApi
+      nugetConfigPath: BookingsApi
       unitTestProjectPath: BookingsApi/BookingsApi.UnitTests
       integTestProjectPath: BookingsApi/BookingsApi.IntegrationTests
       secrets_KeyVault: $(pr_Secret_KeyVault)
