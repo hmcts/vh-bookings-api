@@ -36,6 +36,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.2.1" />
+    <PackageReference Include="VH.Core.Configuration" Version="0.1.0" />
   </ItemGroup>
   
   <ItemGroup>
