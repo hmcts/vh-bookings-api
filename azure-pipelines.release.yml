@@ -85,9 +85,10 @@ extends:
         devOpsResource: vh_bookings_api
         appName: vh-bookings-api-$(environment)
         resourceGroup: vh-bookings-api-$(environment)
-       - group: KinlyConfiguration_Dev
+        variables:
+          - group: KinlyConfiguration_Dev
             env:
-             - Sandbox
+              - Sandbox
           - group: KinlyConfiguration_Test
             env:
              - Preview
