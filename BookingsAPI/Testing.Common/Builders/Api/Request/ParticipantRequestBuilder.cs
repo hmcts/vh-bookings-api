@@ -1,4 +1,4 @@
-﻿using Bookings.Api.Contract.Requests;
+﻿using BookingsApi.Contract.Requests;
 using Faker;
 using FizzWare.NBuilder;
 

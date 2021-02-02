@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>1600292d-7269-4724-8a03-108544edbbc6</UserSecretsId>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="nunit" Version="3.13.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="RestSharp" Version="106.11.7" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.17.0.26580">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SpecFlow" Version="3.5.14" />
+    <PackageReference Include="SpecFlow.NUnit" Version="3.5.14" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.5.14" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
+    <ProjectReference Include="..\BookingsApi.DAL\BookingsApi.DAL.csproj" />
+    <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
+    <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="useraccounts.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="zapapi-config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Features\EndPoints.feature.cs">
+      <DependentUpon>EndPoints.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+</Project>

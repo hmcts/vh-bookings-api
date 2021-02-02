@@ -15,8 +15,8 @@
     <PackageReference Include="NBuilder" Version="6.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bookings.Api.Contract\Bookings.Api.Contract.csproj" />
-    <ProjectReference Include="..\Bookings.Common\Bookings.Common.csproj" />
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
+    <ProjectReference Include="..\BookingsApi.Common\BookingsApi.Common.csproj" />
+    <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 ﻿using System;
-using Bookings.Api.Contract.Queries;
+using BookingsApi.Contract.Queries;
 
 namespace Testing.Common.Builders.Api
 {
