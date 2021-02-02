@@ -82,7 +82,7 @@ extends:
         subscription: $(env_Subscription)
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
-        devOpsResource: vh_notification_api
+        devOpsResource: vh_bookings_api
         appName: vh-bookings-api-$(environment)
         resourceGroup: vh-bookings-api-$(environment)
        - group: KinlyConfiguration_Dev
@@ -122,7 +122,7 @@ extends:
             value: vh-bookings-api-identifieruris
             secret: true          
           
-          - name: Services:VhNotificationApiResourceId
+          - name: Services:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
             secret: true
 
@@ -150,18 +150,18 @@ extends:
             value: tenantid
             secret: true
           - name: AzureAd:ClientId
-            value: vh-notification-api-appid
+            value: vh-bookings-api-appid
             secret: true
           - name: AzureAd:ClientSecret
-            value: vh-notification-api-key
+            value: vh-bookings-api-key
             secret: true
           
           # Services          
-          - name: Services:VhNotificationApiResourceId
-            value: vh-notification-api-identifieruris
+          - name: Services:BookingsApiResourceId
+            value: vh-bookings-api-identifieruris
             secret: true
-          - name: Services:NotificationApiUrl
-            value: $(notification_api_url_staging)
+          - name: Services:BookingsApiUrl
+            value: $(bookings_api_url_staging)
 
           # GOV Notify Configuration
           - name: NotifyConfiguration:ApiKey
