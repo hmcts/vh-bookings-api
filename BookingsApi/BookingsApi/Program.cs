@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using VH.Core.Configuration;
 
 namespace BookingsApi
 {
@@ -19,6 +20,7 @@ namespace BookingsApi
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+                .AddAksKeyVaultSecretProvider()
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     webBuilder.UseIISIntegration();
