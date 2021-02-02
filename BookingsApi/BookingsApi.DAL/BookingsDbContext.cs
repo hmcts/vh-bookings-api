@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL

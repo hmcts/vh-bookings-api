@@ -1,5 +1,5 @@
 ﻿using BookingsApi.Contract.Responses;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain.Participants;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;

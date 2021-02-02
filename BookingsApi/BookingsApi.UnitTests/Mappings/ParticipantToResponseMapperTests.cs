@@ -1,8 +1,8 @@
 using BookingsApi.Contract.Responses;
 using BookingsApi.Mappings;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;

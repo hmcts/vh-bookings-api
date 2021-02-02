@@ -1,6 +1,6 @@
-using Bookings.Domain;
-using Bookings.Domain.Enumerations;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookingsApi.DAL.SeedData

@@ -1,5 +1,5 @@
-﻿using Bookings.Domain;
-using Bookings.Domain.Participants;
+﻿using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

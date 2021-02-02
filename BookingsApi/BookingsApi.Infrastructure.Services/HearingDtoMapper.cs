@@ -1,5 +1,5 @@
 using System.Linq;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using Bookings.Infrastructure.Services.Dtos;
 
 namespace Bookings.Infrastructure.Services

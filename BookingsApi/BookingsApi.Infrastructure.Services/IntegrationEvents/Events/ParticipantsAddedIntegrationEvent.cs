@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain.Participants;
 using Bookings.Infrastructure.Services.Dtos;
 
 namespace Bookings.Infrastructure.Services.IntegrationEvents.Events

@@ -1,7 +1,6 @@
 ﻿using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.Requests;
-using Bookings.Domain;
-using Bookings.Domain.Enumerations;
+using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
+using BookingsApi.Domain;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JVEndPointEndpoints;
 

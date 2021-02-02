@@ -1,5 +1,5 @@
 ﻿using BookingsApi.Contract.Responses;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

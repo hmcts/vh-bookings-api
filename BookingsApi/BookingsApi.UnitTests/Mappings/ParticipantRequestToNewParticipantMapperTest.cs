@@ -3,7 +3,7 @@ using BookingsApi.Contract.Requests;
 using FluentAssertions;
 using BookingsApi.Common;
 using BookingsApi.Mappings;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain.RefData;
 using BookingsApi.UnitTests.Utilities;
 using NUnit.Framework;
 

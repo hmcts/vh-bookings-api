@@ -1,4 +1,4 @@
-﻿using Bookings.Domain.Enumerations;
+﻿using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;

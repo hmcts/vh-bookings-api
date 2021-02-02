@@ -1,10 +1,10 @@
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Extensions;
-using Bookings.Domain;
-using Bookings.Domain.Enumerations;
-using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,5 @@
 ﻿using System;
-using Bookings.Domain.Enumerations;
+using BookingsApi.Domain.Enumerations;
 
 namespace Bookings.Infrastructure.Services.Dtos
 {

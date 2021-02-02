@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingsApi", "BookingsApi\BookingsApi.csproj", "{2131B290-9EA1-4523-BBC2-52E889B2C4E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Domain", "Bookings.Domain\Bookings.Domain.csproj", "{4FC26285-CE9D-4900-93D1-2AEF62DA7DCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingsApi.Domain", "BookingsApi.Domain\BookingsApi.Domain.csproj", "{4FC26285-CE9D-4900-93D1-2AEF62DA7DCE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingsApi.DAL", "BookingsApi.DAL\BookingsApi.DAL.csproj", "{180F7229-726E-4EB7-B5A1-253C4E5F7075}"
 EndProject

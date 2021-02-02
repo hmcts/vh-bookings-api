@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using Bookings.Domain.Enumerations;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;

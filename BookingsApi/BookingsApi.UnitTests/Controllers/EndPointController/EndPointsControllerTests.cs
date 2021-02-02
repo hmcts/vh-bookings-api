@@ -7,8 +7,8 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using Bookings.Domain;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             Hearing.CaseType = CaseType;
 
             if (createdStatus)
-                Hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
+                Hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
             var endpoint = new Endpoint("one", $"{Guid.NewGuid().ToString()}{KinlyConfiguration.SipAddressStem}",
                 "1234", null);

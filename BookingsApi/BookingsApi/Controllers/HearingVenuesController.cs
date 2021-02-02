@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.AspNetCore.Mvc;

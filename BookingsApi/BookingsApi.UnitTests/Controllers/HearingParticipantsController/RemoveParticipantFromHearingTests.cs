@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;

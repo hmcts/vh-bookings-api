@@ -1,4 +1,4 @@
-﻿using Bookings.Domain;
+﻿using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookingsApi.DAL.Migrations

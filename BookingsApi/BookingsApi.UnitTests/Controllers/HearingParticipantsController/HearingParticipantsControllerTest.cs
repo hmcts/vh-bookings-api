@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
@@ -61,7 +61,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             }
 
             if(createdStatus)
-                hearing.UpdateStatus(Bookings.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
+                hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "administrator", string.Empty);
 
             return hearing; 
         }

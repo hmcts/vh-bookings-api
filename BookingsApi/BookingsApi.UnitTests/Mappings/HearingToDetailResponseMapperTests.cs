@@ -1,7 +1,7 @@
 ﻿using BookingsApi.Mappings;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;

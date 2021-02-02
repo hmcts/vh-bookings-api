@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Bookings.Domain;
+using BookingsApi.Domain;
 
 namespace Testing.Common.Builders.Domain
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;

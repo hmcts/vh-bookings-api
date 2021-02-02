@@ -6,7 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.AspNetCore.Authorization;

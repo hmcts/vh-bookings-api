@@ -1,7 +1,7 @@
 using System.Linq;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using Bookings.Infrastructure.Services;
 using FluentAssertions;
 using NUnit.Framework;

@@ -1,5 +1,5 @@
 ﻿using BookingsApi.Contract.Requests;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

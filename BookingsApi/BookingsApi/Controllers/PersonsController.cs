@@ -1,6 +1,6 @@
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Extensions;
-using Bookings.Domain.Enumerations;
+using BookingsApi.Domain.Enumerations;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Commands;

@@ -2,7 +2,7 @@ using System;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Common.Services;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using BookingsApi.DAL.Commands;
 
 namespace BookingsApi.Mappings

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;

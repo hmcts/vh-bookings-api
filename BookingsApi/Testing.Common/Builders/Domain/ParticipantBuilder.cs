@@ -1,6 +1,6 @@
-using Bookings.Domain.Participants;
-using Bookings.Domain;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using System.Collections.Generic;
 
 namespace Testing.Common.Builders.Domain

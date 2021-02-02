@@ -1,7 +1,7 @@
 ﻿using BookingsApi.Contract.Requests;
 using BookingsApi.Mappings;
 using BookingsApi.Common.Services;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;

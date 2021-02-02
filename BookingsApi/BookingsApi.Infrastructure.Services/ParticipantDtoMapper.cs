@@ -1,4 +1,4 @@
-using Bookings.Domain.Participants;
+using BookingsApi.Domain.Participants;
 using Bookings.Infrastructure.Services.Dtos;
 
 namespace Bookings.Infrastructure.Services

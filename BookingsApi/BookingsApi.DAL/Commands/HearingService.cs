@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
