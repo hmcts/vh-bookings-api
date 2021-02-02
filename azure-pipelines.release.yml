@@ -140,7 +140,7 @@ extends:
             secret: true
 
           - name: UseServiceBusFake
-            value: false
+            value: "false"
 
         acceptanceTestSettings:
           # AzureAd
