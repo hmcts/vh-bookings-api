@@ -24,6 +24,10 @@ namespace Bookings.IntegrationTests.Helper
         private List<Guid> _participantRepresentativeIds;
         private readonly string _defaultCaseName;
 
+        public void AddHearingForCleanup(Guid id)
+        {
+            _seededHearings.Add(id);
+        }
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
         {
             _dbContextOptions = dbContextOptions;
@@ -229,6 +233,7 @@ namespace Bookings.IntegrationTests.Helper
             {
                 await RemoveVideoHearing(hearingId);
             }
+            _seededHearings.Clear();
         }
 
         public async Task RemoveVideoHearing(Guid hearingId)
@@ -237,10 +242,11 @@ namespace Bookings.IntegrationTests.Helper
             {
                 await using var db = new BookingsDbContext(_dbContextOptions);
                 await new RemoveHearingCommandHandler(db).Handle(new RemoveHearingCommand(hearingId));
+                TestContext.WriteLine(@$"Removed hearing: {hearingId}.");
             }
             catch (HearingNotFoundException)
             {
-                TestContext.WriteLine(@$"Ignoring cleanup for: ${hearingId}. Does not exist.");
+                TestContext.WriteLine(@$"Ignoring cleanup for: {hearingId}. Does not exist.");
             }
         }
 

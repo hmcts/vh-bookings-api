@@ -138,21 +138,5 @@ namespace Bookings.IntegrationTests.Database.Commands
             var notAnonymisedHearingData = notAnonymisedVideoHearing.HearingCases[0];
             notAnonymisedHearingData.Case.Name.Should().Be(hearingData.Case.Name);
         }
-
-        [TearDown]
-        public new async Task TearDown()
-        {
-            TestContext.WriteLine("Cleaning hearings for AnonymiseHearingsCommandHandler");
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-            if (_newHearingId2 != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId2}");
-                await Hooks.RemoveVideoHearing(_newHearingId2);
-            }
-        }
     }
 }

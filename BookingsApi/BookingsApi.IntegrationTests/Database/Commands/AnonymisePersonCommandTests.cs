@@ -24,17 +24,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             _newHearingId = Guid.Empty;
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
         }
-        
-        [TearDown]
-        public new async Task TearDown()
-        {
-            TestContext.WriteLine("Cleaning hearings for AnonymisePersonCommandHandler");
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-        }
 
         [Test]
         public void should_throw_exception_when_person_does_not_exist()

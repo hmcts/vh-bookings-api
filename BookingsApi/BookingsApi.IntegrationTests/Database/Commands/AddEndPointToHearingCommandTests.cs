@@ -114,15 +114,5 @@ namespace Bookings.IntegrationTests.Database.Commands
             newlyAddedEndPointInDb.DefenceAdvocate.Should().NotBeNull();
             newlyAddedEndPointInDb.DefenceAdvocate.Id.Should().Be(dA.Id);
         }
-
-        [TearDown]
-        public new async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-        }
     }
 }

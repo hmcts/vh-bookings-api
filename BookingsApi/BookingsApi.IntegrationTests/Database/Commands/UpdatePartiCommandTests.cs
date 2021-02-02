@@ -88,15 +88,5 @@ namespace Bookings.IntegrationTests.Database.Commands
             updatedRepresentative.Person.Organisation.Name.Should().Be(organisationName);
             updatedRepresentative.Representee.Should().Be(repInfo.Representee);
         }
-
-        [TearDown]
-        public new async Task TearDown()
-        {
-            if (_newHearingId != Guid.Empty)
-            {
-                TestContext.WriteLine($"Removing test hearing {_newHearingId}");
-                await Hooks.RemoveVideoHearing(_newHearingId);
-            }
-        }
     }
 }
