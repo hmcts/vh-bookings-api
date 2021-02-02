@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace Bookings.UnitTests.Mappings
 {
-    public class ParticipantRequestToNewParticipantMapperTest  : TestBase
+    public class ParticipantRequestToNewParticipantMapperTest : TestBase
     {
         private CaseType _caseType;
 
