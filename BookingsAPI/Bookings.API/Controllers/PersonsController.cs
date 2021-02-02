@@ -289,6 +289,8 @@ namespace Bookings.API.Controllers
             
             // raise an update event for each hearing to ensure consistency between video and bookings api
             var createdHearings = hearings.Where(x => x.Status == BookingStatus.Created).ToList();
+            _logger.LogDebug("Updating {Count} confirmed hearing(s)", createdHearings.Count);
+            
             foreach(var hearing in createdHearings)
             {
                 var participant = hearing.Participants.First(x => x.PersonId == personId);
