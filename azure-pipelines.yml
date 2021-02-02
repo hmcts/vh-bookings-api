@@ -52,3 +52,4 @@ jobs:
       keyVaultName: $(keyVaultName)
       secretsFilter: $(secretsFilter)
       dotNetCoreVersion: '3.1.100'
+      nodeVersion: '14.x'
