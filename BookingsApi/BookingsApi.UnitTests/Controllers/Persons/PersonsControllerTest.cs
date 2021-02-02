@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using BookingsApi.Controllers;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;

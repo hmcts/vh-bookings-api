@@ -1,7 +1,7 @@
 ﻿using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -42,7 +42,7 @@ namespace BookingsApi.UnitTests.Controllers
             participant.SetupGet(p => p.Hearing).Returns(hearing);
             participant.SetupGet(p => p.Questionnaire).Returns(new Questionnaire { UpdatedDate = DateTime.Now.AddHours(addHour) });
             participant.SetupGet(p => p.Person).Returns(new Person("Mr", fName, lName,  $"{fName} {lName}"));
-            participant.SetupGet(p => p.HearingRole).Returns(new Bookings.Domain.RefData.HearingRole(1,"Test"));
+            participant.SetupGet(p => p.HearingRole).Returns(new BookingsApi.Domain.RefData.HearingRole(1,"Test"));
 
             return participant.Object;
         }

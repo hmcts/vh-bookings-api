@@ -1,6 +1,6 @@
 using System;
-using Bookings.Domain;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 

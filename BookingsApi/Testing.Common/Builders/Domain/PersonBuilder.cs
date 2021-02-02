@@ -1,7 +1,7 @@
 ﻿using System;
 using Faker;
 using FizzWare.NBuilder;
-using Bookings.Domain;
+using BookingsApi.Domain;
 
 namespace Testing.Common.Builders.Domain
 {

@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Common;
-using Bookings.Domain;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands;
 
 namespace BookingsApi.Mappings

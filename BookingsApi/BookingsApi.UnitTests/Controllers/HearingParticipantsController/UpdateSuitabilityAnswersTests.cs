@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;

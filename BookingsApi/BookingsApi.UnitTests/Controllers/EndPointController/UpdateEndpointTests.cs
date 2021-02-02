@@ -8,7 +8,7 @@ using System.Net;
 using Testing.Common.Assertions;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;

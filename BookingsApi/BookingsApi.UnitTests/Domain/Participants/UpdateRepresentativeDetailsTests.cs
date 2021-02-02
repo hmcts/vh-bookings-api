@@ -1,5 +1,5 @@
-﻿using Bookings.Domain.Participants;
-using Bookings.Domain.Validations;
+﻿using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using System;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.Requests;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using FluentValidation.Results;
 
 namespace BookingsApi.Validations

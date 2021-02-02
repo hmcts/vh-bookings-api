@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using BookingsApi.Common.Services;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Helper;
 using FluentAssertions;
 using NUnit.Framework;

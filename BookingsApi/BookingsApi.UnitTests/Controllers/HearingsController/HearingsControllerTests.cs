@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Bookings.Domain;
-using Bookings.Domain.Enumerations;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Bookings.Infrastructure.Services.ServiceBusQueue;

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Domain;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 

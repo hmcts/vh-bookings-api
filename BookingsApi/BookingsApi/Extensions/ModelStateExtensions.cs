@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using DomainValidationFailures = Bookings.Domain.Validations.ValidationFailures;
+using DomainValidationFailures = BookingsApi.Domain.Validations.ValidationFailures;
 using FluentValidationFailure = FluentValidation.Results.ValidationFailure;
 
 namespace BookingsApi.Extensions

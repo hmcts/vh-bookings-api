@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
 

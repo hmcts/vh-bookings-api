@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

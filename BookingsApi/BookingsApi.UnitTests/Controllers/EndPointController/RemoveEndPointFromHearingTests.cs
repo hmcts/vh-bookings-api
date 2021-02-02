@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;

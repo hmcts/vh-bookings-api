@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 
 namespace Testing.Common.Configuration
 {

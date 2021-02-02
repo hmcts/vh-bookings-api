@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Bookings.Domain.Enumerations;
+using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 

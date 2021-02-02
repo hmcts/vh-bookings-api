@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;

@@ -2,9 +2,9 @@
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Queries;
 using FizzWare.NBuilder;

@@ -1,6 +1,6 @@
 ﻿using BookingsApi.Contract.Responses;
 using BookingsApi.Validations;
-using Bookings.Domain.Participants;
+using BookingsApi.Domain.Participants;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;

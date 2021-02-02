@@ -1,6 +1,6 @@
 using System.Linq;
 using BookingsApi.Contract.Responses;
-using Bookings.Domain;
+using BookingsApi.Domain;
 
 namespace BookingsApi.Mappings
 {

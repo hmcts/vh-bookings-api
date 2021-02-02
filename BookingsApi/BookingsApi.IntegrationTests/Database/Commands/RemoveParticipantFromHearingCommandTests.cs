@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
@@ -91,7 +91,7 @@ namespace Bookings.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            var endpoint = seededHearing.GetEndpoints().FirstOrDefault(ep => ep.DefenceAdvocate != null);
+            var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
             await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
 
             var returnedVideoHearing =

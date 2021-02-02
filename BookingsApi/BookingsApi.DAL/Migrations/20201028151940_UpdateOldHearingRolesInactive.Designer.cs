@@ -20,7 +20,7 @@ namespace BookingsApi.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Bookings.Domain.Case", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Case", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("Case");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Endpoint", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Endpoint", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -77,7 +77,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("Endpoint");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Hearing", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -155,7 +155,7 @@ namespace BookingsApi.DAL.Migrations
                     b.HasDiscriminator<int>("HearingMediumType");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.HearingCase", b =>
+            modelBuilder.Entity("BookingsApi.Domain.HearingCase", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -178,7 +178,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("HearingCase");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.HearingVenue", b =>
+            modelBuilder.Entity("BookingsApi.Domain.HearingVenue", b =>
                 {
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(450)");
@@ -191,7 +191,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("HearingVenue");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Organisation", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Organisation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,7 +206,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("Organisation");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Participants.Participant", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Participants.Participant", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -258,7 +258,7 @@ namespace BookingsApi.DAL.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("Participant");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Person", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Person", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -308,7 +308,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("Person");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Questionnaire", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Questionnaire", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -329,7 +329,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("Questionnaire");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.CaseRole", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -352,7 +352,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("CaseRole");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.CaseType", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -367,7 +367,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("CaseType");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.HearingRole", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.HearingRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -397,7 +397,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("HearingRole");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.HearingType", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.HearingType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -417,7 +417,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("HearingType");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.UserRole", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.UserRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -432,7 +432,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("UserRole");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.SuitabilityAnswer", b =>
+            modelBuilder.Entity("BookingsApi.Domain.SuitabilityAnswer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -463,30 +463,30 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("SuitabilityAnswer");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.VideoHearing", b =>
+            modelBuilder.Entity("BookingsApi.Domain.VideoHearing", b =>
                 {
-                    b.HasBaseType("Bookings.Domain.Hearing");
+                    b.HasBaseType("BookingsApi.Domain.Hearing");
 
                     b.HasDiscriminator().HasValue(1);
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Participants.Individual", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Participants.Individual", b =>
                 {
-                    b.HasBaseType("Bookings.Domain.Participants.Participant");
+                    b.HasBaseType("BookingsApi.Domain.Participants.Participant");
 
                     b.HasDiscriminator().HasValue("Individual");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Participants.Judge", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Participants.Judge", b =>
                 {
-                    b.HasBaseType("Bookings.Domain.Participants.Participant");
+                    b.HasBaseType("BookingsApi.Domain.Participants.Participant");
 
                     b.HasDiscriminator().HasValue("Judge");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Participants.Representative", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Participants.Representative", b =>
                 {
-                    b.HasBaseType("Bookings.Domain.Participants.Participant");
+                    b.HasBaseType("BookingsApi.Domain.Participants.Participant");
 
                     b.Property<string>("Representee")
                         .HasColumnType("nvarchar(max)");
@@ -494,126 +494,126 @@ namespace BookingsApi.DAL.Migrations
                     b.HasDiscriminator().HasValue("Representative");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Endpoint", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Endpoint", b =>
                 {
-                    b.HasOne("Bookings.Domain.Participants.Participant", "DefenceAdvocate")
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "DefenceAdvocate")
                         .WithMany()
                         .HasForeignKey("DefenceAdvocateId");
 
-                    b.HasOne("Bookings.Domain.Hearing", "Hearing")
+                    b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
                         .WithMany("Endpoints")
                         .HasForeignKey("HearingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Hearing", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
                 {
-                    b.HasOne("Bookings.Domain.RefData.CaseType", "CaseType")
+                    b.HasOne("BookingsApi.Domain.RefData.CaseType", "CaseType")
                         .WithMany()
                         .HasForeignKey("CaseTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.RefData.HearingType", "HearingType")
+                    b.HasOne("BookingsApi.Domain.RefData.HearingType", "HearingType")
                         .WithMany()
                         .HasForeignKey("HearingTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.HearingVenue", "HearingVenue")
+                    b.HasOne("BookingsApi.Domain.HearingVenue", "HearingVenue")
                         .WithMany()
                         .HasForeignKey("HearingVenueName");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.HearingCase", b =>
+            modelBuilder.Entity("BookingsApi.Domain.HearingCase", b =>
                 {
-                    b.HasOne("Bookings.Domain.Case", "Case")
+                    b.HasOne("BookingsApi.Domain.Case", "Case")
                         .WithMany("HearingCases")
                         .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.Hearing", "Hearing")
+                    b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
                         .WithMany("HearingCases")
                         .HasForeignKey("HearingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Participants.Participant", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Participants.Participant", b =>
                 {
-                    b.HasOne("Bookings.Domain.RefData.CaseRole", "CaseRole")
+                    b.HasOne("BookingsApi.Domain.RefData.CaseRole", "CaseRole")
                         .WithMany()
                         .HasForeignKey("CaseRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.Hearing", "Hearing")
+                    b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
                         .WithMany("Participants")
                         .HasForeignKey("HearingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.RefData.HearingRole", "HearingRole")
+                    b.HasOne("BookingsApi.Domain.RefData.HearingRole", "HearingRole")
                         .WithMany()
                         .HasForeignKey("HearingRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.Person", "Person")
+                    b.HasOne("BookingsApi.Domain.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Person", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Person", b =>
                 {
-                    b.HasOne("Bookings.Domain.Organisation", "Organisation")
+                    b.HasOne("BookingsApi.Domain.Organisation", "Organisation")
                         .WithMany()
                         .HasForeignKey("OrganisationId");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.Questionnaire", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Questionnaire", b =>
                 {
-                    b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
                         .WithOne("Questionnaire")
-                        .HasForeignKey("Bookings.Domain.Questionnaire", "ParticipantId")
+                        .HasForeignKey("BookingsApi.Domain.Questionnaire", "ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.CaseRole", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseRole", b =>
                 {
-                    b.HasOne("Bookings.Domain.RefData.CaseType", null)
+                    b.HasOne("BookingsApi.Domain.RefData.CaseType", null)
                         .WithMany("CaseRoles")
                         .HasForeignKey("CaseTypeId");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.HearingRole", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.HearingRole", b =>
                 {
-                    b.HasOne("Bookings.Domain.RefData.CaseRole", null)
+                    b.HasOne("BookingsApi.Domain.RefData.CaseRole", null)
                         .WithMany("HearingRoles")
                         .HasForeignKey("CaseRoleId");
 
-                    b.HasOne("Bookings.Domain.RefData.UserRole", "UserRole")
+                    b.HasOne("BookingsApi.Domain.RefData.UserRole", "UserRole")
                         .WithMany()
                         .HasForeignKey("UserRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bookings.Domain.RefData.HearingType", b =>
+            modelBuilder.Entity("BookingsApi.Domain.RefData.HearingType", b =>
                 {
-                    b.HasOne("Bookings.Domain.RefData.CaseType", null)
+                    b.HasOne("BookingsApi.Domain.RefData.CaseType", null)
                         .WithMany("HearingTypes")
                         .HasForeignKey("CaseTypeId");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.SuitabilityAnswer", b =>
+            modelBuilder.Entity("BookingsApi.Domain.SuitabilityAnswer", b =>
                 {
-                    b.HasOne("Bookings.Domain.Questionnaire", "Questionnaire")
+                    b.HasOne("BookingsApi.Domain.Questionnaire", "Questionnaire")
                         .WithMany("SuitabilityAnswers")
                         .HasForeignKey("QuestionnaireId")
                         .OnDelete(DeleteBehavior.Cascade)

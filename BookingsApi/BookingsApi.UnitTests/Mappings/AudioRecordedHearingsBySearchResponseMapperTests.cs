@@ -1,6 +1,6 @@
 ﻿using BookingsApi.Mappings;
-using Bookings.Domain;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using Castle.Core.Internal;
 using FluentAssertions;
 using NUnit.Framework;

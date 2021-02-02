@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using Bookings.Domain;
-using Bookings.Domain.Participants;
-using Bookings.Domain.RefData;
-using Bookings.Domain.Validations;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using BookingsApi.UnitTests.Utilities;
 using FluentAssertions;
 using NUnit.Framework;

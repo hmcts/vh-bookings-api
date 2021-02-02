@@ -1,5 +1,5 @@
 ﻿using BookingsApi.Mappings;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;

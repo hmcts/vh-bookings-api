@@ -1,6 +1,6 @@
-﻿using Bookings.Domain;
-using Bookings.Domain.Enumerations;
-using Bookings.Domain.Participants;
+﻿using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

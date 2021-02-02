@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using Bookings.Domain;
-using Bookings.Domain.Enumerations;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;
 
 namespace Testing.Common.Builders.Domain

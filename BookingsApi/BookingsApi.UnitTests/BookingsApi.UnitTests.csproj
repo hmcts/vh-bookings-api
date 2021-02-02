@@ -20,7 +20,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
+    <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
     <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
     <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
   </ItemGroup>

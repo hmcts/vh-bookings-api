@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings.Domain;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;

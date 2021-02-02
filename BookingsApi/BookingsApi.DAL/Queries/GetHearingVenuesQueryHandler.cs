@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
 

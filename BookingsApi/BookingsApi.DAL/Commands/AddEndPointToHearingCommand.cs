@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Bookings.Domain;
+using BookingsApi.Domain;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;

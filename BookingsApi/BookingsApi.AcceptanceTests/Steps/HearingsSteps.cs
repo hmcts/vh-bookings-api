@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Model.Case;
-using Bookings.Domain.Enumerations;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.AcceptanceTests.Models;
 using BookingsApi.Contract.Queries;

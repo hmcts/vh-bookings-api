@@ -1,7 +1,7 @@
 ﻿using System;
 using BookingsApi.Mappings;
-using Bookings.Domain;
-using Bookings.Domain.RefData;
+using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
