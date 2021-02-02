@@ -125,10 +125,8 @@ extends:
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     testParameters:
       baseAgent: windows-latest
-      coreProjectPath: NotificationApi/NotificationApi
-      nugetConfigPath: NotificationApi
-      unitTestProjectPath: NotificationApi/NotificationApi.UnitTests
-      integTestProjectPath: NotificationApi/NotificationApi.IntegrationTests
+      unitTestProjectPath: BookingsApi/BookingsApi.UnitTests
+      integTestProjectPath: BookingsApi/BookingsApi.IntegrationTests
       secrets_KeyVault: $(pr_Secret_KeyVault)
       secrets_Subscription: $(pr_Secret_Subscription)
       RunUnitTests: ${{ parameters.RunUnitTests }}
@@ -159,9 +157,9 @@ extends:
       subscription: $(pr_Subscription)
       secrets_KeyVault: $(pr_Secret_KeyVault)
       secrets_Subscription: $(pr_Secret_Subscription)
-      devOpsResource: vh_notification_api
-      appName: vh-notification-api-$(environment)
-      resourceGroup: vh-notification-api-$(environment)
+      devOpsResource: vh_bookings_api
+      appName: vh-bookings-api-$(environment)
+      resourceGroup: vh-bookings-api-$(environment)
       appSettings: ${{ parameters.appSettings }}
       variables:
         - group: vh-bookings-api
