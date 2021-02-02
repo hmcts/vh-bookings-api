@@ -13,7 +13,8 @@ COPY ["Bookings.DAL/Bookings.DAL.csproj", "Bookings.DAL/"]
 COPY ["Bookings.Domain/Bookings.Domain.csproj", "Bookings.Domain/"]
 COPY ["Bookings.Infrastructure.Services/Bookings.Infrastructure.Services.csproj", "Bookings.Infrastructure.Services/"]
 COPY ["Bookings.Api.Contract/Bookings.Api.Contract.csproj", "Bookings.Api.Contract/"]
-RUN dotnet restore "Bookings.API/Bookings.API.csproj"
+COPY ["nuget.config", "nuget.config"]
+RUN dotnet restore --configfile nuget.config "Bookings.API/Bookings.API.csproj"
 COPY . .
 WORKDIR "/src/Bookings.API"
 RUN dotnet build "Bookings.API.csproj" -c Release -o /app/build
