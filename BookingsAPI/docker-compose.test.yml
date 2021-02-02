@@ -4,7 +4,7 @@ services:
   bookingsapi:
     container_name: bookingsapi_ac
     build:
-      context: Bookings.API/bin/${CONFIGURATION}/netcoreapp3.1/publish
+      context: BookingsApi/bin/${CONFIGURATION}/netcoreapp3.1/publish
       dockerfile: ../../../../Dockerfile.publish
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

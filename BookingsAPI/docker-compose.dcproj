@@ -6,7 +6,7 @@
     <ProjectGuid>d163d829-c14e-46aa-99b3-63823c0daca8</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/{Scheme}://{ServiceHost}:{ServicePort}/swagger/</DockerServiceUrl>
-    <DockerServiceName>bookings.api</DockerServiceName>
+    <DockerServiceName>BookingsApi</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.test.yml" />

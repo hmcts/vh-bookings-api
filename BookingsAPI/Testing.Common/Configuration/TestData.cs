@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Bookings.Api.Contract.Requests;
-using Bookings.Api.Contract.Responses;
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using Bookings.Domain;
 using Bookings.Domain.Participants;
 
