@@ -57,7 +57,7 @@ parameters:
       - name: Testing:UsernameStem
         value: $(BookingsApiUsernameStem)
       - name: Services:BookingsApiResourceId
-        value: $(vh-bookings-api-identifieruris)
+        value: vh-bookings-api-identifieruris
         secret: true
 
   - name: appSettings
@@ -75,7 +75,7 @@ parameters:
         value: tenantid
         secret: true
       - name: Services:BookingsApiResourceId
-        value: $(vh-bookings-api-identifieruris)
+        value: vh-bookings-api-identifieruris
         secret: true
       - name: KinlyConfiguration:SipAddressStem
         value: $(SipAddressStem)
