@@ -86,8 +86,6 @@ parameters:
       - name: ServiceBusQueue:ConnectionString
         value: AzureServiceBusConnectionStringSend
         secret: true
-      - name: UseServiceBusFake
-        value: "false"
   
 variables:
   - group: vh-domains-and-urls

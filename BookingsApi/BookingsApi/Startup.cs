@@ -98,7 +98,7 @@ namespace BookingsApi
         }
         private void RegisterInfrastructureServices(IServiceCollection services)
         {
-            bool.TryParse(Configuration["UseServiceBusFake"], out var useFakeClient);
+            bool useFakeClient = !bool.TryParse(Configuration["UseServiceBusFake"], out useFakeClient) || useFakeClient;
             if (useFakeClient)
             {
                 services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
