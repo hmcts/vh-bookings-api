@@ -33,10 +33,11 @@ namespace Bookings.IntegrationTests.Steps
         }
 
         [Then(@"the response should have the status (.*) and success status (.*)")]
-        public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
+        public async Task ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
-            Context.Response.StatusCode.Should().Be(statusCode);
-            Context.Response.IsSuccessStatusCode.Should().Be(isSuccess);
+            var json = await Context.Response.Content.ReadAsStringAsync();
+            Context.Response.StatusCode.Should().Be(statusCode, json);
+            Context.Response.IsSuccessStatusCode.Should().Be(isSuccess, json);
             NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
         }
 
