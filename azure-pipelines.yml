@@ -60,7 +60,7 @@ parameters:
         value: vh-bookings-api-identifieruris
         secret: true
       - name: UseServiceBusFake
-        value: "true"
+        value: "false"
 
   - name: appSettings
     type: object
@@ -88,8 +88,6 @@ parameters:
       - name: ServiceBusQueue:ConnectionString
         value: AzureServiceBusConnectionStringSend
         secret: true
-      - name: UseServiceBusFake
-        value: "false"
   
 variables:
   - group: vh-domains-and-urls
