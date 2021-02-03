@@ -48,22 +48,15 @@ namespace BookingsApi.Domain
 
         public void AnonymisePerson()
         {
-            var firstname = RandomString(10);
-            var lastName = RandomString(10);
+            var firstname = RandomStringGenerator.GenerateRandomString(10);
+            var lastName = RandomStringGenerator.GenerateRandomString(10);
             var newUsername = $"{firstname}.{lastName}@hearings.reform.hmcts.net";
-            var contactEmail = $"{RandomString(10)}@randomdomain.com";
+            var contactEmail = $"{RandomStringGenerator.GenerateRandomString(10)}@randomdomain.com";
 
             FirstName = firstname;
             LastName = lastName;
             Username = newUsername;
             ContactEmail = contactEmail;
-        }
-        
-        private string RandomString(int length)
-        {
-            var random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         private void ValidateArguments(string firstName, string lastName, string username)
