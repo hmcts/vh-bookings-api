@@ -59,8 +59,6 @@ parameters:
       - name: Services:BookingsApiResourceId
         value: vh-bookings-api-identifieruris
         secret: true
-      - name: UseServiceBusFake
-        value: "true"
 
   - name: appSettings
     type: object
