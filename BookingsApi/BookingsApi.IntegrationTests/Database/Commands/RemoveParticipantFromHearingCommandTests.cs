@@ -20,7 +20,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private RemoveParticipantFromHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
 
         [SetUp]
         public void Setup()
@@ -28,7 +27,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveParticipantFromHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -47,7 +45,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var newPerson = new PersonBuilder(true).Build();
             var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
@@ -60,7 +57,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetParticipants().Count;
 
@@ -79,7 +75,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
             var beforeCount = seededHearing.GetParticipants().Count;
 
             var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
