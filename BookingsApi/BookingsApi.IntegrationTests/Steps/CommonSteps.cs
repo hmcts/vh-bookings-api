@@ -36,8 +36,9 @@ namespace Bookings.IntegrationTests.Steps
         public async Task ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
-            Context.Response.StatusCode.Should().Be(statusCode, json);
-            Context.Response.IsSuccessStatusCode.Should().Be(isSuccess, json);
+            var hearingId = Context.TestData.NewHearingId;
+            Context.Response.StatusCode.Should().Be(statusCode, $"hearing: {hearingId} ===== {json}");
+            Context.Response.IsSuccessStatusCode.Should().Be(isSuccess, $"hearing: {hearingId} ===== {json}");
             NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
         }
 
