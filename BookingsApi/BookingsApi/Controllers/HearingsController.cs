@@ -184,11 +184,11 @@ namespace BookingsApi.Controllers
                 const string keyCases = "Cases";
                 _logger.TrackTrace(logHasCases, SeverityLevel.Information, new Dictionary<string, string>
                 {
-                    {keyCases, string.Join(", ", cases?.Select(x => new {x.Name, x.Number}))}
+                    {keyCases, string.Join(", ", cases.Select(x => new {x.Name, x.Number}))}
                 });
 
                 var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
-                    request, caseType, hearingType, venue, cases, _randomGenerator, _kinlyConfiguration, _logger);
+                    request, caseType, hearingType, venue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
                 
                 const string logCallingDb = "BookNewHearing Calling DB...";
                 const string dbCommand = "createVideoHearingCommand";
