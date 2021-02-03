@@ -1,32 +1,100 @@
-# Set variables once
-variables:
-  solutionType: DotNetCore # angularDotNetCore, dotNetCore, angular
-  apiDirectory: "BookingsAPI/Bookings.API"
-  sonarCloudExtraProperties: |
-    sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-    sonar.coverage.exclusions=**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
-    sonar.cpd.exclusions="**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**"
-    sonar.scanner.force-deprecated-java-version-grace-period=true
-  coverletCoverageExclusions: "[*]Bookings.Common.*,[*]Testing.Common.*,[Bookings.DAL]Bookings.DAL.BookingsDbContext,[*]Bookings.DAL.Mappings,[*]Bookings.DAL.SeedData.*,[*]Bookings.DAL.Mappings.*,[*]Bookings.DAL.Commands.Core.*,[*]Bookings.DAL.Queries.Core.*,[*]Bookings.Domain.Ddd.*,[Bookings.DAL]Bookings.DAL.DesignTimeHearingsContextFactory,[Bookings.API]Bookings.API.ConfigureServicesExtensions,[*]Bookings.API.Extensions.*,[*]Bookings.API.Swagger.*,[Bookings.API]Bookings.API.Program,[Bookings.API]Bookings.API.Startup,[*]Bookings.DAL.Migrations.*"
-  integrationTestsAppSettingsTransform: '
-    "AzureAd/ClientId":"$(vh-admin-web-appid)",
-    "AzureAd/ClientSecret":"$(vh-admin-web-key)",
-    "AzureAd/TenantId":"$(tenantid)",
-    "Testing/UsernameStem":"$(username-stem)",
-    "Services/BookingsApiResourceId":"$(vh-bookings-api-identifieruris)"
-    '
-  dalWorkingDirectory: "BookingsAPI/Bookings.DAL"
-  keyVaultName: vhcoreinfrahtdev # Used to get secrets for integration tests
-  secretsFilter: "vh-admin-web-appid,vh-admin-web-key,tenantid,vh-bookings-api-identifieruris" # filters out secrets returned from key vault
+parameters:
+  - name: PackageApp
+    displayName: Package App
+    type: boolean
+    default: true
+  
+  - name: PackageACTests
+    displayName: Package Acceptance Tests
+    type: boolean
+    default: true
+  
+  - name: PackageNuget
+    displayName: Package Nuget Project
+    type: boolean
+    default: true
+  
+  - name: RunUnitTests
+    displayName: Run Unit Tests
+    type: boolean
+    default: true
+  
+  - name: RunIntegTests
+    displayName: Run Integration Tests
+    type: boolean
+    default: true
+  
+  - name: RunSonarCloudTests
+    displayName: Run Sonar Cloud Analysis
+    type: boolean
+    default: true
+  
+  - name: RunMutationTests
+    displayName: Run Mutation Tests
+    type: boolean
+    default: false
+  
+  - name: RunACTests
+    displayName: Run Acceptance Tests
+    type: boolean
+    default: true
 
-# GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
-resources:
-  repositories:
-    - repository: azureDevOpsTemplates
-      type: github
-      name: hmcts/azure-devops-templates
-      ref: refs/heads/master # ref name to use, defaults to 'refs/heads/master'
-      endpoint: hmcts_shaed
+  - name: testSettings
+    type: object
+    default:
+      - name: ApplicationInsights:InstrumentationKey
+        value: vh-core-infra-AppInsightsKey
+        secret: true
+      - name: AzureAd:ClientId
+        value: vh-bookings-api-appid
+        secret: true
+      - name: AzureAd:ClientSecret
+        value: vh-bookings-api-key
+        secret: true
+      - name: AzureAd:TenantId
+        value: tenantid
+        secret: true
+      - name: Testing:UsernameStem
+        value: $(BookingsApiUsernameStem)
+      - name: Services:BookingsApiResourceId
+        value: vh-bookings-api-identifieruris
+        secret: true
+      - name: UseServiceBusFake
+        value: true
+
+  - name: appSettings
+    type: object
+    default:
+      - name: ApplicationInsights:InstrumentationKey
+        value: vh-core-infra-AppInsightsKey
+      - name: AzureAd:ClientId
+        value: vh-bookings-api-appid
+        secret: true
+      - name: AzureAd:ClientSecret
+        value: vh-bookings-api-key
+        secret: true
+      - name: AzureAd:TenantId
+        value: tenantid
+        secret: true
+      - name: Services:BookingsApiResourceId
+        value: vh-bookings-api-identifieruris
+        secret: true
+      - name: KinlyConfiguration:SipAddressStem
+        value: $(SipAddressStem)
+      # Connection strings
+      - name: ConnectionStrings:VhBookings
+        value: VhBookingsDatabaseConnectionString
+        secret: true
+      - name: ServiceBusQueue:ConnectionString
+        value: AzureServiceBusConnectionStringSend
+        secret: true
+  
+variables:
+  - group: vh-domains-and-urls
+  - group: vh-apps-settings-generic
+  - group: vh-preview
+  - group: vh-bookings-api
+  - group: KinlyConfiguration_Test
 
 trigger:
   branches:
@@ -34,23 +102,82 @@ trigger:
     - master
     - release/*
     - hotfix/*
+  
 pr:
-  - master
+  branches:
+    include:
+    - master
 
-jobs:
-  - template: jobs/efMigration.yml@azureDevOpsTemplates # Template reference
-    parameters:
-      dbProjectPath: $(Build.SourcesDirectory)/BookingsAPI/Bookings.DAL/Bookings.DAL.csproj
-      pool: Azure-VSTS-VS2017
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/master
+      endpoint: hmcts_shaed
+  containers:
+  - container: dotnetsdk
+    image: sspublicsbox.azurecr.io/vh/dotnet:3.1.102
+    endpoint: sspublicsbox
+  - container: dotnetsdk-cipipeline
+    image: sspublicsbox.azurecr.io/vh/dotnet-cipipeline:3.1.102
+    endpoint: sspublicsbox
 
-  - template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference
-    parameters:
-      sonarCloudExtraProperties: $(sonarCloudExtraProperties)
-      integrationTestsAppSettingsTransform: $(integrationTestsAppSettingsTransform)
-      coverletCoverageExclusions: $(coverletCoverageExclusions)
-      apiDirectory: $(apiDirectory)
-      dalWorkingDirectory: $(dalWorkingDirectory)
-      keyVaultName: $(keyVaultName)
-      secretsFilter: $(secretsFilter)
-      dotNetCoreVersion: '3.1.100'
-      nodeVersion: '14.x'
+extends:
+  template: stages\dotnet-package.yml@templates
+  parameters:
+    coreProjectPath: BookingsApi/BookingsApi
+    nugetProjectPath: BookingsApi/BookingsApi.Client
+    PackageNuget: ${{ parameters.PackageNuget }}
+    PackageApp: ${{ parameters.PackageApp }}
+    PackageAcceptanceTests: ${{ parameters.PackageACTests }}
+    Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
+    testParameters:
+      baseAgent: windows-latest
+      coreProjectPath: BookingsApi/BookingsApi
+      nugetConfigPath: BookingsApi
+      unitTestProjectPath: BookingsApi/BookingsApi.UnitTests
+      integTestProjectPath: BookingsApi/BookingsApi.IntegrationTests
+      secrets_KeyVault: $(pr_Secret_KeyVault)
+      secrets_Subscription: $(pr_Secret_Subscription)
+      RunUnitTests: ${{ parameters.RunUnitTests }}
+      RunIntegrationTests: ${{ parameters.RunIntegTests }}
+      RunSonarCloud: ${{ parameters.RunSonarCloudTests }}
+      RunStryker: ${{ parameters.RunMutationTests }}
+      IntegrationTestSettings:
+        - ${{ each setting in parameters.testSettings }}:
+          - name: ${{ setting.name }}
+            value: ${{ setting.value }}
+            secret: ${{ setting.secret }}
+            type: ${{ setting.type }}
+      variables:
+        - group: vh-bookings-api
+      coverletCoverageExclusions:
+        - "[BookingsApi.*Tests?]*"
+        - "[BookingsApi]Startup"
+        - "[*]BookingsApi.Common.*"
+        - "[Testing.Common]*"
+      sonarCloud_ExtraProperties: |
+        sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
+        sonar.coverage.exclusions=**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
+        sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
+      StrykerBreak: 75
+    ACTest: ${{ parameters.RunACTests }}
+    releaseParameters:
+      environment: Preview
+      subscription: $(pr_Subscription)
+      secrets_KeyVault: $(pr_Secret_KeyVault)
+      secrets_Subscription: $(pr_Secret_Subscription)
+      devOpsResource: vh_bookings_api
+      appName: vh-bookings-api-$(environment)
+      resourceGroup: vh-bookings-api-$(environment)
+      appSettings: ${{ parameters.appSettings }}
+      variables:
+        - group: vh-bookings-api
+      acceptanceTestSettings:
+        - name: Services:BookingsApiUrl
+          value: $(bookings_api_url_staging)
+        - ${{ each setting in parameters.testSettings }}:
+          - name: ${{ setting.name }}
+            value: ${{ setting.value }}
+            secret: ${{ setting.secret }}
