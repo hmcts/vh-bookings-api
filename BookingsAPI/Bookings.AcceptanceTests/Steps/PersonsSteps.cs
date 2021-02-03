@@ -65,6 +65,22 @@ namespace Bookings.AcceptanceTests.Steps
             var searchTerm = new SearchTermRequest(contactEmail.Substring(0, 3));
             _context.Request = _context.Post(PostPersonBySearchTerm, searchTerm);
         }
+        
+        [Given(@"I have a search for an individual request for an individual")]
+        public void GivenIHaveASearchForAIndividualRequestForAnIndividual()
+        {
+            var participant = _context.TestData.ParticipantsResponses.First(x=> x.UserRoleName == "Individual");
+            _context.Request =
+                _context.Get(SearchForNonJudicialPersonsByContactEmail(participant.ContactEmail));
+        }
+        
+        [Given(@"I have a search for an individual request for a judge")]
+        public void GivenIHaveASearchForAIndividualRequestForAJudge()
+        {
+            var participant = _context.TestData.ParticipantsResponses.First(x=> x.UserRoleName == "Judge");
+            _context.Request =
+                _context.Get(SearchForNonJudicialPersonsByContactEmail(participant.ContactEmail));
+        }
 
         [Then(@"persons details should be retrieved")]
         public void ThenPersonsDetailsShouldBeRetrieved()

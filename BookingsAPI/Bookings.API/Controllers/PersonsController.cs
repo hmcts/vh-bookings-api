@@ -214,6 +214,43 @@ namespace Bookings.API.Controllers
             }
         }
         
+        [HttpGet(Name = "SearchForNonJudicialPersonsByContactEmail")]
+        [SwaggerOperation(OperationId = "SearchForNonJudicialPersonsByContactEmail")]
+        [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string),(int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string),(int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string),(int)HttpStatusCode.Unauthorized)]
+        public async Task<ActionResult<PersonResponse>> SearchForNonJudicialPersonsByContactEmail([FromQuery]string contactEmail)
+        {
+            if (!contactEmail.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
+                return BadRequest(ModelState);
+            }
+
+            var personQuery = new GetPersonByContactEmailQuery(contactEmail);
+            var person = await _queryHandler.Handle<GetPersonByContactEmailQuery, Person>(personQuery);
+            if (person == null)
+            {
+                return NotFound($"Person with {contactEmail} does not exist");
+            }
+
+            var hearingsQuery = new GetHearingsByUsernameQuery(person.Username);
+            var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(hearingsQuery);
+
+            var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id)).Any(x =>
+                x.HearingRole.UserRole.IsJudge || x.HearingRole.UserRole.IsJudicialOfficeHolder);
+
+            if (judicialHearings)
+            {
+                return Unauthorized("Only searches for individuals or representatives are allowed");
+            }
+            
+            var mapper = new PersonToResponseMapper();
+            var response = mapper.MapPersonToResponse(person);
+            return Ok(response);
+        }
+        
         /// <summary>
         /// Update the personal details
         /// </summary>
@@ -252,6 +289,8 @@ namespace Bookings.API.Controllers
             
             // raise an update event for each hearing to ensure consistency between video and bookings api
             var createdHearings = hearings.Where(x => x.Status == BookingStatus.Created).ToList();
+            _logger.LogDebug("Updating {Count} confirmed hearing(s)", createdHearings.Count);
+            
             foreach(var hearing in createdHearings)
             {
                 var participant = hearing.Participants.First(x => x.PersonId == personId);

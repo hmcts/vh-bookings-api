@@ -30,3 +30,15 @@ Scenario: Get persons hearings by username for deletion
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
 	And a list of hearings for deletion is 1
+
+Scenario: Search for an individual by contact email
+	Given I have a hearing
+	And I have a search for an individual request for an individual
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
+
+Scenario: Search for a judge by contact email
+	Given I have a hearing
+	And I have a search for an individual request for a judge
+	When I send the request to the endpoint
+	Then the response should have the status Unauthorized and success status False
