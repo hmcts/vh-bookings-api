@@ -180,15 +180,6 @@ namespace Bookings.API.Controllers
                         "Hearing venue does not exist", logHearingVenueDoesNotExist, request.HearingVenueName, SeverityLevel.Error);
                 }
 
-                var mapper = new ParticipantRequestToNewParticipantMapper();
-                var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
-                const string logMappedParticpants = "BookNewHearing mapped participants";
-                const string keyParticipants = "Participants";
-                _logger.TrackTrace(logMappedParticpants, SeverityLevel.Information, new Dictionary<string, string>
-                {
-                    {keyParticipants, string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
-                });
-               
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
                 const string logHasCases = "BookNewHearing got cases";
                 const string keyCases = "Cases";
@@ -197,33 +188,9 @@ namespace Bookings.API.Controllers
                     {keyCases, string.Join(", ", cases?.Select(x => new {x.Name, x.Number}))}
                 });
 
-                var endpoints = new List<NewEndpoint>();
-                if (request.Endpoints != null)
-                {
-                    endpoints = request.Endpoints.Select(x =>
-                        EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
-                            _kinlyConfiguration.SipAddressStem)).ToList();
-
-                    const string logMappedEndpoints = "BookNewHearing mapped endpoints";
-                    const string keyEndpoints = "Endpoints";
-                    _logger.TrackTrace(logMappedEndpoints, SeverityLevel.Information, new Dictionary<string, string>
-                    {
-                        {keyEndpoints, string.Join(", ", endpoints?.Select(x => new {x?.Sip, x?.DisplayName, x?.DefenceAdvocateUsername}))}
-                    });
-                }
-
-                var linkedParticipants =
-                    LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
-
-                var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                    request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints, linkedParticipants)
-                {
-                    HearingRoomName = request.HearingRoomName,
-                    OtherInformation = request.OtherInformation,
-                    CreatedBy = request.CreatedBy
-                };
-
+                var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
+                    request, caseType, hearingType, venue, cases, _randomGenerator, _kinlyConfiguration, _logger);
+                
                 const string logCallingDb = "BookNewHearing Calling DB...";
                 const string dbCommand = "createVideoHearingCommand";
                 const string logSaveSuccess = "BookNewHearing DB Save Success";

@@ -173,10 +173,9 @@ namespace Bookings.API.Controllers
                 ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
                 return BadRequest(ModelState);
             }
-            
-            var mapper = new ParticipantRequestToNewParticipantMapper();
+
             var participants = request.Participants
-                .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
+                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
             var linkedParticipants =
                 LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
