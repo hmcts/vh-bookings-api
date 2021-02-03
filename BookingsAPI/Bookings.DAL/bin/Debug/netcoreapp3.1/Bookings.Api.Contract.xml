@@ -1,0 +1,892 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Bookings.Api.Contract</name>
+    </assembly>
+    <members>
+        <member name="P:Bookings.Api.Contract.Requests.AddParticipantsToHearingRequest.Participants">
+            <summary>
+                List of participants
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.AddParticipantsToHearingRequest.LinkedParticipants">
+            <summary>
+                List of linked participants
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.ScheduledDateTime">
+            <summary>
+                The date and time for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.ScheduledDuration">
+            <summary>
+                The duration of a hearing (number of minutes)
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.HearingVenueName">
+            <summary>
+                The name of the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.CaseTypeName">
+            <summary>
+                The name of the case type
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.HearingTypeName">
+            <summary>
+                The name of the hearing type
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.Cases">
+            <summary>
+                List of cases associated to the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.Participants">
+            <summary>
+                List of participants in hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.HearingRoomName">
+            <summary>
+                The hearing room name at the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.OtherInformation">
+            <summary>
+                Any other information about the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.CreatedBy">
+            <summary>
+                The VH admin username that created the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.QuestionnaireNotRequired">
+            <summary>
+            QuestionnaireNotRequired
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.BookNewHearingRequest.AudioRecordingRequired">
+            <summary>
+            Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.CaseRequest.Number">
+            <summary>
+                The case number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.CaseRequest.Name">
+            <summary>
+                The case name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.CaseRequest.IsLeadCase">
+            <summary>
+                Is lead case for hearing
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Requests.Enums.UpdateBookingStatus">
+            <summary>
+                Booking status to update
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.IRepresentativeInfoRequest.OrganisationName">
+            <summary>
+                Participant Organisation
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.IRepresentativeInfoRequest.Representee">
+            <summary>
+                Representee
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.Title">
+            <summary>
+                Participant Title.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.FirstName">
+            <summary>
+                Participant first name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.MiddleNames">
+            <summary>
+                Participant middle name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.LastName">
+            <summary>
+                Participant last name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.ContactEmail">
+            <summary>
+                Participant Contact Email
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.TelephoneNumber">
+            <summary>
+                Participant Telephone number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.Username">
+            <summary>
+                Participant Username
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.DisplayName">
+            <summary>
+                Participant Display Name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.CaseRoleName">
+            <summary>
+                The name of the participant's case role
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.HearingRoleName">
+            <summary>
+                The name of the participant's hearing role
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.Representee">
+            <summary>
+                The representee of a representative
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.ParticipantRequest.OrganisationName">
+            <summary>
+                The organisation name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.SuitabilityAnswersRequest.Key">
+            <summary>
+            Key used to identify the question
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.SuitabilityAnswersRequest.Answer">
+            <summary>
+            Answer the question
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.SuitabilityAnswersRequest.ExtendedAnswer">
+            <summary>
+            Extended answer to the question
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateBookingStatusRequest.UpdatedBy">
+            <summary>
+             The user requesting to update the status
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateBookingStatusRequest.Status">
+            <summary>
+                New status of the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateBookingStatusRequest.CancelReason">
+            <summary>
+            The reason for cancelling the video hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.ScheduledDateTime">
+            <summary>
+                Hearing Schedule Date and Time
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.ScheduledDuration">
+            <summary>
+                Duration of the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.HearingVenueName">
+            <summary>
+            The name of the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.HearingRoomName">
+            <summary>
+                The hearing room name at the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.OtherInformation">
+            <summary>
+                Any other information about the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.Cases">
+            <summary>
+                List of cases associated to the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.UpdatedBy">
+            <summary>
+                User updated the hearing record
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.QuestionnaireNotRequired">
+            <summary>
+            QuestionnaireNotRequired
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateHearingRequest.AudioRecordingRequired">
+            <summary>
+            Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdatePersonDetailsRequest.FirstName">
+            <summary>
+                Participant first name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdatePersonDetailsRequest.LastName">
+            <summary>
+                Participant last name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdatePersonDetailsRequest.Username">
+            <summary>
+                Participant Username
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateParticipantRequest.Title">
+            <summary>
+                Participant Title.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateParticipantRequest.TelephoneNumber">
+            <summary>
+                Participant Telephone number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateParticipantRequest.DisplayName">
+            <summary>
+                Participant Display Name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateParticipantRequest.OrganisationName">
+            <summary>
+                Participant Organisation
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateParticipantRequest.Representee">
+            <summary>
+                Representee
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Requests.UpdateParticipantRequest.LinkedParticipants">
+            <summary>
+                List of linked participants
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse">
+            <summary>
+            hearing information queried by case number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.Id">
+            <summary>
+                Hearing Id
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.ScheduledDateTime">
+            <summary>
+                The date and time for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.HearingVenueName">
+            <summary>
+                The name of the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.CaseNumber">
+            <summary>
+                The case number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.CaseName">
+            <summary>
+                The case name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.CourtroomAccount">
+            <summary>
+                The courtroom account
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.CourtroomAccountName">
+            <summary>
+                The courtroom account name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.HearingRoomName">
+            <summary>
+                The hearing room name at the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.AudioRecordedHearingsBySearchResponse.GroupId">
+            <summary>
+            The group id for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsByDateResponse.ScheduledDate">
+            <summary>
+            The hearings grouped by date without time.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsByDateResponse.Hearings">
+            <summary>
+            Gets or sets list of bookings hearings.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.HearingId">
+            <summary>
+            Gets or sets the hearing ID.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.HearingNumber">
+            <summary>
+            Gets or sets the hearing number/reference.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.HearingName">
+            <summary>
+            Gets or sets the hearing title/name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.ScheduledDateTime">
+            <summary>
+            Gets or sets the hearing scheduled date and time.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.ScheduledDuration">
+            <summary>
+            Gets or sets the hearing duration.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.CaseTypeName">
+            <summary>
+            Gets or sets the name of the case type.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.HearingTypeName">
+            <summary>
+            Gets or sets the hearing case type.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.CourtRoom">
+            <summary>
+            Gets or sets the court room.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.CourtAddress">
+            <summary>
+            Gets or sets the court address.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.JudgeName">
+            <summary>
+            Gets or sets Judge name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.CreatedBy">
+            <summary>
+            Gets or sets the name/email person who create the hearing.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.CreatedDate">
+            <summary>
+            Gets or sets the created date of hearing.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.LastEditBy">
+            <summary>
+            Gets or sets the name/email person who last edit the hearing.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.LastEditDate">
+            <summary>
+            Gets or sets the last edited date of hearing.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.ConfirmedBy">
+            <summary>
+                The VH admin username that confirmed the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.ConfirmedDate">
+            <summary>
+                The date and time when the hearing was confirmed
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.HearingDate">
+            <summary>
+            Gets the scheduled date without time.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.Status">
+            <summary>
+            Gets or sets the booking status of the hearing.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.QuestionnaireNotRequired">
+            <summary>
+            QuestionnaireNotRequired
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.AudioRecordingRequired">
+            <summary>
+            Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.GroupId">
+            <summary>
+            The group id for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsHearingResponse.CourtRoomAccount">
+            <summary>
+            Gets or sets Judge/Court account (username).
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.BookingsResponse.Hearings">
+            <summary>
+            Gets or sets list of bookings hearings.
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.CaseResponse">
+            <summary>
+            Case Information
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.CaseResponse.Number">
+            <summary>
+                The case number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.CaseResponse.Name">
+            <summary>
+                The case name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.CaseResponse.IsLeadCase">
+            <summary>
+                Is lead case for hearing
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.CaseTypeResponse">
+            <summary>
+                A case type and the hearing types possible
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.CaseTypeResponse.Name">
+            <summary>
+                The case type display name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.CaseTypeResponse.Id">
+            <summary>
+                Unique identifier
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.CaseTypeResponse.HearingTypes">
+            <summary>
+                The hearing types
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.HearingDetailsResponse">
+            <summary>
+            Detailed information of a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.Id">
+            <summary>
+                Hearing Id
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.ScheduledDateTime">
+            <summary>
+                The date and time for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.ScheduledDuration">
+            <summary>
+                The duration of a hearing (number of minutes)
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.HearingVenueName">
+            <summary>
+                The name of the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.CaseTypeName">
+            <summary>
+                The name of the case type
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.HearingTypeName">
+            <summary>
+                The name of the hearing type
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.Cases">
+            <summary>
+                List of cases associated to the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.Participants">
+            <summary>
+                List of participants in hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.HearingRoomName">
+            <summary>
+                The hearing room name at the hearing venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.OtherInformation">
+            <summary>
+                Any other information about the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.CreatedDate">
+            <summary>
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.CreatedBy">
+            <summary>
+                The VH admin username that created the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.UpdatedBy">
+            <summary>
+                The last date and time any details for the hearing was updated
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.UpdatedDate">
+            <summary>
+                User id of the who last updated the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.ConfirmedBy">
+            <summary>
+                The VH admin username that confirmed the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.ConfirmedDate">
+            <summary>
+                The date and time when the hearing was confirmed
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.Status">
+            <summary>
+            Gets or sets the booking status of the hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.QuestionnaireNotRequired">
+            <summary>
+            QuestionnaireNotRequired
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.AudioRecordingRequired">
+            <summary>
+            Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.CancelReason">
+            <summary>
+            Gets or sets the hearing cancel reason
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.Endpoints">
+            <summary>
+            Gets the endpoints for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingDetailsResponse.GroupId">
+            <summary>
+            The group id for a hearing
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingSuitabilityAnswerResponse.ParticipantId">
+            <summary>
+                Participant Id
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingSuitabilityAnswerResponse.ScheduledAt">
+            <summary>
+            Scheduled At
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingSuitabilityAnswerResponse.UpdatedAt">
+            <summary>
+            Updated At
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingSuitabilityAnswerResponse.CreatedAt">
+            <summary>
+            Created At
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingSuitabilityAnswerResponse.Answers">
+            <summary>
+            List of answers
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.HearingTypeResponse">
+            <summary>
+                A hearing type
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingTypeResponse.Name">
+            <summary>
+                The hearing type display name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.HearingTypeResponse.Id">
+            <summary>
+                Unique identifier for the hearing type
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.HearingVenueResponse">
+            <summary>
+            Hearing Venue
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.LinkedParticipantResponse.LinkedId">
+            <summary>
+                The linked participant in the response
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.LinkedParticipantResponse.Type">
+            <summary>
+                The type of the linked participant
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.PagedCursorBasedResponse">
+            <summary>
+            Base class for paged cursor base pagination responses where each
+            response represents a next cursor to get data.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PagedCursorBasedResponse.NextCursor">
+            <summary>
+            Gets or sets a unique sequential value to get next set of records. 
+            value is set to 0 if no records to return.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PagedCursorBasedResponse.Limit">
+            <summary>
+            Gets or sets the maximum number of items returned for the page.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PagedCursorBasedResponse.PrevPageUrl">
+            <summary>
+            Absolute url to the previous page of items.
+            Will be null for the first page.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PagedCursorBasedResponse.NextPageUrl">
+            <summary>
+            Absolute url for the next page of items.
+            Will be null for the last page.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.Id">
+            <summary>
+                Participant Id
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.DisplayName">
+            <summary>
+                Participant Display Name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.CaseRoleName">
+            <summary>
+                The name of the participant's case role
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.HearingRoleName">
+            <summary>
+                The name of the participant's hearing role
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.UserRoleName">
+            <summary>
+                The name of the participant's user role
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.Title">
+            <summary>
+                Participant Title.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.FirstName">
+            <summary>
+                Participant first name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.MiddleNames">
+            <summary>
+                Participant middle name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.LastName">
+            <summary>
+                Participant last name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.ContactEmail">
+            <summary>
+                Participant contact email
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.TelephoneNumber">
+            <summary>
+                Participant telephone number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.Username">
+            <summary>
+                Participant username
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.Organisation">
+            <summary>
+               Gets or sets the organisation name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.Representee">
+            <summary>
+                Gets or sets the person name that Representative represents.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantResponse.LinkedParticipants">
+            <summary>
+                The participant linked to this participant response
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.ParticipantId">
+            <summary>
+                Gets or sets the participant ID
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.CaseNumber">
+            <summary>
+                Gets or sets the hearing case number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.HearingRole">
+            <summary>
+                Gets or sets the participant hearing role
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.Title">
+            <summary>
+                Gets or sets the participant title
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.FirstName">
+            <summary>
+                Gets or sets the participant first name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.LastName">
+            <summary>
+                Gets or sets the participant last name
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.UpdatedAt">
+            <summary>
+                Last updated date and time of the suitability answers
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.Representee">
+            <summary>
+                Gets or sets the name of represented person
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.ParticipantSuitabilityAnswerResponse.Answers">
+            <summary>
+                List of answers
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.Id">
+            <summary>
+                Participant Id
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.Title">
+            <summary>
+                Participant Title.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.FirstName">
+            <summary>
+                Participant first name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.MiddleNames">
+            <summary>
+                Participant middle name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.LastName">
+            <summary>
+                Participant last name.
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.ContactEmail">
+            <summary>
+                Participant contact email
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.TelephoneNumber">
+            <summary>
+                Participant telephone number
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.Username">
+            <summary>
+                Participant username
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.PersonResponse.Organisation">
+            <summary>
+                Organisation of representative
+            </summary>
+        </member>
+        <member name="T:Bookings.Api.Contract.Responses.SuitabilityAnswerResponse">
+            <summary>
+            Suitability Answer Response Object
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.SuitabilityAnswerResponse.Key">
+            <summary>
+            Key used to identify the question
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.SuitabilityAnswerResponse.Answer">
+            <summary>
+            Answer the question
+            </summary>
+            
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.SuitabilityAnswerResponse.ExtendedAnswer">
+            <summary>
+            Extended answer to the question
+            </summary>
+        </member>
+        <member name="P:Bookings.Api.Contract.Responses.SuitabilityAnswersResponse.ParticipantSuitabilityAnswerResponse">
+            <summary>
+            Gets or sets a list of participants suitability answers.
+            </summary>
+        </member>
+    </members>
+</doc>

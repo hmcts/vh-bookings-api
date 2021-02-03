@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "/Users/virensareen/.dotnet/store/|arch|/|tfm|",
+      "/Users/virensareen/.nuget/packages"
+    ]
+  }
+}
