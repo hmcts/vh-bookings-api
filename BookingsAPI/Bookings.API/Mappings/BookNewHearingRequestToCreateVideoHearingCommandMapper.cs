@@ -12,7 +12,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 
 namespace Bookings.API.Mappings
 {
-    public static class ParticipantRequestToNewParticipantMapperParticipantRequestToNewParticipantMapper
+    public static class BookNewHearingRequestToCreateVideoHearingCommandMapper
     {
         public static CreateVideoHearingCommand Map(
             BookNewHearingRequest request,

@@ -3,10 +3,8 @@ using NUnit.Framework;
 
 namespace Bookings.UnitTests.Mappings
 {
-    public class ParticipantRequestToNewParticipantMapperParticipantRequestToNewParticipantMapperTests
+    public class BookNewHearingRequestToCreateVideoHearingCommandMapperTests
     {
-        private ParticipantRequestToNewParticipantMapperParticipantRequestToNewParticipantMapper _mapper;
-
         [SetUp]
         public void SetUp()
         {
