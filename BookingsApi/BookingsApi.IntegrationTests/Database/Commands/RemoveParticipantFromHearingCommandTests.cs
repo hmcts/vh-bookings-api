@@ -10,7 +10,6 @@ using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
@@ -98,16 +97,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(seededHearing.Id, participantWithALink));
 
-            await using (var db = new BookingsDbContext(BookingsDbContextOptions))
-            {
-                var links = db.LinkedParticipant
-                    .AsNoTracking()
-                    .Include(x => x.Participant)
-                    .Include(x => x.Linked)
-                    .Where(x => x.ParticipantId == participantWithALink.Id)
-                    .ToList();
+            var links = seededHearing.Participants.Select(x =>
+                x.LinkedParticipants.SingleOrDefault(y => y.Participant == participantWithALink)).ToList();
 
-                links.Should().BeNullOrEmpty();
+            foreach (var link in links)
+            {
+                link.Should().BeNull();
             }
         }
     }

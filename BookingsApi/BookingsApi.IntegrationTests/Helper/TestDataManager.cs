@@ -121,7 +121,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 var interpretee = videoHearing.Participants[0];
                 var interpreter = videoHearing.Participants[1];
                 var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, (int)LinkedParticipantType.Interpreter);
-                await CreateParticipantLinks(interpretee, interpreter, participantLink);   
+                CreateParticipantLinks(interpretee, interpreter, participantLink);   
             }
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
@@ -230,16 +230,8 @@ namespace BookingsApi.IntegrationTests.Helper
             return caseType;
         }
         
-        private async Task CreateParticipantLinks(Participant interpretee, Participant interpreter, LinkedParticipant participantLink)
+        private void CreateParticipantLinks(Participant interpretee, Participant interpreter, LinkedParticipant participantLink)
         {
-            await using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                var interpreteeLink = new LinkedParticipant(participantLink.LinkedId, 
-                    participantLink.ParticipantId, participantLink.Type);
-
-                await db.LinkedParticipant.AddRangeAsync(participantLink, interpreteeLink);
-            }
-            
             interpretee.LinkedParticipants.Add(participantLink);
             interpreter.LinkedParticipants.Add(new LinkedParticipant(participantLink.LinkedId,
                 participantLink.ParticipantId, participantLink.Type));
