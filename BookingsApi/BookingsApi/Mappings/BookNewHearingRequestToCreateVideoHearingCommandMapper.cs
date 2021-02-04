@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Common;
-using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
-using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Mappings
 {
@@ -21,12 +18,11 @@ namespace BookingsApi.Mappings
             HearingVenue venue,
             List<Case> cases,
             IRandomGenerator randomGenerator,
-            KinlyConfiguration kinlyConfiguration,
-            ILogger logger)
+            string sipAddressStem)
         {
-            var newParticipants = MapParticipants(request, caseType, logger);
-            var newEndpoints = MapEndpoints(request, randomGenerator, kinlyConfiguration, logger);
-            var linkedParticipants = MapLinkedParticipants(request, logger);
+            var newParticipants = MapParticipants(request, caseType);
+            var newEndpoints = MapEndpoints(request, randomGenerator, sipAddressStem);
+            var linkedParticipants = MapLinkedParticipants(request);
 
             return new CreateVideoHearingCommand(caseType, hearingType,
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
@@ -38,49 +34,30 @@ namespace BookingsApi.Mappings
             };
         }
 
-        private static List<NewParticipant> MapParticipants(BookNewHearingRequest request, CaseType caseType, ILogger logger)
+        private static List<NewParticipant> MapParticipants(BookNewHearingRequest request, CaseType caseType)
         {
             var newParticipants = request.Participants.Select(
                 x => ParticipantRequestToNewParticipantMapper.Map(x, caseType)).ToList();
-            const string logMappedParticipants = "BookNewHearing mapped participants";
-            const string keyParticipants = "Participants";
-            logger.TrackTrace(logMappedParticipants, SeverityLevel.Information, new Dictionary<string, string>
-            {
-                {keyParticipants, string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
-            });
-
             return newParticipants;
         }
 
-        private static List<NewEndpoint> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator, KinlyConfiguration kinlyConfiguration, ILogger logger)
+        private static List<NewEndpoint> MapEndpoints(BookNewHearingRequest request, IRandomGenerator randomGenerator,
+            string sipAddressStem)
         {
             var endpoints = new List<NewEndpoint>();
             if (request.Endpoints != null)
             {
                 endpoints = request.Endpoints.Select(x =>
-                    EndpointToResponseMapper.MapRequestToNewEndpointDto(x, randomGenerator,
-                        kinlyConfiguration.SipAddressStem)).ToList();
-
-                const string logMappedEndpoints = "BookNewHearing mapped endpoints";
-                const string keyEndpoints = "Endpoints";
-                logger.TrackTrace(logMappedEndpoints, SeverityLevel.Information, new Dictionary<string, string>
-                {
-                    {keyEndpoints, string.Join(", ", endpoints?.Select(x => new {x?.Sip, x?.DisplayName, x?.DefenceAdvocateUsername}))}
-                });
+                    EndpointToResponseMapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
             }
 
             return endpoints;
         }
 
-        private static List<LinkedParticipantDto> MapLinkedParticipants(BookNewHearingRequest request, ILogger logger)
+        private static List<LinkedParticipantDto> MapLinkedParticipants(BookNewHearingRequest request)
         {
-            var dto = LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants).ToList();
-            
-            logger.TrackTrace("Linked participants mapped to dto", SeverityLevel.Information, new Dictionary<string, string>
-            {
-                {"LinkedParticipants", string.Join(", ", dto.Select(x => new {x?.ParticipantContactEmail, x?.LinkedParticipantContactEmail, x?.Type}))}
-            });
-
+            var dto = LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants)
+                .ToList();
             return dto;
         }
     }
