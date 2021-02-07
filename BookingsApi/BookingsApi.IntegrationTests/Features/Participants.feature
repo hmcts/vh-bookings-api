@@ -124,6 +124,11 @@ Scenario: Participant not updated with invalid representee
 	Given I have an update participant in a hearing request with a invalid representee
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
+	
+Scenario: Participant details updated successfully
+	Given I have an update participant in a hearing request with a valid hearing id
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True
 
 Scenario: Participant submits suitability answers with invalid participant id
 	Given I have an update suitability answers request with an valid hearing id and invalid participant id
