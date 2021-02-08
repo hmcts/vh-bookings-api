@@ -62,6 +62,6 @@ Scenario: Update suitability answers with user role Representative
 	
 Scenario: Create a single linked participant for a participant
 	Given I have a hearing
-	And I have an interpreter linked to a participant
+	And I create a request to link 2 distinct participants in the hearing
 	When I send the request to the endpoint
 	Then the response should have the status OK and success status True
