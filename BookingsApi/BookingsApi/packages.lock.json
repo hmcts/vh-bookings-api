@@ -2672,10 +2672,7 @@
         }
       },
       "bookingsapi.contract": {
-        "type": "Project",
-        "dependencies": {
-          "BookingsApi.Domain": "1.0.0"
-        }
+        "type": "Project"
       },
       "bookingsapi.dal": {
         "type": "Project",

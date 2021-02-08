@@ -1,6 +1,7 @@
 using System.Linq;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Extensions;
 
 namespace BookingsApi.Mappings
 {
@@ -23,7 +24,8 @@ namespace BookingsApi.Mappings
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
-                LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponse { LinkedId = x.LinkedId, Type = x.Type}).ToList()
+                LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponse
+                    {LinkedId = x.LinkedId, Type = x.Type.MapToContractEnum()}).ToList()
             };
 
             switch (participant.HearingRole.UserRole.Name)

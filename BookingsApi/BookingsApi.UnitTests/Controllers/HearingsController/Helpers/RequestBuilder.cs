@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.Enums;
 using BookingsApi.Contract.Requests;
-using BookingsApi.Domain.Enumerations;
 using FizzWare.NBuilder;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers

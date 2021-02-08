@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.Extensions;
 
 namespace BookingsApi.Mappings
 {
@@ -21,7 +22,7 @@ namespace BookingsApi.Mappings
                     {
                         ParticipantContactEmail = request.ParticipantContactEmail,
                         LinkedParticipantContactEmail = request.LinkedParticipantContactEmail,
-                        Type = request.Type
+                        Type = request.Type.MapToDomainEnum()
                     };
                 
                     listOfDtos.Add(dto);

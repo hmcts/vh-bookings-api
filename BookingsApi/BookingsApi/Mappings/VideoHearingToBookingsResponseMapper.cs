@@ -3,6 +3,7 @@ using BookingsApi.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Extensions;
 
 namespace BookingsApi.Mappings
 {
@@ -53,7 +54,7 @@ namespace BookingsApi.Mappings
                 ConfirmedBy = videoHearing.ConfirmedBy,
                 ConfirmedDate = videoHearing.ConfirmedDate,
                 JudgeName = judgeName,
-                Status = videoHearing.Status,
+                Status = videoHearing.Status.MapToContractEnum(),
                 QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
