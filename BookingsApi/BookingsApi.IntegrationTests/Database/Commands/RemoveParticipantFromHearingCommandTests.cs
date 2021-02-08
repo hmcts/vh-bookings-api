@@ -97,13 +97,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(seededHearing.Id, participantWithALink));
 
-            var links = seededHearing.Participants.Select(x =>
-                x.LinkedParticipants.SingleOrDefault(y => y.Participant == participantWithALink)).ToList();
+            var hearingWithNoLinks = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
-            foreach (var link in links)
-            {
-                link.Should().BeNull();
-            }
+            hearingWithNoLinks.Participants.Where(x => x.LinkedParticipants.Any()).Should().BeNullOrEmpty();
         }
     }
 }

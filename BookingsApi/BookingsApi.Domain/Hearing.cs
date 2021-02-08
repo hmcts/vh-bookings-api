@@ -215,12 +215,9 @@ namespace BookingsApi.Domain
             {
                 endpoint.AssignDefenceAdvocate(null);
             }
-
-            foreach (var linkedParticipant in participant.LinkedParticipants.ToList())
-            {
-                participant.RemoveLink(linkedParticipant);
-            }
             
+            participant.LinkedParticipants.Clear();
+
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
         }

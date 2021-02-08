@@ -140,10 +140,10 @@ namespace BookingsApi.DAL.Commands
             return Task.FromResult(linkedParticipants);
         }
 
-        private void UpdateParticipantsWithLinks(Participant interpretee, Participant interpreter, LinkedParticipantType linkType)
+        private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
         {
-            interpretee.AddLink(interpreter.Id, linkType);
-            interpreter.AddLink(interpretee.Id, linkType);
+            participant1.AddLink(participant2.Id, linkType);
+            participant2.AddLink(participant1.Id, linkType);
         }
 
         private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)

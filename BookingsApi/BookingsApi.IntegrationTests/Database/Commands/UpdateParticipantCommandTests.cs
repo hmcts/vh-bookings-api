@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private UpdateParticipantCommandHandler _commandHandler;
         private Guid _newHearingId;
 
-        [NUnit.Framework.SetUp]
+        [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
@@ -30,7 +30,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _newHearingId = Guid.Empty;
         }
         
-        [NUnit.Framework.Test]
+        [Test]
         public async Task Should_be_able_to_update_individual_participant()
         {
             var editPrefix = " _Edit";
@@ -38,7 +38,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var beforeUpdatedDate = seededHearing.UpdatedDate;
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var individualParticipant = seededHearing.GetParticipants().FirstOrDefault(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+            var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
 
             var title = individualParticipant.Person.Title + editPrefix;
             var displayName = individualParticipant.DisplayName + editPrefix;
@@ -57,7 +57,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedIndividual.Person.TelephoneNumber.Should().Be(telephoneNumber);
         }
 
-        [NUnit.Framework.Test]
+        [Test]
         public async Task Should_be_able_to_update_representative_participant()
         {
             var editPrefix = " _Edit";
@@ -92,7 +92,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedRepresentative.Representee.Should().Be(repInfo.Representee);
         }
 
-        [NUnit.Framework.Test]
+        [Test]
         public async Task Should_Update_Participant_With_Links()
         {
             var editPrefix = " _Edit";

@@ -2,6 +2,6 @@ namespace BookingsApi.Domain.Enumerations
 {
     public enum LinkedParticipantType
     {
-        Interpreter = 0
+        Interpreter = 1
     }
 }

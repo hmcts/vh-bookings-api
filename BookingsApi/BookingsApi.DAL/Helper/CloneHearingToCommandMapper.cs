@@ -62,28 +62,8 @@ namespace BookingsApi.DAL.Helper
                 };
             }).ToList();
 
-            var hearingParticipants = hearing.Participants.Where(x => x.LinkedParticipants.Any()).ToList();
-            var linkedParticipantDtos = new List<LinkedParticipantDto>();
-            foreach (var hearingParticipant in hearingParticipants)
-            {
-                var participantEmail = hearingParticipant.Person.ContactEmail;
-                var participantLink = hearingParticipant.GetLinkedParticipants() 
-                    .FirstOrDefault(x => x.ParticipantId == hearingParticipant.Id);
-                if (participantLink != null)
-                {
-                    var linkedParticipant = hearing.Participants.SingleOrDefault(x => x.Id == participantLink.LinkedId);
-                
-                    var linkedParticipantDto = new LinkedParticipantDto
-                    {
-                        LinkedParticipantContactEmail = linkedParticipant?.Person.ContactEmail,
-                        ParticipantContactEmail = participantEmail,
-                        Type = participantLink.Type
-                    };   
-                    
-                    linkedParticipantDtos.Add(linkedParticipantDto);
-                }
-            }
-            
+            var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
+
             var duration = 480;
             var command = new CreateVideoHearingCommand(hearing.CaseType, hearing.HearingType, newDate,
                 duration, hearing.HearingVenue, participants, cases, true,
@@ -96,6 +76,33 @@ namespace BookingsApi.DAL.Helper
             };
 
             return command;
+        }
+
+        private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)
+        {
+            var hearingParticipants = hearing.Participants.Where(x => x.LinkedParticipants.Any()).ToList();
+            var linkedParticipantDtos = new List<LinkedParticipantDto>();
+            foreach (var hearingParticipant in hearingParticipants)
+            {
+                var participantEmail = hearingParticipant.Person.ContactEmail;
+                var participantLink = hearingParticipant.GetLinkedParticipants()
+                    .FirstOrDefault(x => x.ParticipantId == hearingParticipant.Id);
+                if (participantLink != null)
+                {
+                    var linkedParticipant = hearing.Participants.SingleOrDefault(x => x.Id == participantLink.LinkedId);
+
+                    var linkedParticipantDto = new LinkedParticipantDto
+                    {
+                        LinkedParticipantContactEmail = linkedParticipant?.Person.ContactEmail,
+                        ParticipantContactEmail = participantEmail,
+                        Type = participantLink.Type
+                    };
+
+                    linkedParticipantDtos.Add(linkedParticipantDto);
+                }
+            }
+
+            return linkedParticipantDtos;
         }
     }
 }

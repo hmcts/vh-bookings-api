@@ -120,7 +120,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 var interpretee = videoHearing.Participants[0];
                 var interpreter = videoHearing.Participants[1];
-                var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, (int)LinkedParticipantType.Interpreter);
+                var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
                 CreateParticipantLinks(interpretee, interpreter, participantLink);   
             }
 
