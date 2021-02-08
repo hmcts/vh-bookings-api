@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bookings.IntegrationTests.Models;
+using BookingsApi.IntegrationTests.Models;
 using TechTalk.SpecFlow;
 
-namespace Bookings.IntegrationTests.Transformations
+namespace BookingsApi.IntegrationTests.Transformations
 {
     [Binding]
     public class Transforms

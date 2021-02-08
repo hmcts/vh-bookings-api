@@ -5,8 +5,6 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
-using Bookings.Infrastructure.Services.IntegrationEvents;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -23,6 +21,8 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -179,47 +179,17 @@ namespace BookingsApi.Controllers
                         "Hearing venue does not exist", logHearingVenueDoesNotExist, request.HearingVenueName, SeverityLevel.Error);
                 }
 
-                var mapper = new ParticipantRequestToNewParticipantMapper();
-                var newParticipants = request.Participants.Select(x => mapper.MapRequestToNewParticipant(x, caseType)).ToList();
-                const string logMappedParticpants = "BookNewHearing mapped participants";
-                const string keyParticipants = "Participants";
-                _logger.TrackTrace(logMappedParticpants, SeverityLevel.Information, new Dictionary<string, string>
-                {
-                    {keyParticipants, string.Join(", ", newParticipants?.Select(x => x?.Person?.Username))}
-                });
-                
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
                 const string logHasCases = "BookNewHearing got cases";
                 const string keyCases = "Cases";
                 _logger.TrackTrace(logHasCases, SeverityLevel.Information, new Dictionary<string, string>
                 {
-                    {keyCases, string.Join(", ", cases?.Select(x => new {x.Name, x.Number}))}
+                    {keyCases, string.Join(", ", cases.Select(x => new {x.Name, x.Number}))}
                 });
 
-                var endpoints = new List<NewEndpoint>();
-                if (request.Endpoints != null)
-                {
-                    endpoints = request.Endpoints.Select(x =>
-                        EndpointToResponseMapper.MapRequestToNewEndpointDto(x, _randomGenerator,
-                            _kinlyConfiguration.SipAddressStem)).ToList();
-
-                    const string logMappedEndpoints = "BookNewHearing mapped endpoints";
-                    const string keyEndpoints = "Endpoints";
-                    _logger.TrackTrace(logMappedEndpoints, SeverityLevel.Information, new Dictionary<string, string>
-                    {
-                        {keyEndpoints, string.Join(", ", endpoints?.Select(x => new {x?.Sip, x?.DisplayName, x?.DefenceAdvocateUsername}))}
-                    });
-                }
-
-                var createVideoHearingCommand = new CreateVideoHearingCommand(caseType, hearingType,
-                    request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                    request.QuestionnaireNotRequired, request.AudioRecordingRequired, endpoints)
-                {
-                    HearingRoomName = request.HearingRoomName,
-                    OtherInformation = request.OtherInformation,
-                    CreatedBy = request.CreatedBy
-                };
-
+                var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
+                    request, caseType, hearingType, venue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+                
                 const string logCallingDb = "BookNewHearing Calling DB...";
                 const string dbCommand = "createVideoHearingCommand";
                 const string logSaveSuccess = "BookNewHearing DB Save Success";
@@ -233,17 +203,17 @@ namespace BookingsApi.Controllers
 
                 var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
                 var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-                const string logRetreiveNewHearing = "BookNewHearing Retrieved new hearing from DB";
+                const string logRetrieveNewHearing = "BookNewHearing Retrieved new hearing from DB";
                 const string keyHearingId = "HearingId";
                 const string keyCaseType = "CaseType";
                 const string keyParticipantCount = "Participants.Count";
-                _logger.TrackTrace(logRetreiveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
+                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
                 {
                     {keyHearingId, queriedVideoHearing.Id.ToString()},
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},
                     {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
                 });
-
+                
                 var hearingMapper = new HearingToDetailResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";

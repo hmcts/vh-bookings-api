@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
-namespace Bookings.IntegrationTests.Database.Commands
+namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class UpdatePersonCommandTests : DatabaseTestsBase
     {

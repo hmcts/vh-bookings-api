@@ -59,3 +59,9 @@ Scenario: Update suitability answers with user role Representative
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And suitability answers for 'Representative' should be updated
+	
+Scenario: Create a single linked participant for a participant
+	Given I have a hearing
+	And I create a request to link 2 distinct participants in the hearing
+	When I send the request to the endpoint
+	Then the response should have the status OK and success status True

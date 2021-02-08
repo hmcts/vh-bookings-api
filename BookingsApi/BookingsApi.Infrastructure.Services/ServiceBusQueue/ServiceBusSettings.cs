@@ -1,4 +1,4 @@
-﻿namespace Bookings.Infrastructure.Services.ServiceBusQueue
+﻿namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
     public class ServiceBusSettings
     {

@@ -3284,7 +3284,7 @@
       "bookingsapi.common": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.ApplicationInsights": "2.13.1",
+          "Microsoft.ApplicationInsights": "2.15.0",
           "Microsoft.ApplicationInsights.AspNetCore": "2.13.1",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.3",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.7"
@@ -3300,6 +3300,7 @@
         "type": "Project",
         "dependencies": {
           "BookingsApi.Common": "1.0.0",
+          "BookingsApi.Contract": "1.0.0",
           "BookingsApi.Domain": "1.0.0",
           "Microsoft.EntityFrameworkCore": "3.1.3",
           "Microsoft.EntityFrameworkCore.Proxies": "3.1.3",

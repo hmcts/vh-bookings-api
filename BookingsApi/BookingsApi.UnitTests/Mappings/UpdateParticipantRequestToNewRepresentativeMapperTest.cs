@@ -20,8 +20,7 @@ namespace BookingsApi.UnitTests.Mappings
         [Test]
         public void Should_map_representative_fields_request_to_representative_info()
         {
-            var mapper = new UpdateParticipantRequestToNewRepresentativeMapper();
-            var representativeInfo = mapper.MapRequestToNewRepresentativeInfo(UpdateParticipantRequest);
+            var representativeInfo = UpdateParticipantRequestToNewRepresentativeMapper.MapRequestToNewRepresentativeInfo(UpdateParticipantRequest);
             representativeInfo.Should().NotBeNull();
             representativeInfo.Representee.Should().BeEquivalentTo(UpdateParticipantRequest.Representee);
         }

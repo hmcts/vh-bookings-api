@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BookingsApi.Common.Configuration;
-using Bookings.Infrastructure.Services.IntegrationEvents;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.DAL;
 using BookingsApi.Extensions;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 

@@ -1,4 +1,4 @@
-namespace Bookings.Infrastructure.Services.Dtos
+namespace BookingsApi.Infrastructure.Services.Dtos
 {
     public class EndpointDto
     {

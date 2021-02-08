@@ -8,12 +8,12 @@ using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
-using BookingsApi.Domain.Enumerations;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
-using Bookings.IntegrationTests.Helper;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.IntegrationTests.Helper;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +22,7 @@ using NUnit.Framework;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     [Binding]
     public sealed class HearingsBaseSteps : BaseSteps

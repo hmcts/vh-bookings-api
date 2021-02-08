@@ -4,10 +4,14 @@ using System.Linq;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.AcceptanceTests.Models;
+using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
+using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using Testing.Common.Builders.Api.Request;
 using static Testing.Common.Builders.Api.ApiUriFactory.ParticipantsEndpoints;
+using UpdateParticipantRequest = BookingsApi.AcceptanceTests.Models.UpdateParticipantRequest;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
@@ -46,6 +50,27 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             _removedParticipantId = _context.TestData.ParticipantsResponses[^1].Id;
             _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId));
+        }
+        
+        [Given(@"I create a request to link 2 distinct participants in the hearing")]
+        public void GivenIHaveAnInterpreterLinkedToAParticipant()
+        {
+            var participants = _context.TestData.Hearing.Participants
+                .Where(x => x.UserRoleName.ToLower() == "individual" || x.UserRoleName.ToLower() == "representative").ToList();
+            var interpretee = participants[0];
+            var interpreter = participants[1];
+            
+            var linkedParticipant = new LinkedParticipantRequest
+            {
+                LinkedParticipantContactEmail = interpreter.ContactEmail, 
+                ParticipantContactEmail = interpretee.ContactEmail,
+                Type = LinkedParticipantType.Interpreter
+            };
+            
+            var request = new UpdateParticipantRequestBuilder().Build();
+            request.LinkedParticipants = new List<LinkedParticipantRequest> {linkedParticipant};
+
+            _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, interpretee.Id), request);
         }
 
         [Then(@"a list of hearing participants should be retrieved")]

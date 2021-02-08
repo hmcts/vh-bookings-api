@@ -215,6 +215,9 @@ namespace BookingsApi.Domain
             {
                 endpoint.AssignDefenceAdvocate(null);
             }
+            
+            participant.LinkedParticipants.Clear();
+
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
         }

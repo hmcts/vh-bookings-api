@@ -1,8 +1,3 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
-using Bookings.IntegrationTests.Helper;
-using Faker;
-using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +5,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
+using BookingsApi.IntegrationTests.Helper;
+using Faker;
+using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     [Binding]
     public class PersonBaseSteps : BaseSteps

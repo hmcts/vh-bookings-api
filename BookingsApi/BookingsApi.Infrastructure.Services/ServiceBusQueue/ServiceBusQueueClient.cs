@@ -1,13 +1,13 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using Bookings.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace Bookings.Infrastructure.Services.ServiceBusQueue
+namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
     public interface IServiceBusQueueClient
     {

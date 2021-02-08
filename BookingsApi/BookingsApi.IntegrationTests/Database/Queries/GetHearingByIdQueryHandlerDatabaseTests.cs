@@ -1,12 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.Participants;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Participants;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Queries
+namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetHearingByIdQueryHandlerDatabaseTests : DatabaseTestsBase
     {
@@ -43,7 +43,7 @@ namespace Bookings.IntegrationTests.Database.Queries
 
             var judges = participants.Where(x => x.GetType() == typeof(Judge));
             judges.Should().NotBeNullOrEmpty();
-
+            
             var persons = hearing.GetPersons();
             persons.Count.Should().Be(participants.Count);
             persons[0].Title.Should().NotBeEmpty();

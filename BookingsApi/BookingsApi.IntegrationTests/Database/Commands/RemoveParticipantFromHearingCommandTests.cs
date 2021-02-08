@@ -1,24 +1,24 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.Validations;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.IntegrationTests.Database.Commands
+namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class RemoveParticipantFromHearingCommandTests : DatabaseTestsBase
     {
         private RemoveParticipantFromHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
 
         [SetUp]
         public void Setup()
@@ -26,7 +26,6 @@ namespace Bookings.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveParticipantFromHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -45,7 +44,6 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var newPerson = new PersonBuilder(true).Build();
             var participant = new Individual(newPerson, new HearingRole(1, "Dummy"), new CaseRole(1, "Dummy"));
@@ -58,13 +56,11 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             var beforeCount = seededHearing.GetParticipants().Count;
 
             var participant = seededHearing.GetParticipants().First();
             await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant));
-
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
@@ -78,17 +74,32 @@ namespace Bookings.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
             var beforeCount = seededHearing.GetParticipants().Count;
 
             var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
-            await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
+            await _commandHandler.Handle(
+                new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             var afterCount = returnedVideoHearing.GetParticipants().Count;
 
             afterCount.Should().BeLessThan(beforeCount);
+        }
+
+        [Test]
+        public async Task Should_Remove_ParticipantLink_When_Participant_Is_Removed()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 0, false, true);
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+
+            var participantWithALink = seededHearing.Participants.First(x => x.LinkedParticipants.Any());
+            await _commandHandler.Handle(
+                new RemoveParticipantFromHearingCommand(seededHearing.Id, participantWithALink));
+
+            var hearingWithNoLinks = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+
+            hearingWithNoLinks.Participants.Where(x => x.LinkedParticipants.Any()).Should().BeNullOrEmpty();
         }
     }
 }

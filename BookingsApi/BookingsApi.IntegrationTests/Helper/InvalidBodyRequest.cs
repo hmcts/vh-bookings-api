@@ -1,6 +1,6 @@
 ﻿using FizzWare.NBuilder;
 
-namespace Bookings.IntegrationTests.Helper
+namespace BookingsApi.IntegrationTests.Helper
 {
     public class InvalidRequest
     {

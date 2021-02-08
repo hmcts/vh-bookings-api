@@ -1,7 +1,7 @@
 ﻿using System;
 using BookingsApi.Domain.Enumerations;
 
-namespace Bookings.Infrastructure.Services.Dtos
+namespace BookingsApi.Infrastructure.Services.Dtos
 {
     public class ParticipantDto
     {

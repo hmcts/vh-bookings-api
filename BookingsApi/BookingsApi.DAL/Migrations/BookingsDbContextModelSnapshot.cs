@@ -203,7 +203,30 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("JobHistory");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.Organisation", b =>
+            modelBuilder.Entity("Bookings.Domain.LinkedParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LinkedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ParticipantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LinkedId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.ToTable("LinkedParticipant");
+                });
+            modelBuilder.Entity("Bookings.Domain.Organisation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -557,6 +580,21 @@ namespace BookingsApi.DAL.Migrations
                         .WithMany("HearingCases")
                         .HasForeignKey("HearingId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Bookings.Domain.LinkedParticipant", b =>
+                {
+                    b.HasOne("Bookings.Domain.Participants.Participant", "Linked")
+                        .WithMany()
+                        .HasForeignKey("LinkedId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
+                        .WithMany("LinkedParticipants")
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 

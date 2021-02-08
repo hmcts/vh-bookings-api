@@ -8,5 +8,10 @@ namespace BookingsApi.Contract.Requests
         ///     List of participants
         /// </summary>
         public List<ParticipantRequest> Participants { get; set; }
+        
+        /// <summary>
+        ///     List of linked participants
+        /// </summary>
+        public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
     }
 }

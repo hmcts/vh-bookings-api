@@ -1,11 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Bookings.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace Bookings.Infrastructure.Services.ServiceBusQueue
+namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
     public class ServiceBusQueueClientFake : IServiceBusQueueClient
     {

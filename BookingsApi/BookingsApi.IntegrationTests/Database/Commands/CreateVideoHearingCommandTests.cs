@@ -2,24 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.RefData;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.IntegrationTests.Database.Commands
+namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class CreateVideoHearingCommandTests : DatabaseTestsBase
     {
         private GetHearingByIdQueryHandler _queryHandler;
         private CreateVideoHearingCommandHandler _commandHandler;
         private Guid _newHearingId;
-        
+
         [SetUp]
         public void Setup()
         {
@@ -40,13 +41,14 @@ namespace Bookings.IntegrationTests.Database.Commands
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
             var venue = new RefDataBuilder().HearingVenues.First();
-            
+
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var claimantRepresentativeHearingRole =
+                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-            
+
             var newPerson = new PersonBuilder(true).Build();
             var newJudgePerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
@@ -94,9 +96,19 @@ namespace Bookings.IntegrationTests.Database.Commands
                 }
             };
 
+            var linkedParticipants = new List<LinkedParticipantDto>
+            {
+                new LinkedParticipantDto
+                {
+                    ParticipantContactEmail = newParticipant.Person.ContactEmail,
+                    LinkedParticipantContactEmail = newJudgeParticipant.Person.ContactEmail
+                }
+            };
+
             var command =
-                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue, 
-                    participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints)
+                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue,
+                    participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints,
+                    linkedParticipants)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,
@@ -106,19 +118,19 @@ namespace Bookings.IntegrationTests.Database.Commands
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;
             Hooks.AddHearingForCleanup(_newHearingId);
-            var returnedVideoHearing = await  _queryHandler.Handle(new GetHearingByIdQuery(_newHearingId));
+            var returnedVideoHearing = await _queryHandler.Handle(new GetHearingByIdQuery(_newHearingId));
 
             returnedVideoHearing.Should().NotBeNull();
-            
+
             returnedVideoHearing.CaseType.Should().NotBeNull();
             returnedVideoHearing.HearingVenue.Should().NotBeNull();
             returnedVideoHearing.HearingType.Should().NotBeNull();
-            
+
             returnedVideoHearing.GetParticipants().Any().Should().BeTrue();
             returnedVideoHearing.GetCases().Any().Should().BeTrue();
             returnedVideoHearing.GetEndpoints().Any().Should().BeTrue();
         }
-        
+
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
             CaseType caseType;

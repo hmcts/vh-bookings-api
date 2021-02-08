@@ -4,6 +4,7 @@ using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -31,7 +32,10 @@ namespace BookingsApi.UnitTests.Mappings
             hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@test.com", "2345",
                 hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative)));
             hearing.AddCase("HBS/1234","Case 1 Test", true);
-            
+       
+            var individualsInHearing = hearing.Participants.Where(x => x.HearingRole.UserRole.IsIndividual).ToList();
+            individualsInHearing[0].AddLink(individualsInHearing[1].Id, LinkedParticipantType.Interpreter);
+
             var newDate = hearing.ScheduledDateTime.AddDays(1);
 
             var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator,

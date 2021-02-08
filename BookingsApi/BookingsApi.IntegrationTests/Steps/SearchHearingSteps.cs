@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.Queries;
 using BookingsApi.Contract.Responses;
-using Bookings.IntegrationTests.Contexts;
 using BookingsApi.Domain;
+using BookingsApi.IntegrationTests.Contexts;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     [Binding]
     public sealed class SearchHearingSteps : BaseSteps

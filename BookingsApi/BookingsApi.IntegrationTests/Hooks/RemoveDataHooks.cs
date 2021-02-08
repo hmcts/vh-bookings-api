@@ -4,11 +4,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.Responses;
-using Bookings.IntegrationTests.Contexts;
+using BookingsApi.IntegrationTests.Contexts;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
-namespace Bookings.IntegrationTests.Hooks
+namespace BookingsApi.IntegrationTests.Hooks
 {
     [Binding]
     public static class RemoveDataHooks

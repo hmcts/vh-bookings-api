@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Bookings.IntegrationTests.Models
+namespace BookingsApi.IntegrationTests.Models
 {
     public class CaseHearingType
     {

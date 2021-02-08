@@ -11,14 +11,14 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
-using Bookings.Infrastructure.Services.IntegrationEvents;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Helpers;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
@@ -165,9 +165,9 @@ namespace BookingsApi.Controllers
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypequery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-            var reprensentatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
+            var representatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
 
-            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(reprensentatives);
+            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
 
             if (!representativeValidationResult.IsValid)
             {
@@ -175,11 +175,12 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-
-            var mapper = new ParticipantRequestToNewParticipantMapper();
             var participants = request.Participants
-                .Select(x => mapper.MapRequestToNewParticipant(x, videoHearing.CaseType)).ToList();
-            var command = new AddParticipantsToVideoHearingCommand(hearingId, participants);
+                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
+            var linkedParticipants =
+                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+            
+            var command = new AddParticipantsToVideoHearingCommand(hearingId, participants, linkedParticipants);
 
             try
             {
@@ -319,8 +320,8 @@ namespace BookingsApi.Controllers
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
                 var test = new RepresentativeValidation();
-                test.Validate(request);
-                var repValidationResult = new RepresentativeValidation().Validate(request);
+                await test.ValidateAsync(request);
+                var repValidationResult = await new RepresentativeValidation().ValidateAsync(request);
                 if (!repValidationResult.IsValid)
                 {
                     ModelState.AddFluentValidationErrors(result.Errors);
@@ -328,12 +329,15 @@ namespace BookingsApi.Controllers
                 }
             }
 
-            var representativeMapper = new UpdateParticipantRequestToNewRepresentativeMapper();
-            var representative = representativeMapper.MapRequestToNewRepresentativeInfo(request);
+            var representative =
+                UpdateParticipantRequestToNewRepresentativeMapper.MapRequestToNewRepresentativeInfo(request);
 
+            var linkedParticipants =
+                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+            
             var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
                 request.DisplayName, request.TelephoneNumber,
-                request.OrganisationName, representative);
+                request.OrganisationName, representative, linkedParticipants);
 
             await _commandHandler.Handle(updateParticipantCommand);
 

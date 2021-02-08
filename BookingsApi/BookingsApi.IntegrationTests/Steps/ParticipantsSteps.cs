@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
-using Bookings.IntegrationTests.Helper;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
+using BookingsApi.IntegrationTests.Helper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api.Request;
-using TestContext = Bookings.IntegrationTests.Contexts.TestContext;
+using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 using static Testing.Common.Builders.Api.ApiUriFactory.ParticipantsEndpoints;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     [Binding]
     public sealed class ParticipantsBaseSteps : BaseSteps
@@ -89,10 +89,11 @@ namespace Bookings.IntegrationTests.Steps
         public async Task WhenISendTheSameRequestButWithANewHearingId()
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            var noOfParticipants = seededHearing.GetParticipants().Count;
             Context.TestData.OldHearingId = Context.TestData.NewHearingId;
             Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            seededHearing.GetParticipants().Count.Should().Be(4);
+            seededHearing.GetParticipants().Count.Should().Be(noOfParticipants);
             Context.Uri = AddParticipantsToHearing(Context.TestData.NewHearingId);
             Context.Response = await SendPostRequestAsync(Context);
         }

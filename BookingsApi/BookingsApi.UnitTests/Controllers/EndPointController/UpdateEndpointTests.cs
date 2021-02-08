@@ -9,10 +9,10 @@ using Testing.Common.Assertions;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Domain;
-using Bookings.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace BookingsApi.UnitTests.Controllers.EndPointController
 {

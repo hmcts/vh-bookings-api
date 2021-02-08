@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Mappings
 {
-    public class ParticipantRequestToNewParticipantMapperTest  : TestBase
+    public class ParticipantRequestToNewParticipantMapperTest : TestBase
     {
         private CaseType _caseType;
 
@@ -49,7 +49,7 @@ namespace BookingsApi.UnitTests.Mappings
                 HearingRoleName = "Representative"
             };
 
-            When(() => new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType))
+            When(() => ParticipantRequestToNewParticipantMapper.Map(request, _caseType))
                 .Should().Throw<BadRequestException>().WithMessage("Invalid case role [Missing case role]");
         }
         
@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.Mappings
                 HearingRoleName = "Missing hearing role"
             };
 
-            When(() => new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType))
+            When(() => ParticipantRequestToNewParticipantMapper.Map(request, _caseType))
                 .Should().Throw<BadRequestException>().WithMessage("Invalid hearing role [Missing hearing role]");
         }
 
@@ -80,7 +80,7 @@ namespace BookingsApi.UnitTests.Mappings
                 OrganisationName = "Test Corp Ltd"
             };
 
-            var newParticipant = new ParticipantRequestToNewParticipantMapper().MapRequestToNewParticipant(request, _caseType);
+            var newParticipant = ParticipantRequestToNewParticipantMapper.Map(request, _caseType);
             newParticipant.Should().NotBeNull();
             var person = newParticipant.Person;
             person.Should().NotBeNull();

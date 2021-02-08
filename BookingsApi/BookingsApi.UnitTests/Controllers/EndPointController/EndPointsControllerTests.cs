@@ -1,7 +1,6 @@
 ﻿using BookingsApi.Contract.Requests;
 using BookingsApi.Controllers;
 using BookingsApi.Common.Configuration;
-using Bookings.Infrastructure.Services.IntegrationEvents;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
@@ -12,6 +11,7 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Testing.Common.Builders.Domain;
 using IRandomGenerator = BookingsApi.Common.Services.IRandomGenerator;
 

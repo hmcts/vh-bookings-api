@@ -8,7 +8,7 @@ using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Commands
+namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class RemoveEndPointFromHearingCommandTests : DatabaseTestsBase
     {

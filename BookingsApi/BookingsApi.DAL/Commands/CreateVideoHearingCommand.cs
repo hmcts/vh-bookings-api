@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 
 namespace BookingsApi.DAL.Commands
@@ -13,7 +14,7 @@ namespace BookingsApi.DAL.Commands
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints)
+            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints, List<LinkedParticipantDto> linkedParticipants)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -25,6 +26,7 @@ namespace BookingsApi.DAL.Commands
             QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
             Endpoints = endpoints;
+            LinkedParticipants = linkedParticipants;
         }
 
         public Guid NewHearingId { get; set; }
@@ -43,6 +45,7 @@ namespace BookingsApi.DAL.Commands
         public List<NewEndpoint> Endpoints { get; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
+        public List<LinkedParticipantDto> LinkedParticipants { get; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -71,8 +74,10 @@ namespace BookingsApi.DAL.Commands
 
             await _context.VideoHearings.AddAsync(videoHearing);
             
-            await _hearingService.AddParticipantToService(videoHearing, command.Participants);
+            var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
+             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+     
             videoHearing.AddCases(command.Cases);
 
             if (command.Endpoints != null && command.Endpoints.Count > 0)
@@ -89,7 +94,6 @@ namespace BookingsApi.DAL.Commands
 
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
-            
         }
     }
 }

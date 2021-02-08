@@ -1,8 +1,8 @@
 using System.Linq;
 using BookingsApi.Domain;
-using Bookings.Infrastructure.Services.Dtos;
+using BookingsApi.Infrastructure.Services.Dtos;
 
-namespace Bookings.Infrastructure.Services
+namespace BookingsApi.Infrastructure.Services
 {
     public static class HearingDtoMapper
     {

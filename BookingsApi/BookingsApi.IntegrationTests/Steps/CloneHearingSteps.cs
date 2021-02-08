@@ -5,15 +5,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Common;
+using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     [Binding]
     public class CloneHearingSteps : BaseSteps

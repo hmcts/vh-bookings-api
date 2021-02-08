@@ -1,13 +1,13 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Commands
+namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class AnonymiseHearingsCommandTests : DatabaseTestsBase
     {

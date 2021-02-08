@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.IntegrationTests.Helper
+namespace BookingsApi.IntegrationTests.Helper
 {
     public class TestDataManager
     {
@@ -40,7 +41,7 @@ namespace Bookings.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, bool addJoh = false)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, bool addJoh = false, bool withLinkedParticipants = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -50,9 +51,10 @@ namespace Bookings.IntegrationTests.Helper
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var defendantLipHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
@@ -62,6 +64,7 @@ namespace Bookings.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder(true).Build();
             var judgePerson = new PersonBuilder(true).Build();
             var johPerson = new PersonBuilder(true).Build();
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
@@ -79,12 +82,15 @@ namespace Bookings.IntegrationTests.Helper
 
             videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
-
+            
             videoHearing.AddRepresentative(person2, claimantRepresentativeHearingRole, claimantCaseRole,
                 $"{person2.FirstName} {person2.LastName}", "Ms X");
 
             videoHearing.AddRepresentative(person3, defendantRepresentativeHearingRole, defendantCaseRole,
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
+            
+            videoHearing.AddIndividual(person4, defendantLipHearingRole, defendantCaseRole,
+                $"{person4.FirstName} {person4.LastName}");
 
             videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
 
@@ -108,6 +114,14 @@ namespace Bookings.IntegrationTests.Helper
                         new Endpoint($"new endpoint {i}", $"{sip}@test.com", pin, null)
                     });
                 }
+            }
+
+            if (withLinkedParticipants)
+            {
+                var interpretee = videoHearing.Participants[0];
+                var interpreter = videoHearing.Participants[1];
+                var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
+                CreateParticipantLinks(interpretee, interpreter, participantLink);   
             }
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
@@ -215,6 +229,13 @@ namespace Bookings.IntegrationTests.Helper
 
             return caseType;
         }
+        
+        private void CreateParticipantLinks(Participant interpretee, Participant interpreter, LinkedParticipant participantLink)
+        {
+            interpretee.LinkedParticipants.Add(participantLink);
+            interpreter.LinkedParticipants.Add(new LinkedParticipant(participantLink.LinkedId,
+                participantLink.ParticipantId, participantLink.Type));
+        }
 
         public DateTime? GetJobLastRunDateTime()
         {
@@ -265,7 +286,6 @@ namespace Bookings.IntegrationTests.Helper
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public string[] GetIndividualHearingRoles => new[] { "Litigant in person" };
@@ -286,7 +306,7 @@ namespace Bookings.IntegrationTests.Helper
             var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == options.DefendentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
-            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.ClaimantHearingRole);
+            var claimantLipHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var defendantRepresentativeHearingRole = defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");

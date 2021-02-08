@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +22,16 @@ namespace BookingsApi.DAL.Commands
     
     public class AddParticipantsToVideoHearingCommand : ICommand
     {
-        public AddParticipantsToVideoHearingCommand(Guid hearingId, List<NewParticipant> participants)
+        public AddParticipantsToVideoHearingCommand(Guid hearingId, List<NewParticipant> participants, List<LinkedParticipantDto> linkedParticipants)
         {
             HearingId = hearingId;
             Participants = participants;
+            LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
         }
 
         public List<NewParticipant> Participants { get; set; }
         public Guid HearingId { get; set; }
+        public List<LinkedParticipantDto> LinkedParticipants { get; set; }
     }
     
     public class AddParticipantsToVideoHearingCommandHandler : ICommandHandler<AddParticipantsToVideoHearingCommand>
@@ -48,6 +51,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x=> x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
@@ -56,7 +60,11 @@ namespace BookingsApi.DAL.Commands
             }
 
             _context.Update(hearing);
-            await _hearingService.AddParticipantToService(hearing, command.Participants);
+            
+            var participants = await _hearingService.AddParticipantToService(hearing, command.Participants);
+
+            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+            
             await _context.SaveChangesAsync();
         }
     }

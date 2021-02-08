@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bookings.Infrastructure.Services.IntegrationEvents
+namespace BookingsApi.Infrastructure.Services.IntegrationEvents
 {
     public class EventMessage
     {

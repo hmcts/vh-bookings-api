@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Bookings.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 
-namespace Bookings.Infrastructure.Services.IntegrationEvents
+namespace BookingsApi.Infrastructure.Services.IntegrationEvents
 {
     public interface IEventPublisher
     {

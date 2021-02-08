@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain.Ddd;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 
@@ -14,6 +16,7 @@ namespace BookingsApi.Domain.Participants
         {
             Id = Guid.NewGuid();
             CreatedDate = DateTime.UtcNow;
+            LinkedParticipants = new List<LinkedParticipant>();
         }
 
         protected Participant(Person person, HearingRole hearingRole, CaseRole caseRole) : this()
@@ -38,6 +41,8 @@ namespace BookingsApi.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
+        public virtual IList<LinkedParticipant> LinkedParticipants { get; set; }
+
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)
         {
@@ -71,6 +76,33 @@ namespace BookingsApi.Domain.Participants
                 }
                 Person.UpdateOrganisation(organisation);
             }
+        }
+
+        public void AddLink(Guid linkedId, LinkedParticipantType linkType)
+        {
+            var existingLink = LinkedParticipants.SingleOrDefault(x => x.LinkedId == linkedId && x.Type == linkType);
+            if (existingLink != null)
+            {
+                throw new DomainRuleException("LinkedParticipant", "Participant is already linked with the same link type");
+            }
+            LinkedParticipants.Add(new LinkedParticipant(Id, linkedId, linkType));
+        }
+
+        public void RemoveLink(LinkedParticipant linkedParticipant)
+        {
+            var link = LinkedParticipants.SingleOrDefault(
+                x => x.LinkedId == linkedParticipant.LinkedId && x.Type == linkedParticipant.Type);
+            if (link == null)
+            {
+                throw new DomainRuleException("LinkedParticipant", "Link does not exist");
+            }
+
+            LinkedParticipants.Remove(linkedParticipant);
+        }
+
+        public virtual IList<LinkedParticipant> GetLinkedParticipants()
+        {
+            return LinkedParticipants;
         }
 
         protected void ValidateArguments(string displayName)

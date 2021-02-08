@@ -6,7 +6,7 @@ using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     [Binding]
     public sealed class CommonBaseSteps : BaseSteps

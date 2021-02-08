@@ -73,7 +73,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.Should().NotBeNull();
             _context.TestData.Hearing = model;
             model.Should().BeEquivalentTo(_context.TestData.CreateHearingRequest,
-                o => o.Excluding(x => x.Participants).Excluding(x => x.Endpoints));
+                o => o.Excluding(x => x.Participants).Excluding(x => x.Endpoints).Excluding(x => x.LinkedParticipants));
 
             var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));
             var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));

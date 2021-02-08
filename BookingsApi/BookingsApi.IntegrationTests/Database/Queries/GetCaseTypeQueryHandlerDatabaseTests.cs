@@ -1,12 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.RefData;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Queries
+namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetCaseTypeQueryHandlerDatabaseTests : DatabaseTestsBase
     {

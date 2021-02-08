@@ -1,4 +1,4 @@
-﻿namespace Bookings.IntegrationTests.Hooks
+﻿namespace BookingsApi.IntegrationTests.Hooks
 {
     internal enum HooksSequence
     {

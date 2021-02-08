@@ -2,20 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.Validations;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
-namespace Bookings.IntegrationTests.Database.Commands
+namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class AddParticipantsToVideoHearingCommandTests : DatabaseTestsBase
     {
@@ -39,9 +40,9 @@ namespace Bookings.IntegrationTests.Database.Commands
             var hearingId = Guid.NewGuid();
 
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
-                new AddParticipantsToVideoHearingCommand(hearingId, new List<NewParticipant>())));
+                new AddParticipantsToVideoHearingCommand(hearingId, new List<NewParticipant>(), null)));
         }
-        
+
         [Test]
         public async Task Should_add_participants_to_video_hearing()
         {
@@ -55,7 +56,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var claimantRepresentativeHearingRole =
+                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
@@ -71,7 +73,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 newParticipant
             };
 
-            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, null));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
@@ -86,7 +88,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var representative = (Representative) seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+            var representative =
+                (Representative) seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
 
             var newParticipant = new NewParticipant()
             {
@@ -96,23 +99,24 @@ namespace Bookings.IntegrationTests.Database.Commands
                 DisplayName = representative.DisplayName,
                 Representee = representative.Representee
             };
-            
+
             var participants = new List<NewParticipant>()
             {
                 newParticipant
             };
 
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
-                new AddParticipantsToVideoHearingCommand(_newHearingId, participants)));
+                new AddParticipantsToVideoHearingCommand(_newHearingId, participants, null)));
         }
-        
+
         [Test]
         public async Task Should_throw_exception_when_adding_unsupported_role_to_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var representative = (Representative) seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
+            var representative =
+                (Representative) seededHearing.GetParticipants().First(x => x.GetType() == typeof(Representative));
 
             representative.HearingRole.UserRole.Name = "NonExistent";
             var newParticipant = new NewParticipant()
@@ -123,14 +127,14 @@ namespace Bookings.IntegrationTests.Database.Commands
                 DisplayName = representative.DisplayName,
                 Representee = representative.Representee
             };
-            
+
             var participants = new List<NewParticipant>()
             {
                 newParticipant
             };
 
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
-                new AddParticipantsToVideoHearingCommand(_newHearingId, participants)));
+                new AddParticipantsToVideoHearingCommand(_newHearingId, participants, null)));
         }
 
         [Test]
@@ -141,7 +145,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var personsListAfter = await GetPersonsInDb();
             personsListAfter.Count.Should().Be(personListBefore.Count);
 
-            var existingPersonInDb = personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+            var existingPersonInDb =
+                personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
             existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
             CheckPersonDetails(existingPersonInDb, seededRepresentative);
         }
@@ -154,11 +159,68 @@ namespace Bookings.IntegrationTests.Database.Commands
             var personsListAfter = await GetPersonsInDb();
             personsListAfter.Count.Should().Be(personListBefore.Count);
 
-            var existingPersonInDb = personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+            var existingPersonInDb =
+                personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
             existingPersonInDb.Organisation.Should().NotBeNull();
             existingPersonInDb.Organisation.Name.Should().Be(seededRepresentative.Organisation.Name);
             CheckPersonDetails(existingPersonInDb, seededRepresentative);
-            
+        }
+
+        [Test]
+        public async Task Should_Add_Participant_With_A_Link()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            const string caseTypeName = "Civil Money Claims";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
+            var claimantRepresentativeHearingRole =
+                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+
+            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == "Defendant");
+            var defendantRepresentativeHearingRole =
+                defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var newPerson1 = new PersonBuilder(true).Build();
+            var interpretee = new NewParticipant()
+            {
+                Person = newPerson,
+                CaseRole = claimantCaseRole,
+                HearingRole = claimantRepresentativeHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                Representee = string.Empty
+            };
+            var interpreter = new NewParticipant()
+            {
+                Person = newPerson1,
+                CaseRole = defendantCaseRole,
+                HearingRole = defendantRepresentativeHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                interpretee,
+                interpreter
+            };
+            var links = new List<LinkedParticipantDto>();
+            var link = new LinkedParticipantDto
+            {
+                LinkedParticipantContactEmail = interpreter.Person.ContactEmail,
+                ParticipantContactEmail = interpretee.Person.ContactEmail
+            };
+            links.Add(link);
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, links));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+
+            returnedVideoHearing.Participants.Where(x => x.LinkedParticipants.Any()).Should().NotBeNull();
         }
 
         [Test]
@@ -190,7 +252,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 newParticipant
             };
 
-            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, null));
 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
@@ -198,7 +260,7 @@ namespace Bookings.IntegrationTests.Database.Commands
 
             afterCount.Should().BeGreaterThan(beforeCount);
         }
-        
+
         private async Task<List<Person>> AddExistingPersonToAHearing(Person existingPerson)
         {
             var seededHearing = await Hooks.SeedVideoHearing();
@@ -211,7 +273,8 @@ namespace Bookings.IntegrationTests.Database.Commands
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole = claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var claimantRepresentativeHearingRole =
+                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newParticipant = new NewParticipant()
             {
@@ -227,7 +290,7 @@ namespace Bookings.IntegrationTests.Database.Commands
                 newParticipant
             };
 
-            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants));
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, null));
 
             return personListBefore;
         }
@@ -250,11 +313,11 @@ namespace Bookings.IntegrationTests.Database.Commands
                 .Include(p => p.Organisation)
                 .ToListAsync();
         }
-        
+
         private async Task<Person> SeedPerson(bool withOrganisation = false)
         {
             var builder = new PersonBuilder(true);
-            
+
             if (withOrganisation)
             {
                 builder.WithOrganisation();

@@ -1,4 +1,4 @@
-namespace Bookings.IntegrationTests.Helper
+namespace BookingsApi.IntegrationTests.Helper
 {
     public class SeedVideoHearingOptions
     {
@@ -24,6 +24,6 @@ namespace Bookings.IntegrationTests.Helper
             ? "Defendant"
             : "Respondent";
 
-        public string ClaimantHearingRole => "Litigant in person";
+        public string LipHearingRole => "Litigant in person";
     }
 }

@@ -1,4 +1,4 @@
-using Bookings.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

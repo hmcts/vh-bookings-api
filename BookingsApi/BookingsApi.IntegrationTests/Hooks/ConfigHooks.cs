@@ -1,13 +1,14 @@
-﻿ using System.Collections.Generic;
- using System.Net.Http;
- using AcceptanceTests.Common.Configuration;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using AcceptanceTests.Common.Api;
+using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
-using BookingsApi;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
- using Bookings.IntegrationTests.Contexts;
-using Bookings.IntegrationTests.Helper;
+using BookingsApi.Contract.Requests;
+using BookingsApi.DAL;
+using BookingsApi.IntegrationTests.Contexts;
+using BookingsApi.IntegrationTests.Helper;
 using FluentAssertions;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -18,10 +19,8 @@ using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using TestData = Testing.Common.Configuration.TestData;
-using AcceptanceTests.Common.Api;
- using BookingsApi.DAL;
 
- namespace Bookings.IntegrationTests.Hooks
+namespace BookingsApi.IntegrationTests.Hooks
 {
     [Binding]
     public class ConfigHooks

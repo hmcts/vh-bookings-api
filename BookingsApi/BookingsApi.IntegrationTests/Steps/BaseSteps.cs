@@ -1,11 +1,11 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
-using Bookings.IntegrationTests.Contexts;
-using Bookings.IntegrationTests.Helper;
 using BookingsApi.DAL;
+using BookingsApi.IntegrationTests.Contexts;
+using BookingsApi.IntegrationTests.Helper;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bookings.IntegrationTests.Steps
+namespace BookingsApi.IntegrationTests.Steps
 {
     public abstract class BaseSteps
     {

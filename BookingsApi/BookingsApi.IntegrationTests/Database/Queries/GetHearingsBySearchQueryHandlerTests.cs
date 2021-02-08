@@ -1,12 +1,12 @@
-﻿using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
-using NUnit.Framework;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Enumerations;
+using FluentAssertions;
+using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Queries
+namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetHearingsBySearchQueryHandlerTests : DatabaseTestsBase
     {

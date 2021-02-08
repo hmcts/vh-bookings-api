@@ -7,9 +7,9 @@ namespace BookingsApi.Mappings
     /// This class is used to map a participant request object to the RepresentativeInfo model
     /// used by the UpdateParticipantCommand.
     /// </summary>
-    public class UpdateParticipantRequestToNewRepresentativeMapper
+    public static class UpdateParticipantRequestToNewRepresentativeMapper
     {
-        public RepresentativeInformation MapRequestToNewRepresentativeInfo(UpdateParticipantRequest requestParticipant)
+        public static RepresentativeInformation MapRequestToNewRepresentativeInfo(UpdateParticipantRequest requestParticipant)
         {
             return new RepresentativeInformation
             {

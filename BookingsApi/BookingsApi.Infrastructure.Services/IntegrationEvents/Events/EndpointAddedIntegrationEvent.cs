@@ -1,8 +1,8 @@
 using System;
 using BookingsApi.Domain;
-using Bookings.Infrastructure.Services.Dtos;
+using BookingsApi.Infrastructure.Services.Dtos;
 
-namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
+namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
     public class EndpointAddedIntegrationEvent : IIntegrationEvent
     {

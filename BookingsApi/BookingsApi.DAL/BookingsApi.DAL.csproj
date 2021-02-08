@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BookingsApi.Common\BookingsApi.Common.csproj" />
+    <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
   </ItemGroup>
 </Project>

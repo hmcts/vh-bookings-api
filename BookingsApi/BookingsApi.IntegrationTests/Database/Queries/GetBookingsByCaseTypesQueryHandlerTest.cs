@@ -8,7 +8,7 @@ using BookingsApi.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Queries
+namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetBookingsByCaseTypesQueryHandlerTest : DatabaseTestsBase
     {

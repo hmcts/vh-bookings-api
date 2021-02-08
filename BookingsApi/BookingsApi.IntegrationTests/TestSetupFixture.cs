@@ -2,9 +2,8 @@ using AcceptanceTests.Common.Api;
 using BookingsApi.Common.Configuration;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
-using Testing.Common.Configuration;
 
-namespace Bookings.IntegrationTests
+namespace BookingsApi.IntegrationTests
 {
     [SetUpFixture]
     public class TestSetupFixture

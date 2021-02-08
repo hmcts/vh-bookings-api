@@ -4,7 +4,7 @@ using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database.Queries
+namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetHearingVenuesQueryHandlerDatabaseTests : DatabaseTestsBase
     {

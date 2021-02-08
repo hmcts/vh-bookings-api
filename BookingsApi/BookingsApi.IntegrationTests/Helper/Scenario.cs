@@ -1,4 +1,4 @@
-﻿namespace Bookings.IntegrationTests.Helper
+﻿namespace BookingsApi.IntegrationTests.Helper
 {
     public enum Scenario
     {

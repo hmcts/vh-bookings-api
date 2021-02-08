@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Common;
@@ -12,23 +11,24 @@ namespace BookingsApi.Mappings
     /// This class is used to map a participant request object to the NewParticipant model
     /// used by the AddParticipantsToVideoHearingCommand.
     /// </summary>
-    public class ParticipantRequestToNewParticipantMapper
+    public static class ParticipantRequestToNewParticipantMapper
     {
-        public NewParticipant MapRequestToNewParticipant(ParticipantRequest requestParticipant, CaseType caseType)
+        public static NewParticipant Map(ParticipantRequest requestParticipant, CaseType caseType)
         {
-
             var caseRole = caseType.CaseRoles.FirstOrDefault(x => x.Name == requestParticipant.CaseRoleName);
             if (caseRole == null) throw new BadRequestException($"Invalid case role [{requestParticipant.CaseRoleName}]");
 
             var hearingRole = caseRole.HearingRoles.FirstOrDefault(x => x.Name == requestParticipant.HearingRoleName);
             if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
-            
-            var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-            requestParticipant.Username);
 
-            person.MiddleNames = requestParticipant.MiddleNames;
-            person.ContactEmail = requestParticipant.ContactEmail;
-            person.TelephoneNumber = requestParticipant.TelephoneNumber;
+            var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
+                requestParticipant.Username)
+            {
+                MiddleNames = requestParticipant.MiddleNames,
+                ContactEmail = requestParticipant.ContactEmail,
+                TelephoneNumber = requestParticipant.TelephoneNumber
+            };
+
             if(!string.IsNullOrEmpty(requestParticipant.OrganisationName))
             {
                 person.Organisation = new Organisation(requestParticipant.OrganisationName);
@@ -40,7 +40,7 @@ namespace BookingsApi.Mappings
                 CaseRole = caseRole,
                 HearingRole = hearingRole,
                 DisplayName = requestParticipant.DisplayName,
-                Representee = requestParticipant.Representee,
+                Representee = requestParticipant.Representee
             };
         }
     }

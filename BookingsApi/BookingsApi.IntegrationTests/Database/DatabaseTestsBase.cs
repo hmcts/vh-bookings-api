@@ -1,13 +1,11 @@
 ﻿using System.Threading.Tasks;
-using BookingsApi;
-using Bookings.IntegrationTests.Helper;
 using BookingsApi.DAL;
-using FizzWare.NBuilder;
+using BookingsApi.IntegrationTests.Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
-namespace Bookings.IntegrationTests.Database
+namespace BookingsApi.IntegrationTests.Database
 {
     public abstract class DatabaseTestsBase
     {

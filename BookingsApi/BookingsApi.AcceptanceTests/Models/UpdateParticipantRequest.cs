@@ -1,4 +1,7 @@
-﻿namespace BookingsApi.AcceptanceTests.Models
+﻿using System.Collections.Generic;
+using BookingsApi.Contract.Requests;
+
+namespace BookingsApi.AcceptanceTests.Models
 {
     internal static class UpdateParticipantRequest
     {
@@ -11,6 +14,7 @@
                 TelephoneNumber="11112222333",
                 OrganisationName = "OrgName",
                 Representee = "Rep",
+                LinkedParticipants = new List<LinkedParticipantRequest>()
             };
         }
     }

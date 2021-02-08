@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,35 +16,39 @@ namespace BookingsApi.DAL.Commands
     }
     public class UpdateParticipantCommand : ICommand
     {
-        public Guid HearingId { get; set; }
-        public Guid ParticipantId { get; set; }
-        public string Title { get; set; }
-        public string DisplayName { get; set; }
-        public string TelephoneNumber { get; set; }
-        public string OrganisationName { get; set; }
+        public Guid HearingId { get; }
+        public Guid ParticipantId { get; }
+        public string Title { get; }
+        public string DisplayName { get; }
+        public string TelephoneNumber { get; }
+        public string OrganisationName { get; }
         public Participant UpdatedParticipant { get; set; }
-        public RepresentativeInformation RepresentativeInformation { get; set; }
+        public RepresentativeInformation RepresentativeInformation { get; }
+        public List<LinkedParticipantDto> LinkedParticipants { get; }
 
-        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telphoneNumber, 
-            string organisationName, RepresentativeInformation representativeInformation)
+        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telephoneNumber, 
+            string organisationName, RepresentativeInformation representativeInformation, List<LinkedParticipantDto> linkedParticipants)
         {
             HearingId = hearingId;
             ParticipantId = participantId;
             Title = title;
             DisplayName = displayName;
-            TelephoneNumber = telphoneNumber;
+            TelephoneNumber = telephoneNumber;
             OrganisationName = organisationName;
             RepresentativeInformation = representativeInformation;
+            LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
         }
     }
 
     public class UpdateParticipantCommandHandler : ICommandHandler<UpdateParticipantCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingService _hearingService;
 
-        public UpdateParticipantCommandHandler(BookingsDbContext context)
+        public UpdateParticipantCommandHandler(BookingsDbContext context, IHearingService hearingService)
         {
             _context = context;
+            _hearingService = hearingService;
         }
 
         public async Task Handle(UpdateParticipantCommand command)
@@ -51,6 +57,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.Person.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -66,14 +73,18 @@ namespace BookingsApi.DAL.Commands
             {
                 throw new ParticipantNotFoundException(command.ParticipantId);
             }
+            
+            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
-            participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber, command.OrganisationName);
+            participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
+                command.OrganisationName);
 
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
-                ((Representative)participant).UpdateRepresentativeDetails(
+                ((Representative) participant).UpdateRepresentativeDetails(
                     command.RepresentativeInformation.Representee);
             }
+
             await _context.SaveChangesAsync();
 
             command.UpdatedParticipant = participant;

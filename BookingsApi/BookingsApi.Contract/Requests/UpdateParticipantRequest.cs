@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace BookingsApi.Contract.Requests
 {
     public class UpdatePersonDetailsRequest
@@ -44,5 +46,10 @@ namespace BookingsApi.Contract.Requests
         ///     Representee
         /// </summary>
         public string Representee { get; set; }
+        
+        /// <summary>
+        ///     List of linked participants
+        /// </summary>
+        public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
     }
 }

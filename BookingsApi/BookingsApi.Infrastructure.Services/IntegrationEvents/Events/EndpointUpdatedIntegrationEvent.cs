@@ -1,6 +1,6 @@
 using System;
 
-namespace Bookings.Infrastructure.Services.IntegrationEvents.Events
+namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
     public class EndpointUpdatedIntegrationEvent : IIntegrationEvent
     {

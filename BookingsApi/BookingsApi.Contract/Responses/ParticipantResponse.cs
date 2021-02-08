@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BookingsApi.Contract.Responses
 {
@@ -65,13 +66,18 @@ namespace BookingsApi.Contract.Responses
         public string Username { get; set; }
         
         /// <summary>
-        /// Gets or sets the organisation name.
+        ///    Gets or sets the organisation name.
         /// </summary>
         public string Organisation { get; set; }
 
         /// <summary>
-        /// Gets or sets the person name that Representative represents.
+        ///     Gets or sets the person name that Representative represents.
         /// </summary>
         public string Representee { get; set; }
+        
+        /// <summary>
+        ///     The participant linked to this participant response
+        /// </summary>
+        public List<LinkedParticipantResponse> LinkedParticipants { get; set; }
     }
 }
