@@ -165,9 +165,9 @@ namespace BookingsApi.Controllers
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypequery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-            var reprensentatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
+            var representatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
 
-            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(reprensentatives);
+            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
 
             if (!representativeValidationResult.IsValid)
             {
