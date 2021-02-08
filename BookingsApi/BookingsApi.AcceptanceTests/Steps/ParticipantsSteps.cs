@@ -52,7 +52,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId));
         }
         
-        [Given(@"I have an interpreter linked to a participant")]
+        [Given(@"I create a request to link 2 distinct participants in the hearing")]
         public void GivenIHaveAnInterpreterLinkedToAParticipant()
         {
             var participants = _context.TestData.Hearing.Participants
