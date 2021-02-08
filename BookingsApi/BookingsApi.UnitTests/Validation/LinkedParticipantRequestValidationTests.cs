@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Enums;
 using BookingsApi.Contract.Requests;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;

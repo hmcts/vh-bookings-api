@@ -1,6 +1,6 @@
-using BookingsApi.Domain.Enumerations;
 using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.Enums;
 
 namespace BookingsApi.Contract.Responses
 {

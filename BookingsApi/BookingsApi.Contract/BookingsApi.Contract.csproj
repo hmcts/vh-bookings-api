@@ -12,7 +12,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
-  </ItemGroup>
 </Project>
