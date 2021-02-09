@@ -291,7 +291,7 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = new UpdateParticipantRequestValidation().Validate(request);
+            var result = await new UpdateParticipantRequestValidation().ValidateAsync(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);

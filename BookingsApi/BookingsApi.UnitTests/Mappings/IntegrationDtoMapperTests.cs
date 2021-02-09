@@ -1,5 +1,6 @@
 using System.Linq;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services;
@@ -46,6 +47,7 @@ namespace BookingsApi.UnitTests.Mappings
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
             result.CaseGroupType.Should().Be(participant.CaseRole.Group);
+            result.LinkedParticipants.Should().BeEquivalentTo(participant.LinkedParticipants);
 
             result.Representee.Should().BeNullOrEmpty();
         }
@@ -79,6 +81,13 @@ namespace BookingsApi.UnitTests.Mappings
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
                 participant.CaseRole = new CaseRole(1, "Name");
             }
+
+            var individuals = hearing.Participants.Where(x => x is Individual).ToList();
+            if (individuals.Count < 2)
+            {
+                Assert.Fail("Not enough individuals in test hearing to link participants");
+            }
+            individuals[0].AddLink(individuals[1].Id, LinkedParticipantType.Interpreter);
 
             return hearing;
         }
