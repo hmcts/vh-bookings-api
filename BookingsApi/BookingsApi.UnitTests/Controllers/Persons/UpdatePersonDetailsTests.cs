@@ -78,11 +78,11 @@ namespace BookingsApi.UnitTests.Controllers.Persons
 
         private List<VideoHearing> CreateListOfVideoHearings(Guid personId, string firstName, string lastName, string username)
         {
-            var hearing1 = new VideoHearingBuilder().Build();
-            var hearing2 = new VideoHearingBuilder().Build();
-            var hearing3 = new VideoHearingBuilder().Build();
-            var hearing4 = new VideoHearingBuilder().Build();
-            var hearing5 = new VideoHearingBuilder().Build();
+            var hearing1 = new VideoHearingBuilder().WithCase().Build();
+            var hearing2 = new VideoHearingBuilder().WithCase().Build();
+            var hearing3 = new VideoHearingBuilder().WithCase().Build();
+            var hearing4 = new VideoHearingBuilder().WithCase().Build();
+            var hearing5 = new VideoHearingBuilder().WithCase().Build();
 
             var person1 = hearing1.GetPersons().First();
             var participant1 = hearing1.GetParticipants().First(x => x.Person == person1);
