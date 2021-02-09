@@ -90,6 +90,11 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
         }
 
+        public VideoHearingBuilder WithCase()
+        {
+            _videoHearing.AddCase("AutoTest", "Test", true);
+            return this;
+        }
         public Person Judge => _judgePerson;
 
         public Person JudicialOfficeHolder => _johPerson;

@@ -286,16 +286,18 @@ namespace BookingsApi.Controllers
             var query = new GetHearingsByUsernameQuery(payload.Username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
             
-            
             // raise an update event for each hearing to ensure consistency between video and bookings api
-            var createdHearings = hearings.Where(x => x.Status == BookingStatus.Created).ToList();
-            _logger.LogDebug("Updating {Count} confirmed hearing(s)", createdHearings.Count);
-            
-            foreach(var hearing in createdHearings)
+            var anonymisedText = "@email.net";
+            var nonAnonymisedParticipants = hearings
+                .Where(x => x.Status == BookingStatus.Created &&
+                            x.GetCases().Any(c => !c.Name.EndsWith(anonymisedText))).SelectMany(c => c.Participants)
+                .Where(p => p.PersonId == personId && !p.DisplayName.EndsWith(anonymisedText)).ToList();
+            _logger.LogDebug("Updating {Count} non-anonymised participants", nonAnonymisedParticipants.Count);
+
+            foreach(var participant in nonAnonymisedParticipants)
             {
-                var participant = hearing.Participants.First(x => x.PersonId == personId);
                 // map to updated participant event
-                await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
+                await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(participant.HearingId, participant));
             }
      
             return Accepted();
