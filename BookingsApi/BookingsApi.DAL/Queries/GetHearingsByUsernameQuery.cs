@@ -33,6 +33,7 @@ namespace BookingsApi.DAL.Queries
                 .Include("Participants.Person")
                 .Include("Participants.Questionnaire")
                 .Include("Participants.Questionnaire.SuitabilityAnswers")
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include("HearingCases.Case")
                 .Include("Participants.Person.Organisation")
                 .Include(x => x.CaseType)
