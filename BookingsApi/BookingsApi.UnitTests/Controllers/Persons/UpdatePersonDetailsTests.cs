@@ -78,10 +78,11 @@ namespace BookingsApi.UnitTests.Controllers.Persons
 
         private List<VideoHearing> CreateListOfVideoHearings(Guid personId, string firstName, string lastName, string username)
         {
-            var hearing1 = new VideoHearingBuilder().Build();
-            var hearing2 = new VideoHearingBuilder().Build();
-            var hearing3 = new VideoHearingBuilder().Build();
-            var hearing4 = new VideoHearingBuilder().Build();
+            var hearing1 = new VideoHearingBuilder().WithCase().Build();
+            var hearing2 = new VideoHearingBuilder().WithCase().Build();
+            var hearing3 = new VideoHearingBuilder().WithCase().Build();
+            var hearing4 = new VideoHearingBuilder().WithCase().Build();
+            var hearing5 = new VideoHearingBuilder().WithCase().Build();
 
             var person1 = hearing1.GetPersons().First();
             var participant1 = hearing1.GetParticipants().First(x => x.Person == person1);
@@ -107,14 +108,23 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             person4.SetProtected(nameof(person4.Id), personId);
             participant4.SetProtected(nameof(participant4.PersonId), personId);
             
+            var person5 = hearing5.GetPersons().First();
+            var participant5 = hearing5.GetParticipants().First(x => x.Person == person5);
+            person5.UpdatePerson(firstName, lastName, username);
+            person5.SetProtected(nameof(person5.Id), personId);
+            participant5.SetProtected(nameof(participant5.PersonId), personId);
+            participant5.DisplayName = "dfidshfiudsf@email.net";
+            
             hearing2.UpdateStatus(BookingStatus.Created, "test", null);
             hearing3.UpdateStatus(BookingStatus.Created, "test", null);
             hearing3.UpdateStatus(BookingStatus.Failed, "test", null);
             hearing4.UpdateStatus(BookingStatus.Cancelled, "test", "test cancellation");
+            hearing5.UpdateStatus(BookingStatus.Created, "test", null);
+            hearing5.AddCase("FUHSTD","IUHFISUHF@email.net", false);
             
             return new List<VideoHearing>
             {
-                hearing1, hearing2, hearing3, hearing4
+                hearing1, hearing2, hearing3, hearing4, hearing5
             };
         }
     }
