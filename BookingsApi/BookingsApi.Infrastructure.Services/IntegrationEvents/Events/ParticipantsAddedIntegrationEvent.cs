@@ -9,7 +9,7 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
     public class ParticipantsAddedIntegrationEvent: IIntegrationEvent
     {
         public ParticipantsAddedIntegrationEvent(Guid hearingId, IEnumerable<Participant> participants)
-        {
+        { 
             Participants = new List<ParticipantDto>();
             HearingId = hearingId;
             participants.ToList().ForEach(AddParticipant);

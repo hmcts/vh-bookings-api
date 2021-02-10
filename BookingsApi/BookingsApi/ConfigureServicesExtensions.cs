@@ -22,7 +22,7 @@ namespace BookingsApi
         {
             services.AddOpenApiDocument((document, serviceProvider) =>
             {
-                document.Title = "Notification API";
+                document.Title = "Bookings API";
                 document.DocumentProcessors.Add(
                     new SecurityDefinitionAppender("JWT",
                         new OpenApiSecurityScheme
