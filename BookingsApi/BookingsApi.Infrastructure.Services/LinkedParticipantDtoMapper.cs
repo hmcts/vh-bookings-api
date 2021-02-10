@@ -14,7 +14,12 @@ namespace BookingsApi.Infrastructure.Services
             {
                 foreach (var linkedParticipant in linkedParticipants)
                 {
-                    var dto = new LinkedParticipantDto(linkedParticipant.ParticipantId, linkedParticipant.LinkedId, linkedParticipant.Type);
+                    var dto = new LinkedParticipantDto
+                    {
+                        ParticipantId = linkedParticipant.ParticipantId, 
+                        LinkedId = linkedParticipant.LinkedId, 
+                        Type = linkedParticipant.Type
+                    };
                 
                     listOfDtos.Add(dto);
                 }
