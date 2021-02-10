@@ -27,16 +27,7 @@ namespace BookingsApi.UnitTests.Mappings
             dto.LinkedId.Should().Be(_linkedParticipant.LinkedId);
             dto.Type.Should().BeEquivalentTo(_linkedParticipant.Type);
         }
-        
-        [Test]
-        public void Should_Return_An_Empty_List_When_Request_Is_Null()
-        {
-            var dto = LinkedParticipantDtoMapper.MapToDto(null);
 
-            dto.Should().NotBeNull();
-            dto.Should().BeOfType<LinkedParticipantDto>();
-        }
-        
         private LinkedParticipant BuildLinkedParticipant()
         {
             return new LinkedParticipant(Guid.NewGuid(), Guid.NewGuid(), LinkedParticipantType.Interpreter);
