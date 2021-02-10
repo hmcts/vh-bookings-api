@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["BookingApi/BookingApi.csproj", "BookingApi/"]
+COPY ["BookingsApi/BookingsApi.csproj", "BookingsApi/"]
 COPY ["BookingsApi.Common/Bookings.Common.csproj", "BookingsApi.Common/"]
 COPY ["BookingsApi.DAL/BookingsApi.DAL.csproj", "BookingsApi.DAL/"]
 COPY ["BookingsApi.Domain/BookingsApi.Domain.csproj", "BookingsApi.Domain/"]
