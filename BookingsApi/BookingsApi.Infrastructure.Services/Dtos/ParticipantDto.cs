@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Infrastructure.Services.Dtos
@@ -17,5 +19,6 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string UserRole { get; set; }
         public CaseRoleGroup CaseGroupType { get; set; }
         public string Representee { get; set; }
+        public IList<LinkedParticipantDto> LinkedParticipants { get; set; }
     }
 }
