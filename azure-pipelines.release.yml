@@ -1,0 +1,170 @@
+parameters:
+- name: deploymentBranch
+  displayName: Branch to Deploy
+  type: string
+  default: refs/heads/master
+
+- name: environment
+  displayName: Environment
+  type: string
+  default: Sandbox
+  values:
+  - Preview
+  - Dev
+  - AAT
+  - Sandbox
+  - Test1
+  - Test2
+  - Test3 
+  - Demo
+  - Preprod
+  - Prod
+
+- name: RunZap
+  displayName: Execute ZAP Tests
+  type: boolean
+  default: false
+
+- name: prodEnvs
+  displayName: Environments Using Prod Subscription
+  type: object
+  default:
+    - Prod
+    - Preprod
+
+# Set variables once
+variables:
+  - group: vh-domains-and-urls
+  - group: vh-apps-settings-generic
+  - group: vh-bookings-api
+  - ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
+    - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
+      - group: vh-prod
+    - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
+      - group: vh-preview
+  - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
+    - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
+      - group: vh-prod
+    - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
+      - group: vh-preview
+
+trigger: none
+pr: none
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/master
+      endpoint: hmcts_shaed
+  pipelines:
+  - pipeline: CI
+    source: hmcts.vh-bookings-api
+    trigger:
+      enabled: true
+      branches:
+      - master
+      - hotfix/*
+      - release/*
+
+extends:
+    template: templates/vh-release.yml@templates
+    parameters:
+      ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
+        environments:
+          - ${{ parameters.environment }}
+        deploymentBranch: ${{ parameters.deploymentBranch }}
+      ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
+        deploymentBranch: resources.pipeline.CI.sourceBranch
+      releaseParameters:
+        runACTests: false
+        runZapTests: ${{ parameters.RunZap }}
+        subscription: $(env_Subscription)
+        secrets_KeyVault: $(env_Secret_KeyVault)
+        secrets_Subscription: $(env_Secret_Subscription)
+        devOpsResource: vh_bookings_api
+        appName: vh-bookings-api-$(environment)
+        resourceGroup: vh-bookings-api-$(environment)
+        variables:
+          - group: KinlyConfiguration_Dev
+            env:
+              - Sandbox
+          - group: KinlyConfiguration_Test
+            env:
+             - Preview
+             - Dev
+             - AAT
+             - Test1
+             - Test2
+          - group: KinlyConfiguration_Test2
+            env:
+             - Demo
+          - group: KinlyConfiguration_Preprod
+            env:
+             - Preprod
+          - group: KinlyConfiguration_Prod
+            env:
+             - Prod
+        appSettings:
+          - name: ApplicationInsights:InstrumentationKey
+            value: vh-core-infra-AppInsightsKey
+            secret: true
+          # AzureAd
+          - name: AzureAd:ClientId
+            value: vh-bookings-api-appid
+            secret: true
+          - name: AzureAd:ClientSecret
+            value: vh-bookings-api-key
+            secret: true
+          - name: AzureAd:TenantId
+            value: tenantid
+            secret: true
+          - name: AzureAd:BookingsApiResourceId
+            value: vh-bookings-api-identifieruris
+            secret: true          
+          
+          - name: Services:BookingsApiResourceId
+            value: vh-bookings-api-identifieruris
+            secret: true
+
+          - name: KinlyConfiguration:SipAddressStem
+            value: $(SipAddressStem)
+            
+          # Connection strings
+          - name: ConnectionStrings:VhBookings
+            value: VhBookingsDatabaseConnectionString
+            secret: true
+            
+          - name: ServiceBusQueue:ConnectionString
+            value: AzureServiceBusConnectionStringSend
+            secret: true
+
+          - name: UseServiceBusFake
+            value: false
+
+        acceptanceTestSettings:
+          # AzureAd
+          - name: ApplicationInsights:InstrumentationKey
+            value: vh-core-infra-AppInsightsKey
+            secret: true
+          - name: AzureAd:TenantId
+            value: tenantid
+            secret: true
+          - name: AzureAd:ClientId
+            value: vh-bookings-api-appid
+            secret: true
+          - name: AzureAd:ClientSecret
+            value: vh-bookings-api-key
+            secret: true
+          
+          # Services          
+          - name: Services:BookingsApiResourceId
+            value: vh-bookings-api-identifieruris
+            secret: true
+          - name: Services:BookingsApiUrl
+            value: $(bookings_api_url_staging)
+
+          # GOV Notify Configuration
+          - name: NotifyConfiguration:ApiKey
+            value: $(notify-api-key)
