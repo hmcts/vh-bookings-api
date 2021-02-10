@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services;
+using BookingsApi.Infrastructure.Services.Dtos;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -47,8 +49,8 @@ namespace BookingsApi.UnitTests.Mappings
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
             result.CaseGroupType.Should().Be(participant.CaseRole.Group);
-            result.LinkedParticipants.Should().BeEquivalentTo(participant.LinkedParticipants);
-
+            result.LinkedParticipants.Select(x => x.ParticipantId).Should()
+                .BeEquivalentTo(participant.LinkedParticipants.Select(x => x.ParticipantId));
             result.Representee.Should().BeNullOrEmpty();
         }
         

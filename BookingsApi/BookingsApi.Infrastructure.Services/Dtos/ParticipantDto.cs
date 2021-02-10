@@ -19,6 +19,6 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string UserRole { get; set; }
         public CaseRoleGroup CaseGroupType { get; set; }
         public string Representee { get; set; }
-        public IList<LinkedParticipant> LinkedParticipants { get; set; }
+        public IList<LinkedParticipantDto> LinkedParticipants { get; set; }
     }
 }

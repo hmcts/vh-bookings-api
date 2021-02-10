@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 
@@ -23,7 +25,7 @@ namespace BookingsApi.Infrastructure.Services
                     UserRole = participant.HearingRole.UserRole.Name,
                     CaseGroupType = participant.CaseRole.Group,
                     Representee = representee,
-                    LinkedParticipants = participant.LinkedParticipants
+                    LinkedParticipants = LinkedParticipantDtoMapper.MapToDto(participant.LinkedParticipants) ?? new List<LinkedParticipantDto>()
                 };
         }
     }
