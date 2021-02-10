@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
@@ -25,21 +26,8 @@ namespace BookingsApi.Infrastructure.Services
                     UserRole = participant.HearingRole.UserRole.Name,
                     CaseGroupType = participant.CaseRole.Group,
                     Representee = representee,
-                    LinkedParticipants = MapLinkedParticipants(participant.LinkedParticipants) ?? new List<LinkedParticipantDto>()
+                    LinkedParticipants = participant.LinkedParticipants.Select(LinkedParticipantDtoMapper.MapToDto).ToList()
                 };
-        }
-
-        private static IList<LinkedParticipantDto> MapLinkedParticipants(IList<LinkedParticipant> linkedParticipants)
-        {
-            var linkedParticipantDtos = new List<LinkedParticipantDto>();
-
-            foreach (var linkedParticipant in linkedParticipants)
-            {
-                var dto = LinkedParticipantDtoMapper.MapToDto(linkedParticipant);
-                linkedParticipantDtos.Add(dto);
-            }
-
-            return linkedParticipantDtos;
         }
     }
 }
