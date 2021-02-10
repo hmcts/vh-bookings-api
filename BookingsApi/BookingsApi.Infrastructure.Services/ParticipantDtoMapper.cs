@@ -25,8 +25,21 @@ namespace BookingsApi.Infrastructure.Services
                     UserRole = participant.HearingRole.UserRole.Name,
                     CaseGroupType = participant.CaseRole.Group,
                     Representee = representee,
-                    LinkedParticipants = LinkedParticipantDtoMapper.MapToDto(participant.LinkedParticipants) ?? new List<LinkedParticipantDto>()
+                    LinkedParticipants = MapLinkedParticipants(participant.LinkedParticipants) ?? new List<LinkedParticipantDto>()
                 };
+        }
+
+        private static IList<LinkedParticipantDto> MapLinkedParticipants(IList<LinkedParticipant> linkedParticipants)
+        {
+            var linkedParticipantDtos = new List<LinkedParticipantDto>();
+
+            foreach (var linkedParticipant in linkedParticipants)
+            {
+                var dto = LinkedParticipantDtoMapper.MapToDto(linkedParticipant);
+                linkedParticipantDtos.Add(dto);
+            }
+
+            return linkedParticipantDtos;
         }
     }
 }
