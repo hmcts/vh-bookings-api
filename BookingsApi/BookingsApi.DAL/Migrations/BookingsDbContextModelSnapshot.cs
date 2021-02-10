@@ -203,7 +203,7 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("JobHistory");
                 });
 
-            modelBuilder.Entity("Bookings.Domain.LinkedParticipant", b =>
+            modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -226,7 +226,7 @@ namespace BookingsApi.DAL.Migrations
 
                     b.ToTable("LinkedParticipant");
                 });
-            modelBuilder.Entity("Bookings.Domain.Organisation", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Organisation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -583,15 +583,15 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bookings.Domain.LinkedParticipant", b =>
+            modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>
                 {
-                    b.HasOne("Bookings.Domain.Participants.Participant", "Linked")
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Linked")
                         .WithMany()
                         .HasForeignKey("LinkedId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("Bookings.Domain.Participants.Participant", "Participant")
+                    b.HasOne("BookingsApi.Domain.Participants.Participant", "Participant")
                         .WithMany("LinkedParticipants")
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.ClientCascade)
