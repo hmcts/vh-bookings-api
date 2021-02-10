@@ -6,12 +6,12 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.Sql("update [dbo].[HearingRole] set [Name] = 'Interpreter' where [Name] like 'Inter%'");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.Sql("update [dbo].[HearingRole] set [Name] = 'Interpreter ' where [Name] like 'Inter%'");
         }
     }
 }
