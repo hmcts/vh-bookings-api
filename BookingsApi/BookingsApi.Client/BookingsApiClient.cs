@@ -403,11 +403,11 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostPersonBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PersonResponse> SearchForNonJudicialPersonsByContactEmailAsync(string contactEmail);
+        System.Threading.Tasks.Task<PersonResponse> SearchForNonJudgePersonsByContactEmailAsync(string contactEmail);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PersonResponse> SearchForNonJudicialPersonsByContactEmailAsync(string contactEmail, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<PersonResponse> SearchForNonJudgePersonsByContactEmailAsync(string contactEmail, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get a list of suitability answers for a given person</summary>
         /// <param name="username">The username of the person</param>
@@ -3296,14 +3296,14 @@ namespace BookingsApi.Client
         }
     
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<PersonResponse> SearchForNonJudicialPersonsByContactEmailAsync(string contactEmail)
+        public System.Threading.Tasks.Task<PersonResponse> SearchForNonJudgePersonsByContactEmailAsync(string contactEmail)
         {
-            return SearchForNonJudicialPersonsByContactEmailAsync(contactEmail, System.Threading.CancellationToken.None);
+            return SearchForNonJudgePersonsByContactEmailAsync(contactEmail, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<PersonResponse> SearchForNonJudicialPersonsByContactEmailAsync(string contactEmail, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<PersonResponse> SearchForNonJudgePersonsByContactEmailAsync(string contactEmail, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/persons?");

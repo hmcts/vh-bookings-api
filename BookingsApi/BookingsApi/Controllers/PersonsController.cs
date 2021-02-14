@@ -214,13 +214,13 @@ namespace BookingsApi.Controllers
             }
         }
         
-        [HttpGet(Name = "SearchForNonJudicialPersonsByContactEmail")]
-        [OpenApiOperation("SearchForNonJudicialPersonsByContactEmail")]
+        [HttpGet(Name = "SearchForNonJudgePersonsByContactEmail")]
+        [OpenApiOperation("SearchForNonJudgePersonsByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string),(int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(string),(int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string),(int)HttpStatusCode.Unauthorized)]
-        public async Task<ActionResult<PersonResponse>> SearchForNonJudicialPersonsByContactEmail([FromQuery]string contactEmail)
+        public async Task<ActionResult<PersonResponse>> SearchForNonJudgePersonsByContactEmail([FromQuery]string contactEmail)
         {
             if (!contactEmail.IsValidEmail())
             {
@@ -238,12 +238,12 @@ namespace BookingsApi.Controllers
             var hearingsQuery = new GetHearingsByUsernameQuery(person.Username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(hearingsQuery);
 
-            var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id)).Any(x =>
-                x.HearingRole.UserRole.IsJudge || x.HearingRole.UserRole.IsJudicialOfficeHolder);
+            var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id))
+                .Any(x => x.HearingRole.UserRole.IsJudge);
 
             if (judicialHearings)
             {
-                return Unauthorized("Only searches for individuals or representatives are allowed");
+                return Unauthorized("Only searches for non Judge persons are allowed");
             }
             
             var mapper = new PersonToResponseMapper();
