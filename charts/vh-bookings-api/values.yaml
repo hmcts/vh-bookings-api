@@ -17,8 +17,6 @@ java:
       usePodIdentity: true
       secrets:
         - servicebusqueue--connectionstring
-        - connectionstrings--bookingsapi
-        - connectionstrings--bookings
         - connectionstrings--vhbookings
     vh-bookings-api:
       excludeEnvironmentSuffix: false
