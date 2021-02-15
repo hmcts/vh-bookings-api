@@ -17,6 +17,7 @@ java:
       usePodIdentity: true
       secrets:
         - servicebusqueue--connectionstring
+        - connectionstrings--bookingsapi
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -25,7 +26,6 @@ java:
         - azuread--clientsecret
         - azuread--clientid
         - applicationinsights-instrumentationkey
-        - connectionstrings--bookingsapi
   environment:
     ASPNETCORE_URLS: http://+:8080
     AZUREAD__TENANTID: "fb6e0e22-0da3-4c35-972a-9d61eb256508"
