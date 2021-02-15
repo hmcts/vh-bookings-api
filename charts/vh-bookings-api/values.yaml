@@ -18,6 +18,7 @@ java:
       secrets:
         - servicebusqueue--connectionstring
         - connectionstrings--bookingsapi
+        - connectionstrings--bookings
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
