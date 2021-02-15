@@ -17,7 +17,6 @@ java:
       usePodIdentity: true
       secrets:
         - servicebusqueue--connectionstring
-        - services--bookingswebclientid
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
