@@ -19,6 +19,7 @@ java:
         - servicebusqueue--connectionstring
         - connectionstrings--bookingsapi
         - connectionstrings--bookings
+        - connectionstrings--vhbookings
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
