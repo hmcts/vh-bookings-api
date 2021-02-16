@@ -42,14 +42,14 @@ namespace BookingsApi
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddMemoryCache();
-            
+
             services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
-            
+
             services.AddScoped<ITokenProvider, AzureTokenProvider>();
 
             services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
             services.AddScoped<IQueryHandler, QueryHandler>();
-            
+
             services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
             services.AddScoped<ICommandHandler, CommandHandler>();
             services.AddScoped<IHearingService, HearingService>();
@@ -57,10 +57,10 @@ namespace BookingsApi
             services.AddScoped<ILogger, Logger>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
-            
+
             return services;
         }
-        
+
         private static void RegisterCommandHandlers(IServiceCollection serviceCollection)
         {
             var commandHandlers = typeof(ICommand).Assembly.GetTypes().Where(t =>
@@ -74,7 +74,7 @@ namespace BookingsApi
                 serviceCollection.AddScoped(serviceType, queryHandler);
             }
         }
-        
+
         private static void RegisterQueryHandlers(IServiceCollection serviceCollection)
         {
             var queryHandlers = typeof(IQuery).Assembly.GetTypes().Where(t =>
