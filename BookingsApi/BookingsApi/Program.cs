@@ -19,22 +19,20 @@ namespace BookingsApi
 // ReSharper disable once MemberCanBePrivate.Global Needed for client generation on build with nswag
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            const string mountPath = "/mnt/secrets/vh-bookings-api";
+            const string vhBookingsApi = "/mnt/secrets/vh-bookings-api";
+            const string vhInfraCore = "/mnt/secrets/vh-infra-core";
 
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((configBuilder) =>
                 {
-                    configBuilder.AddAksKeyVaultSecretProvider(mountPath);
+                    configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
+                    configBuilder.AddAksKeyVaultSecretProvider(vhBookingsApi);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     webBuilder.UseIISIntegration();
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.ConfigureAppConfiguration((configBuilder) =>
-                    {
-                        configBuilder.AddAksKeyVaultSecretProvider(mountPath);
-                    });
                 });
         }
     }
