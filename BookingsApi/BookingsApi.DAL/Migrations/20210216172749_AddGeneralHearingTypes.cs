@@ -75,7 +75,7 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            for (var i = 141; i < 145; i++)
+            for (var i = 141; i < 146; i++)
             {
                 migrationBuilder.DeleteData("HearingType", "Id", i);
             }
