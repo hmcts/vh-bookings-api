@@ -99,7 +99,6 @@ Feature: CaseTypes
       | GRC - Query Jurisdiction          |
       | GRC - Welfare of Animals          |
       | Immigration and Asylum            |
-      | Private Law                       |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -253,4 +252,3 @@ Feature: CaseTypes
       | Immigration and Asylum            | Observer     |
       | Immigration and Asylum            | Panel Member |
       | Immigration and Asylum            | Judge        |
-      | Private Law                       | Appellant    |
