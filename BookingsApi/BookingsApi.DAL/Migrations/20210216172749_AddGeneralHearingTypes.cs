@@ -18,6 +18,7 @@ namespace BookingsApi.DAL.Migrations
                     { 143, "Familiarisation", 3 },
                     { 144, "One to one", 3 },
                     { 145, "Test", 3 },
+                    { 146, "Automated Test", 3 },
                 });
             
             migrationBuilder.InsertData(
@@ -75,7 +76,7 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            for (var i = 141; i < 146; i++)
+            for (var i = 141; i < 147; i++)
             {
                 migrationBuilder.DeleteData("HearingType", "Id", i);
             }
