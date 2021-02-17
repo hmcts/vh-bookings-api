@@ -26,7 +26,7 @@ namespace BookingsApi.DAL.Commands
         public RepresentativeInformation RepresentativeInformation { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
 
-        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telephoneNumber, 
+        public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telephoneNumber,
             string organisationName, RepresentativeInformation representativeInformation, List<LinkedParticipantDto> linkedParticipants)
         {
             HearingId = hearingId;
@@ -73,7 +73,11 @@ namespace BookingsApi.DAL.Commands
             {
                 throw new ParticipantNotFoundException(command.ParticipantId);
             }
-            
+
+            if (command.LinkedParticipants.Any() && participant.LinkedParticipants.Any())
+            {
+                await _hearingService.RemoveParticipantLinks(participants, participant);
+            }
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
             participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
@@ -81,7 +85,7 @@ namespace BookingsApi.DAL.Commands
 
             if (participant.HearingRole.UserRole.IsRepresentative)
             {
-                ((Representative) participant).UpdateRepresentativeDetails(
+                ((Representative)participant).UpdateRepresentativeDetails(
                     command.RepresentativeInformation.Representee);
             }
 
