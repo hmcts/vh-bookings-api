@@ -126,6 +126,40 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedRepresentative.GetLinkedParticipants().Should().NotBeEmpty();
         }
 
+        [Test]
+        public async Task Should_Update_Participant_With_Exisiting_Links()
+        {
+            var editPrefix = " _Edit";
+            var seededHearing = await Hooks.SeedVideoHearing(null, false, Domain.Enumerations.BookingStatus.Booked, 0, false,true);
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+
+            var individuals = seededHearing.GetParticipants()
+                .Where(x => x.HearingRole.UserRole.Name.Equals("Individual")).ToList();
+            var interpretee = individuals[0];
+            var interpreter = individuals[1];
+
+            var link = new LinkedParticipantDto
+            {
+                LinkedParticipantContactEmail = interpreter.Person.ContactEmail,
+                ParticipantContactEmail = interpretee.Person.ContactEmail
+            };
+
+            var title = interpreter.Person.Title + editPrefix;
+            var displayName = interpreter.DisplayName + editPrefix;
+            var telephoneNumber = "11112222333";
+
+            var links = new List<LinkedParticipantDto> { link };
+            var updateParticipantCommand = new UpdateParticipantCommand(seededHearing.Id, interpreter.Id,
+                title, displayName, telephoneNumber, null, null, links);
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var updatedRepresentative = updateParticipantCommand.UpdatedParticipant;
+
+            updatedRepresentative.Should().NotBeNull();
+            updatedRepresentative.LinkedParticipants.Should().NotBeNull();
+            updatedRepresentative.GetLinkedParticipants().Should().NotBeEmpty();
+        }
+
         [TearDown]
         public new async Task TearDown()
         {
