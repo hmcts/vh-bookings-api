@@ -29,7 +29,7 @@ namespace BookingsApi.DAL.Commands
         /// <param name="caseName">New case name</param>
         /// <returns></returns>
         Task UpdateHearingCaseName(Guid hearingId, string caseName);
-        
+
         /// <summary>
         /// Create links between participants if any exist
         /// </summary>
@@ -37,6 +37,14 @@ namespace BookingsApi.DAL.Commands
         /// <param name="linkedParticipantDtos">List linked participants dtos containing the linking data</param>
         /// <returns></returns>
         Task CreateParticipantLinks(List<Participant> participants, List<LinkedParticipantDto> linkedParticipantDtos);
+
+        /// <summary>
+        /// Removes the link between participants
+        /// </summary>
+        /// <param name="participant"></param>
+        /// <param name="linkedParticipantDtos"></param>
+        /// <returns></returns>
+        Task RemoveParticipantLinks(List<Participant> participants, Participant participant);
     }
     public class HearingService : IHearingService
     {
@@ -46,7 +54,7 @@ namespace BookingsApi.DAL.Commands
         {
             _context = context;
         }
-        
+
         public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants)
         {
             var participantList = new List<Participant>();
@@ -55,44 +63,44 @@ namespace BookingsApi.DAL.Commands
                 var existingPerson = await _context.Persons
                     .Include("Organisation")
                     .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username);
-                
+
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
                             participantToAdd.CaseRole, participantToAdd.DisplayName);
-            
+
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
                         participantList.Add(individual);
                         break;
                     case "Representative":
-                    {
-                        var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person,
-                            participantToAdd.HearingRole,
-                            participantToAdd.CaseRole, participantToAdd.DisplayName,
-                            participantToAdd.Representee);
+                        {
+                            var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person,
+                                participantToAdd.HearingRole,
+                                participantToAdd.CaseRole, participantToAdd.DisplayName,
+                                participantToAdd.Representee);
 
-                        UpdateOrganisationDetails(participantToAdd.Person, representative);
-                        participantList.Add(representative);
-                        break;
-                    }
+                            UpdateOrganisationDetails(participantToAdd.Person, representative);
+                            participantList.Add(representative);
+                            break;
+                        }
                     case "Judicial Office Holder":
-                    {
-                        var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
-                            participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        {
+                            var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
+                                participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
 
-                        participantList.Add(joh);
-                        break;
-                    }
+                            participantList.Add(joh);
+                            break;
+                        }
                     case "Judge":
-                    {
-                        var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person,
-                            participantToAdd.HearingRole,
-                            participantToAdd.CaseRole, participantToAdd.DisplayName);
+                        {
+                            var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person,
+                                participantToAdd.HearingRole,
+                                participantToAdd.CaseRole, participantToAdd.DisplayName);
 
-                        participantList.Add(judge);
-                        break;
-                    }
+                            participantList.Add(judge);
+                            break;
+                        }
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
@@ -121,14 +129,14 @@ namespace BookingsApi.DAL.Commands
             foreach (var linkedParticipantDto in linkedParticipantDtos)
             {
                 var interpretee =
-                    participants.Single(x => 
+                    participants.Single(x =>
                         x.Person.ContactEmail.Equals(linkedParticipantDto.ParticipantContactEmail,
                             StringComparison.CurrentCultureIgnoreCase));
                 var interpreter =
                     participants.Single(x =>
                         x.Person.ContactEmail.Equals(linkedParticipantDto.LinkedParticipantContactEmail,
                             StringComparison.CurrentCultureIgnoreCase));
-                
+
                 var linkedParticipant = new LinkedParticipant(interpretee.Id, interpreter.Id,
                     linkedParticipantDto.Type);
 
@@ -138,6 +146,23 @@ namespace BookingsApi.DAL.Commands
             }
 
             return Task.FromResult(linkedParticipants);
+        }
+
+        public Task RemoveParticipantLinks(List<Participant> participants, Participant participant)
+        {
+            var linkedParticipants = participant.LinkedParticipants.Select(l => new LinkedParticipant(l.ParticipantId, l.LinkedId, l.Type)).ToList();
+            foreach (var lp in linkedParticipants)
+            {
+                var interpreter = participants.Single(x => x.Id == lp.ParticipantId);
+                var interpretee = participants.Single(x => x.Id == lp.LinkedId);
+
+                var lp1 = interpreter.LinkedParticipants.Single(x => x.LinkedId == interpretee.Id);
+                var lp2 = interpretee.LinkedParticipants.Single(x => x.LinkedId == interpreter.Id);
+
+                interpretee.RemoveLink(lp2);
+                interpreter.RemoveLink(lp1);
+            }
+            return Task.CompletedTask;
         }
 
         private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
