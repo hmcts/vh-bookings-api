@@ -148,19 +148,6 @@ namespace BookingsApi.DAL.Commands
             return Task.FromResult(linkedParticipants);
         }
 
-        private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
-        {
-            participant1.AddLink(participant2.Id, linkType);
-            participant2.AddLink(participant1.Id, linkType);
-        }
-
-        private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)
-        {
-            var newOrganisation = newPersonDetails.Organisation;
-            var existingPerson = participantToUpdate.Person;
-            participantToUpdate.UpdateParticipantDetails(existingPerson.Title, participantToUpdate.DisplayName, existingPerson.TelephoneNumber, newOrganisation?.Name);
-        }
-
         public Task RemoveParticipantLinks(List<Participant> participants, Participant participant)
         {
             var linkedParticipants = participant.LinkedParticipants.Select(l => new LinkedParticipant(l.ParticipantId, l.LinkedId, l.Type)).ToList();
@@ -176,6 +163,19 @@ namespace BookingsApi.DAL.Commands
                 interpreter.RemoveLink(lp1);
             }
             return Task.CompletedTask;
+        }
+
+        private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
+        {
+            participant1.AddLink(participant2.Id, linkType);
+            participant2.AddLink(participant1.Id, linkType);
+        }
+
+        private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)
+        {
+            var newOrganisation = newPersonDetails.Organisation;
+            var existingPerson = participantToUpdate.Person;
+            participantToUpdate.UpdateParticipantDetails(existingPerson.Title, participantToUpdate.DisplayName, existingPerson.TelephoneNumber, newOrganisation?.Name);
         }
     }
 }

@@ -130,7 +130,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_Update_Participant_With_Exisiting_Links()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearing(null, false, Domain.Enumerations.BookingStatus.Booked, 0, false,true);
+            var seededHearing = await Hooks.SeedVideoHearingLinkedParticipants(null);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var individuals = seededHearing.GetParticipants()
