@@ -80,9 +80,21 @@ namespace BookingsApi.DAL.Helper
 
         private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)
         {
-            var hearingParticipants = hearing.Participants.Where(x => x.HearingRole.Name.ToLower() == "interpreter" &&  x.LinkedParticipants.Any()).ToList();
+            var hearingParticipants = hearing.Participants.Where(x => x.LinkedParticipants.Any()).ToList();
+            var hearingParticipantTemp = hearing.Participants.SelectMany(x => x.LinkedParticipants).ToList();
+            var hearingParticipantsFiltered = new List<Participant>();
+            foreach (var lp in hearingParticipantTemp)
+            {
+                // check if we have added a participant with the linked or participant id into filtered list
+                if (!hearingParticipantsFiltered.Any(x => x.Id == lp.ParticipantId || x.Id == lp.LinkedId))
+                {
+                    // hearingParticipantsFiltered.Add(lp.Participant);
+                    hearingParticipantsFiltered.Add(hearing.Participants.Single(x=>x.Id == lp.ParticipantId));
+                }
+            }
+
             var linkedParticipantDtos = new List<LinkedParticipantDto>();
-            foreach (var hearingParticipant in hearingParticipants)
+            foreach (var hearingParticipant in hearingParticipantsFiltered)
             {
                 var participantEmail = hearingParticipant.Person.ContactEmail;
                 var participantLink = hearingParticipant.GetLinkedParticipants()
