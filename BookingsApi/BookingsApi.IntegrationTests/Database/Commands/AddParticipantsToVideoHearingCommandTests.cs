@@ -8,6 +8,7 @@ using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
@@ -208,11 +209,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 interpreter
             };
             var links = new List<LinkedParticipantDto>();
-            var link = new LinkedParticipantDto
-            {
-                LinkedParticipantContactEmail = interpreter.Person.ContactEmail,
-                ParticipantContactEmail = interpretee.Person.ContactEmail
-            };
+            var link = new LinkedParticipantDto(
+                interpreter.Person.ContactEmail, 
+                interpretee.Person.ContactEmail,
+                LinkedParticipantType.Interpreter
+                );
+            
             links.Add(link);
 
             await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, links));
