@@ -80,7 +80,6 @@ namespace BookingsApi.DAL.Helper
 
         private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)
         {
-            var hearingParticipants = hearing.Participants.Where(x => x.LinkedParticipants.Any()).ToList();
             var hearingParticipantTemp = hearing.Participants.SelectMany(x => x.LinkedParticipants).ToList();
             var hearingParticipantsFiltered = new List<Participant>();
             foreach (var lp in hearingParticipantTemp)
@@ -88,7 +87,6 @@ namespace BookingsApi.DAL.Helper
                 // check if we have added a participant with the linked or participant id into filtered list
                 if (!hearingParticipantsFiltered.Any(x => x.Id == lp.ParticipantId || x.Id == lp.LinkedId))
                 {
-                    // hearingParticipantsFiltered.Add(lp.Participant);
                     hearingParticipantsFiltered.Add(hearing.Participants.Single(x=>x.Id == lp.ParticipantId));
                 }
             }
