@@ -7,6 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -98,11 +99,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var linkedParticipants = new List<LinkedParticipantDto>
             {
-                new LinkedParticipantDto
-                {
-                    ParticipantContactEmail = newParticipant.Person.ContactEmail,
-                    LinkedParticipantContactEmail = newJudgeParticipant.Person.ContactEmail
-                }
+                new LinkedParticipantDto(
+                    newParticipant.Person.ContactEmail,
+                    newJudgeParticipant.Person.ContactEmail,
+                    LinkedParticipantType.Interpreter)
             };
 
             var command =
@@ -126,9 +126,20 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.HearingVenue.Should().NotBeNull();
             returnedVideoHearing.HearingType.Should().NotBeNull();
 
-            returnedVideoHearing.GetParticipants().Any().Should().BeTrue();
+            var participantsFromDb = returnedVideoHearing.GetParticipants();
+            participantsFromDb.Any().Should().BeTrue();
             returnedVideoHearing.GetCases().Any().Should().BeTrue();
             returnedVideoHearing.GetEndpoints().Any().Should().BeTrue();
+            var linkedParticipantsFromDb = participantsFromDb.SelectMany(x => x.LinkedParticipants).ToList();
+            linkedParticipantsFromDb.Should().NotBeEmpty();
+            foreach (var linkedParticipant in linkedParticipantsFromDb)
+            {
+                linkedParticipant.Type.Should().BeAssignableTo<LinkedParticipantType>();
+                linkedParticipant.Type.Should().Be(LinkedParticipantType.Interpreter);
+                participantsFromDb.Any(x => x.Id == linkedParticipant.LinkedId).Should().BeTrue();
+                participantsFromDb.Any(x => x.Id == linkedParticipant.ParticipantId).Should().BeTrue();
+            }
+
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)

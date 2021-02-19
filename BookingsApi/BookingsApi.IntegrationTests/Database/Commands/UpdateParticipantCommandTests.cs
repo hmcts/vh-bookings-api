@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using FluentAssertions;
 using NUnit.Framework;
@@ -14,8 +14,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class UpdateParticipantCommandDatabaseTests : DatabaseTestsBase
     {
-        private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private GetHearingVenuesQueryHandler _getHearingVenuesQueryHandler;
         private UpdateParticipantCommandHandler _commandHandler;
         private Guid _newHearingId;
 
@@ -23,8 +21,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _getHearingVenuesQueryHandler = new GetHearingVenuesQueryHandler(context);
             var hearingService = new HearingService(context);
             _commandHandler = new UpdateParticipantCommandHandler(context, hearingService);
             _newHearingId = Guid.Empty;
@@ -103,12 +99,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 .Where(x => x.HearingRole.UserRole.Name.Equals("Individual")).ToList();
             var interpretee = individuals[0];
             var interpreter = individuals[1];
-            
-            var link = new LinkedParticipantDto
-            {
-                LinkedParticipantContactEmail = interpreter.Person.ContactEmail, 
-                ParticipantContactEmail = interpretee.Person.ContactEmail
-            };
+
+            var link = new LinkedParticipantDto(
+                interpreter.Person.ContactEmail, 
+                interpretee.Person.ContactEmail,
+                LinkedParticipantType.Interpreter);
 
             var title = interpreter.Person.Title + editPrefix;
             var displayName = interpreter.DisplayName + editPrefix;
@@ -138,11 +133,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var interpretee = individuals[0];
             var interpreter = individuals[1];
 
-            var link = new LinkedParticipantDto
-            {
-                LinkedParticipantContactEmail = interpreter.Person.ContactEmail,
-                ParticipantContactEmail = interpretee.Person.ContactEmail
-            };
+            var link = new LinkedParticipantDto(
+                interpreter.Person.ContactEmail, 
+                interpretee.Person.ContactEmail,
+                LinkedParticipantType.Interpreter);
 
             var title = interpreter.Person.Title + editPrefix;
             var displayName = interpreter.DisplayName + editPrefix;
