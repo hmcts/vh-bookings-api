@@ -18,7 +18,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
             {
                 ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.Indented,
+                Formatting = Formatting.None,
                 TypeNameHandling = TypeNameHandling.Objects
             };
             SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
@@ -26,6 +26,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         
         public Task PublishMessageAsync(EventMessage eventMessage)
         {
+            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
             _eventMessages.Enqueue(eventMessage);
             return Task.CompletedTask;
         }
