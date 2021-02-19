@@ -18,13 +18,8 @@ namespace BookingsApi.Mappings
             {
                 foreach (var request in requests)
                 {
-                    var dto = new LinkedParticipantDto
-                    {
-                        ParticipantContactEmail = request.ParticipantContactEmail,
-                        LinkedParticipantContactEmail = request.LinkedParticipantContactEmail,
-                        Type = request.Type.MapToDomainEnum()
-                    };
-                
+                    var dto = new LinkedParticipantDto(request.ParticipantContactEmail,
+                        request.LinkedParticipantContactEmail, request.Type.MapToDomainEnum());
                     listOfDtos.Add(dto);
                 }
             }

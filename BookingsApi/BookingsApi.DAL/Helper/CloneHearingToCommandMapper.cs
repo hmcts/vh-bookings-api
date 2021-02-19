@@ -104,11 +104,11 @@ namespace BookingsApi.DAL.Helper
                     var linkedParticipant = hearing.Participants.SingleOrDefault(x => x.Id == participantLink.LinkedId);
 
                     var linkedParticipantDto = new LinkedParticipantDto
-                    {
-                        LinkedParticipantContactEmail = linkedParticipant?.Person.ContactEmail,
-                        ParticipantContactEmail = participantEmail,
-                        Type = participantLink.Type
-                    };
+                    (
+                        participantEmail,
+                        linkedParticipant?.Person.ContactEmail,
+                        participantLink.Type
+                    );
 
                     linkedParticipantDtos.Add(linkedParticipantDto);
                 }
