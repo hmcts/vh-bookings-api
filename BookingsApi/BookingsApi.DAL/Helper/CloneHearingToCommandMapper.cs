@@ -81,6 +81,7 @@ namespace BookingsApi.DAL.Helper
         private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)
         {
             var hearingParticipants = hearing.Participants.Where(x => x.LinkedParticipants.Any()).ToList();
+
             var linkedParticipantDtos = new List<LinkedParticipantDto>();
             foreach (var hearingParticipant in hearingParticipants)
             {

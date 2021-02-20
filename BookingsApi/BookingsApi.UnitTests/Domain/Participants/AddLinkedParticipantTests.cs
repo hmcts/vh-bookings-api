@@ -28,14 +28,5 @@ namespace BookingsApi.UnitTests.Domain.Participants
 
             linkedId.Should().BeEquivalentTo(_linkedIndividual.Id);
         }
-        
-        [Test]
-        public void Should_Throw_Exception_When_Link_Already_Exists()
-        {
-            _individual.AddLink(_linkedIndividual.Id, LinkedParticipantType.Interpreter);
-
-            _individual.Invoking(x => x.AddLink(_linkedIndividual.Id, LinkedParticipantType.Interpreter)).Should()
-                .Throw<DomainRuleException>();
-        }
     }
 }

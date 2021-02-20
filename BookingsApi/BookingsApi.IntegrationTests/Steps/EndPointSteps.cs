@@ -37,6 +37,14 @@ namespace BookingsApi.IntegrationTests.Steps
             PersistTestHearingData(seededHearing);
         }
 
+        [Given(@"I have a hearing with linked participants")]
+        public async Task GivenIHaveAHearingWithLinkedParticipants()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, false, true);
+            PersistTestHearingData(seededHearing);
+        }
+
+
         [Given(@"I have a hearing without endpoints")]
         public async Task GivenIHaveAHearingWithoutEndpoints()
         {
