@@ -35,6 +35,7 @@ namespace BookingsApi.UnitTests.Mappings
        
             var individualsInHearing = hearing.Participants.Where(x => x.HearingRole.UserRole.IsIndividual).ToList();
             individualsInHearing[0].AddLink(individualsInHearing[1].Id, LinkedParticipantType.Interpreter);
+            individualsInHearing[1].AddLink(individualsInHearing[0].Id, LinkedParticipantType.Interpreter);
 
             var newDate = hearing.ScheduledDateTime.AddDays(1);
 
