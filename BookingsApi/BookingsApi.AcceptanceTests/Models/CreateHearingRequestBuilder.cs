@@ -99,6 +99,27 @@ namespace BookingsApi.AcceptanceTests.Models
             return this;
         }
 
+        public CreateHearingRequestBuilder WithLinkedParticipants()
+        {
+            var individualEmail = _request.Participants.FirstOrDefault(p => p.HearingRoleName == "Litigant in person").ContactEmail;
+            var interpreterEmail = _request.Participants.FirstOrDefault(p => p.HearingRoleName == "Interpreter").ContactEmail;
+
+            _request.LinkedParticipants = new List<LinkedParticipantRequest>();
+            _request.LinkedParticipants.Add(AddLinkedParticipant(individualEmail, interpreterEmail));
+            _request.LinkedParticipants.Add(AddLinkedParticipant(interpreterEmail, individualEmail));
+            return this;
+        }
+
+        private LinkedParticipantRequest AddLinkedParticipant(string participantEmail, string linkedParticipantEmail)
+        {
+            var linkeParticipantRequest = Builder<LinkedParticipantRequest>.CreateNew()
+                                    .With(x => x.LinkedParticipantContactEmail = linkedParticipantEmail)
+                                    .With(x => x.ParticipantContactEmail = participantEmail)
+                                    .Build();
+
+            return linkeParticipantRequest;
+        }
+
         public BookNewHearingRequest Build()
         {
             _context.TestData.CreateHearingRequest = _request;
