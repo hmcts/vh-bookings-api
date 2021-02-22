@@ -129,7 +129,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var request = new UpdateBookingStatusRequest
             {
-                UpdatedBy = "email@toupdate.com",
+                UpdatedBy = "email@hmcts.net",
                 Status = UpdateBookingStatus.Created
             };
             var hearingId = Guid.NewGuid();
@@ -156,7 +156,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var request = new UpdateBookingStatusRequest
             {
-                UpdatedBy = "email@toupdate.com",
+                UpdatedBy = "email@hmcts.net",
                 Status = UpdateBookingStatus.Cancelled,
                 CancelReason = "Adjournment"
             };
@@ -205,7 +205,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 OtherInformation = "note",
                 HearingVenueName = "venue1",
                 Cases = new List<CaseRequest> {new CaseRequest {Name = "123XX", Number = "123YY", IsLeadCase = true}},
-                UpdatedBy = "test@auto.com"
+                UpdatedBy = "test@hmcts.net"
             };
 
             var hearingId = Guid.NewGuid();
@@ -245,7 +245,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 OtherInformation = "note",
                 HearingVenueName = "venue2",
                 Cases = new List<CaseRequest> {new CaseRequest {Name = "123XX", Number = "123YY", IsLeadCase = true}},
-                UpdatedBy = "test@auto.com"
+                UpdatedBy = "test@hmcts.net"
             };
 
             var hearingId = Guid.NewGuid();
@@ -347,7 +347,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var request = new UpdateBookingStatusRequest
             {
-                UpdatedBy = "email@toupdate.com",
+                UpdatedBy = "email@hmcts.net",
                 Status = UpdateBookingStatus.Failed,
                 CancelReason = ""
             };

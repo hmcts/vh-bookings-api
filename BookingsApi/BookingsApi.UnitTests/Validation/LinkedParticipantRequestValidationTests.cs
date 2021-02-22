@@ -71,8 +71,8 @@ namespace BookingsApi.UnitTests.Validation
         private LinkedParticipantRequest BuildRequest()
         {
             return Builder<LinkedParticipantRequest>.CreateNew()
-                .With(x => x.ParticipantContactEmail = "interpretee@test.com")
-                .With(x => x.LinkedParticipantContactEmail = "interpreter@test.com")
+                .With(x => x.ParticipantContactEmail = "interpretee@hmcts.net")
+                .With(x => x.LinkedParticipantContactEmail = "interpreter@hmcts.net")
                 .With(x => x.Type = LinkedParticipantType.Interpreter)
                 .Build();
         }

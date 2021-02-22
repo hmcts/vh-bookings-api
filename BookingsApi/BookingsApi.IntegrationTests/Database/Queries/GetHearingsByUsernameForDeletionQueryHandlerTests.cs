@@ -55,7 +55,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public void should_throw_person_not_found_exception_if_username_not_found()
         {
-            var username = "do_not_exist@test.com";
+            var username = "do_not_exist@hmcts.net";
             var query = new GetHearingsByUsernameForDeletionQuery(username);
             Assert.ThrowsAsync<PersonNotFoundException>(() => _handler.Handle(query));
         }

@@ -5,28 +5,28 @@
       "Firstname": "Automation01",
       "Lastname": "Administrator01",
       "DisplayName": "Automation01Administrator01",
-      "AlternativeEmail": "a54@a.com"
+      "AlternativeEmail": "a54@hmcts.net"
     },
     {
       "Role": "Individual",
       "Firstname": "Automation01",
       "Lastname": "Citizen01",
       "DisplayName": "Automation01Citizen01",
-      "AlternativeEmail": "automation01citizen01@email.com"
+      "AlternativeEmail": "automation01citizen01@hmcts.net"
     },
     {
       "Role": "Judge",
       "Firstname": "Automation01",
       "Lastname": "Judge01",
       "DisplayName": "Automation01Judge01",
-      "AlternativeEmail": "a47@a.com"
+      "AlternativeEmail": "a47@hmcts.net"
     },
     {
       "Role": "Representative",
       "Firstname": "Automation01",
       "Lastname": "Professional01",
       "DisplayName": "Automation01Professional01",
-      "AlternativeEmail": "Automation01Professional01@email.com"
+      "AlternativeEmail": "Automation01Professional01@hmcts.net"
     }
   ]
 }

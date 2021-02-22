@@ -388,7 +388,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
         private static AddParticipantsToHearingRequest BuildRequest()
         {
-            var newParticipant = new ParticipantRequestBuilder("Defendant", "Litigant in person").Build();
+            var newParticipant = new ParticipantRequestBuilder("Respondent", "Litigant in person").Build();
 
             return new AddParticipantsToHearingRequest
             {

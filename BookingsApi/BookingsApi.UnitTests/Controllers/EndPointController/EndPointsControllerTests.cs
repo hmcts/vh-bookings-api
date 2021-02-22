@@ -43,7 +43,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             CommandHandlerMock = new Mock<ICommandHandler>();
             RandomGenerator = new Mock<IRandomGenerator>();
             EventPublisher = new Mock<IEventPublisher>();
-            KinlyConfiguration = new KinlyConfiguration {SipAddressStem = "@videohearings.com"};
+            KinlyConfiguration = new KinlyConfiguration {SipAddressStem = "@hmcts.net"};
 
             Controller = new EndPointsController(
                 CommandHandlerMock.Object,
@@ -74,7 +74,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
         {
             CaseRoles = new List<CaseRole>
             {
-                CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> {"Litigant in person"})
+                CreateCaseAndHearingRoles(1, "Generic", "representative", new List<string> {"Litigant in person"})
             }
         };
 

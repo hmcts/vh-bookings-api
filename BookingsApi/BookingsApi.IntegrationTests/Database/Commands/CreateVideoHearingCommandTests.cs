@@ -35,17 +35,17 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_be_able_to_save_video_hearing_to_database()
         {
-            var caseTypeName = "Civil Money Claims";
+            var caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
-            var hearingTypeName = "Application to Set Judgment Aside";
+            var hearingTypeName = "Automated Test";
             var hearingType = caseType.HearingTypes.First(x => x.Name == hearingTypeName);
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
             var venue = new RefDataBuilder().HearingVenues.First();
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole =
-                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
@@ -55,8 +55,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newParticipant = new NewParticipant()
             {
                 Person = newPerson,
-                CaseRole = claimantCaseRole,
-                HearingRole = claimantRepresentativeHearingRole,
+                CaseRole = applicantCaseRole,
+                HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };

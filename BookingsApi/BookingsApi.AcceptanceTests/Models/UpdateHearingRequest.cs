@@ -21,7 +21,7 @@ namespace BookingsApi.AcceptanceTests.Models
                 HearingVenueName = "Manchester Civil and Family Justice Centre",
                 HearingRoomName = "HearingRoomName12345",
                 OtherInformation = "OtherInformation12345",
-                UpdatedBy = "admin@madeupemail.com",
+                UpdatedBy = "admin@hmcts.net",
                 Cases = caseList,
                 QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true

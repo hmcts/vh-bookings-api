@@ -16,8 +16,8 @@ namespace Testing.Common.Builders.Api.Request
                 .With(x => x.Title = Name.Prefix())
                 .With(x => x.FirstName = $"Automation_{Name.First()}")
                 .With(x => x.LastName = $"Automation_{Name.Last()}")
-                .With(x => x.Username = $"Automation_{Internet.Email()}")
-                .With(x => x.ContactEmail = $"Automation_{Internet.Email()}")
+                .With(x => x.Username = $"Automation_{RandomNumber.Next()}@hmcts.net")
+                .With(x => x.ContactEmail = $"Automation_{RandomNumber.Next()}@hmcts.net")
                 .With(x => x.TelephoneNumber = Phone.Number())
                 .Build();
         }

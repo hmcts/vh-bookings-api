@@ -55,7 +55,7 @@ Feature: CaseTypes
     Then the response should have the status NotFound and success status False
 
   Scenario: Get hearing roles for a case role of a case type with nonexistent case type
-    Given I have a get hearing roles for a case type of 'Civil Money Claims' and case role of 'nonexistent' request
+    Given I have a get hearing roles for a case type of 'Generic' and case role of 'nonexistent' request
     When I send the request to the endpoint
     Then the response should have the status NotFound and success status False
 

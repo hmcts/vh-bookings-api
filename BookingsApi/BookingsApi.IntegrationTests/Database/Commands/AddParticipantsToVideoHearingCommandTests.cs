@@ -53,19 +53,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            const string caseTypeName = "Civil Money Claims";
+            const string caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole =
-                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()
             {
                 Person = newPerson,
-                CaseRole = claimantCaseRole,
-                HearingRole = claimantRepresentativeHearingRole,
+                CaseRole = applicantCaseRole,
+                HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
@@ -174,32 +174,32 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
-            const string caseTypeName = "Civil Money Claims";
+            const string caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole =
-                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
-            var defendantCaseRole = caseType.CaseRoles.First(x => x.Name == "Defendant");
-            var defendantRepresentativeHearingRole =
-                defendantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == "Respondent");
+            var respondentRepresentativeHearingRole =
+                respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var newPerson1 = new PersonBuilder(true).Build();
             var interpretee = new NewParticipant()
             {
                 Person = newPerson,
-                CaseRole = claimantCaseRole,
-                HearingRole = claimantRepresentativeHearingRole,
+                CaseRole = applicantCaseRole,
+                HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
             var interpreter = new NewParticipant()
             {
                 Person = newPerson1,
-                CaseRole = defendantCaseRole,
-                HearingRole = defendantRepresentativeHearingRole,
+                CaseRole = respondentCaseRole,
+                HearingRole = respondentRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
@@ -234,7 +234,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var beforeCount = seededHearing.GetParticipants().Count;
 
-            var caseTypeName = "Civil Money Claims";
+            var caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
@@ -271,18 +271,18 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
-            var caseTypeName = "Civil Money Claims";
+            var caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole =
-                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var newParticipant = new NewParticipant()
             {
                 Person = existingPerson,
-                CaseRole = claimantCaseRole,
-                HearingRole = claimantRepresentativeHearingRole,
+                CaseRole = applicantCaseRole,
+                HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{existingPerson.FirstName} {existingPerson.LastName}",
                 Representee = string.Empty
             };

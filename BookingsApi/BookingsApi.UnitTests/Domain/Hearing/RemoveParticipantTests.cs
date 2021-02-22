@@ -29,11 +29,11 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         {
             var hearing = new VideoHearingBuilder().Build();
             
-            var claimantCaseRole = new CaseRole(1, "Claimant");
-            var claimantRepresentativeHearingRole = new HearingRole(2, "Representative");
+            var applicantCaseRole = new CaseRole(1, "Applicant");
+            var applicantRepresentativeHearingRole = new HearingRole(2, "Representative");
             var newPerson = new PersonBuilder(true).Build();
             var participant = Builder<Representative>.CreateNew().WithFactory(() =>
-                new Representative(newPerson, claimantRepresentativeHearingRole, claimantCaseRole)
+                new Representative(newPerson, applicantRepresentativeHearingRole, applicantCaseRole)
             ).Build();
             
             Action action = () => hearing.RemoveParticipant(participant);
