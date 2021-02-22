@@ -15,11 +15,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
             var cases = CasesBuilder();
             var linkedParticipants = LinkedParticipantsBuilder(participants);
 
-            const string createdBy = "caseAdmin@emailaddress.com";
+            const string createdBy = "caseAdmin@hmcts.net";
 
             var request = Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.CaseTypeName = "Civil Money Claims")
-                .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
+                .With(x => x.CaseTypeName = "Generic")
+                .With(x => x.HearingTypeName = "Automated Test")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.ScheduledDateTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1))
                 .With(x => x.ScheduledDuration = 5)
@@ -36,11 +36,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
 
         private static List<LinkedParticipantRequest> LinkedParticipantsBuilder(List<ParticipantRequest> participants)
         {
-            var claimants = participants.Where(x => x.CaseRoleName == "Claimant").ToList();
+            var applicants = participants.Where(x => x.CaseRoleName == "Applicant").ToList();
             var request = new LinkedParticipantRequest
             {
-                ParticipantContactEmail = claimants[0].ContactEmail,
-                LinkedParticipantContactEmail = claimants[1].ContactEmail,
+                ParticipantContactEmail = applicants[0].ContactEmail,
+                LinkedParticipantContactEmail = applicants[1].ContactEmail,
                 Type = LinkedParticipantType.Interpreter
             };
 
@@ -53,26 +53,26 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
                 .With(x => x.Title = "Mrs")
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
-                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.TelephoneNumber = Faker.Phone.Number())
-                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.OrganisationName = $"{Faker.Company.Name()}")
                 .Build().ToList();
             
-            participants[0].CaseRoleName = "Claimant";
+            participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";
             participants[0].Representee = null;
 
-            participants[1].CaseRoleName = "Claimant";
+            participants[1].CaseRoleName = "Applicant";
             participants[1].HearingRoleName = "Representative";
             participants[1].Representee = participants[0].DisplayName;
 
-            participants[2].CaseRoleName = "Defendant";
+            participants[2].CaseRoleName = "Respondent";
             participants[2].HearingRoleName = "Litigant in person";
             participants[2].Representee = null;
 
-            participants[3].CaseRoleName = "Defendant";
+            participants[3].CaseRoleName = "Respondent";
             participants[3].HearingRoleName = "Representative";
             participants[3].Representee = participants[2].DisplayName;
 

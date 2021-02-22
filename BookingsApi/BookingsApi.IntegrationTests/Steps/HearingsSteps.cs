@@ -189,7 +189,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var username = scenario switch
             {
                 Scenario.Valid => seededHearing.GetParticipants().First().Person.Username,
-                Scenario.Nonexistent => "madeupusername@nonexistent.com",
+                Scenario.Nonexistent => "madeupusername@hmcts.net",
                 _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null)
             };
 
@@ -282,7 +282,7 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.TestData.NewHearingId = seededHearing.Id;
             var caseType = scenario switch
             {
-                Scenario.Valid => 1,
+                Scenario.Valid => seededHearing.CaseTypeId,
                 Scenario.Invalid => 99,
                 _ => throw new InvalidOperationException("Unexpected type of case type: " + scenario)
             };
@@ -554,22 +554,22 @@ namespace BookingsApi.IntegrationTests.Steps
         private static BookNewHearingRequest BuildRequest(string caseName)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
-                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
-                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+                .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
                 .With(x => x.OrganisationName = "Automation Organisation")
                 .Build().ToList();
-            participants[0].CaseRoleName = "Claimant";
+            participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";
 
-            participants[1].CaseRoleName = "Claimant";
+            participants[1].CaseRoleName = "Applicant";
             participants[1].HearingRoleName = "Representative";
 
-            participants[2].CaseRoleName = "Defendant";
+            participants[2].CaseRoleName = "Respondent";
             participants[2].HearingRoleName = "Litigant in person";
 
-            participants[3].CaseRoleName = "Defendant";
+            participants[3].CaseRoleName = "Respondent";
             participants[3].HearingRoleName = "Representative";
 
             participants[4].CaseRoleName = "Judge";
@@ -588,8 +588,8 @@ namespace BookingsApi.IntegrationTests.Steps
                     {DisplayName = "Cool endpoint 2", DefenceAdvocateUsername = participants[3].Username}
             };
             return Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.CaseTypeName = "Civil Money Claims")
-                .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
+                .With(x => x.CaseTypeName = "Generic")
+                .With(x => x.HearingTypeName = "Automated Test")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)

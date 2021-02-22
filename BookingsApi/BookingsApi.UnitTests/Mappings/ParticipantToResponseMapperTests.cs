@@ -27,7 +27,7 @@ namespace BookingsApi.UnitTests.Mappings
             var judge = new Judge(person, hearingRole, caseRole)
             {
                 DisplayName = "Judge",
-                CreatedBy = "unit@test.com"
+                CreatedBy = "unit@hmcts.net"
             };
             judge.SetProtected(nameof(judge.CaseRole), caseRole);
             judge.SetProtected(nameof(judge.HearingRole), hearingRole);
@@ -43,14 +43,14 @@ namespace BookingsApi.UnitTests.Mappings
         [Test]
         public void Should_map_individual()
         {
-            var caseRole = new CaseRole(1, "Claimant");
+            var caseRole = new CaseRole(1, "Applicant");
             var hearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(5, "Individual")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
             var individual = new Individual(person, hearingRole, caseRole)
             {
                 DisplayName = "I. Vidual",
-                CreatedBy = "unit@test.com"
+                CreatedBy = "unit@hmcts.net"
             };
             individual.SetProtected(nameof(individual.CaseRole), caseRole);
             individual.SetProtected(nameof(individual.HearingRole), hearingRole);
@@ -65,7 +65,7 @@ namespace BookingsApi.UnitTests.Mappings
         [Test]
         public void Should_map_representative()
         {
-            var caseRole = new CaseRole(1, "Claimant");
+            var caseRole = new CaseRole(1, "Applicant");
             var hearingRole = new HearingRole(2, "Representative") {UserRole = new UserRole(6, "Representative")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
@@ -73,7 +73,7 @@ namespace BookingsApi.UnitTests.Mappings
             {
                 Representee = "Mr A. Daijif",
                 DisplayName = "I. Vidual",
-                CreatedBy = "unit@test.com"
+                CreatedBy = "unit@hmcts.net"
             };
             representative.SetProtected(nameof(representative.CaseRole), caseRole);
             representative.SetProtected(nameof(representative.HearingRole), hearingRole);
@@ -95,7 +95,7 @@ namespace BookingsApi.UnitTests.Mappings
             var joh = new JudicialOfficeHolder(person, hearingRole, caseRole)
             {
                 DisplayName = "JOH",
-                CreatedBy = "unit@test.com"
+                CreatedBy = "unit@hmcts.net"
             };
             joh.SetProtected(nameof(joh.CaseRole), caseRole);
             joh.SetProtected(nameof(joh.HearingRole), hearingRole);
@@ -110,7 +110,7 @@ namespace BookingsApi.UnitTests.Mappings
         [Test]
         public void Should_Map_Individual_With_Linked_Participants()
         {
-            var caseRole = new CaseRole(1, "Claimant");
+            var caseRole = new CaseRole(1, "Applicant");
             var hearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(5, "Individual")};
 
             var person = new PersonBuilder().Build();
@@ -123,7 +123,7 @@ namespace BookingsApi.UnitTests.Mappings
             var individual = new Individual(person, hearingRole, caseRole)
             {
                 DisplayName = "Individual guy",
-                CreatedBy = "unit@test.com",
+                CreatedBy = "unit@hmcts.net",
                 LinkedParticipants = link
             };
             individual.SetProtected(nameof(individual.CaseRole), caseRole);

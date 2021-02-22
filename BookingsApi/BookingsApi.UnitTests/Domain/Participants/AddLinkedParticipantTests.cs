@@ -16,8 +16,8 @@ namespace BookingsApi.UnitTests.Domain.Participants
         [SetUp]
         public void SetUp()
         {
-            _individual = new ParticipantBuilder().IndividualParticipantClaimant;
-            _linkedIndividual = new ParticipantBuilder().IndividualParticipantDefendant;
+            _individual = new ParticipantBuilder().IndividualParticipantApplicant;
+            _linkedIndividual = new ParticipantBuilder().IndividualParticipantRespondent;
         }
         
         [Test]

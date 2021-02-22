@@ -56,7 +56,7 @@ namespace BookingsApi.IntegrationTests.Steps
                         break;
                     }
                 case Scenario.Nonexistent:
-                    _username = Internet.Email();
+                    _username = $"{RandomNumber.Next()}@hmcts.net";
                     break;
                 case Scenario.Invalid:
                     _username = "invalid contact email";
@@ -140,7 +140,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a search for hearings using non-existent username request")]
         public void GivenIHaveASearchForHearingsUsingANonExistentUsernameRequest()
         {
-            SetupGetHearingsByUsernameForDeletionRequest("does.not.exist@test.net");
+            SetupGetHearingsByUsernameForDeletionRequest("does.not.exist@hmcts.net");
         }
         
         [Given(@"I have a valid anonymise person request")]
@@ -153,7 +153,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a non-existent anonymise person request")]
         public void GivenIHaveANonExistentAnonymisePersonRequest()
         {
-            SetupAnonymisePersonRequest("does.not.exist@test.net");
+            SetupAnonymisePersonRequest("does.not.exist@hmcts.net");
         }
 
         [Given(@"I have a non-existent update person details request")]
@@ -163,7 +163,7 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Put;
             var request = new UpdatePersonDetailsRequest
             {
-                Username = "new.me@test.com",
+                Username = "new.me@hmcts.net",
                 FirstName = "New",
                 LastName = "Me"
             };
@@ -195,7 +195,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var person = hearing.GetPersons().First();
             var request = new UpdatePersonDetailsRequest
             {
-                Username = "new.me@test.com",
+                Username = "new.me@hmcts.net",
                 FirstName = "New",
                 LastName = "Me"
             };
@@ -309,7 +309,7 @@ namespace BookingsApi.IntegrationTests.Steps
                         break;
                     }
                 case Scenario.Nonexistent:
-                    _username = Internet.Email();
+                    _username = $"{RandomNumber.Next()}@hmcts.net";
                     break;
                 case Scenario.Invalid:
                     _username = "invalid username";

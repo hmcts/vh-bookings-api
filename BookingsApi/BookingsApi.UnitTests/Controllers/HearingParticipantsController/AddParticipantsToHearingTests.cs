@@ -32,12 +32,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         private List<ParticipantRequest> BuildParticipants(int listSize)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(listSize).All()
-               .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
-               .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+               .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+               .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                .Build().ToList();
             participants.ForEach(x =>
             {
-                x.CaseRoleName = "Civil Money Claims";
+                x.CaseRoleName = "Generic";
                 x.HearingRoleName = "Litigant in person";
                 x.FirstName = "Automation_Added Participant";
             });

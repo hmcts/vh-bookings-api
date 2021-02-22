@@ -35,8 +35,8 @@ namespace BookingsApi.UnitTests.Mappings
         {
             var secondRequest = new LinkedParticipantRequest
             {
-                ParticipantContactEmail = "second@email.com",
-                LinkedParticipantContactEmail = "twolink@email.com",
+                ParticipantContactEmail = "second@hmcts.net",
+                LinkedParticipantContactEmail = "twolink@hmcts.net",
                 Type = LinkedParticipantType.Interpreter
             };
             _requests.Add(secondRequest);
@@ -59,8 +59,8 @@ namespace BookingsApi.UnitTests.Mappings
         {
             return new LinkedParticipantRequest
             {
-                ParticipantContactEmail = "test@email.com",
-                LinkedParticipantContactEmail = "link@email.com",
+                ParticipantContactEmail = "test@hmcts.net",
+                LinkedParticipantContactEmail = "link@hmcts.net",
                 Type = LinkedParticipantType.Interpreter
             };
         }

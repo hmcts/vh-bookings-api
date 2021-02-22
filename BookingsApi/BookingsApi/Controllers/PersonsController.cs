@@ -287,7 +287,7 @@ namespace BookingsApi.Controllers
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
             
             // raise an update event for each hearing to ensure consistency between video and bookings api
-            var anonymisedText = "@email.net";
+            var anonymisedText = "@hmcts.net";
             var nonAnonymisedParticipants = hearings
                 .Where(x => x.Status == BookingStatus.Created &&
                             x.GetCases().Any(c => !c.Name.EndsWith(anonymisedText))).SelectMany(c => c.Participants)

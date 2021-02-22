@@ -39,7 +39,7 @@ namespace BookingsApi.UnitTests.Mappings
         private VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired)
         {
             var mockedHearing = MockHearingWithCase();
-            mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
+            mockedHearing.CaseType = new CaseType(1, "Generic");
             var caseToUpdate = new Case("UpdateCaseNumber", "UpdateCasename");
             var updatedCases = new List<Case>
             {
@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Mappings
                 mockedHearing.ScheduledDuration,
                 mockedHearing.HearingRoomName,
                 mockedHearing.OtherInformation,
-                "admin@madeupemail.com",
+                "admin@hmcts.net",
                 updatedCases,
                 false,
                 audioRecordingRequired
@@ -64,7 +64,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_map_properties_of_hearing()
         {
             var mockedHearing = MockHearingWithCase();
-            mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
+            mockedHearing.CaseType = new CaseType(1, "Generic");
 
             var mapped = _mapper.MapHearingResponse(mockedHearing);
             mapped.Should().NotBeNull();
@@ -72,7 +72,7 @@ namespace BookingsApi.UnitTests.Mappings
             mapped.JudgeName.Should().NotBeNullOrEmpty();
             mapped.HearingNumber.Should().Be("234");
             mapped.HearingName.Should().Be("X vs Y");
-            mapped.CaseTypeName.Should().Be("Civil Money Claims");
+            mapped.CaseTypeName.Should().Be("Generic");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
             mapped.CourtRoomAccount.Should().NotBeNullOrEmpty();
@@ -82,7 +82,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_map_properties_without_judge()
         {
             var mockedHearing = MockHearingWithCase();
-            mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
+            mockedHearing.CaseType = new CaseType(1, "Generic");
             mockedHearing.GetParticipants()[3].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
 
             var mapped = _mapper.MapHearingResponse(mockedHearing);
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Mappings
             mapped.JudgeName.Should().BeNullOrEmpty();
             mapped.HearingNumber.Should().Be("234");
             mapped.HearingName.Should().Be("X vs Y");
-            mapped.CaseTypeName.Should().Be("Civil Money Claims");
+            mapped.CaseTypeName.Should().Be("Generic");
             mapped.CourtAddress.Should().Be("Birmingham Civil and Family Justice Centre");
             mapped.CourtRoom.Should().Be("Roome03");
             mapped.CourtRoomAccount.Should().BeNullOrEmpty();
@@ -128,7 +128,7 @@ namespace BookingsApi.UnitTests.Mappings
             var mockedHearing = MockHearingWithCase();
             var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
             judge.DisplayName = "";
-            mockedHearing.CaseType = new CaseType(1, "Civil Money Claims");
+            mockedHearing.CaseType = new CaseType(1, "Generic");
 
             var target = new VideoHearingsToBookingsResponseMapper();
             var mapped = target.MapHearingResponse(mockedHearing);

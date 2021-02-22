@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task Should_return_notfound_with_no_matching_person()
         {
-            var contactEmail = "test@user.com";
+            var contactEmail = "test@hmcts.net";
             QueryHandlerMock
            .Setup(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()))
            .ReturnsAsync((Person) null);
@@ -45,7 +45,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task Should_return_PersonResponse_successfully()
         {
-            var contactEmail = "test@user.com";
+            var contactEmail = "test@hmcts.net";
             QueryHandlerMock
            .Setup(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()))
            .ReturnsAsync(new Person("Mr","Test","Tester","T Tester"));

@@ -8,7 +8,7 @@ namespace BookingsApi.AcceptanceTests.Models
         {
             return new BookingsApi.Contract.Requests.UpdateBookingStatusRequest
             {
-                UpdatedBy = Faker.Internet.Email(),
+                UpdatedBy = $"{Faker.RandomNumber.Next()}@hmcts.net",
                 Status = status,
                 CancelReason = "Judge decision"
             };
