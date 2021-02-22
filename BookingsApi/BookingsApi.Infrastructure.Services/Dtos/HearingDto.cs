@@ -5,6 +5,7 @@ namespace BookingsApi.Infrastructure.Services.Dtos
     public class HearingDto
     {
         public Guid HearingId { get; set; }
+        public Guid GroupId { get; set; }
         public DateTime ScheduledDateTime { get; set;}
         public int ScheduledDuration { get;set; }
         public string CaseType { get; set;}

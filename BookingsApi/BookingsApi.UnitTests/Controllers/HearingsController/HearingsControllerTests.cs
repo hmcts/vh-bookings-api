@@ -149,6 +149,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var typedMessage = (HearingIsReadyForVideoIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
+            typedMessage.Hearing.GroupId.Should().Be(hearing.SourceId.GetValueOrDefault());
         }
 
         [Test]
