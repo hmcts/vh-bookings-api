@@ -438,6 +438,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
             var hearingReadyForVideoEvent = eventMessage.IntegrationEvent.As<HearingIsReadyForVideoIntegrationEvent>();
             hearingReadyForVideoEvent.Hearing.HearingId.Should().Be(response.Id);
+            hearingReadyForVideoEvent.Hearing.GroupId.Should().Be(response.GroupId.GetValueOrDefault());
             hearingReadyForVideoEvent.Hearing.CaseName.Should().Be(response.Cases[0].Name);
             hearingReadyForVideoEvent.Hearing.CaseNumber.Should().Be(response.Cases[0].Number);
             hearingReadyForVideoEvent.Hearing.CaseType.Should().Be(response.CaseTypeName);
