@@ -25,9 +25,16 @@ Scenario: Add participant to a hearing
 	Then the response should have the status OK and success status True
 	And a hearing participant should be retrieved
 
-	Scenario: Remove participant from a hearing
+	Scenario: Remove participant with an interpreter from a hearing
 	Given I have a hearing
-	And I have a remove participant from a hearing with a valid hearing id
+	And I remove a participant with interpreter from a hearing with a valid hearing id
+	When I send the request to the endpoint
+	Then the response should have the status NoContent and success status True
+	And the participant and interpter should be removed
+
+	Scenario: Remove interpreter from a hearing
+	Given I have a hearing
+	And I remove an interpreter from a hearing with a valid hearing id
 	When I send the request to the endpoint
 	Then the response should have the status NoContent and success status True
 	And the participant should be removed
