@@ -16,20 +16,20 @@ namespace Testing.Common.Builders.Domain
 
         public ParticipantBuilder()
         {
-            var claimantCaseRole = new CaseRole(1, "Claimant");
-            var defendantCaseRole = new CaseRole(2, "Defendant");
-            var claimantLipHearingRole = new HearingRole(1, "Litigant in person");
-            claimantLipHearingRole.UserRole = new UserRole(5, "Individual");
-            var defendantRepresentativeHearingRole = new HearingRole(5, "Representative");
-            defendantRepresentativeHearingRole.UserRole = new UserRole(6, "Representative");
-            var defendantLipHearingRole = new HearingRole(4, "Litigant in person");
-            defendantLipHearingRole.UserRole = new UserRole(5, "Individual");
+            var applicantCaseRole = new CaseRole(1, "Applicant");
+            var respondentCaseRole = new CaseRole(2, "Respondent");
+            var applicantLipHearingRole = new HearingRole(1, "Litigant in person");
+            applicantLipHearingRole.UserRole = new UserRole(5, "Individual");
+            var respondentRepresentativeHearingRole = new HearingRole(5, "Representative");
+            respondentRepresentativeHearingRole.UserRole = new UserRole(6, "Representative");
+            var respondentLipHearingRole = new HearingRole(4, "Litigant in person");
+            respondentLipHearingRole.UserRole = new UserRole(5, "Individual");
             var person1 = new PersonBuilder(true).Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
 
-            _individualParticipant1 = new Individual(person1, claimantLipHearingRole, claimantCaseRole);
-            _individualParticipant1.HearingRole = claimantLipHearingRole;
+            _individualParticipant1 = new Individual(person1, applicantLipHearingRole, applicantCaseRole);
+            _individualParticipant1.HearingRole = applicantLipHearingRole;
             _individualParticipant1.Questionnaire = new Questionnaire
             {
                 Participant = _individualParticipant1,
@@ -37,8 +37,8 @@ namespace Testing.Common.Builders.Domain
             };
             _individualParticipant1.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
-            _individualParticipant2 = new Individual(person2, defendantLipHearingRole, defendantCaseRole);
-            _individualParticipant2.HearingRole = defendantLipHearingRole;
+            _individualParticipant2 = new Individual(person2, respondentLipHearingRole, respondentCaseRole);
+            _individualParticipant2.HearingRole = respondentLipHearingRole;
             _individualParticipant2.Questionnaire = new Questionnaire
             {
                 Participant = _individualParticipant2,
@@ -46,8 +46,8 @@ namespace Testing.Common.Builders.Domain
             };
             _individualParticipant2.Questionnaire.AddSuitabilityAnswers(ListOfSuitabilityAnswers());
 
-            _representativeParticipant = new Representative(person3, defendantRepresentativeHearingRole, defendantCaseRole);
-            _representativeParticipant.HearingRole = defendantRepresentativeHearingRole;
+            _representativeParticipant = new Representative(person3, respondentRepresentativeHearingRole, respondentCaseRole);
+            _representativeParticipant.HearingRole = respondentRepresentativeHearingRole;
             _representativeParticipant.Questionnaire = new Questionnaire
             {
                 Participant = _representativeParticipant,
@@ -69,9 +69,9 @@ namespace Testing.Common.Builders.Domain
             return new List<SuitabilityAnswer> { answer1, answer2, answer3 };
         }
 
-        public Participant IndividualParticipantClaimant => _individualParticipant1;
-        public Participant IndividualParticipantDefendant => _individualParticipant2;
-        public Participant RepresentativeParticipantDefendant => _representativeParticipant;
+        public Participant IndividualParticipantApplicant => _individualParticipant1;
+        public Participant IndividualParticipantRespondent => _individualParticipant2;
+        public Participant RepresentativeParticipantRespondent => _representativeParticipant;
         public List<Participant> Build() => _participants;
     }
 }

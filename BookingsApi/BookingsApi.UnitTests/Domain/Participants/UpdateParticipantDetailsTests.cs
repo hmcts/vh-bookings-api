@@ -13,7 +13,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         [Test]
         public void Should_update_participant_with_user_role_individual_details()
         {
-            var individualParticipant = new ParticipantBuilder().IndividualParticipantClaimant;
+            var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
             var displayName = "Edit Display Name";
             var telephoneNumber = "111122223";
             var title = "Edit Title";
@@ -30,7 +30,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         [Test]
         public void Should_update_participant_with_user_role_representative_details()
         {
-            var representativeParticipant = new ParticipantBuilder().RepresentativeParticipantDefendant;
+            var representativeParticipant = new ParticipantBuilder().RepresentativeParticipantRespondent;
             var displayName = "Edit Display Name";
             var telephoneNumber = "111122223";
             var title = "Edit Title";
@@ -47,7 +47,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         [Test]
         public void Should_throw_exception_when_validation_fails()
         {
-            var individualParticipant = new ParticipantBuilder().IndividualParticipantClaimant;
+            var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
             var displayName = "";
             var telephoneNumber = "111122223";
             var title = "Edit Title";

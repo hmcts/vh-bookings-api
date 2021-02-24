@@ -137,7 +137,7 @@ namespace BookingsApi.DAL.Commands
 					"[LastName] = @randomString, " +
 					"[MiddleNames] = @randomString, " +
 					"[Username] = @randomString + '@email.net', " +
-					"[ContactEmail] = @randomString + '@email.com', " +
+					"[ContactEmail] = @randomString + '@hmcts.net', " +
 					"[TelephoneNumber] = '00000000000' " +
 				"WHERE Id = @personId " +
 

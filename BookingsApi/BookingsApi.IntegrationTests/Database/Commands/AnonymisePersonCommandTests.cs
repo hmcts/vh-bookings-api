@@ -28,7 +28,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public void should_throw_exception_when_person_does_not_exist()
         {
-            var username = "do_not_exist@test.com";
+            var username = "do_not_exist@hmcts.net";
             var command = new AnonymisePersonCommand(username);
             Assert.ThrowsAsync<PersonNotFoundException>(() => _commandHandler.Handle(command));
         }

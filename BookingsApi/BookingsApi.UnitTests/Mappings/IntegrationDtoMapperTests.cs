@@ -25,6 +25,7 @@ namespace BookingsApi.UnitTests.Mappings
             result.CaseNumber.Should().Be(@case.Number);
             result.CaseType.Should().Be(hearing.CaseType.Name);
             result.HearingId.Should().Be(hearing.Id);
+            result.GroupId.Should().Be(hearing.SourceId.GetValueOrDefault());
             result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             result.ScheduledDuration.Should().Be(hearing.ScheduledDuration);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);

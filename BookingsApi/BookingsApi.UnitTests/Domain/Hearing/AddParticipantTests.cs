@@ -17,12 +17,12 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_add_new_participant_to_hearing()
         {
             var hearing = new VideoHearingBuilder().Build();
-            var claimantCaseRole = new CaseRole(1, "Claimant");
-            var claimantRepresentativeHearingRole = new HearingRole(2, "Representative");
+            var applicantCaseRole = new CaseRole(1, "Applicant");
+            var applicantRepresentativeHearingRole = new HearingRole(2, "Representative");
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
-            hearing.AddRepresentative(newPerson, claimantRepresentativeHearingRole, claimantCaseRole, "Display Name",
+            hearing.AddRepresentative(newPerson, applicantRepresentativeHearingRole, applicantCaseRole, "Display Name",
                 string.Empty);
 
             var afterAddCount = hearing.GetParticipants().Count;

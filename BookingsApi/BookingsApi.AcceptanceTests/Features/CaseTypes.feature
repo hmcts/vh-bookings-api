@@ -12,7 +12,7 @@ Feature: CaseTypes
     And a list of case types should be retrieved
 
   Scenario: Get case roles for a case type
-    Given I have a get case roles for a case type of 'Civil Money Claims' request
+    Given I have a get case roles for a case type of 'Generic' request
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And a list of case roles should be retrieved

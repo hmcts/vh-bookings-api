@@ -90,7 +90,7 @@ namespace BookingsApi.UnitTests.Validation
                 ScheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30),
                 HearingRoomName = "RoomUpdate",
                 OtherInformation = "OtherInformationUpdate",
-                UpdatedBy = "test@auto.com"
+                UpdatedBy = "test@hmcts.net"
             };
         }
     }

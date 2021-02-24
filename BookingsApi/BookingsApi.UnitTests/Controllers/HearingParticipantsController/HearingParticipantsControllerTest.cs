@@ -57,7 +57,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             foreach (var participant in hearing.Participants)
             {
                 participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
-                participant.CaseRole = new CaseRole(1, "Civil Money Claims");
+                participant.CaseRole = new CaseRole(1, "Generic");
             }
 
             if(createdStatus)
@@ -66,7 +66,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             return hearing; 
         }
 
-        private CaseType CaseType => new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { CreateCaseAndHearingRoles(1, "Civil Money Claims", "representative", new List<string> { "Litigant in person" }) } };
+        private CaseType CaseType => new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { CreateCaseAndHearingRoles(1, "Generic", "representative", new List<string> { "Litigant in person" }) } };
 
         [SetUp]
         public void Intialize()

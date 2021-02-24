@@ -17,5 +17,21 @@ namespace BookingsApi.AcceptanceTests.Models
                 LinkedParticipants = new List<LinkedParticipantRequest>()
             };
         }
+
+        public static BookingsApi.Contract.Requests.UpdateParticipantRequest WithLinkedParticipants(this BookingsApi.Contract.Requests.UpdateParticipantRequest updateParticipantRequest, string participantEmail, string interpreterEmail)
+        {
+            updateParticipantRequest.LinkedParticipants.Add(CreateLinkedParticipantRequest(participantEmail, interpreterEmail));
+            updateParticipantRequest.LinkedParticipants.Add(CreateLinkedParticipantRequest(interpreterEmail, participantEmail));
+            return updateParticipantRequest;
+        }
+
+        private static LinkedParticipantRequest CreateLinkedParticipantRequest(string participantEmail, string interpreterEmail)
+        {
+            return new LinkedParticipantRequest
+            {
+                ParticipantContactEmail = participantEmail,
+                LinkedParticipantContactEmail = interpreterEmail
+            };
+        }
     }
 }

@@ -166,8 +166,8 @@ namespace BookingsApi.UnitTests.Validation
             var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
 
             var judgelessRequest = Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.CaseTypeName = "Civil Money Claims")
-                .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
+                .With(x => x.CaseTypeName = "Generic")
+                .With(x => x.HearingTypeName = "Automated Test")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.Participants = participants.Where(participant => participant.HearingRoleName != "Judge").ToList())
                 .With(x => x.Cases = cases)
