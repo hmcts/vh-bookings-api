@@ -18,7 +18,7 @@ java:
       secrets:
         - servicebusqueue--connectionstring
         - connectionstrings--vhbookings
-        - applicationinsights-instrumentationkey
+        - applicationinsights--instrumentationkey
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
