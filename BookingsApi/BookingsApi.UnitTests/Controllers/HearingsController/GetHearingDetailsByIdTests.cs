@@ -31,8 +31,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var hearingDetailsResponse = (HearingDetailsResponse)objectResult.Value;
             hearingDetailsResponse.Should().NotBeNull();
-            hearingDetailsResponse.CaseTypeName.Should().Be("Civil Money Claims");
-            hearingDetailsResponse.HearingTypeName.Should().Be("Application to Set Judgment Aside");
+            hearingDetailsResponse.CaseTypeName.Should().Be("Generic");
+            hearingDetailsResponse.HearingTypeName.Should().Be("Automated Test");
             hearingDetailsResponse.Cases.Count.Should().Be(1);
             hearingDetailsResponse.Endpoints.Count.Should().Be(1);
             QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);

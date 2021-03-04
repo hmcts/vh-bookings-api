@@ -21,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_empty_when_no_participant_found()
         {
-            var query = new GetParticipantsByUsernameQuery("doesnt.existatall@email.com");
+            var query = new GetParticipantsByUsernameQuery("doesnt.existatall@hmcts.net");
             var participants = await _handler.Handle(query);
 
             participants.Should().BeEmpty();

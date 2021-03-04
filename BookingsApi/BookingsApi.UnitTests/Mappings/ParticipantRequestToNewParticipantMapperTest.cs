@@ -20,7 +20,7 @@ namespace BookingsApi.UnitTests.Mappings
             {
                 CaseRoles = new List<CaseRole>
                 {
-                    new CaseRole(0, "Claimant")
+                    new CaseRole(0, "Applicant")
                     {
                         HearingRoles = new List<HearingRole>
                         {
@@ -58,7 +58,7 @@ namespace BookingsApi.UnitTests.Mappings
         {
             var request = new ParticipantRequest
             {
-                CaseRoleName = "Claimant",
+                CaseRoleName = "Applicant",
                 HearingRoleName = "Missing hearing role"
             };
 

@@ -18,26 +18,26 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.Title = "Mrs")
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
-                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.TelephoneNumber = Faker.Phone.Number())
-                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.OrganisationName = $"{Faker.Company.Name()}")
                 .Build().ToList();
 
-            participants[0].CaseRoleName = "Claimant";
+            participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";
             participants[0].Representee = null;
 
-            participants[1].CaseRoleName = "Claimant";
+            participants[1].CaseRoleName = "Applicant";
             participants[1].HearingRoleName = "Representative";
             participants[1].Representee = participants[0].DisplayName;
 
-            participants[2].CaseRoleName = "Defendant";
+            participants[2].CaseRoleName = "Respondent";
             participants[2].HearingRoleName = "Litigant in person";
             participants[2].Representee = null;
 
-            participants[3].CaseRoleName = "Defendant";
+            participants[3].CaseRoleName = "Respondent";
             participants[3].HearingRoleName = "Representative";
             participants[3].Representee = participants[2].DisplayName;
 
@@ -54,11 +54,11 @@ namespace BookingsApi.AcceptanceTests.Models
                                 .All()
                                 .Build().ToList();
 
-            const string createdBy = "caseAdmin@emailaddress.com";
+            const string createdBy = "caseAdmin@hmcts.net";
 
             _request = Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.CaseTypeName = "Civil Money Claims")
-                .With(x => x.HearingTypeName = "Application to Set Judgment Aside")
+                .With(x => x.CaseTypeName = "Generic")
+                .With(x => x.HearingTypeName = "Automated Test")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
                 .With(x => x.ScheduledDateTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1))
                 .With(x => x.ScheduledDuration = 5)
@@ -84,9 +84,9 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.Title = "Mrs")
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
-                .With(x => x.ContactEmail = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.TelephoneNumber = Faker.Phone.Number())
-                .With(x => x.Username = $"Automation_{Faker.Internet.Email()}")
+                .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.CaseRoleName = caseRoleName)
                 .With(x => x.HearingRoleName = hearingRoleName)
@@ -97,6 +97,27 @@ namespace BookingsApi.AcceptanceTests.Models
             _request.Participants.Add(participant);
             
             return this;
+        }
+
+        public CreateHearingRequestBuilder WithLinkedParticipants()
+        {
+            var individualEmail = _request.Participants.FirstOrDefault(p => p.HearingRoleName == "Litigant in person").ContactEmail;
+            var interpreterEmail = _request.Participants.FirstOrDefault(p => p.HearingRoleName == "Interpreter").ContactEmail;
+
+            _request.LinkedParticipants = new List<LinkedParticipantRequest>();
+            _request.LinkedParticipants.Add(AddLinkedParticipant(individualEmail, interpreterEmail));
+            _request.LinkedParticipants.Add(AddLinkedParticipant(interpreterEmail, individualEmail));
+            return this;
+        }
+
+        private LinkedParticipantRequest AddLinkedParticipant(string participantEmail, string linkedParticipantEmail)
+        {
+            var linkeParticipantRequest = Builder<LinkedParticipantRequest>.CreateNew()
+                                    .With(x => x.LinkedParticipantContactEmail = linkedParticipantEmail)
+                                    .With(x => x.ParticipantContactEmail = participantEmail)
+                                    .Build();
+
+            return linkeParticipantRequest;
         }
 
         public BookNewHearingRequest Build()

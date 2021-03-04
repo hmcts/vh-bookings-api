@@ -46,7 +46,7 @@ namespace BookingsApi.UnitTests.Controllers
         [Test]
         public async Task Should_return_not_found_when_no_participants_found()
         {
-            const string email = "real@email.com";
+            const string email = "real@hmcts.net";
 
             var result = await _controller.GetParticipantsByUsername(email);
 
@@ -58,7 +58,7 @@ namespace BookingsApi.UnitTests.Controllers
         [Test]
         public async Task Should_return_mapped_participants()
         {
-            const string email = "real@email.com";
+            const string email = "real@hmcts.net";
 
             var caseRole = new CaseRole(1, "");
             var hearingRole = new HearingRole(1, "");
@@ -67,13 +67,13 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 new Individual
                 (
-                    new Person("mr", "test", "er", "test1@test.com"),
+                    new Person("mr", "test", "er", "test1@hmcts.net"),
                     hearingRole,
                     caseRole
                 ),
                 new Individual
                 (
-                    new Person("mr", "test", "er", "test2@test.com"),
+                    new Person("mr", "test", "er", "test2@hmcts.net"),
                     hearingRole,
                     caseRole
                 )

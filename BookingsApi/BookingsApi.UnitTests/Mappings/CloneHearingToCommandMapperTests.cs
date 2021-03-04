@@ -28,13 +28,14 @@ namespace BookingsApi.UnitTests.Mappings
             var totalDays = 5;
             var hearingDay = 2;
             var hearing = new VideoHearingBuilder().Build();
-            hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@test.com", "1234", null));
-            hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@test.com", "2345",
+            hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
+            hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
                 hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative)));
             hearing.AddCase("HBS/1234","Case 1 Test", true);
        
             var individualsInHearing = hearing.Participants.Where(x => x.HearingRole.UserRole.IsIndividual).ToList();
             individualsInHearing[0].AddLink(individualsInHearing[1].Id, LinkedParticipantType.Interpreter);
+            individualsInHearing[1].AddLink(individualsInHearing[0].Id, LinkedParticipantType.Interpreter);
 
             var newDate = hearing.ScheduledDateTime.AddDays(1);
 

@@ -81,6 +81,7 @@ namespace BookingsApi.DAL.Helper
         private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)
         {
             var hearingParticipants = hearing.Participants.Where(x => x.LinkedParticipants.Any()).ToList();
+
             var linkedParticipantDtos = new List<LinkedParticipantDto>();
             foreach (var hearingParticipant in hearingParticipants)
             {
@@ -92,11 +93,11 @@ namespace BookingsApi.DAL.Helper
                     var linkedParticipant = hearing.Participants.SingleOrDefault(x => x.Id == participantLink.LinkedId);
 
                     var linkedParticipantDto = new LinkedParticipantDto
-                    {
-                        LinkedParticipantContactEmail = linkedParticipant?.Person.ContactEmail,
-                        ParticipantContactEmail = participantEmail,
-                        Type = participantLink.Type
-                    };
+                    (
+                        participantEmail,
+                        linkedParticipant?.Person.ContactEmail,
+                        participantLink.Type
+                    );
 
                     linkedParticipantDtos.Add(linkedParticipantDto);
                 }

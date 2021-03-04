@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration;
-using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Exceptions;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Common.Configuration;
@@ -32,7 +31,6 @@ namespace BookingsApi.AcceptanceTests.Hooks
             RegisterAzureSecrets(context);
             RegisterHearingServices(context);
             RegisterTestSettings(context);
-            RegisterTestUsers(context);
             RegisterDefaultData(context);
             await GenerateBearerTokens(context);
         }
@@ -57,23 +55,6 @@ namespace BookingsApi.AcceptanceTests.Hooks
         {
             context.Config.TestSettings = Options.Create(_configRoot.GetSection("Testing").Get<TestSettings>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.Config.TestSettings);
-        }
-
-        private void RegisterTestUsers(TestContext context)
-        {
-            List<UserAccount> userAccounts = new ConfigurationBuilder()
-                .AddJsonFile("useraccounts.json")
-                .Build()
-                .GetSection("UserAccounts")
-                .Get<List<UserAccount>>();
-
-            context.UserAccounts = userAccounts;
-            context.UserAccounts.Should().NotBeNullOrEmpty();
-            foreach (var user in context.UserAccounts)
-            {
-                user.Key = user.Lastname;
-                user.Username = $"{user.DisplayName.Replace(" ", "")}@{context.Config.TestSettings.UsernameStem}";
-            }
         }
 
         private static void RegisterDefaultData(TestContext context)

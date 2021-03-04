@@ -26,12 +26,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public void should_throw_exception_when_peron_does_not_exist()
         {
-            var command = new UpdatePersonCommand(Guid.NewGuid(), "New", "Me", "new.me@test.com");
+            var command = new UpdatePersonCommand(Guid.NewGuid(), "New", "Me", "new.me@hmcts.net");
             Assert.ThrowsAsync<PersonNotFoundException>(() => _commandHandler.Handle(command));
         }
 
-        [TestCase(null, "Me", "new.me@test.com")]
-        [TestCase("New", null, "new.me@test.com")]
+        [TestCase(null, "Me", "new.me@hmcts.net")]
+        [TestCase("New", null, "new.me@hmcts.net")]
         [TestCase("New", "Me", null)]
         public void should_throw_exception_if_arguments_are_null(string firstName, string lastName, string username)
         {
@@ -45,7 +45,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             var person = seededHearing.GetPersons().First();
             
-            var command = new UpdatePersonCommand(person.Id, "New", "Me", "new.me@test.com");
+            var command = new UpdatePersonCommand(person.Id, "New", "Me", "new.me@hmcts.net");
 
             await _commandHandler.Handle(command);
 

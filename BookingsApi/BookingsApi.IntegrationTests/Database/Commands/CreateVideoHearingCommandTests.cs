@@ -7,6 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -34,17 +35,17 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_be_able_to_save_video_hearing_to_database()
         {
-            var caseTypeName = "Civil Money Claims";
+            var caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
-            var hearingTypeName = "Application to Set Judgment Aside";
+            var hearingTypeName = "Automated Test";
             var hearingType = caseType.HearingTypes.First(x => x.Name == hearingTypeName);
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
             var venue = new RefDataBuilder().HearingVenues.First();
 
-            var claimantCaseRole = caseType.CaseRoles.First(x => x.Name == "Claimant");
-            var claimantRepresentativeHearingRole =
-                claimantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
@@ -54,8 +55,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newParticipant = new NewParticipant()
             {
                 Person = newPerson,
-                CaseRole = claimantCaseRole,
-                HearingRole = claimantRepresentativeHearingRole,
+                CaseRole = applicantCaseRole,
+                HearingRole = applicantRepresentativeHearingRole,
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
@@ -98,11 +99,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var linkedParticipants = new List<LinkedParticipantDto>
             {
-                new LinkedParticipantDto
-                {
-                    ParticipantContactEmail = newParticipant.Person.ContactEmail,
-                    LinkedParticipantContactEmail = newJudgeParticipant.Person.ContactEmail
-                }
+                new LinkedParticipantDto(
+                    newParticipant.Person.ContactEmail,
+                    newJudgeParticipant.Person.ContactEmail,
+                    LinkedParticipantType.Interpreter)
             };
 
             var command =
@@ -126,9 +126,20 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.HearingVenue.Should().NotBeNull();
             returnedVideoHearing.HearingType.Should().NotBeNull();
 
-            returnedVideoHearing.GetParticipants().Any().Should().BeTrue();
+            var participantsFromDb = returnedVideoHearing.GetParticipants();
+            participantsFromDb.Any().Should().BeTrue();
             returnedVideoHearing.GetCases().Any().Should().BeTrue();
             returnedVideoHearing.GetEndpoints().Any().Should().BeTrue();
+            var linkedParticipantsFromDb = participantsFromDb.SelectMany(x => x.LinkedParticipants).ToList();
+            linkedParticipantsFromDb.Should().NotBeEmpty();
+            foreach (var linkedParticipant in linkedParticipantsFromDb)
+            {
+                linkedParticipant.Type.Should().BeAssignableTo<LinkedParticipantType>();
+                linkedParticipant.Type.Should().Be(LinkedParticipantType.Interpreter);
+                participantsFromDb.Any(x => x.Id == linkedParticipant.LinkedId).Should().BeTrue();
+                participantsFromDb.Any(x => x.Id == linkedParticipant.ParticipantId).Should().BeTrue();
+            }
+
         }
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)

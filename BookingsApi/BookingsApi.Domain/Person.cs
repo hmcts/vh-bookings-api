@@ -50,8 +50,8 @@ namespace BookingsApi.Domain
         {
             var firstname = RandomStringGenerator.GenerateRandomString(10);
             var lastName = RandomStringGenerator.GenerateRandomString(10);
-            var newUsername = $"{firstname}.{lastName}@hearings.reform.hmcts.net";
-            var contactEmail = $"{RandomStringGenerator.GenerateRandomString(10)}@randomdomain.com";
+            var newUsername = $"{firstname}.{lastName}@hmcts.net";
+            var contactEmail = $"{RandomStringGenerator.GenerateRandomString(10)}@hmcts.net";
 
             FirstName = firstname;
             LastName = lastName;
