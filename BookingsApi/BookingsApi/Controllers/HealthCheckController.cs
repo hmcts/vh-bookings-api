@@ -16,7 +16,6 @@ using NSwag.Annotations;
 namespace BookingsApi.Controllers
 {
     [Produces("application/json")]
-    [Route("HealthCheck")]
     [AllowAnonymous]
     [ApiController]
     public class HealthCheckController : Controller
@@ -32,7 +31,8 @@ namespace BookingsApi.Controllers
         ///     Run a health check of the service
         /// </summary>
         /// <returns>Error if fails, otherwise OK status</returns>
-        [HttpGet("health")]
+        [HttpGet("HealthCheck/health")]
+        [HttpGet("health/liveness")]
         [OpenApiOperation("CheckServiceHealth")]
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.InternalServerError)]
