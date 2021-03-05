@@ -65,12 +65,11 @@ namespace BookingsApi.DAL.Commands
             var participants = hearingsIncCloned.SelectMany(h => h.Participants);
             foreach (var participant in participants)
             {
-                if (participant.LinkedParticipants.Any())
+                if (participant.LinkedParticipants == null || !participant.LinkedParticipants.Any()) 
+                    continue;
+                foreach (var linkedParticipant in participant.LinkedParticipants)
                 {
-                    foreach (var linkedParticipant in participant.LinkedParticipants)
-                    {
-                        _context.LinkedParticipants.Remove(linkedParticipant);
-                    }
+                    _context.Remove(linkedParticipant);
                 }
             }
         }
