@@ -40,7 +40,6 @@ namespace BookingsApi.IntegrationTests.Hooks
             var azureOptions = RegisterAzureSecrets(context);
             RegisterHearingServices(context);
             RegisterTestSettings(context);
-            RegisterTestUsers(context);
             RegisterDefaultData(context);
             RegisterDatabaseSettings(context);
             RegisterServer(context);
@@ -66,24 +65,6 @@ namespace BookingsApi.IntegrationTests.Hooks
         {
             context.Config.TestSettings = Options.Create(_configRoot.GetSection("Testing").Get<TestSettings>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.Config.TestSettings);
-        }
-
-        private void RegisterTestUsers(TestContext context)
-        {
-
-            var userConfiguration  = new ConfigurationBuilder()
-            .AddJsonFile("useraccounts.json", optional: true)
-            .Build()
-            .GetSection("UserAccounts")
-            .Get<List<UserAccount>>();
-
-            context.UserAccounts = userConfiguration;
-            context.UserAccounts.Should().NotBeNullOrEmpty();
-            foreach (var user in context.UserAccounts)
-            {
-                user.Key = user.Lastname;
-                user.Username = $"{user.DisplayName.Replace(" ", "")}@{context.Config.TestSettings.UsernameStem}";
-            }
         }
 
         private static void RegisterDefaultData(TestContext context)
@@ -130,21 +111,5 @@ namespace BookingsApi.IntegrationTests.Hooks
 
             Zap.SetAuthToken(context.BearerToken);
         }
-    }
-
-    public class UserAccounts
-    {
-        public IList<UserAccount> Users { get; set; }
-    }
-
-    public class FileUserAccount
-    {
-        public string Role { get; set; }
-
-        public string AlternativeEmail { get; set; }
-
-        public string Firstname { get; set; }
-
-        public string Lastname { get; set; }
     }
 }

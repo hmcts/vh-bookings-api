@@ -45,13 +45,21 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Request = _context.Get(GetParticipantInHearing(_context.TestData.Hearing.Id, _context.TestData.ParticipantsResponses[0].Id));
         }
 
-        [Given(@"I have a remove participant from a hearing with a valid hearing id")]
-        public void GivenIHaveARemoveParticipantFromAHearingWithAValidHearingId()
+        [Given(@"I remove a participant with interpreter from a hearing with a valid hearing id")]
+        public void GivenIRemoveAParticipantWithInterpreterFromAHearingWithAValidHearingId()
+        {            
+            _removedParticipantId = _removedParticipantId = _context.TestData.ParticipantsResponses.FirstOrDefault(p => p.HearingRoleName != "Interpreter" && p.LinkedParticipants.Any()).Id;
+            _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId)); _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId));
+           
+        }
+
+        [Given(@"I remove an interpreter from a hearing with a valid hearing id")]
+        public void GivenIRemoveAnInterpreterFromAHearingWithAValidHearingId()
         {
-            _removedParticipantId = _context.TestData.ParticipantsResponses[^1].Id;
+            _removedParticipantId = _context.TestData.ParticipantsResponses.FirstOrDefault(p => p.HearingRoleName == "Interpreter" && p.LinkedParticipants.Any()).Id;
             _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId));
         }
-        
+
         [Given(@"I create a request to link 2 distinct participants in the hearing")]
         public void GivenIHaveAnInterpreterLinkedToAParticipant()
         {
@@ -97,12 +105,14 @@ namespace BookingsApi.AcceptanceTests.Steps
         }
 
         [Then(@"the participant should be removed")]
+        [Then(@"the participant and interpter should be removed")]
         public void ThenTheParticipantShouldBeRemoved()
         {
-            _context.Request = _context.Get(GetAllParticipantsInHearing(_context.TestData.Hearing.Id));
-            _context.Response = _context.Client().Execute(_context.Request);
-            var model = RequestHelper.Deserialise<List<ParticipantResponse>>(_context.Response.Content);
-            model.Exists(x => x.Id == _removedParticipantId).Should().BeFalse();
+            _context.Request = _context.Get(GetAllParticipantsInHearing(_context.TestData.Hearing.Id)); _context.Request = _context.Get(GetAllParticipantsInHearing(_context.TestData.Hearing.Id));
+            _context.Response = _context.Client().Execute(_context.Request); _context.Response = _context.Client().Execute(_context.Request);
+            var model = RequestHelper.Deserialise<List<ParticipantResponse>>(_context.Response.Content); 
+            model.Exists(x => x.Id == _removedParticipantId).Should().BeFalse(); model.Exists(x => x.Id == _removedParticipantId).Should().BeFalse();
+            model.Exists(x => x.LinkedParticipants.Any()).Should().BeFalse();
         }
 
         private static void CheckParticipantDetailsAreReturned(IReadOnlyCollection<ParticipantResponse> participantResponses)
@@ -128,9 +138,18 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have an update participant details request with a valid user (.*)")]
         public void GivenIHaveAnUpdateParticipantDetailsRequestWithAValidUserRole(string role)
         {
-            var participantId = _context.TestData.ParticipantsResponses.FirstOrDefault(x=>x.UserRoleName.Equals(role)).Id;
-            var updateParticipantRequest = UpdateParticipantRequest.BuildRequest();
-            _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id,participantId), updateParticipantRequest);
+            var participantResponses = _context.TestData.ParticipantsResponses;
+            var isIndividual = role == "Individual";
+            var participant = isIndividual ? participantResponses.FirstOrDefault(x => x.UserRoleName.Equals(role) && !x.LinkedParticipants.Any())
+                                    : participantResponses.FirstOrDefault(x => x.UserRoleName.Equals(role));
+            var updateParticipantRequest = UpdateParticipantRequest.BuildRequest(); 
+            _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, participant.Id), updateParticipantRequest); 
+            if (isIndividual)
+            {
+                var interpreter = participantResponses.FirstOrDefault(x => x.HearingRoleName.Equals("Interpreter"));
+                updateParticipantRequest.WithLinkedParticipants(participant.ContactEmail, interpreter.ContactEmail);
+            }
+            _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, participant.Id), updateParticipantRequest);
         }
         
         [Then(@"'(.*)' details should be updated")]
@@ -142,6 +161,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.Title.Should().Be(updateParticipantRequest.Title);
             model.DisplayName.Should().Be(updateParticipantRequest.DisplayName);
             model.TelephoneNumber.Should().Be(updateParticipantRequest.TelephoneNumber);
+            model.LinkedParticipants.Count.Should().Be(participant == "Individual" ? 1 : 0);
         }
 
         [Given(@"I have an update participant suitability answers with a valid user '(.*)'")]

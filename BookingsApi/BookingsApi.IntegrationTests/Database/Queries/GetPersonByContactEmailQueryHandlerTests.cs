@@ -21,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_null_when_no_person_found()
         {
-            var query = new GetPersonByContactEmailQuery("doesnt.existatall@email.com");
+            var query = new GetPersonByContactEmailQuery("doesnt.existatall@hmcts.net");
             var person = await _handler.Handle(query);
             person.Should().BeNull();
         }

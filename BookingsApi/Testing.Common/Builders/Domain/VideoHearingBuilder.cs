@@ -9,8 +9,8 @@ namespace Testing.Common.Builders.Domain
 {
     public class VideoHearingBuilder
     {
-        private readonly string _caseTypeName = "Civil Money Claims";
-        private readonly string _hearingTypeName = "Application to Set Judgment Aside";
+        private readonly string _caseTypeName = "Generic";
+        private readonly string _hearingTypeName = "Automated Test";
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
         
         private readonly VideoHearing _videoHearing;
@@ -37,12 +37,12 @@ namespace Testing.Common.Builders.Domain
                         otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
                 .Build();
 
-            var claimantCaseRole = new CaseRole(1, "Claimant") { Group = CaseRoleGroup.Claimant };
-            var defendantCaseRole = new CaseRole(2, "Defendant") { Group = CaseRoleGroup.Defendant };
-            var claimantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
-            var defendantRepresentativeHearingRole =  new HearingRole(5, "Representative") { UserRole = new UserRole(1, "Representative") };
+            var applicantCaseRole = new CaseRole(1, "Applicant") { Group = CaseRoleGroup.Applicant };
+            var respondentCaseRole = new CaseRole(2, "Respondent") { Group = CaseRoleGroup.Respondent };
+            var applicantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
+            var respondentRepresentativeHearingRole =  new HearingRole(5, "Representative") { UserRole = new UserRole(1, "Representative") };
 
-            var defendantLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
+            var respondentLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
             var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
             var johHearingRole = new HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole( 7, "Judicial Office Holder")};
@@ -54,34 +54,34 @@ namespace Testing.Common.Builders.Domain
             _judgePerson = new PersonBuilder(true).Build();
             _johPerson = new PersonBuilder(true).Build();
 
-            _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+            _videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
-            var indClaimant =_videoHearing?.Participants.Last();
-            indClaimant.SetProtected(nameof(indClaimant.CaseRole), claimantCaseRole);
-            indClaimant.SetProtected(nameof(indClaimant.HearingRole), claimantLipHearingRole);
+            var indApplicant =_videoHearing?.Participants.Last();
+            indApplicant.SetProtected(nameof(indApplicant.CaseRole), applicantCaseRole);
+            indApplicant.SetProtected(nameof(indApplicant.HearingRole), applicantLipHearingRole);
 
-            _videoHearing.AddIndividual(person3, defendantLipHearingRole, defendantCaseRole,
+            _videoHearing.AddIndividual(person3, respondentLipHearingRole, respondentCaseRole,
                 $"{person3.FirstName} {person3.LastName}");
-            var indDefendant =_videoHearing?.Participants.Last();
-            indDefendant.SetProtected(nameof(indClaimant.CaseRole), defendantCaseRole);
-            indDefendant.SetProtected(nameof(indDefendant.HearingRole), defendantLipHearingRole);
+            var indRespondent =_videoHearing?.Participants.Last();
+            indRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
+            indRespondent.SetProtected(nameof(indRespondent.HearingRole), respondentLipHearingRole);
             
-            _videoHearing.AddRepresentative(person2, defendantRepresentativeHearingRole, defendantCaseRole,
+            _videoHearing.AddRepresentative(person2, respondentRepresentativeHearingRole, respondentCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty);
-            var repDefendant =_videoHearing?.Participants.Last();
-            repDefendant.SetProtected(nameof(indClaimant.CaseRole), defendantCaseRole);
-            repDefendant.SetProtected(nameof(repDefendant.HearingRole), defendantRepresentativeHearingRole);
+            var repRespondent =_videoHearing?.Participants.Last();
+            repRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
+            repRespondent.SetProtected(nameof(repRespondent.HearingRole), respondentRepresentativeHearingRole);
             
             _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                 $"{_judgePerson.FirstName} {_judgePerson.LastName}");
             var judge =_videoHearing?.Participants.Last();
-            judge.SetProtected(nameof(indClaimant.CaseRole), judgeCaseRole);
+            judge.SetProtected(nameof(indApplicant.CaseRole), judgeCaseRole);
             judge.SetProtected(nameof(judge.HearingRole), judgeHearingRole);
 
             _videoHearing.AddJudicialOfficeHolder(_johPerson, johHearingRole, johCaseRole,
                 $"{_johPerson.FirstName} {_johPerson.LastName}");
             var joh = _videoHearing?.Participants.Last();
-            joh.SetProtected(nameof(indClaimant.CaseRole), johCaseRole);
+            joh.SetProtected(nameof(indApplicant.CaseRole), johCaseRole);
             joh.SetProtected(nameof(joh.HearingRole), johHearingRole);
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB

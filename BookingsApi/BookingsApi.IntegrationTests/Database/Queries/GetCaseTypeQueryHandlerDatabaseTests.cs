@@ -20,20 +20,20 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_have_user_roles_for_civil_money_claims_claimant()
+        public async Task Should_have_user_roles_for_generic_applicant()
         {
-            var caseTypeName = "Civil Money Claims";
-            var caseRoleName = "Claimant";
+            var caseTypeName = "Generic";
+            var caseRoleName = "Applicant";
             var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
 
         [Test]
-        public async Task Should_have_user_roles_for_civil_money_claims_defendant()
+        public async Task Should_have_user_roles_for_generic_respondent()
         {
-            var caseTypeName = "Civil Money Claims";
-            var caseRoleName = "Defendant";
+            var caseTypeName = "Generic";
+            var caseRoleName = "Respondent";
             var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);

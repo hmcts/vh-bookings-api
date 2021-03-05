@@ -165,7 +165,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         [Test]
         public void Should_publish_message_to_queue_when_EndpointAddedIntegrationEvent_is_raised_with_defence_advocate()
         {
-            var dA = new ParticipantBuilder().RepresentativeParticipantDefendant;
+            var dA = new ParticipantBuilder().RepresentativeParticipantRespondent;
             var endpointAddedIntegrationEvent =
                 new EndpointAddedIntegrationEvent(Guid.NewGuid(), new Endpoint("one", "sip", "1234", dA));
             _eventPublisher.PublishAsync(endpointAddedIntegrationEvent);
@@ -190,7 +190,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
         public void Should_publish_message_to_queue_when_EndpointUpdatedIntegrationEvent_is_raised()
         {
             var endpointUpdatedIntegrationEvent =
-                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@test.com");
+                new EndpointUpdatedIntegrationEvent(Guid.NewGuid(), "sip", "name", "sol1@hmcts.net");
             _eventPublisher.PublishAsync(endpointUpdatedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

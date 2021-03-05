@@ -30,10 +30,10 @@ namespace BookingsApi.UnitTests.Validation
 
         private List<ParticipantRequest> BuildRequest(bool withInvalid = false)
         {
-            var invalidParticipantRequest = new ParticipantRequestBuilder("Defendant", "Representative").Build();
+            var invalidParticipantRequest = new ParticipantRequestBuilder("Respondent", "Representative").Build();
             invalidParticipantRequest.Representee = string.Empty;
 
-            var validParticipantRequest = new ParticipantRequestBuilder("Defendant", "Representative").WithRepresentativeDetails("Test Representee").Build();
+            var validParticipantRequest = new ParticipantRequestBuilder("Respondent", "Representative").WithRepresentativeDetails("Test Representee").Build();
 
             var participantRequests = new List<ParticipantRequest>() { validParticipantRequest };
             
