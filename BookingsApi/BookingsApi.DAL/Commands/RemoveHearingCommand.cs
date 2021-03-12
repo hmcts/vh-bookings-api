@@ -48,7 +48,7 @@ namespace BookingsApi.DAL.Commands
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
 
-            RemoveLinkedParticipants(hearingsIncCloned);
+            await RemoveLinkedParticipants(hearingsIncCloned);
 
             var persons = hearingsIncCloned.SelectMany(h => h.Participants.Select(x => x.Person)).ToList();
             var organisations = persons.Where(p => p.Organisation != null).Select(x => x.Organisation).ToList();
@@ -60,7 +60,7 @@ namespace BookingsApi.DAL.Commands
             await _context.SaveChangesAsync();
         }
 
-        private void RemoveLinkedParticipants(List<VideoHearing> hearingsIncCloned)
+        private async Task RemoveLinkedParticipants(List<VideoHearing> hearingsIncCloned)
         {
             var participants = hearingsIncCloned.SelectMany(h => h.Participants);
             foreach (var participant in participants)
@@ -72,6 +72,7 @@ namespace BookingsApi.DAL.Commands
                     _context.Remove(linkedParticipant);
                 }
             }
+            await _context.SaveChangesAsync();
         }
     }
 }
