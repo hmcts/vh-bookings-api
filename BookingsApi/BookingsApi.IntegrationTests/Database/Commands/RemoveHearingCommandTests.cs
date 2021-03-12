@@ -4,6 +4,7 @@ using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -40,8 +41,23 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
 
             await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));
+                
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            returnedVideoHearing.Should().BeNull();
 
+            _newHearingId = Guid.Empty;
+        }
+        
+        [Test]
+        public async Task Should_remove_hearing_containing_interpreter()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing(null, false,BookingStatus.Booked,0,false,true);
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
 
+            await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));
+                
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().BeNull();
