@@ -1283,8 +1283,8 @@
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
-        "resolved": "3.1.3",
-        "contentHash": "j6r0E+OVinD4s13CIZASYJLLLApStb1yh5Vig7moB2FE1UsMRj4TYJ/xioDjreVA0dyOFpbWny1/n2iSJMbmNg=="
+        "resolved": "3.1.5",
+        "contentHash": "ZvwowjRSWXewdPI+whPFXgwF4Qme6Q9KV9SCPEITSGiqHLArct7q5hTBtTzj3GPsVLjTqehvTg6Bd/EQk9JS0A=="
       },
       "Microsoft.Extensions.Logging.ApplicationInsights": {
         "type": "Transitive",
@@ -3144,6 +3144,16 @@
           "SonarAnalyzer.CSharp": "8.2.0.14119"
         }
       },
+      "ZymLabs.NSwag.FluentValidation": {
+        "type": "Transitive",
+        "resolved": "0.4.0",
+        "contentHash": "k57Y6NAlv1rqgHVbCV33gRfJWWX9JuI+zT4CdV/79P9kEecgtRI9tiLjL0DdMAT+PUWJSWG5VDBccSAQ3ZLuZw==",
+        "dependencies": {
+          "FluentValidation": "9.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "3.1.5",
+          "NJsonSchema": "10.1.23"
+        }
+      },
       "bookingsapi": {
         "type": "Project",
         "dependencies": {
@@ -3163,7 +3173,8 @@
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "3.1.1",
           "NSwag.AspNetCore": "13.9.4",
           "Newtonsoft.Json": "12.0.3",
-          "VH.Core.Configuration": "0.1.12"
+          "VH.Core.Configuration": "0.1.12",
+          "ZymLabs.NSwag.FluentValidation": "0.4.0"
         }
       },
       "bookingsapi.common": {
