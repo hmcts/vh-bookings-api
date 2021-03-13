@@ -6,6 +6,7 @@ using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
@@ -172,7 +173,33 @@ namespace BookingsApi.IntegrationTests.Helper
             
             _seededHearings.Add(videoHearing.Id);
         }
-        
+
+        public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing)
+        {
+            var dbContext = new BookingsDbContext(_dbContextOptions);
+            var hearing = await new GetHearingByIdQueryHandler(dbContext)
+                .Handle(new GetHearingByIdQuery(hearingId));
+            
+            var orderedDates = datesOfHearing.OrderBy(x => x).ToList();
+            var totalDays = orderedDates.Count + 1;
+            var commands = orderedDates.Select((newDate, index) =>
+            {
+                var hearingDay = index + 2; 
+                return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(),
+                    GetSipAddress(hearing), totalDays, hearingDay);
+            }).ToList();
+            
+            foreach (var command in commands)
+            {
+                await new CreateVideoHearingCommandHandler(dbContext, new HearingService(dbContext)).Handle(command);
+            }
+        }
+
+        private string GetSipAddress(VideoHearing hearing)
+        {
+            return hearing.Endpoints.First(x => x.Sip != null).Sip;
+        }
+
         private async Task AddQuestionnaire()
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
