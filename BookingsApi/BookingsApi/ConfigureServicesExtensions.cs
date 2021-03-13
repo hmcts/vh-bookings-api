@@ -13,6 +13,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using ZymLabs.NSwag.FluentValidation;
 
 namespace BookingsApi
 {
@@ -20,19 +21,19 @@ namespace BookingsApi
     {
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
+            services.AddSingleton<FluentValidationSchemaProcessor>();
             services.AddOpenApiDocument((document, serviceProvider) =>
             {
+                document.AddSecurity("JWT", Enumerable.Empty<string>(),
+                    new OpenApiSecurityScheme
+                    {
+                        Type = OpenApiSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Description = "Type into the textbox: Bearer {your JWT token}.",
+                        Scheme = "bearer"
+                    });
                 document.Title = "Bookings API";
-                document.DocumentProcessors.Add(
-                    new SecurityDefinitionAppender("JWT",
-                        new OpenApiSecurityScheme
-                        {
-                            Type = OpenApiSecuritySchemeType.ApiKey,
-                            Name = "Authorization",
-                            In = OpenApiSecurityApiKeyLocation.Header,
-                            Description = "Type into the textbox: Bearer {your JWT token}.",
-                            Scheme = "bearer"
-                        }));
                 document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
                 document.OperationProcessors.Add(new AuthResponseOperationProcessor());
             });
