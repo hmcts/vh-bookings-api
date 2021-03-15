@@ -68,7 +68,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var objectResult = (OkObjectResult) result;
             objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             
-            var value = (List<VideoHearing>)objectResult.Value;
+            var value = (List<HearingDetailsResponse>)objectResult.Value;
             value.Count.Should().Be(0);
             QueryHandlerMock.Verify(
                 x => x.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(It.IsAny<GetHearingsByGroupIdQuery>()),

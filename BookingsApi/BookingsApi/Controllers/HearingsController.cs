@@ -128,11 +128,6 @@ namespace BookingsApi.Controllers
             var query = new GetHearingsByGroupIdQuery(groupId);
             var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
 
-            if (hearings.Count < 1)
-            {
-                return Ok(new List<VideoHearing>());
-            }
-
             var hearingMapper = new HearingToDetailResponseMapper();
             var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
 
