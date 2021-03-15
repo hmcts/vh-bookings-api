@@ -35,7 +35,6 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
-                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Where(x =>  x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
@@ -60,17 +59,13 @@ namespace BookingsApi.DAL.Commands
             await _context.SaveChangesAsync();
         }
 
-        private async Task RemoveLinkedParticipants(List<VideoHearing> hearingsIncCloned)
+        private async Task RemoveLinkedParticipants(IEnumerable<VideoHearing> hearingsIncCloned)
         {
-            var participants = hearingsIncCloned.SelectMany(h => h.Participants);
-            foreach (var participant in participants)
+            var linkedParticipants =
+                hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants));
+            foreach (var linkedParticipant in linkedParticipants)
             {
-                if (participant.LinkedParticipants == null || !participant.LinkedParticipants.Any()) 
-                    continue;
-                foreach (var linkedParticipant in participant.LinkedParticipants)
-                {
-                    _context.Remove(linkedParticipant);
-                }
+                _context.Remove(linkedParticipant);
             }
             await _context.SaveChangesAsync();
         }
