@@ -20,7 +20,6 @@ namespace BookingsApi.DAL
         public DbSet<HearingVenue> Venues { get; set; }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<JobHistory> JobHistory { get; set; }
-        public DbSet<LinkedParticipant> LinkedParticipants { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +28,7 @@ namespace BookingsApi.DAL
                                                 BindingFlags.FlattenHierarchy);
             var applyGenericApplyConfigurationMethods = applyGenericMethods.Where(m =>
                 m.IsGenericMethod && m.Name.Equals("ApplyConfiguration", StringComparison.OrdinalIgnoreCase));
-            var applyGenericMethod = applyGenericApplyConfigurationMethods.FirstOrDefault(m =>
+            var applyGenericMethod = applyGenericApplyConfigurationMethods.First(m =>
                 m.GetParameters().FirstOrDefault()?.ParameterType.Name == "IEntityTypeConfiguration`1");
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes()
