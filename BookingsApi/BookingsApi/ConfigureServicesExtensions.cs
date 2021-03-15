@@ -21,7 +21,6 @@ namespace BookingsApi
     {
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
-            services.AddSingleton<FluentValidationSchemaProcessor>();
             services.AddOpenApiDocument((document, serviceProvider) =>
             {
                 document.AddSecurity("JWT", Enumerable.Empty<string>(),

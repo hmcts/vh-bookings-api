@@ -178,6 +178,14 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.Uri = RemoveHearing(_hearingId);
             Context.HttpMethod = HttpMethod.Delete;
         }
+        
+        [Given(@"I have a remove a hearing request")]
+        public void GivenIHaveARemoveHearingRequest()
+        {
+            var seededHearing = Context.TestData.SeededHearing;;
+            Context.Uri = RemoveHearing(seededHearing.Id);
+            Context.HttpMethod = HttpMethod.Delete;
+        }
 
         [Given(@"I have a (.*) get hearings by username request")]
         [Given(@"I have an (.*) get hearings by username request")]
@@ -355,14 +363,10 @@ namespace BookingsApi.IntegrationTests.Steps
         }
 
         [Then(@"the hearing should be removed")]
-        public void ThenTheHearingShouldBeRemoved()
+        public async Task ThenTheHearingShouldBeRemoved()
         {
-            Hearing hearingFromDb;
-            using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
-            {
-                hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
-            }
-
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            var hearingFromDb = db.VideoHearings.AsNoTracking().SingleOrDefault(x => x.Id == _hearingId);
             hearingFromDb.Should().BeNull();
         }
 

@@ -107,6 +107,13 @@ Feature: Hearings
     Then the response should have the status NoContent and success status True
     And the hearing should be removed
 
+  Scenario: Delete a hearing with linked participants
+    Given I have a hearing with linked participants
+    And I have a remove a hearing request
+    When I send the request to the endpoint
+    Then the response should have the status NoContent and success status True
+    And the hearing should be removed
+
   Scenario: Hearing not deleted with an invalid hearing id
     Given I have an invalid remove hearing request
     When I send the request to the endpoint

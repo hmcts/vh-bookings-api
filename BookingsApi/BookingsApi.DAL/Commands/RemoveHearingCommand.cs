@@ -35,7 +35,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
                 .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
-                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants).ThenInclude(x => x.Participant)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Where(x =>  x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
