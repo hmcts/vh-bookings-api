@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
@@ -13,6 +14,7 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
@@ -184,20 +186,18 @@ namespace BookingsApi.IntegrationTests.Helper
             var totalDays = orderedDates.Count + 1;
             var commands = orderedDates.Select((newDate, index) =>
             {
+                var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
                 var hearingDay = index + 2; 
                 return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(),
-                    GetSipAddress(hearing), totalDays, hearingDay);
+                    config.GetValue<string>("KinlyConfiguration:SipAddressStem"), totalDays, hearingDay);
             }).ToList();
             
             foreach (var command in commands)
             {
                 await new CreateVideoHearingCommandHandler(dbContext, new HearingService(dbContext)).Handle(command);
             }
-        }
-
-        private string GetSipAddress(VideoHearing hearing)
-        {
-            return hearing.Endpoints.First(x => x.Sip != null).Sip;
         }
 
         private async Task AddQuestionnaire()

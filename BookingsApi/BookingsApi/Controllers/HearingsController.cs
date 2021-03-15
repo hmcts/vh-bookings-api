@@ -122,30 +122,23 @@ namespace BookingsApi.Controllers
         /// <returns>Hearing details</returns>
         [HttpGet(Name = "GetHearingsByGroupId")]
         [OpenApiOperation("GetHearingsByGroupId")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingsByGroupId([FromQuery]Guid groupId)
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHearingsByGroupId([FromQuery] Guid groupId)
         {
-            try
-            {
-                var query = new GetHearingsByGroupIdQuery(groupId);
-                var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
+            var query = new GetHearingsByGroupIdQuery(groupId);
+            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
 
-                var hearingMapper = new HearingToDetailResponseMapper();
-                var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
-                
-                return Ok(response);
-            }
-            catch (Exception e)
+            if (hearings.Count < 1)
             {
-                _logger.TrackError(e, new Dictionary<string, string>
-                {
-                    {"message", $"Unable to fetch hearings for group: {groupId}"}
-                });
-                return NotFound(e);
+                return Ok(new List<VideoHearing>());
             }
+
+            var hearingMapper = new HearingToDetailResponseMapper();
+            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+
+            return Ok(response);
         }
-        
+
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
