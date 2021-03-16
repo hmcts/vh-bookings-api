@@ -34,9 +34,9 @@ namespace BookingsApi.DAL.Commands
             var hearingsIncCloned = await _context.VideoHearings
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants).ThenInclude(x => x.Participant)
                 .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
-                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Where(x =>  x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
             
             if (hearingsIncCloned.IsNullOrEmpty())
@@ -46,8 +46,7 @@ namespace BookingsApi.DAL.Commands
             
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
-
-            await RemoveLinkedParticipants(hearingsIncCloned);
+            _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants)));
 
             var persons = hearingsIncCloned.SelectMany(h => h.Participants.Select(x => x.Person)).ToList();
             var organisations = persons.Where(p => p.Organisation != null).Select(x => x.Organisation).ToList();
@@ -56,17 +55,6 @@ namespace BookingsApi.DAL.Commands
 
             _context.RemoveRange(hearingsIncCloned);
 
-            await _context.SaveChangesAsync();
-        }
-
-        private async Task RemoveLinkedParticipants(IEnumerable<VideoHearing> hearingsIncCloned)
-        {
-            var linkedParticipants =
-                hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants));
-            foreach (var linkedParticipant in linkedParticipants)
-            {
-                _context.Remove(linkedParticipant);
-            }
             await _context.SaveChangesAsync();
         }
     }

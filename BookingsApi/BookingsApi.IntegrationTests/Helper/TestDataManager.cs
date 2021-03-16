@@ -120,8 +120,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 var interpretee = videoHearing.Participants[0];
                 var interpreter = videoHearing.Participants[1];
-                var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
-                CreateParticipantLinks(interpretee, interpreter, participantLink);   
+                CreateParticipantLinks(interpretee, interpreter);   
             }
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
@@ -230,11 +229,10 @@ namespace BookingsApi.IntegrationTests.Helper
             return caseType;
         }
         
-        private void CreateParticipantLinks(Participant interpretee, Participant interpreter, LinkedParticipant participantLink)
+        private void CreateParticipantLinks(Participant interpretee, Participant interpreter)
         {
-            interpretee.LinkedParticipants.Add(participantLink);
-            interpreter.LinkedParticipants.Add(new LinkedParticipant(participantLink.LinkedId,
-                participantLink.ParticipantId, participantLink.Type));
+            interpretee.LinkedParticipants.Add(new LinkedParticipant(interpretee.Id,interpreter.Id,LinkedParticipantType.Interpreter));
+            interpreter.LinkedParticipants.Add(new LinkedParticipant(interpreter.Id, interpretee.Id, LinkedParticipantType.Interpreter));
         }
 
         public DateTime? GetJobLastRunDateTime()
@@ -426,8 +424,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var interpretee = videoHearing.Participants[0];
             var interpreter = videoHearing.Participants[1];
-            var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
-            CreateParticipantLinks(interpretee, interpreter, participantLink);
+            CreateParticipantLinks(interpretee, interpreter);
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
             {
