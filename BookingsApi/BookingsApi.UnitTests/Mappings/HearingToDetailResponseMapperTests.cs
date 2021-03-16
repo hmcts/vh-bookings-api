@@ -15,7 +15,7 @@ namespace BookingsApi.UnitTests.Mappings
 {
     public class HearingToDetailResponseMapperTests : TestBase
     {
-        private readonly HearingToDetailResponseMapper _mapper = new HearingToDetailResponseMapper();
+        private readonly HearingToDetailsResponseMapper _mapper = new HearingToDetailsResponseMapper();
         private readonly string _caseTypeName = "Generic";
         private readonly string _hearingTypeName = "Automated Test";
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
