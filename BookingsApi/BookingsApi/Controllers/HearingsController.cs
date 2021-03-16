@@ -115,7 +115,25 @@ namespace BookingsApi.Controllers
             return Ok(response);
         }
 
-        
+        /// <summary>
+        /// Get list of all hearings in a group
+        /// </summary>
+        /// <param name="groupId">the group id of the single day or multi day hearing</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet("{groupId}/hearings", Name = "GetHearingsByGroupId")]
+        [OpenApiOperation("GetHearingsByGroupId")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHearingsByGroupId([FromQuery] Guid groupId)
+        {
+            var query = new GetHearingsByGroupIdQuery(groupId);
+            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
+
+            var hearingMapper = new HearingToDetailResponseMapper();
+            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+
+            return Ok(response);
+        }
+
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
