@@ -292,19 +292,17 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get list of all hearings in a group</summary>
-        /// <param name="groupIdQuery">the group id of the single day or multi day hearing</param>
-        /// <param name="groupIdPath">the group id of the single day or multi day hearing</param>
+        /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid? groupIdQuery, string groupIdPath);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid groupId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get list of all hearings in a group</summary>
-        /// <param name="groupIdQuery">the group id of the single day or multi day hearing</param>
-        /// <param name="groupIdPath">the group id of the single day or multi day hearing</param>
+        /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid? groupIdQuery, string groupIdPath, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid groupId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Create a new hearing with the details of a given hearing on given dates</summary>
         /// <param name="hearingId">Original hearing to clone</param>
@@ -2530,34 +2528,27 @@ namespace BookingsApi.Client
         }
     
         /// <summary>Get list of all hearings in a group</summary>
-        /// <param name="groupIdQuery">the group id of the single day or multi day hearing</param>
-        /// <param name="groupIdPath">the group id of the single day or multi day hearing</param>
+        /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid? groupIdQuery, string groupIdPath)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid groupId)
         {
-            return GetHearingsByGroupIdAsync(groupIdQuery, groupIdPath, System.Threading.CancellationToken.None);
+            return GetHearingsByGroupIdAsync(groupId, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get list of all hearings in a group</summary>
-        /// <param name="groupIdQuery">the group id of the single day or multi day hearing</param>
-        /// <param name="groupIdPath">the group id of the single day or multi day hearing</param>
+        /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid? groupIdQuery, string groupIdPath, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid groupId, System.Threading.CancellationToken cancellationToken)
         {
-            if (groupIdPath == null)
-                throw new System.ArgumentNullException("groupIdPath");
+            if (groupId == null)
+                throw new System.ArgumentNullException("groupId");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{groupId}/hearings?");
-            urlBuilder_.Replace("{groupId}", System.Uri.EscapeDataString(ConvertToString(groupIdPath, System.Globalization.CultureInfo.InvariantCulture)));
-            if (groupIdQuery != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("groupId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(groupIdQuery, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{groupId}/hearings");
+            urlBuilder_.Replace("{groupId}", System.Uri.EscapeDataString(ConvertToString(groupId, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             var disposeClient_ = false;
