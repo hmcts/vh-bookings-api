@@ -51,8 +51,19 @@ namespace BookingsApi.DAL.Commands
 
             var persons = hearingsIncCloned.SelectMany(h => h.Participants.Select(x => x.Person)).ToList();
             var organisations = persons.Where(p => p.Organisation != null).Select(x => x.Organisation).ToList();
-            _context.RemoveRange(organisations);
-            _context.RemoveRange(persons);
+            //_context.RemoveRange(organisations);
+            //_context.RemoveRange(persons);
+            bool personRef = false;
+            foreach (var person in persons
+                .Where(person => _context.Participants.Any(p => p.PersonId == person.Id && p.HearingId != command.HearingId)))
+            {
+                personRef = true;
+            }
+            if (!personRef)
+            {
+                _context.RemoveRange(organisations);
+                _context.RemoveRange(persons);
+            }
 
             _context.RemoveRange(hearingsIncCloned);
 
