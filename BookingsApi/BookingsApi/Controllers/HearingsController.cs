@@ -120,7 +120,7 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("{groupId}", Name = "GetHearingsByGroupId")]
+        [HttpGet("{groupId}/hearings", Name = "GetHearingsByGroupId")]
         [OpenApiOperation("GetHearingsByGroupId")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> GetHearingsByGroupId([FromQuery] Guid groupId)
