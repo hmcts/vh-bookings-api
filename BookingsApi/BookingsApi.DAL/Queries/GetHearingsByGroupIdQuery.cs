@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -29,23 +29,11 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<VideoHearing>> Handle(GetHearingsByGroupIdQuery query)
         {
-            return await _context.VideoHearings
-                .Include("Participants.Person")
-                .Include("Participants.Questionnaire")
-                .Include("Participants.Questionnaire.SuitabilityAnswers")
-                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
-                .Include("HearingCases.Case")
-                .Include("Participants.Person.Organisation")
-                .Include(x => x.CaseType)
-                .ThenInclude(x => x.CaseRoles)
-                .ThenInclude(x => x.HearingRoles)
-                .ThenInclude(x=>x.UserRole)
-                .Include(x => x.HearingType)
-                .Include(x => x.HearingVenue)
-                .Include(x => x.Endpoints)
-                .Where(x => x.SourceId == query.GroupId)
+            var videoHearing = await VideoHearings.Get(_context);
+
+            return videoHearing.Where(x => x.SourceId == query.GroupId)
                 .OrderBy(x => x.ScheduledDateTime)
-                .ToListAsync();
+                .ToList();
         }
     }
 }
