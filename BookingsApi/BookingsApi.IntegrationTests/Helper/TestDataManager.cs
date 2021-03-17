@@ -446,5 +446,23 @@ namespace BookingsApi.IntegrationTests.Helper
             _seededHearings.Add(hearing.Id);
             return hearing;
         }
+        
+        public async Task AddJudiciaryPerson(Guid? externalRefId = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            await db.JudiciaryPersons.AddAsync(new JudiciaryPersonBuilder(externalRefId).Build());
+
+            await db.SaveChangesAsync();
+        }
+        
+        public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            db.JudiciaryPersons.Remove(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+        }
     }
 }

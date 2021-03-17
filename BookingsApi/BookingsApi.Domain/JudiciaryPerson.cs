@@ -9,6 +9,16 @@ namespace BookingsApi.Domain
             string fullname, string postNominals, string email)
         {
             Id = Guid.NewGuid();
+            ExternalRefId = externalRefId;
+            PersonalCode = personalCode;
+            Title = title;
+            KnownAs = knownAs;
+            Surname = surname;
+            Fullname = fullname;
+            PostNominals = postNominals;
+            Email = email;
+            CreatedDate = DateTime.UtcNow;
+            UpdatedDate = DateTime.UtcNow;
         }
 
         public Guid ExternalRefId { get; set; }
@@ -19,7 +29,19 @@ namespace BookingsApi.Domain
         public string Fullname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
-        public DateTime CreatedDate { get; private set; }
+        public DateTime CreatedDate { get; }
         public DateTime UpdatedDate { get; private set; }
+
+        public void Update(string personalCode, string title, string knownAs, string surname, string fullname, string postNominals, string email)
+        {
+            PersonalCode = personalCode;
+            Title = title;
+            KnownAs = knownAs;
+            Surname = surname;
+            Fullname = fullname;
+            PostNominals = postNominals;
+            Email = email;
+            UpdatedDate = DateTime.UtcNow;
+        }
     }
 }
