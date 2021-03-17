@@ -336,6 +336,9 @@ namespace BookingsApi.IntegrationTests.Helper
             var respondentRepresentativeHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
+            var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Panel Member");
+            var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Panel Member");
+
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
             var venues = new RefDataBuilder().HearingVenues;
@@ -344,6 +347,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
+            var person5 = new PersonBuilder(true).Build();
 
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
@@ -368,6 +372,9 @@ namespace BookingsApi.IntegrationTests.Helper
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
+
+            videoHearing.AddJudicialOfficeHolder(person5, johHearingRole, johCaseRole,
+                $"{person5.FirstName} {person5.LastName}");
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
