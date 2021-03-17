@@ -51,7 +51,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> {hearingVenueOriginal, newVenue});
-            var expectedResult = new HearingToDetailResponseMapper().MapHearingToDetailedResponse(updatedHearing);
+            var expectedResult = new HearingToDetailsResponseMapper().MapHearingToDetailedResponse(updatedHearing);
             
             var result = await Controller.UpdateHearingDetails(videoHearing.Id, request);
             var ob = result.As<OkObjectResult>();

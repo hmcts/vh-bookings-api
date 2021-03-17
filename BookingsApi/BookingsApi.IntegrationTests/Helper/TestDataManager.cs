@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
@@ -120,8 +123,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 var interpretee = videoHearing.Participants[0];
                 var interpreter = videoHearing.Participants[1];
-                var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
-                CreateParticipantLinks(interpretee, interpreter, participantLink);   
+                CreateParticipantLinks(interpretee, interpreter);   
             }
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
@@ -172,7 +174,31 @@ namespace BookingsApi.IntegrationTests.Helper
             
             _seededHearings.Add(videoHearing.Id);
         }
-        
+
+        public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing)
+        {
+            var dbContext = new BookingsDbContext(_dbContextOptions);
+            var hearing = await new GetHearingByIdQueryHandler(dbContext)
+                .Handle(new GetHearingByIdQuery(hearingId));
+            
+            var orderedDates = datesOfHearing.OrderBy(x => x).ToList();
+            var totalDays = orderedDates.Count + 1;
+            var commands = orderedDates.Select((newDate, index) =>
+            {
+                var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                var hearingDay = index + 2; 
+                return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(),
+                    config.GetValue<string>("KinlyConfiguration:SipAddressStem"), totalDays, hearingDay);
+            }).ToList();
+            
+            foreach (var command in commands)
+            {
+                await new CreateVideoHearingCommandHandler(dbContext, new HearingService(dbContext)).Handle(command);
+            }
+        }
+
         private async Task AddQuestionnaire()
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
@@ -230,11 +256,10 @@ namespace BookingsApi.IntegrationTests.Helper
             return caseType;
         }
         
-        private void CreateParticipantLinks(Participant interpretee, Participant interpreter, LinkedParticipant participantLink)
+        private void CreateParticipantLinks(Participant interpretee, Participant interpreter)
         {
-            interpretee.LinkedParticipants.Add(participantLink);
-            interpreter.LinkedParticipants.Add(new LinkedParticipant(participantLink.LinkedId,
-                participantLink.ParticipantId, participantLink.Type));
+            interpretee.LinkedParticipants.Add(new LinkedParticipant(interpretee.Id,interpreter.Id,LinkedParticipantType.Interpreter));
+            interpreter.LinkedParticipants.Add(new LinkedParticipant(interpreter.Id, interpretee.Id, LinkedParticipantType.Interpreter));
         }
 
         public DateTime? GetJobLastRunDateTime()
@@ -311,6 +336,9 @@ namespace BookingsApi.IntegrationTests.Helper
             var respondentRepresentativeHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
+            var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Panel Member");
+            var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Panel Member");
+
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
             var venues = new RefDataBuilder().HearingVenues;
@@ -319,6 +347,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
+            var person5 = new PersonBuilder(true).Build();
 
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
@@ -343,6 +372,9 @@ namespace BookingsApi.IntegrationTests.Helper
                 $"{person3.FirstName} {person3.LastName}", "Ms Y");
 
             videoHearing.AddJudge(person4, judgeHearingRole, judgeCaseRole, $"{person4.FirstName} {person4.LastName}");
+
+            videoHearing.AddJudicialOfficeHolder(person5, johHearingRole, johCaseRole,
+                $"{person5.FirstName} {person5.LastName}");
 
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
@@ -426,8 +458,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var interpretee = videoHearing.Participants[0];
             var interpreter = videoHearing.Participants[1];
-            var participantLink = new LinkedParticipant(interpretee.Id, interpreter.Id, LinkedParticipantType.Interpreter);
-            CreateParticipantLinks(interpretee, interpreter, participantLink);
+            CreateParticipantLinks(interpretee, interpreter);
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
             {
