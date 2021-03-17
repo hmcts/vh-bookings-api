@@ -34,9 +34,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(p => p.Person)
                 .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
                 .Where(h => h.Hearing.ScheduledDateTime >= cutOffDate
-                            && (h.HearingRole.UserRole.Name.ToLower().Equals("individual") 
-                                || h.HearingRole.UserRole.Name.ToLower().Equals("judicial office holder")
-                                || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
+                            && (!h.HearingRole.UserRole.Name.ToLower().Equals("judge")))
                 .Select(p => p.Person.Username).Distinct();
             
             var personsInPastHearings = await _context.Participants
@@ -44,9 +42,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(p => p.HearingRole).ThenInclude(h => h.UserRole)
                 .Where(h => (h.Hearing.ScheduledDateTime >= cutOffDateFrom
                             && h.Hearing.ScheduledDateTime < cutOffDate)
-                            && (h.HearingRole.UserRole.Name.ToLower().Equals("individual")
-                                || h.HearingRole.UserRole.Name.ToLower().Equals("judicial office holder")
-                                || h.HearingRole.UserRole.Name.ToLower().Equals("representative")))
+                            && (!h.HearingRole.UserRole.Name.ToLower().Equals("judge")))
                 .Where(p => !personsInFutureHearings.Any( pf => pf == p.Person.Username))
                 .Where(p => !p.Person.Username.ToLower().EndsWith("@email.net"))
                 .Where(p => !p.Person.Username.Contains("atif."))
