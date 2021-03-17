@@ -37,25 +37,37 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants).ThenInclude(x => x.Participant)
                 .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
-                .Where(x =>  x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
-            
+                .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
+
             if (hearingsIncCloned.IsNullOrEmpty())
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
-            
+
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetEndpoints()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.GetCases()));
             _context.RemoveRange(hearingsIncCloned.SelectMany(h => h.Participants.SelectMany(p => p.LinkedParticipants)));
 
-            var persons = hearingsIncCloned.SelectMany(h => h.Participants.Select(x => x.Person)).ToList();
+            var persons = GetPersonsToRemove(hearingsIncCloned);
             var organisations = persons.Where(p => p.Organisation != null).Select(x => x.Organisation).ToList();
+
             _context.RemoveRange(organisations);
             _context.RemoveRange(persons);
 
             _context.RemoveRange(hearingsIncCloned);
 
             await _context.SaveChangesAsync();
+        }
+
+        private List<Person> GetPersonsToRemove(List<VideoHearing> hearingsIncCloned)
+        {
+            var removePersons = new List<Person>();
+            foreach (var person in hearingsIncCloned.SelectMany(h => h.Participants.Select(x => x.Person)))
+            {
+                if (_context.Participants.Any(p => p.PersonId == person.Id && p.HearingId != hearingsIncCloned.FirstOrDefault().Id)) continue;
+                removePersons.Add(person);
+            }
+            return removePersons;
         }
     }
 }
