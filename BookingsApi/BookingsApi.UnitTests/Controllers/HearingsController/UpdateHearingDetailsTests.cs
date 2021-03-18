@@ -51,7 +51,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> {hearingVenueOriginal, newVenue});
-            var expectedResult = new HearingToDetailResponseMapper().MapHearingToDetailedResponse(updatedHearing);
+            var expectedResult = new HearingToDetailsResponseMapper().MapHearingToDetailedResponse(updatedHearing);
             
             var result = await Controller.UpdateHearingDetails(videoHearing.Id, request);
             var ob = result.As<OkObjectResult>();
@@ -61,6 +61,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var message = SbQueueClient.ReadMessageFromQueue();
             var payload = message.IntegrationEvent.As<HearingDetailsUpdatedIntegrationEvent>();
             payload.Hearing.HearingId.Should().Be(updatedHearing.Id);
+            payload.Hearing.GroupId.Should().Be(updatedHearing.SourceId.GetValueOrDefault());
             payload.Hearing.RecordAudio.Should().Be(request.AudioRecordingRequired.Value);
             payload.Hearing.ScheduledDuration.Should().Be(request.ScheduledDuration);
             payload.Hearing.ScheduledDateTime.Should().Be(request.ScheduledDateTime);

@@ -21,7 +21,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task Should_return_empty_list_of_suitability_answers_if_no_hearings()
         {
-            var userName = "userName@hearings.reform.net";
+            var userName = "userName@hmcts.net";
             QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
              .ReturnsAsync(new List<VideoHearing>());
@@ -93,7 +93,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         public async Task Should_return_empty_list_of_suitability_answers_if_no_matched_participant_with_username()
         {
             var hearing = TestData();
-            var userName = "some@new.com";
+            var userName = "some@hmcts.net";
             
             QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(It.IsAny<GetHearingsByUsernameQuery>()))
@@ -112,7 +112,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task Should_return_list_of_usernames_for_old_hearings()
         {
-            var usernameList = new List<string> { "testUser1@email.com", "testUser2@email.com", "testUser3@email.com" };
+            var usernameList = new List<string> { "testUser1@hmcts.net", "testUser2@hmcts.net", "testUser3@hmcts.net" };
             QueryHandlerMock
                 .Setup(x => x.Handle<GetPersonsByClosedHearingsQuery, List<string>>(It.IsAny<GetPersonsByClosedHearingsQuery>()))
                 .ReturnsAsync(usernameList);

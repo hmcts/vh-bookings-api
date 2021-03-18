@@ -12,6 +12,7 @@ namespace BookingsApi.Infrastructure.Services
             return new HearingDto
             {
                 HearingId = hearing.Id,
+                GroupId = hearing.SourceId.GetValueOrDefault(),
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 CaseType = hearing.CaseType.Name,

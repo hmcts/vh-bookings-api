@@ -4,25 +4,21 @@ namespace BookingsApi.IntegrationTests.Helper
     {
         public SeedVideoHearingOptions()
         {
-            CaseTypeName = CivilMoneyClaimsType;
+            CaseTypeName = Generic;
         }
 
-        private const string CivilMoneyClaimsType = "Civil Money Claims";
-
+        private const string Generic = "Generic";
 
         public string CaseTypeName { get; set; }
 
         public string HearingTypeName =>
-            CaseTypeName == CivilMoneyClaimsType
-                ? "Application to Set Judgment Aside"
+            CaseTypeName == Generic
+                ? "Automated Test"
                 : "First Directions Appointment";
 
-        public string ClaimantRole =>
-            CaseTypeName == CivilMoneyClaimsType ? "Claimant" : "Applicant";
+        public string ApplicantRole = "Applicant";
 
-        public string DefendentRole => CaseTypeName == CivilMoneyClaimsType
-            ? "Defendant"
-            : "Respondent";
+        public string RespondentRole = "Respondent";
 
         public string LipHearingRole => "Litigant in person";
     }

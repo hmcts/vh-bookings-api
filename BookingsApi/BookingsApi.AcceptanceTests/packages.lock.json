@@ -1283,8 +1283,8 @@
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "Transitive",
-        "resolved": "3.1.3",
-        "contentHash": "j6r0E+OVinD4s13CIZASYJLLLApStb1yh5Vig7moB2FE1UsMRj4TYJ/xioDjreVA0dyOFpbWny1/n2iSJMbmNg=="
+        "resolved": "3.1.5",
+        "contentHash": "ZvwowjRSWXewdPI+whPFXgwF4Qme6Q9KV9SCPEITSGiqHLArct7q5hTBtTzj3GPsVLjTqehvTg6Bd/EQk9JS0A=="
       },
       "Microsoft.Extensions.Logging.ApplicationInsights": {
         "type": "Transitive",
@@ -1566,8 +1566,8 @@
       },
       "Namotion.Reflection": {
         "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "wuJGiFvGfehH2w7jAhMbCJt0/rvUuHyqSZn0sMhNTviDfBZRyX8LFlR/ndQcofkGWulPDfH5nKYTeGXE8xBHPA==",
+        "resolved": "1.0.18",
+        "contentHash": "leuejndOhYxXQWKdFCMHfDkfm47fCtwWYnKYGRY/LBf9pVUUfNvVp20OVRt5FIRI0nHJK1PLYBDT3yvDIwfXbQ==",
         "dependencies": {
           "Microsoft.CSharp": "4.3.0"
         }
@@ -1598,65 +1598,86 @@
       },
       "NJsonSchema": {
         "type": "Transitive",
-        "resolved": "10.3.1",
-        "contentHash": "k5ptrRSxMy1lZXxU7dXW2Gy9Q7uPufSGtb609tfuFdo+w45UMHdBolvbWeEq482BPXhYfoBZ2uNzjJgcny2o3g==",
+        "resolved": "10.3.11",
+        "contentHash": "YQ2rTikMwNLRJ1CEDfR8pJcJAuy1NfYBZ53iwlUdeWYmwlCB0lDL3lhKIDwsZLAcTh6ZuYiGbvfvkIKi7U8lCA==",
         "dependencies": {
-          "Namotion.Reflection": "1.0.14",
+          "Namotion.Reflection": "1.0.18",
           "Newtonsoft.Json": "9.0.1"
+        }
+      },
+      "NJsonSchema.Yaml": {
+        "type": "Transitive",
+        "resolved": "10.3.11",
+        "contentHash": "UkiVy/PW77hTIDU0ZK+VymxAmOjHyP7Urn+YYOg9R+GWumdcGyPVpVhQhrGLU2TkOco3OftmGBdMBM5VR18dug==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.4.1",
+          "NJsonSchema": "10.3.11",
+          "YamlDotNet": "9.1.4"
         }
       },
       "NSwag.Annotations": {
         "type": "Transitive",
-        "resolved": "13.9.4",
-        "contentHash": "qsOYnNMUJJ5VpgYmQsyNkDKbJnMaRo4lGBgkaBlZsHsWGG+HizNkx+HuHkRtI0ks28jqZXpVDxDmnuyq/SwFnw=="
+        "resolved": "13.10.8",
+        "contentHash": "WNT6g+WD1Bs+klfJDy8tZITI8gsO8GoHQmlRE9DjUHwbOMMgS7j0ONEty/iCWec2Zbz244ObIGUGiN0/w3CTnQ=="
       },
       "NSwag.AspNetCore": {
         "type": "Transitive",
-        "resolved": "13.9.4",
-        "contentHash": "2+QqWsUMfwOy1pFsacA4hjVW0tmKrcGG4O1JCVhM93q7QfqbG/ndt002a/GGGyaMsuK7HRKmYJ8nmo5tzOE1tg==",
+        "resolved": "13.10.8",
+        "contentHash": "yQJPf4fa1nTIiNNID4aQVCpYScJN3AdMWIoVPHO8Bej7LfwGdzPrnN/bv4GRB2uRYjrusvyq3ROEkVrxHwbgcQ==",
         "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "1.0.4",
-          "Microsoft.AspNetCore.Mvc.Formatters.Json": "1.0.4",
+          "Microsoft.AspNetCore.Mvc.Core": "1.0.6",
+          "Microsoft.AspNetCore.Mvc.Formatters.Json": "1.0.6",
           "Microsoft.AspNetCore.StaticFiles": "1.0.4",
           "Microsoft.Extensions.ApiDescription.Server": "3.0.0",
           "Microsoft.Extensions.FileProviders.Embedded": "1.0.1",
-          "NSwag.Annotations": "13.9.4",
-          "NSwag.Core": "13.9.4",
-          "NSwag.Generation": "13.9.4",
-          "NSwag.Generation.AspNetCore": "13.9.4",
+          "NSwag.Annotations": "13.10.8",
+          "NSwag.Core": "13.10.8",
+          "NSwag.Core.Yaml": "13.10.8",
+          "NSwag.Generation": "13.10.8",
+          "NSwag.Generation.AspNetCore": "13.10.8",
           "System.IO.FileSystem": "4.3.0",
           "System.Xml.XPath.XDocument": "4.0.1"
         }
       },
       "NSwag.Core": {
         "type": "Transitive",
-        "resolved": "13.9.4",
-        "contentHash": "iNhgBGWT5yEYL3uV6Xhla+VspVaN3NfDi+rjDugWLErU+A7uxV71D1i9OQkW37rdOFKiaixJAXPaLA6JA8c8hw==",
+        "resolved": "13.10.8",
+        "contentHash": "UEw8nImL/40Z6x4/HGc6XUQdZ1vLHRZWKw6DopIO7Y6fh1c0YjQPt+TVMAZnPBaZd/8v0OnR884ek1jyy0aB+g==",
         "dependencies": {
-          "NJsonSchema": "10.3.1",
+          "NJsonSchema": "10.3.11",
           "Newtonsoft.Json": "9.0.1"
+        }
+      },
+      "NSwag.Core.Yaml": {
+        "type": "Transitive",
+        "resolved": "13.10.8",
+        "contentHash": "dEbeHC2DjZV60BA+R+joaCnGGA5lh5j90Fqc9cLH1Db0QeFfLYpntLhx8oWl9Mj2cTDrSARoOPFUc8MeJXoYTw==",
+        "dependencies": {
+          "NJsonSchema.Yaml": "10.3.11",
+          "NSwag.Core": "13.10.8",
+          "YamlDotNet": "9.1.4"
         }
       },
       "NSwag.Generation": {
         "type": "Transitive",
-        "resolved": "13.9.4",
-        "contentHash": "Y6qqOYUEoYZRL5nYshzYn0b7Nz9Rzr6qCdVkah6mQq39Pom/XQgygaV6JR3t0dacDYg/XmVsMn++bdLPQs9rAw==",
+        "resolved": "13.10.8",
+        "contentHash": "x5QpkZFNrPA6VYli5Z423gPEOaV41KV8gO8XJmsR5MMU6IuUdTfHggMB2SnwJElzug5f22EqGWcXG0Id1E1JFw==",
         "dependencies": {
-          "NJsonSchema": "10.3.1",
-          "NSwag.Core": "13.9.4",
+          "NJsonSchema": "10.3.11",
+          "NSwag.Core": "13.10.8",
           "Newtonsoft.Json": "9.0.1"
         }
       },
       "NSwag.Generation.AspNetCore": {
         "type": "Transitive",
-        "resolved": "13.9.4",
-        "contentHash": "N0HGoPJsK67GAtNnPln0MLPnmv9wVp9Ev5sfEuWQIa/VHMkXQL6IyvItXiigDLb8VHXnqUbggU7WBg9Ay6h8oQ==",
+        "resolved": "13.10.8",
+        "contentHash": "RtEHcHb5OLgDQksY0iwvxZfq8qGN0gSAh0GhFgeyv6VJJoH/v5HuxlR0MOFmARGfEI+n1ihAKXX1mG0Fj+T2XA==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.ApiExplorer": "1.0.4",
           "Microsoft.AspNetCore.Mvc.Core": "1.0.4",
           "Microsoft.AspNetCore.Mvc.Formatters.Json": "1.0.4",
-          "NJsonSchema": "10.3.1",
-          "NSwag.Generation": "13.9.4"
+          "NJsonSchema": "10.3.11",
+          "NSwag.Generation": "13.10.8"
         }
       },
       "NuGet.Frameworks": {
@@ -3144,6 +3165,21 @@
           "SonarAnalyzer.CSharp": "8.2.0.14119"
         }
       },
+      "YamlDotNet": {
+        "type": "Transitive",
+        "resolved": "9.1.4",
+        "contentHash": "dVVZVhQxTI4xTNc9YorE+RruBFPPYKP44kMijE6Z5OQQE7zK+SEmh2sPm091CrTYVz1jjIuXKIBm1kFLrlsQJg=="
+      },
+      "ZymLabs.NSwag.FluentValidation": {
+        "type": "Transitive",
+        "resolved": "0.4.0",
+        "contentHash": "k57Y6NAlv1rqgHVbCV33gRfJWWX9JuI+zT4CdV/79P9kEecgtRI9tiLjL0DdMAT+PUWJSWG5VDBccSAQ3ZLuZw==",
+        "dependencies": {
+          "FluentValidation": "9.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "3.1.5",
+          "NJsonSchema": "10.1.23"
+        }
+      },
       "bookingsapi": {
         "type": "Project",
         "dependencies": {
@@ -3161,9 +3197,10 @@
           "Microsoft.Extensions.Logging.ApplicationInsights": "2.15.0",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.10.8",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "3.1.1",
-          "NSwag.AspNetCore": "13.9.4",
+          "NSwag.AspNetCore": "13.10.8",
           "Newtonsoft.Json": "12.0.3",
-          "VH.Core.Configuration": "0.1.12"
+          "VH.Core.Configuration": "0.1.12",
+          "ZymLabs.NSwag.FluentValidation": "0.4.0"
         }
       },
       "bookingsapi.common": {

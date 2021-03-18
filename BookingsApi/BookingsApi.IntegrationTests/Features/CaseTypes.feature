@@ -47,6 +47,7 @@ Feature: CaseTypes
       | Divorce                           | Case Management Hearing,Directions Hearing,Final Hearing,Financial Dispute Resolution,First Application,First Directions Appointment,Hearing,Interim hearing                                                                                                                                                                                               |
       | Public Law - Care                 | Application,Case Management Conference,Case Management Hearing,Directions,Full,Further CMH,Interim Care Order,Issues Resolution Hearing,Pre Hearing Review                                                                                                                                                                                                 |
       | Placement                         | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
+      | Adoption                          | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -54,7 +55,7 @@ Feature: CaseTypes
     Then the response should have the status NotFound and success status False
 
   Scenario: Get hearing roles for a case role of a case type with nonexistent case type
-    Given I have a get hearing roles for a case type of 'Civil Money Claims' and case role of 'nonexistent' request
+    Given I have a get hearing roles for a case type of 'Generic' and case role of 'nonexistent' request
     When I send the request to the endpoint
     Then the response should have the status NotFound and success status False
 

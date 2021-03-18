@@ -39,11 +39,4 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
-    <ItemGroup>
-      <None Update="useraccounts.json">
-        <Generator></Generator>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
 </Project>

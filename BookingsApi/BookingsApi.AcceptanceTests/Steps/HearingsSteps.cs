@@ -75,8 +75,8 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.Should().BeEquivalentTo(_context.TestData.CreateHearingRequest,
                 o => o.Excluding(x => x.Participants).Excluding(x => x.Endpoints).Excluding(x => x.LinkedParticipants));
 
-            var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));
-            var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Claimant") || x.HearingRoleName.Contains("Defendant"));
+            var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
+            var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
             expectedIndividuals.Should().BeEquivalentTo(actualIndividuals, o =>
             {
                 return o.Excluding(x => x.Representee).ExcludingMissingMembers();

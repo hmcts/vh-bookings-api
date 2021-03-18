@@ -15,9 +15,9 @@ namespace BookingsApi.UnitTests.Mappings
 {
     public class HearingToDetailResponseMapperTests : TestBase
     {
-        private readonly HearingToDetailResponseMapper _mapper = new HearingToDetailResponseMapper();
-        private readonly string _caseTypeName = "Civil Money Claims";
-        private readonly string _hearingTypeName = "Application to Set Judgment Aside";
+        private readonly HearingToDetailsResponseMapper _mapper = new HearingToDetailsResponseMapper();
+        private readonly string _caseTypeName = "Generic";
+        private readonly string _hearingTypeName = "Automated Test";
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
 
         private VideoHearing _videoHearing;
@@ -46,17 +46,17 @@ namespace BookingsApi.UnitTests.Mappings
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                hearing).Build();
 
-            var claimantCaseRole = new CaseRole(1, "Claimant");
-            var claimantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
+            var applicantCaseRole = new CaseRole(1, "Applicant");
+            var applicantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             _videoHearing.AddCase("0875", "Test Case Add", false);
 
             var person1 = new PersonBuilder(true).Build();
-            _videoHearing.AddIndividual(person1, claimantLipHearingRole, claimantCaseRole,
+            _videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
             var party = _videoHearing.GetParticipants().FirstOrDefault();
-            party.SetProtected(nameof(party.CaseRole), claimantCaseRole);
-            party.SetProtected(nameof(party.HearingRole), claimantLipHearingRole);
+            party.SetProtected(nameof(party.CaseRole), applicantCaseRole);
+            party.SetProtected(nameof(party.HearingRole), applicantLipHearingRole);
 
             var endpoints = new Endpoint("displayName", "333", "200", null);
             _videoHearing.AddEndpoint(endpoints);

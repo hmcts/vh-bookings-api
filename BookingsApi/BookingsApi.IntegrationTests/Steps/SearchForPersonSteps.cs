@@ -32,7 +32,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a search for a individual request for a non existent person")]	
         public void GivenIHaveASearchForAIndividualRequestForANonExistentPerson()	
         {	
-            SetupRequest($"do_not_exist_{DateTime.Now.Ticks.ToString()}@test.com");	
+            SetupRequest($"do_not_exist_{DateTime.Now.Ticks.ToString()}@hmcts.net");	
         }	
 
         [Given(@"I have a search for a individual with an empty query request")]	

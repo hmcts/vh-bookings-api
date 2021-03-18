@@ -39,7 +39,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var personId = Guid.NewGuid();
             var payload = new UpdatePersonDetailsRequest()
             {
-                Username = "new.me@test.com",
+                Username = "new.me@hmcts.net",
                 FirstName = "New",
                 LastName = "Me"
             };
@@ -57,7 +57,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var personId = Guid.NewGuid();
             var payload = new UpdatePersonDetailsRequest()
             {
-                Username = "new.me@test.com",
+                Username = "new.me@hmcts.net",
                 FirstName = "New",
                 LastName = "Me"
             };
@@ -113,14 +113,14 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             person5.UpdatePerson(firstName, lastName, username);
             person5.SetProtected(nameof(person5.Id), personId);
             participant5.SetProtected(nameof(participant5.PersonId), personId);
-            participant5.DisplayName = "dfidshfiudsf@email.net";
+            participant5.DisplayName = "dfidshfiudsf@hmcts.net";
             
             hearing2.UpdateStatus(BookingStatus.Created, "test", null);
             hearing3.UpdateStatus(BookingStatus.Created, "test", null);
             hearing3.UpdateStatus(BookingStatus.Failed, "test", null);
             hearing4.UpdateStatus(BookingStatus.Cancelled, "test", "test cancellation");
             hearing5.UpdateStatus(BookingStatus.Created, "test", null);
-            hearing5.AddCase("FUHSTD","IUHFISUHF@email.net", false);
+            hearing5.AddCase("FUHSTD","IUHFISUHF@hmcts.net", false);
             
             return new List<VideoHearing>
             {

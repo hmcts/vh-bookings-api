@@ -5,7 +5,7 @@ using BookingsApi.Extensions;
 
 namespace BookingsApi.Mappings
 {
-    public class HearingToDetailResponseMapper
+    public class HearingToDetailsResponseMapper
     {
         public HearingDetailsResponse MapHearingToDetailedResponse(Hearing videoHearing)
         {

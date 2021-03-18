@@ -22,8 +22,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
         private List<CaseRole> CaseRoles => new List<CaseRole> 
         {
-            CreateCaseAndHearingRoles(1, "Claimant",new List<string>{ "Litigant in person", "Representative"}),
-            CreateCaseAndHearingRoles(2, "Defendant",new List<string>{ "Litigant in person", "Representative"}),
+            CreateCaseAndHearingRoles(1, "Applicant",new List<string>{ "Litigant in person", "Representative"}),
+            CreateCaseAndHearingRoles(2, "Respondent",new List<string>{ "Litigant in person", "Representative"}),
             CreateCaseAndHearingRoles(3, "Judge", new List<string>{ "Judge"}),
             CreateCaseAndHearingRoles(4, "Judicial Office Holder", new List<string> { "Judicial Office Holder" })
         };
@@ -49,7 +49,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var caseType = new CaseType(1, "Civil")
             {
                 CaseRoles = CaseRoles,
-                HearingTypes = new List<HearingType> { new HearingType("Application to Set Judgment Aside") }
+                HearingTypes = new List<HearingType> { new HearingType("Automated Test") }
             };
 
             QueryHandlerMock
