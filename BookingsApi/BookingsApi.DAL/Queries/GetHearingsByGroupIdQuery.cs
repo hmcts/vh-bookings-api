@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -29,11 +30,11 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<VideoHearing>> Handle(GetHearingsByGroupIdQuery query)
         {
-            var videoHearing = await VideoHearings.Get(_context);
+            var videoHearing = VideoHearings.Get(_context);
 
-            return videoHearing.Where(x => x.SourceId == query.GroupId)
+            return await videoHearing.Where(x => x.SourceId == query.GroupId)
                 .OrderBy(x => x.ScheduledDateTime)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

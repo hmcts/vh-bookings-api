@@ -17,7 +17,7 @@ namespace BookingsApi.DAL.Queries
 
         public string Username { get; }
     }
-    
+
     public class GetHearingsByUsernameQueryHandler : IQueryHandler<GetHearingsByUsernameQuery, List<VideoHearing>>
     {
         private readonly BookingsDbContext _context;
@@ -30,11 +30,11 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<VideoHearing>> Handle(GetHearingsByUsernameQuery query)
         {
             var username = query.Username.ToLower().Trim();
-            var videoHearing = await VideoHearings.Get(_context);
-                
-            return videoHearing
+            var videoHearing = VideoHearings.Get(_context);
+
+            return await videoHearing
                 .Where(x => x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
-                .ToList();
+                .ToListAsync();
         }
     }
 }
