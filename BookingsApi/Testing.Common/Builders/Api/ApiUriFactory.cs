@@ -83,5 +83,11 @@ namespace Testing.Common.Builders.Api
             public static string UpdateEndpoint(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
             public static string RemoveEndPointFromHearing(Guid hearingId, Guid endpointId) => $"{ApiRoot}/{hearingId}/endpoints/{endpointId}";
         }
+
+        public static class JudiciaryPersonsEndpoints
+        {
+            private const string ApiRoot = "judiciaryperson";
+            public static string BulkJudiciaryPersons() => $"{ApiRoot}";
+        }
     }
 }

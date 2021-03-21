@@ -21,6 +21,7 @@ namespace BookingsApi.Controllers
     [ApiController]
     public class JudiciaryPersonController : Controller
     {
+        private const string BulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
@@ -48,7 +49,7 @@ namespace BookingsApi.Controllers
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = string.Join(", ", validation.Errors.Select(x => x.ErrorMessage)), 
+                        Message = $"{string.Format(BulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}", 
                         JudiciaryPersonRequest = item
                     });
                     
@@ -73,11 +74,10 @@ namespace BookingsApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    var errorMessage = $"Could not add or update external Judiciary user with External Id: {item.Id}";
-                    _logger.LogError(ex, errorMessage);
+                    _logger.LogError(ex, string.Format(BulkItemErrorMessage, item.Id));
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = errorMessage, JudiciaryPersonRequest = item
+                        Message = BulkItemErrorMessage, JudiciaryPersonRequest = item
                     });
                 }
             }
