@@ -281,6 +281,25 @@ namespace BookingsApi.IntegrationTests.Helper
             }
             _seededHearings.Clear();
         }
+        
+        public async Task ClearJudiciaryPersonsAsync(IEnumerable<Guid> ids)
+        {
+            foreach (var externalRefId in ids)
+            {
+                try
+                {
+                    await using var db = new BookingsDbContext(_dbContextOptions);
+                    var jp = await db.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == externalRefId);
+                    db.JudiciaryPersons.Remove(jp);
+                    await db.SaveChangesAsync();
+                    TestContext.WriteLine(@$"Remove Judiciary Person: {externalRefId}.");
+                }
+                catch (JudiciaryPersonNotFoundException)
+                {
+                    TestContext.WriteLine(@$"Ignoring cleanup for Judiciary Person: {externalRefId}. Does not exist.");
+                }
+            }
+        }
 
         public async Task RemoveVideoHearing(Guid hearingId)
         {

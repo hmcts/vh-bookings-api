@@ -35,6 +35,11 @@ namespace BookingsApi.IntegrationTests.Hooks
             {
                 await context.TestDataManager.ClearUnattachedPersons(context.TestData.RemovedPersons);
             }
+
+            if (context.TestData.JudiciaryPersonsExternalIds != null)
+            {
+                await context.TestDataManager.ClearJudiciaryPersonsAsync(context.TestData.JudiciaryPersonsExternalIds);
+            }
         }
 
         [AfterScenario(Order = (int) HooksSequence.RemoveData)]
