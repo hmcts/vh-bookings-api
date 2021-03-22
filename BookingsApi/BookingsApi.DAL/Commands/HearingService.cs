@@ -175,7 +175,7 @@ namespace BookingsApi.DAL.Commands
         {
             var newOrganisation = newPersonDetails.Organisation;
             var existingPerson = participantToUpdate.Person;
-            participantToUpdate.UpdateParticipantDetails(existingPerson.Title, participantToUpdate.DisplayName, existingPerson.TelephoneNumber, newOrganisation?.Name);
+            participantToUpdate.UpdateParticipantDetails(existingPerson.Title, participantToUpdate.DisplayName, newPersonDetails.TelephoneNumber, newOrganisation?.Name);
         }
     }
 }
