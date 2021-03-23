@@ -20,7 +20,6 @@ namespace BookingsApi.DAL
         public DbSet<HearingVenue> Venues { get; set; }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<JobHistory> JobHistory { get; set; }
-        public DbSet<LinkedParticipant> LinkedParticipants { get; set; }
         public DbSet<JudiciaryPerson> JudiciaryPersons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
