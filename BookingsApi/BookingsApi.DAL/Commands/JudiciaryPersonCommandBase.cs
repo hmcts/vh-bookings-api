@@ -2,7 +2,7 @@ using System;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class JudiciaryPersonCommandBase
+    public abstract class JudiciaryPersonCommandBase
     {
         protected JudiciaryPersonCommandBase(Guid externalRefId, string personalCode, string title, 
             string knownAs, string surname, string fullname, string postNominals, string email)

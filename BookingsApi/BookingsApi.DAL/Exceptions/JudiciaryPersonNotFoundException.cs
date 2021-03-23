@@ -1,11 +1,16 @@
 using System;
+using System.Runtime.Serialization;
 
-#pragma warning disable S3925 // "ISerializable" should be implemented correctly
 namespace BookingsApi.DAL.Exceptions
 {
     public abstract class JudiciaryPersonException : Exception
     {
         protected JudiciaryPersonException(string message) : base(message)
+        {
+        }
+        
+        protected JudiciaryPersonException(SerializationInfo info, StreamingContext context) 
+            : base(info, context)
         {
         }
 
@@ -15,6 +20,7 @@ namespace BookingsApi.DAL.Exceptions
         }
     }
 
+    [Serializable]
     public class JudiciaryPersonNotFoundException : JudiciaryPersonException
     {
         public JudiciaryPersonNotFoundException(string username) : 
@@ -26,8 +32,14 @@ namespace BookingsApi.DAL.Exceptions
             base($"Judiciary Person with External ref id: {id} does not exist")
         {
         }
+        
+        protected JudiciaryPersonNotFoundException(SerializationInfo info, StreamingContext context) 
+            : base(info, context)
+        {
+        }
     }
     
+    [Serializable]
     public class JudiciaryPersonAlreadyExistsException : JudiciaryPersonException
     {
         public JudiciaryPersonAlreadyExistsException(string username) : 
@@ -37,6 +49,11 @@ namespace BookingsApi.DAL.Exceptions
         
         public JudiciaryPersonAlreadyExistsException(Guid externalRefId) : 
             base($"Judiciary Person with ExternalRefId {externalRefId} already exists")
+        {
+        }
+        
+        protected JudiciaryPersonAlreadyExistsException(SerializationInfo info, StreamingContext context) 
+            : base(info, context)
         {
         }
     }
