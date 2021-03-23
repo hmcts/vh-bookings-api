@@ -35,20 +35,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var externalRefId = Guid.NewGuid();
             await Hooks.AddJudiciaryPerson(externalRefId);
 
-            const string changedText = "changed";
-            var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand(externalRefId, changedText, changedText, changedText, changedText, changedText, changedText, changedText);
+            var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email");
             await _commandHandler.Handle(updateCommand);
 
             var updatePerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
 
             updatePerson.ExternalRefId.Should().Be(updateCommand.ExternalRefId);
-            updatePerson.Email.Should().Be(changedText);
-            updatePerson.Fullname.Should().Be(changedText);
-            updatePerson.Surname.Should().Be(changedText);
-            updatePerson.Title.Should().Be(changedText);
-            updatePerson.KnownAs.Should().Be(changedText);
-            updatePerson.PersonalCode.Should().Be(changedText);
-            updatePerson.PostNominals.Should().Be(changedText);
+            updatePerson.PersonalCode.Should().Be("PersonalCode");
+            updatePerson.Title.Should().Be("Title");
+            updatePerson.KnownAs.Should().Be("KnownAs");
+            updatePerson.Surname.Should().Be("Surname");
+            updatePerson.Fullname.Should().Be("FullName");
+            updatePerson.PostNominals.Should().Be("PostNominals");
+            updatePerson.Email.Should().Be("Email");
 
             await Hooks.RemoveJudiciaryPersonAsync(updatePerson);
         }

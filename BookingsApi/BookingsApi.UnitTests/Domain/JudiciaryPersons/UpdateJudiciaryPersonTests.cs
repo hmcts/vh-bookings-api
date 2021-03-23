@@ -11,15 +11,15 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         public void should_update_person()
         {
             var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com");
-            person.Update("changed", "changed", "changed", "changed", "changed", "changed", "changed");
+            person.Update("PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email");
 
-            person.PersonalCode.Should().Be("changed");
-            person.Title.Should().Be("changed");
-            person.KnownAs.Should().Be("changed");
-            person.Surname.Should().Be("changed");
-            person.Fullname.Should().Be("changed");
-            person.PostNominals.Should().Be("changed");
-            person.Email.Should().Be("changed");
+            person.PersonalCode.Should().Be("PersonalCode");
+            person.Title.Should().Be("Title");
+            person.KnownAs.Should().Be("KnownAs");
+            person.Surname.Should().Be("Surname");
+            person.Fullname.Should().Be("FullName");
+            person.PostNominals.Should().Be("PostNominals");
+            person.Email.Should().Be("Email");
         }
     }
 }

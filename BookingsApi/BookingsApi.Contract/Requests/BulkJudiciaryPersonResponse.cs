@@ -11,10 +11,4 @@ namespace BookingsApi.Contract.Requests
             
         public List<JudiciaryPersonErrorResponse> ErroredRequests { get; set; }
     }
-
-    public class JudiciaryPersonErrorResponse
-    {
-        public string Message { get; set; }
-        public JudiciaryPersonRequest JudiciaryPersonRequest { get; set; }
-    }
 }

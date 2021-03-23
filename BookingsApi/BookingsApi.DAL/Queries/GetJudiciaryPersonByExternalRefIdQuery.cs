@@ -27,8 +27,7 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<JudiciaryPerson> Handle(GetJudiciaryPersonByExternalRefIdQuery query)
         {
-            return await _context.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == query.ExternalRefId);   
-            
+            return await _context.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == query.ExternalRefId);
         }
     }
 }

@@ -40,9 +40,12 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
         {
+            var judiciaryPersonRequests = request.ToList();
+            _logger.LogInformation($"Starting BulkJudiciaryPersons operation, processing {judiciaryPersonRequests.Count} items");
+            
             var bulkResponse = new BulkJudiciaryPersonResponse();
             
-            foreach (var item in request)
+            foreach (var item in judiciaryPersonRequests)
             {
                 var validation = await new JudiciaryPersonRequestValidation().ValidateAsync(item);
                 if (!validation.IsValid)
@@ -74,7 +77,7 @@ namespace BookingsApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, string.Format(BulkItemErrorMessage, item.Id));
+                    _logger.LogError(ex, BulkItemErrorMessage, item.Id);
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
                         Message = BulkItemErrorMessage, JudiciaryPersonRequest = item

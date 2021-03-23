@@ -39,19 +39,4 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
-    <ItemGroup>
-      <SpecFlowFeatureFiles Update="Features\JudiciaryPersons.feature">
-        <CodeBehindFile>Features/Persons.feature.cs</CodeBehindFile>
-      </SpecFlowFeatureFiles>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Features\JudiciaryPersons.feature.cs">
-        <DependentUpon>JudiciaryPersons.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
-    </ItemGroup>
 </Project>

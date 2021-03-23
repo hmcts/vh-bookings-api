@@ -25,20 +25,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_add_person()
         {
             var externalRefId = Guid.NewGuid();
-            const string addText = "add";
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, addText, addText, addText, addText, addText, addText, addText);
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email");
             await _commandHandler.Handle(addCommand);
 
             var addedPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
 
             addedPerson.ExternalRefId.Should().Be(addCommand.ExternalRefId);
-            addedPerson.Email.Should().Be(addText);
-            addedPerson.Fullname.Should().Be(addText);
-            addedPerson.Surname.Should().Be(addText);
-            addedPerson.Title.Should().Be(addText);
-            addedPerson.KnownAs.Should().Be(addText);
-            addedPerson.PersonalCode.Should().Be(addText);
-            addedPerson.PostNominals.Should().Be(addText);
+            addedPerson.PersonalCode.Should().Be("PersonalCode");
+            addedPerson.Title.Should().Be("Title");
+            addedPerson.KnownAs.Should().Be("KnownAs");
+            addedPerson.Surname.Should().Be("Surname");
+            addedPerson.Fullname.Should().Be("FullName");
+            addedPerson.PostNominals.Should().Be("PostNominals");
+            addedPerson.Email.Should().Be("Email");
 
             await Hooks.RemoveJudiciaryPersonAsync(addedPerson);
         }
