@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class UpdateJudiciaryPersonByExternalRefIdCommand : JudiciaryPersonCommandBase, ICommand
+    public class UpdateJudiciaryPersonByExternalRefIdCommand : JudiciaryPersonCommandBase
     {
         public UpdateJudiciaryPersonByExternalRefIdCommand(Guid externalRefId, string personalCode, string title, 
             string knownAs, string surname, string fullname, string postNominals, string email) :

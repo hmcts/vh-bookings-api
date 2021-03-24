@@ -21,7 +21,6 @@ namespace BookingsApi.Controllers
     [ApiController]
     public class JudiciaryPersonController : Controller
     {
-        private const string BulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
@@ -40,8 +39,9 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
         {
+            const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryPersonRequests = request.ToList();
-            _logger.LogInformation($"Starting BulkJudiciaryPersons operation, processing {judiciaryPersonRequests.Count} items");
+            _logger.LogInformation("Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items", judiciaryPersonRequests.Count);
             
             var bulkResponse = new BulkJudiciaryPersonResponse();
             
@@ -52,7 +52,7 @@ namespace BookingsApi.Controllers
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = $"{string.Format(BulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}", 
+                        Message = $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}", 
                         JudiciaryPersonRequest = item
                     });
                     
@@ -77,10 +77,10 @@ namespace BookingsApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, BulkItemErrorMessage, item.Id);
+                    _logger.LogError(ex, bulkItemErrorMessage, item.Id);
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = BulkItemErrorMessage, JudiciaryPersonRequest = item
+                        Message = bulkItemErrorMessage, JudiciaryPersonRequest = item
                     });
                 }
             }

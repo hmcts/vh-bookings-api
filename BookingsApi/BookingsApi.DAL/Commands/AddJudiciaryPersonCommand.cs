@@ -5,7 +5,7 @@ using BookingsApi.Domain;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class AddJudiciaryPersonCommand : JudiciaryPersonCommandBase, ICommand
+    public class AddJudiciaryPersonCommand : JudiciaryPersonCommandBase
     {
         public AddJudiciaryPersonCommand(Guid externalRefId, string personalCode, string title, 
             string knownAs, string surname, string fullname, string postNominals, string email) : 

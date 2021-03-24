@@ -12,6 +12,7 @@ namespace BookingsApi.DAL.Mappings
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.HasIndex(x => x.ExternalRefId).IsUnique();
             builder.Property(x => x.ExternalRefId);
             builder.Property(x => x.PersonalCode);
             builder.Property(x => x.Title);

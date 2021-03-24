@@ -1,8 +1,9 @@
 using System;
+using BookingsApi.DAL.Commands.Core;
 
 namespace BookingsApi.DAL.Commands
 {
-    public abstract class JudiciaryPersonCommandBase
+    public abstract class JudiciaryPersonCommandBase : ICommand
     {
         protected JudiciaryPersonCommandBase(Guid externalRefId, string personalCode, string title, 
             string knownAs, string surname, string fullname, string postNominals, string email)
@@ -17,13 +18,13 @@ namespace BookingsApi.DAL.Commands
             Email = email;
         }
         
-        public Guid ExternalRefId { get; set; }
-        public string PersonalCode { get; set; }
-        public string Title { get; set; }
-        public string KnownAs { get; set; }
-        public string Surname { get; set; }
-        public string Fullname { get; set; }
-        public string PostNominals { get; set; }
-        public string Email { get; set; }
+        public Guid ExternalRefId { get; }
+        public string PersonalCode { get; }
+        public string Title { get; }
+        public string KnownAs { get; }
+        public string Surname { get; }
+        public string Fullname { get; }
+        public string PostNominals { get; }
+        public string Email { get; }
     }
 }
