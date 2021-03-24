@@ -39,13 +39,6 @@ namespace BookingsApi.IntegrationTests.Steps
             await using var db = new BookingsDbContext(Context.BookingsDbContextOptions);
             var jps = await db.JudiciaryPersons.Where(x => TestDataManager.JudiciaryPersons.Contains(x.ExternalRefId)).ToListAsync();
             jps.ForEach(Assert.NotNull);
-            
-            // foreach (var id in TestDataManager.JudiciaryPersons)
-            // {
-            //     await using var db = new BookingsDbContext(Context.BookingsDbContextOptions);
-            //     var jp = await db.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == id);
-            //     Assert.NotNull(jp);
-            // }
         }
 
         private List<JudiciaryPersonRequest> GetBulkRequest()
