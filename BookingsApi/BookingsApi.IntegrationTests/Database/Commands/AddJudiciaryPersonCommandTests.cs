@@ -26,8 +26,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var externalRefId = Guid.NewGuid();
             var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email");
+            
             await _commandHandler.Handle(addCommand);
-
+            Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
+            
             var addedPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
 
             addedPerson.ExternalRefId.Should().Be(addCommand.ExternalRefId);
@@ -38,8 +40,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             addedPerson.Fullname.Should().Be("FullName");
             addedPerson.PostNominals.Should().Be("PostNominals");
             addedPerson.Email.Should().Be("Email");
-
-            await Hooks.RemoveJudiciaryPersonAsync(addedPerson);
         }
     }
 }

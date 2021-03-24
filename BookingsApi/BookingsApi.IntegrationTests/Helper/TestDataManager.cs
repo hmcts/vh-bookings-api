@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
+using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -24,6 +25,7 @@ namespace BookingsApi.IntegrationTests.Helper
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
+        public List<Guid> JudiciaryPersons { get; } = new List<Guid>();
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
         private readonly string _defaultCaseName;
@@ -32,6 +34,12 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             _seededHearings.Add(id);
         }
+        
+        public void AddJudiciaryPersonsForCleanup(params Guid[] ids)
+        {
+            JudiciaryPersons.AddRange(ids);
+        }
+        
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
         {
             _dbContextOptions = dbContextOptions;
@@ -282,9 +290,9 @@ namespace BookingsApi.IntegrationTests.Helper
             _seededHearings.Clear();
         }
         
-        public async Task ClearJudiciaryPersonsAsync(IEnumerable<Guid> ids)
+        public async Task ClearJudiciaryPersonsAsync()
         {
-            foreach (var externalRefId in ids)
+            foreach (var externalRefId in JudiciaryPersons)
             {
                 try
                 {
@@ -501,9 +509,11 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
-            await db.JudiciaryPersons.AddAsync(new JudiciaryPersonBuilder(externalRefId).Build());
+            var judiciaryPerson = new JudiciaryPersonBuilder(externalRefId).Build();
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.ExternalRefId);
         }
         
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)

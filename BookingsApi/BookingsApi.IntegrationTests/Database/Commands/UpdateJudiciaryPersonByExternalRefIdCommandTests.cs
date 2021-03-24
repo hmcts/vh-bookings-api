@@ -48,8 +48,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatePerson.Fullname.Should().Be("FullName");
             updatePerson.PostNominals.Should().Be("PostNominals");
             updatePerson.Email.Should().Be("Email");
-
-            await Hooks.RemoveJudiciaryPersonAsync(updatePerson);
         }
     }
 }
