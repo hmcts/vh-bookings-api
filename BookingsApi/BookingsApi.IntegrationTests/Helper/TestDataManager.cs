@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
+using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -24,6 +25,7 @@ namespace BookingsApi.IntegrationTests.Helper
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
+        public List<Guid> JudiciaryPersons { get; } = new List<Guid>();
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
         private readonly string _defaultCaseName;
@@ -32,6 +34,12 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             _seededHearings.Add(id);
         }
+        
+        public void AddJudiciaryPersonsForCleanup(params Guid[] ids)
+        {
+            JudiciaryPersons.AddRange(ids);
+        }
+        
         public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
         {
             _dbContextOptions = dbContextOptions;
@@ -281,6 +289,25 @@ namespace BookingsApi.IntegrationTests.Helper
             }
             _seededHearings.Clear();
         }
+        
+        public async Task ClearJudiciaryPersonsAsync()
+        {
+            foreach (var externalRefId in JudiciaryPersons)
+            {
+                try
+                {
+                    await using var db = new BookingsDbContext(_dbContextOptions);
+                    var jp = await db.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == externalRefId);
+                    db.JudiciaryPersons.Remove(jp);
+                    await db.SaveChangesAsync();
+                    TestContext.WriteLine(@$"Remove Judiciary Person: {externalRefId}.");
+                }
+                catch (JudiciaryPersonNotFoundException)
+                {
+                    TestContext.WriteLine(@$"Ignoring cleanup for Judiciary Person: {externalRefId}. Does not exist.");
+                }
+            }
+        }
 
         public async Task RemoveVideoHearing(Guid hearingId)
         {
@@ -476,6 +503,26 @@ namespace BookingsApi.IntegrationTests.Helper
                 new GetHearingByIdQuery(videoHearing.Id));
             _seededHearings.Add(hearing.Id);
             return hearing;
+        }
+        
+        public async Task AddJudiciaryPerson(Guid? externalRefId = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPerson = new JudiciaryPersonBuilder(externalRefId).Build();
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.ExternalRefId);
+        }
+        
+        public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            db.JudiciaryPersons.Remove(judiciaryPerson);
+
+            await db.SaveChangesAsync();
         }
     }
 }

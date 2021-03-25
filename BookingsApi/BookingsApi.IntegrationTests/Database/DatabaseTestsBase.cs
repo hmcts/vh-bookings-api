@@ -39,6 +39,7 @@ namespace BookingsApi.IntegrationTests.Database
         public async Task TearDown()
         {
             await Hooks.ClearSeededHearings();
+            await Hooks.ClearJudiciaryPersonsAsync();
         }
     }
 }
