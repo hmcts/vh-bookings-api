@@ -32,7 +32,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var usernamesList = await _handler.Handle(new GetPersonsByClosedHearingsQuery());
             usernamesList.Should().NotBeNull();
-            usernamesList.Count.Should().Be(4); // Individual & Representative participants + JOH participants
+            usernamesList.Count.Should().Be(3); // Individual & Representative participants
         }
     }
 }

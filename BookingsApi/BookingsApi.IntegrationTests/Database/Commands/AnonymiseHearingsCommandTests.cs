@@ -35,7 +35,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var command = new AnonymiseHearingsCommand();
             await _commandHandler.Handle(command);
-            command.RecordsUpdated.Should().Be(7);
+            command.RecordsUpdated.Should().Be(6);
             command.UpdatedDate.Date.Should().Be(DateTime.UtcNow.Date);
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().NotBeNull();
@@ -104,7 +104,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var command = new AnonymiseHearingsCommand();
             await _commandHandler.Handle(command);
-            command.RecordsUpdated.Should().Be(7);
+            command.RecordsUpdated.Should().Be(6);
             command.UpdatedDate.Date.Should().Be(DateTime.UtcNow.Date);
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().NotBeNull();
