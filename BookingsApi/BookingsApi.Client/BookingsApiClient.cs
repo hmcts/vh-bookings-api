@@ -3194,7 +3194,7 @@ namespace BookingsApi.Client
                 throw new System.ArgumentNullException("term");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/judiciaryperson/search");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/judiciaryperson/PostJudiciaryPersonBySearchTerm");
     
             var client_ = _httpClient;
             var disposeClient_ = false;

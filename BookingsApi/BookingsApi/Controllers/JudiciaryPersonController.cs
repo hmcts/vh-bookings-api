@@ -95,7 +95,8 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="term">Partial string to match email with, case-insensitive.</param>
         /// <returns>Person list</returns>
-        [HttpPost("search")]
+        [HttpPost]
+        [Route("[action]")]
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
