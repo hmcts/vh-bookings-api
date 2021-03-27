@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -273,6 +274,29 @@ namespace BookingsApi.UnitTests.Controllers
             data.ErroredRequests[0].JudiciaryPersonRequest.Should().BeEquivalentTo(item1);
 
             _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Should_return_list_of_PersonResponse_matching_serch_term_successfully()
+        {
+            var searchTermRequest = new SearchTermRequest("test");
+            var persons = new List<JudiciaryPerson> {
+                                new JudiciaryPerson(Guid.NewGuid(),"CODE1","Mr", "Test", "Tester", "T Tester", "N", "test@hmcts.net" ),
+                                new JudiciaryPerson(Guid.NewGuid(), "CODE", "Mr", "Tester", "Test", "T Test", "n1", "atest@hmcts.net" )
+            };
+            _queryHandlerMock
+           .Setup(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()))
+           .ReturnsAsync(persons);
+
+            var result = await _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
+
+            result.Should().NotBeNull();
+            var objectResult = (ObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var personResponses = (List<PersonResponse>)objectResult.Value;
+            personResponses.Count.Should().Be(2);
+            personResponses[0].LastName.Should().Be("Test");
+            _queryHandlerMock.Verify(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()), Times.Once);
         }
     }
 }
