@@ -4,11 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -86,6 +88,24 @@ namespace BookingsApi.Controllers
             }
             
             return Ok(bulkResponse);
+        }
+
+        /// <summary>
+        /// Find persons with the email matching a search term.
+        /// </summary>
+        /// <param name="term">Partial string to match email with, case-insensitive.</param>
+        /// <returns>Person list</returns>
+        [HttpPost("search")]
+        [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
+        [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
+        {
+            var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
+            var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
+            var mapper = new JudiciaryPersonToResponseMapper();
+            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
+            return Ok(response);
         }
     }
 }
