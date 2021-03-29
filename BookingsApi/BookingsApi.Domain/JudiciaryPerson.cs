@@ -6,7 +6,7 @@ namespace BookingsApi.Domain
     public class JudiciaryPerson : AggregateRoot<Guid>
     {
         public JudiciaryPerson(Guid externalRefId, string personalCode, string title, string knownAs, string surname,
-            string fullname, string postNominals, string email)
+            string fullname, string postNominals, string email, bool hasLeft)
         {
             Id = Guid.NewGuid();
             ExternalRefId = externalRefId;
@@ -19,6 +19,7 @@ namespace BookingsApi.Domain
             Email = email;
             CreatedDate = DateTime.UtcNow;
             UpdatedDate = DateTime.UtcNow;
+            HasLeft = hasLeft;
         }
 
         public Guid ExternalRefId { get; set; }
@@ -31,8 +32,10 @@ namespace BookingsApi.Domain
         public string Email { get; set; }
         public DateTime CreatedDate { get; }
         public DateTime UpdatedDate { get; private set; }
+        public bool HasLeft { get; set; }
 
-        public void Update(string personalCode, string title, string knownAs, string surname, string fullname, string postNominals, string email)
+        public void Update(string personalCode, string title, string knownAs, string surname, string fullname, 
+            string postNominals, string email, bool hasLeft)
         {
             PersonalCode = personalCode;
             Title = title;
@@ -42,6 +45,7 @@ namespace BookingsApi.Domain
             PostNominals = postNominals;
             Email = email;
             UpdatedDate = DateTime.UtcNow;
+            HasLeft = hasLeft;
         }
     }
 }

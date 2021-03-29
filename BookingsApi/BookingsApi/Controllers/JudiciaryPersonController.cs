@@ -69,12 +69,12 @@ namespace BookingsApi.Controllers
                     if (judiciaryPerson == null)
                     {
                         await _commandHandler.Handle(new AddJudiciaryPersonCommand(item.Id, item.PersonalCode, item.Title, item.KnownAs, item.Surname,
-                            item.Fullname, item.PostNominals, item.Email));
+                            item.Fullname, item.PostNominals, item.Email, item.HasLeft));
                     }
                     else
                     {
                         await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id, item.PersonalCode, 
-                            item.Title, item.KnownAs, item.Surname, item.Fullname, item.PostNominals, item.Email));
+                            item.Title, item.KnownAs, item.Surname, item.Fullname, item.PostNominals, item.Email, item.HasLeft));
                     }
                 }
                 catch (Exception ex)
