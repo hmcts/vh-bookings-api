@@ -25,7 +25,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_add_person()
         {
             var externalRefId = Guid.NewGuid();
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email");
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false);
             
             await _commandHandler.Handle(addCommand);
             Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
@@ -40,6 +40,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             addedPerson.Fullname.Should().Be("FullName");
             addedPerson.PostNominals.Should().Be("PostNominals");
             addedPerson.Email.Should().Be("Email");
+            addedPerson.HasLeft.Should().BeFalse();
         }
     }
 }
