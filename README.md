@@ -3,7 +3,7 @@
 
 ## Running code coverage
 
-1. Install the report generator dotnet tool
+1. Install  the report generator dotnet tool
 https://www.nuget.org/packages/dotnet-reportgenerator-globaltool/
 
 You may need to restart your prompt to get the updated path.
