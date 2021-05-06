@@ -11,7 +11,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
     public class UpdateStatusTest
     {
         [Test]
-        public void Should_update_hearing_status()
+        public void Should_update_hearing_status_from_booked_to_cancelled()
         {
             var hearing = new VideoHearingBuilder().Build();
             var updatedDate = DateTime.UtcNow;
@@ -21,20 +21,35 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void Should_throw_domain_exception_Upon_hearing_status_update_to_booked()
+        public void should_update_status_from_failed_to_created()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.SetProtected(nameof(hearing.Status), BookingStatus.Failed);
+            hearing.SetProtected(nameof(hearing.UpdatedDate), DateTime.UtcNow);
+
+            var updatedDate = hearing.UpdatedDate;
+            var newStatus = BookingStatus.Created;
+            hearing.UpdateStatus(newStatus, "testuser", null);
+            hearing.Status.Should().Be(BookingStatus.Created);
+            hearing.UpdatedDate.Should().BeAfter(updatedDate);
+        }
+
+        [Test]
+        public void should_not_update_status_from_booked_to_booked()
         {
             var hearing = new VideoHearingBuilder().Build();
             var updatedDate = hearing.UpdatedDate;
             var newStatus = BookingStatus.Booked;
             Action action = () => hearing.UpdateStatus(newStatus, "testuser", null);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}").Should().BeTrue();
+                .Any(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}")
+                .Should().BeTrue();
             hearing.Status.Should().Be(BookingStatus.Booked);
             hearing.UpdatedDate.Should().Be(updatedDate);
         }
 
         [Test]
-        public void Should_throw_domain_exception_Upon_hearing_status_update_to_created()
+        public void should_not_update_status_from_booked_to_created()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.UpdateStatus(BookingStatus.Cancelled, "testuser", "Settled");
@@ -43,7 +58,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newStatus = BookingStatus.Booked;
             Action action = () => hearing.UpdateStatus(newStatus, "testuser", null);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}").Should().BeTrue();
+                .Any(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}")
+                .Should().BeTrue();
             hearing.Status.Should().Be(BookingStatus.Cancelled);
             hearing.UpdatedDate.Should().Be(updatedDate);
         }
@@ -52,7 +68,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_throw_argument_null_exception_when_updatedby_field_is_empty()
         {
             var hearing = new VideoHearingBuilder().Build();
-            
+
             var newStatus = BookingStatus.Cancelled;
             Action action = () => hearing.UpdateStatus(newStatus, string.Empty, "Settled");
             action.Should().Throw<ArgumentNullException>();
