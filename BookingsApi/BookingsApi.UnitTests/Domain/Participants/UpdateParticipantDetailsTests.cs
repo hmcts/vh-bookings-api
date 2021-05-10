@@ -100,7 +100,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
             //Arrange
             var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
             var displayName = "Edit Display Name";
-            string telephoneNumber = "null";
+            string telephoneNumber = null;
             string title = "new Title";
             var organisationName = "Edit Org1";
 
