@@ -93,6 +93,38 @@ namespace BookingsApi.UnitTests.Domain.Participants
 
             individualParticipant.Person.Title.Should().Be(title);
         }
+		
+		[Test]
+        public void Should_use_existing_title_if_new_telephone_is_NULL()
+        {
+            //Arrange
+            var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var displayName = "Edit Display Name";
+            string telephoneNumber = "null";
+            string title = "new Title";
+            var organisationName = "Edit Org1";
+
+            //Act
+            individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, organisationName);
+
+            individualParticipant.Person.TelephoneNumber.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Should_use_new_telephone_if_new_telephonenumber_is_not_NULL()
+        {
+            //Arrange
+            var individualParticipant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var displayName = "Edit Display Name";
+            var telephoneNumber = "1111220000223";
+            string title = "New Title";
+            var organisationName = "Edit Org1";
+
+            //Act
+            individualParticipant.UpdateParticipantDetails(title, displayName, telephoneNumber, organisationName);
+
+            individualParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);
+        }
 
     }
 }
