@@ -63,6 +63,11 @@ namespace BookingsApi.DAL.Commands
                 var existingPerson = await _context.Persons
                     .Include("Organisation")
                     .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username);
+                if(existingPerson != null)
+                {
+                    var person = participantToAdd.Person;
+                    existingPerson.UpdatePerson(person.FirstName, person.LastName, existingPerson.Username, person.Title, person.TelephoneNumber);
+                }
 
                 switch (participantToAdd.HearingRole.UserRole.Name)
                 {
