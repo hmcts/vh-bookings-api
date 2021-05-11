@@ -59,8 +59,8 @@ namespace BookingsApi.Domain.Participants
             ValidatePartipantDetails(title, displayName, telephoneNumber, organisationName);
 
             DisplayName = displayName;
-            Person.Title = title;
-            Person.TelephoneNumber = telephoneNumber;
+            Person.Title = title == null ? Person.Title : title;
+            Person.TelephoneNumber = telephoneNumber == null ? Person.TelephoneNumber : telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
 
             if (!string.IsNullOrEmpty(organisationName))
