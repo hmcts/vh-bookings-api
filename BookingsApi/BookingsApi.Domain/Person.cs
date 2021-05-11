@@ -38,12 +38,14 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void UpdatePerson(string firstName, string lastName, string username)
+        public void UpdatePerson(string firstName, string lastName, string username, string title = null, string telephoneNumber = null)
         {
             ValidateArguments(firstName, lastName, username);
             FirstName = firstName;
             LastName = lastName;
             Username = username;
+            Title = title == null ? Title : title;
+            TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
         }
 
         public void AnonymisePerson()
