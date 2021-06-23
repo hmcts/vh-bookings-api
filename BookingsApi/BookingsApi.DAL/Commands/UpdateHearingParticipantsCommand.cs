@@ -77,7 +77,6 @@ namespace BookingsApi.DAL.Commands
 
                 if (existingParticipant.HearingRole.UserRole.IsRepresentative)
                 {
-                    
                     ((Representative)existingParticipant).UpdateRepresentativeDetails(
                         newExistingParticipantDetails.RepresentativeInformation.Representee);
                 }
