@@ -42,6 +42,7 @@ Scenario: Get available case types
 		| GRC - Professional Regulations    | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
 		| GRC - Query Jurisdiction          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
 		| GRC - Welfare of Animals          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
+		| GRC - EJ                          | Case Management Hearing,Final Hearing,Costs Hearing                                                                                                                                                                                                                                                                                                        |
 		| Immigration and Asylum            | Appeals - Substantive Statutory,Bail Hearing,Case Management Appointment,Case Management Review,Costs Hearing,Payment Liability Hearing,Preliminary Hearing                                                                                                                                                                                                |
 		| Private Law                       | Application,Case Management Conference,Directions,First hearing,Full hearing,Pre hearing review,Review                                                                                                                                                                                                                                                     |
 		| Divorce                           | Case Management Hearing,Directions Hearing,Final Hearing,Financial Dispute Resolution,First Application,First Directions Appointment,Hearing,Interim hearing                                                                                                                                                                                               |
@@ -103,6 +104,7 @@ Scenario Outline: Get case roles for a case type
 		| GRC - Professional Regulations    |
 		| GRC - Query Jurisdiction          |
 		| GRC - Welfare of Animals          |
+		| GRC - EJ                          |
 		| Immigration and Asylum            |
 
 Scenario Outline: Get hearing roles for a case role of a case type
