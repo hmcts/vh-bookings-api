@@ -130,6 +130,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 Title = "UpdatedTitle"
             };
 
+            if (participantToUpdate.HearingRole.UserRole.IsRepresentative)
+            {
+                updateParticipantDetails.RepresentativeInformation.Representee = "UpdatedRepresentee";
+            }
+
             _existingParticipants.Add(updateParticipantDetails);
             _command = BuildCommand(); 
             
@@ -147,6 +152,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedParticipant.Person.TelephoneNumber.Should().Be(updateParticipantDetails.TelephoneNumber);
             updatedParticipant.Person.Organisation.Name.Should().Be(updateParticipantDetails.OrganisationName);
             updatedParticipant.LinkedParticipants.Should().BeEmpty();
+            if (participantToUpdate.HearingRole.UserRole.IsRepresentative)
+            {
+                ((Representative)updatedParticipant).Representee.Should()
+                     .Be(updateParticipantDetails.RepresentativeInformation.Representee);
+            }
         }
 
         [Test]
@@ -260,8 +270,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             if (_hearing.Id != Guid.Empty)
             {
-                TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
-                await Hooks.RemoveVideoHearing(_hearing.Id);
+                //var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
+
+                //if (hearing != null )
+                //{
+                    TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
+                    await Hooks.RemoveVideoHearing(_hearing.Id);
+                //}
             }
         }
     }
