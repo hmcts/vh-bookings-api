@@ -9,9 +9,9 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
     public class ParticipantsAddedIntegrationEvent: IIntegrationEvent
     {
         public ParticipantsAddedIntegrationEvent(Guid hearingId, IEnumerable<Participant> participants)
-        { 
-            Participants = participants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
+        {
             HearingId = hearingId;
+            Participants = participants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
         }
 
         public Guid HearingId { get; }
