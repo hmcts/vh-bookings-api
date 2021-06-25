@@ -19,19 +19,11 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         {
             HearingId = hearingId;
 
-            ExistingParticipants = new List<ParticipantDto>();
+            ExistingParticipants = existingParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
+            NewParticipants = newParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
             NewParticipants = new List<ParticipantDto>();
             RemovedParticipants = removedParticipants;
             LinkedParticipants = linkedParticipants;
-
-            existingParticipants.ForEach(x => AddParticipant(ExistingParticipants, x));
-            newParticipants.ForEach(x => AddParticipant(NewParticipants, x));
-        }
-
-        private void AddParticipant(IList<ParticipantDto> participants, Participant participant)
-        {
-            var participantDto = ParticipantDtoMapper.MapToDto(participant);
-            participants.Add(participantDto);
         }
     }
 }
