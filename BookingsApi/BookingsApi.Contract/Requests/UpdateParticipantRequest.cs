@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace BookingsApi.Contract.Requests
@@ -22,6 +23,11 @@ namespace BookingsApi.Contract.Requests
     
     public class UpdateParticipantRequest : IRepresentativeInfoRequest
     {
+        /// <summary>
+        ///     Participant Id.
+        /// </summary>
+        public Guid ParticipantId { get; set; }
+
         /// <summary>
         ///     Participant Title.
         /// </summary>

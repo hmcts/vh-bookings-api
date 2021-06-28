@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
-using BookingsApi.Extensions;
+using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Extensions;
 using BookingsApi.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -23,6 +19,11 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace BookingsApi.Controllers
 {
@@ -198,6 +199,96 @@ namespace BookingsApi.Controllers
             if (hearing.Status == BookingStatus.Created)
             {
                 await PublishParticipantsAddedEvent(participants, hearing);
+            }
+
+            return NoContent();
+        }
+
+
+        /// <summary>
+        /// Updates a hearings participants
+        /// </summary>
+        /// <param name="hearingId">The Id of the hearing</param> 
+        /// <param name="request">The participants information</param>
+        /// <returns>204 No Content</returns>
+        [HttpPost("{hearingId}/updateParticipants", Name = "UpdateHearingParticipants")]
+        [OpenApiOperation("UpdateHearingParticipants")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId,
+            [FromBody] UpdateHearingParticipantsRequest request)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new UpdateHearingParticipantsRequestValidation().Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            var caseTypequery = new GetCaseTypeQuery(videoHearing.CaseType.Name);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypequery);
+
+            var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
+            var representatives = request.NewParticipants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
+
+            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
+
+            if (!representativeValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var newParticipants = request.NewParticipants
+                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
+
+            var existingParticipants = request.ExistingParticipants
+                .Select(x => new ExistingParticipantDetails
+                {
+                    DisplayName = x.DisplayName,
+                    OrganisationName = x.OrganisationName,
+                    ParticipantId = x.ParticipantId,
+                    RepresentativeInformation = new RepresentativeInformation { Representee = x.Representee },
+                    TelephoneNumber = x.TelephoneNumber,
+                    Title = x.Title
+                }).ToList();
+
+            var linkedParticipants =
+                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+
+            var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipants, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+            }
+            catch (DomainRuleException e)
+            {
+                ModelState.AddDomainRuleErrors(e.ValidationFailures);
+                return BadRequest(ModelState);
+            }
+
+            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+            // Publish this event if the hearing is ready for video
+            if (hearing.Status == BookingStatus.Created)
+            {
+                await PublishUpdateHearingParticipantsEvent(hearing, existingParticipants, newParticipants, request.RemovedParticipantIds, linkedParticipants);
             }
 
             return NoContent();
@@ -428,6 +519,35 @@ namespace BookingsApi.Controllers
             {
                 await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing.Id, participants));
             }
+        }
+
+        private async Task PublishUpdateHearingParticipantsEvent(Hearing hearing, List<ExistingParticipantDetails> existingParticipants, List<NewParticipant> newParticipants,
+            List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
+        {
+            var eventNewParticipants = hearing.GetParticipants()
+                .Where(x => newParticipants.Any(y => y.Person.Username == x.Person.Username)).ToList();
+            
+            var eventExistingParticipants = hearing.GetParticipants()
+                .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();
+
+            var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
+
+            foreach (var linkedParticipant in linkedParticipants)
+            {
+                var primaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.ParticipantContactEmail);
+                var secondaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.LinkedParticipantContactEmail);
+
+                eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
+                {
+                    LinkedId = secondaryLinkedParticipant.Id,
+                    ParticipantId = primaryLinkedParticipant.Id,
+                    Type = linkedParticipant.Type
+                });
+            }
+
+            var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing.Id, eventExistingParticipants, eventNewParticipants,
+                removedParticipantIds, eventLinkedParticipants);
+            await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
         }
     }
 }
