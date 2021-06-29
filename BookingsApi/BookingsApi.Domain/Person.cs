@@ -46,6 +46,7 @@ namespace BookingsApi.Domain
             Username = username;
             Title = title == null ? Title : title;
             TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
+            UpdatedDate = DateTime.UtcNow;
         }
 
         public void AnonymisePerson()
