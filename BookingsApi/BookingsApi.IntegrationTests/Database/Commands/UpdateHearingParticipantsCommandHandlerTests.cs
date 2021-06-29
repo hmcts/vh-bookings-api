@@ -132,7 +132,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             if (participantToUpdate.HearingRole.UserRole.IsRepresentative)
             {
-                updateParticipantDetails.RepresentativeInformation.Representee = "UpdatedRepresentee";
+                updateParticipantDetails.RepresentativeInformation = new RepresentativeInformation { Representee = "UpdatedRepresentee" };
             }
 
             _existingParticipants.Add(updateParticipantDetails);
