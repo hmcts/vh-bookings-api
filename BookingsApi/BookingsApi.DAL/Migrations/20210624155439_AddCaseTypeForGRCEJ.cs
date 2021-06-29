@@ -66,7 +66,7 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            for (int hearingRoleID = 702; hearingRoleID <= 710; hearingRoleID++)
+            for (int hearingRoleID = 702; hearingRoleID <= 713; hearingRoleID++)
             {
                 migrationBuilder.DeleteData("HearingRole", "Id", hearingRoleID);
             }
