@@ -54,10 +54,13 @@ namespace BookingsApi.DAL.Migrations
                     { 704, "Witness", 5, 203 },
                     { 705, "Litigant in person", 5, 204 },
                     { 706, "Representative", 6, 204 },
-                    { 707, "Witness", 5, 205 },
-                    { 708, "Judge", 4, 206 },
-                    { 709, "Panel Member", 5, 207 },
-                    { 710, "Observer", 5, 207 }
+                    { 707, "Witness", 5, 204 },
+                    { 708, "Judge", 4, 205 },
+                    { 709, "Panel Member", 5, 206 },
+                    { 710, "Observer", 5, 207 },
+                    { 711, "Litigant in person", 5, 208 },
+                    { 712, "Representative", 6, 208 },
+                    { 713, "Witness", 5, 208 },
                  });
         }
 
