@@ -88,7 +88,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
-            
+
             _newParticipants.Add(newParticipant);
             _command = BuildCommand();
 
@@ -136,8 +136,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             }
 
             _existingParticipants.Add(updateParticipantDetails);
-            _command = BuildCommand(); 
-            
+            _command = BuildCommand();
+
             //Act
             await _handler.Handle(_command);
 
@@ -270,13 +270,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             if (_hearing.Id != Guid.Empty)
             {
-                //var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
-
-                //if (hearing != null )
-                //{
-                    TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
-                    await Hooks.RemoveVideoHearing(_hearing.Id);
-                //}
+                TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
+                await Hooks.RemoveVideoHearing(_hearing.Id);
             }
         }
     }
