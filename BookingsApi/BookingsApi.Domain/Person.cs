@@ -17,7 +17,7 @@ namespace BookingsApi.Domain
             FirstName = firstName;
             LastName = lastName;
             Username = username;
-            CreatedDate = DateTime.UtcNow;
+            CreatedDate = UpdatedDate = DateTime.UtcNow;
         }
 
         public string Title { get; set; }
