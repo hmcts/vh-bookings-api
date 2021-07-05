@@ -26,7 +26,7 @@ namespace BookingsApi.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
-        
+
         public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger)
         {
             _queryHandler = queryHandler;
@@ -101,11 +101,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
-            var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
-            var mapper = new JudiciaryPersonToResponseMapper();
-            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
-            return Ok(response);
+            // Returning an Empty Result till we have Release 1.27 inplace with full eJud features
+            return Ok(new List<PersonResponse>());
         }
     }
 }
