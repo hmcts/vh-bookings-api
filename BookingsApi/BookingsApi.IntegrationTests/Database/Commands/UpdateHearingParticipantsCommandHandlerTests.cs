@@ -88,7 +88,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
                 Representee = string.Empty
             };
-
+            
             _newParticipants.Add(newParticipant);
             _command = BuildCommand();
 

@@ -21,7 +21,6 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 
             ExistingParticipants = existingParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
             NewParticipants = newParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
-            NewParticipants = new List<ParticipantDto>();
             RemovedParticipants = removedParticipants;
             LinkedParticipants = linkedParticipants;
         }
