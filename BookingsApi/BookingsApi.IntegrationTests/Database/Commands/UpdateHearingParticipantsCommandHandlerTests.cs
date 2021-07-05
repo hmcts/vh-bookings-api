@@ -272,9 +272,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
                 await Hooks.RemoveVideoHearing(_hearing.Id);
-
-                TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
-                await Hooks.RemoveVideoHearing(_hearing.Id);
             }
         }
     }
