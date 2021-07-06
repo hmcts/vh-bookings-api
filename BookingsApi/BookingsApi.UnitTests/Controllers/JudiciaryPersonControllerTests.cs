@@ -294,9 +294,7 @@ namespace BookingsApi.UnitTests.Controllers
             var objectResult = (ObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var personResponses = (List<PersonResponse>)objectResult.Value;
-            personResponses.Count.Should().Be(2);
-            personResponses[0].LastName.Should().Be("Test");
-            _queryHandlerMock.Verify(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()), Times.Once);
+            personResponses.Count.Should().Be(0);
         }
     }
 }
