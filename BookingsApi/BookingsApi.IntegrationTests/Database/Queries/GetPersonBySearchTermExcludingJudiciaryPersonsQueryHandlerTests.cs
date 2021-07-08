@@ -56,6 +56,21 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.RemoveJudiciaryPersonsByExternalRefIdAsync(judiciaryPersonRefId);
         }
 
+        [Test]
+        public async Task Finds_Contact_By_Search_Case_Insensitive_Term()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            var person = seededHearing.GetPersons().First();
+            var contactEmail = person.ContactEmail;
+            var twoCharactersLowercase = contactEmail.Substring(0, 2).ToLower();
+            var twoCharactersUppercase = contactEmail.Substring(2, 2).ToUpper();
+            var searchTerm = twoCharactersLowercase + twoCharactersUppercase;
+
+            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(searchTerm));
+
+            matches.Select(m => m.Id).Should().Contain(person.Id);
+        }
+
         //[Test]
         //public async Task Returns_Person_List_Filtering_Out_AD_Users()
         //{

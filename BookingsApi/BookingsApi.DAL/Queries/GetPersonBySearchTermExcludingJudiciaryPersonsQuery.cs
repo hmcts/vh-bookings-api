@@ -31,7 +31,11 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<Person>> Handle(GetPersonBySearchTermExcludingJudiciaryPersonsQuery query)
         {
             var judiciaryPersons = await _context.JudiciaryPersons.Select(x => x.Email.ToLowerInvariant()).ToListAsync();
-            var persons = await _context.Persons.ToListAsync();
+            var persons = await _context.Persons
+                                .Include(x => x.Organisation)
+                                .Where(x => x.ContactEmail.ToLower()
+                                .Contains(query.Term.ToLowerInvariant()))
+                                .ToListAsync();
 
             //var filteredOutList = persons.Where(
             //    x => 
