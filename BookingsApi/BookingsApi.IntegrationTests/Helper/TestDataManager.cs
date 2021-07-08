@@ -515,6 +515,58 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
             AddJudiciaryPersonsForCleanup(judiciaryPerson.ExternalRefId);
         }
+
+        public async Task AddJudiciaryPersonWithoutAddingForCleanup(Guid? externalRefId = null)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPerson = new JudiciaryPersonBuilder(externalRefId).Build();
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<JudiciaryPerson> GetJudiciaryPerson(Guid externalRefId)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            return await db.JudiciaryPersons.FirstOrDefaultAsync(x => x.ExternalRefId == externalRefId);
+        }
+
+        public async Task AddPersonWithContactEmail(string email)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var person = new PersonBuilder().Build();
+            person.ContactEmail = email;
+
+            await db.Persons.AddAsync(person);
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task AddPersonWithUsernameAndDifferentContactEmail(string email)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var person = new Person("Mr", "John", "Doe", email);
+            person.ContactEmail = $"{RandomStringGenerator.GenerateRandomString(10)}@hmcts.net";
+
+            await db.Persons.AddAsync(person);
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task RemoveJudiciaryPersonFromPersonsTable(string email)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var persons = db.Persons.ToList();
+
+            var personToBeRemoved = persons.FirstOrDefault(p => (!string.IsNullOrEmpty(p.ContactEmail) && p.ContactEmail.ToLowerInvariant() == email) || (!string.IsNullOrEmpty(p.Username) && p.Username.ToLowerInvariant() == email));
+
+            db.Persons.Remove(personToBeRemoved);
+
+            await db.SaveChangesAsync();
+        }
         
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)
         {
@@ -522,6 +574,13 @@ namespace BookingsApi.IntegrationTests.Helper
 
             db.JudiciaryPersons.Remove(judiciaryPerson);
 
+            await db.SaveChangesAsync();
+        }
+        public async Task RemoveJudiciaryPersonsByExternalRefIdAsync(Guid externalRefId)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var jp = await db.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == externalRefId);
+            db.JudiciaryPersons.Remove(jp);
             await db.SaveChangesAsync();
         }
     }
