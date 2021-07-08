@@ -152,6 +152,27 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
+        /// Find persons with contact email matching a search term and excluding judiciary users.
+        /// </summary>
+        /// <param name="request">
+        /// Partial string to match contact email with, case-insensitive 
+        /// and a list of judiciary users found in AD
+        /// </param>
+        /// <returns>Person list</returns>
+        [HttpGet("GetPersonBySearchQuery")]
+        [OpenApiOperation("GetPersonBySearchQuery")]
+        [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetPersonBySearchQuery(SearchQueryRequest request)
+        {
+            var query = new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(request.Term, request.JudiciaryUsernamesFromAd);
+            var personList = await _queryHandler.Handle<GetPersonBySearchTermExcludingJudiciaryPersonsQuery, List<Person>>(query);
+            var mapper = new PersonToResponseMapper();
+            var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Get a list of suitability answers for a given person
         /// </summary>
         /// <param name="username">The username of the person</param>
