@@ -31,10 +31,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var judiciaryPersonEmail = judiciaryPersonFromDb.Email;
             await Hooks.AddPersonWithContactEmail(judiciaryPersonEmail);
 
+            //Act
             var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(judiciaryPersonEmail.Substring(0, 2), new List<string>()));
 
+            //Assert
             matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryPersonEmail);
 
+            //db clean up
             await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryPersonEmail.ToLowerInvariant());
             await Hooks.RemoveJudiciaryPersonsByExternalRefIdAsync(judiciaryPersonRefId);
         }
@@ -48,10 +51,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var judiciaryPersonEmail = judiciaryPersonFromDb.Email;
             await Hooks.AddPersonWithUsernameAndDifferentContactEmail(judiciaryPersonEmail);
 
+            //Act
             var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(judiciaryPersonEmail.Substring(0, 2), new List<string>()));
 
+            //Assert
             matches.Select(m => m.Username).Should().NotContain(judiciaryPersonEmail);
 
+            //db clean up
             await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryPersonEmail.ToLowerInvariant());
             await Hooks.RemoveJudiciaryPersonsByExternalRefIdAsync(judiciaryPersonRefId);
         }
@@ -66,8 +72,10 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var twoCharactersUppercase = contactEmail.Substring(2, 2).ToUpper();
             var searchTerm = twoCharactersLowercase + twoCharactersUppercase;
 
+            //Act
             var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(searchTerm, new List<string>()));
 
+            //Assert
             matches.Select(m => m.Id).Should().Contain(person.Id);
         }
 
@@ -78,10 +86,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.AddPersonWithContactEmail(judiciaryPersonEmail);
             var adUsers = new List<string> { judiciaryPersonEmail };
 
+            //Act
             var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery("joh", adUsers));
 
+            //Assert
             matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryPersonEmail);
 
+            //db clean up
             await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryPersonEmail.ToLowerInvariant());
         }
 
@@ -106,11 +117,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.AddPersonWithContactEmail(judiciaryInADEmail);
             var adUsers = new List<string> { judiciaryInADEmail };
 
+            //Act
             var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(searchTerm, adUsers));
 
+            //Assert
             matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryInADEmail);
             matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryPersonEmail);
 
+            //db clean up
             await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryInADEmail.ToLowerInvariant());
             await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryPersonEmail.ToLowerInvariant());
             await Hooks.RemoveJudiciaryPersonsByExternalRefIdAsync(judiciaryPersonRefId);

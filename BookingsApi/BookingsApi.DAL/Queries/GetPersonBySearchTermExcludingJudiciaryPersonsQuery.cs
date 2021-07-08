@@ -32,11 +32,12 @@ namespace BookingsApi.DAL.Queries
         }
         public async Task<List<Person>> Handle(GetPersonBySearchTermExcludingJudiciaryPersonsQuery query)
         {
-            var judiciaryPersons = await _context.JudiciaryPersons.Select(x => x.Email.ToLowerInvariant()).ToListAsync();
             var persons = await _context.Persons
                                 .Include(x => x.Organisation)
                                 .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLowerInvariant()))
                                 .ToListAsync();
+
+            var judiciaryPersons = await _context.JudiciaryPersons.Select(x => x.Email.ToLowerInvariant()).ToListAsync();
             var accountsToFilter = judiciaryPersons.Concat(query.JudiciaryUsersFromAD).ToList();
             //var filteredOutList = persons.Where(
             //    x => 
@@ -45,21 +46,26 @@ namespace BookingsApi.DAL.Queries
             //    ).ToList();
 
             var filteredOutList = persons.Where(
-              person => person.ContactEmail.DoesJudiciaryPersonExistInPersons(accountsToFilter) &&
-                        person.Username.DoesJudiciaryPersonExistInPersons(accountsToFilter))
+              person => DoesJudiciaryPersonExistInPersons(person.ContactEmail, accountsToFilter) &&
+                        DoesJudiciaryPersonExistInPersons(person.Username, accountsToFilter))
                         .ToList();
 
             return filteredOutList;
         }
 
-    }
-
-    public static class Extension
-    {
-        public static bool DoesJudiciaryPersonExistInPersons(this string email, List<string> judiciaryPersons)
+        private bool DoesJudiciaryPersonExistInPersons(string email, List<string> judiciaryPersons)
         {
             return (!string.IsNullOrEmpty(email) && !judiciaryPersons.Contains(email.ToLowerInvariant()));
         }
 
     }
+
+    //public static class Extension
+    //{
+    //    public static bool DoesJudiciaryPersonExistInPersons(this string email, List<string> judiciaryPersons)
+    //    {
+    //        return (!string.IsNullOrEmpty(email) && !judiciaryPersons.Contains(email.ToLowerInvariant()));
+    //    }
+
+    //}
 }

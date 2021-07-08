@@ -590,6 +590,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             await db.SaveChangesAsync();
         }
+
         public async Task RemoveJudiciaryPersonsByExternalRefIdAsync(Guid externalRefId)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
