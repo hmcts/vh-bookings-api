@@ -537,22 +537,36 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
             var person = new PersonBuilder().Build();
-            person.ContactEmail = email;
+            person.ContactEmail = email.ToLowerInvariant();
 
             await db.Persons.AddAsync(person);
 
-            await db.SaveChangesAsync();
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                TestContext.WriteLine(@$"User with email: {person.ContactEmail} already exists, continuing with the test...");
+            }
         }
 
         public async Task AddPersonWithUsernameAndDifferentContactEmail(string email)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
-            var person = new Person("Mr", "John", "Doe", email);
+            var person = new Person("Mr", "John", "Doe", email.ToLowerInvariant());
             person.ContactEmail = $"{RandomStringGenerator.GenerateRandomString(10)}@hmcts.net";
 
             await db.Persons.AddAsync(person);
 
-            await db.SaveChangesAsync();
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                TestContext.WriteLine(@$"User with email: {person.ContactEmail} already exists, continuing with the test...");
+            }
         }
 
         public async Task RemoveJudiciaryPersonFromPersonsTable(string email)

@@ -31,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var judiciaryPersonEmail = judiciaryPersonFromDb.Email;
             await Hooks.AddPersonWithContactEmail(judiciaryPersonEmail);
 
-            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(judiciaryPersonEmail.Substring(0, 2)));
+            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(judiciaryPersonEmail.Substring(0, 2), new List<string>()));
 
             matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryPersonEmail);
 
@@ -48,7 +48,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var judiciaryPersonEmail = judiciaryPersonFromDb.Email;
             await Hooks.AddPersonWithUsernameAndDifferentContactEmail(judiciaryPersonEmail);
 
-            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(judiciaryPersonEmail.Substring(0, 2)));
+            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(judiciaryPersonEmail.Substring(0, 2), new List<string>()));
 
             matches.Select(m => m.Username).Should().NotContain(judiciaryPersonEmail);
 
@@ -66,15 +66,55 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var twoCharactersUppercase = contactEmail.Substring(2, 2).ToUpper();
             var searchTerm = twoCharactersLowercase + twoCharactersUppercase;
 
-            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(searchTerm));
+            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(searchTerm, new List<string>()));
 
             matches.Select(m => m.Id).Should().Contain(person.Id);
         }
 
-        //[Test]
-        //public async Task Returns_Person_List_Filtering_Out_AD_Users()
-        //{
-        //}
+        [Test]
+        public async Task Returns_Person_List_Filtering_Out_Specified_AD_Users()
+        {
+            var judiciaryPersonEmail = "john.doe@judiciary.hmcts.net";
+            await Hooks.AddPersonWithContactEmail(judiciaryPersonEmail);
+            var adUsers = new List<string> { judiciaryPersonEmail };
+
+            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery("joh", adUsers));
+
+            matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryPersonEmail);
+
+            await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryPersonEmail.ToLowerInvariant());
+        }
+
+        [Test]
+        public async Task Returns_Person_List_Filtering_Out_Specified_AD_Users_And_Judiciary_Persons()
+        {
+
+            //judiciary person for the test
+            var judiciaryPersonRefId = Guid.NewGuid();
+            await Hooks.AddJudiciaryPersonWithoutAddingForCleanup(judiciaryPersonRefId);
+            var judiciaryPersonFromDb = await Hooks.GetJudiciaryPerson(judiciaryPersonRefId);
+            var judiciaryPersonEmail = judiciaryPersonFromDb.Email;
+            await Hooks.AddPersonWithContactEmail(judiciaryPersonEmail);
+
+            //search term for the test
+            var twoCharactersLowercase = judiciaryPersonEmail.Substring(0, 2).ToLower();
+            var twoCharactersUppercase = judiciaryPersonEmail.Substring(2, 2).ToUpper();
+            var searchTerm = twoCharactersLowercase + twoCharactersUppercase;
+
+            //ad user for the test
+            var judiciaryInADEmail = $"{searchTerm}_john.doe@judiciary.hmcts.net";
+            await Hooks.AddPersonWithContactEmail(judiciaryInADEmail);
+            var adUsers = new List<string> { judiciaryInADEmail };
+
+            var matches = await _handler.Handle(new GetPersonBySearchTermExcludingJudiciaryPersonsQuery(searchTerm, adUsers));
+
+            matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryInADEmail);
+            matches.Select(m => m.ContactEmail).Should().NotContain(judiciaryPersonEmail);
+
+            await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryInADEmail.ToLowerInvariant());
+            await Hooks.RemoveJudiciaryPersonFromPersonsTable(judiciaryPersonEmail.ToLowerInvariant());
+            await Hooks.RemoveJudiciaryPersonsByExternalRefIdAsync(judiciaryPersonRefId);
+        }
     }
 
 }
