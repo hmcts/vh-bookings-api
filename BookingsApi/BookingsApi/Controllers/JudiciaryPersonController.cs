@@ -34,7 +34,7 @@ namespace BookingsApi.Controllers
             _logger = logger;
         }
         
-        [HttpPost]
+        [HttpPost("BulkJudiciaryPersons")]
         [OpenApiOperation("BulkJudiciaryPersons")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -87,6 +87,60 @@ namespace BookingsApi.Controllers
                 }
             }
             
+            return Ok(bulkResponse);
+        }
+
+        [HttpPost("BulkJudiciaryLeavers")]
+        [OpenApiOperation("BulkJudiciaryLeavers")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(BulkJudiciaryLeaverResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> BulkJudiciaryLeaversAsync(IEnumerable<JudiciaryLeaverRequest> request)
+        {
+            const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
+            var judiciaryLeaverRequests = request.ToList();
+            _logger.LogInformation("Starting BulkJudiciaryLeavers operation, processing {JudiciaryLeaversRequestsCount} items", judiciaryLeaverRequests.Count);
+
+            var bulkResponse = new BulkJudiciaryLeaverResponse();
+
+            foreach (var item in judiciaryLeaverRequests)
+            {
+                var validation = await new JudiciaryLeaverRequestValidation().ValidateAsync(item);
+                if (!validation.IsValid)
+                {
+                    bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
+                    {
+                        Message = $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
+                        JudiciaryLeaverRequest = item
+                    });
+
+                    continue;
+                }
+
+                try
+                {
+                    var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
+                    var judiciaryPerson = await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+
+                    if (judiciaryPerson != null)
+                    {
+                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(item.Id, item.Leaver));
+                    }
+                    else
+                    {
+                        _logger.LogError($"Unable to update the record in Judiciary Person with ExternalRefId '{item.Id}'");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, bulkItemErrorMessage, item.Id);
+                    bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
+                    {
+                        Message = bulkItemErrorMessage, JudiciaryLeaverRequest = item
+                    });
+                }
+            }
+
             return Ok(bulkResponse);
         }
 

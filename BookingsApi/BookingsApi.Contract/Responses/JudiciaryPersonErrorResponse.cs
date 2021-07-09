@@ -1,4 +1,6 @@
-namespace BookingsApi.Contract.Requests
+using BookingsApi.Contract.Requests;
+
+namespace BookingsApi.Contract.Responses
 {
     public class JudiciaryPersonErrorResponse
     {
