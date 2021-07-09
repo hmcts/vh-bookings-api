@@ -26,7 +26,7 @@ namespace BookingsApi.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
-        
+
         public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger)
         {
             _queryHandler = queryHandler;
