@@ -47,5 +47,11 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             HasLeft = hasLeft;
         }
+
+        public void Update(bool hasLeft)
+        {
+            UpdatedDate = DateTime.UtcNow;
+            HasLeft = hasLeft;
+        }
     }
 }

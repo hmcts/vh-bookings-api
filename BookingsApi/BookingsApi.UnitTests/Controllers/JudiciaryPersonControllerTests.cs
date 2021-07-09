@@ -77,7 +77,35 @@ namespace BookingsApi.UnitTests.Controllers
                      c.PostNominals == item1.PostNominals && c.ExternalRefId == item1.Id
             )));
         }
-        
+
+        [Test]
+        public async Task Should_return_ok_result_updating_leaver_item()
+        {
+            var id = Guid.NewGuid();
+            var judiciaryPerson = new JudiciaryPerson(id, "some@email.com", "a", "b", "c", "d", "123", "nom1", false);
+            var item1 = new JudiciaryLeaverRequest { Id = id, Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString()};
+            var request = new List<JudiciaryLeaverRequest> { item1 };
+
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByExternalRefIdQuery>()))
+                .ReturnsAsync(judiciaryPerson);
+
+            var result = await _controller.BulkJudiciaryLeaversAsync(request);
+
+            result.Should().NotBeNull();
+            var objectResult = result as ObjectResult;
+            objectResult.Should().NotBeNull();
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var data = objectResult.Value as BulkJudiciaryLeaverResponse;
+            data.Should().NotBeNull();
+            data.ErroredRequests.Count.Should().Be(0);
+
+            _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryLeaverByExternalRefIdCommand>
+            (
+                c =>  c.ExternalRefId == item1.Id && c.HasLeft == item1.Leaver
+            )));
+        }
+
         [Test]
         public async Task Should_return_ok_result_updating_item()
         {
