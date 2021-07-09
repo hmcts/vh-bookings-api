@@ -29,7 +29,7 @@ namespace BookingsApi.DAL.Commands
 
             if (person == null)
             {
-                throw new JudiciaryPersonNotFoundException(command.ExternalRefId);
+                throw new JudiciaryLeaverNotFoundException(command.ExternalRefId);
             }
 
             person.Update(command.HasLeft);
