@@ -34,7 +34,7 @@ namespace BookingsApi.Controllers
             _logger = logger;
         }
         
-        [HttpPost]
+        [HttpPost("BulkJudiciaryPersons")]
         [OpenApiOperation("BulkJudiciaryPersons")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -90,7 +90,7 @@ namespace BookingsApi.Controllers
             return Ok(bulkResponse);
         }
 
-        [HttpPost]
+        [HttpPost("BulkJudiciaryLeavers")]
         [OpenApiOperation("BulkJudiciaryLeavers")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
