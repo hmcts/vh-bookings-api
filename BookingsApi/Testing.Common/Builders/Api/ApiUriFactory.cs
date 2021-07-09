@@ -87,7 +87,7 @@ namespace Testing.Common.Builders.Api
         public static class JudiciaryPersonsEndpoints
         {
             private const string ApiRoot = "judiciaryperson";
-            public static string BulkJudiciaryPersons() => $"{ApiRoot}";
+            public static string BulkJudiciaryPersons() => $"{ApiRoot}/BulkJudiciaryPersons";
         }
     }
 }
