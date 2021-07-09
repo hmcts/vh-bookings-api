@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BookingsApi.Contract.Requests
+namespace BookingsApi.Contract.Responses
 {
     public class BulkJudiciaryPersonResponse
     {
