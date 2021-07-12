@@ -57,10 +57,14 @@ namespace BookingsApi.DAL.Commands
 
             _context.Update(hearing);
             
+            foreach (var removedParticipantId in command.RemovedParticipantIds)
+                hearing.RemoveParticipant(removedParticipantId, false);
+            
             await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
-
+            
+            hearing.ValidateParticipantCount();
+            
             var participants = hearing.GetParticipants().ToList();
-
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)
             {
                 var existingParticipant = participants.FirstOrDefault(x => x.Id == newExistingParticipantDetails.ParticipantId);
@@ -81,15 +85,7 @@ namespace BookingsApi.DAL.Commands
                         newExistingParticipantDetails.RepresentativeInformation.Representee);
                 }
             }
-
-            foreach (var removedParticipantId in command.RemovedParticipantIds)
-            {
-                var participantToRemove = participants.SingleOrDefault(x => x.Id == removedParticipantId);
-
-                if (participantToRemove != null)
-                    hearing.RemoveParticipant(participantToRemove);
-            }
-
+            
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
             
             await _context.SaveChangesAsync();
