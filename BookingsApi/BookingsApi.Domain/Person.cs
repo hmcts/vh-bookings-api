@@ -20,6 +20,19 @@ namespace BookingsApi.Domain
             CreatedDate = UpdatedDate = DateTime.UtcNow;
         }
 
+        public Person(string title, string firstName, string lastName, string username, string hearingRoleName, string caseRoleName)
+        {
+            Id = Guid.NewGuid();
+            ValidateArguments(firstName, lastName, username);
+            Title = title;
+            FirstName = firstName;
+            LastName = lastName;
+            Username = username;
+            CreatedDate = UpdatedDate = DateTime.UtcNow;
+            HearingRoleName = hearingRoleName;
+            CaseRoleName = caseRoleName;
+        }
+
         public string Title { get; set; }
         public string FirstName { get; protected set; }
         public string LastName { get; protected set; }
@@ -31,6 +44,8 @@ namespace BookingsApi.Domain
         public virtual Organisation Organisation { get; set; }
         public DateTime CreatedDate { get; private set; }
         public DateTime UpdatedDate { get; private set; }
+        public string HearingRoleName { get; set; }
+        public string CaseRoleName { get; set; }
 
         public void UpdateOrganisation(Organisation organisation)
         {
@@ -47,6 +62,19 @@ namespace BookingsApi.Domain
             Title = title == null ? Title : title;
             TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
+        }
+
+        public void UpdatePerson(string firstName, string lastName, string username, string hearingRoleName, string caseRoleName, string title = null, string telephoneNumber = null)
+        {
+            ValidateArguments(firstName, lastName, username);
+            FirstName = firstName;
+            LastName = lastName;
+            Username = username;
+            Title = title == null ? Title : title;
+            TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
+            UpdatedDate = DateTime.UtcNow;
+            HearingRoleName = hearingRoleName;
+            CaseRoleName = caseRoleName;
         }
 
         public void AnonymisePerson()
