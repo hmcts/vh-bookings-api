@@ -83,7 +83,7 @@ namespace BookingsApi.UnitTests.Controllers
         {
             var id = Guid.NewGuid();
             var judiciaryPerson = new JudiciaryPerson(id, "some@email.com", "a", "b", "c", "d", "123", "nom1", false);
-            var item1 = new JudiciaryLeaverRequest { Id = id, Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
@@ -102,14 +102,14 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryLeaverByExternalRefIdCommand>
             (
-                c => c.ExternalRefId == item1.Id && c.HasLeft == item1.Leaver
+                c => c.ExternalRefId.ToString() == item1.Id && c.HasLeft == item1.Leaver
             )));
         }
 
         [Test]
         public async Task Should_return_ok_result_updating_leaver_item_which_does_not_exist()
         {
-            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
@@ -127,7 +127,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.ErroredRequests.Count.Should().Be(0);
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryLeaverByExternalRefIdCommand>
             (
-                c => c.ExternalRefId == item1.Id && c.HasLeft == item1.Leaver
+                c => c.ExternalRefId.ToString() == item1.Id && c.HasLeft == item1.Leaver
             )), Times.Never());
         }
 
@@ -158,7 +158,7 @@ namespace BookingsApi.UnitTests.Controllers
                 },
                  new JudiciaryLeaverRequest
                 {
-                    Id= Guid.NewGuid(),
+                    Id= Guid.NewGuid().ToString(),
                     Leaver = true
                 }
             };
@@ -177,7 +177,7 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task Should_return_an_errored_RequestCount_One_on_Exception()
         {
             var id = Guid.NewGuid();
-            var item1 = new JudiciaryLeaverRequest { Id = id, Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
