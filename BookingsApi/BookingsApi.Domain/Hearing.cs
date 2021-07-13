@@ -229,7 +229,7 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void RemoveParticipant(Guid participantId, bool validateParticipantCount=true)
+        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
         {
             var participant = GetParticipants().Single(x => x.Id == participantId);
             RemoveParticipant(participant, validateParticipantCount);

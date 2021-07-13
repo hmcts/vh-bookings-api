@@ -58,7 +58,7 @@ namespace BookingsApi.DAL.Commands
             _context.Update(hearing);
             
             foreach (var removedParticipantId in command.RemovedParticipantIds)
-                hearing.RemoveParticipant(removedParticipantId, false);
+                hearing.RemoveParticipantById(removedParticipantId, false);
             
             await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
             
