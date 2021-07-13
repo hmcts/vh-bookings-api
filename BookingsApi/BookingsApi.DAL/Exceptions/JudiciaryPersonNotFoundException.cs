@@ -57,7 +57,7 @@ namespace BookingsApi.DAL.Exceptions
     }
 
     [Serializable]
-    public class JudiciaryLeaverNotFoundException : JudiciaryPersonException
+    public class JudiciaryLeaverNotFoundException : JudiciaryLeaverException
     {
         public JudiciaryLeaverNotFoundException(string username) : 
             base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
