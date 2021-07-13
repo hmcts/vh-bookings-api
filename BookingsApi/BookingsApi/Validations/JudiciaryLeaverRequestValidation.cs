@@ -11,7 +11,7 @@ namespace BookingsApi.Validations
         public JudiciaryLeaverRequestValidation()
         {
             RuleFor(x => x.Id).NotEmpty().WithMessage(IdErrorMessage);
-            RuleFor(x => x.Leaver).NotEmpty().WithMessage(LeaverErrorMessage);
+            RuleFor(x => x.Leaver).NotNull().WithMessage(LeaverErrorMessage);
         }
     }
 }
