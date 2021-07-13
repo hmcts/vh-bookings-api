@@ -57,25 +57,6 @@ namespace BookingsApi.DAL.Exceptions
     }
 
     [Serializable]
-    public class JudiciaryLeaverNotFoundException : JudiciaryLeaverException
-    {
-        public JudiciaryLeaverNotFoundException(string username) :
-            base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
-        {
-        }
-
-        public JudiciaryLeaverNotFoundException(Guid id) :
-            base($"Judiciary Person with External ref id: {id} does not exist")
-        {
-        }
-
-        protected JudiciaryLeaverNotFoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
     public class JudiciaryLeaverNotFoundException : JudiciaryPersonException
     {
         public JudiciaryLeaverNotFoundException(string username) : 
