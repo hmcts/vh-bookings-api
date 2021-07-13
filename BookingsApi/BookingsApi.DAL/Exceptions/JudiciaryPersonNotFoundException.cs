@@ -20,6 +20,23 @@ namespace BookingsApi.DAL.Exceptions
         }
     }
 
+    public abstract class JudiciaryLeaverException : Exception
+    {
+        protected JudiciaryLeaverException(string message) : base(message)
+        {
+        }
+
+        protected JudiciaryLeaverException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        protected static string GetObfuscatedUsernameAsync(string username)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(username, @"(?!\b)\w", "*");
+        }
+    }
+
     [Serializable]
     public class JudiciaryPersonNotFoundException : JudiciaryPersonException
     {
@@ -40,7 +57,7 @@ namespace BookingsApi.DAL.Exceptions
     }
 
     [Serializable]
-    public class JudiciaryLeaverNotFoundException : JudiciaryPersonException
+    public class JudiciaryLeaverNotFoundException : JudiciaryLeaverException
     {
         public JudiciaryLeaverNotFoundException(string username) :
             base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
