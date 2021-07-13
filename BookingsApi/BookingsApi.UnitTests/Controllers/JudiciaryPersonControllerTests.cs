@@ -84,6 +84,7 @@ namespace BookingsApi.UnitTests.Controllers
             var id = Guid.NewGuid();
             var judiciaryPerson = new JudiciaryPerson(id, "some@email.com", "a", "b", "c", "d", "123", "nom1", false);
             var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
@@ -110,6 +111,7 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task Should_return_ok_result_updating_leaver_item_which_does_not_exist()
         {
             var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
@@ -158,6 +160,7 @@ namespace BookingsApi.UnitTests.Controllers
                 },
                  new JudiciaryLeaverRequest
                 {
+
                     Id= Guid.NewGuid().ToString(),
                     Leaver = true
                 }
