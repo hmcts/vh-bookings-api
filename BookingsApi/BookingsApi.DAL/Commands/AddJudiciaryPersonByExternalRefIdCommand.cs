@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
@@ -26,14 +27,9 @@ namespace BookingsApi.DAL.Commands
         
         public async Task Handle(AddJudiciaryPersonByExternalRefIdCommand command)
         {
-            var person = await _context.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == command.ExternalRefId);
+            var judiciaryPerson = new JudiciaryPerson(command.ExternalRefId, command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname, command.PostNominals, command.Email, command.HasLeft);
 
-            if (person == null)
-            {
-                throw new JudiciaryPersonNotFoundException(command.ExternalRefId);
-            }
-
-            person.Update(command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname, command.PostNominals, command.Email, command.HasLeft);
+            await _context.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await _context.SaveChangesAsync();
         }
