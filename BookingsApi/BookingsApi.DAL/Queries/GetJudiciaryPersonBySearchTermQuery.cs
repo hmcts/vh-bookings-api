@@ -29,7 +29,7 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<JudiciaryPerson>> Handle(GetJudiciaryPersonBySearchTermQuery query)
         {
             return await _context.JudiciaryPersons
-                .Where(x => x.Email.ToLower().Contains(query.Term.ToLower()))
+                .Where(x => x.Email.ToLower().Contains(query.Term.ToLower()) && !x.HasLeft)
                 .ToListAsync();
 
         }
