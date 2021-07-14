@@ -425,7 +425,7 @@ namespace BookingsApi.UnitTests.Controllers
             var objectResult = (ObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var personResponses = (List<PersonResponse>)objectResult.Value;
-            personResponses.Count.Should().Be(0);
+            personResponses.Count.Should().Be(2);
         }
     }
 }
