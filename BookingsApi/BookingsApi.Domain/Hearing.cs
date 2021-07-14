@@ -197,17 +197,24 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public void RemoveParticipant(Participant participant)
+        public bool HasValidNumberOfParticipants => GetParticipants().Count >= 2;
+
+        public void ValidateParticipantCount()
+        {
+            if (!HasValidNumberOfParticipants)
+            {
+                throw new DomainRuleException("Participant", "A hearing must have at least one participant");
+            }
+        }
+
+        public void RemoveParticipant(Participant participant, bool validateParticipantCount=true)
         {
             if (!DoesParticipantExist(participant.Person.Username))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
             }
 
-            if (GetParticipants().Count < 2)
-            {
-                throw new DomainRuleException("Participant", "A hearing must have at least one participant");
-            }
+            if (validateParticipantCount) ValidateParticipantCount();
 
             var existingParticipant = Participants.Single(x => x.Person.Username == participant.Person.Username);
             var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
@@ -222,6 +229,12 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
+        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
+        {
+            var participant = GetParticipants().Single(x => x.Id == participantId);
+            RemoveParticipant(participant, validateParticipantCount);
+        }
+        
         public virtual IList<Person> GetPersons()
         {
             return Participants.Select(x => x.Person).ToList();
