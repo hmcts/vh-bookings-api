@@ -33,7 +33,7 @@ namespace BookingsApi.Controllers
             _commandHandler = commandHandler;
             _logger = logger;
         }
-        
+     
         [HttpPost("BulkJudiciaryPersons")]
         [OpenApiOperation("BulkJudiciaryPersons")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -44,9 +44,9 @@ namespace BookingsApi.Controllers
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryPersonRequests = request.ToList();
             _logger.LogInformation("Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items", judiciaryPersonRequests.Count);
-            
+   
             var bulkResponse = new BulkJudiciaryPersonResponse();
-            
+  
             foreach (var item in judiciaryPersonRequests)
             {
                 var validation = await new JudiciaryPersonRequestValidation().ValidateAsync(item);
@@ -68,13 +68,12 @@ namespace BookingsApi.Controllers
 
                     if (judiciaryPerson == null)
                     {
-                        await _commandHandler.Handle(new AddJudiciaryPersonCommand(item.Id, item.PersonalCode, item.Title, item.KnownAs, item.Surname,
+                        await _commandHandler.Handle(new AddJudiciaryPersonByExternalRefIdCommand(item.Id, item.PersonalCode, item.Title, item.KnownAs, item.Surname,
                             item.Fullname, item.PostNominals, item.Email, item.HasLeft));
                     }
                     else
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id, item.PersonalCode, 
-                            item.Title, item.KnownAs, item.Surname, item.Fullname, item.PostNominals, item.Email, item.HasLeft));
+                        await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id,item.HasLeft));
                     }
                 }
                 catch (Exception ex)
@@ -124,11 +123,16 @@ namespace BookingsApi.Controllers
 
                     if (judiciaryPerson != null)
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver));
+                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver.HasValue));
                     }
                     else
                     {
-                        _logger.LogError($"Unable to update the record in Judiciary Person with ExternalRefId '{item.Id}'");
+                        var message = $"Unable to update the record in Judiciary Person with ExternalRefId - '{item.Id}'";
+                        _logger.LogError(message);
+                        bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
+                        {
+                            Message = message, JudiciaryLeaverRequest = item
+                        });
                     }
                 }
                 catch (Exception ex)

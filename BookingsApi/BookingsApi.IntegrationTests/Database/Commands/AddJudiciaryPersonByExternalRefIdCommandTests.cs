@@ -9,23 +9,23 @@ using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class UpdateJudiciaryPersonByExternalRefIdCommandTests : DatabaseTestsBase
+    public class AddJudiciaryPersonByExternalRefIdCommandTests : DatabaseTestsBase
     {
-        private UpdateJudiciaryPersonByExternalRefIdHandler _commandHandler;
+        private AddJudiciaryPersonByExternalRefIdHandler _commandHandler;
         private GetJudiciaryPersonByExternalRefIdQueryHandler _getJudiciaryPersonByExternalRefIdQueryHandler;
 
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new UpdateJudiciaryPersonByExternalRefIdHandler(context);
+            _commandHandler = new AddJudiciaryPersonByExternalRefIdHandler(context);
             _getJudiciaryPersonByExternalRefIdQueryHandler = new GetJudiciaryPersonByExternalRefIdQueryHandler(context);
         }
         
         [Test]
         public void should_throw_exception_when_peron_does_not_exist()
         {
-            var command = new UpdateJudiciaryPersonByExternalRefIdCommand(Guid.NewGuid(), false);
+            var command = new AddJudiciaryPersonByExternalRefIdCommand(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false);
             Assert.ThrowsAsync<JudiciaryPersonNotFoundException>(() => _commandHandler.Handle(command));
         }
         
@@ -35,12 +35,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var externalRefId = Guid.NewGuid();
             await Hooks.AddJudiciaryPerson(externalRefId);
 
-            var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand(externalRefId, true);
+            var updateCommand = new AddJudiciaryPersonByExternalRefIdCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true);
             await _commandHandler.Handle(updateCommand);
 
             var updatePerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
 
             updatePerson.ExternalRefId.Should().Be(updateCommand.ExternalRefId);
+            updatePerson.PersonalCode.Should().Be("PersonalCode");
+            updatePerson.Title.Should().Be("Title");
+            updatePerson.KnownAs.Should().Be("KnownAs");
+            updatePerson.Surname.Should().Be("Surname");
+            updatePerson.Fullname.Should().Be("FullName");
+            updatePerson.PostNominals.Should().Be("PostNominals");
+            updatePerson.Email.Should().Be("Email");
             updatePerson.HasLeft.Should().BeTrue();
         }
     }

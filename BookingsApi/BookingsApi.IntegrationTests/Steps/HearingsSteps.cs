@@ -182,7 +182,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a remove a hearing request")]
         public void GivenIHaveARemoveHearingRequest()
         {
-            var seededHearing = Context.TestData.SeededHearing;;
+            var seededHearing = Context.TestData.SeededHearing;
             Context.Uri = RemoveHearing(seededHearing.Id);
             Context.HttpMethod = HttpMethod.Delete;
         }

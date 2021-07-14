@@ -6,11 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class UpdateJudiciaryPersonByExternalRefIdCommand : JudiciaryPersonCommandBase
+    public class UpdateJudiciaryPersonByExternalRefIdCommand : UpdateJudiciaryPersonCommandBase
     {
-        public UpdateJudiciaryPersonByExternalRefIdCommand(Guid externalRefId, string personalCode, string title, 
-            string knownAs, string surname, string fullname, string postNominals, string email, bool hasLeft) :
-            base(externalRefId, personalCode, title, knownAs, surname, fullname, postNominals, email, hasLeft)
+        public UpdateJudiciaryPersonByExternalRefIdCommand(Guid externalRefId, bool leaver) :
+            base(externalRefId, leaver)
         {
         }
     }
@@ -33,7 +32,7 @@ namespace BookingsApi.DAL.Commands
                 throw new JudiciaryPersonNotFoundException(command.ExternalRefId);
             }
 
-            person.Update(command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname, command.PostNominals, command.Email, command.HasLeft);
+            person.Update(command.HasLeft);
 
             await _context.SaveChangesAsync();
         }

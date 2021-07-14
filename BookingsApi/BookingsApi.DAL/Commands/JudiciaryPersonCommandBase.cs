@@ -18,7 +18,7 @@ namespace BookingsApi.DAL.Commands
             Email = email;
             HasLeft = hasLeft;
         }
-        
+
         public Guid ExternalRefId { get; }
         public string PersonalCode { get; }
         public string Title { get; }
