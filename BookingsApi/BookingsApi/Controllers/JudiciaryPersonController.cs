@@ -159,11 +159,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
-            var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
-            var mapper = new JudiciaryPersonToResponseMapper();
-            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
-            return Ok(response);
+            // Returning an Empty Result till we have Release 1.27 inplace with full eJud features
+            return Ok(new List<PersonResponse>());
         }
     }
 }
