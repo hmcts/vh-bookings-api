@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
@@ -21,14 +21,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _commandHandler = new UpdateJudiciaryLeaverByExternalRefIdHandler(context);
             _getJudiciaryPersonByExternalRefIdQueryHandler = new GetJudiciaryPersonByExternalRefIdQueryHandler(context);
         }
-
+        
         [Test]
         public void should_throw_exception_when_peron_does_not_exist()
         {
-            var command = new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.NewGuid(), true);
+            var command = new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.NewGuid(),true);
             Assert.ThrowsAsync<JudiciaryLeaverNotFoundException>(() => _commandHandler.Handle(command));
         }
-
+        
         [Test]
         public async Task should_update_person()
         {

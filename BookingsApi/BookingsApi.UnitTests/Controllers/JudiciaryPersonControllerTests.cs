@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.Should().NotBeNull();
             data.ErroredRequests.Count.Should().Be(0);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.Is<AddJudiciaryPersonCommand>
+            _commandHandlerMock.Verify(c => c.Handle(It.Is<AddJudiciaryPersonByExternalRefIdCommand>
             (
                 c => c.Email == item1.Email && c.Fullname == item1.Fullname && c.Surname == item1.Surname &&
                      c.Title == item1.Title && c.KnownAs == item1.KnownAs && c.PersonalCode == item1.PersonalCode &&
@@ -83,7 +83,8 @@ namespace BookingsApi.UnitTests.Controllers
         {
             var id = Guid.NewGuid();
             var judiciaryPerson = new JudiciaryPerson(id, "some@email.com", "a", "b", "c", "d", "123", "nom1", false);
-            var item1 = new JudiciaryLeaverRequest { Id = id, Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
@@ -102,14 +103,15 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryLeaverByExternalRefIdCommand>
             (
-                c => c.ExternalRefId == item1.Id && c.HasLeft == item1.Leaver
-            )));
+                c => c.ExternalRefId.ToString() == item1.Id && c.HasLeft == item1.Leaver
+            )), Times.Once);
         }
 
         [Test]
         public async Task Should_return_ok_result_updating_leaver_item_which_does_not_exist()
         {
-            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
@@ -124,10 +126,10 @@ namespace BookingsApi.UnitTests.Controllers
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var data = objectResult.Value as BulkJudiciaryLeaverResponse;
             data.Should().NotBeNull();
-            data.ErroredRequests.Count.Should().Be(0);
+            data.ErroredRequests.Count.Should().Be(1);
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryLeaverByExternalRefIdCommand>
             (
-                c => c.ExternalRefId == item1.Id && c.HasLeft == item1.Leaver
+                c => c.ExternalRefId.ToString() == item1.Id && c.HasLeft == item1.Leaver
             )), Times.Never());
         }
 
@@ -152,15 +154,10 @@ namespace BookingsApi.UnitTests.Controllers
         {
             var requests = new List<JudiciaryLeaverRequest>
             {
-                new JudiciaryLeaverRequest
-                {
-                    Leaver = true
-                },
                  new JudiciaryLeaverRequest
-                {
-                    Id= Guid.NewGuid(),
-                    Leaver = true
-                }
+                 {
+                     Leaver = true
+                 }
             };
             var result = await _controller.BulkJudiciaryLeaversAsync(requests);
 
@@ -177,12 +174,33 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task Should_return_an_errored_RequestCount_One_on_Exception()
         {
             var id = Guid.NewGuid();
-            var item1 = new JudiciaryLeaverRequest { Id = id, Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
                 .Setup(x => x.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByExternalRefIdQuery>()))
                 .ThrowsAsync(new Exception("Unhandled exception"));
+
+            var result = await _controller.BulkJudiciaryLeaversAsync(request);
+
+            result.Should().NotBeNull();
+            var objectResult = result as ObjectResult;
+            objectResult.Should().NotBeNull();
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var data = objectResult.Value as BulkJudiciaryLeaverResponse;
+            data.Should().NotBeNull();
+            data.ErroredRequests.Count.Should().Be(1);
+        }
+
+        [Test]
+        public async Task Should_return_an_errored_RequestCount_One_on_When__record_not_in_DB() {
+            var id = Guid.NewGuid();
+            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var request = new List<JudiciaryLeaverRequest> { item1 };
+
+            _queryHandlerMock
+               .Setup(x => x.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByExternalRefIdQuery>()))
+               .ReturnsAsync(null as JudiciaryPerson);
 
             var result = await _controller.BulkJudiciaryLeaversAsync(request);
 
@@ -218,9 +236,7 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryPersonByExternalRefIdCommand>
             (
-                c => c.Email == item1.Email && c.Fullname == item1.Fullname && c.Surname == item1.Surname &&
-                     c.Title == item1.Title && c.KnownAs == item1.KnownAs && c.PersonalCode == item1.PersonalCode &&
-                     c.PostNominals == item1.PostNominals && c.ExternalRefId == item1.Id
+                c => c.HasLeft == item1.HasLeft && c.ExternalRefId == item1.Id
             )));
         }
 
@@ -250,7 +266,7 @@ namespace BookingsApi.UnitTests.Controllers
             data.Should().NotBeNull();
             data.ErroredRequests.Count.Should().Be(0);
 
-            _commandHandlerMock.Verify(c => c.Handle(It.Is<AddJudiciaryPersonCommand>
+            _commandHandlerMock.Verify(c => c.Handle(It.Is<AddJudiciaryPersonByExternalRefIdCommand>
             (
                 c => c.Email == item1.Email && c.Fullname == item1.Fullname && c.Surname == item1.Surname &&
                      c.Title == item1.Title && c.KnownAs == item1.KnownAs && c.PersonalCode == item1.PersonalCode &&
@@ -259,9 +275,7 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryPersonByExternalRefIdCommand>
             (
-                c => c.Email == item2.Email && c.Fullname == item2.Fullname && c.Surname == item2.Surname &&
-                     c.Title == item2.Title && c.KnownAs == item2.KnownAs && c.PersonalCode == item2.PersonalCode &&
-                     c.PostNominals == item2.PostNominals && c.ExternalRefId == item2.Id
+                c => c.HasLeft == item2.HasLeft && c.ExternalRefId == item2.Id
             )));
         }
 
