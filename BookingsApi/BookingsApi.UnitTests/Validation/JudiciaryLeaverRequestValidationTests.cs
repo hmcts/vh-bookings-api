@@ -38,7 +38,6 @@ namespace BookingsApi.UnitTests.Validation
             var req = new JudiciaryLeaverRequest
             {
                 Id = Guid.NewGuid().ToString(),
-
                 LeftOn = DateTime.Now.AddDays(-100).ToLongDateString()
             };
 
