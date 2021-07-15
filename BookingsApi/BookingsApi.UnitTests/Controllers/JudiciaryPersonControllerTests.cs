@@ -104,7 +104,7 @@ namespace BookingsApi.UnitTests.Controllers
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryLeaverByExternalRefIdCommand>
             (
                 c => c.ExternalRefId.ToString() == item1.Id && c.HasLeft == item1.Leaver
-            )));
+            )), Times.Once);
         }
 
         [Test]

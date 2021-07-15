@@ -123,7 +123,7 @@ namespace BookingsApi.Controllers
 
                     if (judiciaryPerson != null)
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver.HasValue));
+                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver));
                     }
                     else
                     {
