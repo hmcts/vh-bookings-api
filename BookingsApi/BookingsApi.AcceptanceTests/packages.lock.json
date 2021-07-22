@@ -3142,6 +3142,15 @@
         "resolved": "3.3.0",
         "contentHash": "OeXMqNZ1Xt/9ehELN2khz8vT8wckg8VVa6Rx+XeYTdEIMaKETlSXkCzj4TuCGQ0L2SgXdpjGSh1XwZVusZE2Yw=="
       },
+      "UserApi.Client": {
+        "type": "Transitive",
+        "resolved": "1.24.3",
+        "contentHash": "CbbYvdREAv1x4P2FBXJn9DkUOAyPn6yZcfOvWaT19wAjsziabV6qfITbUYiVGOWpwdqdB2H7lyOH/V//AC66fg==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "Utf8Json": {
         "type": "Transitive",
         "resolved": "1.3.7",
@@ -3199,6 +3208,7 @@
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "3.1.1",
           "NSwag.AspNetCore": "13.10.8",
           "Newtonsoft.Json": "12.0.3",
+          "UserApi.Client": "1.24.3",
           "VH.Core.Configuration": "0.1.12",
           "ZymLabs.NSwag.FluentValidation": "0.4.0"
         }

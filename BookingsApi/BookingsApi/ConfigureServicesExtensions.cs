@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using BookingsApi.Common;
+using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
@@ -8,11 +9,13 @@ using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using UserApi.Client;
 using ZymLabs.NSwag.FluentValidation;
 
 namespace BookingsApi
@@ -55,6 +58,17 @@ namespace BookingsApi
             services.AddScoped<IHearingService, HearingService>();
             services.AddScoped<IRandomGenerator, RandomGenerator>();
             services.AddScoped<ILogger, Logger>();
+            var container = services.BuildServiceProvider();
+            var settings = container.GetService<IOptions<ServicesConfiguration>>().Value;
+            services.AddHttpClient<IUserApiClient, UserApiClient>()
+               .AddHttpMessageHandler(() => container.GetService<UserApiTokenHandler>())
+               .AddTypedClient(httpClient =>
+                {
+                    var client = UserApiClient.GetClient(httpClient);
+                    client.BaseUrl = settings.UserApiUrl;
+                    client.ReadResponseAsString = true;
+                    return (IUserApiClient)client;
+                });
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 
