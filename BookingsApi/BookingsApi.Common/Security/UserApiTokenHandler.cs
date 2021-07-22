@@ -1,21 +1,26 @@
-﻿using AdminWebsite.Security;
-using BookingsApi.Common.Configuration;
+﻿using BookingsApi.Common.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace BookingsApi.Common.Security
 {
-    public class UserApiTokenHandler : BaseServiceTokenHandler
+    public class UserApiTokenHandler : DelegatingHandler
     {
-        public UserApiTokenHandler(IOptions<AzureAdConfiguration> azureAdConfiguration,
-            IOptions<ServicesConfiguration> serviceSettings,
-            IMemoryCache memoryCache,
-            ITokenProvider tokenProvider)
-            : base(azureAdConfiguration, serviceSettings, memoryCache, tokenProvider)
+        private readonly ServicesConfiguration _servicesConfiguration;
+
+        public UserApiTokenHandler(IOptions<ServicesConfiguration> servicesConfiguration)
         {
+            _servicesConfiguration = servicesConfiguration.Value;
         }
 
-        protected override string TokenCacheKey => "UserApiServiceToken";
-        protected override string ClientResource => ServiceConfiguration.UserApiResourceId;
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.Headers.Add("Authorization", $"Bearer {_servicesConfiguration.UserApiToken}");
+            return await base.SendAsync(request, cancellationToken);
+        }
+
     }
 }

@@ -15,6 +15,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace BookingsApi
 {
@@ -32,11 +33,11 @@ namespace BookingsApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddNewtonsoftJson();
-            
+
             services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer());
-            
+
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
-            
+
             services.AddSwagger();
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
@@ -47,22 +48,22 @@ namespace BookingsApi
                         .SetIsOriginAllowed((host) => true)
                         .AllowCredentials();
                 }));
-            
+
             services.AddJsonOptions();
             RegisterSettings(services);
             RegisterInfrastructureServices(services);
 
             services.AddCustomTypes();
-            
+
             RegisterAuth(services);
-            
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddCors();
-            
+
             services.AddDbContextPool<BookingsDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VhBookings")));
         }
-        
+
         private void RegisterSettings(IServiceCollection services)
         {
             SettingsConfiguration = Configuration.Get<SettingsConfiguration>();
@@ -96,6 +97,18 @@ namespace BookingsApi
                 options.RequireHttpsMetadata = true;
             });
 
+            var authContext = new AuthenticationContext($"{securitySettings.Authority}{securitySettings.TenantId}");
+            var credential = new ClientCredential(securitySettings.ClientId, securitySettings.ClientSecret);
+            try
+            {
+                var result = authContext.AcquireTokenAsync(serviceSettings.UserApiUrl, credential).GetAwaiter().GetResult();
+                serviceSettings.UserApiToken = result.AccessToken;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error retrieving token: " + ex.Message);
+            }
+
             serviceCollection.AddAuthorization();
         }
         private void RegisterInfrastructureServices(IServiceCollection services)
@@ -117,7 +130,7 @@ namespace BookingsApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.RunLatestMigrations();
-            
+
             app.UseOpenApi();
             app.UseSwaggerUi3(c =>
             {
@@ -128,21 +141,21 @@ namespace BookingsApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            else if(!SettingsConfiguration.DisableHttpsRedirection)
+            else if (!SettingsConfiguration.DisableHttpsRedirection)
             {
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
             app.UseRouting();
             app.UseAuthorization();
-            
+
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
 
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseMiddleware<LogResponseBodyMiddleware>();
 
-            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });            
+            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
         }
     }
 }
