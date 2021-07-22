@@ -14,5 +14,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+	  <PackageReference Include="UserApi.Client" Version="1.24.3" />
   </ItemGroup>
 </Project>

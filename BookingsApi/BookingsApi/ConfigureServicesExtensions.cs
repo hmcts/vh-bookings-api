@@ -58,19 +58,6 @@ namespace BookingsApi
             services.AddScoped<IHearingService, HearingService>();
             services.AddScoped<IRandomGenerator, RandomGenerator>();
             services.AddScoped<ILogger, Logger>();
-
-            var container = services.BuildServiceProvider();
-            var settings = container.GetService<IOptions<ServicesConfiguration>>().Value;
-
-            services.AddHttpClient<IUserApiClient, UserApiClient>()
-               .AddHttpMessageHandler<UserApiTokenHandler>()
-               .AddTypedClient(httpClient =>
-                {
-                    var client = UserApiClient.GetClient(httpClient);
-                    client.BaseUrl = settings.UserApiUrl;
-                    client.ReadResponseAsString = true;
-                    return (IUserApiClient)client;
-                });
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

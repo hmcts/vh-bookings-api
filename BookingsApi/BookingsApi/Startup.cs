@@ -16,6 +16,8 @@ using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using UserApi.Client;
+using BookingsApi.Common.Security;
 
 namespace BookingsApi
 {
@@ -84,6 +86,16 @@ namespace BookingsApi
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var serviceSettings = Configuration.GetSection("Services").Get<ServicesConfiguration>();
 
+            serviceCollection.AddHttpClient<IUserApiClient, UserApiClient>()
+               .AddHttpMessageHandler<UserApiTokenHandler>()
+               .AddTypedClient(httpClient =>
+               {
+                   var client = UserApiClient.GetClient(httpClient);
+                   client.BaseUrl = serviceSettings.UserApiUrl;
+                   client.ReadResponseAsString = true;
+                   return (IUserApiClient)client;
+               });
+
             serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -96,19 +108,6 @@ namespace BookingsApi
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 options.RequireHttpsMetadata = true;
             });
-
-            var authContext = new AuthenticationContext($"{securitySettings.Authority}{securitySettings.TenantId}");
-            var credential = new ClientCredential(securitySettings.ClientId, securitySettings.ClientSecret);
-            try
-            {
-                var result = authContext.AcquireTokenAsync(serviceSettings.UserApiUrl, credential).GetAwaiter().GetResult();
-                serviceSettings.UserApiToken = result.AccessToken;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error retrieving token: " + ex.Message);
-            }
-
             serviceCollection.AddAuthorization();
         }
         private void RegisterInfrastructureServices(IServiceCollection services)
