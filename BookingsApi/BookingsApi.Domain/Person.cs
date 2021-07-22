@@ -31,6 +31,7 @@ namespace BookingsApi.Domain
         public virtual Organisation Organisation { get; set; }
         public DateTime CreatedDate { get; private set; }
         public DateTime UpdatedDate { get; private set; }
+        public string AccountType { get; set; }
 
         public void UpdateOrganisation(Organisation organisation)
         {
