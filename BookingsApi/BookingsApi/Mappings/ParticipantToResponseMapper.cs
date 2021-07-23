@@ -24,6 +24,7 @@ namespace BookingsApi.Mappings
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
+                AccountType = participant.Person.AccountType,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponse
                     {LinkedId = x.LinkedId, Type = x.Type.MapToContractEnum()}).ToList()
             };

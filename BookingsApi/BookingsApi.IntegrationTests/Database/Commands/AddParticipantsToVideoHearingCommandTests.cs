@@ -168,6 +168,21 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [Test]
+        public async Task Update_Account_Type_Of_Existing_Person()
+        {
+            var seededRepresentative = await SeedPerson(true);
+            seededRepresentative.AccountType = "SomethingNew";
+            var personListBefore = await AddExistingPersonToAHearing(seededRepresentative);
+            var personsListAfter = await GetPersonsInDb();
+            personsListAfter.Count.Should().Be(personListBefore.Count);
+
+            var existingPersonInDb =
+                personsListAfter.Single(p => p.ContactEmail.Equals(seededRepresentative.ContactEmail));
+            existingPersonInDb.AccountType.Should().Be("SomethingNew");
+            CheckPersonDetails(existingPersonInDb, seededRepresentative);
+        }
+
+        [Test]
         public async Task Should_Add_Participant_With_A_Link()
         {
             var seededHearing = await Hooks.SeedVideoHearing();

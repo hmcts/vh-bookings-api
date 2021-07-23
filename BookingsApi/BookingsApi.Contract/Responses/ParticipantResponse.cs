@@ -79,5 +79,10 @@ namespace BookingsApi.Contract.Responses
         ///     The participant linked to this participant response
         /// </summary>
         public List<LinkedParticipantResponse> LinkedParticipants { get; set; }
+
+        /// <summary>
+        ///     Account type of the participant
+        /// </summary>
+        public string AccountType { get; set; }
     }
-}
+}   

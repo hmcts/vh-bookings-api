@@ -156,6 +156,8 @@ namespace BookingsApi.UnitTests.Mappings
             response.ContactEmail.Should().Be(person.ContactEmail);
             response.TelephoneNumber.Should().Be(person.TelephoneNumber);
             response.Username.Should().Be(person.Username);
+
+            response.AccountType.Should().Be(person.AccountType);
         }
 
         private static void AssertRepresentativeResponse(ParticipantResponse response, Representative representative)

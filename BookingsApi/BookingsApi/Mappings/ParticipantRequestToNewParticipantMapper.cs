@@ -22,7 +22,7 @@ namespace BookingsApi.Mappings
             if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
 
             var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username)
+                requestParticipant.Username, requestParticipant.AccountType)
             {
                 MiddleNames = requestParticipant.MiddleNames,
                 ContactEmail = requestParticipant.ContactEmail,

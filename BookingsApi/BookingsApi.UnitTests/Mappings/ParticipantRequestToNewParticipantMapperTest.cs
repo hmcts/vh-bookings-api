@@ -86,5 +86,26 @@ namespace BookingsApi.UnitTests.Mappings
             person.Should().NotBeNull();
             person.Organisation.Should().NotBeNull();
         }
+
+        [Test]
+        public void Maps_Account_Type()
+        {
+            var expectedAccountType = "account type";
+            var request = new ParticipantRequest
+            {
+                Title = "Mr",
+                FirstName = "Test",
+                LastName = "Tester",
+                Username = "TestTester",
+                CaseRoleName = "Respondent",
+                HearingRoleName = "Representative",
+                OrganisationName = "Test Corp Ltd",
+                AccountType = expectedAccountType
+            };
+
+            var newParticipant = ParticipantRequestToNewParticipantMapper.Map(request, _caseType);
+
+            newParticipant.Person.AccountType.Should().Be(expectedAccountType);
+        }
     }
 }

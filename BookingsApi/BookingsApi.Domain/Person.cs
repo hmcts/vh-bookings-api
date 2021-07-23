@@ -9,7 +9,7 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
-        public Person(string title, string firstName, string lastName, string username)
+        public Person(string title, string firstName, string lastName, string username, string accountType = null)
         {
             Id = Guid.NewGuid();
             ValidateArguments(firstName, lastName, username);
@@ -18,6 +18,7 @@ namespace BookingsApi.Domain
             LastName = lastName;
             Username = username;
             CreatedDate = UpdatedDate = DateTime.UtcNow;
+            AccountType = accountType;
         }
 
         public string Title { get; set; }
@@ -47,7 +48,19 @@ namespace BookingsApi.Domain
             Username = username;
             Title = title == null ? Title : title;
             TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
+            UpdatedDate = DateTime.UtcNow;  
+        }
+
+        public void UpdatePersonWithAccountType(string firstName, string lastName, string username, string accountType, string title = null, string telephoneNumber = null)
+        {
+            ValidateArguments(firstName, lastName, username);
+            FirstName = firstName;
+            LastName = lastName;
+            Username = username;
+            Title = title == null ? Title : title;
+            TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
+            AccountType = accountType;
         }
 
         public void AnonymisePerson()

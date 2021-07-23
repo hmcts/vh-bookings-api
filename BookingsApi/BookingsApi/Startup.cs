@@ -1,4 +1,9 @@
-﻿using System;
+﻿using BookingsApi.Common.Configuration;
+using BookingsApi.DAL;
+using BookingsApi.Extensions;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -8,16 +13,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BookingsApi.Common.Configuration;
-using BookingsApi.DAL;
-using BookingsApi.Extensions;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using UserApi.Client;
-using BookingsApi.Common.Security;
+using System;
 
 namespace BookingsApi
 {
@@ -85,16 +82,6 @@ namespace BookingsApi
 
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var serviceSettings = Configuration.GetSection("Services").Get<ServicesConfiguration>();
-
-            serviceCollection.AddHttpClient<IUserApiClient, UserApiClient>()
-               .AddHttpMessageHandler<UserApiTokenHandler>()
-               .AddTypedClient(httpClient =>
-               {
-                   var client = UserApiClient.GetClient(httpClient);
-                   client.BaseUrl = serviceSettings.UserApiUrl;
-                   client.ReadResponseAsString = true;
-                   return (IUserApiClient)client;
-               });
 
             serviceCollection.AddAuthentication(options =>
             {

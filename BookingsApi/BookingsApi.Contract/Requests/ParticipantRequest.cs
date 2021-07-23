@@ -61,6 +61,11 @@ namespace BookingsApi.Contract.Requests
         ///     The organisation name
         /// </summary>
         public string OrganisationName { get; set; }
+
+        /// <summary>
+        ///     The account type of the participant
+        /// </summary>
+        public string AccountType { get; set; }
     }
 }
     
