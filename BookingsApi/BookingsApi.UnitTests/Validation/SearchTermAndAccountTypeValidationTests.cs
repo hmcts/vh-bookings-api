@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using System.Linq;
+using BookingsApi.Contract.Requests;
 
 namespace BookingsApi.UnitTests.Validation
 {
@@ -36,7 +37,7 @@ namespace BookingsApi.UnitTests.Validation
         [Test]
         public async Task Returns_Specified_Account_Type_Error_When_Property_Is_Corrupted()
         {
-            var request = new SearchTermAndAccountTypeRequest { SearchTerm = "something", AccountType = null};
+            var request = new SearchTermAndAccountTypeRequest { Term = "something", AccountType = null};
             
             var result = await _validator.ValidateAsync(request);
 

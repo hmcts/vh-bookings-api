@@ -1,5 +1,4 @@
-﻿using BookingsApi.Contract;
-using BookingsApi.Contract.Requests;
+﻿using BookingsApi.Contract.Requests;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace BookingsApi.Validations
 
         public SearchTermAndAccountTypeRequestValidation()
         {
-            RuleFor(x => x.SearchTerm).NotEmpty().WithMessage(SearchTermErrorMessage);
+            RuleFor(x => x.Term).NotEmpty().WithMessage(SearchTermErrorMessage);
             RuleFor(x => x.AccountType).NotNull().WithMessage(AccountTypeErrorMessage);
         }
     }

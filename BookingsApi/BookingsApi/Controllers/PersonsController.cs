@@ -152,6 +152,24 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
+        /// Find persons with contact email matching a search term and an account type if specified
+        /// </summary>
+        /// <param name="request">Partial string to match contact email with, case-insensitive and account types to find users with matching types if specified</param>
+        /// <returns>Person list</returns>
+        [HttpGet("search-term-and-account-type")]
+        [OpenApiOperation("GetPersonBySearchTermAndAccountType")]
+        [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetPersonBySearchTermAndAccountType(SearchTermAndAccountTypeRequest request)
+        {
+            var query = new GetPersonBySearchTermAndAccountTypeQuery(request.Term, request.AccountType);
+            var personList = await _queryHandler.Handle<GetPersonBySearchTermAndAccountTypeQuery, List<Person>>(query);
+            var mapper = new PersonToResponseMapper();
+            var response = personList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Get a list of suitability answers for a given person
         /// </summary>
         /// <param name="username">The username of the person</param>
