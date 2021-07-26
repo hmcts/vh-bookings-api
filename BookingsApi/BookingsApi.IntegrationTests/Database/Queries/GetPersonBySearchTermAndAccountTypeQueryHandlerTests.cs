@@ -88,5 +88,24 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             persons.Select(m => m.Id).Should().NotContain(Person2.Id);
             persons.Select(m => m.Id).Should().NotContain(Person3.Id);
         }
+
+        [Test]
+        public async Task Returns_Persons_With_Multiple_Specified_Account_Types()
+        {
+            var accountType1 = "SomeAccount1";
+            var accountType2 = "SomeAccount2";
+            Person1.AccountType = accountType1;
+            Person3.AccountType = accountType2;
+            _context.Persons.Update(Person1);
+            _context.SaveChanges();
+            _handler = new GetPersonBySearchTermAndAccountTypeQueryHandler(_context);
+
+            var persons = await _handler.Handle(new GetPersonBySearchTermAndAccountTypeQuery("luff", new List<string> { accountType1, accountType2 }));
+
+            Assert.AreEqual(2, persons.Count);
+            persons.Select(m => m.Id).Should().Contain(Person1.Id);
+            persons.Select(m => m.Id).Should().NotContain(Person2.Id);
+            persons.Select(m => m.Id).Should().Contain(Person3.Id);
+        }
     }
 }
