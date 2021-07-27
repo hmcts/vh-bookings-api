@@ -61,6 +61,8 @@ parameters:
         secret: true
       - name: UseServiceBusFake
         value: true
+      - name: Services:UserApiUrl
+        value: $(user_api_url)
 
   - name: appSettings
     type: object
