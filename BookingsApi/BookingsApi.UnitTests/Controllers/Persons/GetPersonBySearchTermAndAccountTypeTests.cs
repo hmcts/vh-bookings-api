@@ -36,7 +36,6 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var personResponses = (List<PersonResponse>)objectResult.Value;
             personResponses.Count.Should().Be(2);
             personResponses[0].LastName.Should().Be("Test");
-            QueryHandlerMock.Verify(x => x.Handle<GetPersonBySearchTermAndAccountTypeQuery, List<Person>>(It.Is<GetPersonBySearchTermAndAccountTypeQuery>(x => x.AccountType == searchTermRequest.AccountType && x.Term == searchTermRequest.Term)), Times.Once);
         }
     }
 }
