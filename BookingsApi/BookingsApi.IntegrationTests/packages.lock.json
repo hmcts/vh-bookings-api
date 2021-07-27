@@ -3267,8 +3267,8 @@
       },
       "UserApi.Client": {
         "type": "Transitive",
-        "resolved": "1.27.0",
-        "contentHash": "yweSY3MRExJF/WaBMdn4AgpxHtVQzmvku/AkURww8kAJug8bMPqPgXuPcIu5BOs9aSgSX+BmQKusofwtRsGLJA==",
+        "resolved": "1.24.3",
+        "contentHash": "CbbYvdREAv1x4P2FBXJn9DkUOAyPn6yZcfOvWaT19wAjsziabV6qfITbUYiVGOWpwdqdB2H7lyOH/V//AC66fg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -3342,7 +3342,7 @@
           "Microsoft.ApplicationInsights.AspNetCore": "2.13.1",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.3",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.7",
-          "UserApi.Client": "1.27.0"
+          "UserApi.Client": "1.24.3"
         }
       },
       "bookingsapi.contract": {
