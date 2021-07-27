@@ -81,6 +81,8 @@ parameters:
         secret: true
       - name: KinlyConfiguration:SipAddressStem
         value: $(SipAddressStem)
+      - name: Services:UserApiUrl
+        value: $(user_api_url)
       # Connection strings
       - name: ConnectionStrings:VhBookings
         value: VhBookingsDatabaseConnectionString
