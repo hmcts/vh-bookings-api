@@ -23,9 +23,11 @@ namespace BookingsApi.UnitTests.Validation
         }
 
         [Test]
-        public async Task Returns_Search_Term_Error_When_Term_Is_Invalid()
+        [TestCase(null)]
+        [TestCase("")]
+        public async Task Returns_Search_Term_Error_When_Term_Is_Invalid(string searchTerm)
         {
-            var request = new SearchTermAndAccountTypeRequest();
+            var request = new SearchTermAndAccountTypeRequest(searchTerm);
 
             var result = await _validator.ValidateAsync(request);
 
@@ -37,7 +39,7 @@ namespace BookingsApi.UnitTests.Validation
         [Test]
         public async Task Returns_Specified_Account_Type_Error_When_Property_Is_Corrupted()
         {
-            var request = new SearchTermAndAccountTypeRequest { Term = "something", AccountType = null};
+            var request = new SearchTermAndAccountTypeRequest("something") { AccountType = null};
             
             var result = await _validator.ValidateAsync(request);
 

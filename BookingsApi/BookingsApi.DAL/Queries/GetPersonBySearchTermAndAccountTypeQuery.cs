@@ -37,14 +37,14 @@ namespace BookingsApi.DAL.Queries
             {
                 persons = await _context.Persons
                     .Include(x => x.Organisation)
-                    .Where(x => x.ContactEmail.ToLowerInvariant().Contains(query.Term.ToLowerInvariant()) && string.IsNullOrWhiteSpace(x.AccountType))
+                    .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLower()) && string.IsNullOrWhiteSpace(x.AccountType))
                     .ToListAsync();
             }
             else
             {
                 persons = await _context.Persons
                     .Include(x => x.Organisation)
-                    .Where(x => x.ContactEmail.ToLowerInvariant().Contains(query.Term.ToLowerInvariant()) &&
+                    .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLower()) &&
                                 query.AccountType.Any(specifiedAccountType => specifiedAccountType == x.AccountType))
                     .ToListAsync();
             }

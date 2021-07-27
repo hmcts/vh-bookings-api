@@ -20,7 +20,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task Should_return_list_of_PersonResponse_successfully()
         {
-            var searchTermRequest = new SearchTermAndAccountTypeRequest { Term = "term", AccountType = new List<string>()};
+            var searchTermRequest = new SearchTermAndAccountTypeRequest("term") { AccountType = new List<string>()};
             var persons = new List<Person> {
                                 new Person("Mr", "Test", "Tester", "T Tester") { ContactEmail = "test@hmcts.net" },
                                 new Person("Mr", "Tester", "Test", "T Test") { ContactEmail = "atest@hmcts.net" }};
