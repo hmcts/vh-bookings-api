@@ -476,12 +476,14 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<PersonResponse> SearchForNonJudgePersonsByContactEmailAsync(string contactEmail, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Find persons with contact email matching a search term and an account type if specified</summary>
+        /// <param name="request">Partial string to match contact email with, case-insensitive and account types to find users with matching types if specified</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetPersonBySearchTermAndAccountTypeAsync(SearchTermAndAccountTypeRequest request);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Find persons with contact email matching a search term and an account type if specified</summary>
+        /// <param name="request">Partial string to match contact email with, case-insensitive and account types to find users with matching types if specified</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetPersonBySearchTermAndAccountTypeAsync(SearchTermAndAccountTypeRequest request, System.Threading.CancellationToken cancellationToken);
@@ -4081,6 +4083,7 @@ namespace BookingsApi.Client
         }
     
         /// <summary>Find persons with contact email matching a search term and an account type if specified</summary>
+        /// <param name="request">Partial string to match contact email with, case-insensitive and account types to find users with matching types if specified</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetPersonBySearchTermAndAccountTypeAsync(SearchTermAndAccountTypeRequest request)
@@ -4090,6 +4093,7 @@ namespace BookingsApi.Client
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Find persons with contact email matching a search term and an account type if specified</summary>
+        /// <param name="request">Partial string to match contact email with, case-insensitive and account types to find users with matching types if specified</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetPersonBySearchTermAndAccountTypeAsync(SearchTermAndAccountTypeRequest request, System.Threading.CancellationToken cancellationToken)
