@@ -61,7 +61,7 @@ namespace BookingsApi.DAL.Migrations
             var authContext = new AuthenticationContext($"{azureAd.Authority}{azureAd.TenantId}");
             var credential = new ClientCredential(azureAd.ClientId, azureAd.ClientSecret);
 
-            var result = await authContext.AcquireTokenAsync(services.UserApiResourceId, credential);
+            var result = await authContext.AcquireTokenAsync(services.UserApiUrl, credential);
 
             using (var client = new HttpClient())
             {
