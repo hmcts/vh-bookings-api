@@ -15,7 +15,7 @@ namespace BookingsApi.DAL.Migrations
                 keyColumn: "Id",
                 keyValue: 709,
                 column: "UserRoleId",
-                value: 7);
+                value: newUserRoleId);
             
             for (int hearingRoleID = 714; hearingRoleID <= 717; hearingRoleID++)
             {
