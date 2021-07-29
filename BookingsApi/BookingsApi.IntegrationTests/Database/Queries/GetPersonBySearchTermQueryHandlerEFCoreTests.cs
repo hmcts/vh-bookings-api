@@ -17,6 +17,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         private BookingsDbContext _context;
         private Person IndividualPerson, JudgePerson, JudicialOfficeHolderPerson;
         private Participant IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant;
+        private Organisation organisation;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -34,10 +35,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [SetUp]
         public void Setup()
         {
+            //orgranisation table setup
+            organisation = new Organisation("strawhat");
+
             //persons record
-            IndividualPerson = new Person("mr", "luffy", "dragon", "luffy2@strawhat.net") { ContactEmail = "luffy2@strawhat.net" };
-            JudgePerson = new Person("mr", "zoro", "rononora", "zoro@strawhat.net") { ContactEmail = "zoro@strawhat.net" };
-            JudicialOfficeHolderPerson = new Person("mr", "luffy", "dragon", "luffy@strawhat.net") { ContactEmail = "luffy@strawhat.net" };
+            IndividualPerson = new Person("mr", "luffy", "dragon", "luffy2@strawhat.net") { ContactEmail = "luffy2@strawhat.net", Organisation = organisation };
+            JudgePerson = new Person("mr", "zoro", "rononora", "zoro@strawhat.net") { ContactEmail = "zoro@strawhat.net", Organisation = organisation };
+            JudicialOfficeHolderPerson = new Person("mr", "luffy", "dragon", "luffy@strawhat.net") { ContactEmail = "luffy@strawhat.net", Organisation = organisation };
 
             //participants record
             IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual"};
@@ -70,7 +74,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Filters_Out_Participant_With_Discriminator_Of_Judge_And_JudicialOfficeHolder()
         {
-            var additionalIndividualPerson = new Person("mr", "luffy", "dragon", "luffy5@strawhat.net") { ContactEmail = "luffy5@strawhat.net" };
+            var additionalIndividualPerson = new Person("mr", "luffy", "dragon", "luffy5@strawhat.net") { ContactEmail = "luffy5@strawhat.net", Organisation = organisation };
             var additionalIndividualParticipant = new JudicialOfficeHolder(additionalIndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
             _context.Persons.Add(additionalIndividualPerson);
             _context.Participants.Add(additionalIndividualParticipant);
@@ -86,6 +90,17 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             _context.Persons.Remove(additionalIndividualPerson);
             _context.Participants.Remove(additionalIndividualParticipant);
+        }
+
+        [Test]
+        public async Task Includes_Organisation()
+        {
+            var persons = await _handler.Handle(new GetPersonBySearchTermQuery("luff"));
+
+            var personToQuery = persons.FirstOrDefault(m => m.Id == IndividualPerson.Id);
+            personToQuery.Id.Should().Be(IndividualPerson.Id);
+            personToQuery.Organisation.Should().NotBeNull();
+            personToQuery.Organisation.Name.Should().Be("strawhat");
         }
 
     }
