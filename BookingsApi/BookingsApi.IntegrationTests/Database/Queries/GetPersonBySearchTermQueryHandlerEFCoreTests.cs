@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
@@ -8,6 +6,8 @@ using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -44,7 +44,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             JudicialOfficeHolderPerson = new Person("mr", "luffy", "dragon", "luffy@strawhat.net") { ContactEmail = "luffy@strawhat.net", Organisation = organisation };
 
             //participants record
-            IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual"};
+            IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
             JudgeParticipant = new Judge(JudgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Judge" };
             JudicialOfficeHolderParticipant = new JudicialOfficeHolder(JudicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "JudicialOfficeHolder" };
             _context.Persons.AddRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson);
