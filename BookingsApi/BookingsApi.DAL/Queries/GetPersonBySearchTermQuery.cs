@@ -30,11 +30,11 @@ namespace BookingsApi.DAL.Queries
         {
             var excludeRoles = new List<string>() { "Judge", "JudicialOfficeHolder" };
 
-            var results = await (from person in _context.Persons.Include(x => x.Organisation)
+            var results = await (from person in _context.Persons
              join participant in _context.Participants on person.Id equals participant.PersonId
              where !excludeRoles.Contains(participant.Discriminator) 
              && person.ContactEmail.ToLower().Contains(query.Term.ToLower())
-             select person).ToListAsync();
+             select person).Include(x => x.Organisation).ToListAsync();
 
             return results;
         }
