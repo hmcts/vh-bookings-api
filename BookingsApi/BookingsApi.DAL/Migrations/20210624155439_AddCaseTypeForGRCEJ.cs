@@ -14,6 +14,8 @@ namespace BookingsApi.DAL.Migrations
              * Possible solutions might be to use, migrationBuilder.Sql(), passing a sql command to query the id of the new group
              * and then using it in the necessary tables. 
              */
+            
+            //Panel Member UserId is incorrect updated in UpdatePanelMemberUserRoleId migration
 
             migrationBuilder.InsertData(
                 nameof(CaseType),
