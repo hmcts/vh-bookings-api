@@ -28,11 +28,15 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<Person>> Handle(GetPersonBySearchTermQuery query)
         {
-            return await _context.Persons
-                .Include(x => x.Organisation)
-                .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLower()))
-                .ToListAsync();
+            var excludeRoles = new List<string>() { "Judge", "JudicialOfficeHolder" };
 
+            var results = await (from person in _context.Persons
+             join participant in _context.Participants on person.Id equals participant.PersonId
+             where !excludeRoles.Contains(participant.Discriminator) 
+             && person.ContactEmail.ToLower().Contains(query.Term.ToLower())
+             select person).ToListAsync();
+
+            return results;
         }
     }
 }
