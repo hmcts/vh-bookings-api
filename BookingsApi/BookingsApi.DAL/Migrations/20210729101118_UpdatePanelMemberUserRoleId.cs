@@ -9,13 +9,13 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var newUserRoleId = UserRoleForHearingRole.UserRoleId.FirstOrDefault(k => k.Key == "Panel Member");
+            var newUserRoleId = UserRoleForHearingRole.UserRoleId["Panel Member"];
             migrationBuilder.UpdateData(
                 table: nameof(HearingRole),
                 keyColumn: "Id",
                 keyValue: 709,
                 column: "UserRoleId",
-                value: newUserRoleId);
+                value: 7);
             
             for (int hearingRoleID = 714; hearingRoleID <= 717; hearingRoleID++)
             {
