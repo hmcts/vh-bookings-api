@@ -8,6 +8,8 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            //Panel Member UserId is incorrect updated in UpdatePanelMemberUserRoleId migration
+
              migrationBuilder.InsertData(
                 nameof(CaseRole),
                 new[] { "Id", "Name", "Group", "CaseTypeId" },
