@@ -40,6 +40,7 @@ namespace BookingsApi.Domain.Participants
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+        public string Discriminator { get; set; }
         public virtual Questionnaire Questionnaire { get; set; }
         public virtual IList<LinkedParticipant> LinkedParticipants { get; set; }
 
