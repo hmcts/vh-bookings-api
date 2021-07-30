@@ -34,7 +34,7 @@ namespace BookingsApi.DAL.Queries
              join participant in _context.Participants on person.Id equals participant.PersonId
              where !excludeRoles.Contains(participant.Discriminator) 
              && person.ContactEmail.ToLower().Contains(query.Term.ToLower())
-             select person).Include(x => x.Organisation).ToListAsync();
+             select person).Distinct().Include(x => x.Organisation).ToListAsync();
 
             return results;
         }
