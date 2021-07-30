@@ -45,11 +45,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             //participants record
             IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
+            var IndividualParticipant2 = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
             JudgeParticipant = new Judge(JudgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Judge" };
             JudicialOfficeHolderParticipant = new JudicialOfficeHolder(JudicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "JudicialOfficeHolder" };
             _context.Persons.AddRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson);
-            _context.Participants.AddRange(IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant);
+            _context.Participants.AddRange(IndividualParticipant, IndividualParticipant2, JudgeParticipant, JudicialOfficeHolderParticipant);
             _context.SaveChanges();
+
             _handler = new GetPersonBySearchTermQueryHandler(_context);
         }
 
