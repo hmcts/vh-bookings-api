@@ -180,6 +180,23 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             return participant;
         }
+
+        public Participant AddStaffMember(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        {
+            if (DoesParticipantExist(person.Username))
+            {
+                throw new DomainRuleException(nameof(person), "Staff Member with given username already exists in the hearing");
+            }
+
+            Participant participant = new StaffMember(person, hearingRole, caseRole)
+            {
+                DisplayName = displayName,
+                CreatedBy = CreatedBy
+            };
+            Participants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
+            return participant;
+        }
         
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {

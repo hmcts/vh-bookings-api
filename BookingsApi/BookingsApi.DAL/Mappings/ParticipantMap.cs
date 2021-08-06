@@ -49,6 +49,14 @@ namespace BookingsApi.DAL.Mappings
         }
     }
     
+    public class StaffMemberMap : IEntityTypeConfiguration<StaffMember>
+    {
+        public void Configure(EntityTypeBuilder<StaffMember> builder)
+        {
+            // Method intentionally left empty.
+        }
+    }
+    
     public class JudicialOfficeHolderMap : IEntityTypeConfiguration<JudicialOfficeHolder>
     {
         public void Configure(EntityTypeBuilder<JudicialOfficeHolder> builder)

@@ -106,6 +106,15 @@ namespace BookingsApi.DAL.Commands
                             participantList.Add(judge);
                             break;
                         }
+                    case "Staff Member":
+                        {
+                            var staffMember = hearing.AddStaffMember(existingPerson ?? participantToAdd.Person,
+                                participantToAdd.HearingRole,
+                                participantToAdd.CaseRole, participantToAdd.DisplayName);
+
+                            participantList.Add(staffMember);
+                            break;
+                        }
                     default:
                         throw new DomainRuleException(nameof(participantToAdd.HearingRole.UserRole.Name),
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");

@@ -37,7 +37,29 @@ namespace BookingsApi.UnitTests.Mappings
             AssertParticipantCommonDetails(response, judge, caseRole, hearingRole);
             AssertRepresentativeResponse(response, null);
             response.Organisation.Should().BeNullOrWhiteSpace();
+        }
+
+        [Test]
+        public void Should_map_staffMember()
+        {
+            const string staffMemberName = nameof(UserRoleId.StaffMember);
+            var caseRole = new CaseRole(222, staffMemberName);
+            var hearingRole = new HearingRole(727, staffMemberName) {UserRole = new UserRole((int) UserRoleId.StaffMember, staffMemberName)};
+
+            var person = new PersonBuilder().Build();
+            var staffMember = new StaffMember(person, hearingRole, caseRole)
+            {
+                DisplayName = "Staff Member",
+                CreatedBy = "unit@hmcts.net"
+            };
+            staffMember.SetProtected(nameof(staffMember.CaseRole), caseRole);
+            staffMember.SetProtected(nameof(staffMember.HearingRole), hearingRole);
+
+            var response = _mapper.MapParticipantToResponse(staffMember);
             
+            AssertParticipantCommonDetails(response, staffMember, caseRole, hearingRole);
+            AssertRepresentativeResponse(response, null);
+            response.Organisation.Should().BeNullOrWhiteSpace();
         }
 
         [Test]

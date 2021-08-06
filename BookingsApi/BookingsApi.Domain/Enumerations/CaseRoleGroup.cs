@@ -13,6 +13,7 @@ namespace BookingsApi.Domain.Enumerations
         State = 8,
         None = 9,
         HomeOffice = 10,
-        Winger = 11
+        Winger = 11,
+        StaffMember = 12
     }
 }

@@ -16,6 +16,7 @@ namespace Testing.Common.Builders.Domain
         private readonly VideoHearing _videoHearing;
         private readonly Person _judgePerson;
         private readonly Person _johPerson;
+        private readonly Person _staffMemberPerson;
 
         public VideoHearingBuilder()
         {
@@ -45,6 +46,8 @@ namespace Testing.Common.Builders.Domain
             var respondentLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
             var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
+            var staffMemberHearingRole = new HearingRole(727, nameof(UserRoleId.StaffMember)) { UserRole = new UserRole((int) UserRoleId.StaffMember, nameof(UserRoleId.StaffMember)) };
+            var staffMemberCaseRole = new CaseRole(213, nameof(UserRoleId.StaffMember)) { Group = CaseRoleGroup.StaffMember };
             var johHearingRole = new HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole( 7, "Judicial Office Holder")};
             var johCaseRole = new CaseRole(11, "Winger") { Group = CaseRoleGroup.Winger };
 
@@ -53,6 +56,7 @@ namespace Testing.Common.Builders.Domain
             var person3 = new PersonBuilder(true).Build();
             _judgePerson = new PersonBuilder(true).Build();
             _johPerson = new PersonBuilder(true).Build();
+            _staffMemberPerson = new PersonBuilder(true).Build();
 
             _videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -83,6 +87,12 @@ namespace Testing.Common.Builders.Domain
             var joh = _videoHearing?.Participants.Last();
             joh.SetProtected(nameof(indApplicant.CaseRole), johCaseRole);
             joh.SetProtected(nameof(joh.HearingRole), johHearingRole);
+
+            _videoHearing.AddStaffMember(_staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
+                $"{_staffMemberPerson.FirstName} {_staffMemberPerson.LastName}");
+            var staffMember = _videoHearing?.Participants.Last();
+            staffMember.SetProtected(nameof(indApplicant.CaseRole), staffMemberCaseRole);
+            staffMember.SetProtected(nameof(staffMember.HearingRole), staffMemberHearingRole);
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
