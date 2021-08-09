@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Mappings;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
@@ -16,6 +17,7 @@ namespace BookingsApi.UnitTests.Mappings
     public class ParticipantToResponseMapperTests
     {
         private readonly ParticipantToResponseMapper _mapper = new ParticipantToResponseMapper();
+
         
         [Test]
         public void Should_map_judge()
@@ -42,9 +44,11 @@ namespace BookingsApi.UnitTests.Mappings
         [Test]
         public void Should_map_staffMember()
         {
-            const string staffMemberName = nameof(UserRoleId.StaffMember);
+            const string staffMemberName = "Staff Member";
             var caseRole = new CaseRole(222, staffMemberName);
-            var hearingRole = new HearingRole(727, staffMemberName) {UserRole = new UserRole((int) UserRoleId.StaffMember, staffMemberName)};
+            var staffMemberUserId = UserRoleForHearingRole.UserRoleId["Staff Member"];
+
+            var hearingRole = new HearingRole(727, staffMemberName) {UserRole = new UserRole(staffMemberUserId, staffMemberName)};
 
             var person = new PersonBuilder().Build();
             var staffMember = new StaffMember(person, hearingRole, caseRole)

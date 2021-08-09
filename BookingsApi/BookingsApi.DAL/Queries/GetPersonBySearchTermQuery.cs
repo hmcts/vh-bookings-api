@@ -28,7 +28,7 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<Person>> Handle(GetPersonBySearchTermQuery query)
         {
-            var excludeRoles = new List<string>() { "Judge", "JudicialOfficeHolder" };
+            var excludeRoles = new List<string>() { "Judge", "JudicialOfficeHolder", "StaffMember" };
 
             var results = await (from person in _context.Persons
              join participant in _context.Participants on person.Id equals participant.PersonId

@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain.Enumerations;
+﻿using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -6,6 +7,8 @@ namespace BookingsApi.DAL.Migrations
 {
     public partial class AddUserRoleStaffMember : Migration
     {
+        int staffMemberUserId = UserRoleForHearingRole.UserRoleId["Staff Member"];
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
@@ -13,7 +16,7 @@ namespace BookingsApi.DAL.Migrations
                 columns: new[] {"Id", "Name"},
                 values: new object[,]
                 {
-                    {(int) UserRoleId.StaffMember, "Staff Member"}
+                    {staffMemberUserId, "Staff Member"}
                 });
             
             var caseRoleId = 213;
@@ -24,7 +27,7 @@ namespace BookingsApi.DAL.Migrations
                     new[] { "Id", "Name", "Group", "CaseTypeId" },
                     new object[,]
                     {
-                        { caseRoleId, "Staff Member", (int) CaseRoleGroup.StaffMember, caseTypeId }
+                        { caseRoleId, "Staff Member", staffMemberUserId, caseTypeId }
                     });
                 caseRoleId++;
             }
@@ -37,7 +40,7 @@ namespace BookingsApi.DAL.Migrations
                     new[] { "Id", "Name", "UserRoleId", "CaseRoleId", },
                     new object[,]
                     {
-                        { hearingId, "Staff Member", (int) UserRoleId.StaffMember, caseTypeId },
+                        { hearingId, "Staff Member", staffMemberUserId, caseTypeId },
                     });
                 hearingId++;
             }
@@ -45,7 +48,7 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData("UserRole", "Id", 8);
+            migrationBuilder.DeleteData("UserRole", "Id", staffMemberUserId);
             for (int hearingRoleID = 718; hearingRoleID <= 755; hearingRoleID++)
             {
                 migrationBuilder.DeleteData("HearingRole", "Id", hearingRoleID);

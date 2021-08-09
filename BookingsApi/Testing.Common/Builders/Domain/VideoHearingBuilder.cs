@@ -45,9 +45,10 @@ namespace Testing.Common.Builders.Domain
 
             var respondentLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
-            var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") }; 
-            var staffMemberHearingRole = new HearingRole(727, nameof(UserRoleId.StaffMember)) { UserRole = new UserRole((int) UserRoleId.StaffMember, nameof(UserRoleId.StaffMember)) };
-            var staffMemberCaseRole = new CaseRole(213, nameof(UserRoleId.StaffMember)) { Group = CaseRoleGroup.StaffMember };
+            var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") };
+            const string  staffMemberRole= "Staff Member";
+            var staffMemberHearingRole = new HearingRole(727, staffMemberRole) { UserRole = new UserRole(8, staffMemberRole) };
+            var staffMemberCaseRole = new CaseRole(213, staffMemberRole) { Group = CaseRoleGroup.StaffMember };
             var johHearingRole = new HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole( 7, "Judicial Office Holder")};
             var johCaseRole = new CaseRole(11, "Winger") { Group = CaseRoleGroup.Winger };
 

@@ -15,8 +15,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     {
         private GetPersonBySearchTermQueryHandler _handler;
         private BookingsDbContext _context;
-        private Person IndividualPerson, JudgePerson, JudicialOfficeHolderPerson;
-        private Participant IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant;
+        private Person IndividualPerson, JudgePerson, JudicialOfficeHolderPerson, StaffMemberPerson;
+        private Participant IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant, StaffMemberParticipant;
         private Organisation organisation;
 
         [OneTimeSetUp]
@@ -42,14 +42,17 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             IndividualPerson = new Person("mr", "luffy", "dragon", "luffy2@strawhat.net") { ContactEmail = "luffy2@strawhat.net", Organisation = organisation };
             JudgePerson = new Person("mr", "zoro", "rononora", "zoro@strawhat.net") { ContactEmail = "zoro@strawhat.net", Organisation = organisation };
             JudicialOfficeHolderPerson = new Person("mr", "luffy", "dragon", "luffy@strawhat.net") { ContactEmail = "luffy@strawhat.net", Organisation = organisation };
+            StaffMemberPerson = new Person("mr", "luffy", "duffy", "luffy@staffmember.net") { ContactEmail = "luffy@staff.net", Organisation = organisation };
 
             //participants record
             IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
             var IndividualParticipant2 = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
             JudgeParticipant = new Judge(JudgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Judge" };
             JudicialOfficeHolderParticipant = new JudicialOfficeHolder(JudicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "JudicialOfficeHolder" };
-            _context.Persons.AddRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson);
-            _context.Participants.AddRange(IndividualParticipant, IndividualParticipant2, JudgeParticipant, JudicialOfficeHolderParticipant);
+            StaffMemberParticipant = new JudicialOfficeHolder(StaffMemberPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "StaffMember" };
+            
+            _context.Persons.AddRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson, StaffMemberPerson);
+            _context.Participants.AddRange(IndividualParticipant, IndividualParticipant2, JudgeParticipant, JudicialOfficeHolderParticipant, StaffMemberParticipant);
             _context.SaveChanges();
 
             _handler = new GetPersonBySearchTermQueryHandler(_context);
@@ -58,8 +61,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [TearDown]
         public void CleanUp()
         {
-            _context.Persons.RemoveRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson);
-            _context.Participants.RemoveRange(IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant);
+            _context.Persons.RemoveRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson, StaffMemberPerson);
+            _context.Participants.RemoveRange(IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant,StaffMemberParticipant);
         }
 
         [Test]
