@@ -11,6 +11,7 @@ namespace BookingsApi.DAL.Helper
             { "Observer", 5},
             { "Respondent", 5},
             { "Panel Member", 7 },
+            { "Staff Member", 8}
         };
     }
 }

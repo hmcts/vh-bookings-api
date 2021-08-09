@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Mappings;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
@@ -16,6 +17,7 @@ namespace BookingsApi.UnitTests.Mappings
     public class ParticipantToResponseMapperTests
     {
         private readonly ParticipantToResponseMapper _mapper = new ParticipantToResponseMapper();
+
         
         [Test]
         public void Should_map_judge()
@@ -37,7 +39,31 @@ namespace BookingsApi.UnitTests.Mappings
             AssertParticipantCommonDetails(response, judge, caseRole, hearingRole);
             AssertRepresentativeResponse(response, null);
             response.Organisation.Should().BeNullOrWhiteSpace();
+        }
+
+        [Test]
+        public void Should_map_staffMember()
+        {
+            const string staffMemberName = "Staff Member";
+            var caseRole = new CaseRole(222, staffMemberName);
+            var staffMemberUserId = UserRoleForHearingRole.UserRoleId["Staff Member"];
+
+            var hearingRole = new HearingRole(727, staffMemberName) {UserRole = new UserRole(staffMemberUserId, staffMemberName)};
+
+            var person = new PersonBuilder().Build();
+            var staffMember = new StaffMember(person, hearingRole, caseRole)
+            {
+                DisplayName = "Staff Member",
+                CreatedBy = "unit@hmcts.net"
+            };
+            staffMember.SetProtected(nameof(staffMember.CaseRole), caseRole);
+            staffMember.SetProtected(nameof(staffMember.HearingRole), hearingRole);
+
+            var response = _mapper.MapParticipantToResponse(staffMember);
             
+            AssertParticipantCommonDetails(response, staffMember, caseRole, hearingRole);
+            AssertRepresentativeResponse(response, null);
+            response.Organisation.Should().BeNullOrWhiteSpace();
         }
 
         [Test]

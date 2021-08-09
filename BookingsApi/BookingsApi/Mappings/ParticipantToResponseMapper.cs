@@ -36,6 +36,7 @@ namespace BookingsApi.Mappings
                     break;
                 case "Individual":
                 case "Judge":
+                case "StaffMember":
                 case "JudicialOfficeHolder":
                     break;
             }
