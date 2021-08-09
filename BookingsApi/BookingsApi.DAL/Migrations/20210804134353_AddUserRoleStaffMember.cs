@@ -27,7 +27,7 @@ namespace BookingsApi.DAL.Migrations
                     new[] { "Id", "Name", "Group", "CaseTypeId" },
                     new object[,]
                     {
-                        { caseRoleId, "Staff Member", staffMemberUserId, caseTypeId }
+                        { caseRoleId, "Staff Member", (int) CaseRoleGroup.StaffMember, caseTypeId }
                     });
                 caseRoleId++;
             }
