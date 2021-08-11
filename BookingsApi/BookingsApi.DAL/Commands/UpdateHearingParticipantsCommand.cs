@@ -74,7 +74,7 @@ namespace BookingsApi.DAL.Commands
                     throw new ParticipantNotFoundException(newExistingParticipantDetails.ParticipantId);
                 }
 
-                existingParticipant.LinkedParticipants.Clear();
+                await _hearingService.RemoveParticipantLinks(participants, existingParticipant);
 
                 existingParticipant.UpdateParticipantDetails(newExistingParticipantDetails.Title, newExistingParticipantDetails.DisplayName,
                     newExistingParticipantDetails.TelephoneNumber, newExistingParticipantDetails.OrganisationName);
