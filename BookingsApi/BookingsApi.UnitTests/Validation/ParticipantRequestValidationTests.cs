@@ -134,5 +134,27 @@ namespace BookingsApi.UnitTests.Validation
                  .With(x => x.HearingRoleName = "Representative")
                  .Build();
         }
+
+        [Test]
+        public async Task Should_return_missing_telephone_error()
+        {
+            var request = BuildStaffMemberRequest();
+            request.TelephoneNumber = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTelephoneErrorMessage)
+                .Should().BeTrue();
+        }
+
+        private ParticipantRequest BuildStaffMemberRequest()
+        {
+            return Builder<ParticipantRequest>.CreateNew()
+                 .With(x => x.CaseRoleName = "Staff Member")
+                 .With(x => x.HearingRoleName = "Staff Member")
+                 .Build();
+        }
     }
 }
