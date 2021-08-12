@@ -22,7 +22,7 @@ namespace BookingsApi.DAL.Queries
         private readonly BookingsDbContext _context;
         public static readonly List<string> excludedRoles = new List<string>() { "Judge", "JudicialOfficeHolder", "StaffMember" };
 
-    public GetPersonBySearchTermQueryHandler(BookingsDbContext context)
+        public GetPersonBySearchTermQueryHandler(BookingsDbContext context)
         {
             _context = context;
         }
