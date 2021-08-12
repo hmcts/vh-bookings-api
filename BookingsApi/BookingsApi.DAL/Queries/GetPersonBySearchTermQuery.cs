@@ -20,6 +20,7 @@ namespace BookingsApi.DAL.Queries
     public class GetPersonBySearchTermQueryHandler : IQueryHandler<GetPersonBySearchTermQuery, List<Person>>
     {
         private readonly BookingsDbContext _context;
+        public static readonly List<string> excludedRoles = new List<string>() { "Judge", "JudicialOfficeHolder", "StaffMember" };
 
         public GetPersonBySearchTermQueryHandler(BookingsDbContext context)
         {
@@ -28,11 +29,10 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<Person>> Handle(GetPersonBySearchTermQuery query)
         {
-            var excludeRoles = new List<string>() { "Judge", "JudicialOfficeHolder", "StaffMember" };
 
             var results = await (from person in _context.Persons
              join participant in _context.Participants on person.Id equals participant.PersonId
-             where !excludeRoles.Contains(participant.Discriminator) 
+             where !excludedRoles.Contains(participant.Discriminator) 
              && person.ContactEmail.ToLower().Contains(query.Term.ToLower())
              select person).Distinct().Include(x => x.Organisation).ToListAsync();
 
