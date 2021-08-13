@@ -1,4 +1,5 @@
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Requests.Enums;
 using FluentValidation;
 
 namespace BookingsApi.Validations
@@ -23,7 +24,7 @@ namespace BookingsApi.Validations
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);
-            RuleFor(x => x.TelephoneNumber).NotEmpty().WithMessage(NoTelephoneErrorMessage).When(x => x.HearingRoleName == "Staff Member");
+            RuleFor(x => x.TelephoneNumber).NotEmpty().WithMessage(NoTelephoneErrorMessage).When(x => x.HearingRoleName == HearingRoleName.StaffMember);
         }
     }
 }

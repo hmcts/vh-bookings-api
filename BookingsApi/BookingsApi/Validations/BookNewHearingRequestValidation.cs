@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Requests.Enums;
 using Castle.Core.Internal;
 using FluentValidation;
 
@@ -55,7 +56,7 @@ namespace BookingsApi.Validations
                 .SetValidator(new LinkedParticipantRequestValidation()).When(x => !x.LinkedParticipants.IsNullOrEmpty());
 
             RuleFor(x => x.Participants)
-                .Must(participant => participant.Any(x => x.HearingRoleName == "Judge"))
+                .Must(participant => participant.Any(x => x.HearingRoleName == HearingRoleName.Judge))
                 .WithMessage(JudgeAbsenceErrorMessage);
         }
     }
