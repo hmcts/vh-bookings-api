@@ -1,5 +1,5 @@
 using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
+using BookingsApi.Contract.Requests.Consts;
 using FluentValidation;
 
 namespace BookingsApi.Validations

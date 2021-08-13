@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
+using BookingsApi.Contract.Requests.Consts;
 using Castle.Core.Internal;
 using FluentValidation;
 

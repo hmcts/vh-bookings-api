@@ -1,4 +1,4 @@
-using BookingsApi.Contract.Requests.Enums;
+using BookingsApi.Contract.Requests.Consts;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;

@@ -1,4 +1,4 @@
-﻿namespace BookingsApi.Contract.Requests.Enums
+﻿namespace BookingsApi.Contract.Requests.Consts
 {
     /// <summary>
     ///     Hearing Roles
