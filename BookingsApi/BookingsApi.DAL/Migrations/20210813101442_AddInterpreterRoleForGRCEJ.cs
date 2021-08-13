@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain.RefData;
+﻿using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookingsApi.DAL.Migrations
@@ -9,12 +10,12 @@ namespace BookingsApi.DAL.Migrations
         {
             migrationBuilder.InsertData(
                 table: nameof(HearingRole),
-                columns: new[] { "Id", "Name", "UserRoleId", "CaseRoleId", },
+                columns: new[] { "Id", "Name", "UserRoleId", "CaseRoleId"},
                 values: new object[,]
                 {
-                    {756, "Interpreter", 5, 203},
-                    {757, "Interpreter", 5, 204},
-                    {758, "Interpreter", 5, 208},
+                    {756, "Interpreter", UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 203},
+                    {757, "Interpreter", UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 204},
+                    {758, "Interpreter", UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 208},
                 });
         }
 

@@ -4,14 +4,15 @@ namespace BookingsApi.DAL.Helper
 {
     public static class UserRoleForHearingRole
     {
+
         public static Dictionary<string, int> UserRoleId = new Dictionary<string, int>
         {
-            { "Judge", 4 },
-            { "Individual", 5},
-            { "Observer", 5},
-            { "Respondent", 5},
-            { "Panel Member", 7 },
-            { "Staff Member", 8}
+            { UserRoles.Judge, 4 },
+            { UserRoles.Individual, 5},
+            { UserRoles.Observer, 5},
+            { UserRoles.Respondent, 5},
+            { UserRoles.PanelMember, 7 },
+            { UserRoles.StaffMember, 8}
         };
     }
 }
