@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using BookingsApi.Contract.Requests.Enums;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
@@ -131,7 +131,7 @@ namespace BookingsApi.UnitTests.Validation
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")
-                 .With(x => x.HearingRoleName = "Representative")
+                 .With(x => x.HearingRoleName = HearingRoleName.Representative)
                  .Build();
         }
 
@@ -153,7 +153,7 @@ namespace BookingsApi.UnitTests.Validation
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Staff Member")
-                 .With(x => x.HearingRoleName = "Staff Member")
+                 .With(x => x.HearingRoleName = HearingRoleName.StaffMember)
                  .Build();
         }
     }
