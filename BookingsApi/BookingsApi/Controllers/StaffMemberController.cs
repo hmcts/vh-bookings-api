@@ -30,11 +30,11 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
-        [HttpPost]
-        [OpenApiOperation("PostStaffMemberBySearchTerm")]
+        [HttpGet]
+        [OpenApiOperation("GetStaffMemberBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PostStaffMemberBySearchTerm(SearchTermRequest term)
+        public async Task<IActionResult> GetStaffMemberBySearchTerm(SearchTermRequest term)
         {
             var query = new GetStaffMemberBySearchTermQuery(term.Term);
             var staffMemberList = await _queryHandler.Handle<GetStaffMemberBySearchTermQuery, List<Person>>(query);

@@ -527,14 +527,14 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostStaffMemberBySearchTermAsync(SearchTermRequest term);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetStaffMemberBySearchTermAsync(SearchTermRequest term);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Find staffmember with contact email matching a search term.</summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostStaffMemberBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetStaffMemberBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get a cursor based list of suitability answers</summary>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
@@ -4445,9 +4445,9 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostStaffMemberBySearchTermAsync(SearchTermRequest term)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetStaffMemberBySearchTermAsync(SearchTermRequest term)
         {
-            return PostStaffMemberBySearchTermAsync(term, System.Threading.CancellationToken.None);
+            return GetStaffMemberBySearchTermAsync(term, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -4455,7 +4455,7 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostStaffMemberBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetStaffMemberBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken)
         {
             if (term == null)
                 throw new System.ArgumentNullException("term");
@@ -4472,7 +4472,7 @@ namespace BookingsApi.Client
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(term, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);

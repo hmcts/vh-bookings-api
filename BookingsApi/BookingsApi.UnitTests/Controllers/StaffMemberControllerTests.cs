@@ -20,7 +20,7 @@ namespace BookingsApi.UnitTests.Controllers
         protected Mock<IQueryHandler> _queryHandlerMock;
 
         [Test]
-        public async Task PostStaffMemberBySearchTerm_ShouldReturn_List_Of_StaffMembers()
+        public async Task GetStaffMemberBySearchTerm_ShouldReturn_List_Of_StaffMembers()
         {   //Arrange
             _queryHandlerMock = new Mock<IQueryHandler>();
             _controller = new StaffMemberController(_queryHandlerMock.Object);
@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Controllers
              .Setup(x => x.Handle<GetStaffMemberBySearchTermQuery, List<Person>>(It.IsAny<GetStaffMemberBySearchTermQuery>()))
              .ReturnsAsync(staffMembers);
 
-            var result = await _controller.PostStaffMemberBySearchTerm(searchTermRequest);
+            var result = await _controller.GetStaffMemberBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result;
