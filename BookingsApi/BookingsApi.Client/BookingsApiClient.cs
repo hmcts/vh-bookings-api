@@ -523,14 +523,14 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task UpdatePersonDetailsAsync(System.Guid personId, UpdatePersonDetailsRequest payload, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Find staffmember with contact email matching a search term.</summary>
+        /// <summary>Find staff member with contact email matching a search term.</summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> GetStaffMemberBySearchTermAsync(string term);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Find staffmember with contact email matching a search term.</summary>
+        /// <summary>Find staff member with contact email matching a search term.</summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -4441,7 +4441,7 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Find staffmember with contact email matching a search term.</summary>
+        /// <summary>Find staff member with contact email matching a search term.</summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -4451,7 +4451,7 @@ namespace BookingsApi.Client
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Find staffmember with contact email matching a search term.</summary>
+        /// <summary>Find staff member with contact email matching a search term.</summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
