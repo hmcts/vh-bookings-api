@@ -1,4 +1,5 @@
-﻿using BookingsApi.Contract.Responses;
+﻿using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
