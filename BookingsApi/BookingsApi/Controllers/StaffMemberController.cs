@@ -26,7 +26,7 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
-        /// Find staffmember with contact email matching a search term.
+        /// Find staff member with contact email matching a search term.
         /// </summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
@@ -34,10 +34,20 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetStaffMemberBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetStaffMemberBySearchTerm(SearchTermRequest term)
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetStaffMemberBySearchTerm(string term)
         {
-            var query = new GetStaffMemberBySearchTermQuery(term.Term);
+            if(term.Length < 3)
+            {
+                return BadRequest("Search term must be atleast 3 charecters.");
+            }
+
+            var query = new GetStaffMemberBySearchTermQuery(term);
             var staffMemberList = await _queryHandler.Handle<GetStaffMemberBySearchTermQuery, List<Person>>(query);
+            if(staffMemberList.Count == 0)
+            {
+                return NotFound();
+            }
             var mapper = new PersonToResponseMapper();
             var response = staffMemberList.Select(x => mapper.MapPersonToResponse(x)).OrderBy(o => o.ContactEmail).ToList();
             return Ok(response);
