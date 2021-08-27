@@ -1,6 +1,6 @@
 ---
 java:
-  image: 'sdshmctspublic.azurecr.io/vh/bookings-api:prod-20210603.5'
+  image: 'sdshmctspublic.azurecr.io/vh/bookings-api:20210603.5'
   applicationPort: 8080
   replicas: 2
   ingressHost: vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
