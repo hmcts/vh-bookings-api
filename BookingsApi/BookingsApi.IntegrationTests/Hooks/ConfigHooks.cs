@@ -45,7 +45,6 @@ namespace BookingsApi.IntegrationTests.Hooks
             RegisterDatabaseSettings(context);
             RegisterServer(context);
             RegisterApiSettings(context);
-            RegisterFeatureFlags(context);
             GenerateBearerTokens(context, azureOptions);
         }
 
@@ -61,12 +60,6 @@ namespace BookingsApi.IntegrationTests.Hooks
         {
             context.Config.ServicesConfiguration = Options.Create(_configRoot.GetSection("Services").Get<ServicesConfiguration>()).Value;
             context.Config.ServicesConfiguration.BookingsApiResourceId.Should().NotBeNullOrEmpty();
-        }
-        
-        private void RegisterFeatureFlags(TestContext context)
-        {
-            context.Config.FeatureToggleConfiguration = Options.Create(_configRoot.GetSection("FeatureFlags").Get<FeatureToggleConfiguration>()).Value;
-            ConfigurationManager.VerifyConfigValuesSet(context.Config.FeatureToggleConfiguration);
         }
 
         private void RegisterTestSettings(TestContext context)
