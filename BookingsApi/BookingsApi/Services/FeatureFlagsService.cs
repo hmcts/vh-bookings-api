@@ -1,4 +1,4 @@
-﻿using BookingsApi.Common.Configuration;
+﻿using BookingsApi.Contract.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace BookingsApi.Services

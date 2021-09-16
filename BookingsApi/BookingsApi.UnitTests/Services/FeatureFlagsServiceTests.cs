@@ -1,5 +1,5 @@
 ﻿using Autofac.Extras.Moq;
-using BookingsApi.Common.Configuration;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;

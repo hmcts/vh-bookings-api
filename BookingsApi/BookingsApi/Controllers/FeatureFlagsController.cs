@@ -1,4 +1,4 @@
-using BookingsApi.Common.Configuration;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;

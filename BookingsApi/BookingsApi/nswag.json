@@ -92,7 +92,8 @@
         "Microsoft.AspNetCore.Mvc",
         "BookingsApi.Contract.Queries",
         "BookingsApi.Contract.Requests",
-        "BookingsApi.Contract.Responses"
+        "BookingsApi.Contract.Responses",
+        "BookingsApi.Contract.Configuration"
       ],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,

@@ -15,6 +15,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
+using BookingsApi.Contract.Configuration;
 
 namespace BookingsApi
 {

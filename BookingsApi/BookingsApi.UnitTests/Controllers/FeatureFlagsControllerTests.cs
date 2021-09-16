@@ -1,4 +1,4 @@
-﻿using BookingsApi.Common.Configuration;
+﻿using BookingsApi.Contract.Configuration;
 using BookingsApi.Controllers;
 using BookingsApi.Services;
 using FluentAssertions;
