@@ -106,6 +106,20 @@ extends:
           - group: KinlyConfiguration_Prod
             env:
              - Prod
+          - group: FeatureFlags_NonProd
+            env:
+             - Preview
+             - Dev
+             - AAT
+             - Test1
+             - Test2
+             - Sandbox
+          - group: FeatureFlags_PreProd
+            env:
+             - PreProd
+          - group: FeatureFlags_Prod
+            env:
+             - Prod
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
@@ -142,6 +156,12 @@ extends:
 
           - name: UseServiceBusFake
             value: false
+          
+          # Feature Flags
+          - name: FeatureToggle:StaffMemberFeature
+            value: $(StaffMemberFeature)
+          - name: FeatureToggle:EJudFeature
+            value: $(EJudFeature)
 
         acceptanceTestSettings:
           # AzureAd

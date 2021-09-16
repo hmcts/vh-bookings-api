@@ -70,6 +70,7 @@ namespace BookingsApi
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
             services.Configure<KinlyConfiguration>(options => Configuration.Bind("KinlyConfiguration", options));
+            services.Configure<FeatureToggleConfiguration>(options => Configuration.Bind("FeatureToggle", options));
         }
 
         private void RegisterAuth(IServiceCollection serviceCollection)
