@@ -105,13 +105,13 @@ namespace BookingsApi.Client
         /// <summary>returns wheather a feature is enabled or not</summary>
         /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName);
+        System.Threading.Tasks.Task<bool> GetFeatureFlagAsync(string featureName);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>returns wheather a feature is enabled or not</summary>
         /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<bool> GetFeatureFlagAsync(string featureName, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Run a health check of the service</summary>
         /// <returns>Error if fails, otherwise OK status</returns>
@@ -1186,7 +1186,7 @@ namespace BookingsApi.Client
         /// <summary>returns wheather a feature is enabled or not</summary>
         /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName)
+        public System.Threading.Tasks.Task<bool> GetFeatureFlagAsync(string featureName)
         {
             return GetFeatureFlagAsync(featureName, System.Threading.CancellationToken.None);
         }
@@ -1195,7 +1195,7 @@ namespace BookingsApi.Client
         /// <summary>returns wheather a feature is enabled or not</summary>
         /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<bool> GetFeatureFlagAsync(string featureName, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/feature-flags?");
@@ -1237,7 +1237,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<FeatureFlagConfiguration>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<bool>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

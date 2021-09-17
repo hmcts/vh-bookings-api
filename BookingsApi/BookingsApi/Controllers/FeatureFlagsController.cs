@@ -1,4 +1,3 @@
-using BookingsApi.Contract.Configuration;
 using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -25,7 +24,7 @@ namespace BookingsApi.Controllers
         /// <returns>bool</returns>
         [HttpGet]
         [OpenApiOperation("GetFeatureFlag")]
-        [ProducesResponseType(typeof(FeatureFlagConfiguration), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public ActionResult<bool> GetFeatureFlag(string featureName)
         {
