@@ -1,6 +1,6 @@
 ﻿namespace BookingsApi.Contract.Configuration
 {
-    public class FeatureToggleConfiguration
+    public class FeatureFlagConfiguration
     {
         public bool EJudFeature { get; set; }
 

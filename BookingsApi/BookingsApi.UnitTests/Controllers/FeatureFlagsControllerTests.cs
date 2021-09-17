@@ -9,23 +9,34 @@ namespace BookingsApi.UnitTests.Controllers
 {
     public class FeatureFlagsControllerTests
     {
-        private Mock<IFeatureFlagsService> _featureFlagsService;
-        [Test]
-        public void GetFeatureToggles_Should_Return_All_Feature_Toggles()
+        private Mock<IFeatureFlagService> _featureFlagsService;
+        private FeatureFlagsController _controller;
+
+        [SetUp]
+        public void SetUp()
         {
-            _featureFlagsService = new Mock<IFeatureFlagsService>();
+            _featureFlagsService = new Mock<IFeatureFlagService>();
+            _controller = new FeatureFlagsController(_featureFlagsService.Object);
+        }
 
-            _featureFlagsService.Setup(p => p.GetFeatureFlags()).Returns(new FeatureToggleConfiguration()
-            {
-                StaffMemberFeature = true,
-                EJudFeature = false
-            });
+        [Test]
+        public void GetFeatureFlag_Should_Return_True_For_StaffMemberFeature()
+        {
+            _featureFlagsService.Setup(p => p.GetFeatureFlag(It.Is<string>(p => p == nameof(FeatureFlags.StaffMemberFeature)))).Returns(true);
 
-            var _controller = new FeatureFlagsController(_featureFlagsService.Object);
-            var result = _controller.GetFeatureToggles();
+            var result = _controller.GetFeatureFlag(nameof(FeatureFlags.StaffMemberFeature));
 
-            result.Value.StaffMemberFeature.Should().BeTrue();
-            result.Value.EJudFeature.Should().BeFalse();
+            result.Value.Should().BeTrue();
+        }
+        
+        [Test]
+        public void GetFeatureFlag_Should_Return_False_For_EjudFeature()
+        {
+            _featureFlagsService.Setup(p => p.GetFeatureFlag(It.Is<string>(p => p == nameof(FeatureFlags.EJudFeature)))).Returns(false); 
+
+            var result = _controller.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
+
+            result.Value.Should().BeFalse();
         }
     }
 }

@@ -8,7 +8,6 @@ namespace Testing.Common.Configuration
         public AzureAdConfiguration AzureAdConfiguration { get; set; }
         public ConnectionStrings ConnectionStrings { get; set; }
         public ServicesConfiguration ServicesConfiguration { get; set; }
-        public FeatureToggleConfiguration FeatureToggleConfiguration { get; set; }
         public TestSettings TestSettings { get; set; }
     }
 }

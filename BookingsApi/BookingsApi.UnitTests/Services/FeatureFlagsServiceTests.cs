@@ -10,22 +10,34 @@ namespace BookingsApi.UnitTests.Services
     public class FeatureFlagsServiceTests
     {
         private AutoMock _mocker;
-
-        [Test]
-        public void GetFeatureToggles_Should_Return_All_Feature_Toggles()
+        private FeatureFlagService _service;
+        [SetUp]
+        public void SetUp()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IOptions<FeatureToggleConfiguration>>().Setup(opt => opt.Value).Returns(new FeatureToggleConfiguration()
+            _mocker.Mock<IOptions<FeatureFlagConfiguration>>().Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
             {
                 StaffMemberFeature = true,
                 EJudFeature = false
             });
 
-            var service = _mocker.Create<FeatureFlagsService>();
-            var result = service.GetFeatureFlags();
+            _service = _mocker.Create<FeatureFlagService>();
+        }
 
-            result.StaffMemberFeature.Should().BeTrue();
-            result.EJudFeature.Should().BeFalse();
+        [Test]
+        public void GetFeatureFlag_Should_Return_True_for_StaffMember_Feature()
+        {
+            var staffMemberFeature = _service.GetFeatureFlag(nameof(FeatureFlags.StaffMemberFeature));
+
+            staffMemberFeature.Should().BeTrue();
+        }
+
+        [Test]
+        public void GetFeatureFlag_Should_Return_True_for_EJud_Feature()
+        {
+            var staffMemberFeature = _service.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
+
+            staffMemberFeature.Should().BeFalse();
         }
     }
 }

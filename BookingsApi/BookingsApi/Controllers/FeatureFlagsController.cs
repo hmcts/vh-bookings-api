@@ -11,24 +11,25 @@ namespace BookingsApi.Controllers
     [ApiController]
     public class FeatureFlagsController : Controller
     {
-        private readonly IFeatureFlagsService _featureFlagsService;
+        private readonly IFeatureFlagService _featureFlagsService;
 
-        public FeatureFlagsController(IFeatureFlagsService featureFlagsService)
+        public FeatureFlagsController(IFeatureFlagService featureFlagsService)
         {
             _featureFlagsService = featureFlagsService;
         }
 
         /// <summary>
-        /// returns the FeatureToggles
+        /// returns wheather a feature is enabled or not
         /// </summary>
-        /// <returns></returns>
+        /// <param name="featureName"></param>
+        /// <returns>bool</returns>
         [HttpGet]
-        [OpenApiOperation("GetFeatureToggles")]
-        [ProducesResponseType(typeof(FeatureToggleConfiguration), (int)HttpStatusCode.OK)]
+        [OpenApiOperation("GetFeatureFlag")]
+        [ProducesResponseType(typeof(FeatureFlagConfiguration), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult<FeatureToggleConfiguration> GetFeatureToggles()
+        public ActionResult<bool> GetFeatureFlag(string featureName)
         {
-            return _featureFlagsService.GetFeatureFlags();
+            return _featureFlagsService.GetFeatureFlag(featureName);
         }
     }
 }

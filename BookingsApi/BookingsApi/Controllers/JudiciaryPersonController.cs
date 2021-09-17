@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Common.Configuration;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
@@ -29,9 +30,9 @@ namespace BookingsApi.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
-        private readonly IFeatureFlagsService _flagsService;
+        private readonly IFeatureFlagService _flagsService;
 
-        public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger, IFeatureFlagsService flagsService)
+        public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger, IFeatureFlagService flagsService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -167,7 +168,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            if (_flagsService.GetFeatureFlags().EJudFeature)
+            if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
             {
                 var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
                 var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);

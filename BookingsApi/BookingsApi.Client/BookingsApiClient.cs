@@ -102,14 +102,16 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task UpdateDisplayNameForEndpointAsync(System.Guid hearingId, System.Guid endpointId, UpdateEndpointRequest updateEndpointRequest, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>returns the FeatureToggles</summary>
+        /// <summary>returns wheather a feature is enabled or not</summary>
+        /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FeatureToggleConfiguration> GetFeatureTogglesAsync();
+        System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>returns the FeatureToggles</summary>
+        /// <summary>returns wheather a feature is enabled or not</summary>
+        /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FeatureToggleConfiguration> GetFeatureTogglesAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Run a health check of the service</summary>
         /// <returns>Error if fails, otherwise OK status</returns>
@@ -1181,20 +1183,27 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>returns the FeatureToggles</summary>
+        /// <summary>returns wheather a feature is enabled or not</summary>
+        /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<FeatureToggleConfiguration> GetFeatureTogglesAsync()
+        public System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName)
         {
-            return GetFeatureTogglesAsync(System.Threading.CancellationToken.None);
+            return GetFeatureFlagAsync(featureName, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>returns the FeatureToggles</summary>
+        /// <summary>returns wheather a feature is enabled or not</summary>
+        /// <returns>bool</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<FeatureToggleConfiguration> GetFeatureTogglesAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<FeatureFlagConfiguration> GetFeatureFlagAsync(string featureName, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/feature-flags");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/feature-flags?");
+            if (featureName != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("featureName") + "=").Append(System.Uri.EscapeDataString(ConvertToString(featureName, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1228,7 +1237,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<FeatureToggleConfiguration>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<FeatureFlagConfiguration>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

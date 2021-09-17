@@ -158,9 +158,9 @@ extends:
             value: false
           
           # Feature Flags
-          - name: FeatureToggle:StaffMemberFeature
+          - name: FeatureFlags:StaffMemberFeature
             value: $(StaffMemberFeature)
-          - name: FeatureToggle:EJudFeature
+          - name: FeatureFlags:EJudFeature
             value: $(EJudFeature)
 
         acceptanceTestSettings:

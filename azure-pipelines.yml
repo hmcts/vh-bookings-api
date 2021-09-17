@@ -89,9 +89,9 @@ parameters:
         value: AzureServiceBusConnectionStringSend
         secret: true
       # Feature Flags
-      - name: FeatureToggle:StaffMemberFeature
+      - name: FeatureFlags:StaffMemberFeature
         value: $(StaffMemberFeature)
-      - name: FeatureToggle:EJudFeature
+      - name: FeatureFlags:EJudFeature
         value: $(EJudFeature)
   
 variables:

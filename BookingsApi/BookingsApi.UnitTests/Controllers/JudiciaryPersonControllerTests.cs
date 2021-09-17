@@ -26,7 +26,7 @@ namespace BookingsApi.UnitTests.Controllers
         private Mock<IQueryHandler> _queryHandlerMock;
         private Mock<ICommandHandler> _commandHandlerMock;
         private Mock<ILogger<JudiciaryPersonController>> _loggerMock;
-        private Mock<IFeatureFlagsService> _featureFlagsService;
+        private Mock<IFeatureFlagService> _featureFlagsService;
 
         [SetUp]
         public void Setup()
@@ -34,7 +34,7 @@ namespace BookingsApi.UnitTests.Controllers
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
             _loggerMock = new Mock<ILogger<JudiciaryPersonController>>();
-            _featureFlagsService = new Mock<IFeatureFlagsService>();
+            _featureFlagsService = new Mock<IFeatureFlagService>();
    
             _controller = new JudiciaryPersonController(_queryHandlerMock.Object, _commandHandlerMock.Object, _loggerMock.Object, _featureFlagsService.Object);
         }
@@ -424,7 +424,7 @@ namespace BookingsApi.UnitTests.Controllers
            .Setup(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()))
            .ReturnsAsync(persons);
 
-            _featureFlagsService.Setup(p => p.GetFeatureFlags()).Returns(new FeatureToggleConfiguration { EJudFeature = true });
+            _featureFlagsService.Setup(p => p.GetFeatureFlag(It.Is<string>(p => p == nameof(FeatureFlags.EJudFeature)))).Returns(true);
             var result = await _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
@@ -438,7 +438,7 @@ namespace BookingsApi.UnitTests.Controllers
         public void PostJudiciaryPersonBySearchTerm_Should_Return_EmptyList_When_EJudFlag_Is_False()
         {
             var searchTermRequest = new SearchTermRequest("test");
-            _featureFlagsService.Setup(p => p.GetFeatureFlags()).Returns(new FeatureToggleConfiguration { EJudFeature = false });
+            _featureFlagsService.Setup(p => p.GetFeatureFlag(It.Is<string>(p => p == nameof(FeatureFlags.EJudFeature)))).Returns(false);
             var result = _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
