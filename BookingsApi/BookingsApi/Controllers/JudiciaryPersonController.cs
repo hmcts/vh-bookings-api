@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
@@ -11,9 +13,11 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Mappings;
+using BookingsApi.Services;
 using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 
 namespace BookingsApi.Controllers
@@ -26,14 +30,16 @@ namespace BookingsApi.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
+        private readonly IFeatureFlagService _flagsService;
 
-        public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger)
+        public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger, IFeatureFlagService flagsService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _logger = logger;
+            _flagsService = flagsService;
         }
-     
+
         [HttpPost("BulkJudiciaryPersons")]
         [OpenApiOperation("BulkJudiciaryPersons")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -44,9 +50,9 @@ namespace BookingsApi.Controllers
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryPersonRequests = request.ToList();
             _logger.LogInformation("Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items", judiciaryPersonRequests.Count);
-   
+
             var bulkResponse = new BulkJudiciaryPersonResponse();
-  
+
             foreach (var item in judiciaryPersonRequests)
             {
                 var validation = await new JudiciaryPersonRequestValidation().ValidateAsync(item);
@@ -54,13 +60,13 @@ namespace BookingsApi.Controllers
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}", 
+                        Message = $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
                         JudiciaryPersonRequest = item
                     });
-                    
+
                     continue;
                 }
-            
+
                 try
                 {
                     var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
@@ -73,7 +79,7 @@ namespace BookingsApi.Controllers
                     }
                     else
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id,item.HasLeft));
+                        await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id, item.HasLeft));
                     }
                 }
                 catch (Exception ex)
@@ -81,11 +87,12 @@ namespace BookingsApi.Controllers
                     _logger.LogError(ex, bulkItemErrorMessage, item.Id);
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = bulkItemErrorMessage, JudiciaryPersonRequest = item
+                        Message = bulkItemErrorMessage,
+                        JudiciaryPersonRequest = item
                     });
                 }
             }
-            
+
             return Ok(bulkResponse);
         }
 
@@ -131,7 +138,8 @@ namespace BookingsApi.Controllers
                         _logger.LogError(message);
                         bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                         {
-                            Message = message, JudiciaryLeaverRequest = item
+                            Message = message,
+                            JudiciaryLeaverRequest = item
                         });
                     }
                 }
@@ -140,7 +148,8 @@ namespace BookingsApi.Controllers
                     _logger.LogError(ex, bulkItemErrorMessage, item.Id);
                     bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                     {
-                        Message = bulkItemErrorMessage, JudiciaryLeaverRequest = item
+                        Message = bulkItemErrorMessage,
+                        JudiciaryLeaverRequest = item
                     });
                 }
             }
@@ -159,11 +168,18 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
-            var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
-            var mapper = new JudiciaryPersonToResponseMapper();
-            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
-            return Ok(response);
+            if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
+            {
+                var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
+                var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
+                var mapper = new JudiciaryPersonToResponseMapper();
+                var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
+                return Ok(response);
+            }
+            else
+            {
+                return Ok(new List<PersonResponse>());
+            }
         }
     }
 }

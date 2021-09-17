@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Common.Configuration;
+using BookingsApi.Contract.Configuration;
 
 namespace Testing.Common.Configuration
 {

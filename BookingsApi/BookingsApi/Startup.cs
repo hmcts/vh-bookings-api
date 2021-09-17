@@ -15,6 +15,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
+using BookingsApi.Contract.Configuration;
 
 namespace BookingsApi
 {
@@ -70,6 +71,7 @@ namespace BookingsApi
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
             services.Configure<KinlyConfiguration>(options => Configuration.Bind("KinlyConfiguration", options));
+            services.Configure<FeatureFlagConfiguration>(featureFlagConfigurationOptions => Configuration.Bind("FeatureFlags", featureFlagConfigurationOptions));
         }
 
         private void RegisterAuth(IServiceCollection serviceCollection)

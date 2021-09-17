@@ -5,6 +5,7 @@ using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Contexts;

@@ -2,6 +2,17 @@
   "version": 1,
   "dependencies": {
     ".NETCoreApp,Version=v3.1": {
+      "Autofac.Extras.Moq": {
+        "type": "Direct",
+        "requested": "[6.0.0, )",
+        "resolved": "6.0.0",
+        "contentHash": "jssPHhCWlOL23LRXRvXkrOC86y0VA2tzqwv3DVLvkBO+DGWI3mOTwGdRuCeXnYzQPYF0o9X5SZLwV+fj4x8u7w==",
+        "dependencies": {
+          "Autofac": "6.0.0",
+          "Moq": "4.7.0",
+          "System.ComponentModel.TypeConverter": "4.1.0"
+        }
+      },
       "coverlet.msbuild": {
         "type": "Direct",
         "requested": "[3.0.1, )",
@@ -65,6 +76,14 @@
         "requested": "[8.17.0.26580, )",
         "resolved": "8.17.0.26580",
         "contentHash": "QIz3aB7Ir4iImzX6rNmNMwGKTUDIhzQ0Iz4VhBnpzurIhKAmFSsSx7l04xM/nIojqNzAYahXdVTcokAdlHaRiw=="
+      },
+      "Autofac": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "tRVRXGxwXbQmPy1ZGso115O55ffVW4mWtufjOy7hduQ1BNVR1j7RQQjxpYuB6tJw5OrgqRWYVJLJ8RwYNz/j+A==",
+        "dependencies": {
+          "System.Diagnostics.DiagnosticSource": "4.7.1"
+        }
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -1875,8 +1894,8 @@
       },
       "System.Diagnostics.DiagnosticSource": {
         "type": "Transitive",
-        "resolved": "4.7.0",
-        "contentHash": "oJjw3uFuVDJiJNbCD8HB4a2p3NYLdt1fiT5OGsPLw+WTOuG0KpP4OXelMmmVKpClueMsit6xOlzy4wNKQFiBLg=="
+        "resolved": "4.7.1",
+        "contentHash": "j81Lovt90PDAq8kLpaJfJKV/rWdWuEk6jfV+MBkee33vzYLEUsy4gXK8laa9V2nZlLM9VM9yA/OOQxxPEJKAMw=="
       },
       "System.Diagnostics.PerformanceCounter": {
         "type": "Transitive",
