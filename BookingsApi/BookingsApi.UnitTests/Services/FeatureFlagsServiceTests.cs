@@ -1,5 +1,6 @@
 ﻿using Autofac.Extras.Moq;
 using BookingsApi.Contract.Configuration;
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -38,6 +39,12 @@ namespace BookingsApi.UnitTests.Services
             var staffMemberFeature = _service.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
 
             staffMemberFeature.Should().BeFalse();
+        }
+
+        [Test]
+        public void GetFeatureFlag_Should_Throw_FeatureFlagNotFoundException()
+        {
+            Assert.Throws<FeatureFlagNotFoundException>(() => _service.GetFeatureFlag("TestFeature"));
         }
     }
 }

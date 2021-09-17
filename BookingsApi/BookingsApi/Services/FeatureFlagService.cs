@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Contract.Configuration;
+using BookingsApi.DAL.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace BookingsApi.Services
@@ -16,7 +17,8 @@ namespace BookingsApi.Services
             return featureName switch
             {
                 nameof(FeatureFlags.StaffMemberFeature) => _featureFlagConfigurationOptions.StaffMemberFeature,
-                nameof(FeatureFlags.EJudFeature) => _featureFlagConfigurationOptions.EJudFeature
+                nameof(FeatureFlags.EJudFeature) => _featureFlagConfigurationOptions.EJudFeature,
+                _ => throw new FeatureFlagNotFoundException(featureName)
             };
         }
     }
