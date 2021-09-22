@@ -1,6 +1,6 @@
-﻿using BookingsApi.Contract.Configuration;
+﻿using BookingsApi.Common.Services;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.Controllers;
-using BookingsApi.Services;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;

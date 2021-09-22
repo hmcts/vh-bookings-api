@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -11,12 +13,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetPersonBySearchTermQueryHandlerTests : DatabaseTestsBase
     {
         private GetPersonBySearchTermQueryHandler _handler;
+        private Mock<IFeatureFlagService> _featureFlagService;
 
         [SetUp]
         public void Setup()
         {
+            _featureFlagService = new Mock<IFeatureFlagService>();
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _handler = new GetPersonBySearchTermQueryHandler(context);
+            _handler = new GetPersonBySearchTermQueryHandler(context, _featureFlagService.Object);
         }
 
         [Test]

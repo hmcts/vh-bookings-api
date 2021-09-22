@@ -1,8 +1,8 @@
-﻿using BookingsApi.Contract.Configuration;
-using BookingsApi.DAL.Exceptions;
+﻿using BookingsApi.Common.Exceptions;
+using BookingsApi.Contract.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace BookingsApi.Services
+namespace BookingsApi.Common.Services
 {
     public class FeatureFlagService : IFeatureFlagService
     {

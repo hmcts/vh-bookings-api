@@ -1,7 +1,7 @@
 ﻿using Autofac.Extras.Moq;
+using BookingsApi.Common.Exceptions;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
-using BookingsApi.DAL.Exceptions;
-using BookingsApi.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
