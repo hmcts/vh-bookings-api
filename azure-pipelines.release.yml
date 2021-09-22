@@ -111,9 +111,11 @@ extends:
              - Preview
              - Dev
              - AAT
+             - Sandbox
+          - group: FeatureFlags_Test
+            env:
              - Test1
              - Test2
-             - Sandbox
           - group: FeatureFlags_PreProd
             env:
              - PreProd
