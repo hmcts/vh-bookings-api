@@ -1,4 +1,4 @@
-﻿namespace BookingsApi.Common.Services
+﻿namespace BookingsApi.Services
 {
     public interface IFeatureFlagService
     {

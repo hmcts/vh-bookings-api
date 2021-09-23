@@ -1,4 +1,3 @@
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
@@ -8,6 +7,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Mappings;
+using BookingsApi.Services;
 using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

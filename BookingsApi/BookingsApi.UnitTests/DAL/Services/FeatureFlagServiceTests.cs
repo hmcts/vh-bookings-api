@@ -1,15 +1,12 @@
 ﻿using Autofac.Extras.Moq;
 using BookingsApi.Common.Exceptions;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
+using BookingsApi.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace BookingsApi.UnitTests.Common.Services
+namespace BookingsApi.UnitTests.DAL.Services
 {
     public class FeatureFlagsServiceTests
     {

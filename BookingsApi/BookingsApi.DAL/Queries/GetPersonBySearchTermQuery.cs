@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using BookingsApi.Contract.Configuration;
+using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
-using BookingsApi.Common.Services;
-using BookingsApi.Contract.Configuration;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -22,20 +22,19 @@ namespace BookingsApi.DAL.Queries
     public class GetPersonBySearchTermQueryHandler : IQueryHandler<GetPersonBySearchTermQuery, List<Person>>
     {
         private readonly BookingsDbContext _context;
-        private readonly IFeatureFlagService _featureFlagService;
+        private readonly FeatureFlagConfiguration _featureFlagConfiguration;
         public static readonly List<string> excludedRoles = new List<string>() { "Judge", "JudicialOfficeHolder", "StaffMember" };
 
-        public GetPersonBySearchTermQueryHandler(BookingsDbContext context, IFeatureFlagService featureFlagService)
+        public GetPersonBySearchTermQueryHandler(BookingsDbContext context, IOptions<FeatureFlagConfiguration> featureFlagConfigurationOptions)
         {
             _context = context;
-            _featureFlagService = featureFlagService;
+            _featureFlagConfiguration = featureFlagConfigurationOptions.Value;
         }
 
         public async Task<List<Person>> Handle(GetPersonBySearchTermQuery query)
         {
             List<Person> results;
-            var ejudFeatureFlag = _featureFlagService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
-            if (ejudFeatureFlag)
+            if (_featureFlagConfiguration.EJudFeature)
             {
                 results = await (from person in _context.Persons
                                  join participant in _context.Participants on person.Id equals participant.PersonId

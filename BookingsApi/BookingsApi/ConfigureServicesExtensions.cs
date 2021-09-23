@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using BookingsApi.Common;
+﻿using BookingsApi.Common;
 using BookingsApi.Common.Security;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Services;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using ZymLabs.NSwag.FluentValidation;
+using System.Linq;
 
 namespace BookingsApi
 {

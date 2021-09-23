@@ -1,4 +1,4 @@
-using BookingsApi.Common.Services;
+using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Net;

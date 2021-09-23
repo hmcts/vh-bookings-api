@@ -2,7 +2,7 @@
 using BookingsApi.Contract.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace BookingsApi.Common.Services
+namespace BookingsApi.Services
 {
     public class FeatureFlagService : IFeatureFlagService
     {
@@ -11,18 +11,15 @@ namespace BookingsApi.Common.Services
         {
             _featureFlagConfigurationOptions = featureFlagConfigurationOptions.Value;
         }
-
+        
         public bool GetFeatureFlag(string featureName)
         {
-            switch (featureName)
+            return featureName switch
             {
-                case nameof(FeatureFlags.StaffMemberFeature):
-                    return _featureFlagConfigurationOptions.StaffMemberFeature;
-                case nameof(FeatureFlags.EJudFeature):
-                    return _featureFlagConfigurationOptions.EJudFeature;
-                default:
-                    throw new FeatureFlagNotFoundException(featureName);
-            }
+                nameof(FeatureFlags.StaffMemberFeature) => _featureFlagConfigurationOptions.StaffMemberFeature,
+                nameof(FeatureFlags.EJudFeature) => _featureFlagConfigurationOptions.EJudFeature,
+                _ => throw new FeatureFlagNotFoundException(featureName)
+            };
         }
     }
 }
