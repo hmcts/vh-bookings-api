@@ -1,4 +1,5 @@
-﻿using BookingsApi.Common.Exceptions;
+﻿using Autofac.Extras.Moq;
+using BookingsApi.Common.Exceptions;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
 using FluentAssertions;
