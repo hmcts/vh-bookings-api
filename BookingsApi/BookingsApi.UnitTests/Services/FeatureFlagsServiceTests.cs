@@ -12,6 +12,7 @@ namespace BookingsApi.UnitTests.Services
     {
         private AutoMock _mocker;
         private FeatureFlagService _service;
+
         [SetUp]
         public void SetUp()
         {
