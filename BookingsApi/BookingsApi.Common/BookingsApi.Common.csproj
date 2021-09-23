@@ -15,7 +15,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
-  </ItemGroup>
 </Project>
