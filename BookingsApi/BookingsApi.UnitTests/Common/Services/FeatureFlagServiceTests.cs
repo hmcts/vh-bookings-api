@@ -1,12 +1,14 @@
-﻿using Autofac.Extras.Moq;
-using BookingsApi.Common.Exceptions;
+﻿using BookingsApi.Common.Exceptions;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace BookingsApi.UnitTests.Services
+namespace BookingsApi.UnitTests.Common.Services
 {
     public class FeatureFlagsServiceTests
     {
@@ -32,7 +34,7 @@ namespace BookingsApi.UnitTests.Services
 
             featureFlag.Should().BeTrue();
         }
-        
+
         [Test]
         public void GetFeatureFlag_Should_Return_False_for_StaffMember_Feature()
         {
@@ -60,7 +62,7 @@ namespace BookingsApi.UnitTests.Services
 
             featureFlag.Should().BeTrue();
         }
-        
+
         [Test]
         public void GetFeatureFlag_Should_Return_False_for_EJud_Feature()
         {
