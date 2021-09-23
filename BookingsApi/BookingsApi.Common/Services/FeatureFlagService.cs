@@ -14,12 +14,15 @@ namespace BookingsApi.Common.Services
 
         public bool GetFeatureFlag(string featureName)
         {
-            return featureName switch
+            switch (featureName)
             {
-                nameof(FeatureFlags.StaffMemberFeature) => _featureFlagConfigurationOptions.StaffMemberFeature,
-                nameof(FeatureFlags.EJudFeature) => _featureFlagConfigurationOptions.EJudFeature,
-                _ => throw new FeatureFlagNotFoundException(featureName)
-            };
+                case nameof(FeatureFlags.StaffMemberFeature):
+                    return _featureFlagConfigurationOptions.StaffMemberFeature;
+                case nameof(FeatureFlags.EJudFeature):
+                    return _featureFlagConfigurationOptions.EJudFeature;
+                default:
+                    throw new FeatureFlagNotFoundException(featureName);
+            }
         }
     }
 }
