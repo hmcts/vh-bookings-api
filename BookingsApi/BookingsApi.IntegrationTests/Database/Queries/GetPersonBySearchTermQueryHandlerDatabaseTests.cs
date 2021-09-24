@@ -1,22 +1,31 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BookingsApi.Contract.Configuration;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
+using Moq;
 using NUnit.Framework;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetPersonBySearchTermQueryHandlerTests : DatabaseTestsBase
     {
         private GetPersonBySearchTermQueryHandler _handler;
+        private Mock<IOptions<FeatureFlagConfiguration>> _configOptions;
+
 
         [SetUp]
         public void Setup()
         {
+            _configOptions = new Mock<IOptions<FeatureFlagConfiguration>>();
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _handler = new GetPersonBySearchTermQueryHandler(context);
+            _configOptions.Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
+            {
+                StaffMemberFeature = true
+            });
+            _handler = new GetPersonBySearchTermQueryHandler(context, _configOptions.Object);
         }
 
         [Test]
