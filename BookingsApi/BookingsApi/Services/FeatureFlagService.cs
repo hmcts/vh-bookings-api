@@ -1,5 +1,5 @@
-﻿using BookingsApi.Contract.Configuration;
-using BookingsApi.DAL.Exceptions;
+﻿using BookingsApi.Common.Exceptions;
+using BookingsApi.Contract.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace BookingsApi.Services
@@ -11,7 +11,7 @@ namespace BookingsApi.Services
         {
             _featureFlagConfigurationOptions = featureFlagConfigurationOptions.Value;
         }
-
+        
         public bool GetFeatureFlag(string featureName)
         {
             return featureName switch
