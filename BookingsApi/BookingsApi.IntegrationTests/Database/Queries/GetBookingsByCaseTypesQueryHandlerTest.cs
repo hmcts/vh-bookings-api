@@ -126,11 +126,15 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
 
             var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, FromDate = fromDate };
-            var result = await _handler.Handle(query);
 
-            var hearingIds = result.Select(hearing => hearing.Id).ToList();
-            foreach (var hearing in includedHearings) hearingIds.Should().Contain(hearing.Id);
+            var hearings = await _handler.Handle(query);
+            var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
+
             hearingIds.Count.Should().Be(includedHearings.Count());
+            foreach (var hearing in includedHearings) 
+            {
+                hearingIds.Should().Contain(hearing.Id);
+            }
         }
 
         private static bool IdsAreInOrder(List<Guid> ids)

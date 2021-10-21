@@ -81,6 +81,26 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
+        public async Task Should_use_passed_from_date_when_from_date_is_provided()
+        {
+            // Arrange
+            var utcNow = DateTime.UtcNow;
+            var expectedDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day).AddDays(3);
+
+            QueryHandlerMock
+                .Setup(x =>
+                    x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                        It.IsAny<GetBookingsByCaseTypesQuery>()))
+                .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
+
+            // Act
+            await Controller.GetHearingsByTypes(new List<int>(), "0", 100, expectedDate);
+
+            // Assert
+            QueryHandlerMock.Verify(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
+        }
+
+        [Test]
         public async Task Should_return_bad_request_if_invalid_case_types()
         {
             var caseTypes = new List<int> { 44, 78 };

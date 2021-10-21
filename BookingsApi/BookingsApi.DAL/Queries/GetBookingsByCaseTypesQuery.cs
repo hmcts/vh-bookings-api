@@ -59,7 +59,10 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .AsNoTracking();
 
-            if (query.CaseTypes.Any()) hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId));
+            if (query.CaseTypes.Any()) 
+            { 
+                hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId)); 
+            }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.FromDate)
                                .OrderBy(x => x.ScheduledDateTime)
