@@ -1,3 +1,5 @@
+using System;
+
 namespace BookingsApi.IntegrationTests.Helper
 {
     public class SeedVideoHearingOptions
@@ -21,5 +23,7 @@ namespace BookingsApi.IntegrationTests.Helper
         public string RespondentRole = "Respondent";
 
         public string LipHearingRole => "Litigant in person";
+
+        public DateTime? ScheduledDate { get; internal set; }
     }
 }

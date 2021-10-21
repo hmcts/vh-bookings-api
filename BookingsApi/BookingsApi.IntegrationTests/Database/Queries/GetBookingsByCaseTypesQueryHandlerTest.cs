@@ -6,6 +6,7 @@ using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -104,6 +105,32 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             // They should all have different id's
             var ids = allHearings.Select(x => x.Id);
             ids.Distinct().Count().Should().Be(_context.VideoHearings.Count());
+        }
+
+        [Test]
+        public async Task Should_return_hearings_on_or_after_the_from_date()
+        {
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(2));
+            var utcNow = DateTime.UtcNow;
+            var fromDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day).AddDays(3);
+            var includedHearings = _context.VideoHearings
+                .Include("Participants.Person")
+                .Include("Participants.HearingRole.UserRole")
+                .Include("Participants.CaseRole")
+                .Include("HearingCases.Case")
+                .Include(x => x.HearingType)
+                .Include(x => x.CaseType)
+                .Include(x => x.HearingVenue)
+                .AsNoTracking().Where(x => x.ScheduledDateTime > fromDate);
+
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, FromDate = fromDate };
+            var result = await _handler.Handle(query);
+
+            var hearingIds = result.Select(hearing => hearing.Id).ToList();
+            foreach (var hearing in includedHearings) hearingIds.Should().Contain(hearing.Id);
+            hearingIds.Count.Should().Be(includedHearings.Count());
         }
 
         private static bool IdsAreInOrder(List<Guid> ids)

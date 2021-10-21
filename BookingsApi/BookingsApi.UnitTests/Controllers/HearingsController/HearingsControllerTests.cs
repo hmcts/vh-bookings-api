@@ -59,6 +59,21 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 HearingServiceMock.Object, Logger.Object);
         }
 
+
+        [Test]
+        public async Task Should_use_utc_now_at_midnight_when_no_from_date_is_provided()
+        {
+            // Arrange
+            var utcNow = DateTime.UtcNow;
+            var expectedDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day);
+
+            // Act
+            Controller.GetHearingsByTypes(new List<int>());
+
+            // Assert
+            QueryHandlerMock.Verify(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
+        }
+
         [Test]
         public async Task Should_return_bad_request_if_invalid_case_types()
         {

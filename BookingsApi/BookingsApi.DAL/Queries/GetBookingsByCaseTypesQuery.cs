@@ -23,7 +23,6 @@ namespace BookingsApi.DAL.Queries
         }
 
         public IList<int> CaseTypes { get; }
-
         public string Cursor { get; set; }
         public DateTime FromDate { get; set; }
 
