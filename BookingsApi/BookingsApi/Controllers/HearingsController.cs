@@ -512,10 +512,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit, [FromQuery] DateTime? fromDate = null)
         {
-            if (!fromDate.HasValue) {
-                var utcNow = DateTime.UtcNow;
-                fromDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day);
-            }
+            fromDate = fromDate ?? DateTime.UtcNow.Date;
 
             types = types ?? new List<int>();
             if (!await ValidateCaseTypes(types))

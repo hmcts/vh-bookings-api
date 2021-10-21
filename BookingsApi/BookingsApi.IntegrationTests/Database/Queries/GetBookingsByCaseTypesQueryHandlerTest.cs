@@ -112,8 +112,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(2));
-            var utcNow = DateTime.UtcNow;
-            var fromDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day).AddDays(3);
+            var fromDate = DateTime.UtcNow.Date.AddDays(3);
             var includedHearings = _context.VideoHearings
                 .Include("Participants.Person")
                 .Include("Participants.HearingRole.UserRole")

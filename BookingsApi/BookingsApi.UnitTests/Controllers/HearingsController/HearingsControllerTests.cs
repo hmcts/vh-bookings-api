@@ -64,8 +64,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         public async Task Should_use_utc_now_at_midnight_when_no_from_date_is_provided()
         {
             // Arrange
-            var utcNow = DateTime.UtcNow;
-            var expectedDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day);
+            var expectedDate = DateTime.UtcNow.Date;
 
             QueryHandlerMock
                 .Setup(x =>
@@ -84,8 +83,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         public async Task Should_use_passed_from_date_when_from_date_is_provided()
         {
             // Arrange
-            var utcNow = DateTime.UtcNow;
-            var expectedDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day).AddDays(3);
+            var expectedDate = DateTime.UtcNow.Date.AddDays(3);
 
             QueryHandlerMock
                 .Setup(x =>
