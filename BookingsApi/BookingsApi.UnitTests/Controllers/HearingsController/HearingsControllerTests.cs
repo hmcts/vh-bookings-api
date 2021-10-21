@@ -68,7 +68,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var expectedDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day);
 
             // Act
-            Controller.GetHearingsByTypes(new List<int>());
+            await Controller.GetHearingsByTypes(new List<int>());
 
             // Assert
             QueryHandlerMock.Verify(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
