@@ -509,8 +509,13 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit, [FromQuery] DateTime? fromDate = null)
         {
+            if (!fromDate.HasValue) {
+                var utcNow = DateTime.UtcNow;
+                fromDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day);
+            }
+
             types = types ?? new List<int>();
             if (!await ValidateCaseTypes(types))
             {
@@ -521,7 +526,8 @@ namespace BookingsApi.Controllers
             var query = new GetBookingsByCaseTypesQuery(types)
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
-                Limit = limit
+                Limit = limit,
+                FromDate = fromDate.Value
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 

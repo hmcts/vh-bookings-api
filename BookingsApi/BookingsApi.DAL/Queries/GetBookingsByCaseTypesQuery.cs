@@ -25,6 +25,7 @@ namespace BookingsApi.DAL.Queries
         public IList<int> CaseTypes { get; }
 
         public string Cursor { get; set; }
+        public DateTime FromDate { get; set; }
 
         public int Limit
         {
@@ -59,15 +60,12 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .AsNoTracking();
 
-            if (query.CaseTypes.Any())
-            {
-                var dayToday = DateTime.UtcNow;
-                var dateNow = new DateTime(dayToday.Year, dayToday.Month, dayToday.Day);
-                hearings = hearings.Where(x =>
-                    x.ScheduledDateTime > dateNow && query.CaseTypes.Contains(x.CaseTypeId));
-            }
+            if (query.CaseTypes.Any()) hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId));
 
-            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ThenBy(x => x.Id);
+            hearings = hearings.Where(x => x.ScheduledDateTime > query.FromDate)
+                               .OrderBy(x => x.ScheduledDateTime)
+                               .ThenBy(x => x.Id);
+
             if (!string.IsNullOrEmpty(query.Cursor))
             {
                 TryParseCursor(query.Cursor, out var scheduledDateTime, out var id);
