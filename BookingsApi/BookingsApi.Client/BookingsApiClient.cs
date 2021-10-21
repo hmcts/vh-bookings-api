@@ -348,6 +348,7 @@ namespace BookingsApi.Client
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
+        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate);
@@ -357,6 +358,7 @@ namespace BookingsApi.Client
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
+        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, System.Threading.CancellationToken cancellationToken);
@@ -2967,6 +2969,7 @@ namespace BookingsApi.Client
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
+        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate)
@@ -2979,6 +2982,7 @@ namespace BookingsApi.Client
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
+        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, System.Threading.CancellationToken cancellationToken)
