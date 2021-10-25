@@ -112,6 +112,8 @@ extends:
              - Dev
              - AAT
              - Sandbox
+          - group: FeatureFlags_Demo
+            env:
              - Demo
           - group: FeatureFlags_Test
             env:
