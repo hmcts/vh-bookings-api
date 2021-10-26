@@ -503,14 +503,17 @@ namespace BookingsApi.Controllers
         /// <param name="types">The hearing case types.</param>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
+        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit)
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit, [FromQuery] DateTime? fromDate = null)
         {
+            fromDate = fromDate ?? DateTime.UtcNow.Date;
+
             types = types ?? new List<int>();
             if (!await ValidateCaseTypes(types))
             {
@@ -521,7 +524,8 @@ namespace BookingsApi.Controllers
             var query = new GetBookingsByCaseTypesQuery(types)
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
-                Limit = limit
+                Limit = limit,
+                FromDate = fromDate.Value
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 

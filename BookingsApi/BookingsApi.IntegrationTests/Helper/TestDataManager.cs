@@ -78,7 +78,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person4 = new PersonBuilder(true).Build();
             var judgePerson = new PersonBuilder(true).Build();
             var johPerson = new PersonBuilder(true).Build();
-            var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
             const string hearingRoomName = "Room02";
             const string otherInformation = "OtherInformation02";
