@@ -214,13 +214,13 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public bool HasValidNumberOfParticipants => GetParticipants().Count >= 2;
+        public bool HasHost => GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member");
 
-        public void ValidateParticipantCount()
+        public void ValidateHostCount()
         {
-            if (!HasValidNumberOfParticipants)
+            if (!HasHost)
             {
-                throw new DomainRuleException("Participant", "A hearing must have at least one participant");
+                throw new DomainRuleException("Host", "A hearing must have at least one host");
             }
         }
 
@@ -231,7 +231,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
             }
 
-            if (validateParticipantCount) ValidateParticipantCount();
+            if (validateParticipantCount) ValidateHostCount();
 
             var existingParticipant = Participants.Single(x => x.Person.Username == participant.Person.Username);
             var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);

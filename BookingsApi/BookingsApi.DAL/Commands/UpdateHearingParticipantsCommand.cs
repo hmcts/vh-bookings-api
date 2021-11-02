@@ -62,7 +62,7 @@ namespace BookingsApi.DAL.Commands
             
             await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
             
-            hearing.ValidateParticipantCount();
+            hearing.ValidateHostCount();
             
             var participants = hearing.GetParticipants().ToList();
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)
