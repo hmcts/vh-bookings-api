@@ -40,23 +40,5 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             action.Should().Throw<DomainRuleException>().And.ValidationFailures.Any(x =>
                 x.Name == "Participant" && x.Message == "Participant does not exist on the hearing").Should().BeTrue();
         }
-
-        [Test]
-        public void Should_not_remove_participant_when_count_is_below_two()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            var currentCount = hearing.GetParticipants().Count;
-            while (currentCount > 1)
-            {
-                var part = hearing.GetParticipants().First();
-                hearing.RemoveParticipant(part);
-                currentCount = hearing.GetParticipants().Count;
-            }
-
-            var participant = hearing.GetParticipants().First();
-            Action action = () => hearing.RemoveParticipant(participant);
-            action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == "A hearing must have at least one participant").Should().BeTrue();
-        }
     }
 }
