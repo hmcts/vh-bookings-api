@@ -268,7 +268,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var judgeHearingRole =
                 judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
-            var test = _hearing.GetParticipants();
             var oldJudgeId = _hearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id).Id;
 
             var newJudge = new PersonBuilder(true).Build();
