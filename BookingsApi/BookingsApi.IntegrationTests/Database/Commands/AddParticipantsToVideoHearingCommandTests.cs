@@ -7,6 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;

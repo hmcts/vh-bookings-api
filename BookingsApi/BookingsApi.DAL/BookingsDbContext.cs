@@ -10,6 +10,10 @@ namespace BookingsApi.DAL
 {
     public class BookingsDbContext : DbContext
     {
+        public BookingsDbContext() : base()
+        {
+        }
+
         public BookingsDbContext(DbContextOptions options) : base(options)
         {
         }
@@ -18,6 +22,7 @@ namespace BookingsApi.DAL
         public DbSet<Person> Persons { get; set; }
         public DbSet<CaseType> CaseTypes { get; set; }
         public DbSet<HearingVenue> Venues { get; set; }
+        public virtual DbSet<HearingRole> HearingRoles { get; set; }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<JobHistory> JobHistory { get; set; }
         public DbSet<JudiciaryPerson> JudiciaryPersons { get; set; }

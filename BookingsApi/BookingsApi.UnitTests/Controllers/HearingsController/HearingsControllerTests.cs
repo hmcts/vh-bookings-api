@@ -26,6 +26,7 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {

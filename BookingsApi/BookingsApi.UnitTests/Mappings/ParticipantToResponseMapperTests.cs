@@ -23,7 +23,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_map_judge()
         {
             var caseRole = new CaseRole(5, "Judge");
-            var hearingRole = new HearingRole(13, "Judge") {UserRole = new UserRole(4, "Judge")};
+            var hearingRole = new BookingsApi.Domain.RefData.HearingRole(13, "Judge") { UserRole = new UserRole(4, "Judge")};
 
             var person = new PersonBuilder().Build();
             var judge = new Judge(person, hearingRole, caseRole)
@@ -48,7 +48,7 @@ namespace BookingsApi.UnitTests.Mappings
             var caseRole = new CaseRole(222, staffMemberName);
             var staffMemberUserId = UserRoleForHearingRole.UserRoleId["Staff Member"];
 
-            var hearingRole = new HearingRole(727, staffMemberName) {UserRole = new UserRole(staffMemberUserId, staffMemberName)};
+            var hearingRole = new BookingsApi.Domain.RefData.HearingRole(727, staffMemberName) { UserRole = new UserRole(staffMemberUserId, staffMemberName)};
 
             var person = new PersonBuilder().Build();
             var staffMember = new StaffMember(person, hearingRole, caseRole)
@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_map_individual()
         {
             var caseRole = new CaseRole(1, "Applicant");
-            var hearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(5, "Individual")};
+            var hearingRole = new BookingsApi.Domain.RefData.HearingRole(1, "Litigant in person") { UserRole = new UserRole(5, "Individual")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
             var individual = new Individual(person, hearingRole, caseRole)
@@ -92,7 +92,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_map_representative()
         {
             var caseRole = new CaseRole(1, "Applicant");
-            var hearingRole = new HearingRole(2, "Representative") {UserRole = new UserRole(6, "Representative")};
+            var hearingRole = new BookingsApi.Domain.RefData.HearingRole(2, "Representative") { UserRole = new UserRole(6, "Representative")};
 
             var person = new PersonBuilder().WithOrganisation().Build();
             var representative = new Representative(person, hearingRole, caseRole)
@@ -115,7 +115,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_map_judicial_office_holder()
         {
             var caseRole = new CaseRole(7, "Judicial Office Holder");
-            var hearingRole = new HearingRole(14, "Judicial Office Holder") {UserRole = new UserRole(7, "Judicial Office Holder")};
+            var hearingRole = new BookingsApi.Domain.RefData.HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole(7, "Judicial Office Holder")};
 
             var person = new PersonBuilder().Build();
             var joh = new JudicialOfficeHolder(person, hearingRole, caseRole)
@@ -137,7 +137,7 @@ namespace BookingsApi.UnitTests.Mappings
         public void Should_Map_Individual_With_Linked_Participants()
         {
             var caseRole = new CaseRole(1, "Applicant");
-            var hearingRole = new HearingRole(1, "Litigant in person") {UserRole = new UserRole(5, "Individual")};
+            var hearingRole = new BookingsApi.Domain.RefData.HearingRole(1, "Litigant in person") { UserRole = new UserRole(5, "Individual")};
 
             var person = new PersonBuilder().Build();
             var linkedId = Guid.NewGuid();
@@ -164,7 +164,7 @@ namespace BookingsApi.UnitTests.Mappings
         }
 
         private static void AssertParticipantCommonDetails(ParticipantResponse response, Participant participant,
-            CaseRole caseRole, HearingRole hearingRole)
+            CaseRole caseRole, BookingsApi.Domain.RefData.HearingRole hearingRole)
         {
             response.Id.Should().Be(participant.Id);
             response.DisplayName.Should().Be(participant.DisplayName);
