@@ -10,10 +10,6 @@ namespace BookingsApi.DAL
 {
     public class BookingsDbContext : DbContext
     {
-        public BookingsDbContext() : base()
-        {
-        }
-
         public BookingsDbContext(DbContextOptions options) : base(options)
         {
         }
