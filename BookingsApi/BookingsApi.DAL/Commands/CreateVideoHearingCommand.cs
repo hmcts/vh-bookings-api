@@ -7,6 +7,7 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
 {

@@ -29,6 +29,7 @@ using Newtonsoft.Json;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.Controllers
 {

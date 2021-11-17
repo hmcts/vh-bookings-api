@@ -1,9 +1,9 @@
 ﻿using BookingsApi.Common;
 using BookingsApi.Common.Security;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.DAL.Services;
 using BookingsApi.Services;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;

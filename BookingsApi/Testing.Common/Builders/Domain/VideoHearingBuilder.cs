@@ -1,9 +1,9 @@
-using System;
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;
+using System;
+using System.Linq;
 
 namespace Testing.Common.Builders.Domain
 {
@@ -40,14 +40,14 @@ namespace Testing.Common.Builders.Domain
 
             var applicantCaseRole = new CaseRole(1, "Applicant") { Group = CaseRoleGroup.Applicant };
             var respondentCaseRole = new CaseRole(2, "Respondent") { Group = CaseRoleGroup.Respondent };
-            var applicantLipHearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
+            var applicantLipHearingRole = new HearingRole((int)HearingRoleIds.LitigantInPerson, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
             var respondentRepresentativeHearingRole =  new HearingRole(5, "Representative") { UserRole = new UserRole(1, "Representative") };
 
             var respondentLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
-            var judgeHearingRole = new HearingRole(13, "Judge") { UserRole = new UserRole(1, "Judge") };
+            var judgeHearingRole = new HearingRole((int)HearingRoleIds.Judge, "Judge") { UserRole = new UserRole(1, "Judge") };
             const string  staffMemberRole= "Staff Member";
-            var staffMemberHearingRole = new HearingRole(727, staffMemberRole) { UserRole = new UserRole(8, staffMemberRole) };
+            var staffMemberHearingRole = new HearingRole((int)HearingRoleIds.StaffMember, staffMemberRole) { UserRole = new UserRole(8, staffMemberRole) };
             var staffMemberCaseRole = new CaseRole(213, staffMemberRole) { Group = CaseRoleGroup.StaffMember };
             var johHearingRole = new HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole( 7, "Judicial Office Holder")};
             var johCaseRole = new CaseRole(11, "Winger") { Group = CaseRoleGroup.Winger };

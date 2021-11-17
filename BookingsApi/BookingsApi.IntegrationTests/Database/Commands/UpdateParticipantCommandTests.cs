@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using FluentAssertions;
