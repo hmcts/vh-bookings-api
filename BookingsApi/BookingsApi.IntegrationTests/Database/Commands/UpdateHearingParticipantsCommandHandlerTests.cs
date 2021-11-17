@@ -295,7 +295,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             addedJudge.Person.LastName.Should().Be(newJudge.LastName);
         }
 
-
         private UpdateHearingParticipantsCommand BuildCommand()
         {
             return new UpdateHearingParticipantsCommand(_hearing.Id, _existingParticipants, _newParticipants, _removedParticipantIds, _linkedParticipants);
