@@ -1,18 +1,14 @@
-using System;
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;
+using System;
+using System.Linq;
 
 namespace Testing.Common.Builders.Domain
 {
     public class VideoHearingBuilder
     {
-        public static int LitigantInPersonHearingRole { get; } = 1;
-        public static int JudgeHearingRoleId { get; } = 13;
-        public static int StaffMemberHearingRoleId { get; } = 727;
-
         private readonly string _caseTypeName = "Generic";
         private readonly string _hearingTypeName = "Automated Test";
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
@@ -44,14 +40,14 @@ namespace Testing.Common.Builders.Domain
 
             var applicantCaseRole = new CaseRole(1, "Applicant") { Group = CaseRoleGroup.Applicant };
             var respondentCaseRole = new CaseRole(2, "Respondent") { Group = CaseRoleGroup.Respondent };
-            var applicantLipHearingRole = new HearingRole(LitigantInPersonHearingRole, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
+            var applicantLipHearingRole = new HearingRole((int)HearingRoleIds.LitigantInPerson, "Litigant in person") { UserRole = new UserRole(1, "Individual")};
             var respondentRepresentativeHearingRole =  new HearingRole(5, "Representative") { UserRole = new UserRole(1, "Representative") };
 
             var respondentLipHearingRole =  new HearingRole(4, "Litigant in person") { UserRole = new UserRole(1, "Individual") };
             var judgeCaseRole = new CaseRole(5, "Judge") { Group = CaseRoleGroup.Judge };
-            var judgeHearingRole = new HearingRole(JudgeHearingRoleId, "Judge") { UserRole = new UserRole(1, "Judge") };
+            var judgeHearingRole = new HearingRole((int)HearingRoleIds.Judge, "Judge") { UserRole = new UserRole(1, "Judge") };
             const string  staffMemberRole= "Staff Member";
-            var staffMemberHearingRole = new HearingRole(StaffMemberHearingRoleId, staffMemberRole) { UserRole = new UserRole(8, staffMemberRole) };
+            var staffMemberHearingRole = new HearingRole((int)HearingRoleIds.StaffMember, staffMemberRole) { UserRole = new UserRole(8, staffMemberRole) };
             var staffMemberCaseRole = new CaseRole(213, staffMemberRole) { Group = CaseRoleGroup.StaffMember };
             var johHearingRole = new HearingRole(14, "Judicial Office Holder") { UserRole = new UserRole( 7, "Judicial Office Holder")};
             var johCaseRole = new CaseRole(11, "Winger") { Group = CaseRoleGroup.Winger };
