@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -49,7 +50,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
-            
+                        
             if (hearing == null)
             {
                 throw new HearingNotFoundException(command.HearingId);
@@ -61,8 +62,8 @@ namespace BookingsApi.DAL.Commands
                 hearing.RemoveParticipantById(removedParticipantId, false);
             
             await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
-            
-            hearing.ValidateHostCount();
+
+            _hearingService.ValidateHostCount(hearing.Participants);
             
             var participants = hearing.GetParticipants().ToList();
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)

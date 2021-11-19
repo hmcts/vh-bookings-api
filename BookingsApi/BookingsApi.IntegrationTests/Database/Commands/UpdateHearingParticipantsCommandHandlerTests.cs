@@ -3,6 +3,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -13,7 +14,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Testing.Common.Builders.Domain;
 
@@ -258,6 +258,41 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             linkedSecondaryParticipant.LinkedParticipants.Should().NotBeEmpty();
             linkedSecondaryParticipant.LinkedParticipants[0].ParticipantId.Should().Be(secondaryParticipant.Id);
             linkedSecondaryParticipant.LinkedParticipants[0].LinkedId.Should().Be(primaryParticipant.Id);
+        }
+
+        [Test]
+        public async Task Should_change_judge()
+        {
+            //Arrange
+            var judgeCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Judge");
+            var judgeHearingRole =
+                judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+
+            var oldJudgeId = _hearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id).Id;
+
+            var newJudge = new PersonBuilder(true).Build();
+
+            var newParticipant = new NewParticipant()
+            {
+                Person = newJudge,
+                CaseRole = judgeCaseRole,
+                HearingRole = judgeHearingRole,
+                DisplayName = $"{newJudge.FirstName} {newJudge.LastName}"
+            };
+
+            _removedParticipantIds.Add(oldJudgeId);
+            _newParticipants.Add(newParticipant);
+            _command = BuildCommand();
+
+            //Act
+            await _handler.Handle(_command);
+            var updatedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
+            var addedJudge = updatedVideoHearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id);
+
+            //Assert
+            addedJudge.Person.FirstName.Should().Be(newJudge.FirstName);
+            addedJudge.Person.LastName.Should().Be(newJudge.LastName);
         }
 
         private UpdateHearingParticipantsCommand BuildCommand()

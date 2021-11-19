@@ -7,6 +7,7 @@ using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
 {

@@ -1,15 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace BookingsApi.DAL.Commands
+namespace BookingsApi.DAL.Services
 {
     public interface IHearingService
     {
@@ -45,6 +47,13 @@ namespace BookingsApi.DAL.Commands
         /// <param name="linkedParticipantDtos"></param>
         /// <returns></returns>
         Task RemoveParticipantLinks(List<Participant> participants, Participant participant);
+
+        /// <summary>
+        /// Checks to see if a host is present
+        /// </summary>
+        /// <param name="participants">List of participants</param>
+        /// <returns></returns>
+        void ValidateHostCount(IList<Participant> participants);
     }
     public class HearingService : IHearingService
     {
@@ -177,6 +186,18 @@ namespace BookingsApi.DAL.Commands
                 interpreter.RemoveLink(lp1);
             }
             return Task.CompletedTask;
+        }
+
+        public void ValidateHostCount(IList<Participant> participants)
+        {
+            var hostHearingRoleIds = _context.HearingRoles.Where(x => x.Name == HearingRoles.Judge || x.Name == HearingRoles.StaffMember).Select(x => x.Id);
+
+            var hasHost = participants.Any(x => hostHearingRoleIds.Contains(x.HearingRoleId));
+
+            if (!hasHost)
+            {
+                throw new DomainRuleException("Host", "A hearing must have at least one host");
+            }
         }
 
         private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
