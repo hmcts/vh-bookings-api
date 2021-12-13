@@ -11,7 +11,9 @@ namespace BookingsApi.DAL.Helper
             { UserRoles.Individual, 5},
             { UserRoles.Observer, 5},
             { UserRoles.Respondent, 5},
+            { UserRoles.Representative, 6 },
             { UserRoles.PanelMember, 7 },
+            { UserRoles.JudicialOfficeHolder, 7 },
             { UserRoles.StaffMember, 8}
         };
     }
