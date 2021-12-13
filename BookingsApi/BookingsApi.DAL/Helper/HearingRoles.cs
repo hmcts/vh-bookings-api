@@ -10,7 +10,7 @@
         public const string Interpreter = "Interpreter";
         public const string JointParty = "Joint Party";
         public const string Representative = "Representative";
-        public const string SupportWorker = "SupportWorker";
+        public const string SupportWorker = "Support Worker";
         public const string Witness = "Witness";
         public const string App = "App";
         public const string AppAdvocate = "App Advocate";

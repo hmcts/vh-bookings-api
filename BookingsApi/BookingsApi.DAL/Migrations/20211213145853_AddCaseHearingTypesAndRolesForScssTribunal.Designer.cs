@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    [Migration("20211213115653_AddCaseHearingTypesAndRolesForScssTribunal")]
+    [Migration("20211213145853_AddCaseHearingTypesAndRolesForScssTribunal")]
     partial class AddCaseHearingTypesAndRolesForScssTribunal
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
