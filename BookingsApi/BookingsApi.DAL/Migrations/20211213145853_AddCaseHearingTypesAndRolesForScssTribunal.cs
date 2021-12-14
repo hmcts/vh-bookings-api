@@ -53,21 +53,24 @@ namespace BookingsApi.DAL.Migrations
                     {773, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 255},
                     {774, HearingRoles.SupportWorker, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 255},
                     {775, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 255},
-                    // Respondent(256)
-                    {776, HearingRoles.App, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 256},
-                    {777, HearingRoles.AppAdvocate, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 256},
-                    {778, HearingRoles.DwpPresentingOfficer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 256},
-                    {779, HearingRoles.Expert, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 256},
-                    {780, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 256},
-                    {781, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 256},
-                    {782, HearingRoles.Respondent, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 256},
-                    {783, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 256},
                     
                     // Panel Member(257)
-                    {784, HearingRoles.DisabilityMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
-                    {785, HearingRoles.FinancialMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
-                    {786, HearingRoles.LegalMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
-                    {787, HearingRoles.MedicalMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
+                    {784, HearingRoles.DisabilityMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 256},
+                    {785, HearingRoles.FinancialMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 256},
+                    {786, HearingRoles.LegalMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 256},
+                    {787, HearingRoles.MedicalMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 256},
+                    
+                    // Respondent(256)
+                    {776, HearingRoles.App, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
+                    {777, HearingRoles.AppAdvocate, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 257},
+                    {778, HearingRoles.DwpPresentingOfficer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
+                    {779, HearingRoles.Expert, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
+                    {780, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
+                    {781, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 257},
+                    {782, HearingRoles.Respondent, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
+                    {783, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
+                    
+                    
                     // Observer(258)
                     {788, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
                     {789, HearingRoles.Appraiser, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
@@ -83,7 +86,7 @@ namespace BookingsApi.DAL.Migrations
                 migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
             }
 
-            for (int hearingRoleId = 769; hearingRoleId <= 788; hearingRoleId++)
+            for (int hearingRoleId = 769; hearingRoleId <= 789; hearingRoleId++)
             {
                 migrationBuilder.DeleteData(nameof(HearingRole), "Id", hearingRoleId);
             }
