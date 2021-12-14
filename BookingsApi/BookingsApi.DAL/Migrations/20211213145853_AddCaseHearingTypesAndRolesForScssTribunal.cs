@@ -68,7 +68,7 @@ namespace BookingsApi.DAL.Migrations
                     {785, HearingRoles.FinancialMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
                     {786, HearingRoles.LegalMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
                     {787, HearingRoles.MedicalMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 257},
-                    // bserver(258)
+                    // Observer(258)
                     {788, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
                     {789, HearingRoles.Appraiser, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
                 });
