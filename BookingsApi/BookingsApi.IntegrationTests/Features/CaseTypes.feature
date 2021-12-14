@@ -49,7 +49,8 @@ Scenario: Get available case types
 		| Public Law - Care                 | Application,Case Management Conference,Case Management Hearing,Directions,Full,Further CMH,Interim Care Order,Issues Resolution Hearing,Pre Hearing Review                                                                                                                                                                                                 |
 		| Placement                         | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
 		| Adoption                          | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
-
+        | SSCS Tribunal	                    | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings	                                                                                                                                                		                                                                                     |	    
+        
 Scenario: Get case roles for a case type with nonexistent case type
 	Given I have a get case roles for a case type of 'nonexistent' request
 	When I send the request to the endpoint
