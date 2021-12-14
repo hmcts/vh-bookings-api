@@ -8,5 +8,7 @@
         public const string Respondent = "Respondent";
         public const string PanelMember = "Panel Member";
         public const string StaffMember = "Staff Member";
+        public const string Representative = "Representative";
+        public const string JudicialOfficeHolder = "Judicial Office Holder";
     }
 }
