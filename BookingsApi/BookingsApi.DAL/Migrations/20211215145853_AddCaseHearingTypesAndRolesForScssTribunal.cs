@@ -38,7 +38,8 @@ namespace BookingsApi.DAL.Migrations
                     { 255, "Appellant", (int) CaseRoleGroup.Appellant, 40 },
                     { 256, "Panel Member", (int) CaseRoleGroup.PanelMember, 40 },
                     { 257, "None", (int) CaseRoleGroup.None, 40 },
-                    { 258, "Observer", (int) CaseRoleGroup.Observer, 40 }
+                    { 258, "Observer", (int) CaseRoleGroup.Observer, 40 },
+                    { 259, "Judge", (int) CaseRoleGroup.Judge, 40 }
                 });
             migrationBuilder.InsertData(
                 nameof(HearingRole),
@@ -70,10 +71,13 @@ namespace BookingsApi.DAL.Migrations
                     {782, HearingRoles.Respondent, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
                     {783, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 257},
                     
-                    
                     // Observer(258)
                     {788, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
                     {789, HearingRoles.Appraiser, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
+                    
+                    //Judge
+                    {790, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 259},
+
                 });
 
         }
@@ -86,12 +90,12 @@ namespace BookingsApi.DAL.Migrations
                 migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
             }
 
-            for (int hearingRoleId = 769; hearingRoleId <= 789; hearingRoleId++)
+            for (int hearingRoleId = 769; hearingRoleId <= 790; hearingRoleId++)
             {
                 migrationBuilder.DeleteData(nameof(HearingRole), "Id", hearingRoleId);
             }
             
-            for (int CaseRoleId = 255; CaseRoleId <= 258; CaseRoleId++)
+            for (int CaseRoleId = 255; CaseRoleId <= 259; CaseRoleId++)
             {
                 migrationBuilder.DeleteData(nameof(CaseRole), "Id", CaseRoleId);
             }
