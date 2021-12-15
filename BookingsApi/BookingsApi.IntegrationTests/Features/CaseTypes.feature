@@ -107,6 +107,7 @@ Scenario Outline: Get case roles for a case type
 		| GRC - Welfare of Animals          |
 		| GRC - EJ                          |
 		| Immigration and Asylum            |
+		| SSCS Tribunal                     |
 
 Scenario Outline: Get hearing roles for a case role of a case type
 	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -265,3 +266,8 @@ Scenario Outline: Get hearing roles for a case role of a case type
 		| Immigration and Asylum            | Observer     |
 		| Immigration and Asylum            | Panel Member |
 		| Immigration and Asylum            | Judge        |
+		| SSCS Tribunal                     | Judge        |
+		| SSCS Tribunal                     | Appellant    |
+		| SSCS Tribunal                     | Panel Member |
+		| SSCS Tribunal                     | None         |
+		| SSCS Tribunal                     | Observer     |
