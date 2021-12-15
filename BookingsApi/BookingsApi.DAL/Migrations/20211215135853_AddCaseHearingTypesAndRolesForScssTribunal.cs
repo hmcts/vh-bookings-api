@@ -76,7 +76,7 @@ namespace BookingsApi.DAL.Migrations
                     {789, HearingRoles.Appraiser, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 258},
                     
                     //Judge
-                    {790, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 259},
+                    {790, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Judge], 259},
 
                 });
 
