@@ -49,7 +49,8 @@ Scenario: Get available case types
 		| Public Law - Care                 | Application,Case Management Conference,Case Management Hearing,Directions,Full,Further CMH,Interim Care Order,Issues Resolution Hearing,Pre Hearing Review                                                                                                                                                                                                 |
 		| Placement                         | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
 		| Adoption                          | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
-
+        | SSCS Tribunal	                    | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings	                                                                                                                                                		                                                                                     |	    
+        
 Scenario: Get case roles for a case type with nonexistent case type
 	Given I have a get case roles for a case type of 'nonexistent' request
 	When I send the request to the endpoint
@@ -106,6 +107,7 @@ Scenario Outline: Get case roles for a case type
 		| GRC - Welfare of Animals          |
 		| GRC - EJ                          |
 		| Immigration and Asylum            |
+		| SSCS Tribunal                     |
 
 Scenario Outline: Get hearing roles for a case role of a case type
 	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -264,3 +266,8 @@ Scenario Outline: Get hearing roles for a case role of a case type
 		| Immigration and Asylum            | Observer     |
 		| Immigration and Asylum            | Panel Member |
 		| Immigration and Asylum            | Judge        |
+		| SSCS Tribunal                     | Judge        |
+		| SSCS Tribunal                     | Appellant    |
+		| SSCS Tribunal                     | Panel Member |
+		| SSCS Tribunal                     | None         |
+		| SSCS Tribunal                     | Observer     |
