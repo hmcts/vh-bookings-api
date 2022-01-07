@@ -273,6 +273,7 @@ Scenario Outline: Get hearing roles for a case role of a case type
 		| SSCS Tribunal                     | Panel Member |
 		| SSCS Tribunal                     | None         |
 		| SSCS Tribunal                     | Observer     |
+		| Upper Tribunal Tax                | Judge        |
 		| Upper Tribunal Tax                | Appellant    |
 		| Upper Tribunal Tax                | Respondent   |
 		| Upper Tribunal Tax                | Panel Member |

@@ -33,7 +33,8 @@ namespace BookingsApi.DAL.Migrations
                     { 251, "Appellant", (int) CaseRoleGroup.Appellant, 39 },
                     { 252, "Respondent", (int) CaseRoleGroup.Respondent, 39 },
                     { 253, "Panel Member", (int) CaseRoleGroup.PanelMember, 39 },
-                    { 254, "Observer", (int) CaseRoleGroup.Observer, 39 }
+                    { 254, "Observer", (int) CaseRoleGroup.Observer, 39 },
+                    { 260, "Judge", (int) CaseRoleGroup.Judge, 39 }
                 });
 
             migrationBuilder.InsertData(
@@ -55,6 +56,9 @@ namespace BookingsApi.DAL.Migrations
                     {767, HearingRoles.PanelMember, UserRoleForHearingRole.UserRoleId[UserRoles.PanelMember], 253},
                     // Observer(254)
                     {768, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 254},
+
+                    //Judge
+                    {791, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Judge], 260},
                 });
         }
 
