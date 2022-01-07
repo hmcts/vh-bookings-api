@@ -42,19 +42,19 @@ namespace BookingsApi.DAL.Migrations
                 new object[,]
                 {
                     // Appellant(251)
-                    {759, nameof(HearingRoles.LitigantInPerson), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 251},
-                    {760, nameof(HearingRoles.Interpreter), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 251},
-                    {761, nameof(HearingRoles.Representative), UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 251},
-                    {762, nameof(HearingRoles.Witness), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 251},
+                    {759, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 251},
+                    {760, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 251},
+                    {761, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 251},
+                    {762, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 251},
                     // Respondent(252)
-                    {763, nameof(HearingRoles.LitigantInPerson), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 252},
-                    {764, nameof(HearingRoles.Interpreter), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 252},
-                    {765, nameof(HearingRoles.Representative), UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 252},
-                    {766, nameof(HearingRoles.Witness), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 252},
+                    {763, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 252},
+                    {764, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 252},
+                    {765, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 252},
+                    {766, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 252},
                     // Panel Member(253)
-                    {767, nameof(HearingRoles.PanelMember), UserRoleForHearingRole.UserRoleId[UserRoles.PanelMember], 253},
+                    {767, HearingRoles.PanelMember, UserRoleForHearingRole.UserRoleId[UserRoles.PanelMember], 253},
                     // Observer(254)
-                    {768, nameof(HearingRoles.Observer), UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 254},
+                    {768, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 254},
                 });
         }
 
