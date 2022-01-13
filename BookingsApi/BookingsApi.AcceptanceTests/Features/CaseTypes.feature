@@ -192,7 +192,13 @@ Feature: CaseTypes
       | Divorce                           | Panel Member |
       | Private Law                       | Panel Member |
       | Public Law - Care                 | Panel Member |
-      | SSCS Tribunal                     | Appellant	 |
-      | SSCS Tribunal                     | None    	 |
+      | SSCS Tribunal                     | Appellant	   |
+      | SSCS Tribunal                     | None    	   |
       | SSCS Tribunal                     | Panel Member |
       | SSCS Tribunal                     | Observer     |
+      | SSCS Tribunal                     | Judge        |
+      | Upper Tribunal Tax                | Judge        |
+      | Upper Tribunal Tax                | Appellant    |
+      | Upper Tribunal Tax                | Respondent   |
+      | Upper Tribunal Tax                | Panel Member |
+      | Upper Tribunal Tax                | Observer     |
