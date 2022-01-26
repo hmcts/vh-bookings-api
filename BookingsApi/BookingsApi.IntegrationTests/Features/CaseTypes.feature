@@ -49,7 +49,8 @@ Scenario: Get available case types
 		| Public Law - Care                 | Application,Case Management Conference,Case Management Hearing,Directions,Full,Further CMH,Interim Care Order,Issues Resolution Hearing,Pre Hearing Review                                                                                                                                                                                                 |
 		| Placement                         | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
 		| Adoption                          | Directions,Full                                                                                                                                                                                                                                                                                                                                            |
-        | SSCS Tribunal	                    | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings	                                                                                                                                                		                                                                                     |	    
+        | SSCS Tribunal	                    | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings	                                                                                                                                                		                                                                                     |
+		| Upper Tribunal Tax                | Permission to Appeal	                                                                                                                                                		                                                                                                                                                                             |
         
 Scenario: Get case roles for a case type with nonexistent case type
 	Given I have a get case roles for a case type of 'nonexistent' request
@@ -108,6 +109,7 @@ Scenario Outline: Get case roles for a case type
 		| GRC - EJ                          |
 		| Immigration and Asylum            |
 		| SSCS Tribunal                     |
+		| Upper Tribunal Tax                |
 
 Scenario Outline: Get hearing roles for a case role of a case type
 	Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -271,3 +273,8 @@ Scenario Outline: Get hearing roles for a case role of a case type
 		| SSCS Tribunal                     | Panel Member |
 		| SSCS Tribunal                     | None         |
 		| SSCS Tribunal                     | Observer     |
+		| Upper Tribunal Tax                | Judge        |
+		| Upper Tribunal Tax                | Appellant    |
+		| Upper Tribunal Tax                | Respondent   |
+		| Upper Tribunal Tax                | Panel Member |
+		| Upper Tribunal Tax                | Observer     |
