@@ -202,3 +202,14 @@ Feature: CaseTypes
       | Upper Tribunal Tax                | Respondent   |
       | Upper Tribunal Tax                | Panel Member |
       | Upper Tribunal Tax                | Observer     |
+
+
+
+
+
+
+      | Business Lease Renewal            | Applicant    |
+      | Business Lease Renewal            | Respondent   |
+      | Business Lease Renewal            | Panel Member |
+      | Business Lease Renewal            | Observer     |
+      | Business Lease Renewal            | Judge        |

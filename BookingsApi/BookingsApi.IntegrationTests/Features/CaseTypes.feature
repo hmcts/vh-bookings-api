@@ -52,6 +52,8 @@ Feature: CaseTypes
       | SSCS Tribunal                     | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
       | Upper Tribunal Tax                | Permission to Appeal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
+      | Business Lease Renewal            | Case Management,Mediation,Preliminary Hearing,Substantive Hearing,Hearing 
+
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
     When I send the request to the endpoint
@@ -110,6 +112,8 @@ Feature: CaseTypes
       | Immigration and Asylum            |
       | SSCS Tribunal                     |
       | Upper Tribunal Tax                |
+
+      | Business Lease Renewal            |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -278,3 +282,13 @@ Feature: CaseTypes
       | Upper Tribunal Tax                | Respondent   |
       | Upper Tribunal Tax                | Panel Member |
       | Upper Tribunal Tax                | Observer     |
+
+
+
+
+
+      | Business Lease Renewal            | Applicant    |
+      | Business Lease Renewal            | Respondent   |
+      | Business Lease Renewal            | Panel Member |
+      | Business Lease Renewal            | Observer     | 
+      | Business Lease Renewal            | Judge        |
