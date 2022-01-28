@@ -205,8 +205,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_remove_participants()
         {
             //Arrange
-            var participantToRemoveIdOne = _hearing.Participants.First(p => p.HearingRole.ToString() != "Judge").Id;
-            var participantToRemoveIdTwo = _hearing.Participants.Last(p => p.HearingRole.ToString() != "Judge").Id;
+            var participantToRemoveIdOne = _hearing.Participants.First(p => p.HearingRole.Name != "Judge").Id;
+            var participantToRemoveIdTwo = _hearing.Participants.Last(p => p.HearingRole.Name != "Judge").Id;
 
             _removedParticipantIds = new List<Guid>
             {
