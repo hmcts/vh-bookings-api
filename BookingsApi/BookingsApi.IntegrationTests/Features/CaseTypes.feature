@@ -51,6 +51,7 @@ Feature: CaseTypes
       | Adoption                          | Directions,Full                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
       | SSCS Tribunal                     | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
       | Upper Tribunal Tax                | Permission to Appeal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+      | Family                            | Divorce,Financial Remedy,Family Public Law,Adoption,Family Private Law,Probate,Court of Protections,REMO,Maintenance Enforcement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -110,6 +111,7 @@ Feature: CaseTypes
       | Immigration and Asylum            |
       | SSCS Tribunal                     |
       | Upper Tribunal Tax                |
+      | Family                            |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -278,3 +280,8 @@ Feature: CaseTypes
       | Upper Tribunal Tax                | Respondent   |
       | Upper Tribunal Tax                | Panel Member |
       | Upper Tribunal Tax                | Observer     |
+      | Family                            | Appellant    |
+      | Family                            | Applicant    |
+      | Family                            | Respondent   |
+      | Family                            | Panel Member |
+      | Family                            | Observer     |
