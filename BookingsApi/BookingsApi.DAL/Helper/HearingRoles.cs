@@ -16,7 +16,7 @@
         public const string App = "App";
         public const string AppAdvocate = "App Advocate";
         public const string DwpPresentingOfficer = "DWP Presenting Officer";
-        public const string Expert = "Expert";
+        public contst string Expert = "Expert";
         public const string Respondent = "Respondent";
         public const string DisabilityMember = "Disability Member (DQM)";
         public const string FinancialMember = "Financial Member";
@@ -29,5 +29,6 @@
         public const string LitigationFriend = "Litigation friend";
         public const string MacKenzieFriend = "MacKenzie friend";
         public const string Solicitor = "Solicitor";
+        public const string Appellant = "Appellant";
     }
 }
