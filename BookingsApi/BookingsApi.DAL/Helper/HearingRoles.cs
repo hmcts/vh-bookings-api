@@ -24,5 +24,6 @@
         public const string MedicalMember = "Medical Member";
         public const string Appraiser = "Appraiser";
         public const string PanelMember = "Panel Member";
+        public const string Appellant = "Appellant";
     }
 }
