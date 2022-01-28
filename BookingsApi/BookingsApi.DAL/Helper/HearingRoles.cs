@@ -24,5 +24,10 @@
         public const string MedicalMember = "Medical Member";
         public const string Appraiser = "Appraiser";
         public const string PanelMember = "Panel Member";
+        public const string Barrister = "Barrister";
+        public const string Intermediary = "Intermediary";
+        public const string LitigationFriend = "Litigation friend";
+        public const string MacKenzieFriend = "MacKenzie friend";
+        public const string Solicitor = "Solicitor";
     }
 }
