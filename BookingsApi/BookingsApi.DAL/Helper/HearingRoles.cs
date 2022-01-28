@@ -16,7 +16,7 @@
         public const string App = "App";
         public const string AppAdvocate = "App Advocate";
         public const string DwpPresentingOfficer = "DWP Presenting Officer";
-        public contst string Expert = "Expert";
+        public const string Expert = "Expert";
         public const string Respondent = "Respondent";
         public const string DisabilityMember = "Disability Member (DQM)";
         public const string FinancialMember = "Financial Member";
