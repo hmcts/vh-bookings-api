@@ -22,10 +22,10 @@ namespace BookingsApi.DAL.Migrations
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
-                    {214, "Case management ", 42},
+                    {214, "Case Management ", 42},
                     {215, "Mediation", 42},
                     {216, "Preliminary Hearing", 42},
-                    {217, "Substantive hearing", 42},
+                    {217, "Substantive Hearing", 42},
                     {218, "Hearing", 42}
                 });
 
@@ -69,23 +69,22 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(nameof(CaseType), "Id", 42);
-
             for (int hearingTypeId = 214; hearingTypeId <= 218; hearingTypeId++)
             {
                 migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
-            }
-
-            for (int caseRoleId = 267; caseRoleId <= 271; caseRoleId++)
-            {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", caseRoleId);
             }
 
             for (int hearingRoleId = 826; hearingRoleId <= 836; hearingRoleId++)
             {
                 migrationBuilder.DeleteData(nameof(HearingRole), "Id", hearingRoleId);
             }
+            
+            for (int caseRoleId = 267; caseRoleId <= 271; caseRoleId++)
+            {
+                migrationBuilder.DeleteData(nameof(CaseRole), "Id", caseRoleId);
+            }
 
+            migrationBuilder.DeleteData(nameof(CaseType), "Id", 42);
         }
     }
 }
