@@ -208,3 +208,9 @@ Feature: CaseTypes
       | Family                            | Respondent   |
       | Family                            | Panel Member |
       | Family                            | Observer     |
+      | Family                            | Judge        |
+      | Tenant Fees                       | Applicant    |
+      | Tenant Fees                       | Respondent   |
+      | Tenant Fees                       | Panel Member |
+      | Tenant Fees                       | Observer     |
+      | Tenant Fees                       | Judge        |

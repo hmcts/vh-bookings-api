@@ -52,6 +52,7 @@ Feature: CaseTypes
       | SSCS Tribunal                     | 01 Appeals,02 Appeals,03 Appeals,04 Appeals,05/06/07 Appeals,Pre Hearing Reviews,Liberty to Apply Hearings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
       | Upper Tribunal Tax                | Permission to Appeal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
       | Family                            | Divorce,Financial Remedy,Family Public Law,Adoption,Family Private Law,Probate,Court of Protections,REMO,Maintenance Enforcement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+      | Tenant Fees                       | Case Management,Mediation,Preliminary Hearing,Substantive Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -112,6 +113,7 @@ Feature: CaseTypes
       | SSCS Tribunal                     |
       | Upper Tribunal Tax                |
       | Family                            |
+      | Tenant Fees                       |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -285,3 +287,9 @@ Feature: CaseTypes
       | Family                            | Respondent   |
       | Family                            | Panel Member |
       | Family                            | Observer     |
+      | Family                            | Judge        |
+      | Tenant Fees                       | Applicant    |
+      | Tenant Fees                       | Respondent   |
+      | Tenant Fees                       | Panel Member |
+      | Tenant Fees                       | Observer     |
+      | Tenant Fees                       | Judge        |
