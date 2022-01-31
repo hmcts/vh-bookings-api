@@ -293,7 +293,7 @@ Feature: CaseTypes
       | Business Lease Renewal            | Applicant    |
       | Business Lease Renewal            | Respondent   |
       | Business Lease Renewal            | Panel Member |
-      | Business Lease Renewal            | Observer     | 
+      | Business Lease Renewal            | Observer     |
       | Business Lease Renewal            | Judge        |
       | Tenant Fees                       | Applicant    |
       | Tenant Fees                       | Respondent   |
