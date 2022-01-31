@@ -24,7 +24,7 @@ namespace BookingsApi.DAL.Migrations
                 {
                     {219, "Case Management", 43},
                     {220, "Mediation", 43},
-                    {221, "Priliminary Hearing", 43},
+                    {221, "Preliminary Hearing", 43},
                     {222, "Substantive Hearing", 43},
                 });
 
