@@ -22,7 +22,7 @@ namespace BookingsApi.DAL.Migrations
                 new[] { "Id", "Name", "CaseTypeId" },
                 new object[,]
                 {
-                    {214, "Case Management ", 42},
+                    {214, "Case Management", 42},
                     {215, "Mediation", 42},
                     {216, "Preliminary Hearing", 42},
                     {217, "Substantive Hearing", 42},
