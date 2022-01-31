@@ -53,6 +53,7 @@ Feature: CaseTypes
       | Upper Tribunal Tax                | Permission to Appeal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
       | Family                            | Divorce,Financial Remedy,Family Public Law,Adoption,Family Private Law,Probate,Court of Protections,REMO,Maintenance Enforcement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
       | Business Lease Renewal            | Case Management,Mediation,Preliminary Hearing,Substantive Hearing,Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+      | Tenant Fees                       | Case Management,Mediation,Preliminary Hearing,Substantive Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -113,6 +114,7 @@ Feature: CaseTypes
       | SSCS Tribunal                     |
       | Upper Tribunal Tax                |
       | Family                            |
+      | Tenant Fees                       |
       | Business Lease Renewal            |
 
   Scenario Outline: Get hearing roles for a case role of a case type
@@ -287,8 +289,14 @@ Feature: CaseTypes
       | Family                            | Respondent   |
       | Family                            | Panel Member |
       | Family                            | Observer     |
+      | Family                            | Judge        |
       | Business Lease Renewal            | Applicant    |
       | Business Lease Renewal            | Respondent   |
       | Business Lease Renewal            | Panel Member |
-      | Business Lease Renewal            | Observer     | 
+      | Business Lease Renewal            | Observer     |
       | Business Lease Renewal            | Judge        |
+      | Tenant Fees                       | Applicant    |
+      | Tenant Fees                       | Respondent   |
+      | Tenant Fees                       | Panel Member |
+      | Tenant Fees                       | Observer     |
+      | Tenant Fees                       | Judge        |
