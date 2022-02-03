@@ -75,7 +75,7 @@ namespace BookingsApi.DAL.Services
                 if(existingPerson != null)
                 {
                     var person = participantToAdd.Person;
-                    existingPerson.UpdatePerson(person.FirstName, person.LastName, existingPerson.Username, person.Title, person.TelephoneNumber);
+                    existingPerson.UpdatePerson(person.FirstName, person.LastName, existingPerson.Username, person.Title, person.TelephoneNumber, person.ContactEmail);
                 }
 
                 switch (participantToAdd.HearingRole.UserRole.Name)
