@@ -21,8 +21,8 @@
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     </None>
-    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BookingsApi.Common\BookingsApi.Common.csproj" />
