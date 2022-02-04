@@ -16,12 +16,13 @@
     <UserSecretsId>D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <PropertyGroup>
     <UseAppHost>false</UseAppHost>
   </PropertyGroup>
-  
+    
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="9.3.0" />
