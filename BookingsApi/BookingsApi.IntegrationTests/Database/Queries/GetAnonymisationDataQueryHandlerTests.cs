@@ -13,10 +13,10 @@ using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
-    public class GetUsernamesToAnonymiseQueryHandlerTests
+    public class GetAnonymisationDataQueryHandlerTests
     {
         private BookingsDbContext _context;
-        private GetUsernamesToAnonymiseQueryHandler _handler;
+        private GetAnonymisationDataQueryHandler _handler;
         private UserRole _userRole1, _userRole2;
         private HearingRole _hearingRole1, _hearingRole2;
         private Person _person1, _person2, _person3, _person4, _anonymisedPerson;
@@ -56,7 +56,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await _context.CaseTypes.AddAsync(_caseType1);
             await _context.SaveChangesAsync();
             
-            _handler = new GetUsernamesToAnonymiseQueryHandler(_context);
+            _handler = new GetAnonymisationDataQueryHandler(_context);
         }
 
         [TearDown]
@@ -66,7 +66,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task GetUsernamesToAnonymiseQuery_Returns_List_Of_Usernames_For_Hearings_Over_3_Months_Old()
+        public async Task GetAnonymisationDataQuery_Returns_List_Of_Usernames_And_Hearing_Ids_For_Hearings_Over_3_Months_Old()
         {
             var hearingType = _caseType1.HearingTypes.First();
 
@@ -93,17 +93,22 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
-            var result = await _handler.Handle(new GetUsernamesToAnonymiseQuery());
+            var result = await _handler.Handle(new GetAnonymisationDataQuery());
 
-            result.Count.Should().Be(2);
-            result.Should().Contain(x => x == _person1.Username);
-            result.Should().Contain(x => x == _person2.Username);
-            result.Should().NotContain(x => x == _person3.Username);
-            result.Should().NotContain(x => x == _person4.Username);
+            result.Usernames.Count.Should().Be(2);
+            result.HearingIds.Count.Should().Be(1);
+            
+            result.Usernames.Should().Contain(x => x == _person1.Username);
+            result.Usernames.Should().Contain(x => x == _person2.Username);
+            result.Usernames.Should().NotContain(x => x == _person3.Username);
+            result.Usernames.Should().NotContain(x => x == _person4.Username);
+            
+            result.HearingIds.Should().Contain(x => x == hearing1.Id);
+            result.HearingIds.Should().NotContain(x => x == hearing2.Id);
         }
         
         [Test]
-        public async Task GetUsernamesToAnonymiseQuery_Filters_Out_Username_Included_In_Future_Hearing()
+        public async Task GetAnonymisationDataQuery_Filters_Out_Username_Included_In_Future_Hearing()
         {
             var hearingType = _caseType1.HearingTypes.First();
 
@@ -131,17 +136,18 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
-            var result = await _handler.Handle(new GetUsernamesToAnonymiseQuery());
+            var result = await _handler.Handle(new GetAnonymisationDataQuery());
 
-            result.Count.Should().Be(1);
-            result.Should().NotContain(x => x == _person1.Username);
-            result.Should().Contain(x => x == _person2.Username);
-            result.Should().NotContain(x => x == _person3.Username);
-            result.Should().NotContain(x => x == _person4.Username);
+            result.Usernames.Count.Should().Be(1);
+            
+            result.Usernames.Should().NotContain(x => x == _person1.Username);
+            result.Usernames.Should().Contain(x => x == _person2.Username);
+            result.Usernames.Should().NotContain(x => x == _person3.Username);
+            result.Usernames.Should().NotContain(x => x == _person4.Username);
         }
               
         [Test]
-        public async Task GetUsernamesToAnonymiseQuery_Filters_Out_Username_Already_Processed_By_LastRunDate_Specified_In_JobHistory()
+        public async Task GetAnonymisationDataQuery_Filters_Out_Usernames_And_Hearing_Ids_Already_Processed_By_LastRunDate_Specified_In_JobHistory()
         {
             var jobHistory = new JobHistoryForTest();
             jobHistory.setLastRunDate(DateTime.Now.AddMonths(-5));
@@ -172,15 +178,16 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
-            var result = await _handler.Handle(new GetUsernamesToAnonymiseQuery());
+            var result = await _handler.Handle(new GetAnonymisationDataQuery());
 
-            result.Count.Should().Be(0);
+            result.Usernames.Count.Should().Be(0);
+            result.HearingIds.Count.Should().Be(0);
 
             _context.JobHistory.Remove(jobHistory);
         }
         
         [Test]
-        public async Task GetUsernamesToAnonymiseQuery_Returns_List_Of_Usernames_For_Hearings_Over_3_Months_Old_And_Are_Unique()
+        public async Task GetAnonymisationDataQuery_Returns_List_Of_Usernames_And_Hearing_Ids_For_Hearings_Over_3_Months_Old_And_Are_Unique()
         {
             var hearingType = _caseType1.HearingTypes.First();
 
@@ -217,17 +224,23 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2, hearing3);
             await _context.SaveChangesAsync();
 
-            var result = await _handler.Handle(new GetUsernamesToAnonymiseQuery());
+            var result = await _handler.Handle(new GetAnonymisationDataQuery());
 
-            result.Count.Should().Be(2);
-            result.Should().Contain(x => x == _person1.Username);
-            result.Should().Contain(x => x == _person2.Username);
-            result.Should().NotContain(x => x == _person3.Username);
-            result.Should().NotContain(x => x == _person4.Username);
+            result.Usernames.Count.Should().Be(2);
+            result.HearingIds.Count.Should().Be(2);
+            
+            result.Usernames.Should().Contain(x => x == _person1.Username);
+            result.Usernames.Should().Contain(x => x == _person2.Username);
+            result.Usernames.Should().NotContain(x => x == _person3.Username);
+            result.Usernames.Should().NotContain(x => x == _person4.Username);
+            
+            result.HearingIds.Should().Contain(x => x == hearing1.Id);
+            result.HearingIds.Should().NotContain(x => x == hearing2.Id);
+            result.HearingIds.Should().Contain(x => x == hearing3.Id);
         }
         
         [Test]
-        public async Task GetUsernamesToAnonymiseQuery_Filters_Out_Anonymised_Usernames()
+        public async Task GetAnonymisationDataQuery_Filters_Out_Anonymised_Usernames()
         {
             var hearingType = _caseType1.HearingTypes.First();
 
@@ -255,14 +268,15 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await _context.VideoHearings.AddRangeAsync(hearing1, hearing2);
             await _context.SaveChangesAsync();
 
-            var result = await _handler.Handle(new GetUsernamesToAnonymiseQuery());
-
-            result.Count.Should().Be(2);
-            result.Should().Contain(x => x == _person1.Username);
-            result.Should().Contain(x => x == _person2.Username);
-            result.Should().NotContain(x => x == _person3.Username);
-            result.Should().NotContain(x => x == _person4.Username);
-            result.Should().NotContain(x => x == _anonymisedPerson.Username);
+            var result = await _handler.Handle(new GetAnonymisationDataQuery());
+            
+            result.Usernames.Count.Should().Be(2);
+            
+            result.Usernames.Should().Contain(x => x == _person1.Username);
+            result.Usernames.Should().Contain(x => x == _person2.Username);
+            result.Usernames.Should().NotContain(x => x == _person3.Username);
+            result.Usernames.Should().NotContain(x => x == _person4.Username);
+            result.Usernames.Should().NotContain(x => x == _anonymisedPerson.Username);
         }
         
         private class JobHistoryForTest : JobHistory
