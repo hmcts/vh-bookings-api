@@ -10,10 +10,10 @@ using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class AnonymiseHearingsWithUsernameCommandTests
+    public class AnonymisePersonWithUsernameCommandTests
     {
         private BookingsDbContext _context;
-        private AnonymiseHearingsWithUsernameCommandHandler _command;
+        private AnonymisePersonWithUsernameCommandHandler _command;
         private Person _person1, _person2;
 
         [OneTimeSetUp]
@@ -40,14 +40,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             
             await _context.SaveChangesAsync();
             
-            _command = new AnonymiseHearingsWithUsernameCommandHandler(_context);
+            _command = new AnonymisePersonWithUsernameCommandHandler(_context);
         }
 
         [Test]
         public async Task AnonymiseHearingsWithUsernameCommand_Anonymises_Only_Specified_Username_In_Person_Table()
         {
             var personEntryBeforeAnonymisation = new Person(_person1.Title, _person1.FirstName, _person1.LastName, _person1.Username);
-            var query = new AnonymiseHearingsWithUsernameCommand {Username = _person1.Username};
+            var query = new AnonymisePersonWithUsernameCommand {Username = _person1.Username};
             
             await _command.Handle(query);
 
@@ -76,7 +76,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var organisationNameBeforeAnonymisation = organisation.Name;
             
-            await _command.Handle(new AnonymiseHearingsWithUsernameCommand {Username = _person1.Username});
+            await _command.Handle(new AnonymisePersonWithUsernameCommand {Username = _person1.Username});
 
             var anonymisedOrganisation = _context.Persons.Select(x => x.Organisation).FirstOrDefault(x => x.Id == organisation.Id);
             anonymisedOrganisation.Name.Should().NotBe(organisationNameBeforeAnonymisation);

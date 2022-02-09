@@ -13,7 +13,7 @@ namespace BookingsApi.DAL.Queries
         
     }
 
-    public class GetAnonymisationDataQueryHandler : IQueryHandler<GetAnonymisationDataQuery, UsernamesToAnonymiseDto>
+    public class GetAnonymisationDataQueryHandler : IQueryHandler<GetAnonymisationDataQuery, AnonymisationDataDto>
     {
         private readonly BookingsDbContext _context;
 
@@ -22,7 +22,7 @@ namespace BookingsApi.DAL.Queries
             _context = context;
         }
         
-        public async Task<UsernamesToAnonymiseDto> Handle(GetAnonymisationDataQuery query)
+        public async Task<AnonymisationDataDto> Handle(GetAnonymisationDataQuery query)
         {
             var cutOffDate = DateTime.UtcNow.AddMonths(-3);
             
@@ -45,7 +45,7 @@ namespace BookingsApi.DAL.Queries
                     .Where(p => !p.Person.Username.ToLower().EndsWith("@email.net"))
                     .ToListAsync();
             
-             var usernameDto = new UsernamesToAnonymiseDto
+             var usernameDto = new AnonymisationDataDto
              {
                  Usernames = participants.Select(x => x.Person.Username).Distinct().ToList(),
                  HearingIds = participants.Select(x => x.HearingId).Distinct().ToList()
