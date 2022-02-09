@@ -11,6 +11,7 @@ using BookingsApi.Extensions;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -191,6 +192,18 @@ namespace BookingsApi.Controllers
             return Ok(new UserWithClosedConferencesResponse { Usernames = person });
         }
 
+        [HttpGet("getanonymisationdata", Name = "GetAnonymisationData")]
+        [OpenApiOperation("GetAnonymisationData")]
+        [ProducesResponseType(typeof(AnonymisationDataResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAnonymisationData()
+        {
+            var anonymisationData =
+                await _queryHandler.Handle<GetAnonymisationDataQuery, AnonymisationDataDto>(
+                    new GetAnonymisationDataQuery());
+            var response = AnonymisationDataResponseMapper.Map(anonymisationData);
+            return Ok(response);
+        }
+
         /// <summary>
         /// Anonymise a person
         /// </summary>
@@ -203,6 +216,29 @@ namespace BookingsApi.Controllers
         public async Task<IActionResult> AnonymisePerson(string username)
         {
             var command = new AnonymisePersonCommand(username);
+            try
+            {
+                await _commandHandler.Handle(command);
+                return Ok();
+            }
+            catch (PersonNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+        
+        /// <summary>
+        /// Anonymise a person
+        /// </summary>
+        /// <param name="username">username of person</param>
+        /// <returns></returns>
+        [HttpPatch("username/{username}/anonymise-for-expired-hearings", Name = "AnonymisePersonWithUsernameForExpiredHearings")]
+        [OpenApiOperation("AnonymisePersonWithUsernameForExpiredHearings")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AnonymisePersonWithUsernameForExpiredHearings(string username)
+        {
+            var command = new AnonymisePersonWithUsernameCommand{Username = username};
             try
             {
                 await _commandHandler.Handle(command);
