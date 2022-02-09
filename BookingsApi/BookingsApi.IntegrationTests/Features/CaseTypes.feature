@@ -54,6 +54,7 @@ Feature: CaseTypes
       | Family                            | Divorce,Financial Remedy,Family Public Law,Adoption,Family Private Law,Probate,Court of Protections,REMO,Maintenance Enforcement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
       | Business Lease Renewal            | Case Management,Mediation,Preliminary Hearing,Substantive Hearing,Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
       | Tenant Fees                       | Case Management,Mediation,Preliminary Hearing,Substantive Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+      | Mental Health                     | Non-Restricted Application,Non-Restricted Referral,Restricted Application,Restricted Referral,Community,Hearing,Section 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -116,6 +117,7 @@ Feature: CaseTypes
       | Family                            |
       | Tenant Fees                       |
       | Business Lease Renewal            |
+      | Mental Health                     |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -300,3 +302,7 @@ Feature: CaseTypes
       | Tenant Fees                       | Panel Member |
       | Tenant Fees                       | Observer     |
       | Tenant Fees                       | Judge        |
+      | Mental Health                     | Applicant    |
+      | Mental Health                     | Panel Member |
+      | Mental Health                     | Observer     |
+      | Mental Health                     | Judge        |
