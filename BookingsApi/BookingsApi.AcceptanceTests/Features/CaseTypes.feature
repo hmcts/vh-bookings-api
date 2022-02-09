@@ -226,3 +226,7 @@ Feature: CaseTypes
       | Upper Tribunal Immigration & Asylum Chamber| Observer     |
       | Upper Tribunal Immigration & Asylum Chamber| Panel Member |
       | Upper Tribunal Immigration & Asylum Chamber| Secretary of State |
+      | Mental Health                     | Applicant    |
+      | Mental Health                     | Panel Member |
+      | Mental Health                     | Observer     |
+      | Mental Health                     | Judge        |

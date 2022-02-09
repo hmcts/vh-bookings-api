@@ -55,6 +55,7 @@ Feature: CaseTypes
       | Business Lease Renewal            | Case Management,Mediation,Preliminary Hearing,Substantive Hearing,Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
       | Tenant Fees                       | Case Management,Mediation,Preliminary Hearing,Substantive Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
       | Upper Tribunal Immigration & Asylum Chamber| Substantive,Oral Permission/Renewal,Case Management Review,Error of Law,For Mention,Hamid,Rolled up,Oral Permission,Resumed/Continuance,Hand down,Urgent Oral                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+      | Mental Health                     | Non-Restricted Application,Non-Restricted Referral,Restricted Application,Restricted Referral,Community,Hearing,Section 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -118,6 +119,7 @@ Feature: CaseTypes
       | Tenant Fees                       |
       | Business Lease Renewal            |
       | Upper Tribunal Immigration & Asylum Chamber|
+      | Mental Health                     |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -309,3 +311,7 @@ Feature: CaseTypes
       | Upper Tribunal Immigration & Asylum Chamber| Observer     |
       | Upper Tribunal Immigration & Asylum Chamber| Panel Member |
       | Upper Tribunal Immigration & Asylum Chamber| Secretary of State |
+      | Mental Health                     | Applicant    |
+      | Mental Health                     | Panel Member |
+      | Mental Health                     | Observer     |
+      | Mental Health                     | Judge        |
