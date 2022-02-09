@@ -125,5 +125,4 @@ namespace BookingsApi.DAL.Migrations
             migrationBuilder.DeleteData(nameof(CaseType), "Id", 45);
         }
     }
-    }
 }
