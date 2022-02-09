@@ -54,6 +54,7 @@ Feature: CaseTypes
       | Family                            | Divorce,Financial Remedy,Family Public Law,Adoption,Family Private Law,Probate,Court of Protections,REMO,Maintenance Enforcement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
       | Business Lease Renewal            | Case Management,Mediation,Preliminary Hearing,Substantive Hearing,Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
       | Tenant Fees                       | Case Management,Mediation,Preliminary Hearing,Substantive Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+      | Upper Tribunal Immigration & Asylum Chamber| Substantive,Oral Permission/Renewal,Case Management Review,Error of Law,For Mention,Hamid,Rolled up,Oral Permission,Resumed/Continuance,Hand down,Urgent Oral                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -116,6 +117,7 @@ Feature: CaseTypes
       | Family                            |
       | Tenant Fees                       |
       | Business Lease Renewal            |
+      | Upper Tribunal Immigration & Asylum Chamber|
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -300,3 +302,10 @@ Feature: CaseTypes
       | Tenant Fees                       | Panel Member |
       | Tenant Fees                       | Observer     |
       | Tenant Fees                       | Judge        |
+      | Upper Tribunal Immigration & Asylum Chamber| Judge        |
+      | Upper Tribunal Immigration & Asylum Chamber| Appellant    |
+      | Upper Tribunal Immigration & Asylum Chamber| Applicant    |
+      | Upper Tribunal Immigration & Asylum Chamber| Home Office  |
+      | Upper Tribunal Immigration & Asylum Chamber| Observer     |
+      | Upper Tribunal Immigration & Asylum Chamber| Panel Member |
+      | Upper Tribunal Immigration & Asylum Chamber| Secretary of State |
