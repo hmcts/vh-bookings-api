@@ -219,3 +219,7 @@ Feature: CaseTypes
       | Tenant Fees                       | Panel Member |
       | Tenant Fees                       | Observer     |
       | Tenant Fees                       | Judge        |
+      | Mental Health                     | Applicant    |
+      | Mental Health                     | Panel Member |
+      | Mental Health                     | Observer     |
+      | Mental Health                     | Judge        |
