@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
@@ -21,7 +22,14 @@ namespace BookingsApi.DAL.Commands
         }
         public async Task Handle(AnonymisePersonWithUsernameCommand command)
         {
-            _context.Persons.Single(p => p.Username == command.Username).AnonymisePersonForSchedulerJob();
+            var person = await _context.Persons.SingleOrDefaultAsync(p => p.Username == command.Username);
+
+            if (person == null)
+            {
+                throw new PersonNotFoundException(command.Username);
+            }
+            
+            person.AnonymisePersonForSchedulerJob();
            
             await _context.SaveChangesAsync();
         }

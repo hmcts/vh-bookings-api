@@ -64,7 +64,7 @@ namespace BookingsApi.Domain
 
         public void AnonymisePersonForSchedulerJob()
         {
-            var randomString = Guid.NewGuid().ToString().Substring(0, 9);
+            var randomString = RandomStringGenerator.GenerateRandomString(9);
             
             FirstName = randomString;
             LastName = randomString;

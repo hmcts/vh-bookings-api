@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -44,7 +45,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task AnonymiseHearingsWithUsernameCommand_Anonymises_Only_Specified_Username_In_Person_Table()
+        public async Task AnonymisePersonWithUsernameCommand_Anonymises_Only_Specified_Username_In_Person_Table()
         {
             var personEntryBeforeAnonymisation = new Person(_person1.Title, _person1.FirstName, _person1.LastName, _person1.Username);
             var query = new AnonymisePersonWithUsernameCommand {Username = _person1.Username};
@@ -68,7 +69,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task AnonymiseHearingsWithUsernameCommand_Anonymises_Organisation_When_OrganisationId_Is_Not_Null()
+        public async Task AnonymisePersonWithUsernameCommand_Anonymises_Organisation_When_OrganisationId_Is_Not_Null()
         {
             var organisation = new Organisation(Faker.Company.Suffix());
 
@@ -80,6 +81,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var anonymisedOrganisation = _context.Persons.Select(x => x.Organisation).FirstOrDefault(x => x.Id == organisation.Id);
             anonymisedOrganisation.Name.Should().NotBe(organisationNameBeforeAnonymisation);
+        }
+
+        [Test]
+        public async Task AnonymisePersonWithUsernameCommand_Throws_Person_Not_Found_Exception()
+        {
+            Assert.ThrowsAsync<PersonNotFoundException>(() =>
+                _command.Handle(new AnonymisePersonWithUsernameCommand {Username = "fakename@email.net"}));
         }
     }
 }
