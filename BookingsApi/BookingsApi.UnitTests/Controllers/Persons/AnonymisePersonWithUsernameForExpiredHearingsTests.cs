@@ -15,10 +15,15 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         public async Task AnonymisePersonWithUsernameForExpiredHearings_Returns_Ok_Status_Code()
         {
             var usernameToAnonymise = "john.doe@email.net";
-            var response = await Controller.AnonymisePersonWithUsernameForExpiredHearings(usernameToAnonymise) as OkResult;
+            var response =
+                await Controller.AnonymisePersonWithUsernameForExpiredHearings(usernameToAnonymise) as OkResult;
 
-            response.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            CommandHandlerMock.Verify(c => c.Handle(It.Is<AnonymisePersonWithUsernameCommand>(command => command.Username == usernameToAnonymise)), Times.Once);
+            response.StatusCode.Should().Be((int) HttpStatusCode.OK);
+            CommandHandlerMock
+                .Verify(c =>
+                        c.Handle(It.Is<AnonymisePersonWithUsernameCommand>(command =>
+                            command.Username == usernameToAnonymise)),
+                    Times.Once);
         }
 
         [Test]
@@ -26,11 +31,11 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         {
             CommandHandlerMock.Setup(c => c.Handle(It.IsAny<AnonymisePersonWithUsernameCommand>()))
                 .ThrowsAsync(new PersonNotFoundException(string.Empty));
-            
-            var response = await Controller.AnonymisePersonWithUsernameForExpiredHearings("invalidUsername") as NotFoundResult;
-            
-            response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+
+            var response =
+                await Controller.AnonymisePersonWithUsernameForExpiredHearings("invalidUsername") as NotFoundResult;
+
+            response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
         }
-        
     }
 }

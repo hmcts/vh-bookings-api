@@ -226,22 +226,22 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
         }
-        
+
         /// <summary>
-        /// Anonymise a person
+        /// Anonymise a person from expired hearing
         /// </summary>
         /// <param name="username">username of person</param>
         /// <returns></returns>
-        [HttpPatch("username/{username}/anonymise-for-expired-hearings", Name = "AnonymisePersonWithUsernameForExpiredHearings")]
+        [HttpPatch("username/{username}/anonymise-for-expired-hearings",
+            Name = "AnonymisePersonWithUsernameForExpiredHearings")]
         [OpenApiOperation("AnonymisePersonWithUsernameForExpiredHearings")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> AnonymisePersonWithUsernameForExpiredHearings(string username)
         {
-            var command = new AnonymisePersonWithUsernameCommand{Username = username};
             try
             {
-                await _commandHandler.Handle(command);
+                await _commandHandler.Handle(new AnonymisePersonWithUsernameCommand { Username = username });
                 return Ok();
             }
             catch (PersonNotFoundException)

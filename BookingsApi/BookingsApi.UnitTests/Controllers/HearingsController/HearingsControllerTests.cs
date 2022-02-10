@@ -27,6 +27,7 @@ using NUnit.Framework;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 using BookingsApi.DAL.Services;
+using FluentAssertions.Common;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -55,7 +56,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             _eventPublisher = new EventPublisher(SbQueueClient);
             Logger = new Mock<ILogger>();
 
-            Controller = new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
+            Controller = new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
+                CommandHandlerMock.Object,
                 _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
                 HearingServiceMock.Object, Logger.Object);
         }
@@ -77,7 +79,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             await Controller.GetHearingsByTypes(new List<int>());
 
             // Assert
-            QueryHandlerMock.Verify(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
+            QueryHandlerMock.Verify(
+                x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                    It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
         }
 
         [Test]
@@ -96,7 +100,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             await Controller.GetHearingsByTypes(new List<int>(), "0", 100, expectedDate);
 
             // Assert
-            QueryHandlerMock.Verify(x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
+            QueryHandlerMock.Verify(
+                x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                    It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
         }
 
         [Test]
@@ -111,9 +117,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             result.Should().NotBeNull();
             result.Should().NotBeNull();
-            var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types",
+            var objectResult = (ObjectResult) result.Result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage("Hearing types",
                 "Invalid value for hearing types");
         }
 
@@ -134,9 +140,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var response = (BookingsResponse)((ObjectResult)result.Result).Value;
+            var objectResult = (ObjectResult) result.Result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
+            var response = (BookingsResponse) ((ObjectResult) result.Result).Value;
             response.PrevPageUrl.Should().Be("hearings/types?types=&cursor=0&limit=2");
             response.NextPageUrl.Should().Be("hearings/types?types=&cursor=next cursor&limit=2");
             QueryHandlerMock.Verify(q => q.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
@@ -159,7 +165,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
 
             result.Should().NotBeNull();
-            var response = (BookingsResponse)((ObjectResult)result.Result).Value;
+            var response = (BookingsResponse) ((ObjectResult) result.Result).Value;
             response.PrevPageUrl.Should().Be("hearings/types?types=1&types=2&cursor=0&limit=2");
             response.NextPageUrl.Should().Be("hearings/types?types=1&types=2&cursor=next-cursor&limit=2");
         }
@@ -182,11 +188,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            var objectResult = (NoContentResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
             var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingIsReadyForVideoIntegrationEvent)message.IntegrationEvent;
+            var typedMessage = (HearingIsReadyForVideoIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
             typedMessage.Hearing.GroupId.Should().Be(hearing.SourceId.GetValueOrDefault());
@@ -211,11 +217,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            var objectResult = (NoContentResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
             var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
+            var typedMessage = (HearingCancelledIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.HearingId.Should().Be(hearingId);
         }
@@ -229,9 +235,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
+            var objectResult = (BadRequestObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
                 $"Please provide a valid {nameof(hearingId)}");
         }
 
@@ -245,7 +251,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 ScheduledDuration = 15,
                 OtherInformation = "note",
                 HearingVenueName = "venue1",
-                Cases = new List<CaseRequest> { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
+                Cases = new List<CaseRequest>
+                    { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
                 UpdatedBy = "test@hmcts.net"
             };
 
@@ -266,11 +273,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (OkObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var objectResult = (OkObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
 
             var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingDetailsUpdatedIntegrationEvent)message.IntegrationEvent;
+            var typedMessage = (HearingDetailsUpdatedIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.Hearing.CaseName.Should().Be("name");
         }
@@ -285,7 +292,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 ScheduledDuration = 15,
                 OtherInformation = "note",
                 HearingVenueName = "venue2",
-                Cases = new List<CaseRequest> { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
+                Cases = new List<CaseRequest>
+                    { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
                 UpdatedBy = "test@hmcts.net"
             };
 
@@ -306,9 +314,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName),
+            var objectResult = (BadRequestObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName),
                 "Hearing venue does not exist");
         }
 
@@ -321,9 +329,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
+            var objectResult = (BadRequestObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
                 $"Please provide a valid {nameof(hearingId)}");
         }
 
@@ -341,11 +349,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            var objectResult = (NoContentResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
             var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
+            var typedMessage = (HearingCancelledIntegrationEvent) message.IntegrationEvent;
             typedMessage.Should().NotBeNull();
             typedMessage.HearingId.Should().Be(hearingId);
         }
@@ -358,9 +366,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
+            var objectResult = (BadRequestObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
                 $"Please provide a valid {nameof(hearingId)}");
         }
 
@@ -373,13 +381,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync((VideoHearing)null);
+                .ReturnsAsync((VideoHearing) null);
 
             var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
-            var objectResult = (NotFoundObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            var objectResult = (NotFoundObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
             objectResult.Value.Should().Be($"{hearingId} does not exist");
         }
 
@@ -399,10 +407,25 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            var objectResult = (NoContentResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.NoContent);
 
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
+        }
+
+        [Test]
+        public async Task AnonymiseParticipantAndCaseByHearingId_Returns_Ok()
+        {
+            var hearingIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
+
+            var response = await Controller.AnonymiseParticipantAndCaseByHearingId(hearingIds) as OkResult;
+
+            response.StatusCode.Should().Be((int) HttpStatusCode.OK);
+            CommandHandlerMock
+                .Verify(c =>
+                        c.Handle(It.Is<AnonymiseCaseAndParticipantCommand>(prop =>
+                            prop.HearingIds.IsSameOrEqualTo(hearingIds))),
+                    Times.Once);
         }
 
 
@@ -422,7 +445,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             }
 
             hearing.AddEndpoints(new List<Endpoint>
-                {new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null)});
+                { new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null) });
 
             return hearing;
         }

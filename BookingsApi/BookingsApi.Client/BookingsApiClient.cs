@@ -318,6 +318,15 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Get list of all hearings in a group</summary>
         /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
@@ -531,13 +540,13 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AnonymisePersonWithUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Anonymise a person</summary>
+        /// <summary>Anonymise a person from expired hearing</summary>
         /// <param name="username">username of person</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AnonymisePersonWithUsernameForExpiredHearingsAsync(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Anonymise a person</summary>
+        /// <summary>Anonymise a person from expired hearing</summary>
         /// <param name="username">username of person</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AnonymisePersonWithUsernameForExpiredHearingsAsync(string username, System.Threading.CancellationToken cancellationToken);
@@ -2809,6 +2818,84 @@ namespace BookingsApi.Client
             }
         }
     
+        /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody)
+        {
+            return AnonymiseParticipantAndCaseByHearingIdAsync(hearingIdsPath, hearingIdsBody, System.Threading.CancellationToken.None);
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingIdsPath == null)
+                throw new System.ArgumentNullException("hearingIdsPath");
+    
+            if (hearingIdsBody == null)
+                throw new System.ArgumentNullException("hearingIdsBody");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/hearingids/{hearingIds}/anonymise-participant-and-case");
+            urlBuilder_.Replace("{hearingIds}", System.Uri.EscapeDataString(ConvertToString(hearingIdsPath, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(hearingIdsBody, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+    
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+    
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+    
         /// <summary>Get list of all hearings in a group</summary>
         /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
@@ -4540,7 +4627,7 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Anonymise a person</summary>
+        /// <summary>Anonymise a person from expired hearing</summary>
         /// <param name="username">username of person</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task AnonymisePersonWithUsernameForExpiredHearingsAsync(string username)
@@ -4549,7 +4636,7 @@ namespace BookingsApi.Client
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Anonymise a person</summary>
+        /// <summary>Anonymise a person from expired hearing</summary>
         /// <param name="username">username of person</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task AnonymisePersonWithUsernameForExpiredHearingsAsync(string username, System.Threading.CancellationToken cancellationToken)

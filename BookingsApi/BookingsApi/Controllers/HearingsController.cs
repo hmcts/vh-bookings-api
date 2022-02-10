@@ -117,6 +117,21 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
+        /// Anonymise participant and case from expired hearing
+        /// </summary>
+        /// <param name="username">username of person</param>
+        /// <returns></returns>
+        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case",
+            Name = "AnonymiseParticipantAndCaseByHearingId")]
+        [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
+        {
+            await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIds });
+            return Ok();
+        }
+
+        /// <summary>
         /// Get list of all hearings in a group
         /// </summary>
         /// <param name="groupId">the group id of the single day or multi day hearing</param>
