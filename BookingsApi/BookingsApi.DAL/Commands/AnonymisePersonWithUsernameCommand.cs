@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
@@ -30,6 +31,17 @@ namespace BookingsApi.DAL.Commands
             }
             
             person.AnonymisePersonForSchedulerJob();
+
+            var jobHistoryEntry = await _context.JobHistory.FirstOrDefaultAsync() as UpdateJobHistory;
+
+            if (jobHistoryEntry == null)
+            {
+                await _context.JobHistory.AddAsync(new UpdateJobHistory());
+            }
+            else
+            {
+                jobHistoryEntry.UpdateLastRunDate();    
+            }
            
             await _context.SaveChangesAsync();
         }

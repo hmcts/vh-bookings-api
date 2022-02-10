@@ -101,6 +101,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             _context.CaseTypes.Remove(_caseType1);
             _context.VideoHearings.RemoveRange(_hearing1, _hearing2, _hearing3);
+
+            var jobHistory = await _context.JobHistory.FirstOrDefaultAsync();
+
+            if (jobHistory != null)
+            {
+                _context.JobHistory.Remove(jobHistory);
+            }
+            
             await _context.SaveChangesAsync();
         }
 
@@ -249,5 +257,33 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedHearing1.HearingCases.FirstOrDefault(hearing => hearing.HearingId == _hearing1.Id).Case.Name.Should()
                 .Be(caseName1);
         }
+        
+        [Test]
+        public async Task AnonymiseCaseAndParticipantCommand_Updates_JobHistory()
+        {
+            await _command.Handle(new AnonymiseCaseAndParticipantCommand {HearingIds = new List<Guid> {_hearing1.Id, _hearing2.Id}});
+
+            var jobHistoryEntry = await _context.JobHistory.FirstOrDefaultAsync();
+
+            jobHistoryEntry.Should().NotBeNull();
+            jobHistoryEntry.LastRunDate.Value.Date.Should().Be(DateTime.UtcNow.Date);
+        }
+        
+        [Test]
+        public async Task AnonymiseCaseAndParticipantCommand_Updates_JobHistory_With_New_Date()
+        {
+            var jobHistory = new UpdateJobHistory();
+            var lastRunDateTimeBeforeRunningCommand = jobHistory.LastRunDate;
+            await _context.JobHistory.AddAsync(jobHistory);
+            await _context.SaveChangesAsync();
+            
+            await _command.Handle(new AnonymiseCaseAndParticipantCommand {HearingIds = new List<Guid> {_hearing1.Id, _hearing2.Id}});
+
+            var jobHistoryEntry = await _context.JobHistory.FirstOrDefaultAsync();
+
+            jobHistoryEntry.Should().NotBeNull();
+            _context.JobHistory.Count().Should().Be(1);
+            jobHistoryEntry.LastRunDate.Value.Should().NotBe(lastRunDateTimeBeforeRunningCommand.Value);
+        }     
     }
 }

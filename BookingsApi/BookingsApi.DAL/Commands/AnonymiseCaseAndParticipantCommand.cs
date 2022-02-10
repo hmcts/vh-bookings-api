@@ -64,6 +64,17 @@ namespace BookingsApi.DAL.Commands
                     });
             }
 
+            var jobHistory = await _context.JobHistory.FirstOrDefaultAsync() as UpdateJobHistory; 
+
+            if (jobHistory == null)
+            {
+                await _context.JobHistory.AddAsync(new UpdateJobHistory());
+            }
+            else
+            {
+                jobHistory.UpdateLastRunDate();
+            }
+
             await _context.SaveChangesAsync();
         }
     }

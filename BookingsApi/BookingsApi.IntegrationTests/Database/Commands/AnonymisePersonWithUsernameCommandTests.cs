@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -42,6 +43,18 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _context.SaveChangesAsync();
             
             _command = new AnonymisePersonWithUsernameCommandHandler(_context);
+        }
+
+        [TearDown]
+        public async Task TearDown()
+        {
+            
+            var jobHistory = await _context.JobHistory.FirstOrDefaultAsync();
+
+            if (jobHistory != null)
+            {
+                _context.JobHistory.Remove(jobHistory);
+            }
         }
 
         [Test]
@@ -89,5 +102,33 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<PersonNotFoundException>(() =>
                 _command.Handle(new AnonymisePersonWithUsernameCommand {Username = "fakename@email.net"}));
         }
+        
+        [Test]
+        public async Task AnonymisePersonWithUsernameCommand_Updates_JobHistory()
+        {
+            await _command.Handle(new AnonymisePersonWithUsernameCommand {Username = _person1.Username});
+
+            var jobHistoryEntry = await _context.JobHistory.FirstOrDefaultAsync();
+
+            jobHistoryEntry.Should().NotBeNull();
+            jobHistoryEntry.LastRunDate.Value.Date.Should().Be(DateTime.UtcNow.Date);
+        }
+        
+        [Test]
+        public async Task AnonymisePersonWithUsernameCommand_Updates_JobHistory_With_New_Date()
+        {
+            var jobHistory = new UpdateJobHistory();
+            var lastRunDateTimeBeforeRunningCommand = jobHistory.LastRunDate;
+            await _context.JobHistory.AddAsync(jobHistory);
+            await _context.SaveChangesAsync();
+            
+            await _command.Handle(new AnonymisePersonWithUsernameCommand {Username = _person1.Username});
+
+            var jobHistoryEntry = await _context.JobHistory.FirstOrDefaultAsync();
+
+            jobHistoryEntry.Should().NotBeNull();
+            _context.JobHistory.Count().Should().Be(1);
+            jobHistoryEntry.LastRunDate.Value.Should().NotBe(lastRunDateTimeBeforeRunningCommand.Value);
+        }   
     }
 }
