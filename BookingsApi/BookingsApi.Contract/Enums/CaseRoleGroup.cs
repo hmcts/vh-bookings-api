@@ -13,6 +13,7 @@ namespace BookingsApi.Contract.Enums
         State = 8,
         None = 9,
         HomeOffice = 10,
-        Winger = 11
+        Winger = 11,
+        SecretaryOfState=12
     }
 }
