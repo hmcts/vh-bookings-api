@@ -28,7 +28,10 @@ namespace BookingsApi.DAL.Commands
         {
             foreach (var hearingId in command.HearingIds)
             {
-                _context.VideoHearings.Where(hearing => hearing.Id == hearingId).ToList().ForEach(hearing =>
+                _context.VideoHearings
+                    .Include(vh => vh.HearingCases)
+                    .ThenInclude(vh => vh.Case)
+                    .Where(hearing => hearing.Id == hearingId).ToList().ForEach(hearing =>
                 {
                     hearing.HearingCases.ToList().ForEach(
                         hearingCase =>
