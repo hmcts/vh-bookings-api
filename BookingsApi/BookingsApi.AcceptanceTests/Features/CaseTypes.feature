@@ -219,3 +219,14 @@ Feature: CaseTypes
       | Tenant Fees                       | Panel Member |
       | Tenant Fees                       | Observer     |
       | Tenant Fees                       | Judge        |
+      | Upper Tribunal Immigration & Asylum Chamber| Judge        |
+      | Upper Tribunal Immigration & Asylum Chamber| Appellant    |
+      | Upper Tribunal Immigration & Asylum Chamber| Applicant    |
+      | Upper Tribunal Immigration & Asylum Chamber| Home Office  |
+      | Upper Tribunal Immigration & Asylum Chamber| Observer     |
+      | Upper Tribunal Immigration & Asylum Chamber| Panel Member |
+      | Upper Tribunal Immigration & Asylum Chamber| Secretary of State |
+      | Mental Health                     | Applicant    |
+      | Mental Health                     | Panel Member |
+      | Mental Health                     | Observer     |
+      | Mental Health                     | Judge        |

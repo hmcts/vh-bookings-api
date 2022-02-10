@@ -30,5 +30,16 @@
         public const string MacKenzieFriend = "MacKenzie friend";
         public const string Solicitor = "Solicitor";
         public const string Appellant = "Appellant";
+        public const string LocalAuthority = "Local Authority";
+        public const string PresentingOfficer = "Presenting Officer";
+        public const string GovernmentLegalDepartmentSolicitor = "Government Legal Department(Solicitor)";
+        public const string CareCoordinator = "Care Coordinator";
+        public const string Doctor = "Doctor";
+        public const string NearestRelative = "Nearest Relative";
+        public const string Nurse = "Nurse";
+        public const string Patient = "Patient";
+        public const string ResponsibleClinician = "Responsible Clinician (RC)";
+        public const string VictimLiaisonOfficer = "Victim Liaison Officer";
+        public const string SpecialistLayMember = "Specialist Lay Member";
     }
 }

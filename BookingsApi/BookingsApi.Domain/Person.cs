@@ -38,7 +38,7 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void UpdatePerson(string firstName, string lastName, string username, string title = null, string telephoneNumber = null)
+        public void UpdatePerson(string firstName, string lastName, string username, string title = null, string telephoneNumber = null, string contactEmail = null)
         {
             ValidateArguments(firstName, lastName, username);
             FirstName = firstName;
@@ -47,6 +47,7 @@ namespace BookingsApi.Domain
             Title = title == null ? Title : title;
             TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
+            ContactEmail = contactEmail ?? ContactEmail;
         }
 
         public void AnonymisePerson()
