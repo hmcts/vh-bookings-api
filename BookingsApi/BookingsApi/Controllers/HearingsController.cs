@@ -119,7 +119,7 @@ namespace BookingsApi.Controllers
         /// <summary>
         /// Anonymise participant and case from expired hearing
         /// </summary>
-        /// <param name="username">username of person</param>
+        /// <param name="hearingIds">hearing ids to anonymise data with</param>
         /// <returns></returns>
         [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case",
             Name = "AnonymiseParticipantAndCaseByHearingId")]
