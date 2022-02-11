@@ -11,7 +11,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
-namespace BookingsApi.IntegrationTests.Database.Commands
+namespace BookingsApi.UnitTests.Domain.Participants
 {
     public class AnonymiseCaseAndParticipantCommandTests
     {

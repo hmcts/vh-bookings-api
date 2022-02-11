@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -10,7 +9,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
-namespace BookingsApi.IntegrationTests.Database.Commands
+namespace BookingsApi.UnitTests.Domain.Persons
 {
     public class AnonymisePersonWithUsernameCommandTests
     {
