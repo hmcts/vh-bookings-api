@@ -24,7 +24,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         private HearingRole _hearingRole1, _hearingRole2;
 
         [OneTimeSetUp]
-        public async Task InitialSetup()
+        public void InitialSetup()
         {
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;

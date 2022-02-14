@@ -18,7 +18,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         private Person _person1, _person2;
 
         [OneTimeSetUp]
-        public async Task InitialSetup()
+        public void InitialSetup()
         {
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;
@@ -96,7 +96,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         }
 
         [Test]
-        public async Task AnonymisePersonWithUsernameCommand_Throws_Person_Not_Found_Exception()
+        public void AnonymisePersonWithUsernameCommand_Throws_Person_Not_Found_Exception()
         {
             Assert.ThrowsAsync<PersonNotFoundException>(() =>
                 _command.Handle(new AnonymisePersonWithUsernameCommand {Username = "fakename@email.net"}));

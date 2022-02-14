@@ -319,11 +319,15 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <param name="hearingIdsPath">hearing ids to anonymise data with</param>
+        /// <param name="hearingIdsBody">hearing ids to anonymise data with</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <param name="hearingIdsPath">hearing ids to anonymise data with</param>
+        /// <param name="hearingIdsBody">hearing ids to anonymise data with</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody, System.Threading.CancellationToken cancellationToken);
     
@@ -2819,6 +2823,8 @@ namespace BookingsApi.Client
         }
     
         /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <param name="hearingIdsPath">hearing ids to anonymise data with</param>
+        /// <param name="hearingIdsBody">hearing ids to anonymise data with</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody)
         {
@@ -2827,6 +2833,8 @@ namespace BookingsApi.Client
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Anonymise participant and case from expired hearing</summary>
+        /// <param name="hearingIdsPath">hearing ids to anonymise data with</param>
+        /// <param name="hearingIdsBody">hearing ids to anonymise data with</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task AnonymiseParticipantAndCaseByHearingIdAsync(string hearingIdsPath, System.Collections.Generic.IEnumerable<System.Guid> hearingIdsBody, System.Threading.CancellationToken cancellationToken)
         {

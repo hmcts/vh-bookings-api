@@ -22,7 +22,7 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         private CaseType _caseType1;
 
         [OneTimeSetUp]
-        public async Task InitialSetup()
+        public void InitialSetup()
         {
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;

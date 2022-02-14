@@ -244,8 +244,9 @@ namespace BookingsApi.Controllers
                 await _commandHandler.Handle(new AnonymisePersonWithUsernameCommand { Username = username });
                 return Ok();
             }
-            catch (PersonNotFoundException)
+            catch (PersonNotFoundException ex)
             {
+                _logger.LogError(ex, "Failed to update a person because the {username} does not exist", username);
                 return NotFound();
             }
         }
