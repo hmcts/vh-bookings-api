@@ -26,50 +26,33 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(AnonymiseCaseAndParticipantCommand command)
         {
-            foreach (var hearingId in command.HearingIds)
-            {
-                _context.VideoHearings
-                    .Include(vh => vh.HearingCases)
-                    .ThenInclude(vh => vh.Case)
-                    .Where(hearing => hearing.Id == hearingId).ToList().ForEach(hearing =>
-                {
-                    hearing.HearingCases.ToList().ForEach(
-                        hearingCase =>
-                        {
-                            if (hearingCase.HearingId == hearingId
-                                && !hearingCase.Case.Name.ToLowerInvariant().Contains(AnonymisedNameSuffix))
-                            {
-                                hearingCase.Case.Name =
-                                    $"{RandomStringGenerator.GenerateRandomString(9)}{AnonymisedNameSuffix}";
-                            }
-                        });
-                });
+            var hearindIds = command.HearingIds;
 
-                _context.Participants
-                    .Where(participant => participant.HearingId == hearingId)
-                    .ToList()
-                    .ForEach(participant =>
-                    {
-                        var randomString = RandomStringGenerator.GenerateRandomString(9);
+            var videoHearings = _context.VideoHearings
+                .Include(vh => vh.HearingCases)
+                .ThenInclude(vh => vh.Case)
+                .Where(hearing => hearindIds.Contains(hearing.Id))
+                .ToList();
 
-                        if (!participant.DisplayName.ToLowerInvariant().Contains(AnonymisedNameSuffix))
-                        {
-                            participant.DisplayName = $"{randomString}{AnonymisedNameSuffix}";
-                        }
+            videoHearings = videoHearings
+                .Select(r => AnonymiseName(r, hearindIds))
+                .ToList();
 
-                        var castingParticipantAsRepresentative = participant as Representative;
+            _context.VideoHearings.UpdateRange(videoHearings);
 
-                        if (castingParticipantAsRepresentative != null &&
-                            !string.IsNullOrEmpty(castingParticipantAsRepresentative.Representee))
-                        {
-                            castingParticipantAsRepresentative.Representee = randomString;
-                        }
-                    });
-            }
 
-            var jobHistory = await _context.JobHistory.FirstOrDefaultAsync() as UpdateJobHistory; 
+            var participants = _context.Participants
+                .Where(participant => hearindIds.Contains(participant.HearingId))
+                 .ToList();
 
-            if (jobHistory == null)
+            participants = participants
+                .Select(r => AnonymiseDisplayName(r))
+                .ToList();
+
+            _context.Participants.UpdateRange(participants);
+
+
+            if (!(await _context.JobHistory.FirstOrDefaultAsync() is UpdateJobHistory jobHistory))
             {
                 await _context.JobHistory.AddAsync(new UpdateJobHistory());
             }
@@ -79,6 +62,40 @@ namespace BookingsApi.DAL.Commands
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        private Participant AnonymiseDisplayName(Participant participant)
+        {
+            var randomString = RandomStringGenerator.GenerateRandomString(9);
+
+            if (!participant.DisplayName.ToLowerInvariant().Contains(AnonymisedNameSuffix))
+            {
+                participant.DisplayName = $"{randomString}{AnonymisedNameSuffix}";
+            }
+
+            if (participant is Representative castingParticipantAsRepresentative &&
+                !string.IsNullOrEmpty(castingParticipantAsRepresentative.Representee))
+            {
+                castingParticipantAsRepresentative.Representee = randomString;
+            }
+
+            return participant;
+        }
+
+        private VideoHearing AnonymiseName(VideoHearing hearing, IList<Guid> hearingIds)
+        {
+            hearing.HearingCases.ToList().ForEach(
+                hearingCase =>
+                {
+                    if (hearingIds.Any(r => r == hearingCase.HearingId)
+                             && !hearingCase.Case.Name.ToLowerInvariant().Contains(AnonymisedNameSuffix))
+                    {
+                        hearingCase.Case.Name =
+                             $"{RandomStringGenerator.GenerateRandomString(9)}{AnonymisedNameSuffix}";
+                    }
+                });
+
+            return hearing;
         }
     }
 }
