@@ -63,6 +63,23 @@ namespace BookingsApi.Domain
             ContactEmail = contactEmail;
         }
 
+        public void AnonymisePersonForSchedulerJob()
+        {
+            var randomString = RandomStringGenerator.GenerateRandomString(9);
+            
+            FirstName = randomString;
+            LastName = randomString;
+            MiddleNames = randomString;
+            Username = $"{randomString}@email.net";
+            ContactEmail = $"{randomString}@hmcts.net";
+            TelephoneNumber = "00000000000";
+
+            if (Organisation != null)
+            {
+                Organisation.Name = randomString;
+            }
+        }
+
         private void ValidateArguments(string firstName, string lastName, string username)
         {
             if (string.IsNullOrEmpty(firstName))

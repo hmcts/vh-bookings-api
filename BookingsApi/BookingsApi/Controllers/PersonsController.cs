@@ -11,6 +11,7 @@ using BookingsApi.Extensions;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -191,6 +192,18 @@ namespace BookingsApi.Controllers
             return Ok(new UserWithClosedConferencesResponse { Usernames = person });
         }
 
+        [HttpGet("getanonymisationdata", Name = "GetAnonymisationData")]
+        [OpenApiOperation("GetAnonymisationData")]
+        [ProducesResponseType(typeof(AnonymisationDataResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAnonymisationData()
+        {
+            var anonymisationData =
+                await _queryHandler.Handle<GetAnonymisationDataQuery, AnonymisationDataDto>(
+                    new GetAnonymisationDataQuery());
+            var response = AnonymisationDataResponseMapper.Map(anonymisationData);
+            return Ok(response);
+        }
+
         /// <summary>
         /// Anonymise a person
         /// </summary>
@@ -210,6 +223,30 @@ namespace BookingsApi.Controllers
             }
             catch (PersonNotFoundException)
             {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Anonymise a person from expired hearing
+        /// </summary>
+        /// <param name="username">username of person</param>
+        /// <returns></returns>
+        [HttpPatch("username/{username}/anonymise-for-expired-hearings",
+            Name = "AnonymisePersonWithUsernameForExpiredHearings")]
+        [OpenApiOperation("AnonymisePersonWithUsernameForExpiredHearings")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AnonymisePersonWithUsernameForExpiredHearings(string username)
+        {
+            try
+            {
+                await _commandHandler.Handle(new AnonymisePersonWithUsernameCommand { Username = username });
+                return Ok();
+            }
+            catch (PersonNotFoundException ex)
+            {
+                _logger.LogError(ex, "Failed to update a person because the {username} does not exist", username);
                 return NotFound();
             }
         }
