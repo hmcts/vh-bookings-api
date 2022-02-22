@@ -41,5 +41,6 @@
         public const string ResponsibleClinician = "Responsible Clinician (RC)";
         public const string VictimLiaisonOfficer = "Victim Liaison Officer";
         public const string SpecialistLayMember = "Specialist Lay Member";
+        public const string TrafficCommissioner = "Traffic Commissioner";
     }
 }
