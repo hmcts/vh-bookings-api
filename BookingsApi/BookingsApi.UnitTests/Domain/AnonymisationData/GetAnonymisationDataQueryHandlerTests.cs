@@ -332,7 +332,7 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
 
             var result = await _handler.Handle(new GetAnonymisationDataQuery());
 
-            // result.Usernames.Count.Should().Be(2);
+            result.Usernames.Count.Should().Be(2);
 
             result.Usernames.Should().Contain(x => x == _person1.Username);
             result.Usernames.Should().Contain(x => x == _person2.Username);
