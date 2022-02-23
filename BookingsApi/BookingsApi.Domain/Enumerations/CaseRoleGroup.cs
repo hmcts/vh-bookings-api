@@ -16,6 +16,7 @@ namespace BookingsApi.Domain.Enumerations
         Winger = 11,
         StaffMember = 12,
         SecretaryOfState = 13,
-        ELAAS = 14
+        TrafficCommissioner = 14,
+        ELAAS = 15
     }
 }
