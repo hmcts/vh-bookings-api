@@ -102,7 +102,7 @@ namespace BookingsApi.DAL.Migrations
                     {943, HearingRoles.ELAAS, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 298},
 
                     // Judge (300)
-                    {945, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 300},
+                    {945, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Judge], 300},
             });
         }
 
