@@ -325,6 +325,7 @@ Feature: CaseTypes
       | Mental Health                     | Panel Member |
       | Mental Health                     | Observer     |
       | Mental Health                     | Judge        |    
+      | Employment Appeal Tribunal        | Judge        |    
       | Employment Appeal Tribunal        | Appellant    |
       | Employment Appeal Tribunal        | Respondent   |
       | Employment Appeal Tribunal        | Observer     |
