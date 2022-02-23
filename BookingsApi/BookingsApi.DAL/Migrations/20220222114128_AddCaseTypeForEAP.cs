@@ -51,6 +51,7 @@ namespace BookingsApi.DAL.Migrations
                     { 296, "Observer", (int) CaseRoleGroup.Observer, 47 },
                     { 297, "Panel Member", (int) CaseRoleGroup.PanelMember, 47 },
                     { 298, "ELAAS", (int) CaseRoleGroup.ELAAS, 47 },
+                    { 300, "Judge", (int) CaseRoleGroup.Judge, 47 },
                });
 
 
@@ -99,6 +100,9 @@ namespace BookingsApi.DAL.Migrations
 
                     // Secretary of State(298)
                     {943, HearingRoles.ELAAS, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 298},
+
+                    // Judge (300)
+                    {945, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 300},
             });
         }
 
