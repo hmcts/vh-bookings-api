@@ -46,7 +46,7 @@ namespace BookingsApi.DAL.Migrations
                new[] { "Id", "Name", "Group", "CaseTypeId" },
                new object[,]
                {
-                    { 294, "Apellant", (int) CaseRoleGroup.Appellant, 47 },
+                    { 294, "Appellant", (int) CaseRoleGroup.Appellant, 47 },
                     { 295, "Respondent", (int) CaseRoleGroup.Respondent, 47 },
                     { 296, "Observer", (int) CaseRoleGroup.Observer, 47 },
                     { 297, "Panel Member", (int) CaseRoleGroup.PanelMember, 47 },
@@ -93,7 +93,7 @@ namespace BookingsApi.DAL.Migrations
                     {940, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
 
                     // Observer(296)
-                    {941, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 296},
+                    {941, HearingRoles.Observer, UserRoleForHearingRole.UserRoleId[UserRoles.Observer], 296},
 
                     // Panel Member(297)
                     {942, HearingRoles.PanelMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 297},
