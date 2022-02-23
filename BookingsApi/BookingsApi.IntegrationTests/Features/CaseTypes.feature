@@ -313,6 +313,7 @@ Feature: CaseTypes
       | Upper Tribunal Immigration & Asylum Chamber| Observer     |
       | Upper Tribunal Immigration & Asylum Chamber| Panel Member |
       | Upper Tribunal Immigration & Asylum Chamber| Secretary of State |
+      | Upper Tribunal Administrative Appeals Chamber| Judge        |
       | Upper Tribunal Administrative Appeals Chamber| Appellant    |
       | Upper Tribunal Administrative Appeals Chamber| Applicant    |
       | Upper Tribunal Administrative Appeals Chamber| Observer     |
