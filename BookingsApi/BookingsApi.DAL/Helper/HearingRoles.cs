@@ -15,6 +15,7 @@
         public const string SupportWorker = "Support Worker";
         public const string App = "App";
         public const string AppAdvocate = "App Advocate";
+        public const string Advocate = "Advocate";
         public const string DwpPresentingOfficer = "DWP Presenting Officer";
         public const string Expert = "Expert";
         public const string Respondent = "Respondent";
@@ -42,5 +43,11 @@
         public const string VictimLiaisonOfficer = "Victim Liaison Officer";
         public const string SpecialistLayMember = "Specialist Lay Member";
         public const string TrafficCommissioner = "Traffic Commissioner";
+        public const string CertificationOfficer = "Certification Officer";
+        public const string Counsel = "Counsel";
+        public const string Employer = "Employer";
+        public const string Interventer = "Interventer";
+        public const string TradeUnion = "Trade Union";
+        public const string ELAAS = "ELAAS";
     }
 }
