@@ -113,10 +113,14 @@ namespace BookingsApi.DAL.Migrations
                 migrationBuilder.DeleteData(nameof(HearingRole), "Id", hearingRoleId);
             }
 
+            migrationBuilder.DeleteData(nameof(HearingRole), "Id", 945);
+
             for (int caseRoleId = 294; caseRoleId <= 298; caseRoleId++)
             {
                 migrationBuilder.DeleteData(nameof(CaseRole), "Id", caseRoleId);
             }
+
+            migrationBuilder.DeleteData(nameof(CaseRole), "Id", 300);
 
             for (int hearingTypeId = 244; hearingTypeId <= 260; hearingTypeId++)
             {
