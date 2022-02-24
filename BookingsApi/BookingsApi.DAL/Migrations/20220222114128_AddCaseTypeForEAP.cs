@@ -98,8 +98,8 @@ namespace BookingsApi.DAL.Migrations
                     // Panel Member(297)
                     {942, HearingRoles.PanelMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 297},
 
-                    // Secretary of State(298)
-                    {943, HearingRoles.ELAAS, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 298},
+                    // ELAAS (298)
+                    {943, HearingRoles.ProBonoRepresentative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 298},
 
                     // Judge (300)
                     {945, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Judge], 300},

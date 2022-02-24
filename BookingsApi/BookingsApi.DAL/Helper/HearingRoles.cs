@@ -48,6 +48,6 @@
         public const string Employer = "Employer";
         public const string Interventer = "Interventer";
         public const string TradeUnion = "Trade Union";
-        public const string ELAAS = "ELAAS";
+        public const string ProBonoRepresentative = "ProBonoRepresentative";
     }
 }
