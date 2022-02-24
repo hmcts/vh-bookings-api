@@ -48,6 +48,7 @@
         public const string Employer = "Employer";
         public const string Interventer = "Interventer";
         public const string TradeUnion = "Trade Union";
+        public const string HomeOffice = "Home Office";
         public const string ProBonoRepresentative = "ProBonoRepresentative";
     }
 }
