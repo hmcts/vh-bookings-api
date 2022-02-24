@@ -56,7 +56,8 @@ Feature: CaseTypes
       | Tenant Fees                       | Case Management,Mediation,Preliminary Hearing,Substantive Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
       | Upper Tribunal Immigration & Asylum Chamber| Substantive,Oral Permission/Renewal,Case Management Review,Error of Law,For Mention,Hamid,Rolled up,Oral Permission,Resumed/Continuance,Hand down,Urgent Oral                                                                                                                                                                                                                                                                                                                                                                                                                                                |
       | Mental Health                     | Non-Restricted Application,Non-Restricted Referral,Restricted Application,Restricted Referral,Community,Hearing,Section 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-      | Upper Tribunal Administrative Appeals Chamber  | Case Management Review,Oral Permission/Renewal,Substantive                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+      | Upper Tribunal Administrative Appeals Chamber  | Case Management Review,Oral Permission/Renewal,Substantive                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+      | Employment Appeal Tribunal        | Appeal from Registrar's Direction,Appeal from Registrar's Order,Appeal from Reinstatement Committee,Application for Extension of Time,Application to Strike Out,Appointment for Directions,Application for Costs,Disposal Hearings,For Mention,Interim Hearing,Oral Judgment,Preliminary Hearing (All Parties),Preliminary Hearing (Appellant Only),Preliminary Hearing (Respondent Only),Review Application,Rule 3(10) Application,Rule 6(16) Application                                                                                                                                                            |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -122,6 +123,7 @@ Feature: CaseTypes
       | Upper Tribunal Immigration & Asylum Chamber|
       | Upper Tribunal Administrative Appeals Chamber|
       | Mental Health                     |
+      | Employment Appeal Tribunal        |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -324,3 +326,9 @@ Feature: CaseTypes
       | Mental Health                     | Panel Member |
       | Mental Health                     | Observer     |
       | Mental Health                     | Judge        |
+      | Employment Appeal Tribunal        | Judge        |
+      | Employment Appeal Tribunal        | Appellant    |
+      | Employment Appeal Tribunal        | Respondent   |
+      | Employment Appeal Tribunal        | Observer     |
+      | Employment Appeal Tribunal        | Panel Member |
+      | Employment Appeal Tribunal        | ELAAS        |
