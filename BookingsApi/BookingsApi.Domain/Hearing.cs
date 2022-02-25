@@ -66,7 +66,7 @@ namespace BookingsApi.Domain
         public DateTime? ConfirmedDate { get; protected set; }
         public virtual IList<Participant> Participants { get; }
         public virtual IList<Endpoint> Endpoints { get; }
-        public virtual IList<HearingCase> HearingCases { get; }
+        public virtual IList<HearingCase> HearingCases { get; set; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool QuestionnaireNotRequired { get; set; }
