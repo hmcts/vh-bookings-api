@@ -243,3 +243,10 @@ Feature: CaseTypes
       | Employment Appeal Tribunal        | Observer     |
       | Employment Appeal Tribunal        | Panel Member |
       | Employment Appeal Tribunal        | ELAAS        |
+      | Asylum Support                    | Appellant    |
+      | Asylum Support                    | Applicant    |
+      | Asylum Support                    | Observer     |
+      | Asylum Support                    | Panel Member |
+      | Asylum Support                    | Secretary of State|
+      | Asylum Support                    | Home Office  |
+      | Asylum Support                    | Judge        |

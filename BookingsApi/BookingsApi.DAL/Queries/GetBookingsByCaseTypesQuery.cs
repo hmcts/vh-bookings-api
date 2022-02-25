@@ -25,6 +25,7 @@ namespace BookingsApi.DAL.Queries
         public IList<int> CaseTypes { get; }
         public string Cursor { get; set; }
         public DateTime FromDate { get; set; }
+        public string CaseNumber { get; set; }
 
         public int Limit
         {
@@ -62,6 +63,13 @@ namespace BookingsApi.DAL.Queries
             if (query.CaseTypes.Any()) 
             { 
                 hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId)); 
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.CaseNumber))
+            {
+                var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
+                hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
+                //hearings = hearings.Where(x =>  x.Cases.Any(y => cases.Contains(y)));
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.FromDate)

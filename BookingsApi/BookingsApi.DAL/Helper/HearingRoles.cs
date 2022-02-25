@@ -42,12 +42,13 @@
         public const string ResponsibleClinician = "Responsible Clinician (RC)";
         public const string VictimLiaisonOfficer = "Victim Liaison Officer";
         public const string SpecialistLayMember = "Specialist Lay Member";
-        public const string TrafficCommissioner = "Traffic Commissioner";
+        public const string TrafficCommissioner = "Traffic Commissioners Officer";
         public const string CertificationOfficer = "Certification Officer";
         public const string Counsel = "Counsel";
         public const string Employer = "Employer";
         public const string Interventer = "Interventer";
         public const string TradeUnion = "Trade Union";
-        public const string ELAAS = "ELAAS";
+        public const string HomeOffice = "Home Office";
+        public const string ProBonoRepresentative = "ProBonoRepresentative";
     }
 }
