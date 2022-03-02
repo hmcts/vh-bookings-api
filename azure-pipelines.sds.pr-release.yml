@@ -16,7 +16,7 @@ parameters:
   - name: pr_number
     displayName: Pull Request ID
     type: number
-    default: $(System.PullRequest.PullRequestId)
+    default: 600
   - name: cluster
     type: string
     default: 01
