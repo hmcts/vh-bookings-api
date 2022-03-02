@@ -19,7 +19,7 @@ parameters:
     default: 600
   - name: git_repo_name
     type: string
-    default: $(Build.Repository.Name)
+    default: vh-bookings-api
   - name: cluster
     type: string
     default: 01
