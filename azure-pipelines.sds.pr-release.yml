@@ -19,7 +19,7 @@ parameters:
     default: 600
   - name: git_repo_name
     type: string
-    value: $(Build.Repository.Name)
+    default: $(Build.Repository.Name)
   - name: cluster
     type: string
     default: 01
