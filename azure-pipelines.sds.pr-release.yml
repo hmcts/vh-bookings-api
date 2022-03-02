@@ -48,11 +48,6 @@ stages:
           parameters:
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
             appId: $(gh_app_app_id)
-          
-        - template: templates\Github\clone.yaml@azTemplates
-          parameters:
-            repoName: ${{ variables.gitRepoName }}
-            branchName: $(Build.SourceBranchName)
 
         - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
           parameters:
