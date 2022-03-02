@@ -1,0 +1,164 @@
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/master
+      endpoint: hmcts
+
+parameters:
+  - name: env
+    type: string
+    default: dev
+    values:
+      - dev
+      - demo
+  - name: pr_number
+    displayName: Pull Request ID
+    type: number
+    default: $(System.PullRequest.PullRequestId)
+  - name: cluster
+    type: string
+    default: 01
+    values:
+      - 01
+      - 00
+
+stages:
+  - stage: Dock
+    displayName: Build and Push Docker Image
+    variables: 
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ parameters.env }}
+          git_repo_name: ${{ parameters.git_repo_name }}
+          cluster: ${{ parameters.cluster }}
+      - group: vh-github-app-credentials
+      - name: prTagName
+        value: 'pr-$(System.PullRequest.PullRequestId)'
+    jobs:
+    - job:
+      steps:
+        - checkout: self
+        
+        - template: templates\Github\get-app-token.yaml@azTemplates
+          parameters:
+            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+            appId: $(gh_app_app_id)
+          
+        - template: templates\Github\get-pull-request-details.yaml@azTemplates
+          parameters:
+            repoName: ${{ variables.gitRepoName }}
+            pullRequestId: ${{ parameters.pr_number }}
+
+        - template: templates\Github\clone.yaml@azTemplates
+          parameters:
+            repoName: ${{ variables.gitRepoName }}
+            branchName: $(pr.branch)
+
+        - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+          parameters:
+            azureSubscription: ${{ variables.acrSubscription }}
+            acrName: ${{ variables.acrName }}
+            repositoryName:  ${{ variables.repositoryName }}
+            imageName: "${{ replace(parameters.git_repo_name, '-', '') }}"
+            imageTags:
+              - '${{ variables.prTagName }}'
+
+  - stage: Install
+    dependsOn: Dock
+    displayName: Deploy Helm chart to ${{ variables.clusterName }}
+    variables:
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ parameters.env }}
+          git_repo_name: ${{ parameters.git_repo_name }}
+          cluster: ${{ parameters.cluster }}
+      - group: vh-github-app-credentials
+      - name: prTagName
+        value: 'pr-${{ parameters.pr_number }}'
+      - name: dnsRecordName
+        value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
+    jobs:
+      - job:
+        steps:
+          - checkout: self
+        
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\get-pull-request-details.yaml@azTemplates
+            parameters:
+              repoName: ${{ variables.gitRepoName }}
+              pullRequestId: ${{ parameters.pr_number }}
+
+          - template: templates\Github\clone.yaml@azTemplates
+            parameters:
+              repoName: ${{ variables.gitRepoName }}
+              branchName: $(pr.branch)
+
+          - template: templates\Github\bump-chart-versions.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartRepoPath }}
+              chartBranch: $(pr.branch)
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+
+          - bash: |
+              export IMAGE_NAME="${imageName}"
+              export SERVICE_FQDN="${fqdn}"
+              export RELEASE_NAME="${releaseName}"
+                            
+              valuesEnvTemplate="${{ variables.envValuesTemplatePath }}"
+              valuesEnv="${{ variables.envValuesPath }}"
+              
+              if test -f "$valuesEnvTemplate"; then
+                echo "$valuesEnvTemplate found"
+                envsubst < ${valuesEnvTemplate} > ${valuesEnv}
+                echo "created $valuesEnv"
+                cat $valuesEnv
+              else
+                echo "No Environment File"
+              fi
+            displayName: Create Environment Values File
+            env:
+              imageName: ${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.prTagName }}
+              fqdn: ${{ variables.dnsRecordName }}.${{ variables.dnsZone }}
+              env: ${{ parameters.env }}
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagName }}"
+
+          - bash: |
+              VERSION=$(cat "${chartPath}/Chart.yaml" | grep ^version | cut -d  ':' -f 2 | tr -d '[:space:]')
+              echo "Chart Version: $VERSION"
+              echo "##vso[task.setvariable variable=chartVersion;isOutput=true]$VERSION"
+            displayName: Get Chart Version
+            env:
+              chartPath: ${{ variables.chartPath }}
+
+          - template: templates\Azure\Dns\private-dns-add-aks-pr.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              aksSubscriptionName: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
+              aksClusterName: "${{ variables.clusterName }}"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+              zoneName: ${{ variables.dnsZone }}
+              recordName: ${{ variables.dnsRecordName }}
+  
+          - template: templates\Containerisation\helm\helm-deploy.yaml@azTemplates
+            parameters:
+              helmVersion: $(chartVersion)
+              azureSubscription: ${{ variables.subscriptionName }}
+              kubernetesRG: "${{ variables.clusterResourceGroup }}"
+              kubernetesCluster: "${{ variables.clusterName }}"
+              namespace: "vh"
+              chartName: '${{ variables.chartName }}'
+              chartPath: '${{ variables.chartPath }}'
+              imageTag: '${{ variables.prTagName }}'
+              environment: ${{ parameters.env }}
+              additionalArgs: "-o json"
