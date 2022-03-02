@@ -1,0 +1,56 @@
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/master
+      endpoint: hmcts
+
+parameters:
+  - name: env
+    type: string
+    default: dev
+    values:
+      - dev
+      - demo
+  - name: pr_number
+    displayName: Pull Request ID
+    type: number
+  - name: cluster
+    type: string
+    default: 01
+    values:
+      - 01
+      - 00
+
+stages:
+  stage: Dock
+  displayName: Build and Push Docker Image
+  variables: 
+    - template: variables/shared.yaml
+      parameters:
+        env: ${{ parameters.env }}
+        git_repo_name: ${{ parameters.git_repo_name }}
+        cluster: ${{ parameters.cluster }}
+    - group: vh-github-app-credentials
+    - name: prTagName
+      value: 'pr-$(System.PullRequest.PullRequestId)'
+  jobs:
+    - job:
+      steps:
+        - checkout: self
+        
+        - template: templates\Github\get-app-token.yaml@azTemplates
+          parameters:
+            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+            appId: $(gh_app_app_id)
+          
+        - template: templates\Github\get-pull-request-details.yaml@azTemplates
+          parameters:
+            repoName: ${{ variables.gitRepoName }}
+            pullRequestId: ${{ parameters.pr_number }}
+
+        - template: templates\Github\clone.yaml@azTemplates
+          parameters:
+            repoName: ${{ variables.gitRepoName }}
+            branchName: $(pr.branch)
