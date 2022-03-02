@@ -39,10 +39,11 @@ namespace BookingsApi.Controllers
                 {
                     Id = caseType.Id,
                     Name = caseType.Name,
-                    HearingTypes = caseType.HearingTypes.Select(hearingType => new HearingTypeResponse
+                    HearingTypes = caseType.HearingTypes.Where(ht => ht.Live).Select(hearingType => new HearingTypeResponse
                     {
                         Id = hearingType.Id,
                         Name = hearingType.Name
+                        
                     }).ToList()
                 }
             );
