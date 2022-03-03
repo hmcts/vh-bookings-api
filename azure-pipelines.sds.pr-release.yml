@@ -42,6 +42,8 @@ stages:
     jobs:
     - job:
       steps:
+        - bash: |
+            echo "our brach name is: $(Build.SourceBranchName)"  
         - checkout: self
         
         - template: templates\Github\get-app-token.yaml@azTemplates
