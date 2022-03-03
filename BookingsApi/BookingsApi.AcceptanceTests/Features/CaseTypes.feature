@@ -226,7 +226,27 @@ Feature: CaseTypes
       | Upper Tribunal Immigration & Asylum Chamber| Observer     |
       | Upper Tribunal Immigration & Asylum Chamber| Panel Member |
       | Upper Tribunal Immigration & Asylum Chamber| Secretary of State |
+      | Upper Tribunal Administrative Appeals Chamber| Judge        |
+      | Upper Tribunal Administrative Appeals Chamber| Appellant |
+      | Upper Tribunal Administrative Appeals Chamber| Applicant |
+      | Upper Tribunal Administrative Appeals Chamber| Observer |
+      | Upper Tribunal Administrative Appeals Chamber| Panel Member |
+      | Upper Tribunal Administrative Appeals Chamber| Secretary of State|
+      | Upper Tribunal Administrative Appeals Chamber| Traffic Commissioner |
       | Mental Health                     | Applicant    |
       | Mental Health                     | Panel Member |
       | Mental Health                     | Observer     |
       | Mental Health                     | Judge        |
+      | Employment Appeal Tribunal        | Judge        |
+      | Employment Appeal Tribunal        | Appellant    |
+      | Employment Appeal Tribunal        | Respondent   |
+      | Employment Appeal Tribunal        | Observer     |
+      | Employment Appeal Tribunal        | Panel Member |
+      | Employment Appeal Tribunal        | ELAAS        |
+      | Asylum Support                    | Appellant    |
+      | Asylum Support                    | Applicant    |
+      | Asylum Support                    | Observer     |
+      | Asylum Support                    | Panel Member |
+      | Asylum Support                    | Secretary of State|
+      | Asylum Support                    | Home Office  |
+      | Asylum Support                    | Judge        |
