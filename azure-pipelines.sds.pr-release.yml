@@ -42,8 +42,6 @@ stages:
     jobs:
     - job:
       steps:
-        - bash: |
-            echo "our brach name is: $(Build.SourceBranchName)"  
         - checkout: self
         
         - template: templates\Github\get-app-token.yaml@azTemplates
@@ -140,7 +138,14 @@ stages:
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
               zoneName: ${{ variables.dnsZone }}
               recordName: ${{ variables.dnsRecordName }}
-  
+          
+          - bash: |
+              echo "this is where we are"
+              pwd
+              echo "this is how it looks"
+              ls -ltra
+              echo {{ variables.chartPath }}
+              
           - template: templates\Containerisation\helm\helm-deploy.yaml@azTemplates
             parameters:
               helmVersion: $(chartVersion)
