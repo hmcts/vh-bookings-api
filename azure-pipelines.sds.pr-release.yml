@@ -38,7 +38,7 @@ stages:
           cluster: ${{ parameters.cluster }}
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestId)'
+        value: 'pr-${{ parameters.pr_number }}'
     jobs:
     - job:
       steps:
