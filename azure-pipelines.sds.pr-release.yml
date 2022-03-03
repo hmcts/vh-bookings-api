@@ -12,6 +12,7 @@ parameters:
     default: dev
     values:
       - dev
+
   - name: git_repo_name
     type: string
     default: bookings-api
@@ -67,6 +68,9 @@ stages:
     jobs:
       - job:
         steps:
+          - bash: |
+              echo "our PR id is:"
+              echo $(System.PullRequest.PullRequestId)
           - checkout: self
         
           - template: templates\Github\get-app-token.yaml@azTemplates
