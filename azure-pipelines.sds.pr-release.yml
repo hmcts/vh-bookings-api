@@ -29,7 +29,7 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestId)'
+        value: 'pr-$(System.PullRequest.PullRequestNumber)'
 
     jobs:
     - job:
@@ -62,7 +62,7 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestId)'
+        value: 'pr-$(System.PullRequest.PullRequestNumber)'
       - name: dnsRecordName
         value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
     jobs:
@@ -70,7 +70,7 @@ stages:
         steps:
           - bash: |
               echo "our PR id is:"
-              echo $(System.PullRequest.PullRequestId)
+              echo $(System.PullRequest.PullRequestNumber)
           - checkout: self
         
           - template: templates\Github\get-app-token.yaml@azTemplates
