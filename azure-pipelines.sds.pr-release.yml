@@ -51,11 +51,6 @@ stages:
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
             appId: $(gh_app_app_id)
 
-        - template: templates\Github\get-pull-request-details.yaml@azTemplates
-          parameters:
-            repoName: ${{ variables.gitRepoName }}
-            pullRequestId: ${{ parameters.pr_number }}
-    
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
             azureSubscription: ${{ variables.acrSubscription }}
@@ -95,16 +90,11 @@ stages:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
               appId: $(gh_app_app_id)
 
-          - template: templates\Github\get-pull-request-details.yaml@azTemplates
-            parameters:
-              repoName: ${{ variables.gitRepoName }}
-              pullRequestId: ${{ parameters.pr_number }}
-
           - template: templates\Github\bump-chart-versions.yaml@azTemplates
             parameters:
               chartName: ${{ variables.chartName }}
               chartPath: ${{ variables.chartRepoPath }}
-              chartBranch: $(pr.branch)
+              chartBranch: $(Build.SourceBranchName)
               githubToken: $(githubappinstall.token)
               githubUsername: $(gh_app_name)
               githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
