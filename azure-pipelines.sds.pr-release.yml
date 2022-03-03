@@ -19,25 +19,21 @@ parameters:
   - name: git_repo_name
     type: string
     default: bookings-api
-  - name: cluster
-    type: string
-    default: 01
-    values:
-      - 01
-      - 00
 
 stages:
   - stage: Dock
     displayName: Build and Push Docker Image
     variables: 
+      - group: aks-cluster-info
       - template: variables/shared.yaml
         parameters:
           env: ${{ parameters.env }}
           git_repo_name: ${{ parameters.git_repo_name }}
-          cluster: ${{ parameters.cluster }}
+          cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
         value: 'pr-${{ parameters.pr_number }}'
+
     jobs:
     - job:
       steps:
@@ -66,7 +62,7 @@ stages:
         parameters:
           env: ${{ parameters.env }}
           git_repo_name: ${{ parameters.git_repo_name }}
-          cluster: ${{ parameters.cluster }}
+          cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
         value: 'pr-${{ parameters.pr_number }}'
