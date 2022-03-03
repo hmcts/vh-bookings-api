@@ -49,6 +49,16 @@ stages:
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
             appId: $(gh_app_app_id)
 
+        - template: templates\Github\get-pull-request-details.yaml@azTemplates
+          parameters:
+            repoName: ${{ variables.gitRepoName }}
+            pullRequestId: ${{ parameters.pr_number }}
+            
+        - template: templates\Github\clone.yaml@azTemplates
+          parameters:
+            repoName: ${{ variables.gitRepoName }}
+            branchName: $(pr.branch)
+
         - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
           parameters:
             azureSubscription: ${{ variables.acrSubscription }}
