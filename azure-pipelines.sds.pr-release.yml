@@ -12,10 +12,6 @@ parameters:
     default: dev
     values:
       - dev
-  - name: pr_number
-    displayName: Pull Request ID
-    type: number
-    default: $(System.PullRequest.PullRequestId)
   - name: git_repo_name
     type: string
     default: bookings-api
@@ -32,7 +28,7 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-${{ parameters.pr_number }}'
+        value: 'pr-$(System.PullRequest.PullRequestId)'
 
     jobs:
     - job:
@@ -65,7 +61,7 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-${{ parameters.pr_number }}'
+        value: 'pr-$(System.PullRequest.PullRequestId)'
       - name: dnsRecordName
         value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
     jobs:
