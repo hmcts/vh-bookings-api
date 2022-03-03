@@ -59,6 +59,18 @@ stages:
             repoName: ${{ variables.gitRepoName }}
             branchName: $(pr.branch)
 
+        - bash: |
+            echo "testing. Repo name ${{ parameters.git_repo_name }}"
+            cd $(Build.SourcesDirectory)/vh-${{ parameters.git_repo_name }}
+            git switch -c $(Build.SourceBranchName)
+          displayName: 'Branch Checkout'
+      
+        - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+          parameters:
+            azureSubscription: ${{ variables.acrSubscription }}
+            acrName: ${{ variables.acrName }}
+            repositoryName:  ${{ variables.repositoryName }}
+            
         - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
           parameters:
             azureSubscription: ${{ variables.acrSubscription }}
