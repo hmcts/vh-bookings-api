@@ -106,13 +106,13 @@ stages:
           - template: templates\Github\clone.yaml@azTemplates
             parameters:
               repoName: ${{ variables.gitRepoName }}
-              branchName: $(Build.SourceBranchName)
+              branchName: $(pr.branch)
 
           - template: templates\Github\bump-chart-versions.yaml@azTemplates
             parameters:
               chartName: ${{ variables.chartName }}
               chartPath: ${{ variables.chartRepoPath }}
-              chartBranch: $(Build.SourceBranchName)
+              chartBranch: $(pr.branch)
               githubToken: $(githubappinstall.token)
               githubUsername: $(gh_app_name)
               githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
