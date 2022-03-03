@@ -53,11 +53,6 @@ stages:
           parameters:
             repoName: ${{ variables.gitRepoName }}
             pullRequestId: ${{ parameters.pr_number }}
-
-        - template: templates\Github\clone.yaml@azTemplates
-          parameters:
-            repoName: ${{ variables.gitRepoName }}
-            branchName: $(pr.branch)
     
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
