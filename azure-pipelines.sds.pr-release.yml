@@ -12,11 +12,10 @@ parameters:
     default: dev
     values:
       - dev
-      - demo
   - name: pr_number
     displayName: Pull Request ID
     type: number
-    default: 373
+    default: $(System.PullRequest.PullRequestId)
   - name: git_repo_name
     type: string
     default: bookings-api
@@ -43,11 +42,6 @@ stages:
     - job:
       steps:
         - checkout: self
-        
-        - template: templates\Github\get-app-token.yaml@azTemplates
-          parameters:
-            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-            appId: $(gh_app_app_id)
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
@@ -138,14 +132,7 @@ stages:
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
               zoneName: ${{ variables.dnsZone }}
               recordName: ${{ variables.dnsRecordName }}
-          
-          - bash: |
-              echo "this is where we are"
-              pwd
-              echo "this is how it looks"
-              ls -ltra
-              echo {{ variables.chartPath }}
-              
+
           - template: templates\Containerisation\helm\helm-deploy.yaml@azTemplates
             parameters:
               helmVersion: $(chartVersion)
