@@ -55,6 +55,7 @@ stages:
     dependsOn: Dock
     displayName: Deploy Helm chart to ${{ variables.clusterName }}
     variables:
+      - group: aks-cluster-info
       - template: variables/shared.yaml
         parameters:
           env: ${{ parameters.env }}
