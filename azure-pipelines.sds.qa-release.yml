@@ -29,7 +29,7 @@ variables:
 
 stages:
 
-  - template: templates/Containerisation/helm/helm-remove.yaml
+  - template: templates/Containerisation/helm/helm-remove.yaml@azTemplates
     parameters: 
       helmVersion: $(chartVersion)
       azureSubscription: ${{ variables.subscriptionName }}
