@@ -1,0 +1,40 @@
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/helm-remove
+      endpoint: hmcts
+
+parameters:
+  - name: env
+    type: string
+    default: dev
+    values:
+      - dev
+
+  - name: git_repo_name
+    type: string
+    default: bookings-api
+
+stages:
+  - template: templates/Containerisation/helm/helm-remove.yaml
+    variables:
+      - group: aks-cluster-info
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ parameters.env }}
+          git_repo_name: ${{ parameters.git_repo_name }}
+          cluster: $(cluster)
+      - name: prTagName
+        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+    parameters: 
+      helmVersion: $(chartVersion)
+      azureSubscription: ${{ variables.subscriptionName }}
+      kubernetesRG: "${{ variables.clusterResourceGroup }}"
+      kubernetesCluster: "${{ variables.clusterName }}"
+      namespace: "vh"
+      chartName: '${{ variables.chartName }}'
+      imageTag: '${{ variables.prTagName }}'
+      environment: ${{ parameters.env }}
+      #additionalArgs: "-o json"
