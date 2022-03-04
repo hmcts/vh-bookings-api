@@ -32,15 +32,15 @@ stages:
     displayName: Uninstall from aks-$(cluster)-${{ parameters.env }}
     jobs:
       - job:
-          steps:
-            - template: templates/Containerisation/helm/helm-remove.yaml@azTemplates
-              parameters: 
-                helmVersion: $(chartVersion)
-                azureSubscription: ${{ variables.subscriptionName }}
-                kubernetesRG: "${{ variables.clusterResourceGroup }}"
-                kubernetesCluster: "${{ variables.clusterName }}"
-                namespace: "vh"
-                chartName: '${{ variables.chartName }}'
-                imageTag: '${{ variables.prTagName }}'
-                environment: ${{ parameters.env }}
-                #additionalArgs: "-o json"
+        steps:
+          - template: templates/Containerisation/helm/helm-remove.yaml@azTemplates
+            parameters: 
+              helmVersion: $(chartVersion)
+              azureSubscription: ${{ variables.subscriptionName }}
+              kubernetesRG: "${{ variables.clusterResourceGroup }}"
+              kubernetesCluster: "${{ variables.clusterName }}"
+              namespace: "vh"
+              chartName: '${{ variables.chartName }}'
+              imageTag: '${{ variables.prTagName }}'
+              environment: ${{ parameters.env }}
+              #additionalArgs: "-o json"
