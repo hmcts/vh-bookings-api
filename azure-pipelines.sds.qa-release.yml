@@ -27,7 +27,7 @@ stages:
           git_repo_name: ${{ parameters.git_repo_name }}
           cluster: $(cluster)
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+        value: 'pr-373'
     parameters: 
       helmVersion: $(chartVersion)
       azureSubscription: ${{ variables.subscriptionName }}
