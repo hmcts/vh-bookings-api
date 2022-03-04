@@ -39,6 +39,7 @@ stages:
               azureSubscription: ${{ variables.subscriptionName }}
               kubernetesRG: "${{ variables.clusterResourceGroup }}"
               kubernetesCluster: "${{ variables.clusterName }}"
+              chartPath: '${{ variables.chartPath }}'
               namespace: "vh"
               chartName: '${{ variables.chartName }}'
               imageTag: '${{ variables.prTagName }}'
