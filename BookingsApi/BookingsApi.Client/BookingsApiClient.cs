@@ -348,14 +348,14 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request);
+        System.Threading.Tasks.Task<CloneHearingResponse> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Create a new hearing with the details of a given hearing on given dates</summary>
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<CloneHearingResponse> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get a paged list of booked hearings</summary>
         /// <param name="types">The hearing case types.</param>
@@ -2990,7 +2990,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request)
+        public System.Threading.Tasks.Task<CloneHearingResponse> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request)
         {
             return CloneHearingAsync(hearingId, request, System.Threading.CancellationToken.None);
         }
@@ -3000,7 +3000,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<CloneHearingResponse> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -3022,6 +3022,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -3044,9 +3045,14 @@ namespace BookingsApi.Client
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<CloneHearingResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)

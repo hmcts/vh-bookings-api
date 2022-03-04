@@ -20,12 +20,12 @@ Scenario: Successfully clone a hearing with valid dates
 	Given I have a hearing with endpoints
 	And I have a request to clone a hearing with valid dates
 	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status OK and success status True
 	And the database should have cloned hearings
 
 Scenario: Successfully clone a hearing with valid dates and with Linked Participants
 	Given I have a hearing with linked participants
 	And I have a request to clone a hearing with valid dates
 	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status OK and success status True
 	And the database should have cloned hearings

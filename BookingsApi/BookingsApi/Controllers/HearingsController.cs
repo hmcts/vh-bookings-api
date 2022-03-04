@@ -301,7 +301,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPost("{hearingId}/clone")]
         [OpenApiOperation("CloneHearing")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(CloneHearingResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
             [FromBody] CloneHearingRequest request)
@@ -339,8 +339,13 @@ namespace BookingsApi.Controllers
 
             var existingCase = videoHearing.GetCases().First();
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
+
+            var response = new CloneHearingResponse
+            {
+                NewHearingIds = commands.Select(c => c.NewHearingId).ToList()
+            };
             
-            return NoContent();
+            return Ok(response);
         }
 
         /// <summary>
