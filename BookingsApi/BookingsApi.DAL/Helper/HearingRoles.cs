@@ -46,9 +46,9 @@
         public const string CertificationOfficer = "Certification Officer";
         public const string Counsel = "Counsel";
         public const string Employer = "Employer";
-        public const string Interventer = "Interventer";
+        public const string Interventor = "Interventor";
         public const string TradeUnion = "Trade Union";
         public const string HomeOffice = "Home Office";
-        public const string ProBonoRepresentative = "ProBonoRepresentative";
+        public const string ProBonoRepresentative = "Pro-Bono Representative";
     }
 }
