@@ -20,7 +20,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
     {
         private readonly BookNewHearingRequest request = RequestBuilder.Build();
 
-        private List<CaseRole> CaseRoles => new List<CaseRole> 
+        private List<CaseRole> CaseRoles => new List<CaseRole>
         {
             CreateCaseAndHearingRoles(1, "Applicant",new List<string>{ "Litigant in person", "Representative"}),
             CreateCaseAndHearingRoles(2, "Respondent",new List<string>{ "Litigant in person", "Representative"}),
@@ -31,7 +31,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         private CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, List<string> roles)
         {
             var hearingRoles = new List<HearingRole>();
-            
+
             foreach (var role in roles)
             {
                 hearingRoles.Add(new HearingRole(1, role) { UserRole = new UserRole(1, "TestUser") });
@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
         [Test]
         public async Task Should_successfully_book_new_hearing()
-        { 
+        {
             var response = await Controller.BookNewHearing(request);
 
             response.Should().NotBeNull();
@@ -84,8 +84,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
 
             RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
-            
-            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1 
+
+            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
                                                                                         && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
                                                                                         && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
         }
@@ -185,7 +185,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            var errors = (Dictionary<string, object>) ((SerializableError)objectResult.Value);
+            var errors = (Dictionary<string, object>)((SerializableError)objectResult.Value);
             errors.Should().ContainKey("CaseTypeName");
             ((string[])errors["CaseTypeName"])[0].Should().Be("Please provide a case type name");
         }
