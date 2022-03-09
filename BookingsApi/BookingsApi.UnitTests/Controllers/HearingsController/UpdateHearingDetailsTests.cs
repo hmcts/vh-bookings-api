@@ -50,14 +50,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
-                .ReturnsAsync(new List<HearingVenue> {hearingVenueOriginal, newVenue});
+                .ReturnsAsync(new List<HearingVenue> { hearingVenueOriginal, newVenue });
             var expectedResult = new HearingToDetailsResponseMapper().MapHearingToDetailedResponse(updatedHearing);
-            
+
             var result = await Controller.UpdateHearingDetails(videoHearing.Id, request);
             var ob = result.As<OkObjectResult>();
             ob.Should().NotBeNull();
             ob.Value.As<HearingDetailsResponse>().Should().BeEquivalentTo(expectedResult);
-            
+
             var message = SbQueueClient.ReadMessageFromQueue();
             var payload = message.IntegrationEvent.As<HearingDetailsUpdatedIntegrationEvent>();
             payload.Hearing.HearingId.Should().Be(updatedHearing.Id);

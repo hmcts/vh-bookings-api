@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -15,14 +17,20 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     {
         private GetBookingsByCaseTypesQueryHandler _handler;
         private BookingsDbContext _context;
+        private Mock<IFeatureToggles> FeatureTogglesMock;
 
         private const string FinancialRemedy = "Financial Remedy";
 
         [SetUp]
         public void Setup()
         {
+            FeatureTogglesMock = new Mock<IFeatureToggles>();
+
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
+
             _context = new BookingsDbContext(BookingsDbContextOptions);
-            _handler = new GetBookingsByCaseTypesQueryHandler(_context);
+
+            _handler = new GetBookingsByCaseTypesQueryHandler(_context, FeatureTogglesMock.Object);
         }
 
         [Test]
@@ -57,6 +65,29 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var hearingTypes = result.Select(hearing => hearing.CaseType.Name).Distinct().ToList();
             hearingTypes.Should().Equal(FinancialRemedy);
+        }
+
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_case_number()
+        {
+            await Hooks.SeedVideoHearing();
+
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
+            { 
+                CaseNumber = Hooks.CaseNumber 
+            };
+
+            var result = await _handler.Handle(query);
+
+            var containsHearingsFilteredByCaseNumber = result
+                .SelectMany(r => r.HearingCases)
+                .All(r => r.Case.Number == Hooks.CaseNumber);
+
+            containsHearingsFilteredByCaseNumber.Should().BeTrue();
         }
 
         [Test]
@@ -130,7 +161,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
 
             hearingIds.Count.Should().Be(includedHearings.Count());
-            foreach (var hearing in includedHearings) 
+            foreach (var hearing in includedHearings)
             {
                 hearingIds.Should().Contain(hearing.Id);
             }

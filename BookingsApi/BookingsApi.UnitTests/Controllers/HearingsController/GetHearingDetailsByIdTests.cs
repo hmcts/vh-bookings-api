@@ -18,7 +18,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         public async Task Should_return_hearing_details_for_given_hearingid()
         {
             var hearingId = Guid.NewGuid();
-             var hearing = GetHearing("123");
+            var hearing = GetHearing("123");
 
             QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))

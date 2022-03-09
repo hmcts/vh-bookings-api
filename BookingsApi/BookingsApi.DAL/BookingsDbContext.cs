@@ -14,6 +14,8 @@ namespace BookingsApi.DAL
         {
         }
 
+        public DbSet<Case> Cases { get; set; }
+
         public DbSet<VideoHearing> VideoHearings { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<CaseType> CaseTypes { get; set; }
