@@ -88,6 +88,10 @@ parameters:
       - name: ServiceBusQueue:ConnectionString
         value: AzureServiceBusConnectionStringSend
         secret: true
+      # LaunchDarkly
+      - name: LaunchDarkly:SdkKey
+        value: vh-admin-web-Feature-Toggle
+        secret: true
       # Feature Flags
       - name: FeatureFlags:StaffMemberFeature
         value: $(StaffMemberFeature)

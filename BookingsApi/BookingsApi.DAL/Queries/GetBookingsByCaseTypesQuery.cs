@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
+using BookingsApi.Common.Services;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -42,10 +43,12 @@ namespace BookingsApi.DAL.Queries
         IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
+        private readonly IFeatureToggles _featureToggles;
 
-        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context)
+        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context, IFeatureToggles featureToggles)
         {
             _context = context;
+            _featureToggles = featureToggles;
         }
 
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
@@ -60,22 +63,36 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .AsNoTracking();
 
-            
-            if (query.CaseTypes.Any()) 
-            { 
-                hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId)); 
+
+            if (query.CaseTypes.Any())
+            {
+                hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId));
             }
 
-            
-            if (!string.IsNullOrWhiteSpace(query.CaseNumber))
+            // Executes code block for new feature when AdminSearchToggle is ON 
+            if (!string.IsNullOrWhiteSpace(query.CaseNumber) && _featureToggles.AdminSearchToggle())
             {
                 var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
+
                 hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
+
+                var caseNumbers = cases.Select(r => r.Number);
+
+                var vhList = new List<VideoHearing>();
 
                 foreach (var item in hearings)
                 {
-                    item.HearingCases = item.HearingCases.Where(y => cases.Contains(y.Case)).ToList();
+                    var hearingCases = item.HearingCases.Where(y => caseNumbers.Contains(y.Case.Number)).ToList();
+
+                    if (hearingCases.Any())
+                    {
+                        item.HearingCases = hearingCases;
+                        vhList.Add(item);
+                    }
+
                 }
+
+                hearings = vhList.AsQueryable();
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.FromDate)
@@ -94,7 +111,7 @@ namespace BookingsApi.DAL.Queries
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result = await hearings.Take(query.Limit + 1).ToListAsync();
+            var result =  hearings.Take(query.Limit + 1).ToList();
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
