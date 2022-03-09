@@ -47,6 +47,7 @@ namespace BookingsApi.Controllers
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
+        private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
@@ -54,6 +55,7 @@ namespace BookingsApi.Controllers
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
+            IFeatureToggles featureToggles,
             ILogger logger)
         {
             _queryHandler = queryHandler;
@@ -61,6 +63,7 @@ namespace BookingsApi.Controllers
             _eventPublisher = eventPublisher;
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
+            _featureToggles = featureToggles;
             _logger = logger;
             
             _kinlyConfiguration = kinlyConfiguration.Value;
@@ -520,13 +523,19 @@ namespace BookingsApi.Controllers
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
         /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
+        /// <param name="caseNumber"></param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit, [FromQuery] DateTime? fromDate = null)
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes(
+            [FromQuery(Name = "types")]List<int> types, 
+            [FromQuery]string cursor = DefaultCursor, 
+            [FromQuery]int limit = DefaultLimit, 
+            [FromQuery] DateTime? fromDate = null, 
+            [FromQuery] string caseNumber = "")
         {
             fromDate = fromDate ?? DateTime.UtcNow.Date;
 
@@ -541,7 +550,8 @@ namespace BookingsApi.Controllers
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
                 Limit = limit,
-                FromDate = fromDate.Value
+                FromDate = fromDate.Value, 
+                CaseNumber = caseNumber
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
@@ -549,8 +559,8 @@ namespace BookingsApi.Controllers
 
             var response = new BookingsResponse
             {
-                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types),
-                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types),
+                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types, caseNumber),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types, caseNumber),
                 NextCursor = result.NextCursor,
                 Limit = limit,
                 Hearings = mapper.MapHearingResponses(result)
@@ -588,7 +598,7 @@ namespace BookingsApi.Controllers
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
 
-        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
+        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes, string caseNumber="")
         {
             const string hearingsListsEndpointBaseUrl = "hearings/";
             const string bookingsEndpointUrl = "types";
@@ -600,7 +610,15 @@ namespace BookingsApi.Controllers
                 types = string.Join("&types=", caseTypes);
             }
 
-            return $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
+            var pageUrl = $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
+
+            // Executes when Admin_Search feature toggle is ON and caseNumber search is performed
+            if (!string.IsNullOrWhiteSpace(caseNumber) && _featureToggles.AdminSearchToggle())
+            {
+                pageUrl += $"&caseNumber={caseNumber}";
+            }
+
+            return pageUrl;
         }
 
         private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
