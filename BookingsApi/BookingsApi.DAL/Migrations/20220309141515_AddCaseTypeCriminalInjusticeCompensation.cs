@@ -23,9 +23,9 @@ namespace BookingsApi.DAL.Migrations
                new[] { "Id", "Name", "CaseTypeId" },
                new object[,]
                {
-                    { 267, "Case Management Discussion", 49 },
-                    { 268, "Case Management Hearing", 49 },
-                    { 269, "Oral Hearing", 49 },
+                    { 269, "Case Management Discussion", 49 },
+                    { 270, "Case Management Hearing", 49 },
+                    { 271, "Oral Hearing", 49 },
                });
 
             migrationBuilder.InsertData(
@@ -95,7 +95,7 @@ namespace BookingsApi.DAL.Migrations
                 migrationBuilder.DeleteData(nameof(CaseRole), "Id", caseRoleId);
             }
 
-            for (int hearingTypeId = 267; hearingTypeId <= 269; hearingTypeId++)
+            for (int hearingTypeId = 269; hearingTypeId <= 271; hearingTypeId++)
             {
                 migrationBuilder.DeleteData(nameof(HearingType), "Id", hearingTypeId);
             }
