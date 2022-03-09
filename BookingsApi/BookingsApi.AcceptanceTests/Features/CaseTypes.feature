@@ -250,3 +250,9 @@ Feature: CaseTypes
       | Asylum Support                    | Secretary of State|
       | Asylum Support                    | Home Office  |
       | Asylum Support                    | Judge        |
+      | War Pensions Appeals              | Appellant    |
+      | War Pensions Appeals              | In absence   |
+      | War Pensions Appeals              | Observer     |
+      | War Pensions Appeals              | Panel Member |
+      | War Pensions Appeals              | Vets UK      |
+      | War Pensions Appeals              | Judge        |

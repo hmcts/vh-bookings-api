@@ -59,6 +59,7 @@ Feature: CaseTypes
       | Upper Tribunal Administrative Appeals Chamber  | Case Management Review,Oral Permission/Renewal,Substantive                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
       | Employment Appeal Tribunal        | Appeal from Registrar's Direction,Appeal from Registrar's Order,Appeal from Reinstatement Committee,Application for Extension of Time,Application to Strike Out,Appointment for Directions,Application for Costs,Disposal Hearings,For Mention,Interim Hearing,Oral Judgment,Preliminary Hearing (All Parties),Preliminary Hearing (Appellant Only),Preliminary Hearing (Respondent Only),Review Application,Rule 3(10) Application,Rule 6(16) Application                                                                                                                                                            |
       | Asylum Support                    | Case Management Review Hearing,Adjourned/Resumed Hearing,Full Hearing,Hearing to determine possible strike out/validity,Hearing do novo - following an internal set aside of a previous decision,Hearing do novo - following remittal by the High Court                                                                                                                                                                                                                                                                                                                                                               |
+      | War Pensions Appeals              | Case Management Hearing,Full Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -126,6 +127,7 @@ Feature: CaseTypes
       | Mental Health                     |
       | Employment Appeal Tribunal        |
       | Asylum Support                    |
+      | War Pensions Appeals              |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -341,3 +343,9 @@ Feature: CaseTypes
       | Asylum Support                    | Secretary of State |
       | Asylum Support                    | Home Office  |
       | Asylum Support                    | Judge        |
+      | War Pensions Appeals              | Appellant    |
+      | War Pensions Appeals              | In absence   |
+      | War Pensions Appeals              | Observer     |
+      | War Pensions Appeals              | Panel Member |
+      | War Pensions Appeals              | Vets UK      |
+      | War Pensions Appeals              | Judge        |
