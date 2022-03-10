@@ -19,6 +19,7 @@ namespace BookingsApi.Contract.Enums
         TrafficCommissioner = 14,
         ELAAS = 15,
         InAbsence = 16,
-        VetsUK = 17
+        VetsUK = 17,
+        PresentingOfficer = 18
     }
 }
