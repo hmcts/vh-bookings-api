@@ -50,5 +50,6 @@
         public const string TradeUnion = "Trade Union";
         public const string HomeOffice = "Home Office";
         public const string ProBonoRepresentative = "Pro-Bono Representative";
+        public const string RoyalBritishLegion = "Royal British Legion";
     }
 }
