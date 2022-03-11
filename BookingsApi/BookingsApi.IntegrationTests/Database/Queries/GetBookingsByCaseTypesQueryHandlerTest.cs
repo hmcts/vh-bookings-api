@@ -10,6 +10,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -83,11 +84,86 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var result = await _handler.Handle(query);
 
-            var containsHearingsFilteredByCaseNumber = result
-                .SelectMany(r => r.HearingCases)
-                .All(r => r.Case.Number == Hooks.CaseNumber);
+            AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
+        }
 
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_venue_ids()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            var venues = new RefDataBuilder().HearingVenues;
+
+            var venue1 = venues[0];
+            var venue2 = venues[1];
+            var venue3 = venues[2];
+  
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue1);
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue2);
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue3);
+
+            var venueIdsToFilterOn = new List<int> { venue1.Id, venue3.Id };
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                VenueIds = venueIdsToFilterOn
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
+        }
+
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_multiple_criteria()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            
+            var venues = new RefDataBuilder().HearingVenues;
+        
+            var venue1 = venues[0];
+            var venue2 = venues[1];
+            var venue3 = venues[2];
+        
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue1);
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue2);
+            await Hooks.SeedVideoHearing(opt =>
+            {
+                opt.CaseTypeName = FinancialRemedy;
+                opt.HearingVenue = venue3;
+            });
+            
+            var venueIdsToFilterOn = new List<int> { venue1.Id, venue3.Id };
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                CaseNumber = Hooks.CaseNumber,
+                VenueIds = venueIdsToFilterOn
+            };
+            
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
+            AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
+        }
+
+        private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
+        {
+            var containsHearingsFilteredByCaseNumber = hearings
+                .SelectMany(r => r.HearingCases)
+                .All(r => r.Case.Number == caseNumber);
+            
             containsHearingsFilteredByCaseNumber.Should().BeTrue();
+        }
+        
+        private void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
+        {
+            var containsHearingsFilteredByVenues = hearings
+                .Select(r => r.HearingVenue)
+                .Distinct()
+                .All(r => venueIds.Contains(r.Id));
+            
+            containsHearingsFilteredByVenues.Should().BeTrue();
         }
 
         [Test]

@@ -459,14 +459,65 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             response.Limit.Should().Be(2);
             response.NextCursor.Should().Be("next-cursor");
-            response.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&caseNumber={searchTerm}");
-            response.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&caseNumber={searchTerm}");
+            response.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&caseNumber={searchTerm}&venueIds=");
+            response.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&caseNumber={searchTerm}&venueIds=");
 
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
 
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_bookings_list_for_venue_ids_search()
+        {
+            var caseTypes = new List<int>();
+            var venueIds = new List<int> { 1, 2, 3 };
+            
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
+                .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham"), new HearingVenue(2, "Manchester"), new HearingVenue(3, "London") });
+            
+            QueryHandlerMock
+                .Setup(x =>
+                    x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                        It.IsAny<GetBookingsByCaseTypesQuery>()))
+                .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
+            
+            var objectResult = (await Controller.GetHearingsByTypes(caseTypes, "0", 2, venueIds: venueIds)).Result as ObjectResult;
+
+            var response = (BookingsResponse)objectResult.Value;
+
+            objectResult.Should().NotBeNull();
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response.Limit.Should().Be(2);
+            response.NextCursor.Should().Be("next-cursor");
+            response.PrevPageUrl.Should().Be($"hearings/types?types=&cursor=0&limit=2&venueIds=1&venueIds=2&venueIds=3");
+            response.NextPageUrl.Should().Be($"hearings/types?types=&cursor=next-cursor&limit=2&venueIds=1&venueIds=2&venueIds=3");
+
+            QueryHandlerMock.Verify(
+                x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                    It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
+        }
+        
+        [Test]
+        public async Task Should_return_bad_request_if_invalid_venue_ids()
+        {
+            var venueIds = new List<int> { 7, 50 };
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
+                .ReturnsAsync(new List<HearingVenue> { new HearingVenue(7, "Tribunal"), new HearingVenue(33, "Private Law") });
+        
+            var result = await Controller.GetHearingsByTypes(null, "0", 2, venueIds: venueIds);
+        
+            result.Should().NotBeNull();
+            result.Should().NotBeNull();
+            var objectResult = (ObjectResult)result.Result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Venue ids",
+                "Invalid value for venue ids");
+        }
 
         protected static VideoHearing GetHearing(string caseNumber)
         {
