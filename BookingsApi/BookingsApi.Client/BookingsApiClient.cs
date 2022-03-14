@@ -65,14 +65,14 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest);
+        System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Add an endpoint to a given hearing</summary>
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Removes an endpoint from a given hearing</summary>
         /// <param name="hearingId">The hearing id</param>
@@ -892,7 +892,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest)
+        public System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
             return AddEndPointToHearingAsync(hearingId, addEndpointRequest, System.Threading.CancellationToken.None);
         }
@@ -902,7 +902,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -924,6 +924,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -946,9 +947,20 @@ namespace BookingsApi.Client
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<EndpointResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
                         if (status_ == 204)
                         {
-                            return;
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("A server side error occurred.", status_, responseText_, headers_, null);
                         }
                         else
                         if (status_ == 400)
