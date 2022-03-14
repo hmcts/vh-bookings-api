@@ -166,7 +166,7 @@ namespace BookingsApi.DAL.Migrations
                     { 204, "Kingston upon Thames County Court and Family Court" },
                     { 205, "Kingston upon Thames Crown Court" },
                     { 206, "Kingston-upon-Hull Combined Court Centre" },
-                    { 207, "Kirklees (Huddersfield) Magistrates Court and Family Court " },
+                    { 207, "Kirklees (Huddersfield) Magistrates Court and Family Court" },
                     { 208, "Lancaster Court House" },
                     { 209, "Lancaster Crown Court" },
                     { 210, "Land Registration" },
