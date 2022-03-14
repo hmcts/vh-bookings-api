@@ -59,6 +59,9 @@ parameters:
       - name: Services:BookingsApiResourceId
         value: vh-bookings-api-identifieruris
         secret: true
+      - name: LaunchDarkly:SdkKey
+        value: vh-admin-web-Feature-Toggle
+        secret: true
       - name: UseServiceBusFake
         value: true
 

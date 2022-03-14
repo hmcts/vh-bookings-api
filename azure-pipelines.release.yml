@@ -154,6 +154,11 @@ extends:
           - name: ConnectionStrings:VhBookings
             value: VhBookingsDatabaseConnectionString
             secret: true
+
+           # LaunchDarkly
+          - name: LaunchDarkly:SdkKey
+            value: vh-admin-web-Feature-Toggle
+            secret: true
             
           - name: ServiceBusQueue:ConnectionString
             value: AzureServiceBusConnectionStringSend
