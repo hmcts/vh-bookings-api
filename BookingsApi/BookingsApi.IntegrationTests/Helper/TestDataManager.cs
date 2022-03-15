@@ -71,7 +71,12 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
-            var venues = new RefDataBuilder().HearingVenues;
+            var venue = options.HearingVenue;
+            if (venue == null)
+            {
+                var venues = new RefDataBuilder().HearingVenues;
+                venue = venues.First();
+            }
 
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
@@ -89,7 +94,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venue, hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
