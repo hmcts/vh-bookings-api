@@ -575,7 +575,6 @@ namespace BookingsApi.Controllers
             await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
         }
 
-
         private List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
         {
             if (participants.Any())
