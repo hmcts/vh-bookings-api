@@ -17,7 +17,6 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System;
@@ -134,7 +133,6 @@ namespace BookingsApi.Controllers
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
-        [AllowAnonymous]
         [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [OpenApiOperation("AddParticipantsToHearing")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -216,7 +214,6 @@ namespace BookingsApi.Controllers
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
-        [AllowAnonymous]
         [HttpPost("{hearingId}/updateParticipants", Name = "UpdateHearingParticipants")]
         [OpenApiOperation("UpdateHearingParticipants")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -581,7 +578,7 @@ namespace BookingsApi.Controllers
 
         private List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
         {
-            if (participants.Count() != 0)
+            if (participants.Any())
             {
                 var mapper = new ParticipantToResponseMapper();
                 return participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();

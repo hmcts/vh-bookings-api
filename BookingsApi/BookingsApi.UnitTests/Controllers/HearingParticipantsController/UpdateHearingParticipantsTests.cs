@@ -28,18 +28,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         public void SetUp()
         {
             var existingParticipant = GetVideoHearing().Participants[0];
-            //_existingParticipants = new List<UpdateParticipantRequest>
-            //{
-            //    new UpdateParticipantRequest
-            //    {
-            //        DisplayName = "DisplayName",
-            //        OrganisationName = "OrganisationName",
-            //        ParticipantId = Guid.NewGuid(),
-            //        Representee = "Representee",
-            //        TelephoneNumber = "07123456789",
-            //        Title = "Title"
-            //    }
-            //};
 
             _existingParticipants = new List<UpdateParticipantRequest>
             {
