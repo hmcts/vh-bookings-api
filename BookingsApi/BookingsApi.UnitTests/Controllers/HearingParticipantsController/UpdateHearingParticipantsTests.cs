@@ -27,13 +27,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         [SetUp]
         public void SetUp()
         {
+            var existingParticipant = GetVideoHearing().Participants[0];
+
             _existingParticipants = new List<UpdateParticipantRequest>
             {
                 new UpdateParticipantRequest
                 {
                     DisplayName = "DisplayName",
                     OrganisationName = "OrganisationName",
-                    ParticipantId = Guid.NewGuid(),
+                    ParticipantId = existingParticipant.Id,
                     Representee = "Representee",
                     TelephoneNumber = "07123456789",
                     Title = "Title"
@@ -134,10 +136,25 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         public async Task Should_call_update_hearing_participants_command()
         {
             //Arrange
+            var hearing = GetVideoHearing();
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
             _request = BuildRequest();
 
             //Act
-            var response = await Controller.UpdateHearingParticipants(hearingId, _request) as NoContentResult;
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request) as OkObjectResult;
 
             //Assert
             CommandHandler.Verify(ch => ch.Handle(It.Is<UpdateHearingParticipantsCommand>(x =>
@@ -166,7 +183,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                 && x.LinkedParticipants[0].LinkedParticipantContactEmail == _request.LinkedParticipants[0].LinkedParticipantContactEmail
                 && x.LinkedParticipants[0].ParticipantContactEmail == _request.LinkedParticipants[0].ParticipantContactEmail
             )), Times.Once);
-            response.Should().BeOfType<NoContentResult>();
+            response.Should().BeOfType<OkObjectResult>();
         }
 
         [Test]

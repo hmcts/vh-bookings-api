@@ -135,7 +135,7 @@ namespace BookingsApi.Controllers
         /// <returns>The participant</returns>
         [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [OpenApiOperation("AddParticipantsToHearing")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
@@ -201,9 +201,12 @@ namespace BookingsApi.Controllers
                 await PublishParticipantsAddedEvent(participants, hearing);
             }
 
-            return NoContent();
-        }
+            var addedParticipants = hearing.Participants.Where(x => request.Participants.Select(p => p.Username).Contains(x.Person.Username));
 
+            var response = CreateParticipantResponseList(addedParticipants);
+
+            return Ok(response);
+        }
 
         /// <summary>
         /// Updates a hearings participants
@@ -213,7 +216,7 @@ namespace BookingsApi.Controllers
         /// <returns>204 No Content</returns>
         [HttpPost("{hearingId}/updateParticipants", Name = "UpdateHearingParticipants")]
         [OpenApiOperation("UpdateHearingParticipants")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId,
@@ -257,21 +260,38 @@ namespace BookingsApi.Controllers
             var newParticipants = request.NewParticipants
                 .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
 
-            var existingParticipants = request.ExistingParticipants
-                .Select(x => new ExistingParticipantDetails
+            var existingParticipants = videoHearing.Participants.Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
+
+            var existingParticipantDetails = new List<ExistingParticipantDetails>();
+
+            foreach (var existingParticipantRequest in request.ExistingParticipants)
+            {
+                var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+
+                if (existingParticipant == null)
                 {
-                    DisplayName = x.DisplayName,
-                    OrganisationName = x.OrganisationName,
-                    ParticipantId = x.ParticipantId,
-                    RepresentativeInformation = new RepresentativeInformation { Representee = x.Representee },
-                    TelephoneNumber = x.TelephoneNumber,
-                    Title = x.Title
-                }).ToList();
+                    continue;
+                }
+
+                var existingParticipantDetail = new ExistingParticipantDetails
+                {
+                    DisplayName = existingParticipantRequest.DisplayName,
+                    OrganisationName = existingParticipantRequest.OrganisationName,
+                    ParticipantId = existingParticipantRequest.ParticipantId,
+                    Person = existingParticipant.Person,
+                    RepresentativeInformation = new RepresentativeInformation { Representee = existingParticipantRequest.Representee },
+                    TelephoneNumber = existingParticipantRequest.TelephoneNumber,
+                    Title = existingParticipantRequest.Title
+                };
+
+                existingParticipantDetails.Add(existingParticipantDetail);
+            }
+             
 
             var linkedParticipants =
                 LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
-            var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipants, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+            var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
             try
             {
@@ -288,10 +308,15 @@ namespace BookingsApi.Controllers
             // Publish this event if the hearing is ready for video
             if (hearing.Status == BookingStatus.Created)
             {
-                await PublishUpdateHearingParticipantsEvent(hearing, existingParticipants, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+                await PublishUpdateHearingParticipantsEvent(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
             }
 
-            return NoContent();
+            var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.Username).Contains(x.Person.Username)
+                || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
+
+            var response = CreateParticipantResponseList(upsertedParticipants);
+
+            return Ok(response);
         }
 
         /// <summary>
@@ -548,6 +573,17 @@ namespace BookingsApi.Controllers
             var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing.Id, eventExistingParticipants, eventNewParticipants,
                 removedParticipantIds, eventLinkedParticipants);
             await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
+        }
+
+        private List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
+        {
+            if (participants.Any())
+            {
+                var mapper = new ParticipantToResponseMapper();
+                return participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
+            }
+
+            return new List<ParticipantResponse>();
         }
     }
 }
