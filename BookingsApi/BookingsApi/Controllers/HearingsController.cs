@@ -537,7 +537,8 @@ namespace BookingsApi.Controllers
             [FromQuery]int limit = DefaultLimit, 
             [FromQuery] DateTime? fromDate = null, 
             [FromQuery] string caseNumber = "",
-            [FromQuery] List<int> venueIds = null)
+            [FromQuery] List<int> venueIds = null, 
+            [FromQuery] DateTime? endDate = null )
         {
             fromDate = fromDate ?? DateTime.UtcNow.Date;
 
@@ -559,7 +560,8 @@ namespace BookingsApi.Controllers
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
                 Limit = limit,
-                FromDate = fromDate.Value, 
+                StartDate = fromDate.Value, 
+                EndDate = endDate.Value,
                 CaseNumber = caseNumber,
                 VenueIds = venueIds
             };

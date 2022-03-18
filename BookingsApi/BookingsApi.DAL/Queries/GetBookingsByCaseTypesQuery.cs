@@ -25,7 +25,8 @@ namespace BookingsApi.DAL.Queries
 
         public IList<int> CaseTypes { get; }
         public string Cursor { get; set; }
-        public DateTime FromDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public string CaseNumber { get; set; }
         public IList<int> VenueIds { get; set; }
 
@@ -102,9 +103,14 @@ namespace BookingsApi.DAL.Queries
                 {
                     hearings = hearings.Where(x => query.VenueIds.Contains(x.HearingVenue.Id));
                 }
+
+                if (query.EndDate != null)
+                {
+                    hearings = hearings.Where(x => x.ScheduledDateTime <= query.EndDate);
+                }
             }
 
-            hearings = hearings.Where(x => x.ScheduledDateTime > query.FromDate)
+            hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
                                .OrderBy(x => x.ScheduledDateTime)
                                .ThenBy(x => x.Id);
 
