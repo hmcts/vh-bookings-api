@@ -541,8 +541,8 @@ namespace BookingsApi.Controllers
             [FromQuery] DateTime? endDate = null )
         {
             fromDate = fromDate ?? DateTime.UtcNow.Date;
-
             types = types ?? new List<int>();
+
             if (!await ValidateCaseTypes(types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
@@ -560,8 +560,8 @@ namespace BookingsApi.Controllers
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
                 Limit = limit,
-                StartDate = fromDate.Value, 
-                EndDate = endDate.Value,
+                StartDate = fromDate.Value,
+                EndDate = endDate,
                 CaseNumber = caseNumber,
                 VenueIds = venueIds
             };
