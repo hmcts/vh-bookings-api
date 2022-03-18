@@ -525,6 +525,7 @@ namespace BookingsApi.Controllers
         /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <param name="caseNumber"></param>
         /// <param name="venueIds"></param>
+        /// <param name="endDate"></param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
