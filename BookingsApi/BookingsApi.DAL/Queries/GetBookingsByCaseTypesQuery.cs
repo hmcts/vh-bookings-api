@@ -76,27 +76,7 @@ namespace BookingsApi.DAL.Queries
             {
                 if (!string.IsNullOrWhiteSpace(query.CaseNumber))
                 {
-                    var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
-            
-                    hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
-            
-                    var caseNumbers = cases.Select(r => r.Number);
-            
-                    var vhList = new List<VideoHearing>();
-            
-                    foreach (var item in hearings)
-                    {
-                        var hearingCases = item.HearingCases.Where(y => caseNumbers.Contains(y.Case.Number)).ToList();
-            
-                        if (hearingCases.Any())
-                        {
-                            item.HearingCases = hearingCases;
-                            vhList.Add(item);
-                        }
-            
-                    }
-            
-                    hearings = vhList.AsQueryable();
+                    hearings = await FilterByCaseNumber(hearings, query);
                 }
 
                 if (query.VenueIds != null && query.VenueIds.Any())
@@ -151,6 +131,31 @@ namespace BookingsApi.DAL.Queries
             {
                 throw new FormatException($"Unexpected cursor format [{cursor}]", e);
             }
+        }
+
+        private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(IQueryable<VideoHearing> hearings, GetBookingsByCaseTypesQuery query)
+        {
+            var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
+            
+            hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
+            
+            var caseNumbers = cases.Select(r => r.Number);
+            
+            var vhList = new List<VideoHearing>();
+            
+            foreach (var item in hearings)
+            {
+                var hearingCases = item.HearingCases.Where(y => caseNumbers.Contains(y.Case.Number)).ToList();
+            
+                if (hearingCases.Any())
+                {
+                    item.HearingCases = hearingCases;
+                    vhList.Add(item);
+                }
+            
+            }
+            
+            return vhList.AsQueryable();
         }
     }
 }
