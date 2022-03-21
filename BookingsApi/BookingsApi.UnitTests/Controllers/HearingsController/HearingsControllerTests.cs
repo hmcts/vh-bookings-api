@@ -85,7 +85,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Assert
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
-                    It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
+                    It.Is<GetBookingsByCaseTypesQuery>(x => x.StartDate == expectedDate)), Times.Once);
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Assert
             QueryHandlerMock.Verify(
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
-                    It.Is<GetBookingsByCaseTypesQuery>(x => x.FromDate == expectedDate)), Times.Once);
+                    It.Is<GetBookingsByCaseTypesQuery>(x => x.StartDate == expectedDate)), Times.Once);
         }
 
         [Test]

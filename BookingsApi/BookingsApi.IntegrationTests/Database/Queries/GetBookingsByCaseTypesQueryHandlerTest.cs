@@ -219,7 +219,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(2));
-            var fromDate = DateTime.UtcNow.Date.AddDays(3);
+            var startDate = DateTime.UtcNow.Date.AddDays(3);
             var includedHearings = _context.VideoHearings
                 .Include("Participants.Person")
                 .Include("Participants.HearingRole.UserRole")
@@ -228,15 +228,51 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
-                .AsNoTracking().Where(x => x.ScheduledDateTime > fromDate);
+                .AsNoTracking().Where(x => x.ScheduledDateTime > startDate);
 
 
-            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, FromDate = fromDate };
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, StartDate = startDate };
 
             var hearings = await _handler.Handle(query);
             var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
 
             hearingIds.Count.Should().Be(includedHearings.Count());
+            foreach (var hearing in includedHearings)
+            {
+                hearingIds.Should().Contain(hearing.Id);
+            }
+        }
+
+        [Test]
+        public async Task Should_return_hearings_on_or_after_the_from_date_and_before_to_date()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(3));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(4));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(5));
+
+            var startDate = DateTime.UtcNow.Date.AddDays(2);
+            var endDate = DateTime.UtcNow.Date.AddDays(3);
+
+            var includedHearings = _context.VideoHearings
+                .Include("Participants.Person")
+                .Include("Participants.HearingRole.UserRole")
+                .Include("Participants.CaseRole")
+                .Include("HearingCases.Case")
+                .Include(x => x.HearingType)
+                .Include(x => x.CaseType)
+                .Include(x => x.HearingVenue)
+                .AsNoTracking().Where(x => x.ScheduledDateTime > startDate && x.ScheduledDateTime <= endDate);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, StartDate = startDate, EndDate = endDate };
+
+            var hearings = await _handler.Handle(query);
+            var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
+
+            hearingIds.Count.Should().Be(includedHearings.Count());
+
             foreach (var hearing in includedHearings)
             {
                 hearingIds.Should().Contain(hearing.Id);

@@ -525,6 +525,7 @@ namespace BookingsApi.Controllers
         /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <param name="caseNumber"></param>
         /// <param name="venueIds"></param>
+        /// <param name="endDate"></param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
@@ -537,11 +538,12 @@ namespace BookingsApi.Controllers
             [FromQuery]int limit = DefaultLimit, 
             [FromQuery] DateTime? fromDate = null, 
             [FromQuery] string caseNumber = "",
-            [FromQuery] List<int> venueIds = null)
+            [FromQuery] List<int> venueIds = null, 
+            [FromQuery] DateTime? endDate = null )
         {
             fromDate = fromDate ?? DateTime.UtcNow.Date;
-
             types = types ?? new List<int>();
+
             if (!await ValidateCaseTypes(types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
@@ -559,7 +561,8 @@ namespace BookingsApi.Controllers
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
                 Limit = limit,
-                FromDate = fromDate.Value, 
+                StartDate = fromDate.Value,
+                EndDate = endDate,
                 CaseNumber = caseNumber,
                 VenueIds = venueIds
             };
