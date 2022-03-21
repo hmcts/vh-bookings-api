@@ -17,6 +17,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System;
@@ -134,6 +135,7 @@ namespace BookingsApi.Controllers
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
+        [AllowAnonymous]
         [OpenApiOperation("AddParticipantsToHearing")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
