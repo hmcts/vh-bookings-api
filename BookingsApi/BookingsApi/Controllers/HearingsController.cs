@@ -47,6 +47,7 @@ namespace BookingsApi.Controllers
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
+        private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
@@ -54,6 +55,7 @@ namespace BookingsApi.Controllers
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
+            IFeatureToggles featureToggles,
             ILogger logger)
         {
             _queryHandler = queryHandler;
@@ -61,6 +63,7 @@ namespace BookingsApi.Controllers
             _eventPublisher = eventPublisher;
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
+            _featureToggles = featureToggles;
             _logger = logger;
             
             _kinlyConfiguration = kinlyConfiguration.Value;
@@ -520,20 +523,37 @@ namespace BookingsApi.Controllers
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
         /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
+        /// <param name="caseNumber"></param>
+        /// <param name="venueIds"></param>
+        /// <param name="endDate"></param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromQuery(Name = "types")]List<int> types, [FromQuery]string cursor = DefaultCursor, [FromQuery]int limit = DefaultLimit, [FromQuery] DateTime? fromDate = null)
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes(
+            [FromQuery(Name = "types")]List<int> types, 
+            [FromQuery]string cursor = DefaultCursor, 
+            [FromQuery]int limit = DefaultLimit, 
+            [FromQuery] DateTime? fromDate = null, 
+            [FromQuery] string caseNumber = "",
+            [FromQuery] List<int> venueIds = null, 
+            [FromQuery] DateTime? endDate = null )
         {
             fromDate = fromDate ?? DateTime.UtcNow.Date;
-
             types = types ?? new List<int>();
+
             if (!await ValidateCaseTypes(types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
+                return BadRequest(ModelState);
+            }
+
+            venueIds = venueIds ?? new List<int>();
+            if (!await ValidateVenueIds(venueIds))
+            {
+                ModelState.AddModelError("Venue ids", "Invalid value for venue ids");
                 return BadRequest(ModelState);
             }
 
@@ -541,7 +561,10 @@ namespace BookingsApi.Controllers
             {
                 Cursor = cursor == DefaultCursor ? null : cursor,
                 Limit = limit,
-                FromDate = fromDate.Value
+                StartDate = fromDate.Value,
+                EndDate = endDate,
+                CaseNumber = caseNumber,
+                VenueIds = venueIds
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
@@ -549,8 +572,8 @@ namespace BookingsApi.Controllers
 
             var response = new BookingsResponse
             {
-                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types),
-                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types),
+                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types, caseNumber, venueIds),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types, caseNumber, venueIds),
                 NextCursor = result.NextCursor,
                 Limit = limit,
                 Hearings = mapper.MapHearingResponses(result)
@@ -588,7 +611,7 @@ namespace BookingsApi.Controllers
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
 
-        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes)
+        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes, string caseNumber="", List<int> hearingVenueIds = null)
         {
             const string hearingsListsEndpointBaseUrl = "hearings/";
             const string bookingsEndpointUrl = "types";
@@ -600,7 +623,25 @@ namespace BookingsApi.Controllers
                 types = string.Join("&types=", caseTypes);
             }
 
-            return $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
+            var pageUrl = $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
+
+            // Executes when Admin_Search feature toggle is ON and caseNumber search is performed
+            if (_featureToggles.AdminSearchToggle())
+            {
+                if (!string.IsNullOrWhiteSpace(caseNumber))
+                {
+                    pageUrl += $"&caseNumber={caseNumber}";
+                }
+
+                var venueIds = string.Empty;
+                if (hearingVenueIds != null && hearingVenueIds.Any())
+                {
+                    venueIds = string.Join("&venueIds=", hearingVenueIds);
+                }
+                pageUrl += $"&venueIds={venueIds}";
+            }
+
+            return pageUrl;
         }
 
         private async Task<bool> ValidateCaseTypes(List<int> filterCaseTypes)
@@ -616,6 +657,20 @@ namespace BookingsApi.Controllers
 
             return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
 
+        }
+        
+        private async Task<bool> ValidateVenueIds(List<int> filterVenueIds)
+        {
+            if (!filterVenueIds.Any())
+            {
+                return true;
+            }
+
+            var query = new GetHearingVenuesQuery();
+            var validVenueIds = (await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query))
+                .Select(venue => venue.Id);
+
+            return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
         }
 
         private List<Case> MapCase(List<CaseRequest> caseRequestList)

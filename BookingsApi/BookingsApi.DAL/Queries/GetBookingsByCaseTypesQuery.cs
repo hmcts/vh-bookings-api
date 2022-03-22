@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
+using BookingsApi.Common.Services;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -24,7 +25,10 @@ namespace BookingsApi.DAL.Queries
 
         public IList<int> CaseTypes { get; }
         public string Cursor { get; set; }
-        public DateTime FromDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string CaseNumber { get; set; }
+        public IList<int> VenueIds { get; set; }
 
         public int Limit
         {
@@ -41,10 +45,12 @@ namespace BookingsApi.DAL.Queries
         IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
+        private readonly IFeatureToggles _featureToggles;
 
-        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context)
+        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context, IFeatureToggles featureToggles)
         {
             _context = context;
+            _featureToggles = featureToggles;
         }
 
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
@@ -59,12 +65,32 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .AsNoTracking();
 
-            if (query.CaseTypes.Any()) 
-            { 
-                hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId)); 
+
+            if (query.CaseTypes.Any())
+            {
+                hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId));
             }
 
-            hearings = hearings.Where(x => x.ScheduledDateTime > query.FromDate)
+            // Executes code block for new feature when AdminSearchToggle is ON 
+            if (_featureToggles.AdminSearchToggle())
+            {
+                if (!string.IsNullOrWhiteSpace(query.CaseNumber))
+                {
+                    hearings = await FilterByCaseNumber(hearings, query);
+                }
+
+                if (query.VenueIds != null && query.VenueIds.Any())
+                {
+                    hearings = hearings.Where(x => query.VenueIds.Contains(x.HearingVenue.Id));
+                }
+
+                if (query.EndDate != null)
+                {
+                    hearings = hearings.Where(x => x.ScheduledDateTime <= query.EndDate);
+                }
+            }
+
+            hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
                                .OrderBy(x => x.ScheduledDateTime)
                                .ThenBy(x => x.Id);
 
@@ -80,7 +106,7 @@ namespace BookingsApi.DAL.Queries
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result = await hearings.Take(query.Limit + 1).ToListAsync();
+            var result =  hearings.Take(query.Limit + 1).ToList();
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
@@ -105,6 +131,31 @@ namespace BookingsApi.DAL.Queries
             {
                 throw new FormatException($"Unexpected cursor format [{cursor}]", e);
             }
+        }
+
+        private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(IQueryable<VideoHearing> hearings, GetBookingsByCaseTypesQuery query)
+        {
+            var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
+            
+            hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
+            
+            var caseNumbers = cases.Select(r => r.Number);
+            
+            var vhList = new List<VideoHearing>();
+            
+            foreach (var item in hearings)
+            {
+                var hearingCases = item.HearingCases.Where(y => caseNumbers.Contains(y.Case.Number)).ToList();
+            
+                if (hearingCases.Any())
+                {
+                    item.HearingCases = hearingCases;
+                    vhList.Add(item);
+                }
+            
+            }
+            
+            return vhList.AsQueryable();
         }
     }
 }

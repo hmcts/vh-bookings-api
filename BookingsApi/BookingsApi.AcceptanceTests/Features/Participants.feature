@@ -15,7 +15,7 @@ Scenario: Add participant to a hearing
 	Given I have a hearing
 	And I have an add participant to a hearing request with a valid hearing id
 	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status Ok and success status True
 	And the participant should be added
 
 	Scenario: Get a single participant in a hearing

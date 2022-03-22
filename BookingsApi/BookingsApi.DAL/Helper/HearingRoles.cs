@@ -46,9 +46,15 @@
         public const string CertificationOfficer = "Certification Officer";
         public const string Counsel = "Counsel";
         public const string Employer = "Employer";
-        public const string Interventer = "Interventer";
+        public const string Interventor = "Interventor";
         public const string TradeUnion = "Trade Union";
-        public const string ELAAS = "ELAAS";
         public const string HomeOffice = "Home Office";
+        public const string ProBonoRepresentative = "Pro-Bono Representative";
+        public const string LegalRepresentative = "Legal Representative";
+        public const string PoliceOfficer = "Police Officer";
+        public const string AppellantAdvocate = "Appellant Advocate";
+        public const string LayMember = "Lay Member";
+        public const string CICAPresentingOfficer = "CICA Presenting Officer";
+        public const string RoyalBritishLegion = "Royal British Legion";
     }
 }

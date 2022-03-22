@@ -30,19 +30,19 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.SearchForHearingsAsync(query);
 
             result.Should().NotBeNull();
-            
+
             var objectResult = (OkObjectResult)result;
-            
+
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            
+
             var hearingDetailsResponse = (List<AudioRecordedHearingsBySearchResponse>)objectResult.Value;
-            
+
             hearingDetailsResponse.Should().NotBeNull();
 
             QueryHandlerMock
                 .Verify(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()), Times.Once);
         }
-        
+
         [TestCase("123")]
         [TestCase("case-123/abc")]
         [TestCase("case-123\abc")]
@@ -54,25 +54,25 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 CaseNumber = caseNumber
             };
             var hearingsByCaseNumber = new List<VideoHearing> { GetHearing(caseNumber) };
-            
+
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()))
                 .ReturnsAsync(hearingsByCaseNumber);
-            
+
             var result = await Controller.SearchForHearingsAsync(query);
-            
+
             result.Should().NotBeNull();
-            
+
             var objectResult = (OkObjectResult)result;
-            
+
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            
+
             var hearingDetailsResponse = (List<AudioRecordedHearingsBySearchResponse>)objectResult.Value;
-            
+
             hearingDetailsResponse.Should().NotBeNull();
-            
+
             hearingDetailsResponse[0].CaseNumber.Should().Be(caseNumber);
-            
+
             QueryHandlerMock
                 .Verify(x => x.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetHearingsBySearchQuery>()), Times.Once);
         }

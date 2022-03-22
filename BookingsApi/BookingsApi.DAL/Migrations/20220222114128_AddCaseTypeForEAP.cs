@@ -67,7 +67,7 @@ namespace BookingsApi.DAL.Migrations
                     {916, HearingRoles.Counsel, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 294},
                     {917, HearingRoles.Employer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
                     {918, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
-                    {919, HearingRoles.Interventer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
+                    {919, HearingRoles.Interventor, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
                     {920, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
                     {921, HearingRoles.LitigationFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
                     {922, HearingRoles.LocalAuthority, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 294},
@@ -83,7 +83,7 @@ namespace BookingsApi.DAL.Migrations
                     {930, HearingRoles.Counsel, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 295},
                     {931, HearingRoles.Employer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
                     {932, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
-                    {933, HearingRoles.Interventer, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
+                    {933, HearingRoles.Interventor, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
                     {934, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
                     {935, HearingRoles.LitigationFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
                     {936, HearingRoles.LocalAuthority, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 295},
@@ -98,8 +98,8 @@ namespace BookingsApi.DAL.Migrations
                     // Panel Member(297)
                     {942, HearingRoles.PanelMember, UserRoleForHearingRole.UserRoleId[UserRoles.JudicialOfficeHolder], 297},
 
-                    // Secretary of State(298)
-                    {943, HearingRoles.ELAAS, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 298},
+                    // ELAAS (298)
+                    {943, HearingRoles.ProBonoRepresentative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 298},
 
                     // Judge (300)
                     {945, HearingRoles.Judge, UserRoleForHearingRole.UserRoleId[UserRoles.Judge], 300},

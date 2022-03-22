@@ -2,6 +2,7 @@ using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -99,8 +100,10 @@ namespace BookingsApi.DAL.Commands
         public string Title { get; set; }
         public string DisplayName { get; set; }
         public string TelephoneNumber { get; set; }
+        public string CaseRoleName { get; set; }
+        public string HearingRoleName { get; set; }
         public string OrganisationName { get; set; }
-        public Participant UpdatedParticipant { get; set; }
+        public Person Person { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; set; }
     }
 }

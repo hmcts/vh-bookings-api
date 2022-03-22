@@ -490,6 +490,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int?>("CaseTypeId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Live")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 

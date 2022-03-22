@@ -23,13 +23,13 @@ Scenario: Participants in a hearing not retrieved with invalid hearing id
 Scenario: Add new participant to a hearing
 	Given I have an add participant to a hearing request with a valid hearing id
 	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status Ok and success status True
 	And the participant should be added
 
 Scenario: Existing participant not added to the same hearing
 	Given I have an add participant to a hearing request with a valid hearing id
 	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status Ok and success status True
 	When I send the same request twice
 	Then the response should have the status BadRequest and success status False
 	And the error response message should contain 'Participant already exists'
@@ -37,10 +37,10 @@ Scenario: Existing participant not added to the same hearing
 Scenario: Existing participant added to a new hearing
 	Given I have an add participant to a hearing request with a valid hearing id
 	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status Ok and success status True
 	And the participant should be added
 	When I send the same request but with a new hearing id
-	Then the response should have the status NoContent and success status True
+	Then the response should have the status Ok and success status True
 	And the participant should be added
 
 Scenario: Participant not added to a hearing with nonexistent hearing id

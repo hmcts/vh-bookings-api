@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Commands;
@@ -54,6 +55,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPost("{hearingId}/endpoints/")]
         [OpenApiOperation("AddEndPointToHearing")]
+        [ProducesResponseType(typeof(EndpointResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -84,16 +86,23 @@ namespace BookingsApi.Controllers
                 var hearing =
                     await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 var endpoint = hearing.GetEndpoints().FirstOrDefault(x => x.DisplayName.Equals(addEndpointRequest.DisplayName));
-                if (endpoint != null && hearing.Status == BookingStatus.Created)
+                if (endpoint != null)
                 {
-                    await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endpoint));
+                    var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint); 
+                    
+                    if (hearing.Status == BookingStatus.Created)
+                    {
+                        await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endpoint));    
+                    }
+
+                    return Ok(endpointResponse);
                 }
             }
             catch (HearingNotFoundException exception)
             {
                 return NotFound(exception.Message);
             }
-
+            
             return NoContent();
         }
 
