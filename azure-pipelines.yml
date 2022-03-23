@@ -126,7 +126,7 @@ resources:
     - repository: templates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/master
+      ref: refs/heads/ef-tasks
       endpoint: hmcts
   containers:
   - container: dotnetsdk
@@ -140,6 +140,8 @@ extends:
   template: stages\dotnet-package.yml@templates
   parameters:
     coreProjectPath: BookingsApi/BookingsApi
+    coreProjectName: BookingApi.cproj
+    databaseContextName: BookingsDbContext
     nugetProjectPath: BookingsApi/BookingsApi.Client
     PackageNuget: ${{ parameters.PackageNuget }}
     PackageApp: ${{ parameters.PackageApp }}
@@ -194,3 +196,4 @@ extends:
           - name: ${{ setting.name }}
             value: ${{ setting.value }}
             secret: ${{ setting.secret }}
+      databaseName: "vhbookings"
