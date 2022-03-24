@@ -13,7 +13,7 @@ parameters:
     values:
       - dev
 
-  - name: qa-env
+  - name: qaenv
     type: string
     default: demo
     values:
@@ -60,7 +60,7 @@ stages:
 
   - stage: Install
     dependsOn: Uninstall
-    displayName: Deploy Helm chart to ${{ parameters.qa-env }}-${{ variables.clusterName }}
+    displayName: Deploy Helm chart to ${{ parameters.qaenv }}-${{ variables.clusterName }}
     variables:
       - group: aks-cluster-info
       - template: variables/shared.yaml
