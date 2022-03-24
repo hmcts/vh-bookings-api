@@ -65,7 +65,7 @@ stages:
       - group: aks-cluster-info
       - template: variables/shared.yaml
         parameters:
-          env: ${{ parameters.qa-env }}
+          env: ${{ parameters.qaenv }}
           git_repo_name: ${{ parameters.git_repo_name }}
           cluster: $(cluster)
       - group: vh-github-app-credentials
