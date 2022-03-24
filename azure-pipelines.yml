@@ -147,6 +147,7 @@ extends:
     PackageApp: ${{ parameters.PackageApp }}
     PackageAcceptanceTests: ${{ parameters.PackageACTests }}
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
+    netVersion: 3.1.0
     testParameters:
       baseAgent: windows-latest
       coreProjectPath: BookingsApi/BookingsApi
