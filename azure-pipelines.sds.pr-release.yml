@@ -1,0 +1,144 @@
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/master
+      endpoint: hmcts
+
+parameters:
+  - name: env
+    type: string
+    default: dev
+    values:
+      - dev
+
+  - name: git_repo_name
+    type: string
+    default: bookings-api
+
+stages:
+  - stage: Dock
+    displayName: Build and Push Docker Image
+    variables: 
+      - group: aks-cluster-info
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ parameters.env }}
+          git_repo_name: ${{ parameters.git_repo_name }}
+          cluster: $(cluster)
+      - group: vh-github-app-credentials
+      - name: prTagName
+        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+
+    jobs:
+    - job:
+      steps:
+        - checkout: self
+
+        - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+          parameters:
+            azureSubscription: ${{ variables.acrSubscription }}
+            acrName: ${{ variables.acrName }}
+            repositoryName:  ${{ variables.repositoryName }}
+
+        - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+          parameters:
+            azureSubscription: ${{ variables.acrSubscription }}
+            acrName: ${{ variables.acrName }}
+            repositoryName:  ${{ variables.repositoryName }}
+            imageName: "${{ replace(parameters.git_repo_name, '-', '') }}"
+            imageTags:
+              - '${{ variables.prTagName }}'
+
+  - stage: Install
+    dependsOn: Dock
+    displayName: Deploy Helm chart to ${{ variables.clusterName }}
+    variables:
+      - group: aks-cluster-info
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ parameters.env }}
+          git_repo_name: ${{ parameters.git_repo_name }}
+          cluster: $(cluster)
+      - group: vh-github-app-credentials
+      - name: prTagName
+        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+      - name: dnsRecordName
+        value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
+    jobs:
+      - job:
+        steps:
+          - bash: |
+              echo "our PR id is:"
+              echo $(System.PullRequest.PullRequestNumber)
+          - checkout: self
+        
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\bump-chart-versions.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartRepoPath }}
+              chartBranch: $(Build.SourceBranchName)
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+
+          - bash: |
+              export IMAGE_NAME="${imageName}"
+              export SERVICE_FQDN="${fqdn}"
+              export RELEASE_NAME="${releaseName}"
+                            
+              valuesEnvTemplate="${{ variables.envValuesTemplatePath }}"
+              valuesEnv="${{ variables.envValuesPath }}"
+              
+              if test -f "$valuesEnvTemplate"; then
+                echo "$valuesEnvTemplate found"
+                envsubst < ${valuesEnvTemplate} > ${valuesEnv}
+                echo "created $valuesEnv"
+                cat $valuesEnv
+              else
+                echo "No Environment File"
+              fi
+            displayName: Create Environment Values File
+            env:
+              imageName: ${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.prTagName }}
+              fqdn: ${{ variables.dnsRecordName }}.${{ variables.dnsZone }}
+              env: ${{ parameters.env }}
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagName }}"
+
+          - bash: |
+              VERSION=$(cat "${chartPath}/Chart.yaml" | grep ^version | cut -d  ':' -f 2 | tr -d '[:space:]')
+              echo "Chart Version: $VERSION"
+              echo "##vso[task.setvariable variable=chartVersion;isOutput=true]$VERSION"
+            displayName: Get Chart Version
+            env:
+              chartPath: ${{ variables.chartPath }}
+
+          - template: templates\Azure\Dns\private-dns-add-aks-pr.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              aksSubscriptionName: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
+              aksClusterName: "${{ variables.clusterName }}"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+              zoneName: ${{ variables.dnsZone }}
+              recordName: ${{ variables.dnsRecordName }}
+
+          - template: templates\Containerisation\helm\helm-deploy.yaml@azTemplates
+            parameters:
+              helmVersion: $(chartVersion)
+              azureSubscription: ${{ variables.subscriptionName }}
+              kubernetesRG: "${{ variables.clusterResourceGroup }}"
+              kubernetesCluster: "${{ variables.clusterName }}"
+              namespace: "vh"
+              chartName: '${{ variables.chartName }}'
+              chartPath: '${{ variables.chartPath }}'
+              imageTag: '${{ variables.prTagName }}'
+              environment: ${{ parameters.env }}
+              additionalArgs: "-o json"
