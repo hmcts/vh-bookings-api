@@ -147,6 +147,25 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
 
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_last_name()
+        {
+            await Hooks.SeedVideoHearing();
+
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId })
+            {
+                LastName = Hooks.LastName
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByLastName(result, Hooks.LastName);
+        }
+
         private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
         {
             var containsHearingsFilteredByCaseNumber = hearings
@@ -164,6 +183,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .All(r => venueIds.Contains(r.Id));
             
             containsHearingsFilteredByVenues.Should().BeTrue();
+        }
+
+        private void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string lastName)
+        {
+            var filteredHearings = hearings.Where(h => h.Participants.Any(p => p.Person.LastName == lastName));
+            filteredHearings.ToList().Count.Should().Be(1);
         }
 
         [Test]

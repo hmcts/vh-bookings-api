@@ -526,6 +526,7 @@ namespace BookingsApi.Controllers
         /// <param name="caseNumber"></param>
         /// <param name="venueIds"></param>
         /// <param name="endDate"></param>
+        /// <param name="lastName"></param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
@@ -539,7 +540,8 @@ namespace BookingsApi.Controllers
             [FromQuery] DateTime? fromDate = null, 
             [FromQuery] string caseNumber = "",
             [FromQuery] List<int> venueIds = null, 
-            [FromQuery] DateTime? endDate = null )
+            [FromQuery] DateTime? endDate = null,
+            [FromQuery] string lastName = "")
         {
             fromDate = fromDate ?? DateTime.UtcNow.Date;
             types = types ?? new List<int>();
@@ -564,7 +566,8 @@ namespace BookingsApi.Controllers
                 StartDate = fromDate.Value,
                 EndDate = endDate,
                 CaseNumber = caseNumber,
-                VenueIds = venueIds
+                VenueIds = venueIds,
+                LastName = lastName
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 

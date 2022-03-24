@@ -27,6 +27,7 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly List<Guid> _seededHearings = new List<Guid>();
         public List<Guid> JudiciaryPersons { get; } = new List<Guid>();
         public string CaseNumber { get; } = "2222/3511";
+        public string LastName { get; } = "Harrison";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
         private readonly string _defaultCaseName;
@@ -92,6 +93,7 @@ namespace BookingsApi.IntegrationTests.Helper
             const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
+            judgePerson.SetProtected(nameof(judgePerson.LastName), "Harrison");
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
                 venue, hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,

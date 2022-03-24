@@ -29,6 +29,7 @@ namespace BookingsApi.DAL.Queries
         public DateTime? EndDate { get; set; }
         public string CaseNumber { get; set; }
         public IList<int> VenueIds { get; set; }
+        public string LastName { get; set; }
 
         public int Limit
         {
@@ -88,6 +89,11 @@ namespace BookingsApi.DAL.Queries
                 {
                     hearings = hearings.Where(x => x.ScheduledDateTime <= query.EndDate);
                 }
+
+                if (!string.IsNullOrWhiteSpace(query.LastName))
+                {
+                    hearings = hearings.Where(h => h.Participants.Any(p => p.Person.LastName.Contains(query.LastName)));
+                }
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
@@ -106,7 +112,7 @@ namespace BookingsApi.DAL.Queries
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result =  hearings.Take(query.Limit + 1).ToList();
+            var result = hearings.Take(query.Limit + 1).ToList();
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
@@ -136,25 +142,25 @@ namespace BookingsApi.DAL.Queries
         private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(IQueryable<VideoHearing> hearings, GetBookingsByCaseTypesQuery query)
         {
             var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
-            
+
             hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
-            
+
             var caseNumbers = cases.Select(r => r.Number);
-            
+
             var vhList = new List<VideoHearing>();
-            
+
             foreach (var item in hearings)
             {
                 var hearingCases = item.HearingCases.Where(y => caseNumbers.Contains(y.Case.Number)).ToList();
-            
+
                 if (hearingCases.Any())
                 {
                     item.HearingCases = hearingCases;
                     vhList.Add(item);
                 }
-            
+
             }
-            
+
             return vhList.AsQueryable();
         }
     }
