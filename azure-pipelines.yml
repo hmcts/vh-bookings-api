@@ -59,6 +59,9 @@ parameters:
       - name: Services:BookingsApiResourceId
         value: vh-bookings-api-identifieruris
         secret: true
+      - name: LaunchDarkly:SdkKey
+        value: vh-admin-web-Feature-Toggle
+        secret: true
       - name: UseServiceBusFake
         value: true
 
@@ -87,6 +90,10 @@ parameters:
         secret: true
       - name: ServiceBusQueue:ConnectionString
         value: AzureServiceBusConnectionStringSend
+        secret: true
+      # LaunchDarkly
+      - name: LaunchDarkly:SdkKey
+        value: vh-admin-web-Feature-Toggle
         secret: true
       # Feature Flags
       - name: FeatureFlags:StaffMemberFeature

@@ -27,10 +27,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 "Case name Day 1 of 2",
                 "Case name Day 2 of 2"
             };
-            
+
             var hearing1 = GetMultiDayHearing("123", caseNames);
             var hearing2 = GetMultiDayHearing("123", caseNames);
-            var hearingList = new List<VideoHearing> {hearing1, hearing2};
+            var hearingList = new List<VideoHearing> { hearing1, hearing2 };
 
             QueryHandlerMock
                 .Setup(x =>
@@ -40,9 +40,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.GetHearingsByGroupId(groupId);
 
             result.Should().NotBeNull();
-            var objectResult = (OkObjectResult) result;
-            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
-            var response = (List<HearingDetailsResponse>) objectResult.Value;
+            var objectResult = (OkObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var response = (List<HearingDetailsResponse>)objectResult.Value;
             response.Should().NotBeNull();
             response.Count.Should().Be(2);
             response.First(x => x.Id == hearing1.Id).Should().NotBeNull();
@@ -65,21 +65,21 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.GetHearingsByGroupId(groupId);
 
             result.Should().NotBeNull();
-            var objectResult = (OkObjectResult) result;
-            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
-            
+            var objectResult = (OkObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
             var value = (List<HearingDetailsResponse>)objectResult.Value;
             value.Count.Should().Be(0);
             QueryHandlerMock.Verify(
                 x => x.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(It.IsAny<GetHearingsByGroupIdQuery>()),
                 Times.Once);
         }
-        
+
         private static VideoHearing GetMultiDayHearing(string caseNumber, List<string> caseNames)
         {
             var hearing = new VideoHearingBuilder().Build();
 
-            if(!caseNumber.IsNullOrEmpty())
+            if (!caseNumber.IsNullOrEmpty())
             {
                 foreach (var caseName in caseNames)
                 {
@@ -89,7 +89,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             foreach (var participant in hearing.Participants)
             {
-                participant.HearingRole = new HearingRole(1, "Name") {UserRole = new UserRole(1, "User"),};
+                participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
                 participant.CaseRole = new CaseRole(1, "Name");
             }
 

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using NUnit.Framework;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -15,14 +18,20 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     {
         private GetBookingsByCaseTypesQueryHandler _handler;
         private BookingsDbContext _context;
+        private Mock<IFeatureToggles> FeatureTogglesMock;
 
         private const string FinancialRemedy = "Financial Remedy";
 
         [SetUp]
         public void Setup()
         {
+            FeatureTogglesMock = new Mock<IFeatureToggles>();
+
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
+
             _context = new BookingsDbContext(BookingsDbContextOptions);
-            _handler = new GetBookingsByCaseTypesQueryHandler(_context);
+
+            _handler = new GetBookingsByCaseTypesQueryHandler(_context, FeatureTogglesMock.Object);
         }
 
         [Test]
@@ -57,6 +66,104 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var hearingTypes = result.Select(hearing => hearing.CaseType.Name).Distinct().ToList();
             hearingTypes.Should().Equal(FinancialRemedy);
+        }
+
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_case_number()
+        {
+            await Hooks.SeedVideoHearing();
+
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
+            { 
+                CaseNumber = Hooks.CaseNumber 
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
+        }
+
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_venue_ids()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            var venues = new RefDataBuilder().HearingVenues;
+
+            var venue1 = venues[0];
+            var venue2 = venues[1];
+            var venue3 = venues[2];
+  
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue1);
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue2);
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue3);
+
+            var venueIdsToFilterOn = new List<int> { venue1.Id, venue3.Id };
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                VenueIds = venueIdsToFilterOn
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
+        }
+
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_multiple_criteria()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            
+            var venues = new RefDataBuilder().HearingVenues;
+        
+            var venue1 = venues[0];
+            var venue2 = venues[1];
+            var venue3 = venues[2];
+        
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue1);
+            await Hooks.SeedVideoHearing(opt => opt.HearingVenue = venue2);
+            await Hooks.SeedVideoHearing(opt =>
+            {
+                opt.CaseTypeName = FinancialRemedy;
+                opt.HearingVenue = venue3;
+            });
+            
+            var venueIdsToFilterOn = new List<int> { venue1.Id, venue3.Id };
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                CaseNumber = Hooks.CaseNumber,
+                VenueIds = venueIdsToFilterOn
+            };
+            
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
+            AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
+        }
+
+        private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
+        {
+            var containsHearingsFilteredByCaseNumber = hearings
+                .SelectMany(r => r.HearingCases)
+                .All(r => r.Case.Number == caseNumber);
+            
+            containsHearingsFilteredByCaseNumber.Should().BeTrue();
+        }
+        
+        private void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
+        {
+            var containsHearingsFilteredByVenues = hearings
+                .Select(r => r.HearingVenue)
+                .Distinct()
+                .All(r => venueIds.Contains(r.Id));
+            
+            containsHearingsFilteredByVenues.Should().BeTrue();
         }
 
         [Test]
@@ -112,7 +219,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(2));
-            var fromDate = DateTime.UtcNow.Date.AddDays(3);
+            var startDate = DateTime.UtcNow.Date.AddDays(3);
             var includedHearings = _context.VideoHearings
                 .Include("Participants.Person")
                 .Include("Participants.HearingRole.UserRole")
@@ -121,16 +228,52 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
-                .AsNoTracking().Where(x => x.ScheduledDateTime > fromDate);
+                .AsNoTracking().Where(x => x.ScheduledDateTime > startDate);
 
 
-            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, FromDate = fromDate };
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, StartDate = startDate };
 
             var hearings = await _handler.Handle(query);
             var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
 
             hearingIds.Count.Should().Be(includedHearings.Count());
-            foreach (var hearing in includedHearings) 
+            foreach (var hearing in includedHearings)
+            {
+                hearingIds.Should().Contain(hearing.Id);
+            }
+        }
+
+        [Test]
+        public async Task Should_return_hearings_on_or_after_the_from_date_and_before_to_date()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(3));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(4));
+            await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(5));
+
+            var startDate = DateTime.UtcNow.Date.AddDays(2);
+            var endDate = DateTime.UtcNow.Date.AddDays(3);
+
+            var includedHearings = _context.VideoHearings
+                .Include("Participants.Person")
+                .Include("Participants.HearingRole.UserRole")
+                .Include("Participants.CaseRole")
+                .Include("HearingCases.Case")
+                .Include(x => x.HearingType)
+                .Include(x => x.CaseType)
+                .Include(x => x.HearingVenue)
+                .AsNoTracking().Where(x => x.ScheduledDateTime > startDate && x.ScheduledDateTime <= endDate);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int>()) { Limit = 100, StartDate = startDate, EndDate = endDate };
+
+            var hearings = await _handler.Handle(query);
+            var hearingIds = hearings.Select(hearing => hearing.Id).ToList();
+
+            hearingIds.Count.Should().Be(includedHearings.Count());
+
+            foreach (var hearing in includedHearings)
             {
                 hearingIds.Should().Contain(hearing.Id);
             }

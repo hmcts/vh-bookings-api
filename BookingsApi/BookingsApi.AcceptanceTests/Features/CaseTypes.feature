@@ -250,3 +250,15 @@ Feature: CaseTypes
       | Asylum Support                    | Secretary of State|
       | Asylum Support                    | Home Office  |
       | Asylum Support                    | Judge        |
+      | Criminal Injuries Compensation    | Judge        |
+      | Criminal Injuries Compensation    | Appellant    |
+      | Criminal Injuries Compensation    | Observer     |
+      | Criminal Injuries Compensation    | None         |
+      | Criminal Injuries Compensation    | Panel Member |
+      | Criminal Injuries Compensation    | Presenting Officer|
+      | War Pensions Appeals              | Appellant    |
+      | War Pensions Appeals              | In absence   |
+      | War Pensions Appeals              | Observer     |
+      | War Pensions Appeals              | Panel Member |
+      | War Pensions Appeals              | Vets UK      |
+      | War Pensions Appeals              | Judge        |

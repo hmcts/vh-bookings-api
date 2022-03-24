@@ -1,4 +1,5 @@
 using System;
+using BookingsApi.Domain;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -25,5 +26,7 @@ namespace BookingsApi.IntegrationTests.Helper
         public string LipHearingRole => "Litigant in person";
 
         public DateTime? ScheduledDate { get; internal set; }
+        
+        public HearingVenue HearingVenue { get; set; }
     }
 }

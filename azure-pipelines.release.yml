@@ -154,6 +154,11 @@ extends:
           - name: ConnectionStrings:VhBookings
             value: VhBookingsDatabaseConnectionString
             secret: true
+
+           # LaunchDarkly
+          - name: LaunchDarkly:SdkKey
+            value: vh-admin-web-Feature-Toggle
+            secret: true
             
           - name: ServiceBusQueue:ConnectionString
             value: AzureServiceBusConnectionStringSend
@@ -189,6 +194,11 @@ extends:
             secret: true
           - name: Services:BookingsApiUrl
             value: $(bookings_api_url_staging)
+
+          # LaunchDarkly
+          - name: LaunchDarkly:SdkKey
+            value: vh-admin-web-Feature-Toggle
+            secret: true
 
           # GOV Notify Configuration
           - name: NotifyConfiguration:ApiKey

@@ -8,7 +8,7 @@ Scenario: Add an endpoint to a valid hearing
     Given I have a hearing
     And I have add endpoint to a hearing request with a valid hearing id
     When I send the request to the endpoint
-    Then the response should have the status NoContent and success status True
+    Then the response should have the status Ok and success status True
     And the endpoint should be added
 
 Scenario: Add an endpoint with invalid data to a valid hearing 
