@@ -140,7 +140,7 @@ extends:
   template: stages\dotnet-package.yml@templates
   parameters:
     coreProjectPath: BookingsApi/BookingsApi
-    coreProjectName: BookingApi.cproj
+    coreProjectName: BookingsApi.cproj
     databaseContextName: BookingsDbContext
     nugetProjectPath: BookingsApi/BookingsApi.Client
     PackageNuget: ${{ parameters.PackageNuget }}
