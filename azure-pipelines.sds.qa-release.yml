@@ -53,6 +53,7 @@ stages:
               #additionalArgs: "-o json"
           - template: templates/Azure/Dns/private-dns-remove.yaml@azTemplates
             parameters: 
+              subscriptionName: ${{ variables.subscriptionName }}
               dnsSubscriptionName: ${{ variables.dnsZoneSubscription }}
               dnsResourceGroupName: ${{ variables.dnsZoneResourceGroup }}
               zoneName: ${{ variables.dnsZone }}
