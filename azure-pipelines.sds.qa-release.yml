@@ -3,7 +3,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/master
+      ref: refs/heads/azure-dns-updates
       endpoint: hmcts
 
 parameters:
@@ -53,8 +53,8 @@ stages:
               #additionalArgs: "-o json"
           - template: templates/Azure/Dns/private-dns-remove.yaml@azTemplates
             parameters: 
-              subscriptionName: ${{ variables.dnsZoneSubscription }}
-              resourceGroupName: ${{ variables.dnsZoneResourceGroup }}
+              dnsSubscriptionName: ${{ variables.dnsZoneSubscription }}
+              dnsResourceGroupName: ${{ variables.dnsZoneResourceGroup }}
               zoneName: ${{ variables.dnsZone }}
               recordName: ${{ variables.dnsRecordName }}
 
