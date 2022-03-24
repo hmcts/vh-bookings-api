@@ -32,6 +32,8 @@ variables:
       cluster: $(cluster)
   - name: prTagName
     value: 'pr-375'
+  - name: dnsRecordName
+    value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
 
 stages:
   - stage: Uninstall
