@@ -73,7 +73,7 @@ extends:
     parameters:
       databaseContextName: BookingsDbContext
       netVersion: 3.1.417
-      connectionStringSecretName: "vhbookings"
+      connectionStringSecretName: "VhBookingsDatabaseConnectionString"
       ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
         environments:
           - ${{ parameters.environment }}
