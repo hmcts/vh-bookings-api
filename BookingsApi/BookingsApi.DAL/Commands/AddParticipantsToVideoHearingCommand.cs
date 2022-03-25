@@ -66,7 +66,7 @@ namespace BookingsApi.DAL.Commands
             await _hearingService.AddParticipantToService(hearing, command.Participants);
 
             await _hearingService.CreateParticipantLinks(hearing.Participants.ToList(), command.LinkedParticipants);
-            
+
             await _context.SaveChangesAsync();
         }
     }
