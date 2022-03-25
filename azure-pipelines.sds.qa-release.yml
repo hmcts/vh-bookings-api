@@ -31,7 +31,7 @@ variables:
       git_repo_name: ${{ parameters.git_repo_name }}
       cluster: $(cluster)
   - name: prTagName
-    value: 'pr-378'
+    value: 'pr-379'
   - name: dnsRecordName
     value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
 
