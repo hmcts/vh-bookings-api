@@ -9,24 +9,13 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
 
-parameters:
-  - name: env
-    type: string
-    default: dev
-    values:
-      - dev
-
-  - name: git_repo_name
-    type: string
-    default: bookings-api
-
 stages:
   - stage: Dock
     displayName: Build and Push Docker Image
     variables:
       - template: variables/shared.yaml
         parameters:
-          git_repo_name: ${{ parameters.git_repo_name }}
+          git_repo_name: 'bookings-api'
       - group: vh-github-app-credentials
     jobs:
       - job:
