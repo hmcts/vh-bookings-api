@@ -1,0 +1,62 @@
+trigger: none
+pr: none
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/master
+      endpoint: hmcts
+
+parameters:
+  - name: env
+    type: string
+    default: dev
+    values:
+      - dev
+
+  - name: git_repo_name
+    type: string
+    default: bookings-api
+
+stages:
+  - stage: Dock
+    displayName: Build and Push Docker Image
+    variables:
+      - template: variables/shared.yaml
+        parameters:
+          git_repo_name: ${{ parameters.git_repo_name }}
+      - group: vh-github-app-credentials
+    jobs:
+      - job:
+        steps:
+          - checkout: self
+
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+        
+          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName:  ${{ variables.repositoryName }}
+            
+          - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName:  ${{ variables.repositoryName }}
+              imageName: "${{ replace(parameters.git_repo_name, '-', '') }}"
+              imageTags:
+                - '${{ variables.releaseTagName }}'

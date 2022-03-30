@@ -6,6 +6,7 @@ parameters:
     type: string
   - name: cluster
     type: string
+    default: ''
 
 variables:
   - name: subscriptionName
@@ -23,10 +24,11 @@ variables:
   - name: gitRepoName
     value: vh-${{ parameters.git_repo_name }}
 
-  - name: clusterName
-    value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
-  - name: clusterResourceGroup
-    value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-rg"
+  - ${{ if ne(parameters.cluster, '') }}:
+    - name: clusterName
+      value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
+    - name: clusterResourceGroup
+      value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-rg"
 
   - name: chartName
     value: "vh-${{ parameters.git_repo_name }}"
