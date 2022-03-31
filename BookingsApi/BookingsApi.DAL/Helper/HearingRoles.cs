@@ -56,5 +56,6 @@
         public const string LayMember = "Lay Member";
         public const string CICAPresentingOfficer = "CICA Presenting Officer";
         public const string RoyalBritishLegion = "Royal British Legion";
+        public const string ExpertWitness = "Expert Witness";
     }
 }
