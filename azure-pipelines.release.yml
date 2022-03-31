@@ -71,6 +71,8 @@ resources:
 extends:
     template: templates/vh-release.yml@templates
     parameters:
+      databaseContextName: BookingsDbContext
+      connectionStringSecretName: "VhBookingsDatabaseConnectionString"
       ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
         environments:
           - ${{ parameters.environment }}

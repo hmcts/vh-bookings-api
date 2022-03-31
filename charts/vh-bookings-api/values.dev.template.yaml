@@ -1,0 +1,38 @@
+---
+java:
+  image: '${IMAGE_NAME}'
+  applicationPort: 8080
+  replicas: 2
+  ingressHost: ${SERVICE_FQDN}
+  releaseNameOverride: ${RELEASE_NAME}
+  readinessPath: /healthcheck/health
+  livenessPath: /healthcheck/health
+  livenessDelay: 360
+  livenessPeriod: 120
+  aadIdentityName: vh-aad-identity
+  keyVaults:
+    vh-infra-core:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-dev
+      usePodIdentity: true
+      secrets:
+        - servicebusqueue--connectionstring
+        - connectionstrings--vhbookings
+    vh-bookings-api:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
+      usePodIdentity: true
+      secrets:
+        - azuread--clientsecret
+        - azuread--clientid
+        - applicationinsights-instrumentationkey
+  environment:
+    ASPNETCORE_URLS: http://+:8080
+    AZUREAD__TENANTID: "fb6e0e22-0da3-4c35-972a-9d61eb256508"
+    DISABLEHTTPSREDIRECTION: true
+    SERVICEBUSQUEUE__QUEUENAME: bookings
+    SERVICES__BOOKINGSAPIRESOURCEID: http://vh-bookings-api.dev.platform.hmcts.net
+    TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
+    Logging__LogLevel__Default: debug
+    Logging__LogLevel__System: debug
+    Logging__LogLevel__Microsoft: debug
