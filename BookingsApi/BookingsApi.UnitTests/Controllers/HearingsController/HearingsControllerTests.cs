@@ -80,7 +80,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
 
             // Act
-            await Controller.GetHearingsByTypes(new List<int>());
+            await Controller.GetHearingsByTypes(new SearchHearingRequest { Types = new List<int>() });
 
             // Assert
             QueryHandlerMock.Verify(
@@ -101,7 +101,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
 
             // Act
-            await Controller.GetHearingsByTypes(new List<int>(), "0", 100, expectedDate);
+            await Controller.GetHearingsByTypes(new SearchHearingRequest { Types = new List<int>(), Cursor = "0", Limit = 100, FromDate = expectedDate });
 
             // Assert
             QueryHandlerMock.Verify(
@@ -117,7 +117,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
                 .ReturnsAsync(new List<CaseType> { new CaseType(44, "Financial"), new CaseType(2, "Civil") });
 
-            var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
+            var result = await Controller.GetHearingsByTypes(new SearchHearingRequest
+            {
+                Types = caseTypes,
+                Cursor = "0",
+                Limit = 2
+            });
 
             result.Should().NotBeNull();
             result.Should().NotBeNull();
@@ -141,7 +146,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                         It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next cursor"));
 
-            var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
+            var result = await Controller.GetHearingsByTypes(new SearchHearingRequest
+            {
+                Types = caseTypes,
+                Cursor = "0",
+                Limit = 2
+            });
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
@@ -166,7 +176,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                     x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                         It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
-            var result = await Controller.GetHearingsByTypes(caseTypes, "0", 2);
+
+            var result = await Controller.GetHearingsByTypes(new SearchHearingRequest
+            {
+                Types = caseTypes,
+                Cursor = "0",
+                Limit = 2
+            });
 
             result.Should().NotBeNull();
             var response = (BookingsResponse)((ObjectResult)result.Result).Value;
@@ -451,7 +467,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                         It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
 
-            var objectResult = (await Controller.GetHearingsByTypes(caseTypes, "0", 2, caseNumber: searchTerm)).Result as ObjectResult;
+            var objectResult = (await Controller.GetHearingsByTypes(new SearchHearingRequest
+            {
+                Types = caseTypes,
+                Cursor = "0",
+                Limit = 2,
+                CaseNumber = searchTerm
+            })).Result as ObjectResult;
 
             var response = (BookingsResponse)objectResult.Value;
 
@@ -472,20 +494,26 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var caseTypes = new List<int>();
             var venueIds = new List<int> { 1, 2, 3 };
-            
+
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-            
+
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham"), new HearingVenue(2, "Manchester"), new HearingVenue(3, "London") });
-            
+
             QueryHandlerMock
                 .Setup(x =>
                     x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                         It.IsAny<GetBookingsByCaseTypesQuery>()))
                 .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
-            
-            var objectResult = (await Controller.GetHearingsByTypes(caseTypes, "0", 2, venueIds: venueIds)).Result as ObjectResult;
+
+            var objectResult = (await Controller.GetHearingsByTypes(new SearchHearingRequest
+            {
+                Types = caseTypes,
+                Cursor = "0",
+                Limit = 2,
+                VenueIds = venueIds
+            })).Result as ObjectResult;
 
             var response = (BookingsResponse)objectResult.Value;
 
@@ -500,7 +528,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
-        
+
         [Test]
         public async Task Should_return_bad_request_if_invalid_venue_ids()
         {
@@ -508,9 +536,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> { new HearingVenue(7, "Tribunal"), new HearingVenue(33, "Private Law") });
-        
-            var result = await Controller.GetHearingsByTypes(null, "0", 2, venueIds: venueIds);
-        
+
+            var result = await Controller.GetHearingsByTypes(new SearchHearingRequest
+            {
+                Types = null,
+                Cursor = "0",
+                Limit = 2,
+                VenueIds = venueIds
+            });
+
             result.Should().NotBeNull();
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;

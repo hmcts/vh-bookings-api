@@ -519,55 +519,40 @@ namespace BookingsApi.Controllers
         /// <summary>
         ///     Get a paged list of booked hearings
         /// </summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
-        /// <param name="caseNumber"></param>
-        /// <param name="venueIds"></param>
-        /// <param name="endDate"></param>
-        /// <param name="lastName"></param>
+        /// <param name="request"></param>
         /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes(
-            [FromQuery(Name = "types")]List<int> types, 
-            [FromQuery]string cursor = DefaultCursor, 
-            [FromQuery]int limit = DefaultLimit, 
-            [FromQuery] DateTime? fromDate = null, 
-            [FromQuery] string caseNumber = "",
-            [FromQuery] List<int> venueIds = null, 
-            [FromQuery] DateTime? endDate = null,
-            [FromQuery] string lastName = "")
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes(SearchHearingRequest request)
         {
-            fromDate = fromDate ?? DateTime.UtcNow.Date;
-            types = types ?? new List<int>();
+            request.FromDate = request.FromDate ?? DateTime.UtcNow.Date;
+            request.Types = request.Types ?? new List<int>();
 
-            if (!await ValidateCaseTypes(types))
+            if (!await ValidateCaseTypes(request.Types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
                 return BadRequest(ModelState);
             }
 
-            venueIds = venueIds ?? new List<int>();
-            if (!await ValidateVenueIds(venueIds))
+            request.VenueIds = request.VenueIds ?? new List<int>();
+            if (!await ValidateVenueIds(request.VenueIds))
             {
                 ModelState.AddModelError("Venue ids", "Invalid value for venue ids");
                 return BadRequest(ModelState);
             }
 
-            var query = new GetBookingsByCaseTypesQuery(types)
+            var query = new GetBookingsByCaseTypesQuery(request.Types)
             {
-                Cursor = cursor == DefaultCursor ? null : cursor,
-                Limit = limit,
-                StartDate = fromDate.Value,
-                EndDate = endDate,
-                CaseNumber = caseNumber,
-                VenueIds = venueIds,
-                LastName = lastName
+                Cursor = request.Cursor == DefaultCursor ? null : request.Cursor,
+                Limit = request.Limit,
+                StartDate = request.FromDate.Value,
+                EndDate = request.EndDate,
+                CaseNumber = request.CaseNumber,
+                VenueIds = request.VenueIds,
+                LastName = request.LastName
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
@@ -575,10 +560,10 @@ namespace BookingsApi.Controllers
 
             var response = new BookingsResponse
             {
-                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types, caseNumber, venueIds),
-                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types, caseNumber, venueIds),
+                PrevPageUrl = BuildCursorPageUrl(request.Cursor, request.Limit, request.Types, request.CaseNumber, request.VenueIds),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, request.Limit, request.Types, request.CaseNumber, request.VenueIds),
                 NextCursor = result.NextCursor,
-                Limit = limit,
+                Limit = request.Limit,
                 Hearings = mapper.MapHearingResponses(result)
             };
 

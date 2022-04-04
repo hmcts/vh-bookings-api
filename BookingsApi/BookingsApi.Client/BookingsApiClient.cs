@@ -358,23 +358,15 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, string caseNumber, System.Collections.Generic.IEnumerable<int> venueIds, System.DateTimeOffset? endDate, string lastName);
+        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(SearchHearingRequest request);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, string caseNumber, System.Collections.Generic.IEnumerable<int> venueIds, System.DateTimeOffset? endDate, string lastName, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(SearchHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Anonymises the Hearings, Case, Person and Participant data.</summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -3091,62 +3083,24 @@ namespace BookingsApi.Client
         }
     
         /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, string caseNumber, System.Collections.Generic.IEnumerable<int> venueIds, System.DateTimeOffset? endDate, string lastName)
+        public System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(SearchHearingRequest request)
         {
-            return GetHearingsByTypesAsync(types, cursor, limit, fromDate, caseNumber, venueIds, endDate, lastName, System.Threading.CancellationToken.None);
+            return GetHearingsByTypesAsync(request, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
         /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, string caseNumber, System.Collections.Generic.IEnumerable<int> venueIds, System.DateTimeOffset? endDate, string lastName, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(SearchHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new System.ArgumentNullException("request");
+    
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/types?");
-            if (types != null)
-            {
-                foreach (var item_ in types) { urlBuilder_.Append(System.Uri.EscapeDataString("types") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            if (cursor != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("cursor") + "=").Append(System.Uri.EscapeDataString(ConvertToString(cursor, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (limit != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("limit") + "=").Append(System.Uri.EscapeDataString(ConvertToString(limit, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (fromDate != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("fromDate") + "=").Append(System.Uri.EscapeDataString(fromDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (caseNumber != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("caseNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(caseNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (venueIds != null)
-            {
-                foreach (var item_ in venueIds) { urlBuilder_.Append(System.Uri.EscapeDataString("venueIds") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            if (endDate != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("endDate") + "=").Append(System.Uri.EscapeDataString(endDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (lastName != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("lastName") + "=").Append(System.Uri.EscapeDataString(ConvertToString(lastName, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/types");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3154,6 +3108,9 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
