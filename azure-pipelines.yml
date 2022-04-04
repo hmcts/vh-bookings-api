@@ -140,11 +140,14 @@ extends:
   template: stages\dotnet-package.yml@templates
   parameters:
     coreProjectPath: BookingsApi/BookingsApi
+    coreProjectName: BookingsApi.csproj
+    databaseContextName: BookingsDbContext
     nugetProjectPath: BookingsApi/BookingsApi.Client
     PackageNuget: ${{ parameters.PackageNuget }}
     PackageApp: ${{ parameters.PackageApp }}
     PackageAcceptanceTests: ${{ parameters.PackageACTests }}
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
+    connectionStringSecretName: "VhBookingsDatabaseConnectionString"
     testParameters:
       baseAgent: windows-latest
       coreProjectPath: BookingsApi/BookingsApi
