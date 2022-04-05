@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
@@ -54,6 +56,18 @@ namespace BookingsApi.DAL
         
         public override int SaveChanges()
         {
+            SetUpdatedDateValue();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            SetUpdatedDateValue();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void SetUpdatedDateValue()
+        {
             foreach (var entry in ChangeTracker.Entries()
                 .Where(e => e.State == EntityState.Added ||
                             e.State == EntityState.Modified))
@@ -65,8 +79,6 @@ namespace BookingsApi.DAL
                     updatedDateProperty.CurrentValue = DateTime.UtcNow;
                 }
             }
-
-            return base.SaveChanges();
         }
     }
 }

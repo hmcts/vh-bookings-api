@@ -2,7 +2,7 @@ using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain
 {
-    public class Organisation : Entity<long>
+    public class Organisation : TrackableEntity<long>
     {
         public Organisation() { }
 
