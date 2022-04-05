@@ -5,16 +5,20 @@ namespace BookingsApi.Domain
 {
     public interface ITrackable
     {
-        DateTime CreatedDate { get; set; }
-        DateTime UpdatedDate { get; set; }
+        DateTime? CreatedDate { get; set; }
+        DateTime? UpdatedDate { get; set; }
     }
 
     public class TrackableEntity<TKey> : Entity<TKey>, ITrackable
     {
-        private DateTime _createdDate = DateTime.UtcNow;
-        private DateTime _updatedDate = DateTime.UtcNow;
+        private readonly DateTime _currentUTC = DateTime.UtcNow;
+        protected TrackableEntity()
+        {
+            CreatedDate = _currentUTC;
+            UpdatedDate = _currentUTC;
+        }
 
-        public DateTime CreatedDate { get => _createdDate; set => _createdDate = DateTime.UtcNow; }
-        public DateTime UpdatedDate { get => _updatedDate; set => _updatedDate = DateTime.UtcNow; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
     }
 }
