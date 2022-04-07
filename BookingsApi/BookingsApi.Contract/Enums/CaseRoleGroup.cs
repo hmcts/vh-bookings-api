@@ -20,6 +20,7 @@ namespace BookingsApi.Contract.Enums
         ELAAS = 15,
         InAbsence = 16,
         VetsUK = 17,
-        PresentingOfficer = 18
+        PresentingOfficer = 18,
+        LocalAuthority = 19
     }
 }
