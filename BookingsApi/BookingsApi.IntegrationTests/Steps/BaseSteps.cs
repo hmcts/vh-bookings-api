@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Contexts;
@@ -48,6 +49,18 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             using var client = apiTestContext.CreateClient();
             return await client.DeleteAsync(apiTestContext.Uri);
+        }
+        protected async Task<HttpResponseMessage> SendRequestAsync(TestContext context)
+        {
+            using var client = context.CreateClient();
+
+            var requestUri = new Uri($"{client.BaseAddress}{context.Uri}");
+
+            return await client.SendAsync(
+                   new HttpRequestMessage {
+                       Content = context.HttpContent, 
+                       Method = context.HttpMethod, 
+                       RequestUri = requestUri });
         }
     }
 }
