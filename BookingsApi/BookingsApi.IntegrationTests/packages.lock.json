@@ -3389,7 +3389,10 @@
         }
       },
       "bookingsapi.contract": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.3"
+        }
       },
       "bookingsapi.dal": {
         "type": "Project",

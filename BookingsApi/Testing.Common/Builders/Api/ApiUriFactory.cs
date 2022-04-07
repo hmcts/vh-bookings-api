@@ -24,14 +24,11 @@ namespace Testing.Common.Builders.Api
             private const string ApiRoot = "hearings";
             public static string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string BookNewHearing => $"{ApiRoot}";
+            public static string HearingTypesRelativePath => $"{ApiRoot}/types";
             public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
-            public static string GetHearingsByCaseType(int caseType) => $"{ApiRoot}/types?types={caseType}";
-            public static string GetHearingsByAnyCaseType(int limit = 100) => $"{ApiRoot}/types?limit={limit}";
-            public static string GetHearingsByAnyCaseTypeAndCursor(string cursor) => $"{ApiRoot}/types?cursor{cursor}";
             public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
-
             public static string SearchForHearings(SearchForHearingsQuery query) =>
                 $"{ApiRoot}/audiorecording/search?{QueryStringBuilder.ConvertToQueryString(query)}";
             public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
