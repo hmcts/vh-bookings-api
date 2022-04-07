@@ -12,16 +12,10 @@ java:
   aadIdentityName: vh-aad-identity
   keyVaults:
     vh-infra-core:
-      excludeEnvironmentSuffix: false
-      resourceGroup: vh-infra-core-dev
-      usePodIdentity: true
       secrets:
         - servicebusqueue--connectionstring
         - connectionstrings--vhbookings
     vh-bookings-api:
-      excludeEnvironmentSuffix: false
-      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
-      usePodIdentity: true
       secrets:
         - azuread--clientsecret
         - azuread--clientid
