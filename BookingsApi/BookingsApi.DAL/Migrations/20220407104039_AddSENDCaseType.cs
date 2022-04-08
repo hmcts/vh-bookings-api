@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Contract.Enums;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookingsApi.DAL.Migrations
@@ -60,7 +61,20 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DeleteData(nameof(CaseType), "Id", 51);
+            
+            for (int id = 1013; id <= 1027; id++)
+            {
+                migrationBuilder.DeleteData(nameof(HearingRole), "Id", id);
+            }
+            for (int id = 320; id <= 324; id++)
+            {
+                migrationBuilder.DeleteData(nameof(CaseRole), "Id", id);
+            }
+            for (int id = 274; id <= 275; id++)
+            {
+                migrationBuilder.DeleteData(nameof(HearingType), "Id", id);
+            }
         }
     }
 }
