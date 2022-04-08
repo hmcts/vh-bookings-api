@@ -154,6 +154,26 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
+        /// Get list of all hearings for notification between next 48 to 72 hrs. 
+        /// </summary>
+        /// <returns>Hearing details</returns>
+        [HttpGet("notifications/gethearings", Name = "GetHearingsForNotification")]
+        [OpenApiOperation("GetHearingsForNotification")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHearingsForNotificationAsync()
+        {
+           
+            var query = new GetHearingsForNotificationsQuery();
+
+            var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(query);
+
+            var hearingMapper = new HearingToDetailsResponseMapper();
+            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Request to book a new hearing
         /// </summary>
         /// <param name="request">Details of a new hearing to book</param>
