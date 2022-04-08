@@ -3,7 +3,7 @@ using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain
 {
-    public class Case : Entity<long>
+    public class Case : TrackableEntity<long>
     {
         public Case(string number, string name)
         {
