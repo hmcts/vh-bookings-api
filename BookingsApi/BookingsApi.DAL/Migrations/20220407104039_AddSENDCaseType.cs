@@ -29,11 +29,15 @@ namespace BookingsApi.DAL.Migrations
             SELECT @caseRoleId4 = SCOPE_IDENTITY()
             DECLARE @caseRoleId5 int
             INSERT INTO CaseRole (""Name"", ""Group"", ""CaseTypeId"",""CreatedDate"",""UpdatedDate"") VALUES ('Judge', {(int) CaseRoleGroup.Judge}  , @caseTypeId,'{DateTime.UtcNow}','{DateTime.UtcNow}')
-            SELECT @caseRoleId5 = SCOPE_IDENTITY()
-            declare @UserRoleId1 int
-            declare @UserRoleId2 int
+            SELECT @caseRoleId5 = SCOPE_IDENTITY();
+            declare @UserRoleId1 int;
+            declare @UserRoleId2 int;
+            declare @UserRoleId3 int;
+            declare @UserRoleId4 int;
             select @UserRoleId1 = Id from UserRole where Name = 'Individual';
             select @UserRoleId2 = Id from UserRole where Name = 'Representative';
+            select @UserRoleId3 = Id from UserRole where Name = 'Judicial Office Holder';
+            select @UserRoleId4 = Id from UserRole where Name = 'Judge';
             INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Appellant}', @UserRoleId1, @caseRoleId1,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
             INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Expert}', @UserRoleId1, @caseRoleId1,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
             INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Intermediary}', @UserRoleId1, @caseRoleId1,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
@@ -47,6 +51,8 @@ namespace BookingsApi.DAL.Migrations
             INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Representative}', @UserRoleId2, @caseRoleId2,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
             INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Witness}', @UserRoleId2, @caseRoleId2,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
             INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Observer}', @UserRoleId2, @caseRoleId3,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.PanelMember}', @UserRoleId3, @caseRoleId4,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('{Helper.HearingRoles.Judge}', @UserRoleId4, @caseRoleId5,1,'{DateTime.UtcNow}','{DateTime.UtcNow}')
             ";
             
             migrationBuilder.Sql(sqlScript);
