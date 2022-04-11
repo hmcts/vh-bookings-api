@@ -8,73 +8,77 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.InsertData(
-                "CaseType",
-                new[] { "Id", "Name" },
-                new object[,]
-                {
-                    {51, "Special Educational Needs and Disability"}
-                });
+            var sqlScript = $@"
+            DECLARE @caseTypeId int
+            INSERT INTO CaseType (""Name"") VALUES ('Special Educational Needs and Disability')
+            SELECT @caseTypeId = SCOPE_IDENTITY()\
+            INSERT INTO HearingType (""Name"", ""CaseTypeId"", ""Live"") VALUES ('Case Management Hearing',@caseTypeId,1)
+            INSERT INTO HearingType (""Name"", ""CaseTypeId"", ""Live"") VALUES ('Final Hearing',@caseTypeId,1)
+            DECLARE @caseRoleId1 int
+            INSERT INTO CaseRole (""Name"", ""Group"", ""CaseTypeId"") VALUES ('Appellant', {(int) CaseRoleGroup.Appellant} , @caseTypeId)
+            SELECT @caseRoleId1 = SCOPE_IDENTITY()
+            DECLARE @caseRoleId2 int
+            INSERT INTO CaseRole (""Name"", ""Group"", ""CaseTypeId"") VALUES ('Local Authority', {(int) CaseRoleGroup.LocalAuthority}  , @caseTypeId)
+            SELECT @caseRoleId2 = SCOPE_IDENTITY()
+            DECLARE @caseRoleId3 int
+            INSERT INTO CaseRole (""Name"", ""Group"", ""CaseTypeId"") VALUES ('Observer', {(int) CaseRoleGroup.Observer}  , @caseTypeId)
+            SELECT @caseRoleId3 = SCOPE_IDENTITY()
+            DECLARE @caseRoleId4 int
+            INSERT INTO CaseRole (""Name"", ""Group"", ""CaseTypeId"") VALUES ('Panel Member', {(int)CaseRoleGroup.PanelMember}  , @caseTypeId)
+            SELECT @caseRoleId4 = SCOPE_IDENTITY()
+            DECLARE @caseRoleId5 int
+            INSERT INTO CaseRole (""Name"", ""Group"", ""CaseTypeId"") VALUES ('Judge', {(int) CaseRoleGroup.Judge}  , @caseTypeId)
+            SELECT @caseRoleId5 = SCOPE_IDENTITY()
+            declare @UserRoleId1 int
+            declare @UserRoleId2 int
+            select @UserRoleId1 = Id from UserRole where Name = 'Individual';
+            select @UserRoleId2 = Id from UserRole where Name = 'Representative';
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Appellant}', @UserRoleId1, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Expert}', @UserRoleId1, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Intermediary}', @UserRoleId1, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Interpreter}', @UserRoleId1, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.LitigantInPerson}', @UserRoleId1, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.LitigationFriend}', @UserRoleId1, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.MacKenzieFriend}', @UserRoleId2, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Representative}', @UserRoleId2, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Solicitor}', @UserRoleId2, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Witness}', @UserRoleId2, @caseRoleId1,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Representative}', @UserRoleId2, @caseRoleId2,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Witness}', @UserRoleId2, @caseRoleId2,1 )
+            INSERT INTO HearingRole (""Name"", ""UserRoleId"", ""CaseRoleId"", ""Live"") VALUES ('{Helper.HearingRoles.Observer}', @UserRoleId2, @caseRoleId3,1 )
+            ";
             
-            migrationBuilder.InsertData(
-                "HearingType",
-                new[] { "Id", "Name", "CaseTypeId", "Live"},
-                new object[,]
-                {
-                    {274, "Case Management Hearing",51,true},
-                    {275, "Final Hearing",51,true}
-                });
-            migrationBuilder.InsertData(
-                "CaseRole",
-                new[] { "Id", "Name", "Group", "CaseTypeId" },
-                new object[,]
-                {
-                    { 320, "Appellant", (int) CaseRoleGroup.Appellant, 51 },
-                    { 321, "Local Authority", (int) CaseRoleGroup.LocalAuthority, 51 },
-                    { 322, "Observer", (int) CaseRoleGroup.Observer, 51 },
-                    { 323, "Panel Member", (int) CaseRoleGroup.PanelMember, 51 },
-                    { 324, "Judge",  (int) CaseRoleGroup.Judge, 51 }
-                });
-
-            migrationBuilder.InsertData(
-                "HearingRole",
-                new[] { "Id", "Name", "UserRoleId", "CaseRoleId", "Live"},
-                new object[,]
-                {
-                    { 1013, "Appellant", 5, 320,true },
-                    { 1014, "Expert", 5, 320,true },
-                    { 1015, "Intermediary", 5, 320,true },
-                    { 1016, "Interpreter", 5, 320,true },
-                    { 1017, "Litigant In Person", 5, 320,true },
-                    { 1018, "Litigation Friend", 5, 320,true },
-                    { 1019, "MacKenzie Friend", 5, 320,true },
-                    { 1020, "Representative", 6, 320,true },
-                    { 1021, "Solicitor", 6, 320,true },
-                    { 1022, "Witness", 5, 320,true },
-                    { 1023, "Representative", 6, 321,true },
-                    { 1024, "Witness", 5, 321,true },
-                    { 1025, "Observer", 5, 322,true },
-                    { 1026, "Panel Member", 7, 323,true },
-                    { 1027, "Judge", 4, 324,true }
-                });
+            migrationBuilder.Sql(sqlScript);
+            
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(nameof(CaseType), "Id", 51);
+            var sqlScript = @"
+                declare @caseTypeId int
+                -- get CaseTypeId
+                select @caseTypeId = Id from CaseType
+                where Name = 'Special Educational Needs and Disability'
+
+                declare @caseRoleIds table
+                (
+                    Value int
+                )
+                -- get CaseRoleIds
+                insert into @caseRoleIds select Id from CaseRole where CaseTypeId = @caseTypeId
+                -- delete all HearingRoles connected to CaseRoleIds
+                delete from HearingRole where CaseRoleId in (select value from @caseRoleIds)
+
+                -- delete all HearingType connected to CaseTypeId
+                delete from HearingType where CaseTypeId = @caseTypeId
+
+                -- delete all CaseRole connected to CaseTypeId
+                delete from CaseRole where CaseTypeId = @caseTypeId
+
+                DELETE FROM CaseType WHERE Id = @caseTypeId
+                ";
             
-            for (int id = 1013; id <= 1027; id++)
-            {
-                migrationBuilder.DeleteData(nameof(HearingRole), "Id", id);
-            }
-            for (int id = 320; id <= 324; id++)
-            {
-                migrationBuilder.DeleteData(nameof(CaseRole), "Id", id);
-            }
-            for (int id = 274; id <= 275; id++)
-            {
-                migrationBuilder.DeleteData(nameof(HearingType), "Id", id);
-            }
+            migrationBuilder.Sql(sqlScript);
         }
     }
 }
