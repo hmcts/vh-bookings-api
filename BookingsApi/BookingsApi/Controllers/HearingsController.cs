@@ -38,8 +38,6 @@ namespace BookingsApi.Controllers
     [ApiController]
     public class HearingsController : Controller
     {
-        private const string DefaultCursor = "0";
-        private const int DefaultLimit = 100;
 
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
@@ -65,7 +63,7 @@ namespace BookingsApi.Controllers
             _hearingService = hearingService;
             _featureToggles = featureToggles;
             _logger = logger;
-            
+
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
 
@@ -109,7 +107,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetHearingsByUsername")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingsByUsername([FromQuery]string username)
+        public async Task<IActionResult> GetHearingsByUsername([FromQuery] string username)
         {
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
@@ -127,7 +125,7 @@ namespace BookingsApi.Controllers
         [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case",
             Name = "AnonymiseParticipantAndCaseByHearingId")]
         [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
         {
             await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIds });
@@ -141,7 +139,7 @@ namespace BookingsApi.Controllers
         /// <returns>Hearing details</returns>
         [HttpGet("{groupId}/hearings", Name = "GetHearingsByGroupId")]
         [OpenApiOperation("GetHearingsByGroupId")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetHearingsByGroupId(Guid groupId)
         {
             var query = new GetHearingsByGroupIdQuery(groupId);
@@ -194,7 +192,7 @@ namespace BookingsApi.Controllers
                     return ModelStateErrorLogger(nameof(BookNewHearingRequest), modelErrorMessage, logModelErrorMessage,
                         null, SeverityLevel.Information);
                 }
-                
+
                 var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
                 if (!result.IsValid)
                 {
@@ -246,16 +244,16 @@ namespace BookingsApi.Controllers
 
                 var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
                     request, caseType, hearingType, venue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
-                
+
                 const string logCallingDb = "BookNewHearing Calling DB...";
                 const string dbCommand = "createVideoHearingCommand";
                 const string logSaveSuccess = "BookNewHearing DB Save Success";
                 const string logNewHearingId = "NewHearingId";
 
-                _logger.TrackTrace(logCallingDb, SeverityLevel.Information, new Dictionary<string, string>{{dbCommand, JsonConvert.SerializeObject(createVideoHearingCommand)}});
+                _logger.TrackTrace(logCallingDb, SeverityLevel.Information, new Dictionary<string, string> { { dbCommand, JsonConvert.SerializeObject(createVideoHearingCommand) } });
                 await _commandHandler.Handle(createVideoHearingCommand);
-                _logger.TrackTrace(logSaveSuccess, SeverityLevel.Information, new Dictionary<string, string>{{logNewHearingId, createVideoHearingCommand.NewHearingId.ToString()}});
-                
+                _logger.TrackTrace(logSaveSuccess, SeverityLevel.Information, new Dictionary<string, string> { { logNewHearingId, createVideoHearingCommand.NewHearingId.ToString() } });
+
                 var videoHearingId = createVideoHearingCommand.NewHearingId;
 
                 var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
@@ -270,11 +268,11 @@ namespace BookingsApi.Controllers
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},
                     {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
                 });
-                
+
                 var hearingMapper = new HearingToDetailsResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
-                _logger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> {{"response", JsonConvert.SerializeObject(response)}});
+                _logger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> { { "response", JsonConvert.SerializeObject(response) } });
                 return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
             }
             catch (Exception ex)
@@ -302,7 +300,7 @@ namespace BookingsApi.Controllers
             }
         }
 
-        private IActionResult ModelStateErrorLogger(string key,string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
+        private IActionResult ModelStateErrorLogger(string key, string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
         {
             ModelState.AddModelError(key, exception);
             if (errorValue == null)
@@ -311,7 +309,7 @@ namespace BookingsApi.Controllers
             }
             else
             {
-               _logger.TrackTrace(logErrorMessage, severity, new Dictionary<string, string> { { key, errorValue } }); 
+                _logger.TrackTrace(logErrorMessage, severity, new Dictionary<string, string> { { key, errorValue } });
             }
             return BadRequest(ModelState);
         }
@@ -324,8 +322,8 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPost("{hearingId}/clone")]
         [OpenApiOperation("CloneHearing")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
             [FromBody] CloneHearingRequest request)
         {
@@ -362,7 +360,7 @@ namespace BookingsApi.Controllers
 
             var existingCase = videoHearing.GetCases().First();
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
-            
+
             return NoContent();
         }
 
@@ -415,7 +413,7 @@ namespace BookingsApi.Controllers
             request.QuestionnaireNotRequired ??= videoHearing.QuestionnaireNotRequired;
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
-            
+
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.QuestionnaireNotRequired.Value, request.AudioRecordingRequired.Value);
@@ -536,55 +534,38 @@ namespace BookingsApi.Controllers
             await _commandHandler.Handle(command);
         }
 
-        /// <summary>
-        ///     Get a paged list of booked hearings
-        /// </summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
-        /// <param name="caseNumber"></param>
-        /// <param name="venueIds"></param>
-        /// <param name="endDate"></param>
-        /// <returns>The list of bookings video hearing</returns>
         [HttpGet("types", Name = "GetHearingsByTypes")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes(
-            [FromQuery(Name = "types")]List<int> types, 
-            [FromQuery]string cursor = DefaultCursor, 
-            [FromQuery]int limit = DefaultLimit, 
-            [FromQuery] DateTime? fromDate = null, 
-            [FromQuery] string caseNumber = "",
-            [FromQuery] List<int> venueIds = null, 
-            [FromQuery] DateTime? endDate = null )
+        public async Task<ActionResult<BookingsResponse>> GetHearingsByTypes([FromBody] GetHearingRequest request)
         {
-            fromDate = fromDate ?? DateTime.UtcNow.Date;
-            types = types ?? new List<int>();
+            request.FromDate ??= DateTime.UtcNow.Date;
+            request.Types ??= new List<int>();
 
-            if (!await ValidateCaseTypes(types))
+            if (!await ValidateCaseTypes(request.Types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
                 return BadRequest(ModelState);
             }
 
-            venueIds = venueIds ?? new List<int>();
-            if (!await ValidateVenueIds(venueIds))
+            request.VenueIds ??= new List<int>();
+            if (!await ValidateVenueIds(request.VenueIds))
             {
                 ModelState.AddModelError("Venue ids", "Invalid value for venue ids");
                 return BadRequest(ModelState);
             }
 
-            var query = new GetBookingsByCaseTypesQuery(types)
+            var query = new GetBookingsByCaseTypesQuery(request.Types)
             {
-                Cursor = cursor == DefaultCursor ? null : cursor,
-                Limit = limit,
-                StartDate = fromDate.Value,
-                EndDate = endDate,
-                CaseNumber = caseNumber,
-                VenueIds = venueIds
+                Cursor = request.Cursor == GetHearingRequest.DefaultCursor ? null : request.Cursor,
+                Limit = request.Limit,
+                StartDate = request.FromDate.Value,
+                EndDate = request.EndDate,
+                CaseNumber = request.CaseNumber,
+                VenueIds = request.VenueIds,
+                LastName = request.LastName
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
@@ -592,10 +573,10 @@ namespace BookingsApi.Controllers
 
             var response = new BookingsResponse
             {
-                PrevPageUrl = BuildCursorPageUrl(cursor, limit, types, caseNumber, venueIds),
-                NextPageUrl = BuildCursorPageUrl(result.NextCursor, limit, types, caseNumber, venueIds),
+                PrevPageUrl = BuildCursorPageUrl(request.Cursor, request.Limit, request.Types, request.CaseNumber, request.VenueIds, request.LastName),
+                NextPageUrl = BuildCursorPageUrl(result.NextCursor, request.Limit, request.Types, request.CaseNumber, request.VenueIds, request.LastName),
                 NextCursor = result.NextCursor,
-                Limit = limit,
+                Limit = request.Limit,
                 Hearings = mapper.MapHearingResponses(result)
             };
 
@@ -631,7 +612,13 @@ namespace BookingsApi.Controllers
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
 
-        private string BuildCursorPageUrl(string cursor, int limit, List<int> caseTypes, string caseNumber="", List<int> hearingVenueIds = null)
+        private string BuildCursorPageUrl(
+            string cursor,
+            int limit,
+            List<int> caseTypes,
+            string caseNumber = "",
+            List<int> hearingVenueIds = null,
+            string lastName = "")
         {
             const string hearingsListsEndpointBaseUrl = "hearings/";
             const string bookingsEndpointUrl = "types";
@@ -645,7 +632,7 @@ namespace BookingsApi.Controllers
 
             var pageUrl = $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
 
-            // Executes when Admin_Search feature toggle is ON and caseNumber search is performed
+            // Executes when Admin_Search feature toggle is ON and search action is performed
             if (_featureToggles.AdminSearchToggle())
             {
                 if (!string.IsNullOrWhiteSpace(caseNumber))
@@ -659,6 +646,11 @@ namespace BookingsApi.Controllers
                     venueIds = string.Join("&venueIds=", hearingVenueIds);
                 }
                 pageUrl += $"&venueIds={venueIds}";
+
+                if (!string.IsNullOrWhiteSpace(lastName))
+                {
+                    pageUrl += $"&lastName={lastName}";
+                }
             }
 
             return pageUrl;
@@ -678,7 +670,7 @@ namespace BookingsApi.Controllers
             return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
 
         }
-        
+
         private async Task<bool> ValidateVenueIds(List<int> filterVenueIds)
         {
             if (!filterVenueIds.Any())
@@ -709,7 +701,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("SearchForHearings")]
         [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> SearchForHearingsAsync([FromQuery]SearchForHearingsQuery searchQuery)
+        public async Task<IActionResult> SearchForHearingsAsync([FromQuery] SearchForHearingsQuery searchQuery)
         {
             var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
 

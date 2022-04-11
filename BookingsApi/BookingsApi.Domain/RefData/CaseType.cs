@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain.RefData
 {
-    public class CaseType : Entity<int>
+    public class CaseType : TrackableEntity<int>
     {
         public CaseType(int id, string name)
         {

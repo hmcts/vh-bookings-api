@@ -372,3 +372,8 @@ Feature: CaseTypes
       | Upper Tribunal Lands Chamber                  | Panel Member           |
       | Upper Tribunal Lands Chamber                  | Observer               |
       | Upper Tribunal Lands Chamber                  | Judge                  |
+      | Special Educational Needs and Disability      | Appellant            |
+      | Special Educational Needs and Disability      | Local Authority      |
+      | Special Educational Needs and Disability      | Observer             |
+      | Special Educational Needs and Disability      | Panel Member         |
+      | Special Educational Needs and Disability      | Judge                |

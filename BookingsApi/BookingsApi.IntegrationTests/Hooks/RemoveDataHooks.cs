@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
+using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.IntegrationTests.Contexts;
+using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
@@ -39,16 +42,28 @@ namespace BookingsApi.IntegrationTests.Hooks
             await context.TestDataManager.ClearJudiciaryPersonsAsync();
         }
 
-        [AfterScenario(Order = (int) HooksSequence.RemoveData)]
+        [AfterScenario(Order = (int)HooksSequence.RemoveData)]
         public static async Task RemoveAllHearingsWithCaseName(TestContext context)
         {
-            context.Uri = GetHearingsByAnyCaseType(HearingsLimit);
-            context.HttpMethod = HttpMethod.Get;
+            var request = new GetHearingRequest { Limit = HearingsLimit };
+            
             using var client = context.Server.CreateClient();
+
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {context.BearerToken}");
-            var response = await client.GetAsync(context.Uri);
+
+            context.Uri = client.BaseAddress + HearingTypesRelativePath;
+            context.HttpMethod = HttpMethod.Get;
+            context.HttpContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(
+                new HttpRequestMessage { 
+                    Content = context.HttpContent, 
+                    Method = context.HttpMethod, 
+                    RequestUri = new Uri(context.Uri) });
+
             var hearings = RequestHelper.Deserialise<BookingsResponse>(await response.Content.ReadAsStringAsync());
-            foreach (var hearing in hearings.Hearings.SelectMany(hearingsListResponse => hearingsListResponse.Hearings.Where(hearing => hearing.HearingName.Contains(context.TestData.CaseName))))
+            foreach (var hearing in hearings.Hearings.SelectMany(
+                hearingsListResponse => hearingsListResponse.Hearings.Where(hearing => hearing.HearingName.Contains(context.TestData.CaseName))))
             {
                 await context.TestDataManager.RemoveVideoHearing(hearing.HearingId);
             }

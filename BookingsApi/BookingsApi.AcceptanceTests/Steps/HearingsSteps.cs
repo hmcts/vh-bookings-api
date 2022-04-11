@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
-using AcceptanceTests.Common.Model.Case;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.AcceptanceTests.Models;
@@ -17,7 +16,7 @@ using BookingsApi.Contract.Requests.Enums;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 using UpdateBookingStatusRequest = BookingsApi.AcceptanceTests.Models.UpdateBookingStatusRequest;
 using UpdateHearingRequest = BookingsApi.AcceptanceTests.Models.UpdateHearingRequest;
-
+using System.Net.Http;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
@@ -25,7 +24,7 @@ namespace BookingsApi.AcceptanceTests.Steps
     public sealed class HearingsSteps
     {
         private readonly TestContext _context;
-        
+
         public HearingsSteps(TestContext context)
         {
             _context = context;
@@ -64,7 +63,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         public void GivenIHaveARemoveHearingRequestWithAValidHearingId()
         {
             _context.Request = _context.Delete(RemoveHearing(_context.TestData.Hearing.Id));
-        }       
+        }
 
         [Then(@"hearing details should be retrieved")]
         public void ThenAHearingDetailsShouldBeRetrieved()
@@ -155,26 +154,37 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have a get details for a given hearing request for case type (.*)")]
         public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidCaseType(string caseTypeString)
         {
-            _context.Request = _context.Get(GetHearingsByCaseType(CaseType.FromString(caseTypeString).Id));
-            _context.Request.AddQueryParameter("Limit", "1000");
-        }
+                var request = new GetHearingRequest
+                {
+                    Limit = 1000
+                };
 
-        [Then(@"hearing details should be retrieved for the case type")]
-        public void ThenHearingDetailsShouldBeRetrievedForTheCaseType()
-        {
-            var response = RequestHelper.Deserialise<BookingsResponse>(_context.Response.Content);
-            response.PrevPageUrl.Should().Contain(response.Limit.ToString());
-            response.Hearings.Count.Should().BeGreaterThan(0);
-            var hearing = HearingInResponse(response);
-            hearing.Should().NotBeNull();
-            hearing.CaseTypeName.Should().NotBeNullOrEmpty();
-            hearing.HearingTypeName.Should().NotBeNullOrEmpty();
-            hearing.ScheduledDateTime.Should().BeAfter(DateTime.UtcNow);
-            hearing.ScheduledDuration.Should().NotBe(0);
-            hearing.JudgeName.Should().NotBeNullOrEmpty();
-            hearing.CourtAddress.Should().NotBeNullOrEmpty();
-            hearing.HearingName.Should().NotBeNullOrEmpty();
-            hearing.HearingNumber.Should().NotBeNullOrEmpty();
+                var client = new TestHttpClient();
+
+                var result = client.ExecuteAsync(
+                    _context,
+                    HearingTypesRelativePath,
+                    request, HttpMethod.Get)
+                    .Result;
+
+                var response = RequestHelper.Deserialise<BookingsResponse>(
+                    result.Content.ReadAsStringAsync().Result);
+
+                response.PrevPageUrl.Should().Contain(response.Limit.ToString());
+                response.Hearings.Count.Should().BeGreaterThan(0);
+                var hearing = HearingInResponse(response);
+                hearing.Should().NotBeNull();
+                hearing.CaseTypeName.Should().NotBeNullOrEmpty();
+                hearing.HearingTypeName.Should().NotBeNullOrEmpty();
+                hearing.ScheduledDateTime.Should().BeAfter(DateTime.UtcNow);
+                hearing.ScheduledDuration.Should().NotBe(0);
+                hearing.JudgeName.Should().NotBeNullOrEmpty();
+                hearing.CourtAddress.Should().NotBeNullOrEmpty();
+                hearing.HearingName.Should().NotBeNullOrEmpty();
+                hearing.HearingNumber.Should().NotBeNullOrEmpty();
+
+                result.StatusCode.Should().Be(HttpStatusCode.OK);
+                result.IsSuccessStatusCode.Should().Be(true);
         }
 
         private BookingsHearingResponse HearingInResponse(BookingsResponse response)
@@ -222,7 +232,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
             model.Status.Should().Be(status);
-            if(status == BookingStatus.Created)
+            if (status == BookingStatus.Created)
             {
                 model.ConfirmedBy.Should().NotBeNullOrEmpty();
             }
@@ -274,7 +284,7 @@ namespace BookingsApi.AcceptanceTests.Steps
                 }
 
                 hearing.GroupId.Should().Be(hearing.Id);
-            }          
+            }
         }
 
         [Then(@"a list of hearing details should be retrieved for the case number")]
@@ -301,12 +311,12 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.Should().NotBeNull();
             model.Count.Should().Be(0);
         }
-        
+
         [Given(@"I have a valid search for recorded hearings by case number request")]
         public void GivenIHaveAValidSearchForHearingByCaseNumberRequest()
         {
             var caseResponse = _context.TestData.Hearing.Cases.First();
-            var query =  new SearchForHearingsQuery
+            var query = new SearchForHearingsQuery
             {
                 CaseNumber = caseResponse.Number
             };
@@ -317,7 +327,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         public void GivenIHaveAnInvalidSearchForHearingByCaseNumberRequest()
         {
             var caseResponse = _context.TestData.Hearing.Cases.First();
-            var query =  new SearchForHearingsQuery
+            var query = new SearchForHearingsQuery
             {
                 CaseNumber = caseResponse.Number + "01"
             };

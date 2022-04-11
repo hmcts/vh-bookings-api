@@ -20,24 +20,32 @@ namespace BookingsApi.IntegrationTests.Steps
         public async Task WhenISendTheRequestToTheEndpoint()
         {
             Context.Response = new HttpResponseMessage();
-            Context.Response = Context.HttpMethod.Method switch
+
+            if (Context.Uri == "hearings/types")
             {
-                "GET" => await SendGetRequestAsync(Context),
-                "POST" => await SendPostRequestAsync(Context),
-                "PATCH" => await SendPatchRequestAsync(Context),
-                "PUT" => await SendPutRequestAsync(Context),
-                "DELETE" => await SendDeleteRequestAsync(Context),
-                _ => throw new ArgumentOutOfRangeException(Context.HttpMethod.ToString(), Context.HttpMethod.ToString(),
-                    null)
-            };
+                Context.Response = await SendRequestAsync(Context);
+            }
+            else
+            {
+                Context.Response = Context.HttpMethod.Method switch
+                {
+                    "GET" => await SendGetRequestAsync(Context),
+                    "POST" => await SendPostRequestAsync(Context),
+                    "PATCH" => await SendPatchRequestAsync(Context),
+                    "PUT" => await SendPutRequestAsync(Context),
+                    "DELETE" => await SendDeleteRequestAsync(Context),
+                    _ => throw new ArgumentOutOfRangeException(Context.HttpMethod.ToString(), Context.HttpMethod.ToString(),
+                        null)
+                };
+            }
+
         }
 
         [Then(@"the response should have the status (.*) and success status (.*)")]
-        public async Task ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
+        public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
-            var json = await Context.Response.Content.ReadAsStringAsync();
-            Context.Response.StatusCode.Should().Be(statusCode, json);
-            Context.Response.IsSuccessStatusCode.Should().Be(isSuccess, json);
+            Context.Response.StatusCode.Should().Be(statusCode);
+            Context.Response.IsSuccessStatusCode.Should().Be(isSuccess);
             NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
         }
 
@@ -57,11 +65,11 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.TestData.SeededHearing = seededHearing;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
         }
-        
+
         [Given(@"I have a confirmed hearing")]
         public async Task GivenIHaveAConfirmedHearing()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(false,BookingStatus.Created);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(false, BookingStatus.Created);
             Context.TestData.NewHearingId = seededHearing.Id;
             Context.TestData.SeededHearing = seededHearing;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
