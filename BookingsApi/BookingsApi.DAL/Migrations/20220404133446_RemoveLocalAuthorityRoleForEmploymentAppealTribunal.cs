@@ -6,20 +6,12 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData("HearingRole", "Id", 922);
-            migrationBuilder.DeleteData("HearingRole", "Id", 936);
+            migrationBuilder.Sql("UPDATE HearingRole SET Live = 0 WHERE Id IN (922, 936)");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.InsertData(
-                "HearingRole",
-                new[] { "Id", "Name", "UserRoleId", "CaseRoleId", "Live" },
-                new object[,]
-                {
-                    {936, "Local Authority", 5, 295, true},
-                    {922, "Local Authority", 5, 294, true}
-                });
+            migrationBuilder.Sql("UPDATE HearingRole SET Live = 1 WHERE Id IN (922, 936)");
         }
     }
 }
