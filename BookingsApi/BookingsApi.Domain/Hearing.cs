@@ -12,13 +12,15 @@ namespace BookingsApi.Domain
     public abstract class Hearing : AggregateRoot<Guid>
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
+        private readonly DateTime _currentUTC = DateTime.UtcNow;
 
         protected Hearing()
         {
             Id = Guid.NewGuid();
             Cases = new List<Case>();
             Participants = new List<Participant>();
-            CreatedDate = DateTime.UtcNow;
+            CreatedDate = _currentUTC;
+            UpdatedDate = _currentUTC;
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
             SourceId = Id;

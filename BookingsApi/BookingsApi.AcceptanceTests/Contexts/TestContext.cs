@@ -6,6 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Testing.Common.Configuration;
 using AcceptanceTests.Common.Api;
 using BookingsApi.DAL;
+using System.Net.Http;
+using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace BookingsApi.AcceptanceTests.Contexts
 {
@@ -21,7 +26,7 @@ namespace BookingsApi.AcceptanceTests.Contexts
 
         public RestClient Client()
         {
-            var client = new RestClient(Config.ServicesConfiguration.BookingsApiUrl) { Proxy = Zap.WebProxy};
+            var client = new RestClient(Config.ServicesConfiguration.BookingsApiUrl) { Proxy = Zap.WebProxy };
             client.AddDefaultHeader("Accept", "application/json");
             client.AddDefaultHeader("Authorization", $"Bearer {BearerToken}");
             return client;
@@ -53,6 +58,39 @@ namespace BookingsApi.AcceptanceTests.Contexts
             request.AddParameter("Application/json", RequestHelper.Serialise(requestBody),
                 ParameterType.RequestBody);
             return request;
+        }
+    }
+
+    public class TestHttpClient
+    {
+        public async Task<HttpResponseMessage> ExecuteAsync<T>(TestContext context, string relativePath, T data, HttpMethod httpMethod)
+            where T : class
+        {
+            var handler = new HttpClientHandler
+            {
+                Proxy = Zap.WebProxy,
+            };
+
+            using var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(context.Config.ServicesConfiguration.BookingsApiUrl)
+            };
+
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {context.BearerToken}");
+
+            var uri = client.BaseAddress + relativePath;
+
+            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(
+                new HttpRequestMessage
+                {
+                    Content = content,
+                    Method = httpMethod,
+                    RequestUri = new Uri(uri)
+                });
+
+            return response;
         }
     }
 }

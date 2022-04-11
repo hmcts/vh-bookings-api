@@ -5,7 +5,7 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.Domain
 {
-    public sealed class LinkedParticipant  : Entity<Guid>
+    public sealed class LinkedParticipant  : TrackableEntity<Guid>
     {
         public Guid ParticipantId { get; private set; }
         public Participant Participant { get; private set; }

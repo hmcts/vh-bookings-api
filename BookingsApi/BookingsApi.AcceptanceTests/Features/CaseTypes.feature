@@ -262,6 +262,19 @@ Feature: CaseTypes
       | War Pensions Appeals                          | Panel Member         |
       | War Pensions Appeals                          | Vets UK              |
       | War Pensions Appeals                          | Judge                |
+      | Upper Tribunal Lands Chamber                  | Applicant              |
+      | Upper Tribunal Lands Chamber                  | Appellant              |
+      | Upper Tribunal Lands Chamber                  | Claimant               |
+      | Upper Tribunal Lands Chamber                  | Respondent             |
+      | Upper Tribunal Lands Chamber                  | Acquiring Authority    |
+      | Upper Tribunal Lands Chamber                  | Compensating Authority |
+      | Upper Tribunal Lands Chamber                  | Objector               |
+      | Upper Tribunal Lands Chamber                  | Operator               |
+      | Upper Tribunal Lands Chamber                  | Site Providers         |
+      | Upper Tribunal Lands Chamber                  | Respondent Authority   |
+      | Upper Tribunal Lands Chamber                  | Panel Member           |
+      | Upper Tribunal Lands Chamber                  | Observer               |
+      | Upper Tribunal Lands Chamber                  | Judge                  |
       | Special Educational Needs and Disability      | Appellant            |
       | Special Educational Needs and Disability      | Local Authority      |
       | Special Educational Needs and Disability      | Observer             |

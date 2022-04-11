@@ -21,6 +21,12 @@ namespace BookingsApi.Contract.Enums
         InAbsence = 16,
         VetsUK = 17,
         PresentingOfficer = 18,
-        LocalAuthority = 19
+        AcquiringAuthority = 19, 
+        CompensatingAuthority = 20,
+        Objector = 21,
+        Operator = 22,
+        SiteProviders = 23,
+        RespondentAuthority = 24
+        LocalAuthority = 25
     }
 }

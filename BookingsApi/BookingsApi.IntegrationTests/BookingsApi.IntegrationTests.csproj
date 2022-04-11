@@ -30,6 +30,7 @@
         <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.64" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
         <ProjectReference Include="..\BookingsApi.DAL\BookingsApi.DAL.csproj" />
         <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
         <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />

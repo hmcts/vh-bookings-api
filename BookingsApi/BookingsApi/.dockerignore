@@ -1,8 +1,8 @@
 **/.classpath
 **/.dockerignore
 **/.env
-**/.git
 **/.gitignore
+!.git/** 
 **/.project
 **/.settings
 **/.toolstarget

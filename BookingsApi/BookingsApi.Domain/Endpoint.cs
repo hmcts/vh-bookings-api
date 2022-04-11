@@ -4,7 +4,7 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.Domain
 {
-    public class Endpoint : Entity<Guid>
+    public class Endpoint : TrackableEntity<Guid>
     {
         public string DisplayName { get; set; }
         public string Sip { get; set; }

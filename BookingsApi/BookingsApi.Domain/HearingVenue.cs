@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
-    public class HearingVenue : Entity<int>
+    public class HearingVenue : TrackableEntity<int>
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 

@@ -29,6 +29,7 @@ namespace BookingsApi.DAL.Queries
         public DateTime? EndDate { get; set; }
         public string CaseNumber { get; set; }
         public IList<int> VenueIds { get; set; }
+        public string LastName { get; set; }
 
         public int Limit
         {
@@ -65,7 +66,6 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .AsNoTracking();
 
-
             if (query.CaseTypes.Any())
             {
                 hearings = hearings.Where(x => query.CaseTypes.Contains(x.CaseTypeId));
@@ -87,6 +87,13 @@ namespace BookingsApi.DAL.Queries
                 if (query.EndDate != null)
                 {
                     hearings = hearings.Where(x => x.ScheduledDateTime <= query.EndDate);
+                }
+
+                if (!string.IsNullOrWhiteSpace(query.LastName))
+                {
+                    hearings = hearings
+                        .Where(h => h.Participants
+                        .Any(p => p.Person.LastName.Contains(query.LastName)));
                 }
             }
 
@@ -133,11 +140,18 @@ namespace BookingsApi.DAL.Queries
             }
         }
 
-        private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(IQueryable<VideoHearing> hearings, GetBookingsByCaseTypesQuery query)
+        private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(
+            IQueryable<VideoHearing> hearings, 
+            GetBookingsByCaseTypesQuery query)
         {
-            var cases = await _context.Cases.Where(x => x.Number.Contains(query.CaseNumber)).AsNoTracking().ToListAsync();
+            var cases = await _context.Cases
+                .Where(x => x.Number.Contains(query.CaseNumber))
+                .AsNoTracking()
+                .ToListAsync();
             
-            hearings = hearings.Where(x => x.HearingCases.Any(y => cases.Contains(y.Case)));
+            hearings = hearings
+                .Where(x => x.HearingCases
+                .Any(y => cases.Contains(y.Case)));
             
             var caseNumbers = cases.Select(r => r.Number);
             
@@ -145,7 +159,9 @@ namespace BookingsApi.DAL.Queries
             
             foreach (var item in hearings)
             {
-                var hearingCases = item.HearingCases.Where(y => caseNumbers.Contains(y.Case.Number)).ToList();
+                var hearingCases = item.HearingCases
+                    .Where(y => caseNumbers.Contains(y.Case.Number))
+                    .ToList();
             
                 if (hearingCases.Any())
                 {

@@ -226,6 +226,51 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.Participants.Where(x => x.LinkedParticipants.Any()).Should().NotBeNull();
         }
 
+        [Test]
+        public async Task Should_Add_New_Participant_Linked_To_Existing_Participant()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+
+            const string caseTypeName = "Generic";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == "Respondent");
+            var respondentRepresentativeHearingRole =
+                respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
+
+            var newPerson = new PersonBuilder(true).Build();
+
+            var interpreter = new NewParticipant()
+            {
+                Person = newPerson,
+                CaseRole = respondentCaseRole,
+                HearingRole = respondentRepresentativeHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                interpreter
+            };
+            var links = new List<LinkedParticipantDto>();
+            var link = new LinkedParticipantDto(
+                interpreter.Person.ContactEmail,
+                seededHearing.Participants[0].Person.ContactEmail,
+                LinkedParticipantType.Interpreter
+                );
+
+            links.Add(link);
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(_newHearingId, participants, links));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+
+            returnedVideoHearing.Participants.Where(x => x.LinkedParticipants.Any()).Should().NotBeNull();
+        }
+
         [TestCase("Judge", "Judge")]
         [TestCase("Staff Member", "Staff Member")]
         public async Task Should_add_participant_to_video_hearing(string caseRole, string hearingRole)
