@@ -33,8 +33,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             hearing1.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
 
             var hearing2 = GetHearing("123");
+
             hearing2.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
-            hearing2.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(1),
+            hearing2.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
                 15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
 
             var hearing3 = GetHearing("1232", caseNames);
@@ -46,10 +47,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock
                 .Setup(x =>
-                    x.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(It.IsAny<GetHearingsByGroupIdQuery>()))
+                    x.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(It.IsAny<GetHearingsForNotificationsQuery>()))
                 .ReturnsAsync(hearingList);
 
-            var result = await Controller.GetHearingsByGroupId(groupId);
+            var result = await Controller.GetHearingsForNotificationAsync();
 
             result.Should().NotBeNull();
 
@@ -66,7 +67,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             response.First(x => x.Id == hearing3.Id).Should().NotBeNull();
 
             QueryHandlerMock.Verify(
-                x => x.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(It.IsAny<GetHearingsByGroupIdQuery>()),
+                x => x.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(It.IsAny<GetHearingsForNotificationsQuery>()),
                 Times.Once);
         }
 
