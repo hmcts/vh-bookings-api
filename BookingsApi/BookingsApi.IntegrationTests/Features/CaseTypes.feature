@@ -132,6 +132,7 @@ Feature: CaseTypes
       | Criminal Injuries Compensation                |
       | War Pensions Appeals                          |
       | Upper Tribunal Lands Chamber                  |
+      | Special Educational Needs and Disability      |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -372,8 +373,8 @@ Feature: CaseTypes
       | Upper Tribunal Lands Chamber                  | Panel Member           |
       | Upper Tribunal Lands Chamber                  | Observer               |
       | Upper Tribunal Lands Chamber                  | Judge                  |
-      | Special Educational Needs and Disability      | Appellant            |
-      | Special Educational Needs and Disability      | Local Authority      |
-      | Special Educational Needs and Disability      | Observer             |
-      | Special Educational Needs and Disability      | Panel Member         |
-      | Special Educational Needs and Disability      | Judge                |
+      | Special Educational Needs and Disability      | Appellant              |
+      | Special Educational Needs and Disability      | Local Authority        |
+      | Special Educational Needs and Disability      | Observer               |
+      | Special Educational Needs and Disability      | Panel Member           |
+      | Special Educational Needs and Disability      | Judge                  |
