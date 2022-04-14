@@ -12,22 +12,18 @@ parameters:
 variables:
   - name: imageName
     value: "${{ replace(parameters.git_repo_name, '-', '') }}"
-    
   - name: subscriptionName
     value: "DTS-SHAREDSERVICES-${{ upper(parameters.env) }}-Video Hearings"
-
   - name: acrSubscription
     value: 'DTS-SHAREDSERVICES-PROD-Video Hearings'
   - name: acrName
     value: 'sdshmctspublic'
   - name: repositoryName
     value: 'vh/${{ parameters.git_repo_name }}'
-  
   - name: releaseTagName
     value: "prod-$(Build.SourceBranchName)"
   - name: gitRepoName
     value: vh-${{ parameters.git_repo_name }}
-
   - ${{ if ne(parameters.cluster, '') }}:
     - name: clusterName
       value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
@@ -38,16 +34,13 @@ variables:
   - name: chartName
     value: "vh-${{ parameters.git_repo_name }}"
   - name: chartRepoPath
-
     value: '$(Build.SourcesDirectory)/'
   - name: chartPath
     value: '$(Build.SourcesDirectory)/charts/vh-${{ parameters.git_repo_name }}'
-
   - name: envValuesPath
     value: "${{ variables.chartPath }}/values.${env}.yaml"
   - name: envValuesTemplatePath
     value: "${{ variables.chartPath }}/values.${env}.template.yaml"
-    
   - name: dnsZoneSubscription
     value: "DTS-CFTPTL-INTSVC"
   - name: dnsZoneResourceGroup
