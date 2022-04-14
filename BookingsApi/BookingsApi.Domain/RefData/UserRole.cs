@@ -1,8 +1,7 @@
-using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain.RefData
 {
-    public class UserRole : Entity<int>
+    public class UserRole : TrackableEntity<int>
     {
         public UserRole(int id, string name)
         {

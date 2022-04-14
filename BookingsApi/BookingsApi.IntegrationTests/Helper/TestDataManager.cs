@@ -18,7 +18,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
-using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -27,6 +26,7 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
         public List<Guid> JudiciaryPersons { get; } = new List<Guid>();
+        public string CaseNumber { get; } = "2222/3511";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
         private readonly string _defaultCaseName;
@@ -71,7 +71,12 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
-            var venues = new RefDataBuilder().HearingVenues;
+            var venue = options.HearingVenue;
+            if (venue == null)
+            {
+                var venues = new RefDataBuilder().HearingVenues;
+                venue = venues.First();
+            }
 
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
@@ -89,7 +94,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venue, hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
@@ -139,6 +144,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
+            videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
 
             var dA = videoHearing.Participants[1];
             videoHearing.AddEndpoints(
@@ -154,6 +160,11 @@ namespace BookingsApi.IntegrationTests.Helper
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
             {
+                if(!db.Cases.Any(r => r.Number == CaseNumber)) 
+                {
+                    db.Cases.Add(new Case (CaseNumber, $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}"));
+                }
+
                 await db.VideoHearings.AddAsync(videoHearing);
                 await db.SaveChangesAsync();
             }
@@ -408,6 +419,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
             videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
                 $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
+
             if (status == BookingStatus.Created)
             {
                 videoHearing.UpdateStatus(BookingStatus.Created, createdBy, null);

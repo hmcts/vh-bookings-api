@@ -4,10 +4,15 @@ parameters:
     default: ""
   - name: git_repo_name
     type: string
+    default: 'bookings-api'
   - name: cluster
     type: string
+    default: ''
 
 variables:
+  - name: imageName
+    value: "${{ replace(parameters.git_repo_name, '-', '') }}"
+    
   - name: subscriptionName
     value: "DTS-SHAREDSERVICES-${{ upper(parameters.env) }}-Video Hearings"
 
@@ -23,17 +28,21 @@ variables:
   - name: gitRepoName
     value: vh-${{ parameters.git_repo_name }}
 
-  - name: clusterName
-    value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
-  - name: clusterResourceGroup
-    value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-rg"
+  - ${{ if ne(parameters.cluster, '') }}:
+    - name: clusterName
+      value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
+    - name: clusterResourceGroup
+      value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-rg"
+
 
   - name: chartName
     value: "vh-${{ parameters.git_repo_name }}"
   - name: chartRepoPath
-    value: '$(Build.SourcesDirectory)/vh-${{ parameters.git_repo_name }}'
+
+    value: '$(Build.SourcesDirectory)/'
   - name: chartPath
-    value: 'charts/vh-${{ parameters.git_repo_name }}'
+    value: '$(Build.SourcesDirectory)/charts/vh-${{ parameters.git_repo_name }}'
+
   - name: envValuesPath
     value: "${{ variables.chartPath }}/values.${env}.yaml"
   - name: envValuesTemplatePath

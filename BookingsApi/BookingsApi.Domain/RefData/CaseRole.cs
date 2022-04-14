@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Domain.RefData
 {
-    public class CaseRole : Entity<int>, IComparable
+    public class CaseRole : TrackableEntity<int>, IComparable
     {
         public CaseRole(int id, string name)
         {

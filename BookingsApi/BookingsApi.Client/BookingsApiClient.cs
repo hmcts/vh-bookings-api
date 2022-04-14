@@ -65,14 +65,14 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest);
+        System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Add an endpoint to a given hearing</summary>
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Removes an endpoint from a given hearing</summary>
         /// <param name="hearingId">The hearing id</param>
@@ -344,6 +344,17 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsByGroupIdAsync(System.Guid groupId, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Get list of all hearings for notification between next 48 to 72 hrs.</summary>
+        /// <returns>Hearing details</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForNotificationAsync();
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get list of all hearings for notification between next 48 to 72 hrs.</summary>
+        /// <returns>Hearing details</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForNotificationAsync(System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Create a new hearing with the details of a given hearing on given dates</summary>
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
@@ -357,24 +368,12 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
-        /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate);
+        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
-        /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Anonymises the Hearings, Case, Person and Participant data.</summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -892,7 +891,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest)
+        public System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
             return AddEndPointToHearingAsync(hearingId, addEndpointRequest, System.Threading.CancellationToken.None);
         }
@@ -902,7 +901,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">The hearing id</param>
         /// <param name="addEndpointRequest">Details of the endpoint to be added to a hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<EndpointResponse> AddEndPointToHearingAsync(System.Guid hearingId, AddEndpointRequest addEndpointRequest, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -924,6 +923,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -946,9 +946,20 @@ namespace BookingsApi.Client
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<EndpointResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
                         if (status_ == 204)
                         {
-                            return;
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("A server side error occurred.", status_, responseText_, headers_, null);
                         }
                         else
                         if (status_ == 400)
@@ -1641,7 +1652,7 @@ namespace BookingsApi.Client
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200)
                         {
                             return;
                         }
@@ -2061,7 +2072,7 @@ namespace BookingsApi.Client
                         ProcessResponse(client_, response_);
     
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200)
                         {
                             return;
                         }
@@ -2986,6 +2997,82 @@ namespace BookingsApi.Client
             }
         }
     
+        /// <summary>Get list of all hearings for notification between next 48 to 72 hrs.</summary>
+        /// <returns>Hearing details</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForNotificationAsync()
+        {
+            return GetHearingsForNotificationAsync(System.Threading.CancellationToken.None);
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get list of all hearings for notification between next 48 to 72 hrs.</summary>
+        /// <returns>Hearing details</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForNotificationAsync(System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/notifications/gethearings");
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+    
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+    
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingDetailsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+    
         /// <summary>Create a new hearing with the details of a given hearing on given dates</summary>
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
@@ -3078,47 +3165,21 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
-        /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate)
+        public System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request)
         {
-            return GetHearingsByTypesAsync(types, cursor, limit, fromDate, System.Threading.CancellationToken.None);
+            return GetHearingsByTypesAsync(request, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get a paged list of booked hearings</summary>
-        /// <param name="types">The hearing case types.</param>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <param name="fromDate">The date of which to return hearings on or after. Defaults to UTC Now at Midnight.</param>
-        /// <returns>The list of bookings video hearing</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.DateTimeOffset? fromDate, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new System.ArgumentNullException("request");
+    
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/types?");
-            if (types != null)
-            {
-                foreach (var item_ in types) { urlBuilder_.Append(System.Uri.EscapeDataString("types") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            if (cursor != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("cursor") + "=").Append(System.Uri.EscapeDataString(ConvertToString(cursor, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (limit != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("limit") + "=").Append(System.Uri.EscapeDataString(ConvertToString(limit, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (fromDate != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("fromDate") + "=").Append(System.Uri.EscapeDataString(fromDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/types");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3126,6 +3187,9 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     

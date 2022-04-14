@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.AcceptanceTests.Contexts;
+using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
@@ -24,9 +26,18 @@ namespace BookingsApi.AcceptanceTests.Hooks
         [AfterScenario(Order = (int)HooksSequence.RemoveAllDataHooks)]
         public static void RemoveAllData(TestContext context)
         {
-            context.Request = context.Get(GetHearingsByAnyCaseType(HearingsLimit));
-            context.Response = context.Client().Execute(context.Request);
-            var hearings = RequestHelper.Deserialise<BookingsResponse>(context.Response.Content);
+
+            var request = new GetHearingRequest { Limit = HearingsLimit };
+
+            var client = new TestHttpClient();
+
+            var response = client.ExecuteAsync(
+                context, HearingTypesRelativePath,
+                request, HttpMethod.Get)
+                .Result;
+
+            var hearings = RequestHelper.Deserialise<BookingsResponse>(response.Content.ReadAsStringAsync().Result);
+
             foreach (var hearing in hearings.Hearings.SelectMany(hearingsListResponse => hearingsListResponse.Hearings.Where(hearing => hearing.HearingName.Contains(context.TestData.CaseName))))
             {
                 DeleteTheHearing(context, hearing.HearingId);

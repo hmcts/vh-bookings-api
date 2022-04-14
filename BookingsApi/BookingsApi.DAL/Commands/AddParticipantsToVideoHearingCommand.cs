@@ -8,6 +8,7 @@ using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using BookingsApi.DAL.Services;
+using System.Linq;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -61,11 +62,11 @@ namespace BookingsApi.DAL.Commands
             }
 
             _context.Update(hearing);
-            
-            var participants = await _hearingService.AddParticipantToService(hearing, command.Participants);
 
-            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
-            
+            await _hearingService.AddParticipantToService(hearing, command.Participants);
+
+            await _hearingService.CreateParticipantLinks(hearing.Participants.ToList(), command.LinkedParticipants);
+
             await _context.SaveChangesAsync();
         }
     }

@@ -12,6 +12,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="5.10.3" />
+        <PackageReference Include="LaunchDarkly.ServerSdk" Version="6.3.2" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.8" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
@@ -29,6 +30,7 @@
         <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.64" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
         <ProjectReference Include="..\BookingsApi.DAL\BookingsApi.DAL.csproj" />
         <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
         <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />

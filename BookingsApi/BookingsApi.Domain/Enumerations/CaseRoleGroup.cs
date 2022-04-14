@@ -17,6 +17,15 @@ namespace BookingsApi.Domain.Enumerations
         StaffMember = 12,
         SecretaryOfState = 13,
         TrafficCommissioner = 14,
-        ELAAS = 15
+        ELAAS = 15,
+        InAbsence = 16,
+        VetsUK = 17,
+        PresentingOfficer = 18,
+        AcquiringAuthority = 19, 
+        CompensatingAuthority = 20,
+        Objector = 21,
+        Operator = 22,
+        SiteProviders = 23,
+        RespondentAuthority = 24
     }
 }

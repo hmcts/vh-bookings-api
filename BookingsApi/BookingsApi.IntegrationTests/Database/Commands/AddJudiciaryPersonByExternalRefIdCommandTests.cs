@@ -40,6 +40,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             judiciaryPerson.PostNominals.Should().Be("PostNominals");
             judiciaryPerson.Email.Should().Be("Email");
             judiciaryPerson.HasLeft.Should().BeTrue();
+            judiciaryPerson.CreatedDate.Should().Be(judiciaryPerson.UpdatedDate);
         }
     }
 }

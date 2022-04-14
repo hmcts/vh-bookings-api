@@ -71,6 +71,8 @@ resources:
 extends:
     template: templates/vh-release.yml@templates
     parameters:
+      databaseContextName: BookingsDbContext
+      connectionStringSecretName: "VhBookingsDatabaseConnectionString"
       ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
         environments:
           - ${{ parameters.environment }}
@@ -154,6 +156,11 @@ extends:
           - name: ConnectionStrings:VhBookings
             value: VhBookingsDatabaseConnectionString
             secret: true
+
+           # LaunchDarkly
+          - name: LaunchDarkly:SdkKey
+            value: vh-admin-web-Feature-Toggle
+            secret: true
             
           - name: ServiceBusQueue:ConnectionString
             value: AzureServiceBusConnectionStringSend
@@ -189,6 +196,11 @@ extends:
             secret: true
           - name: Services:BookingsApiUrl
             value: $(bookings_api_url_staging)
+
+          # LaunchDarkly
+          - name: LaunchDarkly:SdkKey
+            value: vh-admin-web-Feature-Toggle
+            secret: true
 
           # GOV Notify Configuration
           - name: NotifyConfiguration:ApiKey

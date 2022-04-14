@@ -49,6 +49,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var afterCount = returnedVideoHearing.GetCases().Count;
 
             afterCount.Should().BeGreaterThan(beforeCount);
+            
+            var caseAdded = returnedVideoHearing.GetCases()[afterCount - 1];
+            caseAdded.CreatedDate.Should().Be(caseAdded.UpdatedDate.Value);
         }
     }
 }

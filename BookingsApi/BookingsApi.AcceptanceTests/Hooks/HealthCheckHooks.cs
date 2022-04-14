@@ -1,5 +1,4 @@
-﻿using AcceptanceTests.Common.Api;
-using System.Net;
+﻿using System.Net;
 using BookingsApi.AcceptanceTests.Contexts;
 using FluentAssertions;
 using TechTalk.SpecFlow;
