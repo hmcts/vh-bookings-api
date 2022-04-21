@@ -19,6 +19,10 @@ namespace BookingsApi.DAL.Migrations
                 select @caseRoleId2 = Id from CaseRole
                 where CaseTypeId = @caseTypeId and Name = 'Local Authority'
 
+                declare @caseRoleId3 int;
+                select @caseRoleId3 = Id from CaseRole
+                where CaseTypeId = @caseTypeId and Name = 'Observer'
+
                 declare @hearingRoleId1 int;
                 select @hearingRoleId1 = Id from HearingRole
                 where Name = 'MacKenzie Friend' and CaseRoleId = @caseRoleId1
@@ -31,11 +35,15 @@ namespace BookingsApi.DAL.Migrations
                 select @hearingRoleId3 = Id from HearingRole
                 where Name = 'Witness' and CaseRoleId = @caseRoleId2
 
+                declare @hearingRoleId4 int;
+                select @hearingRoleId4 = Id from HearingRole
+                where Name = 'Observer' and CaseRoleId = @caseRoleId3
+
                 declare @userRoleId int;
                 select @userRoleId = Id from UserRole where Name = 'Individual';
 
                 update HearingRole set UserRoleId = @userRoleId
-                where Id in (@hearingRoleId1, @hearingRoleId2, @hearingRoleId3);
+                where Id in (@hearingRoleId1, @hearingRoleId2, @hearingRoleId3, @hearingRoleId4);
                 ";
 
             migrationBuilder.Sql(sqlScript);
@@ -57,6 +65,10 @@ namespace BookingsApi.DAL.Migrations
                 select @caseRoleId2 = Id from CaseRole
                 where CaseTypeId = @caseTypeId and Name = 'Local Authority'
 
+                declare @caseRoleId3 int;
+                select @caseRoleId3 = Id from CaseRole
+                where CaseTypeId = @caseTypeId and Name = 'Observer'
+
                 declare @hearingRoleId1 int;
                 select @hearingRoleId1 = Id from HearingRole
                 where Name = 'MacKenzie Friend' and CaseRoleId = @caseRoleId1
@@ -69,11 +81,15 @@ namespace BookingsApi.DAL.Migrations
                 select @hearingRoleId3 = Id from HearingRole
                 where Name = 'Witness' and CaseRoleId = @caseRoleId2
 
+                declare @hearingRoleId4 int;
+                select @hearingRoleId4 = Id from HearingRole
+                where Name = 'Observer' and CaseRoleId = @caseRoleId3
+
                 declare @userRoleId int;
                 select @userRoleId = Id from UserRole where Name = 'Representative';
 
                 update HearingRole set UserRoleId = @userRoleId
-                where Id in (@hearingRoleId1, @hearingRoleId2, @hearingRoleId3);
+                where Id in (@hearingRoleId1, @hearingRoleId2, @hearingRoleId3, @hearingRoleId4);
                 ";
             
             migrationBuilder.Sql(sqlScript);
