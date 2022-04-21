@@ -20,6 +20,7 @@ namespace BookingsApi.DAL.Migrations
                 select @hearingRoleId = Id from HearingRole
                 where Name = 'Respondent' and CaseRoleId = @caseRoleId;
                 
+                declare @UserRoleId1 int;
                 select @UserRoleId1 = Id from UserRole where Name = 'Individual';
                 
                 update HearingRole set UserRoleId = @UserRoleId1  where Id = @hearingRoleId;
