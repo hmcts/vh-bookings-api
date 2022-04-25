@@ -6,11 +6,6 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
 
-parameters:
-  - name: git_repo_name
-    type: string
-    default: bookings-api
-
 trigger:
   branches:
     include:
@@ -21,16 +16,18 @@ variables:
     value: dev
   - name: qaEnv
     value: demo
+  - name: git_repo_name
+    value: bookings-api
   - group: aks-cluster-info
   - template: variables/shared.yaml
     parameters:
       env: ${{ variables.devEnv }}
-      git_repo_name: ${{ parameters.git_repo_name }}
+      git_repo_name: ${{ variables.git_repo_name }}
       cluster: $(cluster)
   - name: prTagName
     value: 'pr-$(System.PullRequest.PullRequestNumber)'
   - name: dnsRecordName
-    value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
+    value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
 
 stages:
   - stage: Uninstall
@@ -65,13 +62,13 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.qaEnv }}
-          git_repo_name: ${{ parameters.git_repo_name }}
+          git_repo_name: ${{ variables.git_repo_name }}
           cluster: 00
       - group: vh-github-app-credentials
       - name: prTagName
         value: 'pr-$(System.PullRequest.PullRequestNumber)'
       - name: dnsRecordName
-        value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
     jobs:
       - job:
         steps:
