@@ -7,18 +7,6 @@ resources:
       endpoint: hmcts
 
 parameters:
-  - name: env
-    type: string
-    default: dev
-    values:
-      - dev
-
-  - name: qaenv
-    type: string
-    default: demo
-    values:
-      - demo
-
   - name: git_repo_name
     type: string
     default: bookings-api
@@ -29,10 +17,14 @@ trigger:
       - refs/tags/qa*
 
 variables:
+  - name: devEnv
+    value: dev
+  - name: qaEnv
+    value: demo
   - group: aks-cluster-info
   - template: variables/shared.yaml
     parameters:
-      env: ${{ parameters.env }}
+      env: ${{ variables.devEnv }}
       git_repo_name: ${{ parameters.git_repo_name }}
       cluster: $(cluster)
   - name: prTagName
@@ -42,7 +34,7 @@ variables:
 
 stages:
   - stage: Uninstall
-    displayName: Uninstall from aks-$(cluster)-${{ parameters.env }}
+    displayName: Uninstall from aks-$(cluster)-${{ variables.devEnv }}
     jobs:
       - job:
         steps:
@@ -56,7 +48,7 @@ stages:
               namespace: "vh"
               chartName: '${{ variables.chartName }}'
               imageTag: '${{ variables.prTagName }}'
-              environment: ${{ parameters.env }}
+              environment: ${{ variables.devEnv }}
           - template: templates/Azure/Dns/private-dns-remove.yaml@azTemplates
             parameters: 
               subscriptionName: ${{ variables.subscriptionName }}
@@ -67,12 +59,12 @@ stages:
 
   - stage: Install
     dependsOn: Uninstall
-    displayName: Deploy Helm chart to ${{ parameters.qaenv }}-${{ variables.clusterName }}
+    displayName: Deploy Helm chart to ${{ variables.qaEnv }}-${{ variables.clusterName }}
     variables:
       - group: aks-cluster-info
       - template: variables/shared.yaml
         parameters:
-          env: ${{ parameters.qaenv }}
+          env: ${{ variables.qaEnv }}
           git_repo_name: ${{ parameters.git_repo_name }}
           cluster: 00
       - group: vh-github-app-credentials
@@ -113,7 +105,7 @@ stages:
             env:
               imageName: ${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.prTagName }}
               fqdn: ${{ variables.dnsRecordName }}.${{ variables.dnsZone }}
-              env: ${{ parameters.env }}
+              env: ${{ variables.devEnv }}
               releaseName: "${{ variables.chartName }}-${{ variables.prTagName }}"
 
           - bash: |
@@ -145,5 +137,5 @@ stages:
               chartName: '${{ variables.chartName }}'
               chartPath: '${{ variables.chartPath }}'
               imageTag: '${{ variables.prTagName }}'
-              environment: ${{ parameters.env }}
+              environment: ${{ variables.devEnv }}
               additionalArgs: "-o json"
