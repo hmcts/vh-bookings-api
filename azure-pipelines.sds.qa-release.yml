@@ -37,8 +37,9 @@ stages:
     jobs:
       - job:
         steps:
-          bash:
-            echo "Our PR is $(System.PullRequest.PullRequestNumber)"
+          - bash: |
+               echo "Our PR is $(System.PullRequest.PullRequestNumber)"
+            displayName: Big Bash
   - stage: Uninstall
     displayName: Uninstall from aks-$(cluster)-${{ variables.devEnv }}
     jobs:
