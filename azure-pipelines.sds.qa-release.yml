@@ -77,6 +77,8 @@ stages:
             prNumber: $(System.PullRequest.PullRequestNumber)
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
             appId: $(gh_app_app_id)
+            envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+            envValuesPath: ${{ variables.envValuesPath }}
             acrName: ${{ variables.acrName }}
             repositoryName: ${{ variables.repositoryName }}
             prTagName: ${{ variables.prTagName }}
@@ -93,6 +95,7 @@ stages:
             dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
             zoneName: ${{ variables.dnsZone }}
             recordName: ${{ variables.dnsRecordName }}
+            clusterResourceGroup: ${{ variables.clusterResourceGroup }}
  
 
 
