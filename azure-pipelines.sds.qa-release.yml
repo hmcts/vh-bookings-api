@@ -24,8 +24,10 @@ variables:
       env: ${{ variables.devEnv }}
       git_repo_name: ${{ variables.git_repo_name }}
       cluster: $(cluster)
+  - name: prNumber
+    value: $(System.PullRequest.PullRequestNumber)
   - name: prTagName
-    value: "pr-378"
+    value: "pr-${{ variables.prNumber }}"
   - name: dnsRecordName
     value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
 
@@ -65,8 +67,6 @@ stages:
           git_repo_name: ${{ variables.git_repo_name }}
           cluster: 00
       - group: vh-github-app-credentials
-      - name: prTagName
-        value: 'pr-278'
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
     jobs:
