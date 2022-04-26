@@ -32,6 +32,13 @@ variables:
     value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
 
 stages:
+  - stage: bash
+    displayName: Bash Me
+    jobs:
+      - job:
+        steps:
+          bash:
+            echo "Our PR is $(System.PullRequest.PullRequestNumber)"
   - stage: Uninstall
     displayName: Uninstall from aks-$(cluster)-${{ variables.devEnv }}
     jobs:
