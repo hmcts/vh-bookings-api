@@ -25,9 +25,9 @@ variables:
       git_repo_name: ${{ variables.git_repo_name }}
       cluster: $(cluster)
   - name: prNumber
-    value: $(System.PullRequest.PullRequestNumber)
+    value: '$(System.PullRequest.PullRequestNumber)'
   - name: prTagName
-    value: "pr-${{ variables.prNumber }}"
+    value: 'pr-${{ variables.prNumber }}'
   - name: dnsRecordName
     value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
 
