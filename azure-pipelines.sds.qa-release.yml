@@ -66,7 +66,7 @@ stages:
           cluster: 00
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+        value: 'pr-278'
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
     jobs:
@@ -74,7 +74,7 @@ stages:
         steps:
         - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
           parameters:
-            prNumber: $(System.PullRequest.PullRequestNumber)
+            prNumber: $ {{ variables.prTagName }}
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
             appId: $(gh_app_app_id)
             envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
