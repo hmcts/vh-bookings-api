@@ -1,7 +1,7 @@
 parameters:
   - name: prNum
     type: string
-    default: $(System.PullRequest.PullRequestId) 
+    default: $(System.PullRequest.PullRequestNumber) 
 
 resources:
   repositories:
