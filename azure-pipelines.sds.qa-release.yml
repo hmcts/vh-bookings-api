@@ -11,9 +11,10 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
 
+pr:
+  master
+
 trigger:
-  pr:
-    master
   branches:
     include:
       - refs/tags/qa*
