@@ -82,7 +82,6 @@ stages:
         steps:
         - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
           parameters:
-            prNumber: $ {{ variables.prTagName }}
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
             appId: $(gh_app_app_id)
             envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
@@ -96,10 +95,8 @@ stages:
             chartName: ${{ variables.chartName }}
             chartPath: ${{ variables.chartPath }}
             subscriptionName: "${{ variables.subscriptionName }}"
-            aksSubscriptionName: "${{ variables.subscriptionName }}"
             aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
             aksClusterName: "${{ variables.clusterName }}"
             dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
             dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-            recordName: ${{ variables.dnsRecordName }}
             clusterResourceGroup: ${{ variables.clusterResourceGroup }}
