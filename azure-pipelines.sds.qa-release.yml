@@ -11,14 +11,10 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
 
-pr:
-  - master
-
 trigger:
   branches:
     include:
       - refs/tags/qa*
-
 
 variables:
   - name: devEnv
