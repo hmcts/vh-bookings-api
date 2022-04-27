@@ -12,7 +12,7 @@ resources:
       endpoint: hmcts
 
 pr:
-  master
+  - master
 
 trigger:
   branches:
