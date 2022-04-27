@@ -1,3 +1,8 @@
+parameters:
+  - name: prNum
+    type: string
+    default: $(System.PullRequest.PullRequestNumber) 
+
 resources:
   repositories:
     - repository: azTemplates
@@ -38,7 +43,8 @@ stages:
       - job:
         steps:
           - bash: |
-               echo "Our PR is $(System.PullRequest.PullRequestId)"
+               echo "Our PR is "
+               echo ${{ parameters.prNum }}
             displayName: Big Bash
   - stage: Uninstall
     displayName: Uninstall from aks-$(cluster)-${{ variables.devEnv }}
