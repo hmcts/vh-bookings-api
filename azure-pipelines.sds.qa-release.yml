@@ -1,7 +1,7 @@
 parameters:
   - name: prNum
     type: string
-    default: $(System.PullRequest.PullRequestNumber) 
+    default: $(System.PullRequest.PullRequestId) 
 
 resources:
   repositories:
@@ -12,9 +12,12 @@ resources:
       endpoint: hmcts
 
 trigger:
+  pr:
+    master
   branches:
     include:
       - refs/tags/qa*
+
 
 variables:
   - name: devEnv
