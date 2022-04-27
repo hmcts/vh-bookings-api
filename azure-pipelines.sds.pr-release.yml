@@ -29,12 +29,20 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+        value: 'pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)'
 
     jobs:
-    - job:
+    - job: Dock
       steps:
         - checkout: self
+        
+        - powershell: |
+            Write-Host "##[section]Fetching UTC Timestamp, Please Wait..."
+            $Date = Get-Date
+            $UTCDate = $Date.ToUniversalTime().ToString("HHmmddMMyyyy")
+            Write-Host "##vso[task.setvariable variable=utcTimestamp;isOutput=true]$($UTCDate)"
+          name: utcTimestamp
+          displayName: Get UTC Timestamp
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
@@ -49,7 +57,7 @@ stages:
             repositoryName:  ${{ variables.repositoryName }}
             imageName: "${{ replace(parameters.git_repo_name, '-', '') }}"
             imageTags:
-              - '${{ variables.prTagName }}'
+              - '${{ variables.prTagName }}-$(utcTimestamp.utcTimestamp)'
 
   - stage: Install
     dependsOn: Dock
@@ -63,9 +71,11 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestNumber)'
+        value: 'pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)'
       - name: dnsRecordName
         value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
+      - name: utcTimestamp
+        value: $[ stageDependencies.Dock.Dock.outputs['utcTimestamp.utcTimestamp'] ]
     jobs:
       - job:
         steps:
@@ -106,10 +116,10 @@ stages:
               fi
             displayName: Create Environment Values File
             env:
-              imageName: ${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.prTagName }}
-              fqdn: ${{ variables.dnsRecordName }}.${{ variables.dnsZone }}
+              imageName: ${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.prTagName }}-$(utcTimestamp)
+              fqdn: ${{ variables.dnsRecordName }}-$(utcTimestamp).${{ variables.dnsZone }}
               env: ${{ parameters.env }}
-              releaseName: "${{ variables.chartName }}-${{ variables.prTagName }}"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagName }}-$(utcTimestamp)"
 
           - bash: |
               VERSION=$(cat "${chartPath}/Chart.yaml" | grep ^version | cut -d  ':' -f 2 | tr -d '[:space:]')
@@ -128,7 +138,7 @@ stages:
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
               zoneName: ${{ variables.dnsZone }}
-              recordName: ${{ variables.dnsRecordName }}
+              recordName: ${{ variables.dnsRecordName }}-$(utcTimestamp)
 
           - template: templates\Containerisation\helm\helm-deploy.yaml@azTemplates
             parameters:
@@ -139,6 +149,6 @@ stages:
               namespace: "vh"
               chartName: '${{ variables.chartName }}'
               chartPath: '${{ variables.chartPath }}'
-              imageTag: '${{ variables.prTagName }}'
+              imageTag: '${{ variables.prTagName }}-$(utcTimestamp)'
               environment: ${{ parameters.env }}
               additionalArgs: "-o json"
