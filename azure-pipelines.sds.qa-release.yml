@@ -92,7 +92,7 @@ stages:
             prTagName: ${{ variables.prTagName }}
             dnsRecordName: ${{ variables.dnsRecordName }}
             dnsZone: ${{ variables.dnsZone }}
-            devEnv: ${{ variables.devEnv }}
+            env: ${{ variables.qaEnv }}
             chartName: ${{ variables.chartName }}
             chartPath: ${{ variables.chartPath }}
             subscriptionName: "${{ variables.subscriptionName }}"
@@ -101,6 +101,5 @@ stages:
             aksClusterName: "${{ variables.clusterName }}"
             dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
             dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-            zoneName: ${{ variables.dnsZone }}
             recordName: ${{ variables.dnsRecordName }}
             clusterResourceGroup: ${{ variables.clusterResourceGroup }}
