@@ -105,4 +105,3 @@ stages:
             aksClusterName: "${{ variables.clusterName }}"
             dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
             dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-            clusterResourceGroup: ${{ variables.clusterResourceGroup }}
