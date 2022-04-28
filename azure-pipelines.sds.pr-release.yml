@@ -29,7 +29,7 @@ stages:
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)'
+        value: 'pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)-$(timestamp)'
       - name: timestamp
         value: $[format('{0:HH}{0:mm}{0:dd}{0:MM}{0:yyyy}', pipeline.startTime)]
 
@@ -39,7 +39,7 @@ stages:
         - checkout: self
         - powershell: |
             Write-Host "##[section]Setting Image Tag, Please Wait..."
-            Write-Host "##vso[task.setvariable variable=imageTag;isoutput=true]$(prTagName)-$(timestamp)"
+            Write-Host "##vso[task.setvariable variable=imageTag;isoutput=true]$(prTagName)"
           name: setImageTag
           displayName: Set Image Tag
 
