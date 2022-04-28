@@ -41,8 +41,8 @@ stages:
       - group: aks-cluster-info
       - template: variables/shared.yaml
         parameters:
-          env: ${{ parameters.devEnv }}
-          git_repo_name: ${{ parameters.git_repo_name }}
+          env: ${{ variables.devEnv }}
+          git_repo_name: ${{ variables.git_repo_name }}
           cluster: $(cluster)
       - group: vh-github-app-credentials
       - name: prTagName
@@ -64,7 +64,7 @@ stages:
             azureSubscription: ${{ variables.acrSubscription }}
             acrName: ${{ variables.acrName }}
             repositoryName:  ${{ variables.repositoryName }}
-            imageName: "${{ replace(parameters.git_repo_name, '-', '') }}"
+            imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
               - '${{ variables.prTagName }}'
 
