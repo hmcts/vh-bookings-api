@@ -68,7 +68,7 @@ stages:
             imageTags:
               - '${{ variables.prTagName }}'
 
-  - stage: Install-Dev
+  - stage: Install_Dev
     dependsOn: Dock
     displayName: Deploy Helm chart to ${{ variables.devEnv }}-${{ variables.clusterName }}
     variables:
@@ -141,7 +141,7 @@ stages:
               zoneName: ${{ variables.dnsZone }}
               recordName: ${{ variables.dnsRecordName }}
 
-  - stage: Install-Demo
+  - stage: Install_Demo
     displayName: Deploy Helm chart to ${{ variables.devEnv }}-${{ variables.clusterName }}
     variables:
       - group: aks-cluster-info
