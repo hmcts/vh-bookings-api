@@ -1,107 +1,103 @@
-parameters:
-  - name: prNum
-    type: string
-    default: $(System.PullRequest.PullRequestNumber) 
+#parameters:
+#  - name: prNum
+#    type: string
+#    default: $(System.PullRequest.PullRequestNumber) 
+#
+#resources:
+#  repositories:
+#    - repository: azTemplates
+#      type: github
+#      name: hmcts/azure-devops-templates
+#      ref: refs/heads/master
+#      endpoint: hmcts
+#
+#variables:
+#  - name: devEnv
+#    value: dev
+#  - name: qaEnv
+#    value: demo
+#  - name: git_repo_name
+#    value: bookings-api
+#  - group: aks-cluster-info
+#  - template: variables/shared.yaml
+#    parameters:
+#      env: ${{ variables.devEnv }}
+#      git_repo_name: ${{ variables.git_repo_name }}
+#      cluster: $(cluster)
+#  - name: prNumber
+#    value: '$(System.PullRequest.PullRequestNumber)'
+#  - name: prTagName
+#    value: 'pr-${{ variables.prNumber }}'
+#  - name: dnsRecordName
+#    value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
+#
+#stages:
+#  - stage: bash
+#    displayName: Bash Me
+#    jobs:
+#      - job:
+#        steps:
+#          - bash: |
+#               echo "Our PR is "
+#               echo ${{ parameters.prNum }}
+#            displayName: Big Bash
+#  - stage: Uninstall
+#    displayName: Uninstall from aks-$(cluster)-${{ variables.devEnv }}
+#    jobs:
+#      - job:
+#        steps:
+#          - template: templates/Containerisation/helm/helm-remove.yaml@azTemplates
+#            parameters: 
+#              helmVersion: $(chartVersion)
+#              azureSubscription: ${{ variables.subscriptionName }}
+#              kubernetesRG: "${{ variables.clusterResourceGroup }}"
+#              kubernetesCluster: "${{ variables.clusterName }}"
+#              chartPath: '${{ variables.chartPath }}'
+#              namespace: "vh"
+#              chartName: '${{ variables.chartName }}'
+#              imageTag: '${{ variables.prTagName }}'
+#              environment: ${{ variables.devEnv }}
+#          - template: templates/Azure/Dns/private-dns-remove.yaml@azTemplates
+#            parameters: 
+#              subscriptionName: ${{ variables.subscriptionName }}
+#              dnsSubscriptionName: ${{ variables.dnsZoneSubscription }}
+#              dnsResourceGroupName: ${{ variables.dnsZoneResourceGroup }}
+#              zoneName: ${{ variables.dnsZone }}
+#              recordName: ${{ variables.dnsRecordName }}
+#
+#  - stage: Install
+#    dependsOn: Uninstall
+#    displayName: Deploy Helm chart to ${{ variables.devEnv }}-${{ variables.clusterName }}
+#    variables:
+#      - group: aks-cluster-info
+#      - template: variables/shared.yaml
+#        parameters:
+#          env: ${{ variables.qaEnv }}
+#          git_repo_name: ${{ variables.git_repo_name }}
+#          cluster: 00
+#      - group: vh-github-app-credentials
+#      - name: dnsRecordName
+#        value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
+#    jobs:
+#      - job:
+#        steps:
+#        - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
+#          parameters:
+#            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+#            appId: $(gh_app_app_id)
+#            envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+#            envValuesPath: ${{ variables.envValuesPath }}
+#            acrName: ${{ variables.acrName }}
+#            repositoryName: ${{ variables.repositoryName }}
+#            prTagName: ${{ variables.prTagName }}
+#            dnsRecordName: ${{ variables.dnsRecordName }}
+#            dnsZone: ${{ variables.dnsZone }}
+#            env: ${{ variables.qaEnv }}
+#            chartName: ${{ variables.chartName }}
+#            chartPath: ${{ variables.chartPath }}
+#            subscriptionName: "${{ variables.subscriptionName }}"
+#            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
+#            aksClusterName: "${{ variables.clusterName }}"
+#            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+#            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
-resources:
-  repositories:
-    - repository: azTemplates
-      type: github
-      name: hmcts/azure-devops-templates
-      ref: refs/heads/master
-      endpoint: hmcts
-
-trigger:
-  branches:
-    include:
-      - refs/tags/qa*
-
-variables:
-  - name: devEnv
-    value: dev
-  - name: qaEnv
-    value: demo
-  - name: git_repo_name
-    value: bookings-api
-  - group: aks-cluster-info
-  - template: variables/shared.yaml
-    parameters:
-      env: ${{ variables.devEnv }}
-      git_repo_name: ${{ variables.git_repo_name }}
-      cluster: $(cluster)
-  - name: prNumber
-    value: '$(System.PullRequest.PullRequestNumber)'
-  - name: prTagName
-    value: 'pr-${{ variables.prNumber }}'
-  - name: dnsRecordName
-    value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
-
-stages:
-  - stage: bash
-    displayName: Bash Me
-    jobs:
-      - job:
-        steps:
-          - bash: |
-               echo "Our PR is "
-               echo ${{ parameters.prNum }}
-            displayName: Big Bash
-  - stage: Uninstall
-    displayName: Uninstall from aks-$(cluster)-${{ variables.devEnv }}
-    jobs:
-      - job:
-        steps:
-          - template: templates/Containerisation/helm/helm-remove.yaml@azTemplates
-            parameters: 
-              helmVersion: $(chartVersion)
-              azureSubscription: ${{ variables.subscriptionName }}
-              kubernetesRG: "${{ variables.clusterResourceGroup }}"
-              kubernetesCluster: "${{ variables.clusterName }}"
-              chartPath: '${{ variables.chartPath }}'
-              namespace: "vh"
-              chartName: '${{ variables.chartName }}'
-              imageTag: '${{ variables.prTagName }}'
-              environment: ${{ variables.devEnv }}
-          - template: templates/Azure/Dns/private-dns-remove.yaml@azTemplates
-            parameters: 
-              subscriptionName: ${{ variables.subscriptionName }}
-              dnsSubscriptionName: ${{ variables.dnsZoneSubscription }}
-              dnsResourceGroupName: ${{ variables.dnsZoneResourceGroup }}
-              zoneName: ${{ variables.dnsZone }}
-              recordName: ${{ variables.dnsRecordName }}
-
-  - stage: Install
-    dependsOn: Uninstall
-    displayName: Deploy Helm chart to ${{ variables.qaEnv }}-${{ variables.clusterName }}
-    variables:
-      - group: aks-cluster-info
-      - template: variables/shared.yaml
-        parameters:
-          env: ${{ variables.qaEnv }}
-          git_repo_name: ${{ variables.git_repo_name }}
-          cluster: 00
-      - group: vh-github-app-credentials
-      - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
-    jobs:
-      - job:
-        steps:
-        - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
-          parameters:
-            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-            appId: $(gh_app_app_id)
-            envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
-            envValuesPath: ${{ variables.envValuesPath }}
-            acrName: ${{ variables.acrName }}
-            repositoryName: ${{ variables.repositoryName }}
-            prTagName: ${{ variables.prTagName }}
-            dnsRecordName: ${{ variables.dnsRecordName }}
-            dnsZone: ${{ variables.dnsZone }}
-            env: ${{ variables.qaEnv }}
-            chartName: ${{ variables.chartName }}
-            chartPath: ${{ variables.chartPath }}
-            subscriptionName: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-            aksClusterName: "${{ variables.clusterName }}"
-            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
