@@ -91,6 +91,31 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
+        public async Task Should_successfully_book_new_hearing_when_judge_not_present()
+        {
+            //remove judge from request
+            request.Participants.Remove(request.Participants.Find(e => e.HearingRoleName == "Judge"));
+
+            var response = await Controller.BookNewHearing(request);
+
+            response.Should().NotBeNull();
+            var result = (CreatedAtActionResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.Created);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+
+            RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
+
+            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
+                && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
+                && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
+        }
+        
+        [Test]
         public async Task Should_successfully_book_hearing_without_endpoint()
         {
             var newRequest = RequestBuilder.Build();

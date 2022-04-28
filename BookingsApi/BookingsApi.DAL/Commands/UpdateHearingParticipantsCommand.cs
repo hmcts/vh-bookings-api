@@ -63,8 +63,6 @@ namespace BookingsApi.DAL.Commands
                 hearing.RemoveParticipantById(removedParticipantId, false);
             
             await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
-
-            _hearingService.ValidateHostCount(hearing.Participants);
             
             var participants = hearing.GetParticipants().ToList();
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)
