@@ -69,7 +69,6 @@ stages:
               - '${{ variables.prTagName }}'
 
   - stage: Install_Dev
-    dependsOn: Dock
     displayName: Deploy Helm chart to ${{ variables.devEnv }}-${{ variables.clusterName }}
     variables:
       - group: aks-cluster-info
