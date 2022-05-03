@@ -108,7 +108,7 @@ namespace BookingsApi.UnitTests.Validation
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(3);
+            result.Errors.Count.Should().Be(2);
             result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ParticipantsErrorMessage)
                 .Should().BeTrue();
         }
@@ -159,28 +159,6 @@ namespace BookingsApi.UnitTests.Validation
                 .Should().BeTrue();
         }
 
-        [Test]
-        public async Task Should_return_judge_absence_error()
-        {
-            var participants = Builder<ParticipantRequest>.CreateListOfSize(4).Build().ToList();
-            var cases = Builder<CaseRequest>.CreateListOfSize(2).Build().ToList();
-
-            var judgelessRequest = Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.CaseTypeName = "Generic")
-                .With(x => x.HearingTypeName = "Automated Test")
-                .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
-                .With(x => x.Participants = participants.Where(participant => participant.HearingRoleName != "Judge").ToList())
-                .With(x => x.Cases = cases)
-                .Build();
-
-            var result = await _validator.ValidateAsync(judgelessRequest);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.JudgeAbsenceErrorMessage)
-                .Should().BeTrue();
-        }
-        
         [Test]
         public async Task Should_Pass_When_Linked_Participant_Is_Empty()
         {
