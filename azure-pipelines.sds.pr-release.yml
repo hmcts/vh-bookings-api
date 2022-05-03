@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMddhhmmss)-$(Rev:r)
+name: $(Date:yyyyMMddhhmm)-$(Rev:r)
 
 resources:
   repositories:

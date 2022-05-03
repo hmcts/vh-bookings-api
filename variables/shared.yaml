@@ -12,7 +12,7 @@ variables:
     value: 'bookings-api'
 
   - name: prNumber
-    value: 666 #$(System.PullRequest.PullRequestNumber)
+    value: 667 #$(System.PullRequest.PullRequestNumber)
   - name: prTagPrefix
     value: 'pr-${{ variables.prNumber }}'
   - name: prTagName
