@@ -13,8 +13,10 @@ variables:
 
   - name: prNumber
     value: 666 #$(System.PullRequest.PullRequestNumber)
+  - name: prTagPrefix
+    value: 'pr-${{ variables.prNumber }}'
   - name: prTagName
-    value: 'pr-${{ variables.prNumber }}-$(Build.BuildNumber)'
+    value: '${{ variables.prTagPrefix }}-$(Build.BuildNumber)'
 
   - name: imageName
     value: "${{ replace(variables.git_repo_name, '-', '') }}"

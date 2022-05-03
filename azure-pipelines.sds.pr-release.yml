@@ -58,7 +58,7 @@ stages:
           env: ${{ variables.env }}
           cluster: $(dev_cluster)
       - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
         displayName: Deploy to ${{ variables.clusterName }}
@@ -71,7 +71,7 @@ stages:
               envValuesPath: ${{ variables.envValuesPath }}
               acrName: ${{ variables.acrName }}
               repositoryName: ${{ variables.repositoryName }}
-              prTagName: ${{ variables.prTagName }}
+              prTagName: ${{ variables.prTagPrefix }}
               dnsRecordName: ${{ variables.dnsRecordName }}
               dnsZone: ${{ variables.dnsZone }}
               env: ${{ variables.env }}
@@ -104,7 +104,7 @@ stages:
           env: ${{ variables.env }}
           cluster: $(demo_cluster)
       - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
         displayName: Deploy to ${{ variables.clusterName }}
@@ -117,7 +117,7 @@ stages:
             envValuesPath: ${{ variables.envValuesPath }}
             acrName: ${{ variables.acrName }}
             repositoryName: ${{ variables.repositoryName }}
-            prTagName: ${{ variables.prTagName }}
+            prTagName: ${{ variables.prTagPrefix }}
             dnsRecordName: ${{ variables.dnsRecordName }}
             dnsZone: ${{ variables.dnsZone }}
             env: ${{ variables.env }}
