@@ -102,7 +102,7 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: ${{ variables.cluster }}
+          cluster: $(cluster)
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
     jobs:
