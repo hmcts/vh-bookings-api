@@ -27,7 +27,7 @@ stages:
       - name: prNumber
         value: 666 #$(System.PullRequest.PullRequestNumber)
       - name: prTagName
-        value: 'pr-${{ variables.prNumber }}-$(Build.SourceVersion)-$(timestamp)'
+        value: pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)-$(timestamp)
       - name: timestamp
         value: $[format('{0:HH}{0:mm}{0:dd}{0:MM}{0:yyyy}', pipeline.startTime)]
 
@@ -38,6 +38,7 @@ stages:
         - powershell: |
             Write-Host "##[section]Setting Image Tag, Please Wait..."
             Write-Host "##vso[task.setvariable variable=imageTag;isoutput=true]$(prTagName)"
+            Write-Host "Tag: $(prTagName) Set"
           name: setImageTag
           displayName: Set Image Tag
 
@@ -54,7 +55,7 @@ stages:
             repositoryName:  ${{ variables.repositoryName }}
             imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
-              - '$(setImageTag.imageTag)'
+              - $(setImageTag.imageTag)
 
   - stage: Install
     dependsOn: Dock
