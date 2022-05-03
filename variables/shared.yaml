@@ -2,16 +2,17 @@ parameters:
   - name: env
     type: string
     default: ""
-  - name: git_repo_name
-    type: string
-    default: 'bookings-api'
   - name: cluster
     type: string
     default: ''
 
 variables:
+
+  - name: git_repo_name
+    value: 'bookings-api'
+
   - name: imageName
-    value: "${{ replace(parameters.git_repo_name, '-', '') }}"
+    value: "${{ replace(variables.git_repo_name, '-', '') }}"
   - name: subscriptionName
     value: "DTS-SHAREDSERVICES-${{ upper(parameters.env) }}-Video Hearings"
   - name: acrSubscription
@@ -19,11 +20,11 @@ variables:
   - name: acrName
     value: 'sdshmctspublic'
   - name: repositoryName
-    value: 'vh/${{ parameters.git_repo_name }}'
+    value: 'vh/${{ variables.git_repo_name }}'
   - name: releaseTagName
     value: "prod-$(Build.SourceBranchName)"
   - name: gitRepoName
-    value: vh-${{ parameters.git_repo_name }}
+    value: vh-${{ variables.git_repo_name }}
   - ${{ if ne(parameters.cluster, '') }}:
     - name: clusterName
       value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
@@ -32,11 +33,11 @@ variables:
 
 
   - name: chartName
-    value: "vh-${{ parameters.git_repo_name }}"
+    value: "vh-${{ variables.git_repo_name }}"
   - name: chartRepoPath
     value: '$(Build.SourcesDirectory)/'
   - name: chartPath
-    value: '$(Build.SourcesDirectory)/charts/vh-${{ parameters.git_repo_name }}'
+    value: '$(Build.SourcesDirectory)/charts/vh-${{ variables.git_repo_name }}'
   - name: envValuesPath
     value: "${{ variables.chartPath }}/values.${env}.yaml"
   - name: envValuesTemplatePath
