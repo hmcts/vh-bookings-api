@@ -27,7 +27,7 @@ stages:
       - name: prNumber
         value: 666 #$(System.PullRequest.PullRequestNumber)
       - name: prTagName
-        value: pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)-$(timestamp)
+        value: pr-$(prNumber)-$(Build.SourceVersion)-$(timestamp)
       - name: timestamp
         value: $[format('{0:HH}{0:mm}{0:dd}{0:MM}{0:yyyy}', pipeline.startTime)]
 
