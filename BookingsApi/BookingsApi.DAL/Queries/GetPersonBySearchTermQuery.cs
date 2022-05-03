@@ -39,7 +39,7 @@ namespace BookingsApi.DAL.Queries
                 results = await (from person in _context.Persons
                                  join participant in _context.Participants on person.Id equals participant.PersonId
                                  where !excludedRoles.Contains(participant.Discriminator)
-                                 && person.ContactEmail.ToLower().Contains(query.Term.ToLower())
+                                 && person.ContactEmail.ToLower().StartsWith(query.Term.ToLower())
                                  select person).Distinct().Include(x => x.Organisation).ToListAsync();
 
             }
@@ -47,7 +47,7 @@ namespace BookingsApi.DAL.Queries
             {
                 results = await _context.Persons
                  .Include(x => x.Organisation)
-                 .Where(x => x.ContactEmail.ToLower().Contains(query.Term.ToLower()))
+                 .Where(x => x.ContactEmail.ToLower().StartsWith(query.Term.ToLower()))
                  .ToListAsync();
             }
 
