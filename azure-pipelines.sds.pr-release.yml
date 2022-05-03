@@ -63,7 +63,7 @@ stages:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
-          env: $(variables.env)
+          env: ${{ variables.env }}
           cluster: $(cluster)
       - name: prTagName
         value: $[ stageDependencies.Dock.Dock.outputs['setImageTag.imageTag'] ]
