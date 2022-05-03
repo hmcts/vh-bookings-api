@@ -58,13 +58,13 @@ stages:
 
   - stage: Install
     dependsOn: Dock
-    displayName: Deploy Helm chart to ${{ variables.clusterName }}
+    displayName: Deploy Helm chart to $(clusterName)
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
-          env: ${{ variables.env }}
-          cluster: ${{ variables.cluster }}
+          env: $(variables.env)
+          cluster: $(cluster)
       - name: prTagName
         value: $[ stageDependencies.Dock.Dock.outputs['setImageTag.imageTag'] ]
       - name: dnsRecordName
