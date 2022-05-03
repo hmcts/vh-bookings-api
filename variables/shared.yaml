@@ -11,6 +11,11 @@ variables:
   - name: git_repo_name
     value: 'bookings-api'
 
+  - name: prNumber
+    value: 666 #$(System.PullRequest.PullRequestNumber)
+  - name: prTagName
+    value: 'pr-${{ variables.prNumber }}-$(Build.BuildNumber)'
+
   - name: imageName
     value: "${{ replace(variables.git_repo_name, '-', '') }}"
   - name: subscriptionName

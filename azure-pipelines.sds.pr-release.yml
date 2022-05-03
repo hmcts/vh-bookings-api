@@ -1,3 +1,5 @@
+name: $(Date:yyyyMMddhhmmss)-$(Rev:.r)
+
 resources:
   repositories:
     - repository: azTemplates
@@ -24,22 +26,12 @@ stages:
           env: ${{ variables.env }}
           cluster: $(cluster)
       - group: vh-github-app-credentials
-      - name: prNumber
-        value: 666 #$(System.PullRequest.PullRequestNumber)
-      - name: prTagName
-        value: 'pr-${{ variables.prNumber }}-$(Build.SourceVersion)-$(timestamp)'
-      - name: timestamp
-        value: $[format('{0:HH}{0:mm}{0:dd}{0:MM}{0:yyyy}', pipeline.startTime)]
 
     jobs:
     - job: Dock
+      displayName: "Build and Push image ${{ variables.git_repo_name }}"
       steps:
         - checkout: self
-        - powershell: |
-            Write-Host "##[section]Setting Image Tag, Please Wait..."
-            Write-Host "##vso[task.setvariable variable=imageTag;isoutput=true]$(prTagName)"
-          name: setImageTag
-          displayName: Set Image Tag
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
@@ -54,23 +46,22 @@ stages:
             repositoryName:  ${{ variables.repositoryName }}
             imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
-              - '$(setImageTag.imageTag)'
+              - '${{ parameters.prTagName }}'
 
   - stage: Install
     dependsOn: Dock
-    displayName: Deploy Helm chart to $(clusterName)
+    displayName: Deploy Helm chart to Dev AKS
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
           cluster: $(cluster)
-      - name: prTagName
-        value: $[ stageDependencies.Dock.Dock.outputs['setImageTag.imageTag'] ]
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
     jobs:
-      - job:
+      - job: aks_push
+        displayName: Deploy to ${{ variables.clusterName }}
         steps:
           - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
             parameters:
@@ -105,19 +96,18 @@ stages:
               onTimeout: 'reject'
 
   - stage: Install_Demo
-    displayName: Deploy Helm chart to ${{ variables.devEnv }}-${{ variables.clusterName }}
+    displayName: Deploy Helm chart to QA AKS
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
           cluster: ${{ variables.cluster }}
-      - name: prTagName
-        value: $[ stageDependencies.Dock.Dock.outputs['setImageTag.imageTag'] ]
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagName }}
     jobs:
-      - job:
+      - job: aks_push
+        displayName: Deploy to ${{ variables.clusterName }}
         steps:
         - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
           parameters:
