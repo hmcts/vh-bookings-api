@@ -16,7 +16,6 @@ namespace BookingsApi.Validations
         public const string ParticipantsErrorMessage = "Please provide at least one participant";
         public const string CasesErrorMessage = "Please provide at least one case";
         public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
-        public const string JudgeAbsenceErrorMessage = "A judge must be included in a hearing";
 
         public BookNewHearingRequestValidation()
         {
@@ -54,9 +53,6 @@ namespace BookingsApi.Validations
             RuleForEach(x => x.LinkedParticipants)
                 .SetValidator(new LinkedParticipantRequestValidation()).When(x => !x.LinkedParticipants.IsNullOrEmpty());
 
-            RuleFor(x => x.Participants)
-                .Must(participant => participant.Any(x => x.HearingRoleName == "Judge"))
-                .WithMessage(JudgeAbsenceErrorMessage);
         }
     }
 }
