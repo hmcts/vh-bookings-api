@@ -46,7 +46,7 @@ stages:
             repositoryName:  ${{ variables.repositoryName }}
             imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
-              - '${{ parameters.prTagName }}'
+              - '${{ variables.prTagName }}'
 
   - stage: Install
     dependsOn: Dock
