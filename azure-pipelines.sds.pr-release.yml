@@ -74,7 +74,7 @@ stages:
               prTagName: ${{ variables.prTagName }}
               dnsRecordName: ${{ variables.dnsRecordName }}
               dnsZone: ${{ variables.dnsZone }}
-              env: ${{ variables.devEnv }}
+              env: ${{ variables.env }}
               chartName: ${{ variables.chartName }}
               chartPath: ${{ variables.chartPath }}
               subscriptionName: "${{ variables.subscriptionName }}"
@@ -98,7 +98,7 @@ stages:
   - stage: Install_Demo
     displayName: Deploy Helm chart to QA AKS
     variables:
-      - template: variables/dev.yaml
+      - template: variables/qa.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
@@ -120,7 +120,7 @@ stages:
             prTagName: ${{ variables.prTagName }}
             dnsRecordName: ${{ variables.dnsRecordName }}
             dnsZone: ${{ variables.dnsZone }}
-            env: ${{ variables.qaEnv }}
+            env: ${{ variables.env }}
             chartName: ${{ variables.chartName }}
             chartPath: ${{ variables.chartPath }}
             subscriptionName: "${{ variables.subscriptionName }}"
