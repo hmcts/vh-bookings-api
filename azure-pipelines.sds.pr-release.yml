@@ -72,7 +72,7 @@ stages:
               acrName: ${{ variables.acrName }}
               repositoryName: ${{ variables.repositoryName }}
               prTagName: ${{ variables.prTagName }}
-              releaseName: "${{ variables.chartName }}-${{ parameters.prTagPrefix }}"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
               dnsRecordName: ${{ variables.dnsRecordName }}
               dnsZone: ${{ variables.dnsZone }}
               env: ${{ variables.env }}
@@ -119,7 +119,7 @@ stages:
             acrName: ${{ variables.acrName }}
             repositoryName: ${{ variables.repositoryName }}
             prTagName: ${{ variables.prTagName }}
-            releaseName: "${{ variables.chartName }}-${{ parameters.prTagPrefix }}"
+            releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
             dnsRecordName: ${{ variables.dnsRecordName }}
             dnsZone: ${{ variables.dnsZone }}
             env: ${{ variables.env }}
