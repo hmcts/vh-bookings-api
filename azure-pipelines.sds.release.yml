@@ -91,4 +91,4 @@ stages:
               githubToken: $(githubappinstall.token)
               githubUsername: $(gh_app_name)
               githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
-              publishPath: ${{ variables.publishPath }}
+              subDirectory: ${{ variables.subDirectory }}

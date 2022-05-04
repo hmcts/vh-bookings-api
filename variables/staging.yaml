@@ -3,5 +3,5 @@ variables:
     value: stg 
   - name: releaseTagName
     value: "staging-$(Build.SourceVersion)"
-  - name: publishPath
-    value: "./stable/non-prod"
+  - name: subDirectory
+    value: "/non-prod"
