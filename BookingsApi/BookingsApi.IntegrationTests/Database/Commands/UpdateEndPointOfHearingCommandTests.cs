@@ -93,6 +93,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedEndPoint.DisplayName.Should().Be(updatedDisplayName);
             updatedEndPoint.DefenceAdvocate.Should().NotBeNull();
             updatedEndPoint.DefenceAdvocate.Id.Should().Be(dA.Id);
+            endpoint.CreatedDate.Should().Be(updatedEndPoint.CreatedDate.Value);
+            updatedEndPoint.UpdatedDate.Should().BeAfter(updatedEndPoint.CreatedDate.Value);
         }
 
         [Test]

@@ -63,6 +63,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.GetCases().First().Name.Should().Be(caseName);
             returnedVideoHearing.GetCases().First().Number.Should().Be(caseNumber);
             returnedVideoHearing.AudioRecordingRequired.Should().BeTrue();
+            returnedVideoHearing.UpdatedDate.Should().BeAfter(returnedVideoHearing.CreatedDate);
         }
     }
 }

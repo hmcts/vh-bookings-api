@@ -1,9 +1,8 @@
 using System;
-using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain.RefData
 {
-    public class HearingRole : Entity<int>, IComparable
+    public class HearingRole : TrackableEntity<int>, IComparable
     {
         public HearingRole(int id, string name)
         {

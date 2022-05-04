@@ -5,6 +5,7 @@ namespace BookingsApi.Domain
 {
     public class JudiciaryPerson : AggregateRoot<Guid>
     {
+        private readonly DateTime _currentUTC = DateTime.UtcNow;
         public JudiciaryPerson(Guid externalRefId, string personalCode, string title, string knownAs, string surname,
             string fullname, string postNominals, string email, bool hasLeft)
         {
@@ -17,8 +18,8 @@ namespace BookingsApi.Domain
             Fullname = fullname;
             PostNominals = postNominals;
             Email = email;
-            CreatedDate = DateTime.UtcNow;
-            UpdatedDate = DateTime.UtcNow;
+            CreatedDate = _currentUTC;
+            UpdatedDate = _currentUTC;
             HasLeft = hasLeft;
         }
 

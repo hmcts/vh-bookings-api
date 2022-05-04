@@ -1,8 +1,7 @@
-using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain.RefData
 {
-    public class HearingType : Entity<int>
+    public class HearingType : TrackableEntity<int>
     {
         public HearingType(string name)
         {
