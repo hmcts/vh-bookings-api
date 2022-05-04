@@ -71,7 +71,8 @@ stages:
               envValuesPath: ${{ variables.envValuesPath }}
               acrName: ${{ variables.acrName }}
               repositoryName: ${{ variables.repositoryName }}
-              prTagName: ${{ variables.prTagPrefix }}
+              prTagName: ${{ variables.prTagName }}
+              releaseName: "${{ parameters.chartName }}-${{ parameters.prTagPrefix }}"
               dnsRecordName: ${{ variables.dnsRecordName }}
               dnsZone: ${{ variables.dnsZone }}
               env: ${{ variables.env }}
