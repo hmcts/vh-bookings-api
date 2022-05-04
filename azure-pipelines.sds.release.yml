@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  - master
+  - releases/*
+
 pr: none
 
 resources:
@@ -6,32 +9,43 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/master
+      ref: refs/heads/vh-qa-changes
       endpoint: hmcts
 
 stages:
+
+  - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+    - stage: Wait
+      displayName: 'Production Waiting for Approval'
+      pool:
+        vmImage: 'ubuntu-latest'
+      jobs:
+        - job: waitForValidation
+          displayName: 'Production Wait for external validation'
+          pool: server
+          timeoutInMinutes: 4320 # job times out in 3 days
+          steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              instructions: 'Please validate for PROD environment to resume'
+              onTimeout: 'reject'
+
   - stage: Dock
     displayName: Build and Push Docker Image
+    ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+      depends_on: Wait
     variables:
+      - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+        - template: variables/production.yaml
+      - ${{ else }}:
+        - template: variables/staging.yaml
       - template: variables/shared.yaml
-      - group: vh-github-app-credentials
     jobs:
-      - job:
+      - job: Docker_Build
+        displayName: "Docker Build and Push"
         steps:
           - checkout: self
-
-          - template: templates\Github\get-app-token.yaml@azTemplates
-            parameters:
-              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-              appId: $(gh_app_app_id)
-
-          - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
-            parameters:
-              chartName: ${{ variables.chartName }}
-              chartPath: ${{ variables.chartPath }}
-              githubToken: $(githubappinstall.token)
-              githubUsername: $(gh_app_name)
-              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
         
           - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
             parameters:
@@ -47,3 +61,34 @@ stages:
               imageName: "${{ variables.imageName }}"
               imageTags:
                 - '${{ variables.releaseTagName }}'
+                - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+                  - 'latest'
+  - stage: Helm
+    displayName: Push Helm Charts
+    depends_on: Dock
+    variables:
+      - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+        - template: variables/production.yaml
+      - ${{ else }}:
+        - template: variables/staging.yaml
+      - template: variables/shared.yaml
+      - group: vh-github-app-credentials
+    jobs:
+      - job: Helm
+        displayName: "Helm Push"
+        steps:
+          - checkout: self
+
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+              publishPath: ${{ variables.publishPath }}
