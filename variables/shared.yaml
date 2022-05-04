@@ -23,8 +23,6 @@ variables:
   - name: repositoryName
     value: 'vh/${{ parameters.git_repo_name }}'
   
-  - name: releaseTagName
-    value: "prod-$(Build.SourceBranchName)"
   - name: gitRepoName
     value: vh-${{ parameters.git_repo_name }}
 
