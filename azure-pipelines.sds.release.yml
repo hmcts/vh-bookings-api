@@ -34,7 +34,7 @@ stages:
   - stage: Dock
     displayName: Build and Push Docker Image
     ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
-      depends_on: Wait
+      dependsOn: Wait
     variables:
       - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
         - template: variables/production.yaml
@@ -65,7 +65,7 @@ stages:
                   - 'latest'
   - stage: Helm
     displayName: Push Helm Charts
-    depends_on: Dock
+    dependsOn: Dock
     variables:
       - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
         - template: variables/production.yaml
