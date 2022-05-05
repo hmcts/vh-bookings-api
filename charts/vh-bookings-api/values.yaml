@@ -2,6 +2,7 @@
 java:
   image: 'sdshmctspublic.azurecr.io/vh/bookings-api:latest'
   applicationPort: 8080
+  replicas: 2
   ingressHost: vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-bookings-api
   readinessPath: /healthcheck/health
