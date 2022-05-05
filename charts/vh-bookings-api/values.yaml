@@ -10,8 +10,8 @@ java:
   livenessPeriod: 120
   aadIdentityName: vh-aad-identity
   keyVaults:
-    vh-infra-core:
-      excludeEnvironmentSuffix: false
+    vh-infra-core-stg:
+      excludeEnvironmentSuffix: true
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
