@@ -1,9 +1,9 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-#FROM gittools/gitversion:5.6.10-alpine.3.12-x64-3.1 AS gitversion
-#WORKDIR /version 
-#COPY .git .git
-#RUN /tools/dotnet-gitversion /ensureassemblyinfo /updateassemblyinfo AssemblyInfo.cs /nofetch /config /GitVersion.yml
+FROM gittools/gitversion:5.6.10-alpine.3.12-x64-3.1 AS gitversion
+WORKDIR /version 
+COPY .git .git
+RUN /tools/dotnet-gitversion /ensureassemblyinfo /updateassemblyinfo AssemblyInfo.cs /nofetch /config /GitVersion.yml
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
