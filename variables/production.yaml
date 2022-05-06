@@ -1,0 +1,7 @@
+variables:
+  - name: env
+    value: prod 
+  - name: releaseTagName
+    value: "prod-$(Build.SourceVersion)"
+  - name: subDirectory
+    value: "/prod"
