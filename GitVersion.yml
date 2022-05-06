@@ -1,5 +1,34 @@
-mode: Mainline
-branches: {}
+mode: ContinuousDelivery
+branches:
+  master:
+    regex: master
+    mode: ContinuousDelivery
+    tag:
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+  main:
+    regex: master
+    mode: ContinuousDelivery
+    tag:
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+  feature:
+    regex: feature(s)?[/-]
+    mode: ContinuousDelivery
+  develop:
+    regex: dev(elop)?(ment)?$
+    mode: ContinuousDelivery
+    tag: alpha
+  hotfix:
+    regex: hotfix(es)?[/-]
+    mode: ContinuousDelivery
+    tag: beta
+  release:
+    regex: release(s)?[/-]
+    mode: ContinuousDelivery
+    tag: rc
 ignore:
   sha: []
 merge-message-formats: {}
