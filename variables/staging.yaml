@@ -1,0 +1,7 @@
+variables:
+  - name: env
+    value: stg 
+  - name: releaseTagName
+    value: "staging-$(Build.SourceVersion)"
+  - name: subDirectory
+    value: "/non-prod"
