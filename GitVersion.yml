@@ -1,27 +1,5 @@
 mode: Mainline
-branches:
-  master:
-    regex: master
-    mode: Mainline
-    tag:
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-  feature:
-    regex: feature(s)?[/-]
-    mode: Mainline
-  develop:
-    regex: dev(elop)?(ment)?$
-    mode: Mainline
-    tag: alpha
-  hotfix:
-    regex: hotfix(es)?[/-]
-    mode: Mainline
-    tag: beta
-  release:
-    regex: release(s)?[/-]
-    mode: Mainline
-    tag: rc
+branches: {}
 ignore:
   sha: []
 merge-message-formats: {}
