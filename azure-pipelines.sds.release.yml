@@ -67,7 +67,7 @@ stages:
     displayName: Push Helm Charts
     dependsOn: Dock
     variables:
-      - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+      - ${{ if contains(variables['Build.SourceBranchName'], 'update-image') }}:
         - template: variables/production.yaml
       - ${{ else }}:
         - template: variables/staging.yaml
