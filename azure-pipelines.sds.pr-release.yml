@@ -1,47 +1,37 @@
+name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+
 resources:
   repositories:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/master
+      ref: refs/heads/vh-qa-changes
       endpoint: hmcts
 
-parameters:
-  - name: env
-    type: string
-    default: dev
-    values:
-      - dev
+pr:
+  - master
 
-  - name: git_repo_name
-    type: string
-    default: bookings-api
+variables:
+  - group: aks-cluster-info
+  - group: vh-github-app-credentials
 
 stages:
   - stage: Dock
     displayName: Build and Push Docker Image
     variables: 
       - group: aks-cluster-info
+      - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
-          env: ${{ parameters.env }}
-          git_repo_name: ${{ parameters.git_repo_name }}
-          cluster: $(cluster)
+          env: ${{ variables.env }}
+          cluster: $(dev_cluster)
       - group: vh-github-app-credentials
-      - name: prTagName
-        value: 'pr-$(System.PullRequest.PullRequestNumber)-$(Build.SourceVersion)-$(timestamp)'
-      - name: timestamp
-        value: $[format('{0:HH}{0:mm}{0:dd}{0:MM}{0:yyyy}', pipeline.startTime)]
 
     jobs:
     - job: Dock
+      displayName: "Build and Push image ${{ variables.git_repo_name }}"
       steps:
         - checkout: self
-        - powershell: |
-            Write-Host "##[section]Setting Image Tag, Please Wait..."
-            Write-Host "##vso[task.setvariable variable=imageTag;isoutput=true]$(prTagName)"
-          name: setImageTag
-          displayName: Set Image Tag
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
@@ -54,98 +44,89 @@ stages:
             azureSubscription: ${{ variables.acrSubscription }}
             acrName: ${{ variables.acrName }}
             repositoryName:  ${{ variables.repositoryName }}
-            imageName: "${{ replace(parameters.git_repo_name, '-', '') }}"
+            imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
-              - '$(setImageTag.imageTag)'
+              - '${{ variables.prTagName }}'
 
   - stage: Install
     dependsOn: Dock
-    displayName: Deploy Helm chart to ${{ variables.clusterName }}
+    displayName: Deploy Helm chart to Dev AKS
     variables:
-      - group: aks-cluster-info
+      - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
-          env: ${{ parameters.env }}
-          git_repo_name: ${{ parameters.git_repo_name }}
-          cluster: $(cluster)
-      - group: vh-github-app-credentials
-      - name: prTagName
-        value: $[ stageDependencies.Dock.Dock.outputs['setImageTag.imageTag'] ]
+          env: ${{ variables.env }}
+          cluster: $(dev_cluster)
       - name: dnsRecordName
-        value: ${{ parameters.git_repo_name }}-${{ variables.prTagName }}
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
-      - job:
+      - job: aks_push
+        displayName: Deploy to ${{ variables.clusterName }}
         steps:
-          - bash: |
-              echo "our PR id is:"
-              echo $(System.PullRequest.PullRequestNumber)
-          - checkout: self
-        
-          - template: templates\Github\get-app-token.yaml@azTemplates
+          - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
             parameters:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
               appId: $(gh_app_app_id)
-
-          - template: templates\Github\bump-chart-versions.yaml@azTemplates
-            parameters:
+              envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+              envValuesPath: ${{ variables.envValuesPath }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              prTagName: ${{ variables.prTagName }}
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              dnsRecordName: ${{ variables.dnsRecordName }}
+              dnsZone: ${{ variables.dnsZone }}
+              env: ${{ variables.env }}
               chartName: ${{ variables.chartName }}
-              chartPath: ${{ variables.chartRepoPath }}
-              chartBranch: $(Build.SourceBranchName)
-              githubToken: $(githubappinstall.token)
-              githubUsername: $(gh_app_name)
-              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
-
-          - bash: |
-              export IMAGE_NAME="${imageName}"
-              export SERVICE_FQDN="${fqdn}"
-              export RELEASE_NAME="${releaseName}"
-                            
-              valuesEnvTemplate="${{ variables.envValuesTemplatePath }}"
-              valuesEnv="${{ variables.envValuesPath }}"
-              
-              if test -f "$valuesEnvTemplate"; then
-                echo "$valuesEnvTemplate found"
-                envsubst < ${valuesEnvTemplate} > ${valuesEnv}
-                echo "created $valuesEnv"
-                cat $valuesEnv
-              else
-                echo "No Environment File"
-              fi
-            displayName: Create Environment Values File
-            env:
-              imageName: ${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.prTagName }}
-              fqdn: ${{ variables.dnsRecordName }}.${{ variables.dnsZone }}
-              env: ${{ parameters.env }}
-              releaseName: "${{ variables.chartName }}-${{ variables.prTagName }}"
-
-          - bash: |
-              VERSION=$(cat "${chartPath}/Chart.yaml" | grep ^version | cut -d  ':' -f 2 | tr -d '[:space:]')
-              echo "Chart Version: $VERSION"
-              echo "##vso[task.setvariable variable=chartVersion;isOutput=true]$VERSION"
-            displayName: Get Chart Version
-            env:
               chartPath: ${{ variables.chartPath }}
-
-          - template: templates\Azure\Dns\private-dns-add-aks-pr.yaml@azTemplates
-            parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
-              aksSubscriptionName: "${{ variables.subscriptionName }}"
               aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
               aksClusterName: "${{ variables.clusterName }}"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-              zoneName: ${{ variables.dnsZone }}
-              recordName: ${{ variables.dnsRecordName }}
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"  
 
-          - template: templates\Containerisation\helm\helm-deploy.yaml@azTemplates
-            parameters:
-              helmVersion: $(chartVersion)
-              azureSubscription: ${{ variables.subscriptionName }}
-              kubernetesRG: "${{ variables.clusterResourceGroup }}"
-              kubernetesCluster: "${{ variables.clusterName }}"
-              namespace: "vh"
-              chartName: '${{ variables.chartName }}'
-              chartPath: '${{ variables.chartPath }}'
-              imageTag: '${{ variables.prTagName }}'
-              environment: ${{ parameters.env }}
-              additionalArgs: "-o json"
+  - stage: Wait
+    jobs:
+      - job: Wait
+        displayName: "Approve for release to QA"
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              instructions: 'Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the QA environment to resume'
+              onTimeout: 'reject'
+
+  - stage: Install_Demo
+    displayName: Deploy Helm chart to QA AKS
+    variables:
+      - template: variables/qa.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          cluster: $(demo_cluster)
+      - name: dnsRecordName
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: aks_push
+        displayName: Deploy to ${{ variables.clusterName }}
+        steps:
+        - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
+          parameters:
+            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+            appId: $(gh_app_app_id)
+            envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+            envValuesPath: ${{ variables.envValuesPath }}
+            acrName: ${{ variables.acrName }}
+            repositoryName: ${{ variables.repositoryName }}
+            prTagName: ${{ variables.prTagName }}
+            releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+            dnsRecordName: ${{ variables.dnsRecordName }}
+            dnsZone: ${{ variables.dnsZone }}
+            env: ${{ variables.env }}
+            chartName: ${{ variables.chartName }}
+            chartPath: ${{ variables.chartPath }}
+            subscriptionName: "${{ variables.subscriptionName }}"
+            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
+            aksClusterName: "${{ variables.clusterName }}"
+            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
