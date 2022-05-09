@@ -14,7 +14,7 @@ resources:
 
 stages:
 
-  - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+  - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
     - stage: Wait
       displayName: 'Production Waiting for Approval'
       pool:
@@ -33,10 +33,10 @@ stages:
 
   - stage: Dock
     displayName: Build and Push Docker Image
-    ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+    ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
       dependsOn: Wait
     variables:
-      - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+      - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         - template: variables/production.yaml
       - ${{ else }}:
         - template: variables/staging.yaml
@@ -61,13 +61,13 @@ stages:
               imageName: "${{ variables.imageName }}"
               imageTags:
                 - '${{ variables.releaseTagName }}'
-                - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+                - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
                   - 'latest'
   - stage: Helm
     displayName: Push Helm Charts
     dependsOn: Dock
     variables:
-      - ${{ if contains(variables['Build.SourceBranchName'], 'refs/heads/release') }}:
+      - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         - template: variables/production.yaml
       - ${{ else }}:
         - template: variables/staging.yaml
