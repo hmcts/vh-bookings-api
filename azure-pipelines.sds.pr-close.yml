@@ -47,11 +47,11 @@ stages:
         steps:
         - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
           parameters:
-            subscriptionName: "${{ parameters.subscriptionName }}"
-            dnsSubscriptionName: "${{ parameters.dnsSubscriptionName }}"
-            dnsResourceGroupName: "${{ parameters.dnsResourceGroupName }}"
-            zoneName: ${{ parameters.dnsZone }}
-            recordName: ${{ parameters.dnsRecordName }}
+            subscriptionName: "${{ variables.subscriptionName }}"
+            dnsSubscriptionName: "${{ variables.dnsSubscriptionName }}"
+            dnsResourceGroupName: "${{ variables.dnsResourceGroupName }}"
+            zoneName: ${{ variables.dnsZone }}
+            recordName: ${{ variables.dnsRecordName }}
 
   - stage: uninstall_demo
     displayName: Uninstall Demo Helm and DNS
@@ -80,8 +80,8 @@ stages:
         steps:
         - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
           parameters:
-            subscriptionName: "${{ parameters.subscriptionName }}"
-            dnsSubscriptionName: "${{ parameters.dnsSubscriptionName }}"
-            dnsResourceGroupName: "${{ parameters.dnsResourceGroupName }}"
-            zoneName: ${{ parameters.dnsZone }}
-            recordName: ${{ parameters.dnsRecordName }}
+            subscriptionName: "${{ variables.subscriptionName }}"
+            dnsSubscriptionName: "${{ variables.dnsSubscriptionName }}"
+            dnsResourceGroupName: "${{ variables.dnsResourceGroupName }}"
+            zoneName: ${{ variables.dnsZone }}
+            recordName: ${{ variables.dnsRecordName }}
