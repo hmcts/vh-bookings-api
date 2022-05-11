@@ -48,8 +48,8 @@ stages:
         - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
           parameters:
             subscriptionName: "${{ variables.subscriptionName }}"
-            dnsSubscriptionName: "${{ variables.dnsSubscriptionName }}"
-            dnsResourceGroupName: "${{ variables.dnsResourceGroupName }}"
+            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
             zoneName: ${{ variables.dnsZone }}
             recordName: ${{ variables.dnsRecordName }}
 
@@ -81,7 +81,7 @@ stages:
         - template: templates\Azure\Dns\private-dns-remove.yaml@azTemplates
           parameters:
             subscriptionName: "${{ variables.subscriptionName }}"
-            dnsSubscriptionName: "${{ variables.dnsSubscriptionName }}"
-            dnsResourceGroupName: "${{ variables.dnsResourceGroupName }}"
+            dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+            dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
             zoneName: ${{ variables.dnsZone }}
             recordName: ${{ variables.dnsRecordName }}
