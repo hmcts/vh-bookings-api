@@ -111,7 +111,6 @@ stages:
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        dependsOn: Run_Entity_Framework
         displayName: Deploy to ${{ variables.clusterName }}
         steps:
           - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
