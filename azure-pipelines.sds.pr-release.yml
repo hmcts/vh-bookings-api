@@ -95,7 +95,7 @@ stages:
           - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
             parameters:
               outputPath: $(Build.StagingDirectory)
-              contextName: EF-Dev-BookingsApi
+              contextName: BookingsDbContext
               workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
               projectName: BookingsApi.csproj
 
@@ -104,7 +104,7 @@ stages:
               azureSubscription: ${{ variables.subscriptionName }}
               dbServerName:  ${{ variables.vhSQLServerName }}
               databaseName: ${{ variables.BookingsApiDbName }}
-              sqlScriptLocation: $(Build.StagingDirectory)/EF-Dev-BookingsApi.sql
+              sqlScriptLocation: $(Build.StagingDirectory)/BookingsDbContext.sql
               sqlUsername: $(vh-core-infra-dev-user)
               sqlPassword: $(vh-core-infra-dev-pw)
 
