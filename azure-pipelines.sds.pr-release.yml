@@ -67,38 +67,14 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run Entity Framework
         steps:
-          - task: AzureCLI@2
-            name: AddFirewallRule
-            displayName: Add SQL Firewall Rule
-            continueOnError: false
-            inputs:
-              azureSubscription: ${{ variables.subscriptionName }}
-              scriptType: pscore
-              scriptLocation: inlineScript
-              inlineScript: |
-                $ruleName = "AzureDevOpsRule-$(Build.BuildId)"
-                $publicIp = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
-                $sqlServer = "${{ variables.vhSQLServerName }}"
-                $sqlResourceGroup = "${{ variables.vhResourceGroup }}"
+          - template: templates/Database/
 
-                az sql server firewall-rule create -g $sqlResourceGroup  -s $sqlServer -n $ruleName  --start-ip-address $publicIp --end-ip-address $publicIp
-
-                $check = az sql server firewall-rule list -g $sqlResourceGroup  -s $sqlServer
-
-                if ($check -like "*$ruleName*") {
-                  Write-Host "##vso[task.setvariable variable=fwRuleAdded;isOutput=true]yes"
-                }
-                else {
-                  Write-Error "##[error]Failed To Add Firewall Rule To SQL Server..."
-                  exit (0)
-                }
-
-          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+          - template: templates/Database/Firewall/SqlServerFirewallRule.yaml@azTemplates
             parameters:
-              outputPath: $(Build.StagingDirectory)
-              contextName: BookingsDbContext
-              workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-              projectName: BookingsApi.csproj
+              addFirewallRule: true
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              azureSubscription: ${{ variables.subscriptionName }}
 
           - template: templates/Database/EntityFramework/deploy-ms-sql.yaml@azTemplates
             parameters:
@@ -110,23 +86,15 @@ stages:
               sqlPassword: $(vh-infra-core-dev-pw)
 
           
-          - task: AzureCLI@2
-            name: RemoveFirewallRule
-            displayName: Remove SQL Firewall Rule
-            continueOnError: false
-            condition: eq(variables['AddFirewallRule.fwRuleAdded'], 'yes')
-            inputs:
+          - template: templates/Database/Firewall/SqlServerFirewallRule.yaml@azTemplates
+            parameters:
+              removeFirewallRule: true
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
               azureSubscription: ${{ variables.subscriptionName }}
-              scriptType: pscore
-              scriptLocation: inlineScript
-              inlineScript: |
-                $ruleName = "AzureDevOpsRule-$(Build.BuildId)"
-                $sqlServer = "${{ variables.vhSQLServerName }}"
-                $sqlResourceGroup = "${{ variables.vhResourceGroup }}"
-
-                az sql server firewall-rule delete -g $sqlResourceGroup  -s $sqlServer -n $ruleName
 
       - job: aks_push
+        dependsOn: Run_Entity_Framework
         displayName: Deploy to ${{ variables.clusterName }}
         steps:
           - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
