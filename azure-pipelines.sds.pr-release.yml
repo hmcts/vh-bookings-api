@@ -67,9 +67,8 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run Entity Framework
         steps:
-          - template: templates/Database/Firewall/SqlServerFirewallRule.yaml@azTemplates
+          - template: templates/Database/Firewall/addSqlFirewallRule.yaml.yaml@azTemplates
             parameters:
-              addFirewallRule: true
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
               azureSubscription: ${{ variables.subscriptionName }}
@@ -90,12 +89,12 @@ stages:
               sqlUsername: $(vh-infra-core-dev-user)
               sqlPassword: $(vh-infra-core-dev-pw)
           
-          - template: templates/Database/Firewall/SqlServerFirewallRule.yaml@azTemplates
-            parameters:
-              removeFirewallRule: true
-              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-              sqlServerName: ${{ variables.vhSQLServerName }}
-              azureSubscription: ${{ variables.subscriptionName }}
+          - ${{ if eq(variables['AddFirewallRule.fwRuleAdded'], 'yes) }}:
+            - template: templates/Database/Firewall/removeSqlFirewallRule.yaml.yaml@azTemplates
+              parameters:
+                sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+                sqlServerName: ${{ variables.vhSQLServerName }}
+                azureSubscription: ${{ variables.subscriptionName }}
 
       - job: aks_push
         dependsOn: Run_Entity_Framework
