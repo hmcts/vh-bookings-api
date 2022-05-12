@@ -15,6 +15,8 @@ variables:
   - group: aks-cluster-info
   - group: vh-github-app-credentials
 
+#####################################################
+# Build Docker Image. ###############################
 stages:
   - stage: Dock
     displayName: Build and Push Docker Image
@@ -26,7 +28,6 @@ stages:
           env: ${{ variables.env }}
           cluster: $(dev_cluster)
       - group: vh-github-app-credentials
-
     jobs:
     - job: Dock
       displayName: "Build and Push image ${{ variables.git_repo_name }}"
@@ -47,11 +48,12 @@ stages:
             imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
               - '${{ variables.prTagName }}'
-  
 
-  - stage: Install
+#####################################################
+# Run Entity Framework Dev. #########################
+  - stage: EF_Dev
     dependsOn: Dock
-    displayName: Deploy Helm chart to Dev AKS
+    displayName: Run EF Dev
     variables:
       - group: vh-sql-credentials
       - template: variables/dev.yaml
@@ -59,13 +61,11 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(dev_cluster)
-      - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
-      - job: Run_Entity_Framework
+      - job: Run_Entity_Framework_Dev
         pool:
          vmImage: 'windows-latest'
-        displayName: Run Entity Framework
+        displayName: Run EF Dev
         steps:
           - template: templates/Database/Firewall/addSqlFirewallRule.yaml@azTemplates
             parameters:
@@ -95,6 +95,21 @@ stages:
               sqlServerName: ${{ variables.vhSQLServerName }}
               azureSubscription: ${{ variables.subscriptionName }}
 
+#####################################################
+# Deploy Helm Chart to Dev. ######################### 
+  - stage: Install
+    dependsOn: EF_Dev
+    displayName: Deploy Helm chart to Dev AKS
+    variables:
+      - group: vh-sql-credentials
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          cluster: $(dev_cluster)
+      - name: dnsRecordName
+        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
       - job: aks_push
         dependsOn: Run_Entity_Framework
         displayName: Deploy to ${{ variables.clusterName }}
@@ -118,8 +133,10 @@ stages:
               aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
               aksClusterName: "${{ variables.clusterName }}"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"  
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
+#####################################################
+# Manual Approval To QA. ############################
   - stage: Wait
     jobs:
       - job: Wait
@@ -131,9 +148,56 @@ stages:
             inputs:
               instructions: 'Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the QA environment to resume'
               onTimeout: 'reject'
+#####################################################
+# Run Entity Framework QA. ##########################
+  - stage: EF_QA
+    dependsOn: Wait
+    displayName: Run EF QA
+    variables:
+      - group: vh-sql-credentials
+      - template: variables/qa.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          cluster: $(demo_cluster)
+    jobs:
+      - job: Run_Entity_Framework_QA
+        pool:
+         vmImage: 'windows-latest'
+        displayName: Run EF QA
+        steps:
+          - template: templates/Database/Firewall/addSqlFirewallRule.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              azureSubscription: ${{ variables.subscriptionName }}
 
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: BookingsDbContext
+              workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+              projectName: BookingsApi.csproj
+
+          - template: templates/Database/EntityFramework/deploy-ms-sql.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.subscriptionName }}
+              dbServerName:  "${{ variables.vhSQLServerName }}.database.windows.net"
+              databaseName: ${{ variables.BookingsApiDbName }}
+              sqlScriptLocation: $(Build.StagingDirectory)/BookingsDbContext.sql
+              sqlUsername: $(vh-infra-core-demo-user)
+              sqlPassword: $(vh-infra-core-demo-pw)
+          
+          - template: templates/Database/Firewall/removeSqlFirewallRule.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+
+#####################################################
+# Deploy Helm Chart to QA. ##########################
   - stage: Install_Demo
     displayName: Deploy Helm chart to QA AKS
+    dependsOn: EF_QA
     variables:
       - template: variables/qa.yaml
       - template: variables/shared.yaml
