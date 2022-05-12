@@ -89,7 +89,7 @@ stages:
               sqlUsername: $(vh-infra-core-dev-user)
               sqlPassword: $(vh-infra-core-dev-pw)
           
-          - ${{ if eq(variables['AddFirewallRule.fwRuleAdded'], 'yes) }}:
+          - ${{ if eq(variables['AddFirewallRule.fwRuleAdded'], 'yes') }}:
             - template: templates/Database/Firewall/removeSqlFirewallRule.yaml.yaml@azTemplates
               parameters:
                 sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
