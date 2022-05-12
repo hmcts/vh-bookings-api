@@ -110,7 +110,7 @@ stages:
 
           
           - task: AzureCLI@2
-            name: AddFirewallRule
+            name: RemoveFirewallRule
             displayName: Remove SQL Firewall Rule
             continueOnError: false
             condition: eq(variables['AddFirewallRule.fwRuleAdded'], 'yes')
