@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: ef-template
       endpoint: hmcts
 
 pr:
@@ -67,33 +67,19 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run EF Dev
         steps:
-          - template: templates/Azure/MSSQL/Firewall/addSqlFirewallRule.yaml@azTemplates
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
               azureSubscription: ${{ variables.subscriptionName }}
-
-          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-            parameters:
               outputPath: $(Build.StagingDirectory)
               contextName: ${{ variables.efContextName }}
               workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
               projectName: ${{ variables.efProjectName }}
-
-          - template: templates/Database/EntityFramework/deploy-ms-sql.yaml@azTemplates
-            parameters:
-              azureSubscription: ${{ variables.subscriptionName }}
-              dbServerName:  "${{ variables.vhSQLServerName }}.database.windows.net"
-              databaseName: ${{ variables.BookingsApiDbName }}
               sqlScriptLocation: $(Build.StagingDirectory)/BookingsDbContext.sql
               sqlUsername: $(vh-infra-core-dev-user)
               sqlPassword: $(vh-infra-core-dev-pw)
-          
-          - template: templates/Azure/MSSQL/Firewall/removeSqlFirewallRule.yaml@azTemplates
-            parameters:
-              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-              sqlServerName: ${{ variables.vhSQLServerName }}
-              azureSubscription: ${{ variables.subscriptionName }}
 
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
@@ -165,7 +151,7 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run EF QA
         steps:
-          - template: templates/Azure/MSSQL/Firewall/addSqlFirewallRule.yaml@azTemplates
+          - template: templates/Database/MSSQL/Firewall/addSqlFirewallRule.yaml@azTemplates
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
