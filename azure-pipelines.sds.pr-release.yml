@@ -63,9 +63,10 @@ stages:
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: Run_Entity_Framework
+        pool:
+         vmImage: 'windows-latest'
         displayName: Run Entity Framework
         steps:
-
           - task: AzureCLI@2
             name: AddFirewallRule
             displayName: Add SQL Firewall Rule
