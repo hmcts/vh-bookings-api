@@ -89,12 +89,11 @@ stages:
               sqlUsername: $(vh-infra-core-dev-user)
               sqlPassword: $(vh-infra-core-dev-pw)
           
-          - ${{ if eq(variables['AddFirewallRule.fwRuleAdded'], 'yes') }}:
-            - template: templates/Database/Firewall/removeSqlFirewallRule.yaml@azTemplates
-              parameters:
-                sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-                sqlServerName: ${{ variables.vhSQLServerName }}
-                azureSubscription: ${{ variables.subscriptionName }}
+          - template: templates/Database/Firewall/removeSqlFirewallRule.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              azureSubscription: ${{ variables.subscriptionName }}
 
       - job: aks_push
         dependsOn: Run_Entity_Framework
