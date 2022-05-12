@@ -192,6 +192,7 @@ stages:
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
+              azureSubscription: ${{ variables.subscriptionName }}
 
 #####################################################
 # Deploy Helm Chart to QA. ##########################
