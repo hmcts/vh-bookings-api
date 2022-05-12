@@ -106,8 +106,8 @@ stages:
               dbServerName:  ${{ variables.vhSQLServerName }}
               databaseName: ${{ variables.BookingsApiDbName }}
               sqlScriptLocation: $(Build.StagingDirectory)/BookingsDbContext.sql
-              sqlUsername: $(vh-core-infra-dev-user)
-              sqlPassword: $(vh-core-infra-dev-pw)
+              sqlUsername: $(vh-infra-core-dev-user)
+              sqlPassword: $(vh-infra-core-dev-pw)
 
           
           - task: AzureCLI@2
