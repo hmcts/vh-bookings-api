@@ -58,3 +58,9 @@ variables:
 
   - name: gh_app_private_key_file_name
     value: hmcts-ado-cnp-app.private-key.pem
+
+
+  - name: vhSQLServerName
+    value: vh-infra-core-${{ parameters.env }}
+  - name: BookingsApiDbName
+    value: vhbookings

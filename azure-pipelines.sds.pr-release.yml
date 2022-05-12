@@ -47,11 +47,13 @@ stages:
             imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
               - '${{ variables.prTagName }}'
+  
 
   - stage: Install
     dependsOn: Dock
     displayName: Deploy Helm chart to Dev AKS
     variables:
+      - group: vh-sql-credentials
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
@@ -60,6 +62,25 @@ stages:
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
+      - job: Run_Entity_Framework
+        displayName: Run Entity Framework
+        steps:
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: EF-Dev-BookingsApi
+              workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+              projectName: BookingsApi.csproj
+
+          - template: templates/Database/EntityFramework/deploy-ms-sql.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.subscriptionName }}
+              dbServerName:  ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
+              sqlScriptLocation: $(Build.StagingDirectory)/EF-Dev-BookingsApi.sql
+              sqlUsername: $(vh-core-infra-dev-user)
+              sqlPassword: $(vh-core-infra-dev-pw)
+
       - job: aks_push
         displayName: Deploy to ${{ variables.clusterName }}
         steps:
