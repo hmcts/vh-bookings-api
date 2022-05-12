@@ -64,3 +64,5 @@ variables:
     value: vh-infra-core-${{ parameters.env }}
   - name: BookingsApiDbName
     value: vhbookings
+  - name: vhResourceGroup
+    value: vh-infra-core-${{ parameters.env }}
