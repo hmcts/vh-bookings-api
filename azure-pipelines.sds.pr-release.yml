@@ -103,7 +103,7 @@ stages:
           - template: templates/Database/EntityFramework/deploy-ms-sql.yaml@azTemplates
             parameters:
               azureSubscription: ${{ variables.subscriptionName }}
-              dbServerName:  ${{ variables.vhSQLServerName }}
+              dbServerName:  "${{ variables.vhSQLServerName }}.database.windows.net"
               databaseName: ${{ variables.BookingsApiDbName }}
               sqlScriptLocation: $(Build.StagingDirectory)/BookingsDbContext.sql
               sqlUsername: $(vh-infra-core-dev-user)

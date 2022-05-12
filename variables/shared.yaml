@@ -61,7 +61,7 @@ variables:
 
 
   - name: vhSQLServerName
-    value: vh-infra-core-${{ parameters.env }}.database.windows.net
+    value: vh-infra-core-${{ parameters.env }}
   - name: BookingsApiDbName
     value: vhbookings
   - name: vhResourceGroup
