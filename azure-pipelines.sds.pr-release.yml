@@ -67,14 +67,19 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run Entity Framework
         steps:
-          - template: templates/Database/
-
           - template: templates/Database/Firewall/SqlServerFirewallRule.yaml@azTemplates
             parameters:
               addFirewallRule: true
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
               azureSubscription: ${{ variables.subscriptionName }}
+
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: BookingsDbContext
+              workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+              projectName: BookingsApi.csproj
 
           - template: templates/Database/EntityFramework/deploy-ms-sql.yaml@azTemplates
             parameters:
@@ -84,7 +89,6 @@ stages:
               sqlScriptLocation: $(Build.StagingDirectory)/BookingsDbContext.sql
               sqlUsername: $(vh-infra-core-dev-user)
               sqlPassword: $(vh-infra-core-dev-pw)
-
           
           - template: templates/Database/Firewall/SqlServerFirewallRule.yaml@azTemplates
             parameters:
