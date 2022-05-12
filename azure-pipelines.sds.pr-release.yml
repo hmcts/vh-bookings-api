@@ -67,7 +67,7 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run Entity Framework
         steps:
-          - template: templates/Database/Firewall/addSqlFirewallRule.yaml.yaml@azTemplates
+          - template: templates/Database/Firewall/addSqlFirewallRule.yaml@azTemplates
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
@@ -90,7 +90,7 @@ stages:
               sqlPassword: $(vh-infra-core-dev-pw)
           
           - ${{ if eq(variables['AddFirewallRule.fwRuleAdded'], 'yes') }}:
-            - template: templates/Database/Firewall/removeSqlFirewallRule.yaml.yaml@azTemplates
+            - template: templates/Database/Firewall/removeSqlFirewallRule.yaml@azTemplates
               parameters:
                 sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
                 sqlServerName: ${{ variables.vhSQLServerName }}
