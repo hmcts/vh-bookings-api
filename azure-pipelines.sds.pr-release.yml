@@ -67,7 +67,7 @@ stages:
          vmImage: 'windows-latest'
         displayName: Run EF Dev
         steps:
-          - template: templates/Database/EntityFramework/run-entity-framework.yaml
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
               sqlServerName: ${{ variables.vhSQLServerName }}
