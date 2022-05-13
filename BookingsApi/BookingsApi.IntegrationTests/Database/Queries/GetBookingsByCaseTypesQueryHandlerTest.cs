@@ -195,12 +195,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
         private void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
         {
-            var containsHearingsFilteredByVenues = hearings
+            var containsHearingsFilteredWithNoJugde = hearings
                 .SelectMany(r => r.Participants)
                 .Distinct()
                 .All(r => !r.Discriminator.Equals("judge", StringComparison.InvariantCultureIgnoreCase));
 
-            containsHearingsFilteredByVenues.Should().BeTrue();
+            containsHearingsFilteredWithNoJugde.Should().BeTrue();
 
             hearings.Count().Should().Equals(1);
         }
