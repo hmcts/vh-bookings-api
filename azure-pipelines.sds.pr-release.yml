@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: ef-template
+      ref: master
       endpoint: hmcts
 
 pr:
@@ -16,7 +16,7 @@ variables:
   - group: vh-github-app-credentials
 
 #####################################################
-# Build Docker Image. ###############################
+# Build Docker Image & Generate EF Script. ##########
 stages:
   - stage: Dock
     displayName: Build and Push Docker Image
@@ -64,7 +64,7 @@ stages:
         inputs:
           targetPath: $(Build.StagingDirectory)
           publishLocation: Pipeline
-          artifact: ${{ variables.efContextName }}
+          artifact: ${{ variables.efContextName }}-$(Build.BuildId)
 
 #####################################################
 # Run Entity Framework Dev. #########################
@@ -72,7 +72,6 @@ stages:
     dependsOn: Dock
     displayName: Run EF Dev
     variables:
-      - group: vh-sql-credentials
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
@@ -85,6 +84,7 @@ stages:
         displayName: Run EF Dev
         steps:
           - download: current
+            displayName: Download Sql Artifact
 
           - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
             parameters:
@@ -92,7 +92,7 @@ stages:
               sqlServerName: ${{ variables.vhSQLServerName }}
               databaseName: ${{ variables.BookingsApiDbName }}
               azureSubscription: ${{ variables.subscriptionName }}
-              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}/${{ variables.efContextName }}.sql"
+              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
               sqlUsername: ${{ variables.vhSqlUsername }}
               kvfirewallRequired: false
               kvName: ${{ variables.vhKeyVault }}
@@ -156,7 +156,6 @@ stages:
     dependsOn: Wait
     displayName: Run EF QA
     variables:
-      - group: vh-sql-credentials
       - template: variables/qa.yaml
       - template: variables/shared.yaml
         parameters:
@@ -169,6 +168,7 @@ stages:
         displayName: Run EF QA
         steps:
           - download: current
+            displayName: Download Sql Artifact
 
           - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
             parameters:
@@ -176,7 +176,7 @@ stages:
               sqlServerName: ${{ variables.vhSQLServerName }}
               databaseName: ${{ variables.BookingsApiDbName }}
               azureSubscription: ${{ variables.subscriptionName }}
-              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}/${{ variables.efContextName }}.sql"
+              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
               sqlUsername: ${{ variables.vhSqlUsername }}
               kvfirewallRequired: false
               kvName: ${{ variables.vhKeyVault }}
