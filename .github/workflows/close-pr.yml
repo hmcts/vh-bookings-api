@@ -18,10 +18,10 @@ jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-      - uses: Azure/pipelines@v1
+      - uses: Azure/pipelines@v1.2
         with:
           azure-devops-project-url: 'https://dev.azure.com/${{ env.ado_org }}/${{ env.ado_project }}'
           azure-pipeline-name: ${{ env.ado_pipeline }}
           azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
-          azure-pipeline-variables:  '{"prNumber": "${PR_NUMBER}"}' 
+          azure-pipeline-variables: '{"prNumber": "${PR_NUMBER}"}' 
           
