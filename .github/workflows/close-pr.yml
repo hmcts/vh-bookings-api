@@ -13,6 +13,7 @@ env:
   ado_org: 'hmcts'
   ado_project: 'Video Hearings'
   ado_pipeline: 'azure-pipelines.sds.pr-close'
+  pr_number: ${PR_NUMBER}
 
 jobs:
   deployment:
@@ -23,5 +24,5 @@ jobs:
           azure-devops-project-url: 'https://dev.azure.com/${{ env.ado_org }}/${{ env.ado_project }}'
           azure-pipeline-name: ${{ env.ado_pipeline }}
           azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
-          azure-pipeline-variables: '{"prNumber": "${PR_NUMBER}"}' 
+          azure-pipeline-variables: '{"prNumber": "${{ env.pr_number }}"}' 
           
