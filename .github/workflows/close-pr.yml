@@ -13,7 +13,7 @@ env:
   ado_org: 'hmcts'
   ado_project: 'Video Hearings'
   ado_pipeline: 'azure-pipelines.sds.pr-close'
-  pr_number: ${PR_NUMBER}
+  pr_number: 422 #${PR_NUMBER}
 
 jobs:
   deployment:
