@@ -33,5 +33,8 @@ namespace BookingsApi.Contract.Requests
 
         [JsonProperty("lastName")]
         public string LastName { get; set; }
+
+        [JsonProperty("noJudge")]
+        public bool NoJudge { get; set; }
     }
 }
