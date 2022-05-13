@@ -104,7 +104,6 @@ stages:
     dependsOn: EF_Dev
     displayName: Deploy Helm chart to Dev AKS
     variables:
-      - group: vh-sql-credentials
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
