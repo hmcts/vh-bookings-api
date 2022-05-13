@@ -60,6 +60,7 @@ stages:
           projectName: ${{ variables.efProjectName }}
 
       - task: PublishPipelineArtifact@1
+        displayName: Publish EF Artifacts
         inputs:
           targetPath: $(Build.StagingDirectory)
           publishLocation: Pipeline
