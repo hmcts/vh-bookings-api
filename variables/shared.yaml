@@ -73,5 +73,7 @@ variables:
     value: BookingsApi.csproj
   - name: vhKeyVault
     value: vh-infra-core-${{ parameters.env }}
-  - name: vhSqlUsername
-    value: hvhearingsapiadmin
+  - name: vhSqlUsernameSecret
+    value: "vh-infra-core-${{ parameters.env }}-sql-username"
+  - name: vhSqlPasswordSecret
+    value: "vh-infra-core-${{ parameters.env }}-sql-password"
