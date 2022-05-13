@@ -93,10 +93,10 @@ stages:
               databaseName: ${{ variables.BookingsApiDbName }}
               azureSubscription: ${{ variables.subscriptionName }}
               sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
-              sqlUsername: ${{ variables.vhSqlUsername }}
               kvfirewallRequired: false
               kvName: ${{ variables.vhKeyVault }}
-              kvSqlPasswordSecret: hvhearingsapiadmin
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
@@ -177,10 +177,10 @@ stages:
               databaseName: ${{ variables.BookingsApiDbName }}
               azureSubscription: ${{ variables.subscriptionName }}
               sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
-              sqlUsername: ${{ variables.vhSqlUsername }}
               kvfirewallRequired: false
               kvName: ${{ variables.vhKeyVault }}
-              kvSqlPasswordSecret: hvhearingsapiadmin
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
 #####################################################
 # Deploy Helm Chart to QA. ##########################
