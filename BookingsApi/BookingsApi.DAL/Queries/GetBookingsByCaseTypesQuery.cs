@@ -30,6 +30,7 @@ namespace BookingsApi.DAL.Queries
         public string CaseNumber { get; set; }
         public IList<int> VenueIds { get; set; }
         public string LastName { get; set; }
+        public bool NoJudge { get; set; }
 
         public int Limit
         {
@@ -95,6 +96,11 @@ namespace BookingsApi.DAL.Queries
                         .Where(h => h.Participants
                         .Any(p => p.Person.LastName.Contains(query.LastName)));
                 }
+
+                if (query.NoJudge)
+                {
+                    hearings = GetHearingsWithoutJudge(hearings);
+                }
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
@@ -138,6 +144,24 @@ namespace BookingsApi.DAL.Queries
             {
                 throw new FormatException($"Unexpected cursor format [{cursor}]", e);
             }
+        }
+
+        private IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
+        {
+            var videoHearings = new List<VideoHearing>();
+
+            foreach (var item in hearings)
+            {
+                var containsNoJudge = item.Participants
+                    .All(r => !r.Discriminator.ToLower().Equals("judge"));
+
+                if (containsNoJudge)
+                {
+                    videoHearings.Add(item);
+                }
+            }
+
+            return videoHearings.AsQueryable();
         }
 
         private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(
