@@ -15,6 +15,8 @@ variables:
   - group: aks-cluster-info
   - group: vh-github-app-credentials
 
+#####################################################
+# Build Docker Image & Generate EF Script. ##########
 stages:
   - stage: Dock
     displayName: Build and Push Docker Image
@@ -26,7 +28,6 @@ stages:
           env: ${{ variables.env }}
           cluster: $(dev_cluster)
       - group: vh-github-app-credentials
-
     jobs:
     - job: Dock
       displayName: "Build and Push image ${{ variables.git_repo_name }}"
@@ -48,8 +49,59 @@ stages:
             imageTags:
               - '${{ variables.prTagName }}'
 
-  - stage: Install
+    - job: Generate_EF
+      displayName: "Generate Entity Framework Script"
+      steps:
+      - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+        parameters:
+          outputPath: $(Build.StagingDirectory)
+          contextName: ${{ variables.efContextName }}
+          workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+          projectName: ${{ variables.efProjectName }}
+
+      - task: PublishPipelineArtifact@1
+        displayName: Publish EF Artifacts
+        inputs:
+          targetPath: $(Build.StagingDirectory)
+          publishLocation: Pipeline
+          artifact: ${{ variables.efContextName }}-$(Build.BuildId)
+
+#####################################################
+# Run Entity Framework Dev. #########################
+  - stage: EF_Dev
     dependsOn: Dock
+    displayName: Run EF Dev
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          cluster: $(dev_cluster)
+    jobs:
+      - job: Run_Entity_Framework_Dev
+        pool:
+         vmImage: 'windows-latest'
+        displayName: Run EF Dev
+        steps:
+          - download: current
+            displayName: Download Sql Artifact
+
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
+              kvfirewallRequired: false
+              kvName: ${{ variables.vhKeyVault }}
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+
+#####################################################
+# Deploy Helm Chart to Dev. ######################### 
+  - stage: Install
+    dependsOn: EF_Dev
     displayName: Deploy Helm chart to Dev AKS
     variables:
       - template: variables/dev.yaml
@@ -82,8 +134,10 @@ stages:
               aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
               aksClusterName: "${{ variables.clusterName }}"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"  
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
+#####################################################
+# Manual Approval To QA. ############################
   - stage: Wait
     jobs:
       - job: Wait
@@ -95,9 +149,43 @@ stages:
             inputs:
               instructions: 'Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the QA environment to resume'
               onTimeout: 'reject'
+#####################################################
+# Run Entity Framework QA. ##########################
+  - stage: EF_QA
+    dependsOn: Wait
+    displayName: Run EF QA
+    variables:
+      - template: variables/qa.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          cluster: $(demo_cluster)
+    jobs:
+      - job: Run_Entity_Framework_QA
+        pool:
+         vmImage: 'windows-latest'
+        displayName: Run EF QA
+        steps:
+          - download: current
+            displayName: Download Sql Artifact
 
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
+              kvfirewallRequired: false
+              kvName: ${{ variables.vhKeyVault }}
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+
+#####################################################
+# Deploy Helm Chart to QA. ##########################
   - stage: Install_Demo
     displayName: Deploy Helm chart to QA AKS
+    dependsOn: EF_QA
     variables:
       - template: variables/qa.yaml
       - template: variables/shared.yaml
