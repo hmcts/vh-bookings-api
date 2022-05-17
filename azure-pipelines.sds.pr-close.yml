@@ -15,7 +15,8 @@ variables:
   - group: vh-github-app-credentials
   - name: prNumber
     value: ""
-
+  - name: appName
+    value: "this"
 #parameters: 
 #  - name: prNumber
 #    displayName: Pull Request Number 
@@ -38,6 +39,9 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
+        - bash: |
+            echo "$(appName)"
+            
         - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
           parameters:
             namespace: 'vh'
