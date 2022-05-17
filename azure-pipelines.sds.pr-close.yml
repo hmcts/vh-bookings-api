@@ -13,11 +13,13 @@ pr: none
 variables:
   - group: aks-cluster-info
   - group: vh-github-app-credentials
-
-parameters: 
   - name: prNumber
-    displayName: Pull Request Number 
-    type: string
+    value: ""
+
+#parameters: 
+#  - name: prNumber
+#    displayName: Pull Request Number 
+#    type: number
 
 stages:
   - stage: uninstall_dev
