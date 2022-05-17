@@ -105,8 +105,25 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             AssertHearingsAreFilteredByLastName(result, participantLastName);
         }
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_with_no_judge()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
 
-     
+            var bookingsWithNoJugde = await Hooks.SeedVideoHearingWithNoJudge();
+
+            var bookingsWithJudge = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })
+            {
+                NoJudge = true
+            };
+
+            var hearings = await _handler.Handle(query);
+
+            AssertHearingsContainsNoJdge(hearings);
+        }
+
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_venue_ids()
         {
@@ -175,7 +192,19 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             containsHearingsFilteredByCaseNumber.Should().BeTrue();
         }
-        
+
+        private void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
+        {
+            var containsHearingsFilteredWithNoJudge = hearings
+                .SelectMany(r => r.Participants)
+                .Distinct()
+                .All(r => !r.Discriminator.Equals("judge", StringComparison.InvariantCultureIgnoreCase));
+
+            containsHearingsFilteredWithNoJudge.Should().BeTrue();
+
+            hearings.Count().Should().Equals(1);
+        }
+
         private void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
         {
             var containsHearingsFilteredByVenues = hearings
