@@ -36,6 +36,9 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
+        - bash: |
+            echo "$(appName)"
+            
         - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
           parameters:
             namespace: 'vh'
