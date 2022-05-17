@@ -31,7 +31,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(dev_cluster)
-          prNumber: ${{ parameters.prNumber }}
+          prNumber: ${{ variables.prNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
@@ -65,7 +65,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(demo_cluster)
-          prNumber: ${{ parameters.prNumber }}
+          prNumber: ${{ variables.prNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
