@@ -13,7 +13,7 @@ env:
   ado_org: 'hmcts'
   ado_project: 'Video Hearings'
   ado_pipeline: 'azure-pipelines.sds.pr-close'
-  pr_number: ${PR_NUMBER}
+  pr_number: ${{github.event.pull_request.number}}
   branch: ${{ github.ref_name }}
   AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
@@ -43,7 +43,7 @@ jobs:
               Write-host $definition
               $definitionId = $definition.id
 
-              Write-Host "Trigger def $definitionId for branch $branch"
+              Write-Host "Trigger PR $gitPullRequestId def $definitionId for branch $branch"
               az pipelines run --branch $branch --detect $false --folder-path "\" --id $definitionId --org $organisation --project $project --parameters "prNumber=$gitPullRequestId" #--debug
 
           } else {
