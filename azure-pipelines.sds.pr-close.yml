@@ -17,7 +17,7 @@ variables:
 parameters: 
   - name: prNumber
     displayName: Pull Request Number 
-    type: number
+    type: string
 
 stages:
   - stage: uninstall_dev
