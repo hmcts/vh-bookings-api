@@ -5,6 +5,9 @@ parameters:
   - name: cluster
     type: string
     default: ''
+  - name: prNumber
+    type: string
+    default: ''
 
 variables:
 
@@ -12,7 +15,10 @@ variables:
     value: 'bookings-api'
 
   - name: prNumber
-    value: 667 #$(System.PullRequest.PullRequestNumber)
+    ${{ if eq(parameters.prNumber, '')}}:
+      value: $(System.PullRequest.PullRequestNumber)
+    ${{ else }}:
+      value: ${{ parameters.prNumber }}
   - name: prTagPrefix
     value: 'pr-${{ variables.prNumber }}'
   - name: prTagName
