@@ -25,7 +25,7 @@ jobs:
         shell: pwsh
         run: |
           $gitPullRequestId = "${{ env.pr_number }}"
-          $branch="${{ env.branch }}"
+          $branch="refs/pull/${{ env.branch }}"
 
           $pipelineName = "${{ env.ado_pipeline }}"
           $organisation = "https://dev.azure.com/${{ env.ado_org }}/"
