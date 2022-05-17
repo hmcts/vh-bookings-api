@@ -14,16 +14,44 @@ env:
   ado_project: 'Video Hearings'
   ado_pipeline: 'azure-pipelines.sds.pr-close'
   pr_number: ${PR_NUMBER}
+  AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
 jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-      - uses: Azure/pipelines@v1.2
-        with:
-          azure-devops-project-url: 'https://dev.azure.com/${{ env.ado_org }}/${{ env.ado_project }}'
-          azure-pipeline-name: ${{ env.ado_pipeline }}
-          azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
-          azure-pipeline-variables: '{"prNumber": "541", "appName": "Test"}'
-          #azure-pipeline-variables: '{"prNumber": "${{ env.pr_number }}"}' 
+
+      - name: Trigger Pipline
+        shell: pwsh
+        run: |
+          $gitPullRequestId = "${{ env.pr_number }}"
+          $branch="${{ env.GITHUB_REF }}"
+
+          $pipelineName = "${{ env.ado_pipeline }}"
+          $organisation = "https://dev.azure.com/${{ env.ado_org }}/"
+          $project = "${{ env.ado_project }}"
+
+          Write-Host "Login to $organisation $project"
+          az devops login --organization $organisation
+
+          Write-Host "Get Definition of $pipelineName"
+          $definitions = az pipelines build definition list --name $pipelineName  --org $organisation --project $project | ConvertFrom-Json 
+
+          $definitionId = ""
+          if ($definitions.length -gt 0){
+              $definition = $definitions[0]
+              Write-host $definition
+              $definitionId = $definition.id
+
+              Write-Host "Trigger def $definitionId for branch $branch"
+              az pipelines run --branch $branch --detect $false --folder-path "\" --id $definitionId --org $organisation --project $project --parameters "prNumber=$gitPullRequestId" #--debug
+
+          } else {
+              Write-Error "No Definition found with name $pipelineName in $organisation proj $project "
+              exit 1
+          }
+
+
+
+
           
