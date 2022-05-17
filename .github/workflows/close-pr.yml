@@ -6,8 +6,8 @@ on:
       - synchronize
 
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 env:
   ado_org: 'hmcts'

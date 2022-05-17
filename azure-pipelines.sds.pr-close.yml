@@ -13,13 +13,11 @@ pr: none
 variables:
   - group: aks-cluster-info
   - group: vh-github-app-credentials
-  - name: prNumber
-    value: ""
 
-#parameters: 
-#  - name: prNumber
-#    displayName: Pull Request Number 
-#    type: number
+parameters: 
+  - name: prNumber
+    displayName: Pull Request Number 
+    type: number
 
 stages:
   - stage: uninstall_dev
@@ -31,7 +29,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(dev_cluster)
-          prNumber: ${{ variables.prNumber }}
+          prNumber: ${{ parameters.prNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
@@ -65,7 +63,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(demo_cluster)
-          prNumber: ${{ variables.prNumber }}
+          prNumber: ${{ parameters.prNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
