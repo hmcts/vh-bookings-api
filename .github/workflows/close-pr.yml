@@ -14,14 +14,13 @@ env:
   ado_project: 'Video Hearings'
   ado_pipeline: 'azure-pipelines.sds.pr-close'
   pr_number: ${PR_NUMBER}
-  branch: ${GITHUB_REF}
+  branch: ${{ github.ref_name }}
   AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
 jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-
       - name: Trigger Pipline
         shell: pwsh
         run: |
