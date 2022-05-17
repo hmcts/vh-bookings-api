@@ -14,6 +14,7 @@ env:
   ado_project: 'Video Hearings'
   ado_pipeline: 'azure-pipelines.sds.pr-close'
   pr_number: ${PR_NUMBER}
+  branch: ${GITHUB_REF}
   AZURE_DEVOPS_EXT_PAT: ${{ secrets.AZURE_DEVOPS_TOKEN }}
 
 jobs:
@@ -25,14 +26,14 @@ jobs:
         shell: pwsh
         run: |
           $gitPullRequestId = "${{ env.pr_number }}"
-          $branch="${{ env.GITHUB_REF }}"
+          $branch="${{ env.branch }}"
 
           $pipelineName = "${{ env.ado_pipeline }}"
           $organisation = "https://dev.azure.com/${{ env.ado_org }}/"
           $project = "${{ env.ado_project }}"
 
           Write-Host "Login to $organisation $project"
-          az devops login --organization $organisation
+          #az devops login --organization $organisation
 
           Write-Host "Get Definition of $pipelineName"
           $definitions = az pipelines build definition list --name $pipelineName  --org $organisation --project $project | ConvertFrom-Json 
