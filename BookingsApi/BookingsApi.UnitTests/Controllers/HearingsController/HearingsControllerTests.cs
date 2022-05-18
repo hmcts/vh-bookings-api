@@ -612,6 +612,47 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
 
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_bookings_list_without_judge_search()
+        {
+            var caseTypes = new List<int> { 1, 2 };
+
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
+                .ReturnsAsync(new List<CaseType> { new CaseType(1, "Financial"), new CaseType(2, "Civil") });
+
+            QueryHandlerMock
+                .Setup(x =>
+                    x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                        It.IsAny<GetBookingsByCaseTypesQuery>()))
+                .ReturnsAsync(new CursorPagedResult<VideoHearing, string>(new List<VideoHearing>(), "next-cursor"));
+
+            var objectResult = (await Controller.GetHearingsByTypes(
+               new GetHearingRequest
+               {
+                   Types = caseTypes,
+                   Cursor = GetHearingRequest.DefaultCursor,
+                   Limit = 2,
+                   NoJudge = true
+               }))
+               .Result as ObjectResult;
+
+            var response = (BookingsResponse)objectResult.Value;
+
+            objectResult.Should().NotBeNull();
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            response.Limit.Should().Be(2);
+            response.NextCursor.Should().Be("next-cursor");
+            response.PrevPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=0&limit=2&venueIds=");
+            response.NextPageUrl.Should().Be($"hearings/types?types=1&types=2&cursor=next-cursor&limit=2&venueIds=");
+
+            QueryHandlerMock.Verify(
+                x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
+                    It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
+        }
+
         protected static VideoHearing GetHearing(string caseNumber)
         {
             var hearing = new VideoHearingBuilder().Build();

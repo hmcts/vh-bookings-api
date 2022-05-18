@@ -566,7 +566,8 @@ namespace BookingsApi.Controllers
                 EndDate = request.EndDate,
                 CaseNumber = request.CaseNumber,
                 VenueIds = request.VenueIds,
-                LastName = request.LastName
+                LastName = request.LastName,
+                NoJudge = request.NoJudge
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
@@ -651,7 +652,7 @@ namespace BookingsApi.Controllers
                 if (!string.IsNullOrWhiteSpace(lastName))
                 {
                     pageUrl += $"&lastName={lastName}";
-                }
+                } 
             }
 
             return pageUrl;

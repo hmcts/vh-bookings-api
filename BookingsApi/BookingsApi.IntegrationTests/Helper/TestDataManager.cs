@@ -186,13 +186,71 @@ namespace BookingsApi.IntegrationTests.Helper
             return hearing;
         }
 
-        public async Task SeedVideoHearing(VideoHearing videoHearing)
+        public async Task<VideoHearing> SeedVideoHearingWithNoJudge(Action<SeedVideoHearingOptions> configureOptions = null)
+        {
+            var options = new SeedVideoHearingOptions();
+            configureOptions?.Invoke(options);
+            var caseType = GetCaseTypeFromDb(options.CaseTypeName);
+
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ApplicantRole);
+            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
+            var applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+            var applicantRepresentativeHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var respondentRepresentativeHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+            var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
+
+            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues.First();
+
+            var person1 = new PersonBuilder(true).WithOrganisation().Build();
+            var person2 = new PersonBuilder(true).Build();
+            var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder(true).Build();
+
+            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+
+            const int duration = 45;
+            const string hearingRoomName = "Room02";
+            const string otherInformation = "OtherInformation02";
+            const string createdBy = "test@hmcts.net";
+            const bool questionnaireNotRequired = false;
+            const bool audioRecordingRequired = true;
+            const string cancelReason = "Online abandonment (incomplete registration)";
+
+            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
+                venue, hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                audioRecordingRequired, cancelReason);
+
+            videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
+                $"{person1.FirstName} {person1.LastName}");
+
+            videoHearing.AddRepresentative(person2, applicantRepresentativeHearingRole, applicantCaseRole,
+                $"{person2.FirstName} {person2.LastName}", "Ms X");
+
+            videoHearing.AddRepresentative(person3, respondentRepresentativeHearingRole, respondentCaseRole,
+                $"{person3.FirstName} {person3.LastName}", "Ms Y");
+
+            videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
+                $"{person4.FirstName} {person4.LastName}");
+
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
+                $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", true);
+            videoHearing.AddCase($"{Faker.RandomNumber.Next(1000, 9999)}/{Faker.RandomNumber.Next(1000, 9999)}",
+                $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
+            videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {Faker.RandomNumber.Next(900000, 999999)}", false);
+
+            return await SaveVideoHearing(videoHearing);
+        }
+
+        public async Task<VideoHearing> SaveVideoHearing(VideoHearing videoHearing)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
             await db.VideoHearings.AddAsync(videoHearing);
             await db.SaveChangesAsync();
-            
+
             _seededHearings.Add(videoHearing.Id);
+
+            return videoHearing;
         }
 
         public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing)
