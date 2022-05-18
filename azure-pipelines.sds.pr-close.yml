@@ -9,6 +9,7 @@ resources:
       endpoint: hmcts
 
 pr: none
+trigger: none
 
 variables:
   - group: aks-cluster-info
