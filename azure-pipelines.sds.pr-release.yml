@@ -11,9 +11,13 @@ resources:
 pr:
   - master
 
+
+
 variables:
   - group: aks-cluster-info
   - group: vh-github-app-credentials
+  - name: prTagName1
+    value: pr-$(System.PullRequest.PullRequestNumber)-james
 
 #####################################################
 # Build Docker Image & Generate EF Script. ##########
@@ -51,7 +55,7 @@ stages:
             repositoryName:  ${{ variables.repositoryName }}
             imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
             imageTags:
-              - '${{ variables.prTagName }}'
+              - '${{ variables.prTagName1 }}'
 
     - job: Generate_EF
       displayName: "Generate Entity Framework Script"
