@@ -33,6 +33,9 @@ stages:
       displayName: "Build and Push image ${{ variables.git_repo_name }}"
       steps:
         - checkout: self
+        - bash: |
+            echo $(System.PullRequest.PullRequestNumber)
+            echo $(System.PullRequest.PullRequestId)
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
