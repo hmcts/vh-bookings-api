@@ -34,8 +34,8 @@ stages:
       steps:
         - checkout: self
         - bash: |
-            echo $(System.PullRequest.PullRequestNumber)
-            echo $(System.PullRequest.PullRequestId)
+            echo "$(System.PullRequest.PullRequestNumber)"
+            echo "$(System.PullRequest.PullRequestId)"
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
