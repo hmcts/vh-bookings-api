@@ -16,7 +16,7 @@ variables:
 
   - name: prNumber
     ${{ if eq(parameters.prNumber, '')}}:
-      value: ${{ variables.System.PullRequest.PullRequestNumber }}
+      value: $(Build.BuildId)
     ${{ else }}:
       value: ${{ parameters.prNumber }}
   - name: prTagPrefix
