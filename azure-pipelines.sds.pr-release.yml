@@ -12,7 +12,6 @@ pr:
   - master
 
 variables:
-  - group: aks-cluster-info
   - group: vh-github-app-credentials
 
 #####################################################
@@ -26,7 +25,6 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
       - group: vh-github-app-credentials
     jobs:
     - job: Dock
@@ -76,7 +74,6 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
     jobs:
       - job: Run_Entity_Framework_Dev
         pool:
@@ -108,13 +105,16 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        displayName: Deploy to ${{ variables.clusterName }}
+        displayName: Deploy to AKS
         steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
           - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
             parameters:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -131,8 +131,8 @@ stages:
               chartName: ${{ variables.chartName }}
               chartPath: ${{ variables.chartPath }}
               subscriptionName: "${{ variables.subscriptionName }}"
-              aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-              aksClusterName: "${{ variables.clusterName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
@@ -159,7 +159,6 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(demo_cluster)
     jobs:
       - job: Run_Entity_Framework_QA
         pool:
@@ -191,13 +190,16 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(demo_cluster)
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        displayName: Deploy to ${{ variables.clusterName }}
+        displayName: Deploy to AKS
         steps:
+        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            environment: ${{ variables.env }}
         - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
           parameters:
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -214,7 +216,7 @@ stages:
             chartName: ${{ variables.chartName }}
             chartPath: ${{ variables.chartPath }}
             subscriptionName: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-            aksClusterName: "${{ variables.clusterName }}"
+            aksResourceGroupName: "$(aksCluster.resourceGroup)"
+            aksClusterName: "$(aksCluster.name)"
             dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
             dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"

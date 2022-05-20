@@ -12,7 +12,6 @@ pr: none
 trigger: none
 
 variables:
-  - group: aks-cluster-info
   - group: vh-github-app-credentials
 
 parameters: 
@@ -29,7 +28,6 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
           prNumber: ${{ parameters.prNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
@@ -37,6 +35,11 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
+        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            environment: ${{ variables.env }}
+
         - bash: |
             echo "$(appName)"
             
@@ -45,8 +48,8 @@ stages:
             namespace: 'vh'
             releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
             azureSubscription: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-            aksClusterName: "${{ variables.clusterName }}"
+            aksResourceGroupName: "$(aksCluster.resourceGroup)"
+            aksClusterName: "$(aksCluster.name)"
       - job: dns_uninstall
         displayName: Uninstall DNS from Dev
         steps:
@@ -66,7 +69,6 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(demo_cluster)
           prNumber: ${{ parameters.prNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
@@ -74,13 +76,17 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Demo
         steps:
+        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            environment: ${{ variables.env }}
         - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
           parameters:
             namespace: 'vh'
             releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
             azureSubscription: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-            aksClusterName: "${{ variables.clusterName }}"
+            aksResourceGroupName: "$(aksCluster.resourceGroup)"
+            aksClusterName: "$(aksCluster.name)"
       - job: dns_uninstall
         displayName: Uninstall DNS from Demo
         steps:
