@@ -36,6 +36,7 @@ stages:
         - bash: |
             echo "$(System.PullRequest.PullRequestNumber)"
             echo "$(System.PullRequest.PullRequestId)"
+            echo "$(System.DefaultWorkingDirectory)"
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
