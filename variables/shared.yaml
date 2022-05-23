@@ -2,9 +2,6 @@ parameters:
   - name: env
     type: string
     default: ""
-  - name: cluster
-    type: string
-    default: ''
   - name: prNumber
     type: string
     default: ''
@@ -38,11 +35,6 @@ variables:
     value: "prod-$(Build.SourceBranchName)"
   - name: gitRepoName
     value: vh-${{ variables.git_repo_name }}
-  - ${{ if ne(parameters.cluster, '') }}:
-    - name: clusterName
-      value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-aks"
-    - name: clusterResourceGroup
-      value: "ss-${{ parameters.env }}-${{ parameters.cluster }}-rg"
 
 
   - name: chartName
