@@ -31,6 +31,8 @@ stages:
       displayName: "Build and Push Image ${{ variables.git_repo_name }}"
       steps:
         - checkout: self
+        - powershell: |
+            gci env:* | sort-object name | Format-Table -Property name,value -AutoSize
 
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
