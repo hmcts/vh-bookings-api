@@ -12,7 +12,6 @@ pr:
   - master
 
 variables:
-  - group: aks-cluster-info
   - group: vh-github-app-credentials
   - name: pullRequestNumber
     value: $(System.PullRequest.PullRequestNumber)
@@ -120,8 +119,12 @@ stages:
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        displayName: Deploy to ${{ variables.clusterName }}
+        displayName: Deploy to AKS
         steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
           - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
             parameters:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -138,8 +141,8 @@ stages:
               chartName: ${{ variables.chartName }}
               chartPath: ${{ variables.chartPath }}
               subscriptionName: "${{ variables.subscriptionName }}"
-              aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-              aksClusterName: "${{ variables.clusterName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
@@ -205,8 +208,12 @@ stages:
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        displayName: Deploy to ${{ variables.clusterName }}
+        displayName: Deploy to AKS
         steps:
+        - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+          parameters:
+            subscriptionName: "${{ variables.subscriptionName }}"
+            environment: ${{ variables.env }}
         - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
           parameters:
             privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -223,7 +230,7 @@ stages:
             chartName: ${{ variables.chartName }}
             chartPath: ${{ variables.chartPath }}
             subscriptionName: "${{ variables.subscriptionName }}"
-            aksResourceGroupName: "${{ variables.clusterResourceGroup }}"
-            aksClusterName: "${{ variables.clusterName }}"
+            aksResourceGroupName: "$(aksCluster.resourceGroup)"
+            aksClusterName: "$(aksCluster.name)"
             dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
             dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
