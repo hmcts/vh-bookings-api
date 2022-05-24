@@ -32,10 +32,6 @@ stages:
       steps:
         - checkout: self
 
-        - bash: |
-            echo "$(System.PullRequest.PullRequestNumber)"
-            echo "$(System.PullRequest.PullRequestId)"
-            
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
             azureSubscription: ${{ variables.acrSubscription }}
@@ -51,7 +47,7 @@ stages:
             imageTags:
               - '${{ variables.prTagName }}'
 
-    - job: Generate_EF
+    - job: Generate_Entity_Framework_Script
       displayName: "Generate Entity Framework Script"
       steps:
       - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
@@ -70,9 +66,9 @@ stages:
 
 #####################################################
 # Run Entity Framework Dev. #########################
-  - stage: EF_Dev
+  - stage: Run_Entity_Framework_Dev
     dependsOn: Dock
-    displayName: Run EF Dev
+    displayName: Run Entity Framework Dev
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
@@ -82,7 +78,7 @@ stages:
       - job: Run_Entity_Framework_Dev
         pool:
          vmImage: 'windows-latest'
-        displayName: Run EF Dev
+        displayName: Run Entity Framework Dev
         steps:
           - download: current
             displayName: Download Sql Artifact
@@ -102,8 +98,8 @@ stages:
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
   - stage: Install
-    dependsOn: EF_Dev
-    displayName: Deploy Helm chart to Dev AKS
+    dependsOn: Run_Entity_Framework_Dev
+    displayName: Deploy Helm Chart Dev AKS
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
@@ -113,7 +109,7 @@ stages:
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        displayName: Deploy to AKS
+        displayName: Deploy To Dev AKS
         steps:
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
@@ -141,33 +137,33 @@ stages:
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
 #####################################################
-# Manual Approval To QA. ############################
+# Manual Approval To Demo. ##########################
   - stage: Wait
     jobs:
       - job: Wait
-        displayName: "Approve for release to QA"
+        displayName: "Approve Release Demo"
         pool: server
         steps:
           - task: ManualValidation@0
             timeoutInMinutes: 1440 # task times out in 1 day
             inputs:
-              instructions: 'Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the QA environment to resume'
+              instructions: 'Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the Demo environment to resume'
               onTimeout: 'reject'
 #####################################################
-# Run Entity Framework QA. ##########################
-  - stage: EF_QA
+# Run Entity Framework Demo. ##########################
+  - stage: Run_Entity_Framework_Demo
     dependsOn: Wait
-    displayName: Run EF QA
+    displayName: Run Entity Framework Demo
     variables:
       - template: variables/qa.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
     jobs:
-      - job: Run_Entity_Framework_QA
+      - job: Run_Entity_Framework_Demo
         pool:
          vmImage: 'windows-latest'
-        displayName: Run EF QA
+        displayName: Run Entity Framework Demo
         steps:
           - download: current
             displayName: Download Sql Artifact
@@ -187,8 +183,8 @@ stages:
 #####################################################
 # Deploy Helm Chart to QA. ##########################
   - stage: Install_Demo
-    displayName: Deploy Helm chart to QA AKS
-    dependsOn: EF_QA
+    displayName: Deploy Helm Chart Demo AKS
+    dependsOn: Run_Entity_Framework_Demo
     variables:
       - template: variables/qa.yaml
       - template: variables/shared.yaml
@@ -198,7 +194,7 @@ stages:
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
-        displayName: Deploy to AKS
+        displayName: Deploy To Demo AKS
         steps:
         - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
           parameters:
