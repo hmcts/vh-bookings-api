@@ -13,10 +13,6 @@ pr:
 
 variables:
   - group: vh-github-app-credentials
-  - name: pullRequestNumber
-    value: $(System.PullRequest.PullRequestNumber)
-  - name: pullRequestId
-    value: $(System.PullRequest.PullRequestId)
 
 #####################################################
 # Build Docker Image & Generate EF Script. ##########
@@ -37,8 +33,8 @@ stages:
         - checkout: self
 
         - bash: |
-            echo "$(pullRequestNumber)"
-            echo "$(pullRequestId)"
+            echo "$(System.PullRequest.PullRequestNumber)"
+            echo "$(System.PullRequest.PullRequestId)"
             
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
