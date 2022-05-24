@@ -14,6 +14,8 @@ pr:
 variables:
   - group: aks-cluster-info
   - group: vh-github-app-credentials
+  - name: pullRequestNumber
+    value: $(System.PullRequest.PullRequestNumber)
 
 #####################################################
 # Build Docker Image & Generate EF Script. ##########
@@ -26,7 +28,8 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
+          cluster: ${{ variables.dev_cluster }}
+          prNumber: ${{ variables.pullRequestNumber }}
       - group: vh-github-app-credentials
     jobs:
     - job: Dock
@@ -49,7 +52,7 @@ stages:
             imageTags:
               - '${{ variables.prTagName }}'
 
-    - job: Generate_EF
+    - job: Generate_Entity_Framework_Script
       displayName: "Generate Entity Framework Script"
       steps:
       - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
@@ -60,7 +63,7 @@ stages:
           projectName: ${{ variables.efProjectName }}
 
       - task: PublishPipelineArtifact@1
-        displayName: Publish EF Artifacts
+        displayName: Publish Artifacts
         inputs:
           targetPath: $(Build.StagingDirectory)
           publishLocation: Pipeline
@@ -68,15 +71,16 @@ stages:
 
 #####################################################
 # Run Entity Framework Dev. #########################
-  - stage: EF_Dev
+  - stage: Run_Entity_Framework_Dev
     dependsOn: Dock
-    displayName: Run EF Dev
+    displayName: Run Entity Framework Dev
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
+          cluster: ${{ variables.dev_cluster }}
+          prNumber: ${{ variables.pullRequestNumber }}
     jobs:
       - job: Run_Entity_Framework_Dev
         pool:
@@ -108,7 +112,8 @@ stages:
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-          cluster: $(dev_cluster)
+          cluster: ${{ variables.dev_cluster }}
+          prNumber: ${{ variables.pullRequestNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
@@ -160,6 +165,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(demo_cluster)
+          prNumber: ${{ variables.pullRequestNumber }}
     jobs:
       - job: Run_Entity_Framework_QA
         pool:
@@ -192,6 +198,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
           cluster: $(demo_cluster)
+          prNumber: ${{ variables.pullRequestNumber }}
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
