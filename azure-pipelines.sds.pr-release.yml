@@ -28,7 +28,7 @@ stages:
       - group: vh-github-app-credentials
     jobs:
     - job: Dock
-      displayName: "Build and Push image ${{ variables.git_repo_name }}"
+      displayName: "Build and Push Image ${{ variables.git_repo_name }}"
       steps:
         - checkout: self
 
@@ -58,7 +58,7 @@ stages:
           projectName: ${{ variables.efProjectName }}
 
       - task: PublishPipelineArtifact@1
-        displayName: Publish EF Artifacts
+        displayName: Publish Artifacts
         inputs:
           targetPath: $(Build.StagingDirectory)
           publishLocation: Pipeline
@@ -77,7 +77,7 @@ stages:
     jobs:
       - job: Run_Entity_Framework_Dev
         pool:
-         vmImage: 'windows-latest'
+         vmImage: 'windows-latest' # This Job Must be Run on Windows
         displayName: Run Entity Framework Dev
         steps:
           - download: current
