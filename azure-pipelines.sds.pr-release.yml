@@ -85,7 +85,7 @@ stages:
       - job: Run_Entity_Framework_Dev
         pool:
          vmImage: 'windows-latest'
-        displayName: Run EF Dev
+        displayName: Run Entity Framework Dev
         steps:
           - download: current
             displayName: Download Sql Artifact
@@ -105,7 +105,7 @@ stages:
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
   - stage: Install
-    dependsOn: EF_Dev
+    dependsOn: Run_Entity_Framework_Dev
     displayName: Deploy Helm chart to Dev AKS
     variables:
       - template: variables/dev.yaml
