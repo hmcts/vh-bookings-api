@@ -125,66 +125,37 @@ stages:
       - name: dnsRecordName
         value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
-      - job: aks_push
-        displayName: Deploy to AKS
-        steps:
-          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
-            parameters:
-              subscriptionName: "${{ variables.subscriptionName }}"
-              environment: ${{ variables.env }}
-          - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
-            parameters:
-              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-              appId: $(gh_app_app_id)
-              envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
-              envValuesPath: ${{ variables.envValuesPath }}
-              acrName: ${{ variables.acrName }}
-              repositoryName: ${{ variables.repositoryName }}
-              prTagName: ${{ variables.prTagName }}
-              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
-              dnsRecordName: ${{ variables.dnsRecordName }}
-              dnsZone: ${{ variables.dnsZone }}
-              env: ${{ variables.env }}
-              chartName: ${{ variables.chartName }}
-              chartPath: ${{ variables.chartPath }}
-              subscriptionName: "${{ variables.subscriptionName }}"
-              aksResourceGroupName: "$(aksCluster.resourceGroup)"
-              aksClusterName: "$(aksCluster.name)"
-              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-      - job: integration_test
-        displayName: "Integration Testing"
-        steps:
-          - template: stages\dotnet-tests\integration-test.yml@azTemplates
-            parameters:
-              coreProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}"
-              nugetConfigPath: ${{ variables.config_path }}
-              integTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.IntegrationTests"
-              secrets_KeyVault: "vh-bookings-api-${{ variables.env }}"
-              secrets_Subscription: "DTS-SHAREDSERVICES-${{ variables.env }}"
-              testSettings:
-                - name: ApplicationInsights:InstrumentationKey
-                  value: vh-core-infra-AppInsightsKey
-                  secret: true
-                - name: AzureAd:ClientId
-                  value: vh-bookings-api-appid
-                  secret: true
-                - name: AzureAd:ClientSecret
-                  value: vh-bookings-api-key
-                  secret: true
-                - name: AzureAd:TenantId
-                  value: tenantid
-                  secret: true
-                - name: Testing:UsernameStem
-                  value: $(BookingsApiUsernameStem)
-                - name: Services:BookingsApiResourceId
-                  value: vh-bookings-api-identifieruris
-                  secret: true
-                - name: LaunchDarkly:SdkKey
-                  value: vh-admin-web-Feature-Toggle
-                  secret: true
-                - name: UseServiceBusFake
-                  value: true
+
+  - template: stages\dotnet-tests\integration-test.yml@azTemplates
+    parameters:
+      coreProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}"
+      nugetConfigPath: ${{ variables.config_path }}
+      integTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.IntegrationTests"
+      secrets_KeyVault: "vh-bookings-api-${{ variables.env }}"
+      secrets_Subscription: "DTS-SHAREDSERVICES-${{ variables.env }}"
+      testSettings:
+        - name: ApplicationInsights:InstrumentationKey
+          value: vh-core-infra-AppInsightsKey
+          secret: true
+        - name: AzureAd:ClientId
+          value: vh-bookings-api-appid
+          secret: true
+        - name: AzureAd:ClientSecret
+          value: vh-bookings-api-key
+          secret: true
+        - name: AzureAd:TenantId
+          value: tenantid
+          secret: true
+        - name: Testing:UsernameStem
+          value: $(BookingsApiUsernameStem)
+        - name: Services:BookingsApiResourceId
+          value: vh-bookings-api-identifieruris
+          secret: true
+        - name: LaunchDarkly:SdkKey
+          value: vh-admin-web-Feature-Toggle
+          secret: true
+        - name: UseServiceBusFake
+          value: true
 
 #####################################################
 # Manual Approval To QA. ############################
