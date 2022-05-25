@@ -7,6 +7,8 @@ resources:
       name: hmcts/azure-devops-templates
       ref: master
       endpoint: hmcts
+      
+trigger: none
 
 pr:
   - master
@@ -106,7 +108,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
       - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
         displayName: Deploy To Dev AKS
@@ -191,7 +193,7 @@ stages:
         parameters:
           env: ${{ variables.env }}
       - name: dnsRecordName
-        value: ${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: aks_push
         displayName: Deploy To Demo AKS
