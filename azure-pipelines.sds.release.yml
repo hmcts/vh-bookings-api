@@ -78,15 +78,15 @@ stages:
       dependsOn: Approve_Entity_Framework_Staging
       displayName: Run Entity Framework ${{ env }}
       variables:
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
       - ${{ if eq(env, 'Dev') }}:
         - template: variables/dev.yaml
       - ${{ if eq(env, 'Staging') }}:
         - template: variables/staging.yaml
       - ${{ if eq(env, 'Demo') }}:
         - template: variables/qa.yaml
-      - template: variables/shared.yaml
-        parameters:
-          env: ${{ variables.env }}
       jobs:
       - job: Run_Entity_Framework_${{ env }}
         pool:
