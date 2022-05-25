@@ -160,6 +160,8 @@ stages:
               coreProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}"
               nugetConfigPath: ${{ variables.config_path }}
               integTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.IntegrationTests"
+              secrets_KeyVault: "vh-bookings-api-${{ variables.env }}"
+              secrets_Subscription: "DTS-SHAREDSERVICES-${{ variables.env }}"
               testSettings:
                 - name: ApplicationInsights:InstrumentationKey
                   value: vh-core-infra-AppInsightsKey
