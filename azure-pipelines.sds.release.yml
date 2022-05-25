@@ -26,7 +26,7 @@ parameters:
 
 stages:
   - stage: Generate_Entity_Framework_Script
-    displayName: Generate Entity Framework Script
+    displayName: Generate EF Script
     variables:
       - template: variables/shared.yaml
       - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
@@ -53,16 +53,15 @@ stages:
 
 
 #####################################################
-# Run Entity Framework Staging. #####################
+# Approval Gate for EF. #############################
 
-  - stage: Approve_Entity_Framework_Staging
-    condition: eq(variables['Build.SourceBranchName'], 'VIH-8960-sds-release')
-    displayName: 'Entity Framework Staging'
+  - stage: Approve_Entity_Framework
+    displayName: 'Approve EF Release'
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
       - job: waitForValidation
-        displayName: 'Approve Entity Framework Staging'
+        displayName: 'Approve Entity Framework'
         pool: server
         timeoutInMinutes: 4320 # job times out in 3 days
         steps:
@@ -72,11 +71,14 @@ stages:
             instructions: 'Please Approve to Run Entity Framework in the Staging Environment...'
             onTimeout: 'reject'
 
+#####################################################
+# Run Entity Framework Staging. #####################
+
   - ${{ each env in parameters.environment }}:
     - stage: Run_Entity_Framework_${{ env }}
       condition: eq(variables['Build.SourceBranchName'], 'VIH-8960-sds-release')
-      dependsOn: Approve_Entity_Framework_Staging
-      displayName: Run Entity Framework ${{ env }}
+      dependsOn: Approve_Entity_Framework
+      displayName: ${{ env }} EF Release
       variables:
         - ${{ if eq(env, 'Dev') }}:
           - template: variables/dev.yaml
@@ -129,28 +131,10 @@ stages:
 #####################################################
 # Run Entity Framework Prod. #####################
 
-  - stage: Approve_Entity_Framework_Prod
-    condition: contains(variables['Build.SourceBranch'], 'refs/heads/release')
-    displayName: 'Entity Framework Prod'
-    pool:
-      vmImage: 'ubuntu-latest'
-    jobs:
-      - job: waitForValidation
-        displayName: 'Approve Entity Framework Prod'
-        pool: server
-        timeoutInMinutes: 4320 # job times out in 3 days
-        steps:
-        - task: ManualValidation@0
-          timeoutInMinutes: 1440 # task times out in 1 day
-          inputs:
-            instructions: 'Please Approve to Run Entity Framework in the Prod Environment...'
-            onTimeout: 'reject'
-
-
   - stage: Run_Entity_Framework_Prod
     condition: contains(variables['Build.SourceBranch'], 'refs/heads/release')
-    dependsOn: Approve_Entity_Framework_Prod
-    displayName: Run Entity Framework Prod
+    dependsOn: Approve_Entity_Framework
+    displayName: EF Release Prod
     variables:
       - template: variables/production.yaml
       - template: variables/shared.yaml
