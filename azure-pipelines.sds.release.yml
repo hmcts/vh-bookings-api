@@ -82,11 +82,11 @@ stages:
           parameters:
             env: ${{ variables.env }}
 
-        - ${{ if eq(env, 'Dev') }}:
+        - ${{ if contains(env, 'Dev') }}:
           - template: variables/dev.yaml
-        - ${{ if eq(env, 'Staging') }}:
+        - ${{ if contains(env, 'Staging') }}:
           - template: variables/staging.yaml
-        - ${{ if eq(env, 'Demo') }}:
+        - ${{ if contains(env, 'Demo') }}:
           - template: variables/qa.yaml
 
       jobs:
@@ -98,7 +98,7 @@ stages:
               - download: current
                 displayName: Download Sql Artifact
 
-              - ${{ if contains(env, 'staging') }}:
+              - ${{ if contains(env, 'Staging') }}: 
                 - template: templates/Azure/Common/unlock-lock.yaml@azTemplates
                   parameters:
                     addOrDelete: delete
@@ -118,7 +118,7 @@ stages:
                   kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
                   kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
-              - ${{ if contains(env, 'staging') }}: 
+              - ${{ if contains(env, 'Staging') }}: 
                 - template: templates/Azure/Common/unlock-lock.yaml@azTemplates
                   parameters:
                     addOrDelete: add
