@@ -1,7 +1,7 @@
 name: $(Date:yyyyMMddhhmm)-$(Rev:r)
 
 trigger:
-  - VIH-8960-sds-release
+  - master
 
 pr: none
 
@@ -80,7 +80,7 @@ stages:
       ${{ if eq(env, 'Prod') }}:
         condition: contains(variables['Build.SourceBranch'], 'refs/heads/release')
       ${{ else }}:
-        condition: eq(variables['Build.SourceBranchName'], 'VIH-8960-sds-release')
+        condition: eq(variables['Build.SourceBranchName'], 'master')
       dependsOn: Approve_Entity_Framework
       displayName: ${{ env }} EF Release
       variables:
@@ -140,7 +140,7 @@ stages:
 
   - stage: Approve_Helm_Release
     displayName: 'Approve Helm Release'
-    ${{ if eq(variables['Build.SourceBranchName'], 'VIH-8960-sds-release') }}:
+    ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
       dependsOn: Run_Entity_Framework_Staging
     ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
       dependsOn: Run_Entity_Framework_Prod
@@ -189,7 +189,7 @@ stages:
               repositoryName:  ${{ variables.repositoryName }}
               imageName: "${{ variables.imageName }}"
               imageTags:
-                - ${{ if eq(variables['Build.SourceBranchName'], 'VIH-8960-sds-release') }}:
+                - ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
                   - '${{ variables.stagingTagName }}'
                 - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
                   - 'latest'
