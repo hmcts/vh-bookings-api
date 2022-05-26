@@ -159,7 +159,7 @@ stages:
             onTimeout: 'reject'
 
 #####################################################
-# Approval Gate for Booking API Release. ############
+# Build Docker Image & Push. ########################
 
   - stage: Docker_Build_Push
     displayName: Docker Build and Push Image
