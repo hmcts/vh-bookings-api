@@ -36,7 +36,7 @@ variables:
   - name: gitRepoName
     value: vh-${{ variables.git_repo_name }}
   - name: stagingTagName
-    value: staging-$(Build.SourceVersion)-$(Build.BuildNumber)
+    value: staging-$(Build.SourceVersion)
 
 
   - name: chartName

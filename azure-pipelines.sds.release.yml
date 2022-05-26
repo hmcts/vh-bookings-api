@@ -194,3 +194,36 @@ stages:
                 - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
                   - 'latest'
                   - '${{ variables.releaseTagName }}'
+
+#########################################
+# Push Helm Charts to Repo. #############
+  - stage: Helm
+    displayName: Push Helm Charts
+    dependsOn: Docker_Build_Push
+    variables:
+      - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
+        - template: variables/production.yaml
+      - ${{ else }}:
+        - template: variables/staging.yaml
+        
+      - template: variables/shared.yaml
+      - group: vh-github-app-credentials
+    jobs:
+      - job: Helm
+        displayName: "Helm Push"
+        steps:
+          - checkout: self
+
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+
+          - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+              subDirectory: ${{ variables.subDirectory }}
