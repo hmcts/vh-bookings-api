@@ -10,10 +10,6 @@ variables:
 
   - name: git_repo_name
     value: 'bookings-api'
-  - name: app_path
-    value: 'BookingsApi'
-  - name: sonar_exclusion
-    value: '**/${{ variables.app_path }}.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**'
 
   - name: prNumber
     ${{ if eq(parameters.prNumber, '')}}:
