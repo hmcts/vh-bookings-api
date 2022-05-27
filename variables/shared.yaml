@@ -31,8 +31,6 @@ variables:
     value: 'sdshmctspublic'
   - name: repositoryName
     value: 'vh/${{ variables.git_repo_name }}'
-  - name: releaseTagName
-    value: "prod-$(Build.SourceBranchName)"
   - name: gitRepoName
     value: vh-${{ variables.git_repo_name }}
 
