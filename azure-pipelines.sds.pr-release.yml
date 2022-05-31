@@ -42,7 +42,7 @@ stages:
         - template: templates\Github\bump-chart-versions.yaml@azTemplates
           parameters:
             chartName: ${{ variables.chartName }}
-            chartPath: ${{ variables.chartPath }}
+            chartPath: $(Build.SourcesDirectory)
             chartBranch: $(Build.SourceBranch)
             githubToken: $(githubappinstall.token)
             githubUsername: $(gh_app_name)
