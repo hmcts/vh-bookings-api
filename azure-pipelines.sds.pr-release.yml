@@ -34,6 +34,20 @@ stages:
       steps:
         - checkout: self
 
+        - template: templates\Github\get-app-token.yaml@azTemplates
+          parameters:
+            privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+            appId: $(gh_app_app_id)
+
+        - template: templates\Github\bump-chart-versions.yaml@azTemplates
+          parameters:
+            chartName: ${{ variables.chartName }}
+            chartPath: ${{ variables.chartPath }}
+            githubToken: $(githubappinstall.token)
+            githubUsername: $(gh_app_name)
+            githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+            subDirectory: ${{ variables.subDirectory }}
+
         - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
           parameters:
             azureSubscription: ${{ variables.acrSubscription }}
