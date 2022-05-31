@@ -17,6 +17,26 @@ variables:
   - group: vh-github-app-credentials
 
 #####################################################
+# CI Build Checks ##########
+stages:
+  - stage: CI_Build
+    displayName: CI Build
+    variables: 
+      - template: variables/shared.yaml
+        parameters:
+          env: ''
+    jobs:
+    - job: CI_Helm
+      displayName: "Helm CI"
+      steps:
+        - checkout: self
+
+        - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+          parameters:
+            chartPath: ${{ variables.chartPath }}
+            chartValuesPath: ${{ variables.chartPath }}
+
+#####################################################
 # Build Docker Image & Generate EF Script. ##########
 stages:
   - stage: Dock
