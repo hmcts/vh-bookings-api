@@ -36,3 +36,4 @@ java:
     Logging__LogLevel__Default: debug
     Logging__LogLevel__System: debug
     Logging__LogLevel__Microsoft: debug
+    something: nothing
