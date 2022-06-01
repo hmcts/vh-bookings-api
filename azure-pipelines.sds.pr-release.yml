@@ -16,9 +16,28 @@ pr:
 variables:
   - group: vh-github-app-credentials
 
+stages:
+#####################################################
+# CI Build Checks ##########
+  - stage: CI_Build
+    displayName: CI Build
+    variables: 
+      - template: variables/shared.yaml
+        parameters:
+          env: ''
+    jobs:
+      - job: CI_Helm
+        displayName: "Helm CI"
+        steps:
+          - checkout: self
+
+          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+            parameters:
+              chartPath: ${{ variables.chartPath }}
+              chartValuesPath: ${{ variables.chartPath }}
+
 #####################################################
 # Build Docker Image & Generate EF Script. ##########
-stages:
   - stage: Dock
     displayName: Build and Push Docker Image
     variables: 
@@ -124,6 +143,21 @@ stages:
       - name: dnsRecordName
         value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Dev
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+              
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: 'vh'
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
       - job: aks_push
         displayName: Deploy To Dev AKS
         steps:
@@ -165,6 +199,7 @@ stages:
             inputs:
               instructions: 'Please approve the release of PR-$(System.PullRequest.PullRequestNumber) to the Demo environment to resume'
               onTimeout: 'reject'
+
 #####################################################
 # Run Entity Framework Demo. ##########################
   - stage: Run_Entity_Framework_Demo
@@ -209,6 +244,21 @@ stages:
       - name: dnsRecordName
         value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Dev
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+              
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: 'vh'
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
       - job: aks_push
         displayName: Deploy To Demo AKS
         steps:
