@@ -57,7 +57,7 @@ stages:
 
           - template: stages\dotnet-tests\sonar-test.yaml@azTemplates
             parameters:
-              sonarExclusion: |
+              sonarCloud_ExtraProperties: |
                 sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
                 sonar.coverage.exclusions=${{ variables.sonar_exclusion }}
 
