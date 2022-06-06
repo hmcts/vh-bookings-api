@@ -68,6 +68,7 @@ stages:
           - bash: |
               cd BookingsApi/BookingsApi
               dotnet build BookingsApi.csproj
+            displayName: Build .NET Projects
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
