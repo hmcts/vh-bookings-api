@@ -46,12 +46,6 @@ stages:
         steps:
           - checkout: self
           
-          - template: templates/sonarCloud/prepare.yml@azTemplates
-            parameters:
-              sonarCloud_ExtraProperties: |
-                sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-                sonar.coverage.exclusions=${{ variables.sonar_exclusion }}
-
           - template: stages\dotnet-tests\unit-tests.yml@azTemplates
             parameters:
               nugetConfigPath: ${{ variables.app_path }}
@@ -61,6 +55,19 @@ stages:
                 - "[${{ variables.app_path }}]Startup"
                 - "[*]${{ variables.app_path }}.Common.*"
                 - "[Testing.Common]*"
+
+      - job: SonarCloud
+        displayName: SonarCloud Test Analysis
+        steps:
+          - template: templates/sonarCloud/prepare.yml@azTemplates
+            parameters:
+              sonarCloud_ExtraProperties: |
+                sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
+                sonar.coverage.exclusions=${{ variables.sonar_exclusion }}
+
+          - bash: |
+              cd BookingsApi/BookingsApi
+              dotnet build BookingsApi.csproj
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
