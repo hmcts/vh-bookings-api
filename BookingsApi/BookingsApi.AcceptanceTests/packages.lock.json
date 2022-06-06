@@ -3386,7 +3386,8 @@
       "bookingsapi.contract": {
         "type": "Project",
         "dependencies": {
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.3",
+          "System.ComponentModel.Annotations": "4.7.0"
         }
       },
       "bookingsapi.dal": {
