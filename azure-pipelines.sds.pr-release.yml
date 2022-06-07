@@ -66,21 +66,22 @@ stages:
                 sonar.coverage.exclusions=${{ variables.sonar_exclusion }}
 
           - bash: |
-              cd BookingsApi/BookingsApi
-              dotnet build BookingsApi.csproj
-            displayName: Build .NET Projects
+              cd BookingsApi/BookingsApi.UnitTests
+              dotnet build BookingsApi.UnitTests.csproj
+            displayName: Build .NET Project(s)
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
-      - job: PublishAcceptenceTests
-        displayName: Publish Acceptence Tests 
+      - job: PublishAcceptanceTests
+        displayName: Publish Acceptance Tests 
         variables:
           projectPath: BookingsApi/BookingsApi
         steps:
-        - template: stages\dotnet-tests\publish-acceptence-tests.yml@azTemplates
+        - template: stages\dotnet-tests\publish-acceptance-tests.yml@azTemplates
           parameters:
             coreProjectPath: $(projectPath)
             nugetProjectPath: $(projectPath)
+            nugetConfigPath:
 
 
 #####################################################
