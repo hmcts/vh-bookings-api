@@ -23,7 +23,7 @@ variables:
 
 stages:
 #####################################################
-# CI Build Checks ##########
+# CI Build Checks. ##################################
   - stage: CI_Build
     displayName: CI Build
     variables: 
@@ -71,6 +71,17 @@ stages:
             displayName: Build .NET Projects
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
+
+      - job: PublishAcceptenceTests
+        displayName: Publish Acceptence Tests 
+        variables:
+          projectPath: BookingsApi/BookingsApi
+        steps:
+        - template: stages\dotnet-tests\publish-acceptence-tests.yml@azTemplates
+          parameters:
+            coreProjectPath: $(projectPath)
+            nugetProjectPath: $(projectPath)
+
 
 #####################################################
 # Pre Steps. #########################
