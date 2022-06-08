@@ -28,6 +28,9 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         {
             var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false);
             person.Update(true);
+            
+            person.HasLeft.Should().BeTrue();
+            person.Fullname.Should().BeNull();
         }
         
         [Test]
