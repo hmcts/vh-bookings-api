@@ -53,6 +53,16 @@ namespace BookingsApi.Domain
         {
             UpdatedDate = DateTime.UtcNow;
             HasLeft = hasLeft;
+
+            if (hasLeft)
+            {
+                Fullname = null;
+                KnownAs = null;
+                Surname = null;
+                Email = null;
+                Title = null;    
+            }
+            
         }
     }
 }
