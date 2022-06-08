@@ -77,15 +77,14 @@ stages:
         variables:
           projectPath: BookingsApi/BookingsApi
         steps:
-        - template: stages\dotnet-tests\publish-acceptance-tests.yml@azTemplates
+        - template: stages\dotnet-tests\package-acceptance-tests.yml@azTemplates
           parameters:
             coreProjectPath: $(projectPath)
             nugetProjectPath: $(projectPath)
-            nugetConfigPath:
 
 
 #####################################################
-# Pre Steps. #########################
+# Pre Steps. ########################################
 # Build Docker Image & Generate EF Script. ##########
   - stage: Dock
     displayName: Build and Push Docker Image
@@ -250,7 +249,7 @@ stages:
               onTimeout: 'reject'
 
 #####################################################
-# Run Entity Framework Demo. ##########################
+# Run Entity Framework Demo. ########################
   - stage: Run_Entity_Framework_Demo
     dependsOn: Wait
     displayName: Run Entity Framework Demo
