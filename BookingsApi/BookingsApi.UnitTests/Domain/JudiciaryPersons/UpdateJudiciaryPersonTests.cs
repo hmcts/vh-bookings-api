@@ -43,5 +43,19 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
             person.Surname.Should().BeNull();
             person.Email.Should().BeNull();
         }
+        
+        [Test]
+        public void Should_not_set_personal_data_to_null_for_leaver_accounts()
+        {
+            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false);
+            person.Update(false);
+
+            person.HasLeft.Should().BeFalse();
+            person.Fullname.Should().NotBeNull();
+            person.Title.Should().NotBeNull();
+            person.KnownAs.Should().NotBeNull();
+            person.Surname.Should().NotBeNull();
+            person.Email.Should().NotBeNull();
+        }
     }
 }
