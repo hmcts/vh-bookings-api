@@ -78,9 +78,9 @@ stages:
   - ${{ each env in parameters.environment }}:
     - stage: Run_Entity_Framework_${{ env }}
       ${{ if eq(env, 'Prod') }}:
-        condition: contains(variables['Build.SourceBranch'], 'refs/heads/release')
+        condition: and(succeeded(), contains(variables['Build.SourceBranch'], 'refs/heads/release'))
       ${{ else }}:
-        condition: eq(variables['Build.SourceBranchName'], 'master')
+        condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
       dependsOn: Approve_Entity_Framework
       displayName: ${{ env }} EF Release
       variables:
@@ -165,7 +165,7 @@ stages:
 # Build Docker Image & Push. ########################
 
   - stage: Docker_Build_Push
-    displayName: Docker Build and Push Image
+    displayName: Docker Build & Push Image
     variables:
       - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         - template: variables/production.yaml

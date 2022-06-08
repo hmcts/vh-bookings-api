@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BookingsApi.Contract.Requests
 {
     public class ParticipantRequest : IRepresentativeInfoRequest
@@ -40,6 +42,9 @@ namespace BookingsApi.Contract.Requests
         /// <summary>
         ///     Participant Display Name
         /// </summary>
+        ///
+        [StringLength(255, ErrorMessage = "Display name max length is 255 characters")]
+        [RegularExpression("^([-A-Za-z0-9 ',._])*$")]
         public string DisplayName { get; set; }
 
         /// <summary>
