@@ -60,7 +60,8 @@ namespace BookingsApi.Domain
                 KnownAs = null;
                 Surname = null;
                 Email = null;
-                Title = null;    
+                Title = null;
+                PostNominals = null;
             }
             
         }

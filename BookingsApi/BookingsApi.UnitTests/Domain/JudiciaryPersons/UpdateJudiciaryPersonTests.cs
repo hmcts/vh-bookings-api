@@ -42,6 +42,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
             person.KnownAs.Should().BeNull();
             person.Surname.Should().BeNull();
             person.Email.Should().BeNull();
+            person.PostNominals.Should().BeNull();
         }
         
         [Test]
@@ -56,6 +57,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
             person.KnownAs.Should().NotBeNull();
             person.Surname.Should().NotBeNull();
             person.Email.Should().NotBeNull();
+            person.PostNominals.Should().NotBeNull();
         }
     }
 }
