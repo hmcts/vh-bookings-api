@@ -7,6 +7,10 @@ resources:
       name: hmcts/azure-devops-templates
       ref: VIH-8979
       endpoint: hmcts
+  containers:
+  - container: dotnetsdk
+    image: sspublicsbox.azurecr.io/vh/dotnet:3.1.102
+    endpoint: sspublicsbox
       
 trigger: none
 
@@ -71,7 +75,7 @@ stages:
             displayName: Build .NET Project(s)
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
-
+            
 
 #####################################################
 # Pre Steps. ########################################
@@ -129,8 +133,14 @@ stages:
           contextName: ${{ variables.efContextName }}
           workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
           projectName: ${{ variables.efProjectName }}
+    
+    - template: stages\dotnet-tests\publish-nuget-packages.yml@azTemplates
+      parameters:
+        nugetProjectPath: BookingsApi/BookingsApi.Client
 
     - job: PublishAcceptanceTests
+      dependsOn:
+      - Publish_Nuget
       displayName: Publish Acceptance Tests 
       variables:
         projectPath: BookingsApi/BookingsApi
