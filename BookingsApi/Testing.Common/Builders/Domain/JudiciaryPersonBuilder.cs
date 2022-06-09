@@ -21,8 +21,10 @@ namespace Testing.Common.Builders.Domain
                         $"Automation_{Name.Last()}",
                         Name.FullName(),
                         $"{RandomNumber.Next(1000, 100000)}",
-                        $"Automation_{RandomNumber.Next()}@hmcts.net"
-                        , false))
+                        $"Automation_{RandomNumber.Next()}@hmcts.net", 
+                        false,
+                        false,
+                        string.Empty))
                 .Build();
         }
 

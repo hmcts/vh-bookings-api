@@ -22,10 +22,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_add_person()
+        public async Task should_add_non_leaver_person()
         {
             var externalRefId = Guid.NewGuid();
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false);
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false, false, string.Empty);
             
             await _commandHandler.Handle(addCommand);
             Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
@@ -41,6 +41,32 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             addedPerson.PostNominals.Should().Be("PostNominals");
             addedPerson.Email.Should().Be("Email");
             addedPerson.HasLeft.Should().BeFalse();
+            addedPerson.Leaver.Should().BeFalse();
+            addedPerson.LeftOn.Should().Be(string.Empty);
+        }
+        
+        [Test]
+        public async Task should_add_leaver_person()
+        {
+            var externalRefId = Guid.NewGuid();
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false, true, "2022-06-08");
+            
+            await _commandHandler.Handle(addCommand);
+            Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
+            
+            var addedPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
+
+            addedPerson.ExternalRefId.Should().Be(addCommand.ExternalRefId);
+            addedPerson.PersonalCode.Should().Be(string.Empty);
+            addedPerson.Title.Should().Be(string.Empty);
+            addedPerson.KnownAs.Should().Be(string.Empty);
+            addedPerson.Surname.Should().Be(string.Empty);
+            addedPerson.Fullname.Should().Be(string.Empty);
+            addedPerson.PostNominals.Should().Be(string.Empty);
+            addedPerson.Email.Should().Be(string.Empty);
+            addedPerson.HasLeft.Should().BeFalse();
+            addedPerson.Leaver.Should().BeTrue();
+            addedPerson.LeftOn.Should().Be("2022-06-08");
         }
     }
 }
