@@ -38,7 +38,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         [Test]
         public void Should_set_personal_data_to_null_for_leaver_accounts()
         {
-            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false);
+            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, true, "1-1-2020");
             person.Update(true);
 
             person.HasLeft.Should().BeTrue();
@@ -53,7 +53,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         [Test]
         public void Should_not_set_personal_data_to_null_for_leaver_accounts()
         {
-            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false);
+            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, true, "1-1-2020");
             person.Update(false);
 
             person.HasLeft.Should().BeFalse();
