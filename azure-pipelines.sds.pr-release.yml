@@ -134,13 +134,14 @@ stages:
           workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
           projectName: ${{ variables.efProjectName }}
     
-    - template: stages\dotnet-tests\publish-nuget-packages.yml@azTemplates
-      parameters:
-        nugetProjectPath: BookingsApi/BookingsApi.Client
+    - job: Publish_Nuget
+      displayName: Publish NuGet Packages
+      steps:
+      - template: stages\dotnet-tests\publish-nuget-packages.yml@azTemplates
+        parameters:
+          nugetProjectPath: BookingsApi/BookingsApi.Client
 
     - job: PublishAcceptanceTests
-      dependsOn:
-      - Publish_Nuget
       displayName: Publish Acceptance Tests 
       variables:
         projectPath: BookingsApi/BookingsApi
