@@ -26,7 +26,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var externalRefId = Guid.NewGuid();
 
-            var insertCommand = new AddJudiciaryPersonByExternalRefIdCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true);
+            var insertCommand = new AddJudiciaryPersonByExternalRefIdCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true, true, "2022-06-08");
             await _commandHandler.Handle(insertCommand);
 
             var judiciaryPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
@@ -41,6 +41,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             judiciaryPerson.Email.Should().Be("Email");
             judiciaryPerson.HasLeft.Should().BeTrue();
             judiciaryPerson.CreatedDate.Should().Be(judiciaryPerson.UpdatedDate);
+            judiciaryPerson.Leaver.Should().BeTrue();
+            judiciaryPerson.LeftOn.Should().Be("2022-06-08");
         }
     }
 }
