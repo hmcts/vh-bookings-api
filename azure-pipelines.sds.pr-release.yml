@@ -72,22 +72,12 @@ stages:
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
-      - job: PublishAcceptanceTests
-        displayName: Publish Acceptance Tests 
-        variables:
-          projectPath: BookingsApi/BookingsApi
-        steps:
-        - template: stages\dotnet-tests\package-smoke-test.yml@azTemplates
-          parameters:
-            coreProjectPath: $(projectPath)
-            nugetProjectPath: $(projectPath)
-
 
 #####################################################
 # Pre Steps. ########################################
 # Build Docker Image & Generate EF Script. ##########
   - stage: Dock
-    displayName: Build and Push Docker Image
+    displayName: Build Bookings API
     variables: 
       - group: aks-cluster-info
       - template: variables/dev.yaml
@@ -140,12 +130,15 @@ stages:
           workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
           projectName: ${{ variables.efProjectName }}
 
-      - task: PublishPipelineArtifact@1
-        displayName: Publish Artifacts
-        inputs:
-          targetPath: $(Build.StagingDirectory)
-          publishLocation: Pipeline
-          artifact: ${{ variables.efContextName }}-$(Build.BuildId)
+    - job: PublishAcceptanceTests
+      displayName: Publish Acceptance Tests 
+      variables:
+        projectPath: BookingsApi/BookingsApi
+      steps:
+      - template: stages\dotnet-tests\publish-acceptance-test.yml@azTemplates
+        parameters:
+          coreProjectPath: $(projectPath)
+          nugetProjectPath: $(projectPath)
 
 #####################################################
 # Run Entity Framework Dev. #########################
