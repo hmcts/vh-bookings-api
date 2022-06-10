@@ -140,6 +140,7 @@ stages:
       - template: templates\dotnet\publish-nuget-packages.yml@azTemplates
         parameters:
           nugetProjectPath: BookingsApi/BookingsApi.Client
+          vstsFeed: 'Video Hearings/vh-packages'
 
     - job: PublishAcceptanceTests
       displayName: Publish Acceptance Tests 
