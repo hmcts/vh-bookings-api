@@ -542,7 +542,7 @@ namespace BookingsApi.Controllers
                 .Where(x => newParticipants.Any(y => y.Person.Username == x.Person.Username)).ToList();
             if (participants.Any())
             {
-                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing.Id, participants));
+                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
             }
         }
 

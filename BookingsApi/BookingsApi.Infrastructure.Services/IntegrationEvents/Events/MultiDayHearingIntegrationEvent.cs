@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
-    public class ParticipantsAddedIntegrationEvent: IIntegrationEvent
+    public class MultiDayHearingIntegrationEvent : IIntegrationEvent
     {
-        public ParticipantsAddedIntegrationEvent(Hearing hearing, IEnumerable<Participant> participants)
+        public MultiDayHearingIntegrationEvent(Hearing hearing, int totalDays)
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
-            Participants = participants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
+            var hearingParticipants = hearing.GetParticipants();
+            Participants = hearingParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            TotalDays = totalDays;
         }
 
         public HearingDto Hearing { get; }
-
         public IList<ParticipantDto> Participants { get; }
+        public int TotalDays { get; set; }
     }
 }

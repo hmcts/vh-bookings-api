@@ -360,6 +360,7 @@ namespace BookingsApi.Controllers
                 return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, _randomGenerator,
                     _kinlyConfiguration.SipAddressStem, totalDays, hearingDay);
             }).ToList();
+
             foreach (var command in commands)
             {
                 // dbcontext is not thread safe. loop one at a time
@@ -372,8 +373,10 @@ namespace BookingsApi.Controllers
             {
                 foreach (var command in commands)
                 {
-                    await UpdateHearingStatusAsync(hearingId, BookingStatus.Created, "Api",string.Empty);
+                    await UpdateHearingStatusAsync(command.NewHearingId, BookingStatus.Created, "Api",string.Empty);
                 }
+                // publish multi day hearing notification event
+                await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(videoHearing, totalDays));
             }
             return NoContent();
         }
