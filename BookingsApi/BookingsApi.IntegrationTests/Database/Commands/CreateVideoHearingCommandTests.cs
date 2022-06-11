@@ -109,7 +109,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue,
                     participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints,
-                    linkedParticipants)
+                    linkedParticipants, false)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,

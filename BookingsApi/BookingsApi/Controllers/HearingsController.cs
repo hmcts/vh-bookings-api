@@ -259,6 +259,11 @@ namespace BookingsApi.Controllers
 
                 var getHearingByIdQuery = new GetHearingByIdQuery(videoHearingId);
                 var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+                if (queriedVideoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
+                {
+                    // Confirm the hearing
+                    await ConfirmBooking(queriedVideoHearing.Id, "Api", string.Empty, BookingStatus.Created);
+                }
                 const string logRetrieveNewHearing = "BookNewHearing Retrieved new hearing from DB";
                 const string keyHearingId = "HearingId";
                 const string keyCaseType = "CaseType";
@@ -274,6 +279,7 @@ namespace BookingsApi.Controllers
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
                 _logger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> { { "response", JsonConvert.SerializeObject(response) } });
+                
                 return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
             }
             catch (Exception ex)
@@ -345,6 +351,7 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
+            var judgeExists = videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge");
             var orderedDates = request.Dates.OrderBy(x => x).ToList();
             var totalDays = orderedDates.Count + 1; // include original hearing
             var commands = orderedDates.Select((newDate, index) =>
@@ -361,7 +368,13 @@ namespace BookingsApi.Controllers
 
             var existingCase = videoHearing.GetCases().First();
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
-
+            if (judgeExists)
+            {
+                foreach (var command in commands)
+                {
+                    await UpdateHearingStatusAsync(hearingId, BookingStatus.Created, "Api",string.Empty);
+                }
+            }
             return NoContent();
         }
 
@@ -505,18 +518,7 @@ namespace BookingsApi.Controllers
             try
             {
                 var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString());
-                await UpdateHearingStatusAsync(hearingId, bookingStatus, request.UpdatedBy, request.CancelReason);
-
-                switch (bookingStatus)
-                {
-                    case BookingStatus.Created:
-                        var queriedVideoHearing = await GetHearingToPublishAsync(hearingId);
-                        await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing));
-                        break;
-                    case BookingStatus.Cancelled:
-                        await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
-                        break;
-                }
+                await ConfirmBooking(hearingId, request.UpdatedBy, request.CancelReason, bookingStatus);
 
                 return NoContent();
             }
@@ -528,6 +530,22 @@ namespace BookingsApi.Controllers
             {
                 exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
                 return Conflict(ModelState);
+            }
+        }
+
+        private async Task ConfirmBooking(Guid hearingId, string updatedBy, string cancelReason, BookingStatus bookingStatus)
+        {
+            await UpdateHearingStatusAsync(hearingId, bookingStatus, updatedBy, cancelReason);
+
+            switch (bookingStatus)
+            {
+                case BookingStatus.Created:
+                    var queriedVideoHearing = await GetHearingToPublishAsync(hearingId);
+                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(queriedVideoHearing));
+                    break;
+                case BookingStatus.Cancelled:
+                    await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                    break;
             }
         }
 

@@ -14,8 +14,9 @@ namespace BookingsApi.DAL.Commands
     public class CreateVideoHearingCommand : ICommand
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints, List<LinkedParticipantDto> linkedParticipants)
+            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases,
+            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints,
+            List<LinkedParticipantDto> linkedParticipants, bool isMultiDayFirstHearing)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -28,6 +29,7 @@ namespace BookingsApi.DAL.Commands
             AudioRecordingRequired = audioRecordingRequired;
             Endpoints = endpoints;
             LinkedParticipants = linkedParticipants;
+            IsMultiDayFirstHearing = isMultiDayFirstHearing;
         }
 
         public Guid NewHearingId { get; set; }
@@ -47,6 +49,7 @@ namespace BookingsApi.DAL.Commands
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
+        public bool IsMultiDayFirstHearing { get; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -66,7 +69,8 @@ namespace BookingsApi.DAL.Commands
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
                 command.AudioRecordingRequired, command.CancelReason);
-            
+
+            command.SourceId = command.IsMultiDayFirstHearing ? videoHearing.Id : (Guid?)null;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)
             {
