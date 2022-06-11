@@ -427,8 +427,11 @@ namespace BookingsApi.Controllers
 
             if (videoHearing.Status == BookingStatus.Created)
             {
-                // publish this event when Hearing is set for ready for video
                 await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
+                if (request.ScheduledDateTime.Ticks != videoHearing.ScheduledDateTime.Ticks)
+                {
+                    await _eventPublisher.PublishAsync(new HearingDateTimeChangedIntegrationEvent(updatedHearing, videoHearing.ScheduledDateTime));
+                }
             }
 
             return Ok(response);
