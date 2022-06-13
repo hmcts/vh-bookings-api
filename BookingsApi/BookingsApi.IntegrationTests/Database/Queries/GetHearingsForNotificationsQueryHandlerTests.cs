@@ -31,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var hearing1 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created, isMultiDayFirstHearing:true);
             var hearing2 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created);
-            var hearing3 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(3), null, false, BookingStatus.Created)
+            var hearing3 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(3), null, false, BookingStatus.Created);
 
             var query = new GetHearingsForNotificationsQuery();
             var result = await _handler.Handle(query);
