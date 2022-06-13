@@ -27,7 +27,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Shoud_return_hearings_between_48_to_72_hrs_for_notifications()
         {
-            var hearing1 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created);
+            var hearing1 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created, isMultiDayFirstHearing:true);
             var hearing2 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created);
             var hearing3 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(3), null, false, BookingStatus.Created);
 

@@ -47,13 +47,15 @@ namespace BookingsApi.IntegrationTests.Helper
             _defaultCaseName = defaultCaseName;
         }
 
-        public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked)
+        public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false,
+            BookingStatus status = BookingStatus.Booked, bool isMultiDayFirstHearing = false)
         {
-            return SeedVideoHearing(null, addSuitabilityAnswer, status);
+            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing:isMultiDayFirstHearing);
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, bool addJoh = false, bool withLinkedParticipants = false)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, 
+            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -96,7 +98,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
                 venue, hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
-
+            videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
             
@@ -418,7 +420,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedPastVideoHearing(DateTime pastScheduledDate, Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked)
+            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -458,7 +460,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
                 venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
-
+            videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 

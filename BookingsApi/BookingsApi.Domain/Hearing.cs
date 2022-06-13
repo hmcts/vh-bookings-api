@@ -13,6 +13,7 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
         private readonly DateTime _currentUTC = DateTime.UtcNow;
+        private bool _isFirstDayOfMultiDayHearing;
 
         protected Hearing()
         {
@@ -74,6 +75,17 @@ namespace BookingsApi.Domain
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
+
+        // Ideally, the domain object would implement the clone method and so this change is a work around.
+        public bool IsFirstDayOfMultiDayHearing
+        {
+            get => _isFirstDayOfMultiDayHearing;
+            set
+            {
+                _isFirstDayOfMultiDayHearing = value;
+                SourceId = Id;
+            }
+        }
 
         public void CancelHearing()
         {

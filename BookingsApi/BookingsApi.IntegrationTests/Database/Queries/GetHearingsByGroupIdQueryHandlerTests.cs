@@ -43,7 +43,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_hearings_for_multi_day_by_groupId()
         {
-            var hearing1 = await Hooks.SeedVideoHearing();
+            var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true);
             var groupId = hearing1.SourceId;
 
             var dates = new List<DateTime> {DateTime.Now.AddDays(2), DateTime.Now.AddDays(3)};

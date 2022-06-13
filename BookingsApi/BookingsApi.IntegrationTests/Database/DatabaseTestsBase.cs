@@ -32,7 +32,7 @@ namespace BookingsApi.IntegrationTests.Database
             Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
             
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            context.Database.Migrate();
+            //context.Database.Migrate();
         }
         
         [TearDown]

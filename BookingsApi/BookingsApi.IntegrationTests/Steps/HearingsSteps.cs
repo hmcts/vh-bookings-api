@@ -685,7 +685,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
+                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
                         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         _hearingId = seededHearing.Id;
                         Context.TestData.NewHearingId = seededHearing.Id;

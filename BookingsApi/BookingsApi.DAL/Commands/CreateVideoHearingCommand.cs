@@ -70,7 +70,8 @@ namespace BookingsApi.DAL.Commands
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
                 command.AudioRecordingRequired, command.CancelReason);
 
-            command.SourceId = command.IsMultiDayFirstHearing ? videoHearing.Id : (Guid?)null;
+            // Ideally, the domain object would implement the clone method and so this change is a work around.
+            videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)
             {

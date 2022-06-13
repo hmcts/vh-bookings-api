@@ -69,7 +69,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a confirmed hearing")]
         public async Task GivenIHaveAConfirmedHearing()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(false, BookingStatus.Created);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
             Context.TestData.NewHearingId = seededHearing.Id;
             Context.TestData.SeededHearing = seededHearing;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
