@@ -25,14 +25,15 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Shoud_return_hearings_between_48_to_72_hrs_for_notifications()
+        [TestCase(BookingStatus.Created)]
+        [TestCase(BookingStatus.Booked)]
+        public async Task Shoud_return_hearings_between_48_to_72_hrs_for_notifications(BookingStatus bookingStatus)
         {
             var hearing1 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created, isMultiDayFirstHearing:true);
             var hearing2 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created);
-            var hearing3 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(3), null, false, BookingStatus.Created);
+            var hearing3 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(3), null, false, BookingStatus.Created)
 
             var query = new GetHearingsForNotificationsQuery();
-
             var result = await _handler.Handle(query);
 
             var resulthearing1 = result.FirstOrDefault(x => x.Id == hearing1.Id);
@@ -47,9 +48,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
 
         [Test]
-        public async Task Should_not_return_multiday_hearings_between_48_to_72_hrs_for_notifications()
+        [TestCase(BookingStatus.Created)]
+        [TestCase(BookingStatus.Booked)]
+        public async Task Should_not_return_multiday_hearings_between_48_to_72_hrs_for_notifications(BookingStatus bookingStatus)
         {
-            var hearing1 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, BookingStatus.Created);
+            var hearing1 = await Hooks.SeedPastVideoHearing(DateTime.Today.AddDays(2), null, false, bookingStatus);
 
             var groupId = hearing1.SourceId;
 
