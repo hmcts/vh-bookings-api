@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             individual1.CaseRole = new CaseRole(1, "test");
 
             var participantAddedIntegrationEvent =
-                new ParticipantsAddedIntegrationEvent(hearing.Id, new List<Participant> {individual1});
+                new ParticipantsAddedIntegrationEvent(hearing, new List<Participant> {individual1});
             _eventPublisher.PublishAsync(participantAddedIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

@@ -76,7 +76,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.Is<ParticipantsAddedIntegrationEvent>
             (
-                p => p.HearingId == hearing.Id && p.Participants[0].Username == request.Participants[0].Username
+                p => p.Hearing.HearingId == hearing.Id && p.Participants[0].Username == request.Participants[0].Username
                                                && p.Participants[0].FirstName == request.Participants[0].FirstName
                                                && p.Participants[0].LastName == request.Participants[0].LastName
                                                && p.Participants[0].ContactEmail == request.Participants[0].ContactEmail
