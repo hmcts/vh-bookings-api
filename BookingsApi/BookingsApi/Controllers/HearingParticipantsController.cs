@@ -570,7 +570,7 @@ namespace BookingsApi.Controllers
                 });
             }
 
-            var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing.Id, eventExistingParticipants, eventNewParticipants,
+            var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants,
                 removedParticipantIds, eventLinkedParticipants);
             await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
         }
