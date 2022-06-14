@@ -6,13 +6,13 @@ namespace BookingsApi.Validations
     public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
     {
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
-        public static readonly string NoCaseRoleNameErrorMessage = "Display name is required";
-        public static readonly string NoHearingRoleNameErrorMessage = "Display name is required";
+        public static readonly string NoCaseRoleNameErrorMessage = "Case role is required";
+        public static readonly string NoHearingRoleNameErrorMessage = "Hearing role is required";
         public static readonly string NoFirstNameErrorMessage = "First name is required";
         public static readonly string NoLastNameErrorMessage = "Last name is required";
         public static readonly string NoUsernameErrorMessage = "Username is required";
         public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
-
+        // TODO: apply email validation on username and contact email
         public ParticipantRequestValidation()
         {
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);

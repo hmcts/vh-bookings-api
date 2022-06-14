@@ -83,7 +83,10 @@ namespace BookingsApi.Domain
             set
             {
                 _isFirstDayOfMultiDayHearing = value;
-                SourceId = Id;
+                if (_isFirstDayOfMultiDayHearing)
+                {
+                    SourceId = Id;
+                }
             }
         }
 
