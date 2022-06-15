@@ -18,7 +18,8 @@ namespace BookingsApi.Validations
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
             RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);
             RuleFor(x => x.ContactEmail).NotEmpty().WithMessage(NoContactEmailErrorMessage);
-            RuleFor(x => x.Username).NotEmpty().WithMessage(NoUsernameErrorMessage);
+            RuleFor(x => x.Username).NotEmpty().When(x => x.CaseRoleName == "Judge").WithMessage(NoUsernameErrorMessage);
+
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);

@@ -13,6 +13,8 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             Hearing = HearingDtoMapper.MapToDto(hearing);
             var hearingParticipants = hearing.GetParticipants();
             Participants = hearingParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            Participants.ToList().ForEach(x =>
+                x.SetContactEmailForNonEJudJudgeUser(hearing.OtherInformation));
             TotalDays = totalDays;
         }
 
