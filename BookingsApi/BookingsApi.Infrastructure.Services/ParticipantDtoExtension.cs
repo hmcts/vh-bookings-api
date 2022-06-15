@@ -9,8 +9,7 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static void SetContactEmailForNonEJudJudgeUser(this ParticipantDto participant, string otherInformation)
         {
-            if (participant.HearingRole != "Judge" || 
-                string.IsNullOrWhiteSpace(otherInformation))
+            if (participant.HearingRole != "Judge")
             {
                 participant.ContactEmailForNonEJudJudgeUser = string.Empty;
             }
