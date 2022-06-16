@@ -3,14 +3,14 @@ using FluentValidation;
 
 namespace BookingsApi.Validations
 {
-    public class JudiciaryPersonRequestValidation : AbstractValidator<JudiciaryPersonRequest>
+    public class JudiciaryNonLeaverPersonRequestValidation : AbstractValidator<JudiciaryPersonRequest>
     {
         public static readonly string NoIdErrorMessage = "Id can not be null or empty";
         public static readonly string NoFirstNameErrorMessage = "First name / known as is required";
         public static readonly string NoSurnameNameErrorMessage = "Surname is required";
         public static readonly string NoEmailErrorMessage = "Email is required";
         
-        public JudiciaryPersonRequestValidation()
+        public JudiciaryNonLeaverPersonRequestValidation()
         {
             RuleFor(x => x.Id).NotEmpty().WithMessage(NoIdErrorMessage);
             RuleFor(x => x.KnownAs).NotEmpty().WithMessage(NoFirstNameErrorMessage);

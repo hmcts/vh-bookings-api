@@ -6,7 +6,8 @@ namespace BookingsApi.DAL.Commands
     public abstract class JudiciaryPersonCommandBase : ICommand
     {
         protected JudiciaryPersonCommandBase(Guid externalRefId, string personalCode, string title,
-            string knownAs, string surname, string fullname, string postNominals, string email, bool hasLeft)
+            string knownAs, string surname, string fullname, string postNominals, string email, bool hasLeft,
+            bool leaver, string leftOn)
         {
             ExternalRefId = externalRefId;
             PersonalCode = personalCode;
@@ -17,6 +18,8 @@ namespace BookingsApi.DAL.Commands
             PostNominals = postNominals;
             Email = email;
             HasLeft = hasLeft;
+            Leaver = leaver;
+            LeftOn = leftOn;
         }
 
         public Guid ExternalRefId { get; }
@@ -28,5 +31,7 @@ namespace BookingsApi.DAL.Commands
         public string PostNominals { get; }
         public string Email { get; }
         public bool HasLeft { get; set; }
+        public bool Leaver { get; }
+        public string LeftOn { get; }
     }
 }
