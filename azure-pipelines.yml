@@ -145,7 +145,6 @@ extends:
     nugetProjectPath: BookingsApi/BookingsApi.Client
     PackageNuget: ${{ parameters.PackageNuget }}
     PackageApp: ${{ parameters.PackageApp }}
-
     PackageAcceptanceTests: ${{ parameters.PackageACTests }}
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     connectionStringSecretName: "VhBookingsDatabaseConnectionString"
@@ -153,7 +152,6 @@ extends:
       baseAgent: windows-latest
       coreProjectPath: BookingsApi/BookingsApi
       nugetConfigPath: BookingsApi
-      dotnetEfVersion: '6.0.5'
       unitTestProjectPath: BookingsApi/BookingsApi.UnitTests
       integTestProjectPath: BookingsApi/BookingsApi.IntegrationTests
       secrets_KeyVault: $(pr_Secret_KeyVault)
@@ -183,7 +181,6 @@ extends:
     ACTest: ${{ parameters.RunACTests }}
     releaseParameters:
       environment: Preview
-      dotnetEfVersion: '6.0.5'
       subscription: $(pr_Subscription)
       secrets_KeyVault: $(pr_Secret_KeyVault)
       secrets_Subscription: $(pr_Secret_Subscription)
