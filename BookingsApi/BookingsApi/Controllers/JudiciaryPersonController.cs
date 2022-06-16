@@ -53,7 +53,7 @@ namespace BookingsApi.Controllers
 
             foreach (var item in judiciaryPersonRequests)
             {
-                var validation = await new JudiciaryPersonRequestValidation().ValidateAsync(item);
+                var validation = item.Leaver ? await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item) : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
                 if (!validation.IsValid)
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
@@ -73,7 +73,7 @@ namespace BookingsApi.Controllers
                     if (judiciaryPerson == null)
                     {
                         await _commandHandler.Handle(new AddJudiciaryPersonByExternalRefIdCommand(item.Id, item.PersonalCode, item.Title, item.KnownAs, item.Surname,
-                            item.Fullname, item.PostNominals, item.Email, item.HasLeft));
+                            item.Fullname, item.PostNominals, item.Email, item.HasLeft, item.Leaver, item.LeftOn));
                     }
                     else
                     {

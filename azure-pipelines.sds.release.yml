@@ -165,7 +165,7 @@ stages:
 # Build Docker Image & Push. ########################
 
   - stage: Docker_Build_Push
-    displayName: Docker Build and Push Image
+    displayName: Docker Build & Push Image
     variables:
       - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         - template: variables/production.yaml
