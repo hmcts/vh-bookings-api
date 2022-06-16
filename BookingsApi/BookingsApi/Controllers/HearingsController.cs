@@ -262,7 +262,7 @@ namespace BookingsApi.Controllers
                 if (queriedVideoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
                 {
                     // Confirm the hearing
-                    await ConfirmBooking(queriedVideoHearing.Id, "Api", string.Empty, BookingStatus.Created);
+                    await ConfirmBooking(queriedVideoHearing.Id, "System", string.Empty, BookingStatus.Created);
                 }
                 const string logRetrieveNewHearing = "BookNewHearing Retrieved new hearing from DB";
                 const string keyHearingId = "HearingId";
@@ -373,7 +373,7 @@ namespace BookingsApi.Controllers
             {
                 foreach (var command in commands)
                 {
-                    await UpdateHearingStatusAsync(command.NewHearingId, BookingStatus.Created, "Api",string.Empty);
+                    await ConfirmBooking(command.NewHearingId, "System",string.Empty, BookingStatus.Created);
                 }
                 // publish multi day hearing notification event
                 await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(videoHearing, totalDays));
