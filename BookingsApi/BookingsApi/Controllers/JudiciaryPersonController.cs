@@ -38,6 +38,16 @@ namespace BookingsApi.Controllers
             _flagsService = flagsService;
         }
 
+        [HttpGet("RemoveAllJudiciaryPersonsStaging")]
+        [OpenApiOperation("RemoveAllJudiciaryPersonsStaging")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> RemoveAllJudiciaryPersonsStaging()
+        {
+            await _commandHandler.Handle(new RemoveAllJudiciaryPersonStagingCommand());
+
+            return Ok();
+        }
+
         [HttpPost("BulkJudiciaryPersons")]
         [OpenApiOperation("BulkJudiciaryPersons")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
