@@ -9,12 +9,12 @@ namespace Testing.Common.Builders.Domain
     {
         private readonly JudiciaryPerson _judiciaryPerson;
 
-        public JudiciaryPersonBuilder(Guid? externalRefId = null)
+        public JudiciaryPersonBuilder(string externalRefId = null)
         {
             var settings = new BuilderSettings();
             _judiciaryPerson = new Builder(settings).CreateNew<JudiciaryPerson>().WithFactory(() =>
                     new JudiciaryPerson(
-                        externalRefId ?? Guid.NewGuid(),
+                        externalRefId,
                         $"{RandomNumber.Next(0, 1000)}",
                         Name.Prefix(),
                         $"Automation_{Name.First()}",
