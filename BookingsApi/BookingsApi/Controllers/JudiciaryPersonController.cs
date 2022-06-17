@@ -44,7 +44,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
-        {
+        { 
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryPersonRequests = request.ToList();
             _logger.LogInformation("Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items", judiciaryPersonRequests.Count);
