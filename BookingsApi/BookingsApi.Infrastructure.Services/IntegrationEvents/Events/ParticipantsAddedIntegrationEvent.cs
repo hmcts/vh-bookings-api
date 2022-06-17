@@ -13,8 +13,7 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
             Participants = participants.Select(ParticipantDtoMapper.MapToDto).ToList();
-            Participants.ToList().ForEach(x =>
-                x.SetContactEmailForNonEJudJudgeUser(hearing.OtherInformation));
+            Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
         }
 
         public HearingDto Hearing { get; }

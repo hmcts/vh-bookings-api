@@ -22,8 +22,7 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 
             ExistingParticipants = existingParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
             NewParticipants = newParticipants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
-            NewParticipants.ToList().ForEach(x =>
-                x.SetContactEmailForNonEJudJudgeUser(hearing.OtherInformation));
+            NewParticipants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
             RemovedParticipants = removedParticipants;
             LinkedParticipants = linkedParticipants;
         }

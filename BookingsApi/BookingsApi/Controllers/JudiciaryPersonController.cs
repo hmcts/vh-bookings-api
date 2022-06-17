@@ -166,18 +166,18 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            //if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
-            //{
+            if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
+            {
                 var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
                 var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
                 var mapper = new JudiciaryPersonToResponseMapper();
                 var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
                 return Ok(response);
-            //}
-            //else
-            //{
-            //    return Ok(new List<PersonResponse>());
-            //}
+            }
+            else
+            {
+                return Ok(new List<PersonResponse>());
+            }
         }
     }
 }
