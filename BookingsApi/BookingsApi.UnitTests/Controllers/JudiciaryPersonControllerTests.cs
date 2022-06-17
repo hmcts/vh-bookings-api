@@ -473,17 +473,5 @@ namespace BookingsApi.UnitTests.Controllers
             var personResponses = (List<PersonResponse>)objectResult.Value;
             personResponses.Count.Should().Be(0);
         }
-
-        [Test]
-        public void RemoveAllJudiciaryPersonsStaging_Should_Clear_Existing_Entries()
-        {
-            var result =_controller.RemoveAllJudiciaryPersonsStaging();
-            
-            result.Should().NotBeNull();
-            var objectResult = (OkResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            
-            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<RemoveAllJudiciaryPersonStagingCommand>()), Times.Exactly(1));
-        }
     }
 }
