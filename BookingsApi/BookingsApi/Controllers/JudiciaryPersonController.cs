@@ -131,7 +131,7 @@ namespace BookingsApi.Controllers
                         await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver));
                     }
                     else
-                    {
+                    { 
                         var message = $"Unable to update the record in Judiciary Person with ExternalRefId - '{item.Id}'";
                         _logger.LogError(message);
                         bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
