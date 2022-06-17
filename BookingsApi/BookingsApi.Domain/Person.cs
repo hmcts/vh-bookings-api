@@ -49,7 +49,14 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             ContactEmail = contactEmail ?? ContactEmail;
         }
-
+        public void UpdatePerson(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                _validationFailures.AddFailure("Username", "Username cannot be empty");
+            }
+            Username = username;
+        }
         public void AnonymisePerson()
         {
             var firstname = RandomStringGenerator.GenerateRandomString(10);
