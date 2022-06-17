@@ -8,9 +8,9 @@ namespace BookingsApi.DAL.Queries
 {
     public class GetJudiciaryPersonByExternalRefIdQuery : IQuery
     {
-        public Guid ExternalRefId { get; set; }
+        public string ExternalRefId { get; set; }
 
-        public GetJudiciaryPersonByExternalRefIdQuery(Guid externalRefId)
+        public GetJudiciaryPersonByExternalRefIdQuery(string externalRefId)
         {
             ExternalRefId = externalRefId;
         }
