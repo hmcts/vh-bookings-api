@@ -39,9 +39,9 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void UpdatePerson(string firstName, string lastName, string username, string title = null, string telephoneNumber = null, string contactEmail = null)
+        public void UpdatePerson(string firstName, string lastName, string contactEmail, string username, string title = null, string telephoneNumber = null)
         {
-            ValidateArgumentsForUpdate(firstName, lastName);
+            ValidateArguments(firstName, lastName, contactEmail);
             FirstName = firstName;
             LastName = lastName;
             Username = username;
@@ -101,22 +101,6 @@ namespace BookingsApi.Domain
             if (string.IsNullOrEmpty(contactEmail))
             {
                 _validationFailures.AddFailure("ContactEmail", "ContactEmail cannot be empty");
-            }
-
-            if (_validationFailures.Any())
-            {
-                throw new DomainRuleException(_validationFailures);
-            }
-        }
-        private void ValidateArgumentsForUpdate(string firstName, string lastName)
-        {
-            if (string.IsNullOrEmpty(firstName))
-            {
-                _validationFailures.AddFailure("FirstName", "FirstName cannot be empty");
-            }
-            if (string.IsNullOrEmpty(lastName))
-            {
-                _validationFailures.AddFailure("LastName", "LastName cannot be empty");
             }
 
             if (_validationFailures.Any())
