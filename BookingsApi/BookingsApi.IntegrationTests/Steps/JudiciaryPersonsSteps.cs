@@ -45,9 +45,9 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             return new List<JudiciaryPersonRequest>
             {
-                new JudiciaryPersonRequest {Id = Guid.NewGuid(), Email = "test.email.com", Fullname = "ccc ddd", KnownAs = "ccc", Surname = "ddd", Title = "mr", PersonalCode = "123", PostNominals = "postnom1"},
-                new JudiciaryPersonRequest {Id = Guid.NewGuid(), Email = "test.email.com", Fullname = "eee fff", KnownAs = "eee", Surname = "fff", Title = "mr", PersonalCode = "123", PostNominals = "postnom1"},
-                new JudiciaryPersonRequest {Id = Guid.NewGuid(), Email = "test.email.com", Fullname = "ggg hhh", KnownAs = "ggg", Surname = "hhh", Title = "mr", PersonalCode = "123", PostNominals = "postnom1"}
+                new JudiciaryPersonRequest {Id = Guid.NewGuid().ToString(), Email = "test.email.com", Fullname = "ccc ddd", KnownAs = "ccc", Surname = "ddd", Title = "mr", PersonalCode = "123", PostNominals = "postnom1"},
+                new JudiciaryPersonRequest {Id = Guid.NewGuid().ToString(), Email = "test.email.com", Fullname = "eee fff", KnownAs = "eee", Surname = "fff", Title = "mr", PersonalCode = "123", PostNominals = "postnom1"},
+                new JudiciaryPersonRequest {Id = Guid.NewGuid().ToString(), Email = "test.email.com", Fullname = "ggg hhh", KnownAs = "ggg", Surname = "hhh", Title = "mr", PersonalCode = "123", PostNominals = "postnom1"}
             };
         }
     }
