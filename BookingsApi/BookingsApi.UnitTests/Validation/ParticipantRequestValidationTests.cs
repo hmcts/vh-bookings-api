@@ -128,6 +128,30 @@ namespace BookingsApi.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
+        [Test]
+        public async Task Should_return_invalid_contact_email_error()
+        {
+            var request = BuildRequest();
+            request.ContactEmail = "gsdgdsgfs";
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
+                .Should().BeTrue();
+        }
+        [Test]
+        public async Task Should_return_valid_contact_email_error()
+        {
+            var request = BuildRequest();
+            request.ContactEmail = "mmm@mm.com";
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeTrue();
+        }
+
         private ParticipantRequest BuildRequest()
         {
             return Builder<ParticipantRequest>.CreateNew()

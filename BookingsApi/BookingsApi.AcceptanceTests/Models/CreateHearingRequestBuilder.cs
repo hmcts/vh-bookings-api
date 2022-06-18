@@ -86,7 +86,7 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
                 .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.TelephoneNumber = Faker.Phone.Number())
-                .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+                .With(x => x.Username = hearingRoleName == "Judge" ? $"Automation_{Faker.RandomNumber.Next()}@hmcts.net" : String.Empty)
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.CaseRoleName = caseRoleName)
                 .With(x => x.HearingRoleName = hearingRoleName)
