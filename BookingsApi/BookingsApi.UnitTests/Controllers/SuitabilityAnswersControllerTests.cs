@@ -41,7 +41,7 @@ namespace BookingsApi.UnitTests.Controllers
             var participant = new Mock<Participant>();
             participant.SetupGet(p => p.Hearing).Returns(hearing);
             participant.SetupGet(p => p.Questionnaire).Returns(new Questionnaire { UpdatedDate = DateTime.Now.AddHours(addHour) });
-            participant.SetupGet(p => p.Person).Returns(new Person("Mr", fName, lName,  $"{fName} {lName}"));
+            participant.SetupGet(p => p.Person).Returns(new Person("Mr", fName, lName, "me@me.com", $"{fName} {lName}"));
             participant.SetupGet(p => p.HearingRole).Returns(new BookingsApi.Domain.RefData.HearingRole(1,"Test"));
 
             return participant.Object;

@@ -145,7 +145,7 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExist(person.Username))
+            if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
             }
@@ -163,7 +163,7 @@ namespace BookingsApi.Domain
         public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
             string representee)
         {
-            if (DoesParticipantExist(person.Username))
+            if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
             }
@@ -182,7 +182,7 @@ namespace BookingsApi.Domain
 
         public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExist(person.Username))
+            if (DoesParticipantExistByUsername(person.Username))
             {
                 throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
             }
@@ -199,7 +199,7 @@ namespace BookingsApi.Domain
 
         public Participant AddStaffMember(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExist(person.Username))
+            if (DoesParticipantExistByUsername(person.Username))
             {
                 throw new DomainRuleException(nameof(person), "Staff Member with given username already exists in the hearing");
             }
@@ -216,7 +216,7 @@ namespace BookingsApi.Domain
         
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (DoesParticipantExist(person.Username))
+            if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), "Judicial office holder already exists in the hearing");
             }
@@ -242,14 +242,14 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipant(Participant participant, bool validateParticipantCount=true)
         {
-            if (!DoesParticipantExist(participant.Person.Username))
+            if (!DoesParticipantExistByContactEmail(participant.Person.ContactEmail))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
             }
 
             if (validateParticipantCount) ValidateHostCount();
 
-            var existingParticipant = Participants.Single(x => x.Person.Username == participant.Person.Username);
+            var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
             var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
             if (endpoint != null)
             {
@@ -346,7 +346,12 @@ namespace BookingsApi.Domain
             AudioRecordingRequired = audioRecordingRequired;
         }
 
-        private bool DoesParticipantExist(string username)
+        private bool DoesParticipantExistByContactEmail(string contactEmail)
+        {
+            return Participants.Any(x => x.Person.ContactEmail == contactEmail);
+        }
+
+        private bool DoesParticipantExistByUsername(string username)
         {
             return Participants.Any(x => x.Person.Username == username);
         }

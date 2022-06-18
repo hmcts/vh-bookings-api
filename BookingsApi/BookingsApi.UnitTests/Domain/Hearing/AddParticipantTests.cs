@@ -88,7 +88,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             var judgeCaseRole = new CaseRole(5, "Judge");
             var judgeHearingRole = new HearingRole(13, "Judge");
-            var newPerson = new PersonBuilder(existingJudge.Username).Build();
+            var newPerson = new PersonBuilder(existingJudge.Username, existingJudge.ContactEmail).Build();
 
             When(() => hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Dredd"))
                 .Should().Throw<DomainRuleException>().WithMessage("Judge with given username already exists in the hearing");
@@ -104,7 +104,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             var johCaseRole = new CaseRole(7, "Judicial Office Holder");
             var johHearingRole = new HearingRole(14, "Judicial Office Holder");
-            var newPerson = new PersonBuilder(existingJoh.Username).Build();
+            var newPerson = new PersonBuilder(existingJoh.Username, existingJoh.ContactEmail).Build();
 
             When(() => hearing.AddJudicialOfficeHolder(newPerson, johHearingRole, johCaseRole, "Joh"))
                 .Should().Throw<DomainRuleException>().WithMessage("Judicial office holder already exists in the hearing");

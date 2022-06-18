@@ -47,16 +47,12 @@ namespace BookingsApi.UnitTests.Domain.Participants
             _hearingRole1 = new HearingRole(1, "hearing role 1") {UserRole = _userRole1};
             _hearingRole2 = new HearingRole(2, "hearing role 2") {UserRole = _userRole2};
 
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email())
-                {ContactEmail = Faker.Internet.Email()};
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email())
-                {ContactEmail = Faker.Internet.Email()};
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
             _representativePerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(),
-                    Faker.Internet.Email())
-                {ContactEmail = Faker.Internet.Email()};
-            _anonymisedParticipantPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(),
-                    Faker.Internet.Email())
-                {ContactEmail = Faker.Internet.Email()};
+                    Faker.Internet.Email(), Faker.Internet.Email());
+            _anonymisedParticipantPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Internet.Email(), Faker.Name.Last(),
+                    Faker.Internet.Email());
 
             _caseType1 = new CaseType(12, "case 1")
                 {HearingTypes = new List<HearingType> {new HearingType("Hearing type 1")}};

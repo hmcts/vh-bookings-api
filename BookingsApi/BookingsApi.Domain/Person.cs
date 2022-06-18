@@ -9,14 +9,15 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
-        public Person(string title, string firstName, string lastName, string username)
+        public Person(string title, string firstName, string lastName, string contactEmail, string username)
         {
             Id = Guid.NewGuid();
-            ValidateArguments(firstName, lastName, username);
+            ValidateArguments(firstName, lastName, contactEmail);
             Title = title;
             FirstName = firstName;
             LastName = lastName;
             Username = username;
+            ContactEmail = contactEmail;
             CreatedDate = UpdatedDate = DateTime.UtcNow;
         }
 
@@ -40,7 +41,7 @@ namespace BookingsApi.Domain
 
         public void UpdatePerson(string firstName, string lastName, string username, string title = null, string telephoneNumber = null, string contactEmail = null)
         {
-            ValidateArguments(firstName, lastName, username);
+            ValidateArgumentsForUpdate(firstName, lastName);
             FirstName = firstName;
             LastName = lastName;
             Username = username;
@@ -87,7 +88,7 @@ namespace BookingsApi.Domain
             }
         }
 
-        private void ValidateArguments(string firstName, string lastName, string username)
+        private void ValidateArguments(string firstName, string lastName, string contactEmail)
         {
             if (string.IsNullOrEmpty(firstName))
             {
@@ -97,9 +98,25 @@ namespace BookingsApi.Domain
             {
                 _validationFailures.AddFailure("LastName", "LastName cannot be empty");
             }
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(contactEmail))
             {
-                _validationFailures.AddFailure("Username", "Username cannot be empty");
+                _validationFailures.AddFailure("ContactEmail", "ContactEmail cannot be empty");
+            }
+
+            if (_validationFailures.Any())
+            {
+                throw new DomainRuleException(_validationFailures);
+            }
+        }
+        private void ValidateArgumentsForUpdate(string firstName, string lastName)
+        {
+            if (string.IsNullOrEmpty(firstName))
+            {
+                _validationFailures.AddFailure("FirstName", "FirstName cannot be empty");
+            }
+            if (string.IsNullOrEmpty(lastName))
+            {
+                _validationFailures.AddFailure("LastName", "LastName cannot be empty");
             }
 
             if (_validationFailures.Any())

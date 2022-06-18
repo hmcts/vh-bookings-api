@@ -59,7 +59,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             {
                 Username = "new.me@hmcts.net",
                 FirstName = "New",
-                LastName = "Me"
+                LastName = "Me",
             };
 
             var hearings = CreateListOfVideoHearings(personId, payload.FirstName, payload.LastName, payload.Username);

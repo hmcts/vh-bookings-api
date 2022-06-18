@@ -67,13 +67,13 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 new Individual
                 (
-                    new Person("mr", "test", "er", "test1@hmcts.net"),
+                    new Person("mr", "test", "er","test1@hmcts.net", "test1@hmcts.net"),
                     hearingRole,
                     caseRole
                 ),
                 new Individual
                 (
-                    new Person("mr", "test", "er", "test2@hmcts.net"),
+                    new Person("mr", "test", "er", "test2@hmcts.net", "test2@hmcts.net"),
                     hearingRole,
                     caseRole
                 )

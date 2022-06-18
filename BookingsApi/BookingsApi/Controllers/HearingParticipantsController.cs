@@ -539,7 +539,7 @@ namespace BookingsApi.Controllers
         private async Task PublishParticipantsAddedEvent(IEnumerable<NewParticipant> newParticipants, Hearing hearing)
         {
             var participants = hearing.GetParticipants()
-                .Where(x => newParticipants.Any(y => y.Person.Username == x.Person.Username)).ToList();
+                .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
             if (participants.Any())
             {
                 await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
@@ -550,7 +550,7 @@ namespace BookingsApi.Controllers
             List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
         {
             var eventNewParticipants = hearing.GetParticipants()
-                .Where(x => newParticipants.Any(y => y.Person.Username == x.Person.Username)).ToList();
+                .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
             
             var eventExistingParticipants = hearing.GetParticipants()
                 .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();

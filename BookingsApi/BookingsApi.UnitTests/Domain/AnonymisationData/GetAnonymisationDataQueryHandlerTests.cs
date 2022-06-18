@@ -44,17 +44,13 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             _hearingRole1 = new HearingRole(1, "hearing role 1") { UserRole = _userRole1 };
             _hearingRole2 = new HearingRole(2, "hearing role 2") { UserRole = _userRole2 };
 
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email())
-                { ContactEmail = Faker.Internet.Email() };
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email())
-                { ContactEmail = Faker.Internet.Email() };
-            _person3 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email())
-                { ContactEmail = Faker.Internet.Email() };
-            _person4 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email())
-                { ContactEmail = Faker.Internet.Email() };
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person3 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person4 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
             _anonymisedPerson =
-                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(),
-                    $"{Faker.Internet.Email()}@email.net") { ContactEmail = Faker.Internet.Email() };
+                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
+                    $"{Faker.Internet.Email()}@email.net");
 
             _caseType1 = new CaseType(12, "case 1")
                 { HearingTypes = new List<HearingType> { new HearingType("Hearing type 1") } };
@@ -313,8 +309,7 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
                 Faker.Name.First(), Faker.Name.First(), null, true, false, null);
 
             var automationTestAccountPersonEntry =
-                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), username)
-                    { ContactEmail = Faker.Internet.Email() };
+                new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), username);
 
             hearing1.AddJudge(_person1, _hearingRole1, new CaseRole(1, "judge"), "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, new CaseRole(2, "individual"), "Individual 123");

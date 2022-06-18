@@ -153,12 +153,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         }
 
         [Test]
-        public async Task Should_add_given_participants_to_hearing_and_PublishParticipantsAddedEvent_if_several_matching_participant_with_username()
+        public async Task Should_add_given_participants_to_hearing_and_PublishParticipantsAddedEvent_if_several_matching_participant_with_contactemail()
         {
             var hearing = GetVideoHearing(true);
             var participants = BuildParticipants(3);
-            participants[0].Username = hearing.Participants[0].Person.Username;
-            participants[1].Username = hearing.Participants[1].Person.Username;
+            participants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+            participants[1].ContactEmail = hearing.Participants[1].Person.ContactEmail;
 
             request = new AddParticipantsToHearingRequest { Participants = participants };
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);

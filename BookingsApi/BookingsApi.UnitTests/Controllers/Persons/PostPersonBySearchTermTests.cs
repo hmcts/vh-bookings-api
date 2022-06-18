@@ -19,8 +19,8 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         {
             var searchTermRequest = new SearchTermRequest("test");
             var persons = new List<Person> { 
-                                new Person("Mr", "Test", "Tester", "T Tester") { ContactEmail = "test@hmcts.net" },
-                                new Person("Mr", "Tester", "Test", "T Test") { ContactEmail = "atest@hmcts.net" }};
+                                new Person("Mr", "Test", "Tester", "test@hmcts.net", "T Tester"),
+                                new Person("Mr", "Tester", "Test", "atest@hmcts.net", "T Test")};
             QueryHandlerMock
            .Setup(x => x.Handle<GetPersonBySearchTermQuery, List<Person>>(It.IsAny<GetPersonBySearchTermQuery>()))
            .ReturnsAsync(persons);
