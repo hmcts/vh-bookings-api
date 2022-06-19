@@ -517,12 +517,19 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(result.Errors);
                 return BadRequest(ModelState);
             }
-
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            if (videoHearing == null)
+            {
+                return NotFound($"{hearingId} does not exist");
+            }
+            
             try
             {
                 var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString());
-                await ConfirmBooking(hearingId, request.UpdatedBy, request.CancelReason, bookingStatus);
-
+                if (videoHearing.Status != bookingStatus)
+                {
+                    await ConfirmBooking(hearingId, request.UpdatedBy, request.CancelReason, bookingStatus);
+                }
                 return NoContent();
             }
             catch (HearingNotFoundException)
