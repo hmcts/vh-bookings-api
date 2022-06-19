@@ -430,11 +430,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 Status = UpdateBookingStatus.Failed,
                 CancelReason = ""
             };
-            var hearingId = Guid.NewGuid();
+            
+            var hearing = GetHearing("123");
+            QueryHandlerMock
+               .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+               .ReturnsAsync(hearing);
 
             CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
 
-            var result = await Controller.UpdateBookingStatus(hearingId, request);
+            var result = await Controller.UpdateBookingStatus(hearing.Id, request);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
