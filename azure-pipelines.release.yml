@@ -56,7 +56,7 @@ resources:
     - repository: templates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/master
+      ref: refs/heads/cache-clear
       endpoint: hmcts
   pipelines:
   - pipeline: CI
