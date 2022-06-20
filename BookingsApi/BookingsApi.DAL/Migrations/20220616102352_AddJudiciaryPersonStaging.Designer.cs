@@ -5,14 +5,16 @@ using BookingsApi.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220616102352_AddJudiciaryPersonStaging")]
+    partial class AddJudiciaryPersonStaging
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,8 +242,8 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalRefId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("ExternalRefId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Fullname")
                         .HasColumnType("nvarchar(max)");
@@ -276,8 +278,7 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ExternalRefId")
-                        .IsUnique()
-                        .HasFilter("[ExternalRefId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("JudiciaryPerson");
                 });
