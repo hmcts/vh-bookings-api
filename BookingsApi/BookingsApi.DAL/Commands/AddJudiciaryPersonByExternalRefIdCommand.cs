@@ -9,7 +9,7 @@ namespace BookingsApi.DAL.Commands
 {
     public class AddJudiciaryPersonByExternalRefIdCommand : JudiciaryPersonCommandBase
     {
-        public AddJudiciaryPersonByExternalRefIdCommand(Guid externalRefId, string personalCode, string title,
+        public AddJudiciaryPersonByExternalRefIdCommand(string externalRefId, string personalCode, string title,
             string knownAs, string surname, string fullname, string postNominals, string email, bool hasLeft, bool leaver, string leftOn) :
             base(externalRefId, personalCode, title, knownAs, surname, fullname, postNominals, email, hasLeft, leaver, leftOn)
         {

@@ -6,7 +6,7 @@ namespace BookingsApi.Domain
     public class JudiciaryPerson : AggregateRoot<Guid>
     {
         private readonly DateTime _currentUTC = DateTime.UtcNow;
-        public JudiciaryPerson(Guid externalRefId, string personalCode, string title, string knownAs, string surname,
+        public JudiciaryPerson(string externalRefId, string personalCode, string title, string knownAs, string surname,
             string fullname, string postNominals, string email, bool hasLeft, bool leaver, string leftOn)
         {
             Id = Guid.NewGuid();
@@ -25,7 +25,7 @@ namespace BookingsApi.Domain
             LeftOn = leftOn;
         }
 
-        public Guid ExternalRefId { get; set; }
+        public string ExternalRefId { get; set; }
         public string PersonalCode { get; set; }
         public string Title { get; set; }
         public string KnownAs { get; set; }

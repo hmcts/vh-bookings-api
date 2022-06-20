@@ -10,7 +10,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         [Test]
         public void Should_update_person()
         {
-            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", true, false, string.Empty);
+            var person = new JudiciaryPerson(Guid.NewGuid().ToString(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", true, false, string.Empty);
             person.Update("PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true, true, "2022-06-08");
 
             person.PersonalCode.Should().Be("PersonalCode");
@@ -28,7 +28,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         [Test]
         public void Should_update_the_leaver_person()
         {
-            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, false, string.Empty);
+            var person = new JudiciaryPerson(Guid.NewGuid().ToString(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, false, string.Empty);
             person.Update(true);
             
             person.HasLeft.Should().BeTrue();
@@ -38,7 +38,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         [Test]
         public void Should_set_personal_data_to_null_for_leaver_accounts()
         {
-            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, true, "1-1-2020");
+            var person = new JudiciaryPerson(Guid.NewGuid().ToString(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, true, "1-1-2020");
             person.Update(true);
 
             person.HasLeft.Should().BeTrue();
@@ -53,7 +53,7 @@ namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
         [Test]
         public void Should_not_set_personal_data_to_null_for_leaver_accounts()
         {
-            var person = new JudiciaryPerson(Guid.NewGuid(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, true, "1-1-2020");
+            var person = new JudiciaryPerson(Guid.NewGuid().ToString(), "123", "Mr", "Steve", "Allen", "Steve Allen", "nom1", "email1@email.com", false, true, "1-1-2020");
             person.Update(false);
 
             person.HasLeft.Should().BeFalse();

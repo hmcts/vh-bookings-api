@@ -24,7 +24,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task should_add_person()
         {
-            var externalRefId = Guid.NewGuid();
+            var externalRefId = Guid.NewGuid().ToString();
 
             var insertCommand = new AddJudiciaryPersonByExternalRefIdCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true, true, "2022-06-08");
             await _commandHandler.Handle(insertCommand);
