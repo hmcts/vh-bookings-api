@@ -24,7 +24,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task should_add_non_leaver_person()
         {
-            var externalRefId = Guid.NewGuid();
+            var externalRefId = Guid.NewGuid().ToString();
             var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false, false, string.Empty);
             
             await _commandHandler.Handle(addCommand);
@@ -48,7 +48,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task should_add_leaver_person()
         {
-            var externalRefId = Guid.NewGuid();
+            var externalRefId = Guid.NewGuid().ToString();
             var addCommand = new AddJudiciaryPersonCommand(externalRefId, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false, true, "2022-06-08");
             
             await _commandHandler.Handle(addCommand);

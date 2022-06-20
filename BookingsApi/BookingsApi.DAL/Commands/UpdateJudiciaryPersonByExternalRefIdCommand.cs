@@ -8,7 +8,7 @@ namespace BookingsApi.DAL.Commands
 {
     public class UpdateJudiciaryPersonByExternalRefIdCommand : UpdateJudiciaryPersonCommandBase
     {
-        public UpdateJudiciaryPersonByExternalRefIdCommand(Guid externalRefId, bool leaver) :
+        public UpdateJudiciaryPersonByExternalRefIdCommand(string externalRefId, bool leaver) :
             base(externalRefId, leaver)
         {
         }

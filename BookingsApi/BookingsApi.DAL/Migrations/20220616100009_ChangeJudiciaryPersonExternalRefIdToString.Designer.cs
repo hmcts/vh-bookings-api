@@ -5,14 +5,16 @@ using BookingsApi.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220616100009_ChangeJudiciaryPersonExternalRefIdToString")]
+    partial class ChangeJudiciaryPersonExternalRefIdToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -280,53 +282,6 @@ namespace BookingsApi.DAL.Migrations
                         .HasFilter("[ExternalRefId] IS NOT NULL");
 
                     b.ToTable("JudiciaryPerson");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.JudiciaryPersonStaging", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExternalRefId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Fullname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KnownAs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Leaver")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LeftOn")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PersonalCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostNominals")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Surname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JudiciaryPersonsStaging");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>

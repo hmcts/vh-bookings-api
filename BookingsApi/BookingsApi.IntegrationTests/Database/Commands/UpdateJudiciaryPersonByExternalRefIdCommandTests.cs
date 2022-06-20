@@ -25,14 +25,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public void should_throw_exception_when_peron_does_not_exist()
         {
-            var command = new UpdateJudiciaryPersonByExternalRefIdCommand(Guid.NewGuid(), false);
+            var command = new UpdateJudiciaryPersonByExternalRefIdCommand(Guid.NewGuid().ToString(), false);
             Assert.ThrowsAsync<JudiciaryPersonNotFoundException>(() => _commandHandler.Handle(command));
         }
         
         [Test]
         public async Task should_update_person()
         {
-            var externalRefId = Guid.NewGuid();
+            var externalRefId = Guid.NewGuid().ToString();
             await Hooks.AddJudiciaryPerson(externalRefId);
 
             var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand(externalRefId, true);

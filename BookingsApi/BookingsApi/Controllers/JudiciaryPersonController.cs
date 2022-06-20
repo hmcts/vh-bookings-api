@@ -123,12 +123,12 @@ namespace BookingsApi.Controllers
 
                 try
                 {
-                    var query = new GetJudiciaryPersonByExternalRefIdQuery(Guid.Parse(item.Id));
+                    var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
                     var judiciaryPerson = await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
 
                     if (judiciaryPerson != null)
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver));
+                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(item.Id, item.Leaver));
                     }
                     else
                     {
