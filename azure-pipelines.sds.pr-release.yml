@@ -147,7 +147,7 @@ stages:
       variables:
         projectPath: BookingsApi/BookingsApi
       steps:
-      - template: stages\dotnet-tests\publish-acceptance-test.yml@azTemplates
+      - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
         parameters:
           coreProjectPath: $(projectPath)
           nugetProjectPath: $(projectPath)
