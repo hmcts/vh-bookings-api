@@ -165,7 +165,7 @@
         "type": "Direct",
         "requested": "[1.21.68, )",
         "resolved": "1.21.68",
-        "contentHash": "aN4mLKFXbQvePnUnFgmMbDIdD1g/wYrmBlAP7vBfAN5zMHkRlwn0WbF7OmfboB0u0oELr5+DzCAQMoWzoQR/9g==",
+        "contentHash": "EUJIsZXqljR8h03AWJl/tcW9aer1gCjzh2Oceheobk8EgsJjwYPujea3d7uMzNJAMvJdgznyb7zpBxjYuKx6/g==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
