@@ -91,7 +91,7 @@ namespace BookingsApi.DAL.Commands
                 var dtos = command.Endpoints;
                 var newEndpoints = (from dto in dtos
                     let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.DefenceAdvocateUsername,
+                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
                             videoHearing.GetParticipants())
                     select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
 

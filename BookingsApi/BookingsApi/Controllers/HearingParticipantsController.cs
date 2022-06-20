@@ -201,7 +201,7 @@ namespace BookingsApi.Controllers
                 await PublishParticipantsAddedEvent(participants, hearing);
             }
 
-            var addedParticipants = hearing.Participants.Where(x => request.Participants.Select(p => p.Username).Contains(x.Person.Username));
+            var addedParticipants = hearing.Participants.Where(x => request.Participants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail));
 
             var response = CreateParticipantResponseList(addedParticipants);
 
@@ -311,7 +311,7 @@ namespace BookingsApi.Controllers
                 await PublishUpdateHearingParticipantsEvent(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
             }
 
-            var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.Username).Contains(x.Person.Username)
+            var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
 
             var response = CreateParticipantResponseList(upsertedParticipants);

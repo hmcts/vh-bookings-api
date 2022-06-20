@@ -58,7 +58,7 @@ namespace BookingsApi.DAL.Helper
                     Pin = pin,
                     Sip = $"{sip}{sipAddressStem}",
                     DisplayName = x.DisplayName,
-                    DefenceAdvocateUsername = x.DefenceAdvocate?.Person?.Username
+                    ContactEmail = x.DefenceAdvocate?.Person?.ContactEmail
                 };
             }).ToList();
 

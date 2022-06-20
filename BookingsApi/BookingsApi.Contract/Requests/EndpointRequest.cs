@@ -7,6 +7,6 @@ namespace BookingsApi.Contract.Requests
         [StringLength(255, ErrorMessage = "Display name max length is 255 characters")]
         [RegularExpression("^([-A-Za-z0-9 ',._])*$")]
         public string DisplayName { get; set; }
-        public string DefenceAdvocateUsername { get; set; }
+        public string DefenceAdvocateContactEmail { get; set; }
     }
 }
