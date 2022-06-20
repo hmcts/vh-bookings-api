@@ -23,7 +23,7 @@ namespace BookingsApi.Controllers
             _logger = logger;
         }
         
-        [HttpGet("RemoveAllJudiciaryPersonsStaging")]
+        [HttpDelete("RemoveAllJudiciaryPersonsStaging")]
         [OpenApiOperation("RemoveAllJudiciaryPersonsStaging")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> RemoveAllJudiciaryPersonsStagingAsync()
