@@ -25,12 +25,6 @@ namespace BookingsApi.UnitTests.Domain.Persons
             _context = new BookingsDbContext(contextOptions);
         }
 
-        [OneTimeTearDown]
-        public void FinalCleanUp()
-        {
-            _context.Database.EnsureDeleted();
-        }
-
         [SetUp]
         public async Task SetUp()
         {
