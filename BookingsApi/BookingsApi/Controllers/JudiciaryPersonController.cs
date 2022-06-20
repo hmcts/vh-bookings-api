@@ -77,7 +77,10 @@ namespace BookingsApi.Controllers
                     }
                     else
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id, item.HasLeft));
+                        if (judiciaryPerson.HasLeft != item.HasLeft)
+                        {
+                            await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id, item.HasLeft));
+                        }
                     }
                 }
                 catch (Exception ex)
