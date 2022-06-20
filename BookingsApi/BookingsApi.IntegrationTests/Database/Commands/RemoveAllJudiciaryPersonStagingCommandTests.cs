@@ -13,8 +13,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private BookingsDbContext _context;
         private RemoveAllJudiciaryPersonStagingCommandHandler _command;
 
-        private JudiciaryPersonStaging _person1, _person2;
-
         [OneTimeSetUp]
         public void InitialSetup()
         {
