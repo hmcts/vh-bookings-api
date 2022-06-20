@@ -144,6 +144,8 @@ stages:
 
     - job: PublishAcceptanceTests
       displayName: Publish Acceptance Tests 
+      pool:
+        vmImage: 'windows-latest'
       variables:
         projectPath: BookingsApi/BookingsApi
       steps:
