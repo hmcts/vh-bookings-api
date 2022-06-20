@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: VIH-8979
+      ref: master
       endpoint: hmcts
   containers:
   - container: sspublicsbox
@@ -142,15 +142,6 @@ stages:
           nugetProjectPath: BookingsApi/BookingsApi.Client
           vstsFeed: 'Video Hearings/vh-packages'
 
-    - job: PublishAcceptanceTests
-      displayName: Publish Acceptance Tests 
-      variables:
-        projectPath: BookingsApi/BookingsApi
-      steps:
-      - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
-        parameters:
-          coreProjectPath: $(projectPath)
-          nugetProjectPath: $(projectPath)
 
 #####################################################
 # Run Entity Framework Dev. #########################
