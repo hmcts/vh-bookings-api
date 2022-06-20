@@ -3808,7 +3808,7 @@ namespace BookingsApi.Client
         public async System.Threading.Tasks.Task RemoveAllJudiciaryPersonsStagingAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/RemoveAllJudiciaryPersonsStaging");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/judiciarypersonstaging/RemoveAllJudiciaryPersonsStaging");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3816,7 +3816,7 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -3873,13 +3873,11 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task BulkJudiciaryPersonsStagingAsync(System.Collections.Generic.IEnumerable<JudiciaryPersonStagingRequest> request, System.Threading.CancellationToken cancellationToken)
         {
+            if (request == null)
+                throw new System.ArgumentNullException("request");
+    
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/BulkJudiciaryPersonsStaging?");
-            if (request != null)
-            {
-                foreach (var item_ in request) { urlBuilder_.Append(System.Uri.EscapeDataString("request") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/judiciarypersonstaging/BulkJudiciaryPersonsStaging");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3887,7 +3885,9 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
     
                     PrepareRequest(client_, request_, urlBuilder_);

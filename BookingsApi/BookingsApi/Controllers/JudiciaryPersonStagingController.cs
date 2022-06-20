@@ -12,6 +12,9 @@ using NSwag.Annotations;
 
 namespace BookingsApi.Controllers
 {
+    [Produces("application/json")]
+    [Route("judiciarypersonstaging")]
+    [ApiController]
     public class JudiciaryPersonStagingController : Controller
     {
         private readonly ICommandHandler _commandHandler;
