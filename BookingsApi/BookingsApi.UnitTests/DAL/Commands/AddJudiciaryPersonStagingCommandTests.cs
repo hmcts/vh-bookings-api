@@ -37,7 +37,19 @@ namespace BookingsApi.UnitTests.DAL.Commands
         [Test]
         public async Task Adds_Entry_To_Table()
         {
-            var command = new AddJudiciaryPersonStagingCommand(Faker.Name.First(), Faker.Name.First(), Faker.Name.First(), Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First());;
+            var command = new AddJudiciaryPersonStagingCommand
+            {
+                ExternalRefId = Faker.Name.First(),
+                PersonalCode = Faker.Name.First(),
+                Title = Faker.Name.First(),
+                KnownAs = Faker.Name.First(),
+                Surname = Faker.Name.First(),
+                Fullname = Faker.Name.First(),
+                PostNominals = Faker.Name.First(),
+                Email = Faker.Name.First(),
+                Leaver = Faker.Name.First(),
+                LeftOn = Faker.Name.First()
+            };
 
             await _handler.Handle(command);
 

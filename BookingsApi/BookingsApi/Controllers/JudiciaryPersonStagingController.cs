@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
@@ -47,9 +48,7 @@ namespace BookingsApi.Controllers
             {
                 try
                 {
-                    await _commandHandler.Handle(new AddJudiciaryPersonStagingCommand(item.Id, item.PersonalCode,
-                        item.Title, item.KnownAs, item.Surname,
-                        item.Fullname, item.PostNominals, item.Email, item.Leaver, item.LeftOn));
+                    await _commandHandler.Handle(AddJudiciaryPersonStagingCommandMapper.Map(item));
                 }
                 catch (Exception e)
                 {

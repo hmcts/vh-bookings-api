@@ -7,20 +7,6 @@ namespace BookingsApi.DAL.Commands
 {
     public class AddJudiciaryPersonStagingCommand : ICommand 
     {
-        public AddJudiciaryPersonStagingCommand(string externalRefId, string personalCode, string title, string knownAs, string surname,
-            string fullname, string postNominals, string email, string leaver, string leftOn)
-        {
-            ExternalRefId = externalRefId;
-            PersonalCode = personalCode;
-            Title = title;
-            KnownAs = knownAs;
-            Surname = surname;
-            Fullname = fullname;
-            PostNominals = postNominals;
-            Email = email;
-            Leaver = leaver;
-            LeftOn = leftOn;
-        }
         public string ExternalRefId { get; set; }
         public string PersonalCode { get; set; }
         public string Title { get; set; }
