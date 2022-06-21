@@ -126,7 +126,17 @@ stages:
           contextName: ${{ variables.efContextName }}
           workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
           projectName: ${{ variables.efProjectName }}
-    
+
+    - job: PublishAcceptanceTests
+      displayName: Publish Acceptance Tests 
+      variables:
+        projectPath: BookingsApi/BookingsApi
+      steps:
+      - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+        parameters:
+          coreProjectPath: $(projectPath)
+          nugetProjectPath: $(projectPath)
+          
 #####################################################
 # Run Entity Framework Dev. #########################
   - stage: Run_Entity_Framework_Dev
