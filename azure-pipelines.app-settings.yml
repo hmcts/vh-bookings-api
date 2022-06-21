@@ -108,6 +108,15 @@ variables:
   - group: vh-preview
   - group: vh-bookings-api
   - group: KinlyConfiguration_Test
+  - ${{ each setting in parameters.testSettings }}:
+      - ${{ if eq(setting.slot, true)}}:
+        - name: "acDevSettings_azDeploymentSlotSetting_${{ setting.name }}"
+          value: $[ dependencies.Secret_Gathering.outputs['SetSecretVariables.deployment_${{ setting.name }}'] ]
+      - ${{ if ne(setting.slot, true)}}:
+        - name: "acDevSettings_${{ setting.name }}"
+          value: $[ dependencies.Secret_Gathering.outputs['SetSecretVariables._${{ setting.name }}'] ]
+  - name: appPackagePath
+    value: $(Pipeline.Workspace)/App/App.zip
 
 trigger:
   branches:
