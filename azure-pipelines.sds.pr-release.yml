@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: VIH-8979-ACPT-TESTS
       endpoint: hmcts
       
 trigger: none
@@ -224,6 +224,24 @@ stages:
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
+      - job: AcceptanceTestsDemo
+        displayName: Acceptance Tests Demo
+        steps:
+        - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+          parameters:
+            environment: ${{ variables.env }}
+            acceptanceTestSettings:
+              - name: AppSettings__AzureAd__ClientId
+                value: '00000000000000001'
+              - name: AppSettings__AzureAd__Secret
+                value: SecretTest
+              - name: AppSettings__AzureAd__TenantId
+                value: '123456789'
+              - name: AppSettings__Services__BookingsApiResourceId
+                value: "https://vh-bookings-api.dev.platform.hmcts.net"
+              - name: AppSettings__UseServiceBusFake
+                value: true
+                
 #####################################################
 # Manual Approval To Demo. ##########################
   - stage: Wait
