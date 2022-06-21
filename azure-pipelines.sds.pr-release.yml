@@ -224,8 +224,8 @@ stages:
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
-      - job: AcceptanceTestsDemo
-        displayName: Acceptance Tests Demo
+      - job: AcceptanceTestsDev
+        displayName: Acceptance Tests Dev
         steps:
         - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
           parameters:
