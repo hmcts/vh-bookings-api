@@ -10,6 +10,8 @@ variables:
 
   - name: git_repo_name
     value: 'bookings-api'
+  - name: sonar_exclusion
+    value: '**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*'
 
   - name: prNumber
     ${{ if eq(parameters.prNumber, '')}}:
