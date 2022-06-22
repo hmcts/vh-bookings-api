@@ -237,7 +237,7 @@ stages:
               - name: Services:BookingsApiUrl
                 value: "https://vh-bookings-api.dev.platform.hmcts.net"
               - name: ApplicationInsights:InstrumentationKey
-                value: vh-core-infra-AppInsightsKey
+                value: applicationinsights--instrumentationkey
                 secret: true
               - name: AzureAd:ClientId
                 value: azuread--clientid
