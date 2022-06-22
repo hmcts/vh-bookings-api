@@ -255,6 +255,10 @@ stages:
                 value: azuread--tenantid
                 keyVaultName: vh-infra-core-${{ variables.env }}
                 secret: true
+              - name: Services:BookingsApiResourceId
+                value: azuread--identifieruri
+                keyVaultName: vh-bookings-api-${{ variables.env }}
+                secret: true
                 
 #####################################################
 # Manual Approval To Demo. ##########################
