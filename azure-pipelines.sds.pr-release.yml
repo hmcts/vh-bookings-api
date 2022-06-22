@@ -17,6 +17,7 @@ variables:
   - group: vh-github-app-credentials
   - name: app_path
     value: 'BookingsApi'
+  - group: vh-bookings-api
 
 stages:
 #####################################################
@@ -239,22 +240,16 @@ stages:
                 value: vh-core-infra-AppInsightsKey
                 secret: true
               - name: AzureAd:ClientId
-                value: vh-bookings-api-appid
+                value: azuread--clientid
                 secret: true
               - name: AzureAd:ClientSecret
-                value: vh-bookings-api-key
+                value: azuread--clientsecret
                 secret: true
               - name: AzureAd:TenantId
-                value: tenantid
+                value: azuread--tenantid
                 secret: true
               - name: Testing:UsernameStem
                 value: $(BookingsApiUsernameStem)
-              - name: Services:BookingsApiResourceId
-                value: vh-bookings-api-identifieruris
-                secret: true
-              - name: LaunchDarkly:SdkKey
-                value: vh-admin-web-Feature-Toggle
-                secret: true
               - name: UseServiceBusFake
                 value: true
                 
