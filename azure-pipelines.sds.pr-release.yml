@@ -18,6 +18,8 @@ variables:
   - name: app_path
     value: 'BookingsApi'
   - group: vh-bookings-api
+  - name: run_acceptance_tests
+    value: true
 
 stages:
 #####################################################
@@ -128,15 +130,16 @@ stages:
     #       workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
     #       projectName: ${{ variables.efProjectName }}
 
-    - job: PublishAcceptanceTests
-      displayName: Publish Acceptance Tests 
-      variables:
-        projectPath: BookingsApi/BookingsApi
-      steps:
-      - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
-        parameters:
-          coreProjectPath: $(projectPath)
-          nugetProjectPath: $(projectPath)
+    - ${{ if eq(variables.run_acceptance_tests, true) }}:
+      - job: PublishAcceptanceTests
+        displayName: Publish Acceptance Tests 
+        variables:
+          projectPath: BookingsApi/BookingsApi
+        steps:
+        - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+          parameters:
+            coreProjectPath: $(projectPath)
+            nugetProjectPath: $(projectPath)
           
 #####################################################
 # Run Entity Framework Dev. #########################
@@ -225,40 +228,41 @@ stages:
       #         dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
       #         dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
-      - job: AcceptanceTestsDev
-        displayName: Acceptance Tests Dev
-        steps:
-        - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
-          parameters:
-            environment: ${{ variables.env }}
-            azureSubscription: ${{ variables.subscriptionName }}
-            acceptanceTestSettings:
-              - name: Services:BookingsApiUrl
-                value: "https://vh-bookings-api.dev.platform.hmcts.net"
-              - name: ApplicationInsights:InstrumentationKey
-                value: applicationinsights--instrumentationkey
-                keyVaultName: vh-infra-core-${{ variables.env }}
-                secret: true
-              - name: AzureAd:ClientId
-                value: azuread--clientid
-                keyVaultName: vh-bookings-api-${{ variables.env }}
-                secret: true
-              - name: AzureAd:ClientSecret
-                value: azuread--clientsecret
-                keyVaultName: vh-bookings-api-${{ variables.env }}
-                secret: true
-              - name: Testing:UsernameStem
-                value: $(BookingsApiUsernameStem)
-              - name: UseServiceBusFake
-                value: true
-              - name: AzureAd:TenantId
-                value: azuread--tenantid
-                keyVaultName: vh-infra-core-${{ variables.env }}
-                secret: true
-              - name: Services:BookingsApiResourceId
-                value: azuread--identifieruri
-                keyVaultName: vh-bookings-api-${{ variables.env }}
-                secret: true
+      - ${{ if eq(variables.run_acceptance_tests, true) }}:
+        - job: AcceptanceTestsDev
+          displayName: Acceptance Tests Dev
+          steps:
+          - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+            parameters:
+              environment: ${{ variables.env }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              acceptanceTestSettings:
+                - name: Services:BookingsApiUrl
+                  value: "https://vh-bookings-api.dev.platform.hmcts.net"
+                - name: ApplicationInsights:InstrumentationKey
+                  value: applicationinsights--instrumentationkey
+                  keyVaultName: vh-infra-core-${{ variables.env }}
+                  secret: true
+                - name: AzureAd:ClientId
+                  value: azuread--clientid
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                - name: AzureAd:ClientSecret
+                  value: azuread--clientsecret
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                - name: Testing:UsernameStem
+                  value: $(BookingsApiUsernameStem)
+                - name: UseServiceBusFake
+                  value: true
+                - name: AzureAd:TenantId
+                  value: azuread--tenantid
+                  keyVaultName: vh-infra-core-${{ variables.env }}
+                  secret: true
+                - name: Services:BookingsApiResourceId
+                  value: azuread--identifieruri
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
                 
 #####################################################
 # Manual Approval To Demo. ##########################
