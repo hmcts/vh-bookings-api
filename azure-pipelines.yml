@@ -196,3 +196,5 @@ extends:
         - ${{ each setting in parameters.testSettings }}:
           - name: ${{ setting.name }}
             value: ${{ setting.value }}
+            secret: ${{ setting.secret }}
+            
