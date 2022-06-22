@@ -253,7 +253,7 @@ stages:
                 value: true
               - name: AzureAd:TenantId
                 value: azuread--tenantid
-                keyVaultName: vh-bookings-api-${{ variables.env }}
+                keyVaultName: vh-infra-core-${{ variables.env }}
                 secret: true
                 
 #####################################################
