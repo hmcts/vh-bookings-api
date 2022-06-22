@@ -230,6 +230,8 @@ stages:
         - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
           parameters:
             environment: ${{ variables.env }}
+            azureSubscription: ${{ variables.subscriptionName }}
+            keyVaultName: vh-bookings-api-${{ variables.env }}
             acceptanceTestSettings:
               - name: Services:BookingsApiUrl
                 value: "https://vh-bookings-api.dev.platform.hmcts.net"
