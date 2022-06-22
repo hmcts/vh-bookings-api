@@ -231,15 +231,29 @@ stages:
           parameters:
             environment: ${{ variables.env }}
             acceptanceTestSettings:
-              - name: AppSettings__AzureAd__ClientId
-                value: '00000000000000001'
-              - name: AppSettings__AzureAd__Secret
-                value: SecretTest
-              - name: AppSettings__AzureAd__TenantId
-                value: '123456789'
-              - name: AppSettings__Services__BookingsApiResourceId
+              - name: Services:BookingsApiUrl
                 value: "https://vh-bookings-api.dev.platform.hmcts.net"
-              - name: AppSettings__UseServiceBusFake
+              - name: ApplicationInsights:InstrumentationKey
+                value: vh-core-infra-AppInsightsKey
+                secret: true
+              - name: AzureAd:ClientId
+                value: vh-bookings-api-appid
+                secret: true
+              - name: AzureAd:ClientSecret
+                value: vh-bookings-api-key
+                secret: true
+              - name: AzureAd:TenantId
+                value: tenantid
+                secret: true
+              - name: Testing:UsernameStem
+                value: $(BookingsApiUsernameStem)
+              - name: Services:BookingsApiResourceId
+                value: vh-bookings-api-identifieruris
+                secret: true
+              - name: LaunchDarkly:SdkKey
+                value: vh-admin-web-Feature-Toggle
+                secret: true
+              - name: UseServiceBusFake
                 value: true
                 
 #####################################################
