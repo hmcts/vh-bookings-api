@@ -251,10 +251,10 @@ stages:
                 value: $(BookingsApiUsernameStem)
               - name: UseServiceBusFake
                 value: true
-              #- name: AzureAd:TenantId
-              #  value: azuread--tenantid
-              #  keyVaultName: vh-bookings-api-${{ variables.env }}
-              #  secret: true
+              - name: AzureAd:TenantId
+                value: azuread--tenantid
+                keyVaultName: vh-bookings-api-${{ variables.env }}
+                secret: true
                 
 #####################################################
 # Manual Approval To Demo. ##########################
