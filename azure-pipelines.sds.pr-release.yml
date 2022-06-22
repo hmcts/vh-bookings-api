@@ -245,13 +245,13 @@ stages:
               - name: AzureAd:ClientSecret
                 value: azuread--clientsecret
                 secret: true
-              - name: AzureAd:TenantId
-                value: azuread--tenantid
-                secret: true
               - name: Testing:UsernameStem
                 value: $(BookingsApiUsernameStem)
               - name: UseServiceBusFake
                 value: true
+              #- name: AzureAd:TenantId
+              #  value: azuread--tenantid
+              #  secret: true
                 
 #####################################################
 # Manual Approval To Demo. ##########################
