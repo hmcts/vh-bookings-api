@@ -73,16 +73,16 @@ stages:
 #####################################################
 # Pre Steps. ########################################
 # Build Docker Image & Generate EF Script. ##########
-  # - stage: Dock
-    # displayName: Build Bookings API
-    # variables: 
-      # - group: aks-cluster-info
-      # - template: variables/dev.yaml
-      # - template: variables/shared.yaml
-        # parameters:
-          # env: ${{ variables.env }}
-      # - group: vh-github-app-credentials
-    # jobs:
+  - stage: Dock
+    displayName: Build Bookings API
+    variables: 
+      - group: aks-cluster-info
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+      - group: vh-github-app-credentials
+    jobs:
     #- job: Dock
       #displayName: "Build and Push Image ${{ variables.git_repo_name }}"
       #steps:
@@ -126,6 +126,15 @@ stages:
           # contextName: ${{ variables.efContextName }}
           # workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
           # projectName: ${{ variables.efProjectName }}
+
+    - job: package_nuget
+      displayName: "Package Nuget Packages"
+      steps:
+        - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+          parameters:
+            nugetProjectPath: ${{ variables.nuget_package_name }}
+            vstsFeed: ${{ variables.nuget_feed_name }}
+            gitVersionConfigPath: ${{ variables.git_version_config_path }}
     
 #####################################################
 # Run Entity Framework Dev. #########################
@@ -229,11 +238,10 @@ stages:
       - job: Publish_Nuget
         displayName: Publish NuGet Packages
         steps:
-        - template: templates\dotnet\publish-nuget-packages.yml@azTemplates
+        - download: 
+        - template: templates\dotnet\push-nuget-packages.yml@azTemplates
           parameters:
-            nugetProjectPath: ${{ variables.nuget_package_name }}
             vstsFeed: ${{ variables.nuget_feed_name }}
-            gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
 #####################################################
 # Manual Approval To Demo. ##########################
