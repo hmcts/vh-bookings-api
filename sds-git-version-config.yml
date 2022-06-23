@@ -32,7 +32,7 @@ branches:
   pull-request:
     regex: ^(pull|pull\-requests|pr)[/-]
     mode: ContinuousDelivery
-    tag: pr-{PreReleaseNumber}
+    tag: pr-
     increment: Patch
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     source-branches: [ 'main', 'release', 'feature', 'hotfix' ]
