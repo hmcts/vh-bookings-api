@@ -8,7 +8,7 @@ patch-version-bump-message: '\+semver:\s?(fix|patch)'
 commit-message-incrementing: Enabled
 branches:
   main:
-    regex: ^master$|^main$
+    regex: ^master$
     mode: ContinuousDelivery
     tag: staging
     increment: Patch
@@ -27,13 +27,13 @@ branches:
     regex: ^features?[/-]$
     mode: ContinuousDelivery
     tag: useBranchName
-    increment: Inherit
+    increment: Patch
     source-branches: [ 'pull-request', 'main', 'release', 'feature', 'hotfix' ]
   pull-request:
     regex: ^(pull|pull\-requests|pr)[/-]
     mode: ContinuousDelivery
-    tag: PullRequest
-    increment: Inherit
+    tag: pr-{PreReleaseNumber}
+    increment: Patch
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     source-branches: [ 'main', 'release', 'feature', 'hotfix' ]
   hotfix:
