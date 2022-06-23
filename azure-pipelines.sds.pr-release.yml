@@ -216,16 +216,14 @@ stages:
 
 #####################################################
 # Deploy Nuget Packages. #########################
-  - stage: Install
-    dependsOn: Run_Entity_Framework_Dev
-    displayName: Deploy Helm Chart Dev AKS
+  - stage: Push_Nuget
+    dependsOn: Install
+    displayName: Deploy Nuget Packages
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
           env: ${{ variables.env }}
-      - name: dnsRecordName
-        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs: 
       - job: Publish_Nuget
         displayName: Publish NuGet Packages
