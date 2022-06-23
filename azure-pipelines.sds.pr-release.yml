@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: VIH-9084-nuget-pattern
       endpoint: hmcts
       
 trigger: none
@@ -213,6 +213,28 @@ stages:
               aksClusterName: "$(aksCluster.name)"
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+
+#####################################################
+# Deploy Nuget Packages. #########################
+  - stage: Install
+    dependsOn: Run_Entity_Framework_Dev
+    displayName: Deploy Helm Chart Dev AKS
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+      - name: dnsRecordName
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs: 
+      - job: Publish_Nuget
+        displayName: Publish NuGet Packages
+        steps:
+        - template: templates\dotnet\publish-nuget-packages.yml@azTemplates
+          parameters:
+            nugetProjectPath: ${{ variables.nuget_package_name }}
+            vstsFeed: ${{ variables.nuget_feed_name }}
+            gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
 #####################################################
 # Manual Approval To Demo. ##########################
