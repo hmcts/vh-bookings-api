@@ -227,7 +227,7 @@ stages:
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
     #dependsOn: Install
-    dependsOn: CI_Build
+    dependsOn: Dock
     displayName: Deploy Nuget Packages
     variables:
       - template: variables/dev.yaml
