@@ -238,10 +238,9 @@ stages:
       - job: Publish_Nuget
         displayName: Publish NuGet Packages
         steps:
-        - download: 
-        - template: templates\dotnet\push-nuget-packages.yml@azTemplates
-          parameters:
-            vstsFeed: ${{ variables.nuget_feed_name }}
+          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+            parameters:
+              vstsFeed: ${{ variables.nuget_feed_name }}
 
 #####################################################
 # Manual Approval To Demo. ##########################
