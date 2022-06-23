@@ -12,6 +12,7 @@ branches:
     mode: ContinuousDelivery
     tag: staging
     increment: Patch
+    source-branches: [ 'feature', 'release', 'hotfix' ]
     prevent-increment-of-merged-branch-version: true
     is-mainline: true
     pre-release-weight: 55000
@@ -20,25 +21,25 @@ branches:
     mode: ContinuousDelivery
     tag: ''
     increment: None
-    source-branches: [ 'master', 'main', 'hotfix', 'release' ]
+    source-branches: [ 'main', 'hotfix', 'release' ]
     is-release-branch: true
   feature:
-    regex: ^features?[/-]|^VIH$
+    regex: ^features?[/-]$
     mode: ContinuousDelivery
     tag: useBranchName
     increment: Inherit
-    source-branches: [ 'develop', 'master', 'main', 'release', 'feature', 'hotfix' ]
+    source-branches: [ 'pull-request', 'main', 'release', 'feature', 'hotfix' ]
   pull-request:
     regex: ^(pull|pull\-requests|pr)[/-]
     mode: ContinuousDelivery
     tag: PullRequest
     increment: Inherit
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
-    source-branches: [ 'develop', 'master', 'main', 'release', 'feature', 'hotfix' ]
+    source-branches: [ 'main', 'release', 'feature', 'hotfix' ]
   hotfix:
     regex: ^hotfix(es)?[/-]
     mode: ContinuousDelivery
     tag: hotfix
     increment: Patch
     track-merge-target: false
-    source-branches: [ 'develop', 'main', 'support' ]
+    source-branches: [ 'pull-request', 'main', 'release' ]
