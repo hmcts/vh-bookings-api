@@ -194,12 +194,7 @@ namespace BookingsApi.Controllers
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-
-            // ONLY publish this event when Hearing is set for ready for video
-            if (hearing.Status == BookingStatus.Created)
-            {
-                await PublishParticipantsAddedEvent(participants, hearing);
-            }
+            await PublishEventForNewParticipantsAsync(hearing, participants);
 
             var addedParticipants = hearing.Participants.Where(x => request.Participants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail));
 
@@ -304,12 +299,8 @@ namespace BookingsApi.Controllers
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-
-            // Publish this event if the hearing is ready for video
-            if (hearing.Status == BookingStatus.Created)
-            {
-                await PublishUpdateHearingParticipantsEvent(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-            }
+            await PublishEventForUpdateParticipantsAysnc(hearing, existingParticipantDetails, newParticipants, 
+                request.RemovedParticipantIds, linkedParticipants);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
@@ -536,13 +527,74 @@ namespace BookingsApi.Controllers
             return NoContent();
         }
 
-        private async Task PublishParticipantsAddedEvent(IEnumerable<NewParticipant> newParticipants, Hearing hearing)
+        private async Task PublishEventForNewParticipantsAsync(Hearing hearing, IEnumerable<NewParticipant> newParticipants)
         {
             var participants = hearing.GetParticipants()
-                .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
+                        .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
             if (participants.Any())
             {
-                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+                if(hearing.Status == BookingStatus.Created) 
+                {
+                    await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+                }
+                else if (participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+                {
+                    await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
+                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing));
+                }
+                else
+                {
+                    await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, participants));
+                }
+            }
+        }
+        private async Task UpdateHearingStatusAsync(Guid hearingId, BookingStatus bookingStatus, string updatedBy, string cancelReason)
+        {
+            var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
+            await _commandHandler.Handle(command);
+        }
+        private async Task PublishEventForUpdateParticipantsAysnc(Hearing hearing, List<ExistingParticipantDetails> existingParticipants, List<NewParticipant> newParticipants,
+            List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
+        {
+            var participants = hearing.GetParticipants()
+                        .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
+            if (participants.Any())
+            {
+                var eventNewParticipants = hearing.GetParticipants()
+                            .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
+                if (hearing.Status == BookingStatus.Created)
+                {
+                    var eventExistingParticipants = hearing.GetParticipants()
+                        .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();
+
+                    var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
+
+                    foreach (var linkedParticipant in linkedParticipants)
+                    {
+                        var primaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.ParticipantContactEmail);
+                        var secondaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.LinkedParticipantContactEmail);
+
+                        eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
+                        {
+                            LinkedId = secondaryLinkedParticipant.Id,
+                            ParticipantId = primaryLinkedParticipant.Id,
+                            Type = linkedParticipant.Type
+                        });
+                    }
+
+                    var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants,
+                        removedParticipantIds, eventLinkedParticipants);
+                    await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
+                }
+                else if (participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+                {
+                    await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
+                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing));
+                }
+                else
+                {
+                    await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, eventNewParticipants));
+                }
             }
         }
 

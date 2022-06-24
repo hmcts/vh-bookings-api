@@ -201,34 +201,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
-        public async Task Should_change_hearing_status_to_created_and_send_event_notification()
-        {
-            var request = new UpdateBookingStatusRequest
-            {
-                UpdatedBy = "email@hmcts.net",
-                Status = UpdateBookingStatus.Created
-            };
-            var hearingId = Guid.NewGuid();
-            var hearing = GetHearing("123");
-
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(hearing);
-
-            var result = await Controller.UpdateBookingStatus(hearingId, request);
-
-            result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-
-            var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingIsReadyForVideoIntegrationEvent)message.IntegrationEvent;
-            typedMessage.Should().NotBeNull();
-            typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
-            typedMessage.Hearing.GroupId.Should().Be(hearing.SourceId.GetValueOrDefault());
-        }
-
-        [Test]
         public async Task Should_change_hearing_status_to_cancelled()
         {
             var request = new UpdateBookingStatusRequest
