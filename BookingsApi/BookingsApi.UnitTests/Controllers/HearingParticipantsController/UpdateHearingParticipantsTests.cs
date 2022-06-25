@@ -189,20 +189,54 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             response.Should().BeOfType<OkObjectResult>();
         }
 
-        //[Test]
-        //public async Task Should_add_given_participants_to_hearing_and_PublishParticipantsAddedEvent_if_several_matching_participant_with_username()
-        //{
-        //    var hearing = GetVideoHearing(true);
-        //    hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_with_created_status_and_publishevent_if_several_matching_participant_with_contactemail()
+        {
+            var hearing = GetVideoHearing(true);
+            hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+            
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+            _request = BuildRequest(withLinkedParticipants: false);
+            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
 
-        //    QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
-        //    _request = BuildRequest(withLinkedParticipants: false);
-        
-        //    var response = await Controller.UpdateHearingParticipants(hearingId, _request);
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request);
 
-        //    response.Should().NotBeNull();
-        //    EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
-        //}
+            response.Should().NotBeNull();
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
+            CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_with_judge_and_publishevent_if_several_matching_participant_with_contactemail()
+        {
+            var hearing = GetVideoHearing(false);
+            hearing.Participants[0].HearingRole = new HearingRole(1, "Generic") { UserRole = new UserRole(1, "Judge"), };
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+            _request = BuildRequest(withLinkedParticipants: false);
+            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            response.Should().NotBeNull();
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+            CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_without_judge_and_publishevent_if_several_matching_participant_with_contactemail()
+        {
+            var hearing = GetVideoHearing(false);
+            hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+            _request = BuildRequest(withLinkedParticipants: false);
+            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            response.Should().NotBeNull();
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
+        }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)
         {
