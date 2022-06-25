@@ -48,6 +48,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
         protected Guid hearingId;
         protected Guid participantId;
+        protected VideoHearing videoHearing;
 
         protected VideoHearing GetVideoHearing(bool createdStatus = false)
         { 
@@ -66,7 +67,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             return hearing; 
         }
 
-        private CaseType CaseType => new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { CreateCaseAndHearingRoles(1, "Generic", "representative", new List<string> { "Litigant in person" }) } };
+        private CaseType CaseType => new CaseType(1, "Civil") { CaseRoles = new List<CaseRole> { 
+            CreateCaseAndHearingRoles(1, "Generic", "representative", new List<string> { "Litigant in person" }),
+            CreateCaseAndHearingRoles(2, "Test", "Judge", new List<string> { "Judge" })
+        } };
 
         [SetUp]
         public void Intialize()
@@ -77,13 +81,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
-
+            videoHearing = GetVideoHearing();
             Controller = new BookingsApi.Controllers.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);
 
-            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(GetVideoHearing());
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(videoHearing);
              
             QueryHandler.Setup(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>())).ReturnsAsync(CaseType);
         }

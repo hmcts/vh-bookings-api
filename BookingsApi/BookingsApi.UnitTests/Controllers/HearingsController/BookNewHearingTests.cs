@@ -13,12 +13,15 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Assertions;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using System.Linq;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
     public class BookNewHearingTests : HearingsControllerTests
     {
         private readonly BookNewHearingRequest request = RequestBuilder.Build();
+        private VideoHearing _videoHearing;
 
         private List<CaseRole> CaseRoles => new List<CaseRole>
         {
@@ -60,11 +63,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
             .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham Civil and Family Justice Centre") });
 
-            var hearing = GetHearing("123");
+            _videoHearing = GetHearing("123");
 
             QueryHandlerMock
              .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-             .ReturnsAsync(hearing);
+             .ReturnsAsync(_videoHearing);
         }
 
 
@@ -88,6 +91,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
                                                                                         && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
                                                                                         && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
+
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
         [Test]
@@ -95,7 +101,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             //remove judge from request
             request.Participants.Remove(request.Participants.Find(e => e.HearingRoleName == "Judge"));
-
+            _videoHearing.Participants.Remove(_videoHearing.Participants.Single(x => x.HearingRole.Name == "Judge"));
             var response = await Controller.BookNewHearing(request);
 
             response.Should().NotBeNull();
@@ -113,6 +119,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
                 && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
                 && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
+
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
         
         [Test]
@@ -135,6 +144,37 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Never);
 
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 0)), Times.Once);
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_successfully_book_first_day_of_multiday_hearing_without_Judge()
+        {
+            //remove judge from request
+            request.Participants.Remove(request.Participants.Find(e => e.HearingRoleName == "Judge"));
+            request.IsMultiDayHearing = true;
+            _videoHearing.Participants.Remove(_videoHearing.Participants.Single(x => x.HearingRole.Name == "Judge"));
+            var response = await Controller.BookNewHearing(request);
+
+            response.Should().NotBeNull();
+            var result = (CreatedAtActionResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.Created);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+
+            RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
+
+            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
+                && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
+                && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
+
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
 
         [Test]

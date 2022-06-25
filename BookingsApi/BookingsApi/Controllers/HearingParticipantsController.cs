@@ -598,35 +598,6 @@ namespace BookingsApi.Controllers
             }
         }
 
-        private async Task PublishUpdateHearingParticipantsEvent(Hearing hearing, List<ExistingParticipantDetails> existingParticipants, List<NewParticipant> newParticipants,
-            List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
-        {
-            var eventNewParticipants = hearing.GetParticipants()
-                .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
-            
-            var eventExistingParticipants = hearing.GetParticipants()
-                .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();
-
-            var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
-
-            foreach (var linkedParticipant in linkedParticipants)
-            {
-                var primaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.ParticipantContactEmail);
-                var secondaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.LinkedParticipantContactEmail);
-
-                eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
-                {
-                    LinkedId = secondaryLinkedParticipant.Id,
-                    ParticipantId = primaryLinkedParticipant.Id,
-                    Type = linkedParticipant.Type
-                });
-            }
-
-            var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants,
-                removedParticipantIds, eventLinkedParticipants);
-            await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
-        }
-
         private List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
         {
             if (participants.Any())
