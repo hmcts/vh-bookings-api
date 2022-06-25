@@ -580,6 +580,16 @@ namespace BookingsApi.IntegrationTests.Helper
             _seededHearings.Add(hearing.Id);
             return hearing;
         }
+
+        public async Task AddJudiciaryPersonStaging()
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPersonStaging = new JudiciaryPersonStaging(Faker.Name.First(), Faker.Name.First(), Faker.Name.First(), Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First());;
+            await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);
+
+            await db.SaveChangesAsync();
+        }
         
         public async Task AddJudiciaryPerson(string externalRefId = null)
         {
