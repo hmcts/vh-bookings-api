@@ -182,7 +182,7 @@ namespace BookingsApi.Domain
 
         public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if(hearingRole.Name != "Judge")
+            if(!string.Equals(hearingRole.Name, "Judge", StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new DomainRuleException(nameof(hearingRole), "Hearing role should be Judge");
             }

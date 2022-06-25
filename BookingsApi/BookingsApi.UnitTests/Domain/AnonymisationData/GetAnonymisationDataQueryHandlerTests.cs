@@ -41,7 +41,7 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             _userRole1 = new UserRole(1, "user role 1");
             _userRole2 = new UserRole(2, "user role 2");
 
-            _hearingRole1 = new HearingRole(1, "hearing role 1") { UserRole = _userRole1 };
+            _hearingRole1 = new HearingRole(1, "Judge") { UserRole = _userRole1 };
             _hearingRole2 = new HearingRole(2, "hearing role 2") { UserRole = _userRole2 };
 
             _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
