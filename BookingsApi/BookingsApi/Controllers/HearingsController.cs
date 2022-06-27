@@ -307,6 +307,7 @@ namespace BookingsApi.Controllers
                 // Confirm the hearing
                 await UpdateHearingStatusAsync(videoHearing.Id, BookingStatus.Created, "System", string.Empty);
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing));
+                await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
             }
             else if (!isCloned)
             {
@@ -356,7 +357,6 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var judgeExists = videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge");
             var orderedDates = request.Dates.OrderBy(x => x).ToList();
             var totalDays = orderedDates.Count + 1; // include original hearing
             var commands = orderedDates.Select((newDate, index) =>
@@ -375,12 +375,10 @@ namespace BookingsApi.Controllers
                 await _commandHandler.Handle(command);
                 await PublishEventForNewBooking(await GetHearingAsync(command.NewHearingId), true);
             }
+            
+            // publish multi day hearing notification event
+            await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(videoHearing, totalDays));
 
-            if (judgeExists)
-            {
-                // publish multi day hearing notification event
-                await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(videoHearing, totalDays));
-            }
             return NoContent();
         }
 

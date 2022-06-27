@@ -541,6 +541,7 @@ namespace BookingsApi.Controllers
                 {
                     await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
                     await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing));
+                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, participants));
                 }
                 else
                 {
@@ -556,12 +557,10 @@ namespace BookingsApi.Controllers
         private async Task PublishEventForUpdateParticipantsAysnc(Hearing hearing, List<ExistingParticipantDetails> existingParticipants, List<NewParticipant> newParticipants,
             List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
         {
-            var participants = hearing.GetParticipants()
+            var eventNewParticipants = hearing.GetParticipants()
                         .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
-            if (participants.Any())
+            if (eventNewParticipants.Any())
             {
-                var eventNewParticipants = hearing.GetParticipants()
-                            .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
                 if (hearing.Status == BookingStatus.Created)
                 {
                     var eventExistingParticipants = hearing.GetParticipants()
@@ -586,10 +585,11 @@ namespace BookingsApi.Controllers
                         removedParticipantIds, eventLinkedParticipants);
                     await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
                 }
-                else if (participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+                else if (eventNewParticipants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
                 {
                     await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
                     await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing));
+                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));
                 }
                 else
                 {

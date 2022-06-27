@@ -98,7 +98,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Never);
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<MultiDayHearingIntegrationEvent>()), Times.Never);
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<MultiDayHearingIntegrationEvent>()), Times.Once);
 
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
