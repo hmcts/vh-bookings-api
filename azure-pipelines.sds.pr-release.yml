@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: VIH-9084-nuget-pattern
+      ref: master
       endpoint: hmcts
       
 trigger: none
@@ -13,10 +13,14 @@ trigger: none
 pr:
   - master
 
+
 variables:
   - group: vh-github-app-credentials
   - name: app_path
     value: 'BookingsApi'
+  - group: vh-bookings-api
+  - name: run_acceptance_tests
+    value: false
 
 stages:
 #####################################################
@@ -116,6 +120,7 @@ stages:
               imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
               imageTags:
                 - '${{ variables.prTagName }}'
+
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
@@ -135,6 +140,17 @@ stages:
               vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
       
+      - ${{ if eq(variables.run_acceptance_tests, true) }}:
+        - job: PublishAcceptanceTests
+          displayName: Publish Acceptance Tests 
+          variables:
+            projectPath: BookingsApi/BookingsApi
+          steps:
+          - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+            parameters:
+              coreProjectPath: $(projectPath)
+              nugetProjectPath: $(projectPath)
+          
 #####################################################
 # Run Entity Framework Dev. #########################
   - stage: Run_Entity_Framework_Dev
@@ -148,7 +164,7 @@ stages:
     jobs:
       - job: Run_Entity_Framework_Dev
         pool:
-         vmImage: 'windows-latest' # This Job Must be Run on Windows
+        vmImage: 'windows-latest' # This Job Must be Run on Windows
         displayName: Run Entity Framework Dev
         steps:
           - download: current
@@ -186,7 +202,7 @@ stages:
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
               environment: ${{ variables.env }}
-              
+            
           - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
             parameters:
               namespace: 'vh'
@@ -222,6 +238,42 @@ stages:
               dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
               dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
 
+      - ${{ if eq(variables.run_acceptance_tests, true) }}:
+        - job: AcceptanceTestsDev
+          displayName: Acceptance Tests Dev
+          steps:
+          - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+            parameters:
+              environment: ${{ variables.env }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              acceptanceTestSettings:
+                - name: Services:BookingsApiUrl
+                  value: "https://vh-bookings-api.dev.platform.hmcts.net"
+                - name: ApplicationInsights:InstrumentationKey
+                  value: applicationinsights--instrumentationkey
+                  keyVaultName: vh-infra-core-${{ variables.env }}
+                  secret: true
+                - name: AzureAd:ClientId
+                  value: azuread--clientid
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                - name: AzureAd:ClientSecret
+                  value: azuread--clientsecret
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                - name: Testing:UsernameStem
+                  value: $(BookingsApiUsernameStem)
+                - name: UseServiceBusFake
+                  value: true
+                - name: AzureAd:TenantId
+                  value: azuread--tenantid
+                  keyVaultName: vh-infra-core-${{ variables.env }}
+                  secret: true
+                - name: Services:BookingsApiResourceId
+                  value: azuread--identifieruri
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                
 #####################################################
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
