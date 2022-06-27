@@ -131,7 +131,7 @@ stages:
         steps:
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
-              nugetProjectPath: ${{ variables.nuget_package_name }}
+              nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
               vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
       
@@ -225,7 +225,7 @@ stages:
 #####################################################
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
-    dependsOn: Dock
+    dependsOn: Install
     displayName: Deploy Nuget Packages
     variables:
       - template: variables/dev.yaml
@@ -243,6 +243,7 @@ stages:
 #####################################################
 # Manual Approval To Demo. ##########################
   - stage: Wait
+    dependsOn: Push_Nuget
     jobs:
       - job: Wait
         displayName: "Approve Release Demo"

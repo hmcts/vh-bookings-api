@@ -16,7 +16,6 @@ variables:
     value: $(Build.SourcesDirectory)/sds-git-version-config.yml
   - name: nuget_package_name
     value: 'BookingsApi.Client'
-    #value: 'BookingsApi/BookingsApi.Client'
 
   - name: git_repo_name
     value: 'bookings-api'

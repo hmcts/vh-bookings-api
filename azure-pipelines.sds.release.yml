@@ -57,8 +57,8 @@ stages:
         steps:
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
-              nugetProjectPath: ${{ variables.nuget_package_name }}
-              vstsFeed: ${{ variables.nuget_feed_name }}
+              nugetProjectPath: 'BookingsApi/${{ variables.nuget_package_name }}'
+              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
       
 
@@ -224,7 +224,7 @@ stages:
         steps:
           - template: templates\dotnet\push-nuget-packages.yml@azTemplates
             parameters:
-              vstsFeed: ${{ variables.nuget_feed_name }}
+              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
 
 #########################################
 # Push Helm Charts to Repo. #############
