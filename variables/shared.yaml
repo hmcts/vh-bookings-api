@@ -8,6 +8,15 @@ parameters:
 
 variables:
 
+  - name: nuget_org_name
+    value: 'Video Hearings/vh-packages'
+  - name: nuget_feed_name
+    value: 'vh-packages'
+  - name: git_version_config_path
+    value: $(Build.SourcesDirectory)/sds-git-version-config.yml
+  - name: nuget_package_name
+    value: 'BookingsApi.Client'
+
   - name: git_repo_name
     value: 'bookings-api'
   - name: sonar_exclusion
