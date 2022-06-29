@@ -1,5 +1,6 @@
 using System;
 using BookingsApi.Domain.Ddd;
+using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.Domain
 {
@@ -53,6 +54,22 @@ namespace BookingsApi.Domain
             HasLeft = hasLeft;
             Leaver = leaver;
             LeftOn = leftOn;
+        }
+        
+        public void Update(UpdateJudiciaryPersonDto command)
+        {
+            ExternalRefId = command.ExternalRefId;
+            PersonalCode = command.PersonalCode;
+            Title = command.Title;
+            KnownAs = command.KnownAs;
+            Surname = command.Surname;
+            Fullname = command.Fullname;
+            PostNominals = command.PostNominals;
+            Email = command.Email;
+            UpdatedDate = DateTime.UtcNow;
+            HasLeft = command.HasLeft;
+            Leaver = command.Leaver;
+            LeftOn = command.LeftOn;
         }
 
         public void Update(bool hasLeft)
