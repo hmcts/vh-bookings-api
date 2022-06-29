@@ -267,7 +267,9 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryPersonByExternalRefIdCommand>
             (
-                c => c.HasLeft == item1.HasLeft && c.ExternalRefId == item1.Id
+                c => c.Email == item1.Email && c.Fullname == item1.Fullname && c.Surname == item1.Surname &&
+                     c.Title == item1.Title && c.KnownAs == item1.KnownAs && c.PersonalCode == item1.PersonalCode &&
+                     c.PostNominals == item1.PostNominals && c.ExternalRefId == item1.Id
             )));
         }
 
@@ -306,47 +308,10 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryPersonByExternalRefIdCommand>
             (
-                c => c.HasLeft == item2.HasLeft && c.ExternalRefId == item2.Id
+                c => c.Email == item2.Email && c.Fullname == item2.Fullname && c.Surname == item2.Surname &&
+                     c.Title == item2.Title && c.KnownAs == item2.KnownAs && c.PersonalCode == item2.PersonalCode &&
+                     c.PostNominals == item2.PostNominals && c.ExternalRefId == item2.Id
             )));
-        }
-
-        [Test]
-        public async Task Should_not_update_item_if_hasleft_has_not_changed()
-        {
-            var item1 = new JudiciaryPersonRequest { Id = Guid.NewGuid().ToString(), Email = "some@email.com", Fullname = "a", Surname = "b", Title = "c", KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", HasLeft = false };
-            var item2 = new JudiciaryPersonRequest { Id = Guid.NewGuid().ToString(), Email = "some2@email.com", Fullname = "a2", Surname = "b2", Title = "c2", KnownAs = "d2", PersonalCode = "456", PostNominals = "nom2", HasLeft = false };
-            var retrievedPerson1 = new JudiciaryPerson(item2.Id, item2.PersonalCode, item2.Title, item2.KnownAs, item2.Surname, item2.Fullname, item2.PostNominals, item2.Email, item2.HasLeft, false, string.Empty);
-            var request = new List<JudiciaryPersonRequest> { item1, item2 };
-
-            _queryHandlerMock
-                .Setup(x => x.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByExternalRefIdQuery>()))
-                .ReturnsAsync(retrievedPerson1);
-
-            _queryHandlerMock
-                .Setup(x => x.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(It.Is<GetJudiciaryPersonByExternalRefIdQuery>(x => x.ExternalRefId == item1.Id)))
-                .ReturnsAsync((JudiciaryPerson)null);
-
-            var result = await _controller.BulkJudiciaryPersonsAsync(request);
-
-            result.Should().NotBeNull();
-            var objectResult = result as ObjectResult;
-            objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var data = objectResult.Value as BulkJudiciaryPersonResponse;
-            data.Should().NotBeNull();
-            data.ErroredRequests.Count.Should().Be(0);
-
-            _commandHandlerMock.Verify(c => c.Handle(It.Is<AddJudiciaryPersonByExternalRefIdCommand>
-            (
-                c => c.Email == item1.Email && c.Fullname == item1.Fullname && c.Surname == item1.Surname &&
-                     c.Title == item1.Title && c.KnownAs == item1.KnownAs && c.PersonalCode == item1.PersonalCode &&
-                     c.PostNominals == item1.PostNominals && c.ExternalRefId == item1.Id
-            )));
-
-            _commandHandlerMock.Verify(c => c.Handle(It.Is<UpdateJudiciaryPersonByExternalRefIdCommand>
-            (
-                c => c.ExternalRefId == item2.Id
-            )), Times.Never);
         }
 
         [Test]
