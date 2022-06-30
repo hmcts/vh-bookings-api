@@ -135,7 +135,7 @@ stages:
         steps:
           - powershell: |
               Write-Host "##vso[task.setvariable variable=BuildNum;]$(Build.BuildNumber)"
-            displayName: Get Build Number
+            displayName: Get Build.BuildNumber
 
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
@@ -145,7 +145,7 @@ stages:
 
           - powershell: |
               Write-Host "##vso[build.updatebuildnumber]$(BuildNum)"
-            displayName: Set Build Number
+            displayName: Set Build.BuildNumber
       
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
