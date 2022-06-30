@@ -125,6 +125,9 @@ stages:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
+        - bash: |
+            echo "${{ variables.prTagName }}"
+
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
             outputPath: $(Build.StagingDirectory)
@@ -140,6 +143,9 @@ stages:
               nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
               vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
+
+          - bash: |
+              echo "${{ variables.prTagName }}"
       
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
