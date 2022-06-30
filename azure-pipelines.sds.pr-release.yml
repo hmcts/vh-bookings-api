@@ -133,12 +133,19 @@ stages:
       - job: package_nuget
         displayName: "Package NuGet Packages"
         steps:
+          - powershell: |
+              Write-Host "##vso[task.setvariable variable=BuildNum;]$(Build.BuildNumber)"
+            displayName: Get Build Number
+
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
               nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
               vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
+          - powershell: |
+              Write-Host "##vso[build.updatebuildnumber]$(BuildNum)"
+            displayName: Set Build Number
       
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
