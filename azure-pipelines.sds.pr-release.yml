@@ -13,7 +13,6 @@ trigger: none
 pr:
   - master
 
-
 variables:
   - group: vh-github-app-credentials
   - name: app_path
