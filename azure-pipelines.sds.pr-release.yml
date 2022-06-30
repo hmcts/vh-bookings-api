@@ -90,9 +90,6 @@ stages:
         steps:
           - checkout: self
 
-          - bash: |
-              echo "${{ variables.prTagName }}"
-
           - template: templates\Github\get-app-token.yaml@azTemplates
             parameters:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -125,8 +122,6 @@ stages:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
-        - bash: |
-            echo "${{ variables.prTagName }}"
 
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
@@ -135,17 +130,15 @@ stages:
             workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
             projectName: ${{ variables.efProjectName }}
 
-      - job: package_nuget
-        displayName: "Package NuGet Packages"
-        steps:
-          - template: templates\dotnet\package-nuget-packages.yml@azTemplates
-            parameters:
-              nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
-              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
-              gitVersionConfigPath: ${{ variables.git_version_config_path }}
+      # - job: package_nuget
+      #   displayName: "Package NuGet Packages"
+      #   steps:
+      #     - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+      #       parameters:
+      #         nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
+      #         vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+      #         gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
-          - bash: |
-              echo "${{ variables.prTagName }}"
       
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
@@ -177,9 +170,6 @@ stages:
           - download: current
             displayName: Download Sql Artifact
 
-          - bash: |
-              echo "${{ variables.prTagName }}"
-
           - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
@@ -208,8 +198,6 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
-          - bash: |
-              echo "${{ variables.prTagName }}"
 
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
@@ -226,8 +214,6 @@ stages:
       - job: aks_push
         displayName: Deploy To Dev AKS
         steps:
-          - bash: |
-              echo "${{ variables.prTagName }}"
 
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
