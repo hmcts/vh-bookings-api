@@ -132,7 +132,7 @@ stages:
             projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
-        displayName: "Package Nuget Packages"
+        displayName: "Package NuGet Packages"
         steps:
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
@@ -278,7 +278,7 @@ stages:
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
     dependsOn: Install
-    displayName: Deploy Nuget Packages
+    displayName: Deploy NuGet Packages
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
