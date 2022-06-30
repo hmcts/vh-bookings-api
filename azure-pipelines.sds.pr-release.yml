@@ -211,6 +211,9 @@ stages:
       - job: aks_push
         displayName: Deploy To Dev AKS
         steps:
+          - bash: |
+              echo "${{ variables.prTagName }}"
+              
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
