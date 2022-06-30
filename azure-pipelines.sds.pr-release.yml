@@ -71,7 +71,6 @@ stages:
             displayName: Build .NET Project(s)
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
-            
 
 #####################################################
 # Pre Steps. ########################################
