@@ -90,6 +90,9 @@ stages:
         steps:
           - checkout: self
 
+          - bash: |
+              echo "${{ variables.prTagName }}"
+
           - template: templates\Github\get-app-token.yaml@azTemplates
             parameters:
               privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
@@ -168,6 +171,9 @@ stages:
           - download: current
             displayName: Download Sql Artifact
 
+          - bash: |
+              echo "${{ variables.prTagName }}"
+
           - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
             parameters:
               sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
@@ -196,6 +202,9 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
+          - bash: |
+              echo "${{ variables.prTagName }}"
+
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
@@ -213,7 +222,7 @@ stages:
         steps:
           - bash: |
               echo "${{ variables.prTagName }}"
-              
+
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
