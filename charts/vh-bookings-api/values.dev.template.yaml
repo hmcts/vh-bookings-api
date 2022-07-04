@@ -4,5 +4,5 @@ java:
   ingressHost: ${SERVICE_FQDN}
   releaseNameOverride: ${RELEASE_NAME}
   environment:
-    SERVICES__BOOKINGSAPIRESOURCEID: http://vh-bookings-api.staging.platform.hmcts.net
+    SERVICES__BOOKINGSAPIRESOURCEID: http://vh-bookings-api.dev.platform.hmcts.net
 
