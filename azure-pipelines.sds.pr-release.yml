@@ -13,7 +13,6 @@ trigger: none
 pr:
   - master
 
-
 variables:
   - group: vh-github-app-credentials
   - name: app_path
@@ -72,7 +71,6 @@ stages:
             displayName: Build .NET Project(s)
 
           - template: templates/sonarCloud/runAnalysis.yml@azTemplates
-            
 
 #####################################################
 # Pre Steps. ########################################
@@ -105,6 +103,11 @@ stages:
               githubToken: $(githubappinstall.token)
               githubUsername: $(gh_app_name)
               githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+          
+          - bash: |
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+            displayName: Add NuGet Feed Authentication
+            workingDirectory: BookingsApi
 
           - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
             parameters:
@@ -124,6 +127,7 @@ stages:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
+
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
             outputPath: $(Build.StagingDirectory)
@@ -132,14 +136,15 @@ stages:
             projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
-        displayName: "Package Nuget Packages"
+        displayName: "Package NuGet Packages"
+        dependsOn: Dock
         steps:
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
               nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
               vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
-      
+
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
           displayName: Publish Acceptance Tests 
@@ -164,7 +169,7 @@ stages:
     jobs:
       - job: Run_Entity_Framework_Dev
         pool:
-        vmImage: 'windows-latest' # This Job Must be Run on Windows
+          vmImage: 'windows-latest' # This Job Must be Run on Windows
         displayName: Run Entity Framework Dev
         steps:
           - download: current
@@ -198,6 +203,7 @@ stages:
       - job: helm_uninstall
         displayName: Uninstall Helm from Dev
         steps:
+
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
@@ -213,6 +219,7 @@ stages:
       - job: aks_push
         displayName: Deploy To Dev AKS
         steps:
+
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
               subscriptionName: "${{ variables.subscriptionName }}"
@@ -278,7 +285,7 @@ stages:
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
     dependsOn: Install
-    displayName: Deploy Nuget Packages
+    displayName: Deploy NuGet Packages
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
@@ -352,7 +359,7 @@ stages:
         value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: helm_uninstall
-        displayName: Uninstall Helm from Dev
+        displayName: Uninstall Helm from Demo
         steps:
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
