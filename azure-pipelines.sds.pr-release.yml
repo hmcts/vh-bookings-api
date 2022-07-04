@@ -354,7 +354,7 @@ stages:
         value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
     jobs:
       - job: helm_uninstall
-        displayName: Uninstall Helm from Dev
+        displayName: Uninstall Helm from Demo
         steps:
           - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
             parameters:
