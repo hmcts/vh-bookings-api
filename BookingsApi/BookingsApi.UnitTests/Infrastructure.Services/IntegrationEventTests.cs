@@ -139,7 +139,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
                 new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
             });
 
-            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
+            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
             _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);
@@ -186,7 +186,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
                 new Endpoint("two", Guid.NewGuid().ToString(), "1234", representative)
             });
 
-            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing);
+            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
             _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
 
             _serviceBusQueueClient.Count.Should().Be(1);

@@ -540,12 +540,12 @@ namespace BookingsApi.Controllers
                 else if (participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
                 {
                     await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
-                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing));
-                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, participants));
+                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, participants));
                 }
                 else
                 {
                     await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, participants));
+                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, participants));
                 }
             }
         }
@@ -588,12 +588,12 @@ namespace BookingsApi.Controllers
                 else if (eventNewParticipants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
                 {
                     await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
-                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing));
-                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));
+                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, eventNewParticipants));
                 }
                 else
                 {
                     await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, eventNewParticipants));
+                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));
                 }
             }
         }

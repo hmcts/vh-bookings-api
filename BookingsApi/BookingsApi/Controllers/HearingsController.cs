@@ -255,7 +255,7 @@ namespace BookingsApi.Controllers
                 await _commandHandler.Handle(createVideoHearingCommand);
                 _logger.TrackTrace(logSaveSuccess, SeverityLevel.Information, new Dictionary<string, string> { { logNewHearingId, createVideoHearingCommand.NewHearingId.ToString() } });
                 var queriedVideoHearing = await GetHearingAsync(createVideoHearingCommand.NewHearingId);
-                await PublishEventForNewBooking(queriedVideoHearing, false);
+                await PublishEventForNewBooking(queriedVideoHearing, request.IsMultiDayHearing);
 
                 const string logRetrieveNewHearing = "BookNewHearing Retrieved new hearing from DB";
                 const string keyHearingId = "HearingId";
@@ -300,19 +300,24 @@ namespace BookingsApi.Controllers
             }
         }
 
-        private async Task PublishEventForNewBooking(Hearing videoHearing, bool isCloned)
+        private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
             {
                 // Confirm the hearing
                 await UpdateHearingStatusAsync(videoHearing.Id, BookingStatus.Created, "System", string.Empty);
-                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing));
-                await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
+                // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
+                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
             }
-            else if (!isCloned)
+            else
             {
                 await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(videoHearing, videoHearing.Participants));
+                if (!isMultiDay)
+                {
+                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
+                }
             }
+            
         }
 
         private IActionResult ModelStateErrorLogger(string key, string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
