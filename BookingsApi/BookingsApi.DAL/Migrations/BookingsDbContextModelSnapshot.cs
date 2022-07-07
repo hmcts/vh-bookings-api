@@ -329,6 +329,33 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("JudiciaryPersonsStaging");
                 });
 
+            modelBuilder.Entity("BookingsApi.Domain.Jurisdiction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsLive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Jurisdiction");
+                });
+
             modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>
                 {
                     b.Property<Guid>("Id")

@@ -28,6 +28,8 @@ namespace BookingsApi.DAL
         public DbSet<JudiciaryPerson> JudiciaryPersons { get; set; }
         public DbSet<JudiciaryPersonStaging> JudiciaryPersonsStaging { get; set; }
 
+        public DbSet<Jurisdiction> Jurisdiction { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var applyGenericMethods =
