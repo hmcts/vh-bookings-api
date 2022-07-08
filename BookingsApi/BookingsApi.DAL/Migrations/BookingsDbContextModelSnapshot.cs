@@ -281,6 +281,33 @@ namespace BookingsApi.DAL.Migrations
                     b.ToTable("JudiciaryPerson");
                 });
 
+            modelBuilder.Entity("BookingsApi.Domain.Jurisdiction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsLive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Jurisdiction");
+                });
+
             modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -493,6 +520,9 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("JurisdictionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -500,6 +530,8 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JurisdictionId");
 
                     b.ToTable("CaseType");
                 });
@@ -778,6 +810,13 @@ namespace BookingsApi.DAL.Migrations
                     b.HasOne("BookingsApi.Domain.RefData.CaseType", null)
                         .WithMany("CaseRoles")
                         .HasForeignKey("CaseTypeId");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseType", b =>
+                {
+                    b.HasOne("BookingsApi.Domain.Jurisdiction", null)
+                        .WithMany("CaseTypes")
+                        .HasForeignKey("JurisdictionId");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.RefData.HearingRole", b =>
