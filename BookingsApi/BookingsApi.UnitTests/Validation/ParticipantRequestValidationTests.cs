@@ -104,6 +104,7 @@ namespace BookingsApi.UnitTests.Validation
         public async Task Should_return_missing_username_error()
         {
             var request = BuildRequest();
+            request.HearingRoleName = "Judge";
             request.ContactEmail = "test@T.com";
             request.Username = string.Empty;
 
@@ -128,6 +129,7 @@ namespace BookingsApi.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
+
         [Test]
         public async Task Should_return_invalid_contact_email_error()
         {
@@ -141,6 +143,34 @@ namespace BookingsApi.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
                 .Should().BeTrue();
         }
+
+        [Test]
+        public async Task Should_return_invalid_judge_username_error()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Judge";
+            request.Username = "gsdgdsgfs";
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidJudgeUsernameErrorMessage)
+                .Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Should_return_valid_judge_username()
+        {
+            var request = BuildRequest();
+            request.HearingRoleName = "Judge";
+            request.Username = "judge.one@ejudiciary.net";
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeTrue();
+        }
+
         [Test]
         public async Task Should_return_valid_contact_email_error()
         {
@@ -156,7 +186,7 @@ namespace BookingsApi.UnitTests.Validation
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")
-                 .With(x => x.HearingRoleName = "Judge")
+                 .With(x => x.HearingRoleName = "Representative")
                  .With(x => x.ContactEmail = "mm@mm.com")
                  .Build();
         }

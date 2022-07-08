@@ -13,14 +13,17 @@ namespace BookingsApi.Validations
         public static readonly string NoUsernameErrorMessage = "Username is required";
         public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
         public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
+        public static readonly string InvalidJudgeUsernameErrorMessage = "Judge username is Invalid";
 
-        // TODO: apply email validation on username and contact email
         public ParticipantRequestValidation()
         {
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
             RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);
             RuleFor(x => x.ContactEmail).NotEmpty().WithMessage(NoContactEmailErrorMessage).Must(x => x.IsValidEmail()).WithMessage(InvalidContactEmailErrorMessage);
+
             RuleFor(x => x.Username).NotEmpty().When(x => x.HearingRoleName == "Judge").WithMessage(NoUsernameErrorMessage);
+            RuleFor(x => x.Username).Must(x => x.IsValidEmail()).When(x => x.HearingRoleName == "Judge" && !string.IsNullOrEmpty(x.Username))
+                .WithMessage(InvalidJudgeUsernameErrorMessage);
 
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
