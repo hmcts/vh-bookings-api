@@ -140,6 +140,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         {
             //Arrange
             var hearing = GetVideoHearing();
+            hearing.Participants[0].Person.ContactEmail = "contactme@dontcontactme.com";
+            hearing.Participants[1].Person.ContactEmail = "participant@notLinked.com";
+            hearing.Participants[2].Person.ContactEmail = "participant@linked.com";
+            hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "test", "");
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
             _existingParticipants = new List<UpdateParticipantRequest>
