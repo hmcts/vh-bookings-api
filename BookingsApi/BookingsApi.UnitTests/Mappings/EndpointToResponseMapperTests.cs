@@ -18,14 +18,14 @@ namespace BookingsApi.UnitTests.Mappings
         {
             var sipAddStream = "TestSipStream";
             var randomGen = new Mock<IRandomGenerator>();
-            var endpointRequest = new EndpointRequest { DefenceAdvocateUsername = "TestUserName", DisplayName = "TestDispName" };
+            var endpointRequest = new EndpointRequest { DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName" };
 
             var result = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointRequest,randomGen.Object, sipAddStream);
 
             result.Should().NotBeNull();
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
             result.DisplayName.Should().Be(endpointRequest.DisplayName);
-            result.DefenceAdvocateUsername.Should().Be(endpointRequest.DefenceAdvocateUsername);
+            result.ContactEmail.Should().Be(endpointRequest.DefenceAdvocateContactEmail);
 
         }
 

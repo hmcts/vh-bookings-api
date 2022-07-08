@@ -48,7 +48,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var username = "test@hmcts.net";
             QueryHandlerMock
            .Setup(x => x.Handle<GetPersonByUsernameQuery, Person>(It.IsAny<GetPersonByUsernameQuery>()))
-           .ReturnsAsync(new Person("Mr", "Test", "Tester", "T Tester"));
+           .ReturnsAsync(new Person("Mr", "Test", "Tester", "T Tester", "T Tester"));
 
             var result = await Controller.GetPersonByUsername(username);
 

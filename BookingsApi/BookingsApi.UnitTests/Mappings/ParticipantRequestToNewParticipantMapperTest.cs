@@ -77,7 +77,8 @@ namespace BookingsApi.UnitTests.Mappings
                 Username = "TestTester",
                 CaseRoleName = "Respondent",
                 HearingRoleName = "Representative",
-                OrganisationName = "Test Corp Ltd"
+                OrganisationName = "Test Corp Ltd",
+                ContactEmail = "contact@contact.com"
             };
 
             var newParticipant = ParticipantRequestToNewParticipantMapper.Map(request, _caseType);

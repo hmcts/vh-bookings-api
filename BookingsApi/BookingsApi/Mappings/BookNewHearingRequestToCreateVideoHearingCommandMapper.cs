@@ -26,7 +26,7 @@ namespace BookingsApi.Mappings
 
             return new CreateVideoHearingCommand(caseType, hearingType,
                 request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired, newEndpoints, linkedParticipants)
+                request.QuestionnaireNotRequired, request.AudioRecordingRequired, newEndpoints, linkedParticipants, request.IsMultiDayHearing)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,

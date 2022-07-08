@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
-    public class ParticipantsAddedIntegrationEvent: IIntegrationEvent
+    public class HearingDateTimeChangedIntegrationEvent : IIntegrationEvent
     {
-        public ParticipantsAddedIntegrationEvent(Hearing hearing, IEnumerable<Participant> participants)
+        public HearingDateTimeChangedIntegrationEvent(Hearing hearing, DateTime oldScheduledDateTime)
         {
+            OldScheduledDateTime = oldScheduledDateTime;
             Hearing = HearingDtoMapper.MapToDto(hearing);
-            Participants = participants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            var hearingParticipants = hearing.GetParticipants();
+            Participants = hearingParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
             Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
         }
 
         public HearingDto Hearing { get; }
-
+        public DateTime OldScheduledDateTime { get; }
         public IList<ParticipantDto> Participants { get; }
     }
 }

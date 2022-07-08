@@ -71,11 +71,11 @@ namespace BookingsApi.DAL.Services
             {
                 var existingPerson = await _context.Persons
                     .Include("Organisation")
-                    .SingleOrDefaultAsync(x => x.Username == participantToAdd.Person.Username || x.ContactEmail == participantToAdd.Person.ContactEmail);
+                    .SingleOrDefaultAsync(x => x.ContactEmail == participantToAdd.Person.ContactEmail);
                 if(existingPerson != null)
                 {
                     var person = participantToAdd.Person;
-                    existingPerson.UpdatePerson(person.FirstName, person.LastName, existingPerson.Username, person.Title, person.TelephoneNumber, person.ContactEmail);
+                    existingPerson.UpdatePerson(person.FirstName, person.LastName, person.ContactEmail, existingPerson.Username, person.Title, person.TelephoneNumber);
                 }
 
                 switch (participantToAdd.HearingRole.UserRole.Name)

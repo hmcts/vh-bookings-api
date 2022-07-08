@@ -72,7 +72,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.Should().NotBeNull();
             _context.TestData.Hearing = model;
             model.Should().BeEquivalentTo(_context.TestData.CreateHearingRequest,
-                o => o.Excluding(x => x.Participants).Excluding(x => x.Endpoints).Excluding(x => x.LinkedParticipants));
+                o => o.Excluding(x => x.Participants).Excluding(x => x.Endpoints).Excluding(x => x.LinkedParticipants).Excluding(x => x.IsMultiDayHearing));
 
             var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
             var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
@@ -95,7 +95,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             expected.Should().BeEquivalentTo(actual, o =>
             {
-                o.ExcludingMissingMembers();
+                o.ExcludingMissingMembers().Excluding(x => x.Username);
                 return o;
             });
         }
@@ -282,8 +282,6 @@ namespace BookingsApi.AcceptanceTests.Steps
                     endpoint.Sip.Should().NotBeNullOrEmpty();
                     endpoint.Pin.Should().NotBeNullOrEmpty();
                 }
-
-                hearing.GroupId.Should().Be(hearing.Id);
             }
         }
 

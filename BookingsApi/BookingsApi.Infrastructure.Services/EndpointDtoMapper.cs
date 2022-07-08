@@ -12,7 +12,7 @@ namespace BookingsApi.Infrastructure.Services
                 DisplayName = source.DisplayName,
                 Sip = source.Sip,
                 Pin = source.Pin,
-                DefenceAdvocateUsername = source.DefenceAdvocate?.Person.Username
+                DefenceAdvocateContactEmail = source.DefenceAdvocate?.Person.ContactEmail
             };
         }
     }

@@ -39,7 +39,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 participant.CaseRole.Should().NotBeNull();
                 participant.CaseRole.Name.Should().NotBeNull();
                 var person = participant.Person;
-                var existingPerson = seededHearing.GetParticipants().First(x => x.Person.Username == person.Username)
+                var existingPerson = seededHearing.GetParticipants().First(x => x.Person.ContactEmail == person.ContactEmail)
                     .Person;
                 person.Should().BeEquivalentTo(existingPerson);
 

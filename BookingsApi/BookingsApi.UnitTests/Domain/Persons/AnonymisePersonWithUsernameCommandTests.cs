@@ -28,8 +28,8 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [SetUp]
         public async Task SetUp()
         {
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email() };
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email() };
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
             
             await _context.Persons.AddRangeAsync(_person1, _person2);
             
@@ -53,7 +53,7 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [Test]
         public async Task AnonymisePersonWithUsernameCommand_Anonymises_Only_Specified_Username_In_Person_Table()
         {
-            var personEntryBeforeAnonymisation = new Person(_person1.Title, _person1.FirstName, _person1.LastName, _person1.Username);
+            var personEntryBeforeAnonymisation = new Person(_person1.Title, _person1.FirstName, _person1.LastName, _person1.ContactEmail, _person1.Username);
             var query = new AnonymisePersonWithUsernameCommand {Username = _person1.Username};
             
             await _command.Handle(query);

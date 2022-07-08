@@ -13,7 +13,7 @@ namespace BookingsApi.DAL.Commands
         public string DisplayName { get; set; }
         public string Sip { get; set; }
         public string Pin { get; set; }
-        public string DefenceAdvocateUsername { get; set; } 
+        public string ContactEmail { get; set; } 
     }
     
     public class AddEndPointToHearingCommand : ICommand
@@ -50,7 +50,7 @@ namespace BookingsApi.DAL.Commands
             }
 
             var dto = command.Endpoint;
-            var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.DefenceAdvocateUsername, hearing.GetParticipants());
+            var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, hearing.GetParticipants());
             var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
             hearing.AddEndpoint(endpoint);
             await _context.SaveChangesAsync();

@@ -9,8 +9,8 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [Test]
         public void should_anonymise_person()
         {
-            var personOriginal = new Person("Mr", "John", "Doe", "john.doe@hmcts.net");
-            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net");
+            var personOriginal = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
+            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
             person.AnonymisePerson();
             person.FirstName.Should().NotBe(personOriginal.FirstName);
             person.LastName.Should().NotBe(personOriginal.LastName);

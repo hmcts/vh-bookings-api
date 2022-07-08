@@ -60,7 +60,7 @@ namespace BookingsApi.Domain.Participants
             ValidatePartipantDetails(title, displayName, telephoneNumber, organisationName);
 
             DisplayName = displayName;
-            Person.UpdatePerson(Person.FirstName, Person.LastName, Person.Username, title, telephoneNumber);
+            Person.UpdatePerson(Person.FirstName, Person.LastName, Person.ContactEmail, Person.Username, title, telephoneNumber);
             UpdatedDate = DateTime.UtcNow;
 
             if (!string.IsNullOrEmpty(organisationName))
