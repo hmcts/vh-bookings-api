@@ -25,22 +25,43 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public void should_throw_exception_when_peron_does_not_exist()
         {
-            var command = new UpdateJudiciaryPersonByExternalRefIdCommand(Guid.NewGuid(), false);
+            var command = new UpdateJudiciaryPersonByExternalRefIdCommand{ExternalRefId = "asdasd"};
             Assert.ThrowsAsync<JudiciaryPersonNotFoundException>(() => _commandHandler.Handle(command));
         }
         
         [Test]
         public async Task should_update_person()
         {
-            var externalRefId = Guid.NewGuid();
+            var externalRefId = Guid.NewGuid().ToString();
             await Hooks.AddJudiciaryPerson(externalRefId);
 
-            var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand(externalRefId, true);
+            var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand
+            {
+                ExternalRefId =externalRefId,
+                PersonalCode ="PersonalCode",
+                Title ="Title",
+                KnownAs ="KnownAs",
+                Fullname ="Fullname",
+                Surname ="Surname",
+                PostNominals ="PostNominals",
+                Email ="Email",
+                Leaver = true,
+                LeftOn ="LeftOn",
+                    
+            };
             await _commandHandler.Handle(updateCommand);
 
             var updatePerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
-
+            
             updatePerson.ExternalRefId.Should().Be(updateCommand.ExternalRefId);
+            updatePerson.PersonalCode.Should().Be(updateCommand.PersonalCode);
+            updatePerson.Title.Should().Be(updateCommand.Title);
+            updatePerson.KnownAs.Should().Be(updateCommand.KnownAs);
+            updatePerson.Fullname.Should().Be(updateCommand.Fullname);
+            updatePerson.Surname.Should().Be(updateCommand.Surname);
+            updatePerson.PostNominals.Should().Be(updateCommand.PostNominals);
+            updatePerson.Email.Should().Be(updateCommand.Email);
+            updatePerson.LeftOn.Should().Be(updateCommand.LeftOn);
             updatePerson.HasLeft.Should().BeTrue();
         }
     }

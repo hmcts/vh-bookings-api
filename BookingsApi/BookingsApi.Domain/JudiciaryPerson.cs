@@ -1,12 +1,13 @@
 using System;
 using BookingsApi.Domain.Ddd;
+using BookingsApi.Domain.Dtos;
 
 namespace BookingsApi.Domain
 {
     public class JudiciaryPerson : AggregateRoot<Guid>
     {
         private readonly DateTime _currentUTC = DateTime.UtcNow;
-        public JudiciaryPerson(Guid externalRefId, string personalCode, string title, string knownAs, string surname,
+        public JudiciaryPerson(string externalRefId, string personalCode, string title, string knownAs, string surname,
             string fullname, string postNominals, string email, bool hasLeft, bool leaver, string leftOn)
         {
             Id = Guid.NewGuid();
@@ -25,7 +26,7 @@ namespace BookingsApi.Domain
             LeftOn = leftOn;
         }
 
-        public Guid ExternalRefId { get; set; }
+        public string ExternalRefId { get; set; }
         public string PersonalCode { get; set; }
         public string Title { get; set; }
         public string KnownAs { get; set; }
@@ -53,6 +54,22 @@ namespace BookingsApi.Domain
             HasLeft = hasLeft;
             Leaver = leaver;
             LeftOn = leftOn;
+        }
+        
+        public void Update(UpdateJudiciaryPersonDto command)
+        {
+            ExternalRefId = command.ExternalRefId;
+            PersonalCode = command.PersonalCode;
+            Title = command.Title;
+            KnownAs = command.KnownAs;
+            Surname = command.Surname;
+            Fullname = command.Fullname;
+            PostNominals = command.PostNominals;
+            Email = command.Email;
+            UpdatedDate = DateTime.UtcNow;
+            HasLeft = command.HasLeft;
+            Leaver = command.Leaver;
+            LeftOn = command.LeftOn;
         }
 
         public void Update(bool hasLeft)

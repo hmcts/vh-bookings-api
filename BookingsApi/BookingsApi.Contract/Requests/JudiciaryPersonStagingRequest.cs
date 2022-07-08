@@ -1,8 +1,6 @@
-using System;
-
-namespace BookingsApi.Contract.Requests
+﻿namespace BookingsApi.Contract.Requests
 {
-    public class JudiciaryPersonRequest
+    public class JudiciaryPersonStagingRequest
     {
         public string Id { get; set; }
         public string PersonalCode { get; set; }
@@ -12,8 +10,7 @@ namespace BookingsApi.Contract.Requests
         public string Fullname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
-        public bool HasLeft { get; set; }
-        public bool Leaver { get; set; }
+        public string Leaver { get; set; }
         public string LeftOn { get; set; }
     }
 }

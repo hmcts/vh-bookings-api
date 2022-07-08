@@ -6,13 +6,13 @@ namespace BookingsApi.DAL.Commands
 
     public abstract class UpdateJudiciaryPersonCommandBase : ICommand
     {
-        protected UpdateJudiciaryPersonCommandBase(Guid externalRefId, bool hasLeft)
+        protected UpdateJudiciaryPersonCommandBase(string externalRefId, bool hasLeft)
         {
             ExternalRefId = externalRefId;
             HasLeft = hasLeft;
         }
 
-        public Guid ExternalRefId { get; }
+        public string ExternalRefId { get; }
         public bool HasLeft { get; set; }
     }
 }

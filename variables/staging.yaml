@@ -2,6 +2,6 @@ variables:
   - name: env
     value: stg 
   - name: stagingTagName
-    value: "staging-$(Build.SourceVersion)"
+    value: "staging-#{SHORTCOMMITID}#-#{DATETIME}#"
   - name: subDirectory
     value: "/non-prod"

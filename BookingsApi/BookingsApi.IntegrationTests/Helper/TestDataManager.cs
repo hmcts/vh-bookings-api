@@ -25,7 +25,7 @@ namespace BookingsApi.IntegrationTests.Helper
     {
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
-        public List<Guid> JudiciaryPersons { get; } = new List<Guid>();
+        public List<string> JudiciaryPersons { get; } = new List<string>();
         public string CaseNumber { get; } = "2222/3511";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests.Helper
             _seededHearings.Add(id);
         }
         
-        public void AddJudiciaryPersonsForCleanup(params Guid[] ids)
+        public void AddJudiciaryPersonsForCleanup(params string[] ids)
         {
             JudiciaryPersons.AddRange(ids);
         }
@@ -578,8 +578,18 @@ namespace BookingsApi.IntegrationTests.Helper
             _seededHearings.Add(hearing.Id);
             return hearing;
         }
+
+        public async Task AddJudiciaryPersonStaging()
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var judiciaryPersonStaging = new JudiciaryPersonStaging(Faker.Name.First(), Faker.Name.First(), Faker.Name.First(), Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First());;
+            await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);
+
+            await db.SaveChangesAsync();
+        }
         
-        public async Task AddJudiciaryPerson(Guid? externalRefId = null)
+        public async Task AddJudiciaryPerson(string externalRefId = null)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 

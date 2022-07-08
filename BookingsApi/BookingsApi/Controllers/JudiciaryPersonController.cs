@@ -30,7 +30,8 @@ namespace BookingsApi.Controllers
         private readonly ILogger<JudiciaryPersonController> _logger;
         private readonly IFeatureFlagService _flagsService;
 
-        public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JudiciaryPersonController> logger, IFeatureFlagService flagsService)
+        public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler,
+            ILogger<JudiciaryPersonController> logger, IFeatureFlagService flagsService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -40,25 +41,30 @@ namespace BookingsApi.Controllers
 
         [HttpPost("BulkJudiciaryPersons")]
         [OpenApiOperation("BulkJudiciaryPersons")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryPersonRequests = request.ToList();
-            _logger.LogInformation("Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items", judiciaryPersonRequests.Count);
+            _logger.LogInformation(
+                "Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items",
+                judiciaryPersonRequests.Count);
 
             var bulkResponse = new BulkJudiciaryPersonResponse();
 
             foreach (var item in judiciaryPersonRequests)
             {
-                var validation = item.Leaver ? await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item) : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
+                var validation = item.Leaver
+                    ? await new JudiciaryLeaverPersonRequestValidation().ValidateAsync(item)
+                    : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
                 if (!validation.IsValid)
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
-                        Message = $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
+                        Message =
+                            $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
                         JudiciaryPersonRequest = item
                     });
 
@@ -68,16 +74,18 @@ namespace BookingsApi.Controllers
                 try
                 {
                     var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
-                    var judiciaryPerson = await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+                    var judiciaryPerson =
+                        await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
 
                     if (judiciaryPerson == null)
                     {
-                        await _commandHandler.Handle(new AddJudiciaryPersonByExternalRefIdCommand(item.Id, item.PersonalCode, item.Title, item.KnownAs, item.Surname,
+                        await _commandHandler.Handle(new AddJudiciaryPersonByExternalRefIdCommand(item.Id,
+                            item.PersonalCode, item.Title, item.KnownAs, item.Surname,
                             item.Fullname, item.PostNominals, item.Email, item.HasLeft, item.Leaver, item.LeftOn));
                     }
                     else
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryPersonByExternalRefIdCommand(item.Id, item.HasLeft));
+                        await _commandHandler.Handle(UpdateJudiciaryPersonByExternalRefIdCommandMapper.Map(item));
                     }
                 }
                 catch (Exception ex)
@@ -96,14 +104,16 @@ namespace BookingsApi.Controllers
 
         [HttpPost("BulkJudiciaryLeavers")]
         [OpenApiOperation("BulkJudiciaryLeavers")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(BulkJudiciaryLeaverResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(BulkJudiciaryLeaverResponse), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryLeaversAsync(IEnumerable<JudiciaryLeaverRequest> request)
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryLeaverRequests = request.ToList();
-            _logger.LogInformation("Starting BulkJudiciaryLeavers operation, processing {JudiciaryLeaversRequestsCount} items", judiciaryLeaverRequests.Count);
+            _logger.LogInformation(
+                "Starting BulkJudiciaryLeavers operation, processing {JudiciaryLeaversRequestsCount} items",
+                judiciaryLeaverRequests.Count);
 
             var bulkResponse = new BulkJudiciaryLeaverResponse();
 
@@ -114,7 +124,8 @@ namespace BookingsApi.Controllers
                 {
                     bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                     {
-                        Message = $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
+                        Message =
+                            $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
                         JudiciaryLeaverRequest = item
                     });
 
@@ -123,16 +134,19 @@ namespace BookingsApi.Controllers
 
                 try
                 {
-                    var query = new GetJudiciaryPersonByExternalRefIdQuery(Guid.Parse(item.Id));
-                    var judiciaryPerson = await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+                    var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
+                    var judiciaryPerson =
+                        await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
 
                     if (judiciaryPerson != null)
                     {
-                        await _commandHandler.Handle(new UpdateJudiciaryLeaverByExternalRefIdCommand(Guid.Parse(item.Id), item.Leaver));
+                        await _commandHandler.Handle(
+                            new UpdateJudiciaryLeaverByExternalRefIdCommand(item.Id, item.Leaver));
                     }
                     else
                     {
-                        var message = $"Unable to update the record in Judiciary Person with ExternalRefId - '{item.Id}'";
+                        var message =
+                            $"Unable to update the record in Judiciary Person with ExternalRefId - '{item.Id}'";
                         _logger.LogError(message);
                         bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                         {
@@ -162,16 +176,18 @@ namespace BookingsApi.Controllers
         /// <returns>Person list</returns>
         [HttpPost("search")]
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
-        [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(IList<PersonResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
             if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
             {
                 var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
-                var personList = await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
+                var personList =
+                    await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
                 var mapper = new JudiciaryPersonToResponseMapper();
-                var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username).ToList();
+                var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username)
+                    .ToList();
                 return Ok(response);
             }
             else

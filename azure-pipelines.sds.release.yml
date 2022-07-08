@@ -26,8 +26,8 @@ parameters:
 # Generate Entity Framework Script. #################
 
 stages:
-  - stage: Generate_Entity_Framework_Script
-    displayName: Generate EF Script
+  - stage: pre_run_tasks
+    displayName: Pre-Release Tasks
     variables:
       - template: variables/shared.yaml
       - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
@@ -51,6 +51,16 @@ stages:
             targetPath: $(Build.StagingDirectory)
             publishLocation: Pipeline
             artifact: ${{ variables.efContextName }}-$(Build.BuildId)
+
+      - job: package_nuget
+        displayName: "Package Nuget Packages"
+        steps:
+          - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+            parameters:
+              nugetProjectPath: 'BookingsApi/${{ variables.nuget_package_name }}'
+              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+              gitVersionConfigPath: ${{ variables.git_version_config_path }}
+      
 
 
 #####################################################
@@ -178,6 +188,11 @@ stages:
         displayName: "Docker Build and Push"
         steps:
           - checkout: self
+
+          - bash: |
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+            displayName: Add NuGet Feed Authentication
+            workingDirectory: BookingsApi
         
           - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
             parameters:
@@ -197,6 +212,24 @@ stages:
                 - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
                   - 'latest'
                   - '${{ variables.releaseTagName }}'
+
+#####################################################
+# Deploy Nuget Packages. #########################
+  - stage: Push_Nuget
+    dependsOn: Approve_Helm_Release
+    displayName: Deploy Nuget Packages
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+    jobs: 
+      - job: Publish_Nuget
+        displayName: Publish NuGet Packages
+        steps:
+          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+            parameters:
+              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
 
 #########################################
 # Push Helm Charts to Repo. #############
