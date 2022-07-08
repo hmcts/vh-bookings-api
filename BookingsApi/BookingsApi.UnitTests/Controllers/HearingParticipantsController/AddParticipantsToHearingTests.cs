@@ -85,7 +85,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         }
 
         [Test]
-        public async Task Should_add_given_participants_to_hearing_without_judge_and_CreateAndNotifyUserIntegrationEvent()
+        public async Task Should_add_given_participants_to_hearing_without_judge_and_CreateAndNotifyUser_and_HearingNotification_IntegrationEvent()
         {
             var hearing = GetVideoHearing();
             request.Participants[0].Username = hearing.Participants[0].Person.Username;
@@ -103,6 +103,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingNotificationIntegrationEvent>()), Times.Once);
+
         }
 
         [Test]
