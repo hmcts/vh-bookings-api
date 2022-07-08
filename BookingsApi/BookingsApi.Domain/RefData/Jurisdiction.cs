@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Transactions;
 using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class Jurisdiction : TrackableEntity<int>
     {
         public Jurisdiction(string code , string name )
