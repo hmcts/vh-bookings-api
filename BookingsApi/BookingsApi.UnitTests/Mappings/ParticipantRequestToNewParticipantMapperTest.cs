@@ -85,7 +85,37 @@ namespace BookingsApi.UnitTests.Mappings
             newParticipant.Should().NotBeNull();
             var person = newParticipant.Person;
             person.Should().NotBeNull();
-            person.Organisation.Should().NotBeNull();
+            person.Title.Should().Be("Mr");
+            person.FirstName.Should().Be("Test");
+            person.LastName.Should().Be("Tester");
+            person.Username.Should().Be("TestTester");
+            person.ContactEmail.Should().Be("contact@contact.com");
+            person.Organisation.Name.Should().Be("Test Corp Ltd");
+
+            var caseRole = newParticipant.CaseRole;
+            caseRole.Name.Should().Be("Respondent");
+        }
+
+        [Test]
+        public void Should_map_username_to_contact_email_when_username_empty()
+        {
+            var request = new ParticipantRequest
+            {
+                Title = "Mr",
+                FirstName = "Test",
+                LastName = "Tester",
+                Username = "",
+                CaseRoleName = "Respondent",
+                HearingRoleName = "Representative",
+                OrganisationName = "Test Corp Ltd",
+                ContactEmail = "contact@contact.com"
+            };
+            
+            var newParticipant = ParticipantRequestToNewParticipantMapper.Map(request, _caseType);
+            newParticipant.Should().NotBeNull();
+            var person = newParticipant.Person;
+            person.ContactEmail.Should().Be("contact@contact.com");
+            person.Username.Should().Be("contact@contact.com");
         }
     }
 }

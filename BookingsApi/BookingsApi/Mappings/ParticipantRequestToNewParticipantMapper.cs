@@ -20,15 +20,14 @@ namespace BookingsApi.Mappings
 
             var hearingRole = caseRole.HearingRoles.FirstOrDefault(x => x.Name == requestParticipant.HearingRoleName);
             if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
-            
-            if (requestParticipant.HearingRoleName != "Judge" || !string.IsNullOrEmpty(requestParticipant.Username)
-                && (requestParticipant.HearingRoleName == "PanelMember" || requestParticipant.HearingRoleName == "Winger"))
+
+            if (string.IsNullOrEmpty(requestParticipant.Username))
             {
                 requestParticipant.Username = requestParticipant.ContactEmail;
             }
             
             var person = new Person(requestParticipant.Title, requestParticipant.FirstName, requestParticipant.LastName,
-                requestParticipant.Username, requestParticipant.ContactEmail)
+                requestParticipant.ContactEmail, requestParticipant.Username)
             {
                 MiddleNames = requestParticipant.MiddleNames,
                 ContactEmail = requestParticipant.ContactEmail,
