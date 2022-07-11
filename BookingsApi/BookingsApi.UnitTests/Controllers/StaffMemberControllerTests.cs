@@ -1,5 +1,4 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
+﻿using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -32,8 +31,8 @@ namespace BookingsApi.UnitTests.Controllers
             //Arrange
             var searchTermRequest = "staf";
             var staffMembers = new List<Person> {
-                                new Person("Mr", "staffffff", "Member", "T Tester") { ContactEmail = "staffff@hmcts.net" },
-                                new Person("Mr", "staffer", "Person", "T Test") { ContactEmail = "staffer@hmcts.net" }};
+                                new Person("Mr", "staffffff", "Member", "staffff@hmcts.net", "T Tester"),
+                                new Person("Mr", "staffer", "Person","staffer@hmcts.net", "T Test")};
             _queryHandlerMock
              .Setup(x => x.Handle<GetStaffMemberBySearchTermQuery, List<Person>>(It.IsAny<GetStaffMemberBySearchTermQuery>()))
              .ReturnsAsync(staffMembers);

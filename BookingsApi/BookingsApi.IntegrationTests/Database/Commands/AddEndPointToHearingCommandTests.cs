@@ -34,7 +34,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = "displayName",
                 Sip = "sip",
                 Pin = "pin",
-                DefenceAdvocateUsername = null
+                ContactEmail = null
             };
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
                 new AddEndPointToHearingCommand(hearingId, newEndpoint)));
@@ -57,7 +57,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                DefenceAdvocateUsername = null
+                ContactEmail = null
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));
@@ -95,7 +95,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 DisplayName = displayName,
                 Sip = sip,
                 Pin = pin,
-                DefenceAdvocateUsername = dA.Person.Username
+                ContactEmail = dA.Person.ContactEmail
             };
 
             await _commandHandler.Handle(new AddEndPointToHearingCommand(_newHearingId, newEndpoint));

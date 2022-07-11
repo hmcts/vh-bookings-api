@@ -39,11 +39,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             _organisation = new Organisation(Faker.Company.Name());
 
-            _individualPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email(), Organisation = _organisation };
-            _judgePerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email(), Organisation = _organisation };
-            _judicialOfficeHolderPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email(), Organisation = _organisation };
-            _staffMemberPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email(), Organisation = _organisation };
-            _repPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email()) { ContactEmail = Faker.Internet.Email(), Organisation = _organisation };
+            _individualPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) { Organisation = _organisation };
+            _judgePerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) { Organisation = _organisation };
+            _judicialOfficeHolderPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) { Organisation = _organisation };
+            _staffMemberPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) {  Organisation = _organisation };
+            _repPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email()) {  Organisation = _organisation };
 
             _judgeParticipant = new Judge(_judgePerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Judge" };
             _individualParticipant = new Individual(_individualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };

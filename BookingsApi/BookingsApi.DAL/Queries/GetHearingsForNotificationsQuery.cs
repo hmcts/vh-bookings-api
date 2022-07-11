@@ -37,8 +37,7 @@ namespace BookingsApi.DAL.Queries
                         (x.Status == Domain.Enumerations.BookingStatus.Created ||
                          x.Status == Domain.Enumerations.BookingStatus.Booked)
                      && x.ScheduledDateTime >= startDate
-                     && x.ScheduledDateTime < endDate
-                     && x.SourceId == x.Id)
+                     && x.ScheduledDateTime < endDate)
                 .ToListAsync();
         }
     }

@@ -363,5 +363,50 @@ namespace BookingsApi.Controllers
 
             return personSuitabilityAnswer;
         }
+
+        /// <summary>
+        /// Updates the person's user name
+        /// </summary>
+        /// <param name="contactEmail">The contact email of the person</param>
+        /// <param name="username">username of the person</param>
+        /// <returns>No content</returns>
+        [HttpPut("user/{contactEmail}", Name = "UpdatePersonUsername")]
+        [OpenApiOperation("UpdatePersonUsername")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdatePersonUsername(string contactEmail, string username)
+        {
+            if (!contactEmail.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
+                return BadRequest(ModelState);
+            }
+            if (!username.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
+                return BadRequest(ModelState);
+            }
+            var query = new GetPersonByContactEmailQuery(contactEmail);
+            var person = await _queryHandler.Handle<GetPersonByContactEmailQuery, Person>(query);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var command = new UpdatePersonUsernameCommand(person.Id, username);
+                await _commandHandler.Handle(command);
+            }
+            catch (PersonNotFoundException e)
+            {
+                _logger.LogError(e, "Failed to update a person because the person with {contactEmail} does not exist", contactEmail);
+                return NotFound($"{contactEmail} does not exist");
+            }
+
+            return NoContent();
+        }
     }
 }

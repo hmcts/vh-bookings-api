@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BookingsApi.Contract.Requests
 {
@@ -72,6 +73,9 @@ namespace BookingsApi.Contract.Requests
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsMultiDayHearing { get; set; } = false;
 
         public List<EndpointRequest> Endpoints { get; set; }
         

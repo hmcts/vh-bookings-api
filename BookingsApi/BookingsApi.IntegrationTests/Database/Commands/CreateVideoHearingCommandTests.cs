@@ -87,14 +87,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                     DisplayName = "display 1",
                     Sip = Guid.NewGuid().ToString(),
                     Pin = "1234",
-                    DefenceAdvocateUsername = null
+                    ContactEmail = null
                 },
                 new NewEndpoint
                 {
                     DisplayName = "display 2",
                     Sip = Guid.NewGuid().ToString(),
                     Pin = "5678",
-                    DefenceAdvocateUsername = null
+                    ContactEmail = null
                 }
             };
 
@@ -109,7 +109,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var command =
                 new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue,
                     participants, cases, questionnaireNotRequired, audioRecordingRequired, endpoints,
-                    linkedParticipants)
+                    linkedParticipants, false)
                 {
                     HearingRoomName = hearingRoomName,
                     OtherInformation = otherInformation,

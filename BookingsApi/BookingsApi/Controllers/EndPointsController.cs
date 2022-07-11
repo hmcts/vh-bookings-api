@@ -183,7 +183,7 @@ namespace BookingsApi.Controllers
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
                 var defenceAdvocate =
-                    DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(updateEndpointRequest.DefenceAdvocateUsername,
+                    DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(updateEndpointRequest.DefenceAdvocateContactEmail,
                         hearing.GetParticipants());
                 var command = new UpdateEndPointOfHearingCommand(hearingId, endpointId, updateEndpointRequest.DisplayName, defenceAdvocate);
                 await _commandHandler.Handle(command);
@@ -194,7 +194,7 @@ namespace BookingsApi.Controllers
                 {
 
                     await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip,
-                        updateEndpointRequest.DisplayName, defenceAdvocate?.Person.Username));
+                        updateEndpointRequest.DisplayName, defenceAdvocate?.Person.ContactEmail));
                 }
             }
             catch (HearingNotFoundException exception)

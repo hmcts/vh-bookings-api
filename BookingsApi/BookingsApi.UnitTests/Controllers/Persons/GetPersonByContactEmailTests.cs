@@ -48,7 +48,7 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var contactEmail = "test@hmcts.net";
             QueryHandlerMock
            .Setup(x => x.Handle<GetPersonByContactEmailQuery, Person>(It.IsAny<GetPersonByContactEmailQuery>()))
-           .ReturnsAsync(new Person("Mr","Test","Tester","T Tester"));
+           .ReturnsAsync(new Person("Mr","Test","Tester", "T Tester", "T Tester"));
 
             var result = await Controller.GetPersonByContactEmail(contactEmail);
 

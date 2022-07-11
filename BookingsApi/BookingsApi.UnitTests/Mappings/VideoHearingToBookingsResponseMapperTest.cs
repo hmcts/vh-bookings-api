@@ -8,6 +8,7 @@ using Testing.Common.Builders.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.UnitTests.Utilities;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BookingsApi.UnitTests.Mappings
 {
@@ -20,9 +21,9 @@ namespace BookingsApi.UnitTests.Mappings
         {
             var hearings = new[]
             {
-                MockHearingAtDate(DateTime.Now.AddDays(1), true),
-                MockHearingAtDate(DateTime.Now.AddDays(2), true),
-                MockHearingAtDate(DateTime.Now.AddDays(3), false)
+                MockHearingAtDate(DateTime.Now.AddDays(1), true, true),
+                MockHearingAtDate(DateTime.Now.AddDays(2), true, true),
+                MockHearingAtDate(DateTime.Now.AddDays(3), false, true)
             };
             var mappedHearings = _mapper.MapHearingResponses(hearings);
             mappedHearings.Count.Should().Be(3);
@@ -36,7 +37,8 @@ namespace BookingsApi.UnitTests.Mappings
             firstGroup.Hearings.First().GroupId.Should().Be(hearings[0].Id);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired)
+        private VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired,
+            bool isMultiDayFirstHearing = false)
         {
             var mockedHearing = MockHearingWithCase();
             mockedHearing.CaseType = new CaseType(1, "Generic");
@@ -57,6 +59,7 @@ namespace BookingsApi.UnitTests.Mappings
                 false,
                 audioRecordingRequired
             );
+            mockedHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             return mockedHearing;
         }
 

@@ -22,7 +22,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_case_number()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
@@ -42,7 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_partial_case_number()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
@@ -64,7 +64,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_case_number_and_date()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
@@ -86,7 +86,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_date()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
@@ -106,7 +106,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_not_get_hearing_details_by_case_number_and_wrong_date()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(false, BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 

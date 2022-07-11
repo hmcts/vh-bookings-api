@@ -44,10 +44,10 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             organisation = new Organisation("strawhat");
 
             //persons record
-            IndividualPerson = new Person("mr", "luffy", "dragon", "luffy2@strawhat.net") { ContactEmail = "luffy2@strawhat.net", Organisation = organisation };
-            JudgePerson = new Person("mr", "zoro", "rononora", "zoro@strawhat.net") { ContactEmail = "zoro@strawhat.net", Organisation = organisation };
-            JudicialOfficeHolderPerson = new Person("mr", "luffy", "dragon", "luffy@strawhat.net") { ContactEmail = "luffy@strawhat.net", Organisation = organisation };
-            StaffMemberPerson = new Person("mr", "luffy", "duffy", "luffy@staffmember.net") { ContactEmail = "luffy@staff.net", Organisation = organisation };
+            IndividualPerson = new Person("mr", "luffy", "dragon", "luffy2@strawhat.net", "luffy2@strawhat.net") { Organisation = organisation };
+            JudgePerson = new Person("mr", "zoro", "rononora", "zoro@strawhat.net", "zoro@strawhat.net") { Organisation = organisation };
+            JudicialOfficeHolderPerson = new Person("mr", "luffy", "dragon", "luffy@strawhat.net", "luffy@strawhat.net") { Organisation = organisation };
+            StaffMemberPerson = new Person("mr", "luffy", "duffy", "luffy@staff.net", "luffy@staffmember.net") {  Organisation = organisation };
 
             //participants record
             IndividualParticipant = new Individual(IndividualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };

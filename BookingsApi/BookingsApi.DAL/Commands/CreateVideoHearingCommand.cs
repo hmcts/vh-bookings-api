@@ -14,8 +14,9 @@ namespace BookingsApi.DAL.Commands
     public class CreateVideoHearingCommand : ICommand
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases, 
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints, List<LinkedParticipantDto> linkedParticipants)
+            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases,
+            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints,
+            List<LinkedParticipantDto> linkedParticipants, bool isMultiDayFirstHearing)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -28,6 +29,7 @@ namespace BookingsApi.DAL.Commands
             AudioRecordingRequired = audioRecordingRequired;
             Endpoints = endpoints;
             LinkedParticipants = linkedParticipants;
+            IsMultiDayFirstHearing = isMultiDayFirstHearing;
         }
 
         public Guid NewHearingId { get; set; }
@@ -47,6 +49,7 @@ namespace BookingsApi.DAL.Commands
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
+        public bool IsMultiDayFirstHearing { get; }
     }
 
     public class CreateVideoHearingCommandHandler : ICommandHandler<CreateVideoHearingCommand>
@@ -66,7 +69,9 @@ namespace BookingsApi.DAL.Commands
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
                 command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
                 command.AudioRecordingRequired, command.CancelReason);
-            
+
+            // Ideally, the domain object would implement the clone method and so this change is a work around.
+            videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)
             {
@@ -86,7 +91,7 @@ namespace BookingsApi.DAL.Commands
                 var dtos = command.Endpoints;
                 var newEndpoints = (from dto in dtos
                     let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.DefenceAdvocateUsername,
+                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
                             videoHearing.GetParticipants())
                     select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
 

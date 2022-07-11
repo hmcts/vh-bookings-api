@@ -5,17 +5,17 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
     public class EndpointUpdatedIntegrationEvent : IIntegrationEvent
     {
         public EndpointUpdatedIntegrationEvent(Guid hearingId, string sip, string displayName,
-            string defenceAdvocateUsername)
+            string defenceAdvocateContactEmail)
         {
             HearingId = hearingId;
             Sip = sip;
             DisplayName = displayName;
-            DefenceAdvocateUsername = defenceAdvocateUsername;
+            DefenceAdvocateContactEmail = defenceAdvocateContactEmail;
         }
 
         public Guid HearingId { get; }
         public string Sip { get; }
         public string DisplayName { get; }
-        public string DefenceAdvocateUsername { get; }
+        public string DefenceAdvocateContactEmail { get; }
     }
 }

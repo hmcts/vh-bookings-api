@@ -530,7 +530,6 @@ namespace BookingsApi.IntegrationTests.Steps
 
             model.HearingTypeName.Should().NotBeNullOrEmpty();
             model.HearingVenueName.Should().NotBeNullOrEmpty();
-            model.GroupId.Should().NotBeEmpty();
             foreach (var participant in model.Participants)
             {
                 participant.CaseRoleName.Should().NotBeNullOrEmpty();
@@ -611,7 +610,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 new EndpointRequest {DisplayName = "Cool endpoint 1"},
                 new EndpointRequest
-                    {DisplayName = "Cool endpoint 2", DefenceAdvocateUsername = participants[3].Username}
+                    {DisplayName = "Cool endpoint 2", DefenceAdvocateContactEmail = participants[3].ContactEmail}
             };
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Generic")
@@ -685,7 +684,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
+                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
                         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         _hearingId = seededHearing.Id;
                         Context.TestData.NewHearingId = seededHearing.Id;
