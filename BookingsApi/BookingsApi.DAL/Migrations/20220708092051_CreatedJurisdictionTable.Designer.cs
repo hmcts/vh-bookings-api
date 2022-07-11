@@ -5,14 +5,16 @@ using BookingsApi.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220708092051_CreatedJurisdictionTable")]
+    partial class CreatedJurisdictionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,8 +242,8 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalRefId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("ExternalRefId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Fullname")
                         .HasColumnType("nvarchar(max)");
@@ -276,49 +278,28 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ExternalRefId")
-                        .IsUnique()
-                        .HasFilter("[ExternalRefId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("JudiciaryPerson");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.JudiciaryPersonStaging", b =>
+            modelBuilder.Entity("BookingsApi.Domain.Jurisdiction", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsLive")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("ExternalRefId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Fullname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KnownAs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Leaver")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LeftOn")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PersonalCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostNominals")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Surname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDate")
@@ -326,7 +307,7 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JudiciaryPersonsStaging");
+                    b.ToTable("Jurisdiction");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>
@@ -541,9 +522,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("JurisdictionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -551,8 +529,6 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("JurisdictionId");
 
                     b.ToTable("CaseType");
                 });
@@ -831,13 +807,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasOne("BookingsApi.Domain.RefData.CaseType", null)
                         .WithMany("CaseRoles")
                         .HasForeignKey("CaseTypeId");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.RefData.CaseType", b =>
-                {
-                    b.HasOne("BookingsApi.Domain.Jurisdiction", null)
-                        .WithMany("CaseTypes")
-                        .HasForeignKey("JurisdictionId");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.RefData.HearingRole", b =>
