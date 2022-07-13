@@ -1,4 +1,6 @@
-﻿using LaunchDarkly.Sdk;
+﻿using System;
+using LaunchDarkly.Logging;
+using LaunchDarkly.Sdk;
 using LaunchDarkly.Sdk.Server;
 using LaunchDarkly.Sdk.Server.Interfaces;
 
@@ -17,7 +19,12 @@ namespace BookingsApi.Common.Services
         private const string AdminSearchToggleKey = "admin_search";
         public FeatureToggles(string sdkKey)
         {
-            _ldClient = new LdClient(sdkKey);
+            var config = LaunchDarkly.Sdk.Server.Configuration.Builder(sdkKey)
+                .Logging(
+                    Components.Logging(Logs.ToWriter(Console.Out)).Level(LogLevel.Warn)
+                )
+                .Build();
+            _ldClient = new LdClient(config);
             _user = User.WithKey(LdUser);
         }
 
