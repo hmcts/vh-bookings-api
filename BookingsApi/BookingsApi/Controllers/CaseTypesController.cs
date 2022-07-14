@@ -18,12 +18,9 @@ namespace BookingsApi.Controllers
     public class CaseTypesController : Controller
     {
         private readonly IQueryHandler _queryHandler;
-        private readonly IFeatureToggles _featureFlag;
-
-        public CaseTypesController(IQueryHandler queryHandler, IFeatureToggles featureToggles)
+        public CaseTypesController(IQueryHandler queryHandler)
         {
             _queryHandler = queryHandler;
-            _featureFlag = featureToggles;
         }
 
         /// <summary>
@@ -39,41 +36,25 @@ namespace BookingsApi.Controllers
             var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
             IEnumerable<CaseTypeResponse> response;
             //ServiceId Property behind refData toggle
-            if (_featureFlag.ReferenceDataToggle())
-                response = caseTypes.Select(caseType => new CaseTypeResponse
+            response = caseTypes.Select(caseType => new CaseTypeResponse
+                {
+                    Id = caseType.Id,
+                    Name = caseType.Name,
+                    ServiceId = caseType.ServiceId,
+                    HearingTypes = caseType.HearingTypes.Where(ht => ht.Live).Select(hearingType => new HearingTypeResponse
                     {
-                        Id = caseType.Id,
-                        Name = caseType.Name,
-                        ServiceId = caseType.ServiceId,
-                        HearingTypes = caseType.HearingTypes.Where(ht => ht.Live).Select(hearingType => new HearingTypeResponse
-                        {
-                            Id = hearingType.Id,
-                            Name = hearingType.Name
-                            
-                        }).ToList()
-                    }
-                );
-            else
-                response = caseTypes.Select(caseType => new CaseTypeResponse
-                    {
-                        Id = caseType.Id,
-                        Name = caseType.Name,
-                        HearingTypes = caseType.HearingTypes.Where(ht => ht.Live).Select(hearingType => new HearingTypeResponse
-                        {
-                            Id = hearingType.Id,
-                            Name = hearingType.Name
-                            
-                        }).ToList()
-                    }
-                );
-
+                        Id = hearingType.Id,
+                        Name = hearingType.Name
+                    }).ToList()
+                }
+            );
             return Ok(response);
         } 
         
         /// <summary>
         /// Get case roles for a case type
         /// </summary>
-        /// <param name="caseTypeName"></param>
+        /// <param name="caseTypeParam"></param>
         /// <returns>Available case roles for given case type</returns>
         [HttpGet("{caseTypeParam}/caseroles")]
         [OpenApiOperation("GetCaseRolesForCaseType")]
