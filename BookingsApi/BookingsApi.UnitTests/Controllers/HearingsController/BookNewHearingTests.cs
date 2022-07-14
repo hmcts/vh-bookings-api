@@ -71,16 +71,23 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
 
-        [Test]
-        public async Task Should_successfully_book_new_hearing()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task Should_successfully_book_new_hearing(bool referenceDataToggle)
         {
+            if (referenceDataToggle)
+                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
+
             var response = await Controller.BookNewHearing(request);
 
             response.Should().NotBeNull();
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            if (referenceDataToggle)
+                QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.Is<GetCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeServiceId)), Times.Once);
+            else
+                QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.Is<GetCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeName)), Times.Once);        
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
@@ -182,10 +189,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         public async Task Should_return_badrequest_without_matching_casetype(bool referenceDataToggle)
         {
             if (referenceDataToggle)
-            {
                 FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
-                request.CaseTypeServiceId = "TestServiceId";
-            }
             
             QueryHandlerMock
            .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
@@ -265,14 +269,20 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             ((string[])errors["CaseTypeName"])[0].Should().Be("Please provide a case type name");
         }
 
-        [Test]
-        public void Should_log_exception_when_thrown_with_request_details()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Should_log_exception_when_thrown_with_request_details(bool referenceDataToggle)
         {
+            if (referenceDataToggle)
+                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
+            
             var newRequest = RequestBuilder.Build();
             QueryHandlerMock.Setup(qh => qh.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
                 .Throws<Exception>();
 
             Assert.ThrowsAsync<Exception>(async () => await Controller.BookNewHearing(newRequest));
+            if (referenceDataToggle)
+              Logger.Verify(c => c.TrackError(It.IsAny<Exception>(), It.Is<Dictionary<string,string>>(e => e.Count == 6)), Times.Once());
         }
     }
 }

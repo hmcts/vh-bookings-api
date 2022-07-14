@@ -194,6 +194,7 @@ namespace BookingsApi.Controllers
                         null, SeverityLevel.Information);
                 }
 
+                var rDataFlag = _featureToggles.ReferenceDataToggle();
                 var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
                 if (!result.IsValid)
                 {
@@ -209,23 +210,12 @@ namespace BookingsApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                GetCaseTypeQuery query;
-                if (_featureToggles.ReferenceDataToggle())
-                    query = new GetCaseTypeQuery(request.CaseTypeServiceId);
-                else
-                    query = new GetCaseTypeQuery(request.CaseTypeName);
-                
-                var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+                var queryValue = rDataFlag ? request.CaseTypeServiceId : request.CaseTypeName;
+                var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(new GetCaseTypeQuery(queryValue));
                 if (caseType == null)
                 {
                     const string logCaseDoesNotExist = "BookNewHearing Error: Case type does not exist";
-                    
-                    if (_featureToggles.ReferenceDataToggle())
-                        return ModelStateErrorLogger(nameof(request.CaseTypeServiceId),
-                            "Case type does not exist", logCaseDoesNotExist, request.CaseTypeServiceId, SeverityLevel.Error);
-                    else
-                        return ModelStateErrorLogger(nameof(request.CaseTypeName),
-                            "Case type does not exist", logCaseDoesNotExist, request.CaseTypeName, SeverityLevel.Error);
+                    return ModelStateErrorLogger(rDataFlag ? nameof(request.CaseTypeServiceId) : nameof(request.CaseTypeName), "Case type does not exist", logCaseDoesNotExist, queryValue, SeverityLevel.Error);
                 }
 
                 var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
@@ -271,24 +261,16 @@ namespace BookingsApi.Controllers
                 const string keyHearingId = "HearingId";
                 const string keyCaseType = "CaseType";
                 const string keyParticipantCount = "Participants.Count";
-                if (_featureToggles.ReferenceDataToggle())
+                var logTrace = new Dictionary<string, string>
                 {
-                    _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
-                    {
-                        {keyHearingId, queriedVideoHearing.Id.ToString()},
-                        {keyCaseType, queriedVideoHearing.CaseType?.ServiceId},
-                        {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
-                    });
-                }
-                else
-                    _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
-                    {
-                        {keyHearingId, queriedVideoHearing.Id.ToString()},
-                        {keyCaseType, queriedVideoHearing.CaseType?.Name},
-                        {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
-                    });
+                    {keyHearingId, queriedVideoHearing.Id.ToString()},
+                    {keyCaseType, queriedVideoHearing.CaseType?.Name},
+                    {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
+                };
+                if (rDataFlag)
+                    logTrace.Add("CaseTypeServiceId", queriedVideoHearing.CaseType?.ServiceId);
+                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
                 
-
                 var hearingMapper = new HearingToDetailsResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
