@@ -177,9 +177,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
 
-        [Test]
-        public async Task Should_return_badrequest_without_matching_casetype()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task Should_return_badrequest_without_matching_casetype(bool referenceDataToggle)
         {
+            if (referenceDataToggle)
+            {
+                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
+                request.CaseTypeServiceId = "TestServiceId";
+            }
+            
             QueryHandlerMock
            .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
            .ReturnsAsync((CaseType)null);
@@ -189,7 +196,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.CaseTypeName), "Case type does not exist");
+            if(referenceDataToggle)
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.CaseTypeServiceId), "Case type does not exist");
+            else
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.CaseTypeName), "Case type does not exist");
         }
 
         [Test]

@@ -38,13 +38,13 @@ namespace BookingsApi.Client
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get hearing roles for a case role of a case type</summary>
         /// <param name="caseTypeName">Hearing case type</param>
@@ -740,20 +740,20 @@ namespace BookingsApi.Client
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam)
         {
-            return GetCaseRolesForCaseTypeAsync(caseTypeName, System.Threading.CancellationToken.None);
+            return GetCaseRolesForCaseTypeAsync(caseTypeParam, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes/{caseTypeName}/caseroles");
-            urlBuilder_.Replace("{caseTypeName}", System.Uri.EscapeDataString(ConvertToString(caseTypeName, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes/{caseTypeParam}/caseroles");
+            urlBuilder_.Replace("{caseTypeParam}", System.Uri.EscapeDataString(ConvertToString(caseTypeParam, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             var disposeClient_ = false;

@@ -209,13 +209,23 @@ namespace BookingsApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var query = new GetCaseTypeQuery(request.CaseTypeName);
+                GetCaseTypeQuery query;
+                if (_featureToggles.ReferenceDataToggle())
+                    query = new GetCaseTypeQuery(request.CaseTypeServiceId);
+                else
+                    query = new GetCaseTypeQuery(request.CaseTypeName);
+                
                 var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
                 if (caseType == null)
                 {
                     const string logCaseDoesNotExist = "BookNewHearing Error: Case type does not exist";
-                    return ModelStateErrorLogger(nameof(request.CaseTypeName),
-                        "Case type does not exist", logCaseDoesNotExist, request.CaseTypeName, SeverityLevel.Error);
+                    
+                    if (_featureToggles.ReferenceDataToggle())
+                        return ModelStateErrorLogger(nameof(request.CaseTypeServiceId),
+                            "Case type does not exist", logCaseDoesNotExist, request.CaseTypeServiceId, SeverityLevel.Error);
+                    else
+                        return ModelStateErrorLogger(nameof(request.CaseTypeName),
+                            "Case type does not exist", logCaseDoesNotExist, request.CaseTypeName, SeverityLevel.Error);
                 }
 
                 var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
@@ -261,12 +271,23 @@ namespace BookingsApi.Controllers
                 const string keyHearingId = "HearingId";
                 const string keyCaseType = "CaseType";
                 const string keyParticipantCount = "Participants.Count";
-                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
+                if (_featureToggles.ReferenceDataToggle())
                 {
-                    {keyHearingId, queriedVideoHearing.Id.ToString()},
-                    {keyCaseType, queriedVideoHearing.CaseType?.Name},
-                    {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
-                });
+                    _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
+                    {
+                        {keyHearingId, queriedVideoHearing.Id.ToString()},
+                        {keyCaseType, queriedVideoHearing.CaseType?.ServiceId},
+                        {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
+                    });
+                }
+                else
+                    _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
+                    {
+                        {keyHearingId, queriedVideoHearing.Id.ToString()},
+                        {keyCaseType, queriedVideoHearing.CaseType?.Name},
+                        {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
+                    });
+                
 
                 var hearingMapper = new HearingToDetailsResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
@@ -282,20 +303,22 @@ namespace BookingsApi.Controllers
                 const string keyScheduledDuration = "ScheduledDuration";
                 const string keyCaseTypeName = "CaseTypeName";
                 const string keyHearingTypeName = "HearingTypeName";
-
+                
                 if (request != null)
                 {
                     var payload = JsonConvert.SerializeObject(request);
-                    _logger.TrackError(ex, new Dictionary<string, string>
+                    var errorLog = new Dictionary<string, string>
                     {
                         {keyPayload, !string.IsNullOrWhiteSpace(payload) ? payload : "Empty Payload"},
                         {keyScheduledDateTime, request.ScheduledDateTime.ToString("s")},
                         {keyScheduledDuration, request.ScheduledDuration.ToString()},
                         {keyCaseTypeName, request.CaseTypeName},
                         {keyHearingTypeName, request.HearingTypeName}
-                    });
+                    };
+                    if (_featureToggles.ReferenceDataToggle())
+                        errorLog.Add("CaseTypeServiceId", request.CaseTypeServiceId);
+                    _logger.TrackError(ex, errorLog);
                 }
-
                 throw;
             }
         }
