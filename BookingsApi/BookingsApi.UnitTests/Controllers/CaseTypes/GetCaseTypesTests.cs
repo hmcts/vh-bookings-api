@@ -29,18 +29,11 @@ namespace BookingsApi.UnitTests.Controllers.CaseTypes
             response.Should().BeEmpty();
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public async Task Should_succesfully_return_casetyperesponse(bool refDataFeatureToggleOn)
+        [Test]
+        public async Task Should_succesfully_return_casetyperesponse()
         {
             var hearingTypes = new List<HearingType> { new HearingType("NewHearing") };
             var caseType = new CaseType(1, "Civil") { HearingTypes = hearingTypes };
-            if (refDataFeatureToggleOn)
-            {
-                FeatureTogglesMock
-                    .Setup(x => x.ReferenceDataToggle()).Returns(true);
-                caseType.ServiceId = "testServiceId";
-            }
             var caseTypes = new List<CaseType>() { caseType };
             
             QueryHandler.Setup(q => q.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>())).ReturnsAsync(caseTypes);
@@ -54,8 +47,6 @@ namespace BookingsApi.UnitTests.Controllers.CaseTypes
             response.Count.Should().Be(1);
             response[0].Name.Should().Be("Civil");
             response[0].HearingTypes[0].Name.Should().Be("NewHearing");
-            if (refDataFeatureToggleOn)
-                response[0].ServiceId.Should().Be("testServiceId");
         }
     }
 }
