@@ -34,13 +34,11 @@ namespace BookingsApi.Controllers
         {
             var query = new GetAllCaseTypesQuery();
             var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
-            IEnumerable<CaseTypeResponse> response;
-            //ServiceId Property behind refData toggle
-            response = caseTypes.Select(caseType => new CaseTypeResponse
+            var response = caseTypes.Select(caseType => new CaseTypeResponse
                 {
                     Id = caseType.Id,
                     Name = caseType.Name,
-                    ServiceId = caseType.ServiceId,
+                    ServiceId = caseType.ServiceId, //ServiceId Property behind refData toggle
                     HearingTypes = caseType.HearingTypes.Where(ht => ht.Live).Select(hearingType => new HearingTypeResponse
                     {
                         Id = hearingType.Id,
