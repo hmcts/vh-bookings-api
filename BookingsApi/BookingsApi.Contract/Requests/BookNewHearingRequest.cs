@@ -33,6 +33,11 @@ namespace BookingsApi.Contract.Requests
         ///     The name of the case type
         /// </summary>
         public string CaseTypeName { get; set; }
+        
+        /// <summary>
+        ///     The name of the case type
+        /// </summary>
+        public string CaseTypeServiceId { get; set; }
 
         /// <summary>
         ///     The name of the hearing type

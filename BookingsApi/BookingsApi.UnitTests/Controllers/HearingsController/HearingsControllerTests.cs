@@ -61,6 +61,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             Logger = new Mock<ILogger>();
 
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
+            FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(false);
+
 
             Controller = GetControllerObject(false);
         }

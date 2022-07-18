@@ -1,9 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.RefData;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -11,12 +13,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetCaseTypeQueryHandlerDatabaseTests : DatabaseTestsBase
     {
         private GetCaseTypeQueryHandler _handler;
-
+        
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _handler = new GetCaseTypeQueryHandler(context);
+            var featureTogglesMock = new Mock<IFeatureToggles>();
+            featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(false);
+            _handler = new GetCaseTypeQueryHandler(context, featureTogglesMock.Object);
         }
 
         [Test]

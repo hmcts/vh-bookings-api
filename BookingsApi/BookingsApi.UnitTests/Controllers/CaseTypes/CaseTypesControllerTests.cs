@@ -14,7 +14,6 @@ namespace BookingsApi.UnitTests.Controllers.CaseTypes
         public void TestInitialize()
         {
             QueryHandler = new Mock<IQueryHandler>();
-
             Controller = new CaseTypesController(QueryHandler.Object);
         }
     }

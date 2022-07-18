@@ -194,6 +194,7 @@ namespace BookingsApi.Controllers
                         null, SeverityLevel.Information);
                 }
 
+                var rDataFlag = _featureToggles.ReferenceDataToggle();
                 var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
                 if (!result.IsValid)
                 {
@@ -209,13 +210,12 @@ namespace BookingsApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var query = new GetCaseTypeQuery(request.CaseTypeName);
-                var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+                var queryValue = rDataFlag ? request.CaseTypeServiceId : request.CaseTypeName;
+                var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(new GetCaseTypeQuery(queryValue));
                 if (caseType == null)
                 {
                     const string logCaseDoesNotExist = "BookNewHearing Error: Case type does not exist";
-                    return ModelStateErrorLogger(nameof(request.CaseTypeName),
-                        "Case type does not exist", logCaseDoesNotExist, request.CaseTypeName, SeverityLevel.Error);
+                    return ModelStateErrorLogger(rDataFlag ? nameof(request.CaseTypeServiceId) : nameof(request.CaseTypeName), "Case type does not exist", logCaseDoesNotExist, queryValue, SeverityLevel.Error);
                 }
 
                 var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
@@ -261,13 +261,16 @@ namespace BookingsApi.Controllers
                 const string keyHearingId = "HearingId";
                 const string keyCaseType = "CaseType";
                 const string keyParticipantCount = "Participants.Count";
-                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, new Dictionary<string, string>
+                var logTrace = new Dictionary<string, string>
                 {
                     {keyHearingId, queriedVideoHearing.Id.ToString()},
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},
                     {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
-                });
-
+                };
+                if (rDataFlag)
+                    logTrace.Add("CaseTypeServiceId", queriedVideoHearing.CaseType?.ServiceId);
+                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
+                
                 var hearingMapper = new HearingToDetailsResponseMapper();
                 var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
@@ -282,20 +285,22 @@ namespace BookingsApi.Controllers
                 const string keyScheduledDuration = "ScheduledDuration";
                 const string keyCaseTypeName = "CaseTypeName";
                 const string keyHearingTypeName = "HearingTypeName";
-
+                
                 if (request != null)
                 {
                     var payload = JsonConvert.SerializeObject(request);
-                    _logger.TrackError(ex, new Dictionary<string, string>
+                    var errorLog = new Dictionary<string, string>
                     {
                         {keyPayload, !string.IsNullOrWhiteSpace(payload) ? payload : "Empty Payload"},
                         {keyScheduledDateTime, request.ScheduledDateTime.ToString("s")},
                         {keyScheduledDuration, request.ScheduledDuration.ToString()},
                         {keyCaseTypeName, request.CaseTypeName},
                         {keyHearingTypeName, request.HearingTypeName}
-                    });
+                    };
+                    if (_featureToggles.ReferenceDataToggle())
+                        errorLog.Add("CaseTypeServiceId", request.CaseTypeServiceId);
+                    _logger.TrackError(ex, errorLog);
                 }
-
                 throw;
             }
         }
