@@ -325,7 +325,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 hearingFromDb.GetParticipants().Count.Should().BeGreaterThan(3);
                 foreach (var participantRequest in Context.TestData.Participants)
                 {
-                    hearingFromDb.GetParticipants().Any(x => x.Person.Username == participantRequest.Username).Should()
+                    hearingFromDb.GetParticipants().Any(x => x.Person.ContactEmail == participantRequest.ContactEmail).Should()
                         .BeTrue();
                 }
             }

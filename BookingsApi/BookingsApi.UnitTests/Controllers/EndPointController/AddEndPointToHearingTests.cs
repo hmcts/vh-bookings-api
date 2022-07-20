@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(x => x.PublishAsync(
                     It.Is<EndpointAddedIntegrationEvent>(r =>
                         r.HearingId == HearingId && r.Endpoint.Pin == "pin" && r.Endpoint.Sip == "sip" &&
-                        r.Endpoint.DisplayName == AddEndpointRequest.DisplayName && r.Endpoint.DefenceAdvocateUsername == null)),
+                        r.Endpoint.DisplayName == AddEndpointRequest.DisplayName && r.Endpoint.DefenceAdvocateContactEmail == null)),
                 Times.Once);
         }
 
@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
         {
             var updatedHearing = GetVideoHearing(true);
             var rep = updatedHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
-            AddEndpointRequest.DefenceAdvocateUsername = rep.Person.Username;
+            AddEndpointRequest.DefenceAdvocateContactEmail = rep.Person.ContactEmail;
             
             updatedHearing.AddEndpoint(new Endpoint(AddEndpointRequest.DisplayName, "sip", "pin", rep));
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
@@ -78,7 +78,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(x => x.PublishAsync(
                     It.Is<EndpointAddedIntegrationEvent>(r =>
                         r.HearingId == HearingId && r.Endpoint.Pin == "pin" && r.Endpoint.Sip == "sip" &&
-                        r.Endpoint.DisplayName == AddEndpointRequest.DisplayName && r.Endpoint.DefenceAdvocateUsername == AddEndpointRequest.DefenceAdvocateUsername)),
+                        r.Endpoint.DisplayName == AddEndpointRequest.DisplayName && r.Endpoint.DefenceAdvocateContactEmail == AddEndpointRequest.DefenceAdvocateContactEmail)),
                 Times.Once);
         }
 
@@ -87,7 +87,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
         {
             var updatedHearing = GetVideoHearing(true);
             var rep = updatedHearing.Participants.First(x => x.HearingRole.UserRole.IsRepresentative);
-            AddEndpointRequest.DefenceAdvocateUsername = rep.Person.Username;
+            AddEndpointRequest.DefenceAdvocateContactEmail = rep.Person.ContactEmail;
             var endpoint = new Endpoint(AddEndpointRequest.DisplayName, "sip", "pin", rep);
             
             updatedHearing.AddEndpoint(endpoint);

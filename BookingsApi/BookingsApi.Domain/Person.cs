@@ -9,14 +9,15 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
-        public Person(string title, string firstName, string lastName, string username)
+        public Person(string title, string firstName, string lastName, string contactEmail, string username)
         {
             Id = Guid.NewGuid();
-            ValidateArguments(firstName, lastName, username);
+            ValidateArguments(firstName, lastName, contactEmail);
             Title = title;
             FirstName = firstName;
             LastName = lastName;
             Username = username;
+            ContactEmail = contactEmail;
             CreatedDate = UpdatedDate = DateTime.UtcNow;
         }
 
@@ -38,9 +39,9 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void UpdatePerson(string firstName, string lastName, string username, string title = null, string telephoneNumber = null, string contactEmail = null)
+        public void UpdatePerson(string firstName, string lastName, string contactEmail, string username, string title = null, string telephoneNumber = null)
         {
-            ValidateArguments(firstName, lastName, username);
+            ValidateArguments(firstName, lastName, contactEmail);
             FirstName = firstName;
             LastName = lastName;
             Username = username;
@@ -49,7 +50,14 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             ContactEmail = contactEmail ?? ContactEmail;
         }
-
+        public void UpdatePerson(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                _validationFailures.AddFailure("Username", "Username cannot be empty");
+            }
+            Username = username;
+        }
         public void AnonymisePerson()
         {
             var firstname = RandomStringGenerator.GenerateRandomString(10);
@@ -80,7 +88,7 @@ namespace BookingsApi.Domain
             }
         }
 
-        private void ValidateArguments(string firstName, string lastName, string username)
+        private void ValidateArguments(string firstName, string lastName, string contactEmail)
         {
             if (string.IsNullOrEmpty(firstName))
             {
@@ -90,9 +98,9 @@ namespace BookingsApi.Domain
             {
                 _validationFailures.AddFailure("LastName", "LastName cannot be empty");
             }
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(contactEmail))
             {
-                _validationFailures.AddFailure("Username", "Username cannot be empty");
+                _validationFailures.AddFailure("ContactEmail", "ContactEmail cannot be empty");
             }
 
             if (_validationFailures.Any())

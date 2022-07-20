@@ -21,5 +21,7 @@ namespace BookingsApi.Contract.Responses
         ///     The hearing types
         /// </summary>
         public List<HearingTypeResponse> HearingTypes { get; set; }
+        
+        public string ServiceId { get; set; }
     }
 }

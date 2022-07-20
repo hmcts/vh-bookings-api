@@ -7,15 +7,15 @@ namespace BookingsApi.DAL.Helper
 {
     public static class DefenceAdvocateHelper
     {
-        public static Participant CheckAndReturnDefenceAdvocate(string defenceAdvocateUsername,
+        public static Participant CheckAndReturnDefenceAdvocate(string defenceAdvocateContactEmail,
             IEnumerable<Participant> participants)
         {
             Participant defenceAdvocate = null;
 
-            if (!string.IsNullOrWhiteSpace(defenceAdvocateUsername))
+            if (!string.IsNullOrWhiteSpace(defenceAdvocateContactEmail))
             {
                 defenceAdvocate = participants.First(x =>
-                    x.Person.Username.Equals(defenceAdvocateUsername, StringComparison.CurrentCultureIgnoreCase));
+                    x.Person.ContactEmail.Equals(defenceAdvocateContactEmail, StringComparison.CurrentCultureIgnoreCase));
             }
 
             return defenceAdvocate;

@@ -31,7 +31,7 @@ namespace BookingsApi.Mappings
                 Pin = pin,
                 Sip = sipComplete,
                 DisplayName = request.DisplayName,
-                DefenceAdvocateUsername = request.DefenceAdvocateUsername
+                ContactEmail = request.DefenceAdvocateContactEmail
             };
         }
     }

@@ -43,6 +43,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<ILogger> Logger;
 
         private IEventPublisher _eventPublisher;
+        protected Mock<IEventPublisher> EventPublisherMock;
         protected ServiceBusQueueClientFake SbQueueClient;
 
         [SetUp]
@@ -56,16 +57,23 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             RandomGenerator = new Mock<IRandomGenerator>();
             FeatureTogglesMock = new Mock<IFeatureToggles>();
             _eventPublisher = new EventPublisher(SbQueueClient);
+            EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<ILogger>();
 
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
+            FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(false);
 
-            Controller = new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
-                CommandHandlerMock.Object,
-                _eventPublisher, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);
+
+            Controller = GetControllerObject(false);
         }
 
+        protected BookingsApi.Controllers.HearingsController GetControllerObject(bool withQueueClient)
+        {
+            return  new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
+                CommandHandlerMock.Object,
+                withQueueClient ? _eventPublisher: EventPublisherMock.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
+                HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);
+        }
 
         [Test]
         public async Task Should_use_utc_now_at_midnight_when_no_from_date_is_provided()
@@ -201,36 +209,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
-        public async Task Should_change_hearing_status_to_created_and_send_event_notification()
-        {
-            var request = new UpdateBookingStatusRequest
-            {
-                UpdatedBy = "email@hmcts.net",
-                Status = UpdateBookingStatus.Created
-            };
-            var hearingId = Guid.NewGuid();
-            var hearing = GetHearing("123");
-
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(hearing);
-
-            var result = await Controller.UpdateBookingStatus(hearingId, request);
-
-            result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-
-            var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingIsReadyForVideoIntegrationEvent)message.IntegrationEvent;
-            typedMessage.Should().NotBeNull();
-            typedMessage.Hearing.HearingId.Should().Be(hearing.Id);
-            typedMessage.Hearing.GroupId.Should().Be(hearing.SourceId.GetValueOrDefault());
-        }
-
-        [Test]
         public async Task Should_change_hearing_status_to_cancelled()
         {
+            var controller = GetControllerObject(true);
             var request = new UpdateBookingStatusRequest
             {
                 UpdatedBy = "email@hmcts.net",
@@ -244,7 +225,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
 
-            var result = await Controller.UpdateBookingStatus(hearingId, request);
+            var result = await controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
@@ -300,7 +281,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(venues);
 
-            var result = await Controller.UpdateHearingDetails(hearingId, request);
+            var controller = GetControllerObject(true);
+            var result = await controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
             var objectResult = (OkObjectResult)result;
@@ -375,8 +357,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
-
-            var result = await Controller.RemoveHearing(hearingId);
+            var controller = GetControllerObject(true);
+            var result = await controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
@@ -430,11 +412,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 Status = UpdateBookingStatus.Failed,
                 CancelReason = ""
             };
-            var hearingId = Guid.NewGuid();
+            
+            var hearing = GetHearing("123");
+            QueryHandlerMock
+               .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+               .ReturnsAsync(hearing);
 
             CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
 
-            var result = await Controller.UpdateBookingStatus(hearingId, request);
+            var result = await Controller.UpdateBookingStatus(hearing.Id, request);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
@@ -660,12 +646,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             if (!caseNumber.IsNullOrEmpty())
             {
                 hearing.AddCase(caseNumber, "Case name", true);
-            }
-
-            foreach (var participant in hearing.Participants)
-            {
-                participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
-                participant.CaseRole = new CaseRole(1, "Name");
             }
 
             hearing.AddEndpoints(new List<Endpoint>

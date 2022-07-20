@@ -35,6 +35,7 @@ namespace BookingsApi.UnitTests.Controllers.CaseTypes
             var hearingTypes = new List<HearingType> { new HearingType("NewHearing") };
             var caseType = new CaseType(1, "Civil") { HearingTypes = hearingTypes };
             var caseTypes = new List<CaseType>() { caseType };
+            
             QueryHandler.Setup(q => q.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>())).ReturnsAsync(caseTypes);
 
             var result = await Controller.GetCaseTypes();

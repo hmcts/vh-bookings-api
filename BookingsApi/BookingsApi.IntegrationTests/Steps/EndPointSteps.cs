@@ -37,6 +37,13 @@ namespace BookingsApi.IntegrationTests.Steps
             PersistTestHearingData(seededHearing);
         }
 
+        [Given(@"I have a hearing with endpoints for cloning")]
+        public async Task GivenIHaveAHearingWithEndpointsForCloning()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, isMultiDayFirstHearing:true);
+            PersistTestHearingData(seededHearing);
+        }
+
         [Given(@"I have a hearing with linked participants")]
         public async Task GivenIHaveAHearingWithLinkedParticipants()
         {
@@ -44,6 +51,12 @@ namespace BookingsApi.IntegrationTests.Steps
             PersistTestHearingData(seededHearing);
         }
 
+        [Given(@"I have a hearing with linked participants for cloning")]
+        public async Task GivenIHaveAHearingWithLinkedParticipantsForCloning()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, false, true, isMultiDayFirstHearing: true);
+            PersistTestHearingData(seededHearing);
+        }
 
         [Given(@"I have a hearing without endpoints")]
         public async Task GivenIHaveAHearingWithoutEndpoints()
@@ -96,7 +109,7 @@ namespace BookingsApi.IntegrationTests.Steps
             PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
             {
                 DisplayName = "UpdatedDisplayName",
-                DefenceAdvocateUsername = rep.Person.Username
+                DefenceAdvocateContactEmail = rep.Person.ContactEmail
             });
             
             Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);

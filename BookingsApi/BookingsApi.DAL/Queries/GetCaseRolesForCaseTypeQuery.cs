@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
@@ -8,32 +9,43 @@ namespace BookingsApi.DAL.Queries
 {
     public class GetCaseTypeQuery : IQuery
     {
-        public GetCaseTypeQuery(string caseTypeName)
+        public GetCaseTypeQuery(string caseTypeQueryParameter)
         {
-            CaseTypeName = caseTypeName;
+            CaseTypeQueryParameter = caseTypeQueryParameter;
         }
 
-        public string CaseTypeName { get; set; }
+        /// <summary>
+        /// Can be caseType name or ServiceId (depending on whether refData flag on/off)
+        /// </summary>
+        public string CaseTypeQueryParameter { get; set; }
     }
     
     public class GetCaseTypeQueryHandler : IQueryHandler<GetCaseTypeQuery, CaseType>
     {
         private readonly BookingsDbContext _context;
+        private readonly IFeatureToggles _featureToggles;
 
-        public GetCaseTypeQueryHandler(BookingsDbContext context)
+        public GetCaseTypeQueryHandler(BookingsDbContext context, IFeatureToggles featureToggles)
         {
             _context = context;
+            _featureToggles = featureToggles;
         }
 
         public async Task<CaseType> Handle(GetCaseTypeQuery query)
         {
-            var caseTypes = await _context.CaseTypes
+            var caseTypesQuery = _context.CaseTypes
                 .Include(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)
                 .ThenInclude(x => x.UserRole)
                 .Include(x => x.HearingTypes)
-                .SingleOrDefaultAsync(x => x.Name == query.CaseTypeName);
-
+                .AsQueryable();
+            
+            CaseType caseTypes;
+            if (_featureToggles.ReferenceDataToggle())
+                caseTypes = await caseTypesQuery.SingleOrDefaultAsync(x => x.ServiceId == query.CaseTypeQueryParameter);
+            else
+                caseTypes = await caseTypesQuery.SingleOrDefaultAsync(x => x.Name == query.CaseTypeQueryParameter);
+            
             if (caseTypes?.CaseRoles != null && caseTypes.CaseRoles.Any())
             {
                 caseTypes.CaseRoles = caseTypes?.CaseRoles?.OrderBy(x => x.Name).ToList();

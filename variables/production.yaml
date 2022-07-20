@@ -2,6 +2,6 @@ variables:
   - name: env
     value: prod 
   - name: releaseTagName
-    value: "prod-$(Build.SourceBranchName)"
+    value: "prod-#{SHORTCOMMITID}#-#{DATETIME}#"
   - name: subDirectory
     value: "/prod"

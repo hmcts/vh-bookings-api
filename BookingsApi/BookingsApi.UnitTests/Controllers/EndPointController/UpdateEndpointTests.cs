@@ -110,7 +110,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             var request = new UpdateEndpointRequest
             {
                 DisplayName = "Updated Display Name With Defence Advocate Test",
-                DefenceAdvocateUsername = null
+                DefenceAdvocateContactEmail = null
             };
             var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId, request);
 
@@ -122,7 +122,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(
                 x => x.PublishAsync(It.Is<EndpointUpdatedIntegrationEvent>(r =>
                     r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
-                    r.DefenceAdvocateUsername == request.DefenceAdvocateUsername)), Times.Once);
+                    r.DefenceAdvocateContactEmail == request.DefenceAdvocateContactEmail)), Times.Once);
         }
 
         [Test]
@@ -131,7 +131,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             var request = new UpdateEndpointRequest
             {
                 DisplayName = "Updated Display Name With Defence Advocate Test",
-                DefenceAdvocateUsername = null
+                DefenceAdvocateContactEmail = null
             };
             var response = await Controller.UpdateEndpointAsync(HearingId, Guid.NewGuid(), request);
 
@@ -153,7 +153,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             var request = new UpdateEndpointRequest
             {
                 DisplayName = "Updated Display Name With Defence Advocate Test",
-                DefenceAdvocateUsername = rep.Person.Username
+                DefenceAdvocateContactEmail = rep.Person.ContactEmail
             };
             var response = await Controller.UpdateEndpointAsync(HearingId, EndpointId, request);
 
@@ -165,7 +165,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(
                 x => x.PublishAsync(It.Is<EndpointUpdatedIntegrationEvent>(r =>
                     r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
-                    r.DefenceAdvocateUsername == request.DefenceAdvocateUsername)), Times.Once);
+                    r.DefenceAdvocateContactEmail == request.DefenceAdvocateContactEmail)), Times.Once);
         }
     }
 }

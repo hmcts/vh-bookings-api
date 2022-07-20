@@ -12,14 +12,15 @@ namespace BookingsApi.Infrastructure.Services
             return new HearingDto
             {
                 HearingId = hearing.Id,
-                GroupId = hearing.SourceId.GetValueOrDefault(),
+                GroupId = hearing.SourceId,
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 CaseType = hearing.CaseType.Name,
                 CaseNumber = @case.Number,
                 CaseName= @case.Name,
                 HearingVenueName = hearing.HearingVenueName,
-                RecordAudio = hearing.AudioRecordingRequired
+                RecordAudio = hearing.AudioRecordingRequired,
+                HearingType = hearing.HearingType.Name,
             };
         }
     }

@@ -3,6 +3,7 @@ using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,10 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Testing.Common.Assertions;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 {
@@ -57,7 +60,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                     Representee = "Representee",
                     TelephoneNumber = "07123456789",
                     Title = "Title",
-                    Username = "Username"
+                    Username = "contactme@dontcontactme.com",
                 }
             };
 
@@ -137,6 +140,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         {
             //Arrange
             var hearing = GetVideoHearing();
+            hearing.Participants[0].Person.ContactEmail = "contactme@dontcontactme.com";
+            hearing.Participants[1].Person.ContactEmail = "participant@notLinked.com";
+            hearing.Participants[2].Person.ContactEmail = "participant@linked.com";
+            hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "test", "");
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
             _existingParticipants = new List<UpdateParticipantRequest>
@@ -184,19 +191,153 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                 && x.LinkedParticipants[0].ParticipantContactEmail == _request.LinkedParticipants[0].ParticipantContactEmail
             )), Times.Once);
             response.Should().BeOfType<OkObjectResult>();
+
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
         }
 
         [Test]
-        public async Task Should_add_given_participants_to_hearing_and_PublishParticipantsAddedEvent_if_several_matching_participant_with_username()
+        public async Task Should_publish_CreateAndNotifyUser_and_HearingNotification_integration_events_when_no_judge()
+        {
+            //Arrange
+            var hearing = GetVideoHearing();
+            var part1 = hearing.Participants.FirstOrDefault(x => x.HearingRole.Name == "Name");
+            part1.Person.ContactEmail = "contactme@dontcontactme.com";
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
+            _request = BuildRequest();
+
+            //Act
+            await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            //Assert
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingNotificationIntegrationEvent>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_publish_HearingIsReadyForVideo_integration_events_when_judge_added()
+        {
+            //Arrange
+            var hearing = GetVideoHearing();
+            var part1 = hearing.Participants.FirstOrDefault(x => x.HearingRole.Name == "Name");
+            part1.HearingRole = new HearingRole(102, "Judge") { UserRole = new UserRole(1, "Judge") };
+            part1.Person.ContactEmail = "contactme@dontcontactme.com";
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
+            _request = BuildRequest();
+
+            //Act
+            await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            //Assert
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_publish_HearingParticipantsUpdated_integration_events_when_hearing_status_is_created()
+        {
+            //Arrange
+            var hearing = GetVideoHearing();
+            hearing.Participants[0].Person.ContactEmail = "contactme@dontcontactme.com";
+            hearing.Participants[1].Person.ContactEmail = "participant@notLinked.com";
+            hearing.Participants[2].Person.ContactEmail = "participant@linked.com";
+
+            hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "test", "");
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
+            _request = BuildRequest();
+
+            //Act
+            await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            //Assert
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
+        }
+
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_with_created_status_and_publishevent_if_several_matching_participant_with_contactemail()
         {
             var hearing = GetVideoHearing(true);
+            hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+            
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
             _request = BuildRequest(withLinkedParticipants: false);
+            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
 
             var response = await Controller.UpdateHearingParticipants(hearingId, _request);
 
             response.Should().NotBeNull();
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
+            CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_with_judge_and_publishevent_if_several_matching_participant_with_contactemail()
+        {
+            var hearing = GetVideoHearing(false);
+            hearing.Participants[0].HearingRole = new HearingRole(1, "Generic") { UserRole = new UserRole(1, "Judge"), };
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+            _request = BuildRequest(withLinkedParticipants: false);
+            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            response.Should().NotBeNull();
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+            CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_add_given_participants_to_hearing_without_judge_and_publishevent_if_several_matching_participant_with_contactemail()
+        {
+            var hearing = GetVideoHearing(false);
+            hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+            _request = BuildRequest(withLinkedParticipants: false);
+            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            response.Should().NotBeNull();
+            EventPublisher.Verify(e => e.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)

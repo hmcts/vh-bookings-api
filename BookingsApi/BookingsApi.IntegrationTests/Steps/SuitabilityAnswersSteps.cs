@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have the suitable answers for participants")]
         public async Task GivenIHaveTheSuitableAnswersForParticipants()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
             Context.TestData.NewHearingId = seededHearing.Id;
             Context.Uri = GetSuitabilityAnswers("");
             Context.HttpMethod = HttpMethod.Get;
@@ -46,8 +46,8 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a request to the second set of suitable answers")]
         public async Task GivenIHaveARequestToTheSecondSetOfSuitableAnswers()
         {
-            var firstHearing =  await Context.TestDataManager.SeedVideoHearing(true);
-            var secondHearing = await Context.TestDataManager.SeedVideoHearing(true);
+            var firstHearing =  await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
+            var secondHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
 
             Context.TestData.OldHearingId = firstHearing.Id;
             Context.TestData.NewHearingId = secondHearing.Id;

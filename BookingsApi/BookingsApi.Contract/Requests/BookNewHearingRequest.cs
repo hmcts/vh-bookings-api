@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BookingsApi.Contract.Requests
 {
@@ -32,6 +33,11 @@ namespace BookingsApi.Contract.Requests
         ///     The name of the case type
         /// </summary>
         public string CaseTypeName { get; set; }
+        
+        /// <summary>
+        ///     The name of the case type
+        /// </summary>
+        public string CaseTypeServiceId { get; set; }
 
         /// <summary>
         ///     The name of the hearing type
@@ -72,6 +78,9 @@ namespace BookingsApi.Contract.Requests
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsMultiDayHearing { get; set; } = false;
 
         public List<EndpointRequest> Endpoints { get; set; }
         

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 
@@ -8,13 +9,14 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
     public class ParticipantsAddedIntegrationEvent: IIntegrationEvent
     {
-        public ParticipantsAddedIntegrationEvent(Guid hearingId, IEnumerable<Participant> participants)
+        public ParticipantsAddedIntegrationEvent(Hearing hearing, IEnumerable<Participant> participants)
         {
-            HearingId = hearingId;
-            Participants = participants.Select(participant => ParticipantDtoMapper.MapToDto(participant)).ToList();
+            Hearing = HearingDtoMapper.MapToDto(hearing);
+            Participants = participants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
         }
 
-        public Guid HearingId { get; }
+        public HearingDto Hearing { get; }
 
         public IList<ParticipantDto> Participants { get; }
     }

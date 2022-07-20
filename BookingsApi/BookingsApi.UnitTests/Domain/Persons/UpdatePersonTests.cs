@@ -11,8 +11,8 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [Test]
         public void should_update_person()
         {
-            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net");
-            person.UpdatePerson("New", "Me", "new.me@hmcts.net");
+            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
+            person.UpdatePerson("New", "Me", "me@me.com","new.me@hmcts.net");
 
             person.FirstName.Should().Be("New");
             person.LastName.Should().Be("Me");
@@ -22,25 +22,25 @@ namespace BookingsApi.UnitTests.Domain.Persons
         [Test]
         public void should_throw_exception_when_updating_a_person_with_no_first_name()
         {
-            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net");
-            var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson(null, "Me", "new.me@hmcts.net"));
+            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
+            var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson(null, "Me", "me@me.com", "new.me@hmcts.net"));
             exception.ValidationFailures.Any(x => x.Name == nameof(person.FirstName)).Should().BeTrue();
         }
         
         [Test]
         public void should_throw_exception_when_updating_a_person_with_no_last_name()
         {
-            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net");
-            var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson("New", null, "new.me@hmcts.net"));
+            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
+            var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson("New", null, "me@me.com", "new.me@hmcts.net"));
             exception.ValidationFailures.Any(x => x.Name == nameof(person.LastName)).Should().BeTrue();
         }
         
         [Test]
-        public void should_throw_exception_when_updating_a_person_with_no_username()
+        public void should_throw_exception_when_updating_a_person_with_no_contactEmail()
         {
-            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net");
-            var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson("New", "Me", null));
-            exception.ValidationFailures.Any(x => x.Name == nameof(person.Username)).Should().BeTrue();
+            var person = new Person("Mr", "John", "Doe", "john.doe@hmcts.net", "john.doe@hmcts.net");
+            var exception = Assert.Throws<DomainRuleException>(() => person.UpdatePerson("New", "Me", null, "user@me.com"));
+            exception.ValidationFailures.Any(x => x.Name == nameof(person.ContactEmail)).Should().BeTrue();
         }
     }
 }

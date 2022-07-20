@@ -38,13 +38,13 @@ namespace BookingsApi.Client
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get hearing roles for a case role of a case type</summary>
         /// <param name="caseTypeName">Hearing case type</param>
@@ -581,6 +581,21 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task UpdatePersonDetailsAsync(System.Guid personId, UpdatePersonDetailsRequest payload, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Updates the person's user name</summary>
+        /// <param name="contactEmail">The contact email of the person</param>
+        /// <param name="username">username of the person</param>
+        /// <returns>No content</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task UpdatePersonUsernameAsync(string contactEmail, string username);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Updates the person's user name</summary>
+        /// <param name="contactEmail">The contact email of the person</param>
+        /// <param name="username">username of the person</param>
+        /// <returns>No content</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task UpdatePersonUsernameAsync(string contactEmail, string username, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Find staff member with contact email matching a search term.</summary>
         /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
         /// <returns>Person list</returns>
@@ -725,20 +740,20 @@ namespace BookingsApi.Client
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam)
         {
-            return GetCaseRolesForCaseTypeAsync(caseTypeName, System.Threading.CancellationToken.None);
+            return GetCaseRolesForCaseTypeAsync(caseTypeParam, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get case roles for a case type</summary>
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeName, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes/{caseTypeName}/caseroles");
-            urlBuilder_.Replace("{caseTypeName}", System.Uri.EscapeDataString(ConvertToString(caseTypeName, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes/{caseTypeParam}/caseroles");
+            urlBuilder_.Replace("{caseTypeParam}", System.Uri.EscapeDataString(ConvertToString(caseTypeParam, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -5007,6 +5022,107 @@ namespace BookingsApi.Client
                         }
                         else
                         if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+    
+        /// <summary>Updates the person's user name</summary>
+        /// <param name="contactEmail">The contact email of the person</param>
+        /// <param name="username">username of the person</param>
+        /// <returns>No content</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task UpdatePersonUsernameAsync(string contactEmail, string username)
+        {
+            return UpdatePersonUsernameAsync(contactEmail, username, System.Threading.CancellationToken.None);
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Updates the person's user name</summary>
+        /// <param name="contactEmail">The contact email of the person</param>
+        /// <param name="username">username of the person</param>
+        /// <returns>No content</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task UpdatePersonUsernameAsync(string contactEmail, string username, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/persons/user/{contactEmail}?");
+            urlBuilder_.Replace("{contactEmail}", System.Uri.EscapeDataString(ConvertToString(contactEmail, System.Globalization.CultureInfo.InvariantCulture)));
+            if (username != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("username") + "=").Append(System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+    
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+    
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)

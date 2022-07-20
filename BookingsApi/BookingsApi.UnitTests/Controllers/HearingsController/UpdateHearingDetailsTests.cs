@@ -52,8 +52,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> { hearingVenueOriginal, newVenue });
             var expectedResult = new HearingToDetailsResponseMapper().MapHearingToDetailedResponse(updatedHearing);
-
-            var result = await Controller.UpdateHearingDetails(videoHearing.Id, request);
+            
+            var controller = GetControllerObject(true);
+            var result = await controller.UpdateHearingDetails(videoHearing.Id, request);
             var ob = result.As<OkObjectResult>();
             ob.Should().NotBeNull();
             ob.Value.As<HearingDetailsResponse>().Should().BeEquivalentTo(expectedResult);
