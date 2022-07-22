@@ -11,5 +11,7 @@ namespace BookingsApi.Domain
             LastRunDate = DateTime.UtcNow;
         }
         public DateTime? LastRunDate { get; protected set; }
+        public string JobName { get; set; }
+        public bool IsSuccessful { get; set; }
     }
 }

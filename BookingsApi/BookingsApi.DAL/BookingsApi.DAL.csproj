@@ -23,4 +23,9 @@
     <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

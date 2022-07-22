@@ -221,6 +221,12 @@ namespace BookingsApi.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsSuccessful")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("LastRunDate")
                         .HasColumnType("datetime2");
 
