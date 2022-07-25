@@ -161,7 +161,7 @@ namespace BookingsApi.DAL.Commands
 			var updateQuery = @$"IF EXISTS(select * from JobHistory)
 								Update JobHistory Set LastRunDate= '{updatedDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
 							ELSE
-							  Insert into JobHistory values (NEWID(), '{updatedDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}')";
+							  Insert into JobHistory values (NEWID(), '{updatedDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}','true', 'AnonymiseHearings')";
 			await _context.Database.ExecuteSqlRawAsync(updateQuery);
 			command.UpdatedDate = updatedDate;
 		}
