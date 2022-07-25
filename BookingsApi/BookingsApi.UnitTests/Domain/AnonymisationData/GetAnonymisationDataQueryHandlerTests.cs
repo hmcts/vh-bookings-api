@@ -341,6 +341,8 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             public void setLastRunDate(DateTime lastRunDate)
             {
                 LastRunDate = lastRunDate;
+                IsSuccessful = true;
+                JobName = "AnonymiseHearings";
             }
         }
     }
