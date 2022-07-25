@@ -180,7 +180,7 @@ namespace BookingsApi.IntegrationTests.Steps
             if (!checkForDefenceAdvocate) return;
             var rep = hearingFromDb.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
             updatedEndpoint.DefenceAdvocate.Id.Should().Be(rep.Id);
-            updatedEndpoint.UpdatedDate.Value.TimeOfDay.Should().BeCloseTo(DateTime.UtcNow.TimeOfDay, 30);
+            updatedEndpoint.UpdatedDate.Value.TimeOfDay.Should().BeCloseTo(DateTime.UtcNow.TimeOfDay, 100);
         }
 
         private Hearing GetHearingFromDb()
