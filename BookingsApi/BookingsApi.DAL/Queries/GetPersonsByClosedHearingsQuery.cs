@@ -25,11 +25,7 @@ namespace BookingsApi.DAL.Queries
         {
             var cutOffDate = DateTime.UtcNow.AddMonths(-3);
 
-            var lastRunDate = _context.JobHistory
-                .Where(e => e.JobName == SchedulerJobsNames.AnonymiseHearings && e.IsSuccessful)
-                .OrderByDescending(e => e.LastRunDate)
-                .FirstOrDefault()?
-                .LastRunDate;
+            var lastRunDate = BaseQueries.JobHistory.GetLastRunDate(_context, SchedulerJobsNames.AnonymiseHearings);
 
             var cutOffDateFrom = lastRunDate.HasValue 
                                         ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1) 

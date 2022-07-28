@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
@@ -23,12 +24,8 @@ namespace BookingsApi.DAL.Queries
         public async Task<AnonymisationDataDto> Handle(GetAnonymisationDataQuery query)
         {
             var cutOffDate = DateTime.UtcNow.AddMonths(-3);
-
-            var lastRunDate = _context.JobHistory
-                .Where(e => e.JobName == SchedulerJobsNames.AnonymiseHearings && e.IsSuccessful)
-                .OrderByDescending(e => e.LastRunDate)
-                .FirstOrDefault()?
-                .LastRunDate;
+            
+            var lastRunDate = BaseQueries.JobHistory.GetLastRunDate(_context, SchedulerJobsNames.AnonymiseHearings);
 
             var cutOffDateFrom = lastRunDate.HasValue
                 ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1)
