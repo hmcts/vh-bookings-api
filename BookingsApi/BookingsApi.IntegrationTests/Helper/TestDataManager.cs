@@ -342,12 +342,17 @@ namespace BookingsApi.IntegrationTests.Helper
             interpreter.LinkedParticipants.Add(new LinkedParticipant(interpreter.Id, interpretee.Id, LinkedParticipantType.Interpreter));
         }
 
-        public DateTime? GetJobLastRunDateTime()
+        public DateTime? GetJobLastRunDateTime(string jobName)
         {
             DateTime? lastUpdateDateTime;
             using (var db = new BookingsDbContext(_dbContextOptions))
             {
-                lastUpdateDateTime = db.JobHistory.FirstOrDefault()?.LastRunDate;
+                lastUpdateDateTime = db.JobHistory
+                    .Where(e => e.JobName == jobName && e.IsSuccessful)
+                    .OrderByDescending(e => e.LastRunDate)
+                    .FirstOrDefault()?
+                    .LastRunDate;
+                
             }
         
             return lastUpdateDateTime;
@@ -585,7 +590,7 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
-            var judiciaryPersonStaging = new JudiciaryPersonStaging(Faker.Name.First(), Faker.Name.First(), Faker.Name.First(), Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First());;
+            var judiciaryPersonStaging = new JudiciaryPersonStaging(Faker.Name.First(), Faker.Name.First(), Faker.Name.First(), Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First());
             await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);
 
             await db.SaveChangesAsync();

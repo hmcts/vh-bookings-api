@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,11 @@ namespace BookingsApi.DAL.Queries
         {
             var cutOffDate = DateTime.UtcNow.AddMonths(-3);
 
-            var lastRunDate = _context.JobHistory.FirstOrDefault()?.LastRunDate;
+            var lastRunDate = _context.JobHistory
+                .Where(e => e.JobName == SchedulerJobsNames.AnonymiseHearings && e.IsSuccessful)
+                .OrderByDescending(e => e.LastRunDate)
+                .FirstOrDefault()?
+                .LastRunDate;
 
             var cutOffDateFrom = lastRunDate.HasValue 
                                         ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1) 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
+using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_list_of_user_names_for_old_hearings_over_3_months_old()
         {
             
-            var lastRunDate = Hooks.GetJobLastRunDateTime();
+            var lastRunDate = Hooks.GetJobLastRunDateTime(SchedulerJobsNames.AnonymiseHearings);
             var cutOffDate = DateTime.UtcNow.AddMonths(-3);
             var scheduledDate = lastRunDate.HasValue 
                              ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1).AddMinutes(10) 

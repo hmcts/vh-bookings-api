@@ -1,12 +1,11 @@
-﻿using System;
-
-namespace BookingsApi.Domain
+﻿namespace BookingsApi.Domain
 {
     public class UpdateJobHistory : JobHistory
     {
-        public void UpdateLastRunDate()
+        public UpdateJobHistory(string jobName, bool isSuccessful)
         {
-            LastRunDate = DateTime.UtcNow;
+            JobName = jobName;
+            IsSuccessful = isSuccessful;
         }
     }
 }

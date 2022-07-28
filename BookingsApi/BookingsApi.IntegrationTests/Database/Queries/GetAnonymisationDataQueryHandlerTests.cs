@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
+using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Returns_Anonymisation_Data_For_3_Months_Old_Hearings()
         {
-            var lastRunDate = Hooks.GetJobLastRunDateTime();
+            var lastRunDate = Hooks.GetJobLastRunDateTime(SchedulerJobsNames.AnonymiseHearings);
             var cutOffDate = DateTime.UtcNow.AddMonths(-3);
             var scheduledDate = lastRunDate.HasValue
                 ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1).AddMinutes(10)
@@ -45,7 +46,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [TestCase(-2)]
         public async Task Returns_Empty_List_Of_Anonymisation_Data(int cutOffInMonths)
         {
-            var lastRunDate = Hooks.GetJobLastRunDateTime();
+            var lastRunDate = Hooks.GetJobLastRunDateTime(SchedulerJobsNames.AnonymiseHearings);
             var cutOffDate = DateTime.UtcNow.AddMonths(cutOffInMonths);
             var scheduledDate = lastRunDate.HasValue
                 ? cutOffDate.AddDays((lastRunDate.Value - DateTime.UtcNow).Days - 1).AddMinutes(10)
