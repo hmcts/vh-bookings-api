@@ -8,7 +8,6 @@ using NSwag.Annotations;
 
 namespace BookingsApi.Controllers
 {
-    [AllowAnonymous]
     [Produces("application/json")]
     [Route("JobHistory")]
     [ApiController]
