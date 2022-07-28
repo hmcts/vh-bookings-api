@@ -206,13 +206,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
-        [Given(@"I have a request to anonymise the data")]
-        public void GivenIHaveARequestToAnonymiseTheData()
-        {
-            Context.Uri = AnonymiseHearings();
-            Context.HttpMethod = HttpMethod.Patch;
-        }
-
         [Given(@"I have a request to the get booked hearings endpoint")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
         {
