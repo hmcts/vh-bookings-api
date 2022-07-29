@@ -1,7 +1,11 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -14,19 +18,29 @@ namespace BookingsApi.UnitTests.Controllers
     {
         private JobHistoryController _controller;
         private Mock<ICommandHandler> _commandHandlerMock;
+        private Mock<IQueryHandler> _queryHandlerMock;
         [SetUp]
         public void Setup()
         {
             _commandHandlerMock = new Mock<ICommandHandler>();
-            _controller = new JobHistoryController(_commandHandlerMock.Object);
+            _queryHandlerMock = new Mock<IQueryHandler>();
+            _controller = new JobHistoryController(_commandHandlerMock.Object, _queryHandlerMock.Object);
         }
         
         [Test]
-        public async Task Should_call_add_job_history_command_and_return_ok()
+        public async Task Should_call_add_job_history_command_and_return_no_content()
         {
             var result = await _controller.UpdateJobHistory(It.IsAny<string>(), It.IsAny<bool>());
             _commandHandlerMock.Verify(e => e.Handle(It.IsAny<AddJobHistoryCommand>()), Times.Exactly(1));
-            result.Should().BeOfType<OkResult>();
+            result.Should().BeOfType<NoContentResult>();
+        }
+                
+        [Test]
+        public async Task Should_call_get_job_history_and_return_ok()
+        {
+            var result = await _controller.GetJobHistory(It.IsAny<string>());
+            _queryHandlerMock.Verify(e => e.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(It.IsAny<GetJobHistoryByJobNameQuery>()), Times.Exactly(1));
+            result.Should().BeOfType<OkObjectResult>();
         }
     }
 }
