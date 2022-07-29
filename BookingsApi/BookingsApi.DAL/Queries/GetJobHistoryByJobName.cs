@@ -11,24 +11,17 @@ namespace BookingsApi.DAL.Queries
     {
         public string JobName { get; }
 
-        public GetJobHistoryByJobNameQuery(string jobName)
-        {
-            JobName = jobName;
-        }
+        public GetJobHistoryByJobNameQuery(string jobName) => JobName = jobName;
+        
     }
 
     public class GetJobHistoryByJobNameQueryHandler : IQueryHandler<GetJobHistoryByJobNameQuery, List<JobHistory>>
     {
         private readonly BookingsDbContext _context;
 
-        public GetJobHistoryByJobNameQueryHandler(BookingsDbContext context)
-        {
-            _context = context;
-        }
+        public GetJobHistoryByJobNameQueryHandler(BookingsDbContext context) => _context = context;
 
-        public async Task<List<JobHistory>> Handle(GetJobHistoryByJobNameQuery query)
-        {
-            return await _context.JobHistory.Where(e => e.JobName == query.JobName).ToListAsync();
-        }
+        public async Task<List<JobHistory>> Handle(GetJobHistoryByJobNameQuery query) => await _context.JobHistory.Where(e => e.JobName == query.JobName).ToListAsync();
+        
     }
 }

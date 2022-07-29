@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BookingsApi.Controllers;
@@ -38,8 +39,11 @@ namespace BookingsApi.UnitTests.Controllers
         [Test]
         public async Task Should_call_get_job_history_and_return_ok()
         {
-            var result = await _controller.GetJobHistory(It.IsAny<string>());
-            _queryHandlerMock.Verify(e => e.Handle<GetJobHistoryByJobNameQuery, IEnumerable<JobHistory>>(It.IsAny<GetJobHistoryByJobNameQuery>()), Times.Exactly(1));
+            _queryHandlerMock.Setup(e =>
+                    e.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(It.IsAny<GetJobHistoryByJobNameQuery>()))
+                     .ReturnsAsync(new List<JobHistory> {new UpdateJobHistory("mockJob", true)});
+            var result = await _controller.GetJobHistory(It.IsAny<String>());
+            _queryHandlerMock.Verify(e => e.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(It.IsAny<GetJobHistoryByJobNameQuery>()), Times.Exactly(1));
             result.Should().BeOfType<OkObjectResult>();
         }
     }

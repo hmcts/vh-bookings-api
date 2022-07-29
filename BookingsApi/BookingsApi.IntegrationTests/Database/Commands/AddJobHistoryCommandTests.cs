@@ -12,6 +12,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private AddJobHistoryCommandHandler _commandHandler;
         private BookingsDbContext _context;
 
+        private string job = "unitTestJobName";
+        private bool success = true;
+        
         [SetUp]
         public void Setup()
         {
@@ -22,8 +25,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_add_record_to_job_history()
         {
-            var job = "unitTestJobName";
-            var success = true;
             var beforeCount = _context.JobHistory.Count();
             var command = new AddJobHistoryCommand{JobName = job, IsSuccessful = success};
             
@@ -35,6 +36,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newRecord = _context.JobHistory.First(e => e.JobName == job);
             newRecord.JobName.Should().Be(job);
             newRecord.IsSuccessful.Should().Be(success);
+        }
+        [TearDown]
+        public void RemoveTestRecords()
+        {
+
+            var testRecords = _context.JobHistory.Where(e => e.JobName == job);
+            _context.JobHistory.RemoveRange(testRecords);
+            _context.SaveChanges();
         }
     }
 }

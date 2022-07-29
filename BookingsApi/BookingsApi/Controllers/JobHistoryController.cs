@@ -49,14 +49,16 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="jobName">The name of the job</param>
         /// <returns>Job history list</returns>
+        [AllowAnonymous]
         [HttpGet("{jobName}")]
         [OpenApiOperation("GetJobHistory")]
         [ProducesResponseType(typeof(List<JobHistoryResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetJobHistory(string jobName)
         {
-            var jobHistories = await _queryHandler.Handle<GetJobHistoryByJobNameQuery, IEnumerable<JobHistory>>(new GetJobHistoryByJobNameQuery(jobName));   
-            return Ok(jobHistories.Select(e => new JobHistoryResponse(e.JobName, e.LastRunDate, e.IsSuccessful)).ToList());
+            var jobHistories = await _queryHandler.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(new GetJobHistoryByJobNameQuery(jobName));   
+            var obj = jobHistories.Select(e => new JobHistoryResponse(e.JobName, e.LastRunDate, e.IsSuccessful)).ToList();
+            return Ok(obj);
         }
     }
 }
