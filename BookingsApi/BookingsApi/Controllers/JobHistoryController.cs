@@ -49,7 +49,6 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="jobName">The name of the job</param>
         /// <returns>Job history list</returns>
-        [AllowAnonymous]
         [HttpGet("{jobName}")]
         [OpenApiOperation("GetJobHistory")]
         [ProducesResponseType(typeof(List<JobHistoryResponse>), (int) HttpStatusCode.OK)]
