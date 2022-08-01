@@ -51,16 +51,6 @@ namespace BookingsApi.DAL.Commands
 
             _context.Participants.UpdateRange(participants);
 
-
-            if (!(await _context.JobHistory.FirstOrDefaultAsync() is UpdateJobHistory jobHistory))
-            {
-                await _context.JobHistory.AddAsync(new UpdateJobHistory());
-            }
-            else
-            {
-                jobHistory.UpdateLastRunDate();
-            }
-
             await _context.SaveChangesAsync();
         }
 

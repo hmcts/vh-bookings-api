@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
+using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
@@ -342,7 +343,7 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
             {
                 LastRunDate = lastRunDate;
                 IsSuccessful = true;
-                JobName = "AnonymiseHearings";
+                JobName = SchedulerJobsNames.AnonymiseHearings;
             }
         }
     }

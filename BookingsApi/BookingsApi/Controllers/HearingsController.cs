@@ -623,20 +623,6 @@ namespace BookingsApi.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Anonymises the Hearings, Case, Person and Participant data.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPatch("anonymisehearings")]
-        [OpenApiOperation("AnonymiseHearings")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> AnonymiseHearingsAsync()
-        {
-            var anonymiseHearingsCommand = new AnonymiseHearingsCommand();
-            await _commandHandler.Handle(anonymiseHearingsCommand);
-            return NoContent();
-        }
-
         private async Task<Hearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
