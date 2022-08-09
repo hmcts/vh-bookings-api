@@ -116,15 +116,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             persons.Select(m => m.Id).Should().NotContain(JudgePerson.Id);
             persons.Select(m => m.Id).Should().Contain(JudicialOfficeHolderPerson.Id);
         }
-        
-        [Test]
-        public async Task Returns_Null_List_Persons_Record_By_Search_Term_Not_Matching_StartWith()
-        {
-            var persons = await _handler.Handle(new GetPersonBySearchTermQuery("uff"));
 
-            Assert.AreEqual(0, persons.Count);
-        }
-        
         [Test]
         public async Task Includes_Organisation()
         {

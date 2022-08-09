@@ -43,5 +43,18 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             matches.Select(m => m.Id).Should().Contain(person.Id);
         }
+
+        [Test]
+        public async Task Should_find_contact_by_email_when_searched_from_middle_of_string()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            var person = seededHearing.GetPersons().First(x => seededHearing.Participants.Any(p => p.PersonId == x.Id && !GetPersonBySearchTermQueryHandler.excludedRoles.Contains(p.Discriminator)));
+            var contactEmail = person.ContactEmail;
+            
+            var searchTerm = contactEmail.Substring(2, 3);
+            var matches  = await _handler.Handle(new GetPersonBySearchTermQuery(searchTerm));
+
+            matches.Select(m => m.Id).Should().Contain(person.Id);
+        }
     }
 }
