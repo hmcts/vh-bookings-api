@@ -29,9 +29,12 @@ java:
         - azuread--clientsecret
         - kinlyconfiguration--sipaddressstem
         - launchdarkly--sdkkey
+        - name: azuread--identifieruri
+          alias: azuread--bookingsapiresourceid
+        - name: azuread--identifieruri
+          alias: services--bookingsapiresourceid
   environment:
     ASPNETCORE_URLS: http://+:8080
-    AZUREAD__BOOKINGSAPIRESOURCEID: http://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
     DISABLEHTTPSREDIRECTION: true
     FEATUREFLAGS__EJUDFEATURE: false
     FEATUREFLAGS__STAFFMEMBERFEATURE: true
@@ -39,5 +42,4 @@ java:
     Logging__LogLevel__Microsoft: debug
     Logging__LogLevel__System: debug
     SERVICEBUSQUEUE__QUEUENAME: booking
-    SERVICES__BOOKINGSAPIRESOURCEID: http://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
     TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
