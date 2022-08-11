@@ -16,26 +16,30 @@ java:
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
-        - servicebusqueue--connectionstring
-        - connectionstrings--vhbookings
         - applicationinsights--instrumentationkey
+        - azuread--tenantid
+        - connectionstrings--vhbookings
+        - servicebusqueue--connectionstring
     vh-bookings-api:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
-        - azuread--clientsecret
         - azuread--clientid
-        - KinlyConfiguration--SipAddressStem
-        - FeatureFlags--StaffMemberFeature
-        - FeatureFlags--EJudFeature
+        - azuread--clientsecret
+        - kinlyconfiguration--sipaddressstem
+        - launchdarkly--sdkkey
+        - name: azuread--identifieruri
+          alias: azuread--bookingsapiresourceid
+        - name: azuread--identifieruri
+          alias: services--bookingsapiresourceid
   environment:
     ASPNETCORE_URLS: http://+:8080
-    AZUREAD__TENANTID: "fb6e0e22-0da3-4c35-972a-9d61eb256508"
     DISABLEHTTPSREDIRECTION: true
-    SERVICEBUSQUEUE__QUEUENAME: bookings
-    SERVICES__BOOKINGSAPIRESOURCEID: http://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
-    TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
+    FEATUREFLAGS__EJUDFEATURE: false
+    FEATUREFLAGS__STAFFMEMBERFEATURE: true
     Logging__LogLevel__Default: debug
-    Logging__LogLevel__System: debug
     Logging__LogLevel__Microsoft: debug
+    Logging__LogLevel__System: debug
+    SERVICEBUSQUEUE__QUEUENAME: booking
+    TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
