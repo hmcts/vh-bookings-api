@@ -39,7 +39,6 @@ namespace Testing.Common.Builders.Domain
             _person.Organisation = new Builder(_settings).CreateNew<Organisation>()
                 .WithFactory(() => new Organisation())
                 .With(x => x.Name = Company.Name())
-                .With(x => "(+44)123 456")
                 .Build();
             return this;
         }
