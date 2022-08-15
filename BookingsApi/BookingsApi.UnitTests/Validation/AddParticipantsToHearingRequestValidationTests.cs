@@ -47,9 +47,13 @@ namespace BookingsApi.UnitTests.Validation
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(4).Build().ToList();
             participants[0].ContactEmail = "me0@me.com";
+            participants[0].TelephoneNumber = "(+44)123 456";
             participants[1].ContactEmail = "me1@me.com";
+            participants[1].TelephoneNumber = "(+44)123 456";
             participants[2].ContactEmail = "me2@me.com";
+            participants[2].TelephoneNumber = "(+44)123 456";
             participants[3].ContactEmail = "me3@me.com";
+            participants[3].TelephoneNumber = "(+44)123 456";
             return new AddParticipantsToHearingRequest
             {
                 Participants = participants

@@ -21,6 +21,7 @@ namespace Testing.Common.Builders.Domain
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
                     new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", $"Automation_{RandomNumber.Next()}@hmcts.net", $"Automation_{RandomNumber.Next()}@hmcts.net"))
                 .With(x => x.UpdatedDate, DateTime.MinValue)
+                .With(x => x.TelephoneNumber, "(+44)123 456")
                 .Build();
         }
 
@@ -29,6 +30,7 @@ namespace Testing.Common.Builders.Domain
             var settings = new BuilderSettings();
             _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
                     new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", contactEmail, userId))
+                .With(x => x.TelephoneNumber, "(+44)123 456")
                 .Build();
         }
 
@@ -36,7 +38,9 @@ namespace Testing.Common.Builders.Domain
         {
             _person.Organisation = new Builder(_settings).CreateNew<Organisation>()
                 .WithFactory(() => new Organisation())
-                .With(x => x.Name = Company.Name()).Build();
+                .With(x => x.Name = Company.Name())
+                .With(x => "(+44)123 456")
+                .Build();
             return this;
         }
 
