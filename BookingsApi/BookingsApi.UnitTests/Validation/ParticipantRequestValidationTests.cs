@@ -181,6 +181,20 @@ namespace BookingsApi.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
+        
+        [Test]
+        public async Task Should_return_missing_telephone_number_error()
+        {
+            var request = BuildRequest();
+            request.TelephoneNumber = string.Empty;
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTelephoneNumberErrorMessage)
+                .Should().BeTrue();
+        }
 
         private ParticipantRequest BuildRequest()
         {

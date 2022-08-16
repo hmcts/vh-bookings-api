@@ -11,6 +11,7 @@ namespace BookingsApi.Validations
         public static readonly string NoFirstNameErrorMessage = "First name is required";
         public static readonly string NoLastNameErrorMessage = "Last name is required";
         public static readonly string NoUsernameErrorMessage = "Username is required";
+        public static readonly string NoTelephoneNumberErrorMessage = "Telephone Number is required";
         public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
         public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
         public static readonly string InvalidJudgeUsernameErrorMessage = "Judge username is Invalid";
@@ -28,6 +29,7 @@ namespace BookingsApi.Validations
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);
+            RuleFor(x => x.TelephoneNumber).NotEmpty().WithMessage(NoTelephoneNumberErrorMessage);
         }
     }
 }
