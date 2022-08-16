@@ -126,7 +126,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                 FirstName = "Judge",
                 LastName = "One",
                 DisplayName = "One",
-                Username = "judge@me.com"
+                Username = "judge@me.com",
+                TelephoneNumber = "(+44)123 456"
             });
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
