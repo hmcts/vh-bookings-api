@@ -11,6 +11,7 @@ namespace BookingsApi.AcceptanceTests.Models
             var participants = Builder<ParticipantRequest>.CreateListOfSize(1).All()
                 .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+                .With(x => x.TelephoneNumber = "(+44)123 456")
                 .Build().ToList();
             participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";
