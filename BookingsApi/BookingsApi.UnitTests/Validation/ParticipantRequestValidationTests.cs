@@ -183,10 +183,11 @@ namespace BookingsApi.UnitTests.Validation
         }
         
         [Test]
-        public async Task Should_return_missing_telephone_number_error()
+        public async Task Should_return_missing_telephone_number_error_for_non_judge()
         {
             var request = BuildRequest();
             request.TelephoneNumber = string.Empty;
+            request.HearingRoleName = "Representative";
 
             var result = await _validator.ValidateAsync(request);
 
@@ -194,6 +195,19 @@ namespace BookingsApi.UnitTests.Validation
             result.Errors.Count.Should().Be(1);
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTelephoneNumberErrorMessage)
                 .Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Should_not_return_missing_telephone_number_error_for_judge()
+        {
+            var request = BuildRequest();
+            request.TelephoneNumber = string.Empty;
+            request.HearingRoleName = "Judge";
+            request.Username = "judge.one@ejudiciary.net";
+            
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeTrue();
         }
 
         private ParticipantRequest BuildRequest()
