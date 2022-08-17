@@ -559,42 +559,40 @@ namespace BookingsApi.Controllers
         {
             var eventNewParticipants = hearing.GetParticipants()
                         .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
-            if (eventNewParticipants.Any())
+
+            if (hearing.Status == BookingStatus.Created)
             {
-                if (hearing.Status == BookingStatus.Created)
+                var eventExistingParticipants = hearing.GetParticipants()
+                    .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();
+            
+                var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
+            
+                foreach (var linkedParticipant in linkedParticipants)
                 {
-                    var eventExistingParticipants = hearing.GetParticipants()
-                        .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();
-
-                    var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
-
-                    foreach (var linkedParticipant in linkedParticipants)
+                    var primaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.ParticipantContactEmail);
+                    var secondaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.LinkedParticipantContactEmail);
+            
+                    eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
                     {
-                        var primaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.ParticipantContactEmail);
-                        var secondaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.LinkedParticipantContactEmail);
-
-                        eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
-                        {
-                            LinkedId = secondaryLinkedParticipant.Id,
-                            ParticipantId = primaryLinkedParticipant.Id,
-                            Type = linkedParticipant.Type
-                        });
-                    }
-
-                    var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants,
-                        removedParticipantIds, eventLinkedParticipants);
-                    await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
+                        LinkedId = secondaryLinkedParticipant.Id,
+                        ParticipantId = primaryLinkedParticipant.Id,
+                        Type = linkedParticipant.Type
+                    });
                 }
-                else if (eventNewParticipants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
-                {
-                    await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
-                    await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, eventNewParticipants));
-                }
-                else
-                {
-                    await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, eventNewParticipants));
-                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));
-                }
+            
+                var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants,
+                    removedParticipantIds, eventLinkedParticipants);
+                await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
+            }
+            else if (eventNewParticipants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+            {
+                await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
+                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, eventNewParticipants));
+            }
+            else
+            {
+                await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, eventNewParticipants));
+                await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));
             }
         }
 
