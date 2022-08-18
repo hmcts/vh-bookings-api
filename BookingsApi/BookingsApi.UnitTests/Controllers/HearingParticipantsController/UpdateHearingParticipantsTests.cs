@@ -339,6 +339,41 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
             CommandHandler.Verify(ch => ch.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
+        
+        [Test]
+        public async Task Should_publish_HearingParticipantsUpdated_integration_events_when_participant_is_removed()
+        {
+            //Arrange
+            var hearing = GetVideoHearing();
+            hearing.Participants[0].Person.ContactEmail = "contactme@dontcontactme.com";
+            hearing.Participants[1].Person.ContactEmail = "participantToDelete@notLinked.com";
+
+            hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "test", "");
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
+            _request = BuildRequest();
+            _request.LinkedParticipants = new List<LinkedParticipantRequest>();
+            _request.NewParticipants = new List<ParticipantRequest>();
+            _request.RemovedParticipantIds = new List<Guid> { hearing.Participants[1].Id };
+
+            //Act
+            await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            //Assert
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
+        }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)
         {
