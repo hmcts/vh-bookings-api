@@ -592,8 +592,11 @@ namespace BookingsApi.Controllers
                 }
                 else
                 {
-                    await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, eventNewParticipants));
-                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));
+                    if (eventNewParticipants.Any())
+                    {
+                        await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, eventNewParticipants));
+                        await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(hearing, eventNewParticipants));   
+                    }
                 }
             }
         }
