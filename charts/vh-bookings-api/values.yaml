@@ -43,3 +43,4 @@ java:
     Logging__LogLevel__System: debug
     SERVICEBUSQUEUE__QUEUENAME: booking
     TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
+    UseServiceBusFake: false
