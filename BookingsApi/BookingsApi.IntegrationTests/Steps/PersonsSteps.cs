@@ -204,6 +204,17 @@ namespace BookingsApi.IntegrationTests.Steps
             var jsonBody = RequestHelper.Serialise(request);
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
+
+        [Given(@"I have a valid update username request containing a slash")]
+        public void GivenIHaveAValidUpdateUsernameRequestContainingASlash()
+        {
+            var hearing = Context.TestData.SeededHearing;
+            var person = hearing.GetPersons().First((p => p.ContactEmail.Contains(("/"))));
+            var contactEmail = person.ContactEmail;
+            var username = person.ContactEmail;
+            Context.Uri = UpdatePersonUsername(contactEmail, username);
+            Context.HttpMethod = HttpMethod.Put;
+        }
         
         private void SetupGetHearingsByUsernameForDeletionRequest(string username)
         {

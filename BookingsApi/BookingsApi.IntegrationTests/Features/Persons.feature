@@ -119,3 +119,10 @@ Feature: Persons
     And I have a valid update person details request
     When I send the request to the endpoint
     Then the response should have the status Accepted and success status True
+   
+  Scenario: Update username for a person with valid details containing a slash
+    Given I have a hearing
+    And I have a valid update username request containing a slash
+    When I send the request to the endpoint
+    Then the response should have the status NoContent and success status True
+    

@@ -32,6 +32,14 @@ namespace Testing.Common.Builders.Domain
                 .Build();
         }
 
+        public PersonBuilder(string contactEmail)
+        {
+            var settings = new BuilderSettings();
+            _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
+                    new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", contactEmail, contactEmail))
+                .Build();
+        }
+
         public PersonBuilder WithOrganisation()
         {
             _person.Organisation = new Builder(_settings).CreateNew<Organisation>()
