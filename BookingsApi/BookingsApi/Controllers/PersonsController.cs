@@ -109,7 +109,7 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="contactEmail">The contact email of the person</param>
         /// <returns>Person</returns>
-        [HttpGet("contactEmail/{contactEmail}", Name = "GetPersonByContactEmail")]
+        [HttpGet("contactEmail/{**contactEmail}", Name = "GetPersonByContactEmail")]
         [OpenApiOperation("GetPersonByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
