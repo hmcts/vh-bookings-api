@@ -14,6 +14,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using Faker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
@@ -84,6 +85,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
+            var person5 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
             var judgePerson = new PersonBuilder(true).Build();
             var johPerson = new PersonBuilder(true).Build();
             var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
@@ -111,6 +113,9 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
                 $"{person4.FirstName} {person4.LastName}");
 
+            videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
+                $"{person5.FirstName} {person5.LastName}");
+            
             videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
 
             if (addJoh)

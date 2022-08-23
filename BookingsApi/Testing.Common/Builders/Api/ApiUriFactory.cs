@@ -64,6 +64,7 @@ namespace Testing.Common.Builders.Api
             public static string AnonymisePerson(string username) => $"{ApiRoot}/username/{username}/anonymise";
             public static string SearchForNonJudicialPersonsByContactEmail(string contactEmail) => $"{ApiRoot}/?contactEmail={contactEmail}";
             public static string UpdatePersonDetails(Guid personId) => $"{ApiRoot}/{personId}";
+            public static string UpdatePersonUsername(string contactEmail, string username) => $"{ApiRoot}/user/{contactEmail}?username={username}";
         }
 
         public static class SuitabilityAnswerEndpoints
