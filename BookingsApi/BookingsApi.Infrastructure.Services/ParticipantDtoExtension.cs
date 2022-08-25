@@ -14,12 +14,21 @@ namespace BookingsApi.Infrastructure.Services
             }
 
             var properties = otherInformation.Split("|");
-            participant.ContactEmailForNonEJudJudgeUser = Array.IndexOf(properties, "JudgeEmail") > -1
-                ? properties[Array.IndexOf(properties, "JudgeEmail") + 1]
-                : string.Empty;
+            participant.ContactEmailForNonEJudJudgeUser = ExtractJudgeEmail(properties);
+            participant.ContactPhoneForNonEJudJudgeUser = ExtractJudgePhone(properties);
+        }
 
-            participant.ContactPhoneForNonEJudJudgeUser = Array.IndexOf(properties, "JudgePhone") > -1
+        public static string ExtractJudgePhone(string[] properties)
+        {
+            return Array.IndexOf(properties, "JudgePhone") > -1
                 ? properties[Array.IndexOf(properties, "JudgePhone") + 1]
+                : string.Empty;
+        }
+
+        public static string ExtractJudgeEmail(string[] properties)
+        {
+            return Array.IndexOf(properties, "JudgeEmail") > -1
+                ? properties[Array.IndexOf(properties, "JudgeEmail") + 1]
                 : string.Empty;
         }
     }

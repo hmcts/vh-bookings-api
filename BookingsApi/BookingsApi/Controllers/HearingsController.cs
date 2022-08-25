@@ -30,6 +30,7 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
+using BookingsApi.Infrastructure.Services;
 
 namespace BookingsApi.Controllers
 {
@@ -452,6 +453,8 @@ namespace BookingsApi.Controllers
             var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
             var response = hearingMapper.MapHearingToDetailedResponse(updatedHearing);
 
+            await JudgeContactInformationUpdateEvent(request.OtherInformation, videoHearing.OtherInformation, videoHearing);
+            
             if (videoHearing.Status == BookingStatus.Created)
             {
                 await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
@@ -462,6 +465,23 @@ namespace BookingsApi.Controllers
             }
 
             return Ok(response);
+        }
+
+        private async Task JudgeContactInformationUpdateEvent(
+            string requestOtherInformation,
+            string videoHearingOtherInformation, 
+            VideoHearing videoHearing)
+        {
+            var requestInfo = requestOtherInformation.Split('|');
+            var vhInfo = videoHearingOtherInformation.Split('|');
+
+            if (!String.Equals(ParticipantDtoExtension.ExtractJudgeEmail(requestInfo),
+                               ParticipantDtoExtension.ExtractJudgeEmail(vhInfo)))
+            {
+                var judge = videoHearing.GetParticipants().FirstOrDefault(e => e.HearingRole.Name == HearingRoles.Judge);
+                if(judge != null)
+                    await _eventPublisher.PublishAsync(new JudgeIntegrationEvent(videoHearing, judge, requestOtherInformation));
+            }
         }
 
         /// <summary>
