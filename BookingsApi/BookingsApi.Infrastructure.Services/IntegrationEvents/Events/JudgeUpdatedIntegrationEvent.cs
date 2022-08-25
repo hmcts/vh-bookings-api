@@ -4,9 +4,9 @@ using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
-    public class JudgeIntegrationEvent: IIntegrationEvent
+    public class JudgeUpdatedIntegrationEvent: IIntegrationEvent
     {
-        public JudgeIntegrationEvent(Hearing hearing, Participant judge, string otherInformation)
+        public JudgeUpdatedIntegrationEvent(Hearing hearing, Participant judge, string otherInformation)
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
             Judge = ParticipantDtoMapper.MapToDto(judge);
