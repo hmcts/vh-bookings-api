@@ -480,7 +480,7 @@ namespace BookingsApi.Controllers
             {
                 var judge = videoHearing.GetParticipants().FirstOrDefault(e => e.HearingRole.Name == HearingRoles.Judge);
                 if(judge != null)
-                    await _eventPublisher.PublishAsync(new JudgeIntegrationEvent(videoHearing, judge, requestOtherInformation));
+                    await _eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(videoHearing, judge, requestOtherInformation));
             }
         }
 
