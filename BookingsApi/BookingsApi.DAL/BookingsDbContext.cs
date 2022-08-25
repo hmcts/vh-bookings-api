@@ -16,18 +16,23 @@ namespace BookingsApi.DAL
         {
         }
 
+        public DbSet<Allocation> Allocations { get; set; }
         public DbSet<Case> Cases { get; set; }
 
         public DbSet<VideoHearing> VideoHearings { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<CaseType> CaseTypes { get; set; }
+        public DbSet<Domain.DayOfWeek> DaysOfWeek { get; set; }
         public DbSet<HearingVenue> Venues { get; set; }
         public DbSet<HearingRole> HearingRoles { get; set; }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<JobHistory> JobHistory { get; set; }
         public DbSet<JudiciaryPerson> JudiciaryPersons { get; set; }
+        public DbSet<JusticeUser> JusticeUsers { get; set; }
         public DbSet<JudiciaryPersonStaging> JudiciaryPersonsStaging { get; set; }
         public DbSet<Jurisdiction> Jurisdiction { get; set; }
+        public DbSet<VhoNonAvailability> VhoNonAvailabilities { get; set; }
+        public DbSet<VhoWorkHours> VhoWorkHours { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

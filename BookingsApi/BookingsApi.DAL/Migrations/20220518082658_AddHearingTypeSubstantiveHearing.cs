@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using BookingsApi.Contract.Enums;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -13,7 +14,7 @@ var sqlScript = $@"
             -- get CaseTypeId
             select @caseTypeId = Id from CaseType
             where Name = 'Upper Tribunal Tax';
-            INSERT INTO HearingType (""Name"", ""CaseTypeId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('Substantive Hearing',@caseTypeId,1,'{DateTime.UtcNow}','{DateTime.UtcNow}');";
+            INSERT INTO HearingType (""Name"", ""CaseTypeId"", ""Live"",""CreatedDate"",""UpdatedDate"") VALUES ('Substantive Hearing',@caseTypeId,1,'{DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture)}','{DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture)}');";
             
             migrationBuilder.Sql(sqlScript);
         }
