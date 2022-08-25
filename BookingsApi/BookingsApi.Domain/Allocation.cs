@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace BookingsApi.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class Allocation : TrackableEntity<long>
     {
         public Guid HearingId { get; set; }

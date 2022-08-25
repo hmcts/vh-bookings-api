@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BookingsApi.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class JusticeUser : TrackableEntity<Guid>
     {
         public string FirstName { get; set; }

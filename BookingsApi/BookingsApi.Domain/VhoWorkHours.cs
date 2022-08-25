@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BookingsApi.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class VhoWorkHours : TrackableEntity<long>
     {
         public Guid JusticeUserId { get; set; }
