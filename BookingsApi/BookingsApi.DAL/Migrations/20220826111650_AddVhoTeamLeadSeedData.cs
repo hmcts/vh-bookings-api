@@ -85,11 +85,11 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData("UserRole", "Id", 9);
             migrationBuilder.DeleteData("JusticeUser", "Id", "ba3fc1e6-6f4d-4ad4-b4a9-8e7e70d60099");
             migrationBuilder.DeleteData("JusticeUser", "Id", "5fa2274d-5604-4d02-9f14-024ba17c1e3a");
             migrationBuilder.DeleteData("JusticeUser", "Id", "32152059-22be-45ef-88d9-315f01f8d118");
             migrationBuilder.DeleteData("JusticeUser", "Id", "f0369900-ede8-4989-8e57-0daf4cc8e3fb");
+            migrationBuilder.DeleteData("UserRole", "Id", 9);
         }
     }
 }
