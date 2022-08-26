@@ -468,19 +468,16 @@ namespace BookingsApi.Controllers
         }
 
         private async Task JudgeContactInformationUpdateEvent(
-            string requestOtherInformation,
-            string videoHearingOtherInformation, 
+            string requestInfo,
+            string vhOtherInformation, 
             VideoHearing videoHearing)
         {
-            var requestInfo = requestOtherInformation.Split('|');
-            var vhInfo = videoHearingOtherInformation.Split('|');
-
-            if (!String.Equals(ParticipantDtoExtension.ExtractJudgeEmail(requestInfo),
-                               ParticipantDtoExtension.ExtractJudgeEmail(vhInfo)))
+            if (!String.Equals(ParticipantDtoExtension.ExtractJudgeEmail(requestInfo.Split('|')),
+                               ParticipantDtoExtension.ExtractJudgeEmail(vhOtherInformation.Split('|'))))
             {
                 var judge = videoHearing.GetParticipants().FirstOrDefault(e => e.HearingRole.Name == HearingRoles.Judge);
                 if(judge != null)
-                    await _eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(videoHearing, judge, requestOtherInformation));
+                    await _eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(videoHearing, judge, requestInfo));
             }
         }
 
