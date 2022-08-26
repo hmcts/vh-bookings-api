@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    [Migration("20220825150116_AddVhoTeamLeadSeedData")]
+    [Migration("20220826111650_AddVhoTeamLeadSeedData")]
     partial class AddVhoTeamLeadSeedData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -444,13 +444,15 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserRole")
+                    b.Property<int>("UserRoleId")
                         .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserRoleId");
 
                     b.ToTable("JusticeUser");
                 });
@@ -983,6 +985,15 @@ namespace BookingsApi.DAL.Migrations
                     b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
                         .WithMany("HearingCases")
                         .HasForeignKey("HearingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.JusticeUser", b =>
+                {
+                    b.HasOne("BookingsApi.Domain.RefData.UserRole", "UserRole")
+                        .WithMany()
+                        .HasForeignKey("UserRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

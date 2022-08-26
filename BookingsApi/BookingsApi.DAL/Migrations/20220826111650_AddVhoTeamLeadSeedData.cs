@@ -24,7 +24,7 @@ namespace BookingsApi.DAL.Migrations
                     }
                 }
            );
-            
+
             migrationBuilder.InsertData(
                 table: nameof(JusticeUser),
                 columns: new[] {
@@ -34,7 +34,7 @@ namespace BookingsApi.DAL.Migrations
                     "Lastname",
                     "ContactEmail",
                     "Username",
-                    "UserRole",
+                    "UserRoleId",
                     "CreatedBy",
                 },
                 values: new object[,]
