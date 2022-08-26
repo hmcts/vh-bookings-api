@@ -214,8 +214,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId,
-            [FromBody] UpdateHearingParticipantsRequest request)
+        public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId, [FromBody] UpdateHearingParticipantsRequest request)
         {
             if (hearingId == Guid.Empty)
             {
@@ -557,15 +556,19 @@ namespace BookingsApi.Controllers
         private async Task PublishEventForUpdateParticipantsAysnc(Hearing hearing, List<ExistingParticipantDetails> existingParticipants, List<NewParticipant> newParticipants,
             List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
         {
-            var eventNewParticipants = hearing.GetParticipants()
-                        .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
+            var eventNewParticipants = hearing
+                .GetParticipants()
+                .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail))
+                .ToList();
+            var eventExistingParticipants = hearing
+                .GetParticipants()
+                .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id))
+                .ToList();
+            
             if (eventNewParticipants.Any() || removedParticipantIds.Any())
             {
                 if (hearing.Status == BookingStatus.Created)
                 {
-                    var eventExistingParticipants = hearing.GetParticipants()
-                        .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id)).ToList();
-                
                     var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
                 
                     foreach (var linkedParticipant in linkedParticipants)
@@ -581,8 +584,7 @@ namespace BookingsApi.Controllers
                         });
                     }
                 
-                    var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants,
-                        removedParticipantIds, eventLinkedParticipants);
+                    var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants, removedParticipantIds, eventLinkedParticipants);
                     await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
                 }
                 else if (eventNewParticipants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
@@ -599,6 +601,10 @@ namespace BookingsApi.Controllers
                     }
                 }
             }
+            else
+                foreach (var participant in eventExistingParticipants)
+                    await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));  
+            
         }
 
         private List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
