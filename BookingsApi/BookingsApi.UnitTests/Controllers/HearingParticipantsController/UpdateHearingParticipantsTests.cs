@@ -373,6 +373,37 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             //Assert
             EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
+        }  
+        [Test]
+        public async Task Should_publish_ParticipantUpdatedIntegrationEvent_on_each_participant_when_no_new_participants_added()
+        {
+            //Arrange
+            var hearing = GetVideoHearing();
+            hearing.UpdateStatus(BookingsApi.Domain.Enumerations.BookingStatus.Created, "test", "");
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
+            _request = BuildRequest();
+            _request.LinkedParticipants = new List<LinkedParticipantRequest>();
+            _request.NewParticipants = new List<ParticipantRequest>();
+            _request.RemovedParticipantIds = new List<Guid>();
+
+            //Act
+            await Controller.UpdateHearingParticipants(hearingId, _request);
+
+            //Assert
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.Once);
         }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)
