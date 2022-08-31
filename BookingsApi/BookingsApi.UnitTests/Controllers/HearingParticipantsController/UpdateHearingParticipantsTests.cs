@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Domain.Participants;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 
@@ -375,7 +376,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
         }  
         [Test]
-        public async Task Should_publish_ParticipantUpdatedIntegrationEvent_on_each_participant_when_no_new_participants_added()
+        public async Task Should_publish_Participant_and_Judge_UpdatedIntegrationEvent_on_each_participant_when_no_new_participants_added()
         {
             //Arrange
             var hearing = GetVideoHearing();
@@ -392,6 +393,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                     Representee = "Representee",
                     TelephoneNumber = "07123456789",
                     Title = "Title"
+                },     
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants.First(e=>e is Judge).Id, 
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    ContactEmail = "new@email.com",
+                    Title = "Title"
                 }
             };
             _request = BuildRequest();
@@ -403,7 +414,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             await Controller.UpdateHearingParticipants(hearingId, _request);
 
             //Assert
-            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.Once);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.AtLeastOnce);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<JudgeUpdatedIntegrationEvent>()), Times.Once);
         }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)
