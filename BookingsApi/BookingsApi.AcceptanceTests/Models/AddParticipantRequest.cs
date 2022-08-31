@@ -6,6 +6,7 @@ namespace BookingsApi.AcceptanceTests.Models
 {
     internal static class AddParticipantRequest
     {
+        public const string ParticipantRequestFirstName = "Automation_AddedParticipant";
         public static AddParticipantsToHearingRequest BuildRequest()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(1).All()
@@ -14,7 +15,7 @@ namespace BookingsApi.AcceptanceTests.Models
                 .Build().ToList();
             participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";
-            participants[0].FirstName = "Automation_Added Participant";
+            participants[0].FirstName = ParticipantRequestFirstName;
             var request = new AddParticipantsToHearingRequest{Participants = participants};
             return request;
         }
