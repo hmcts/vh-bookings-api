@@ -81,7 +81,7 @@ namespace BookingsApi.UnitTests.Validation
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
+            result.Errors.Count.Should().Be(2);
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
@@ -95,7 +95,7 @@ namespace BookingsApi.UnitTests.Validation
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
+            result.Errors.Count.Should().Be(2);
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
