@@ -25,8 +25,7 @@ namespace BookingsApi.DAL.Commands
         public string LeftOn { get; set; }
     }
 
-    public class
-        UpdateJudiciaryPersonByExternalRefIdHandler : ICommandHandler<UpdateJudiciaryPersonByExternalRefIdCommand>
+    public class UpdateJudiciaryPersonByExternalRefIdHandler : ICommandHandler<UpdateJudiciaryPersonByExternalRefIdCommand>
     {
         private readonly BookingsDbContext _context;
 

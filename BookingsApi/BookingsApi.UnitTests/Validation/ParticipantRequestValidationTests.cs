@@ -209,6 +209,34 @@ namespace BookingsApi.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
+        [TestCase("wil.li_am." , false)]
+        [TestCase("Cr.aig_1234", true)]
+        [TestCase("I.", false)]
+        [TestCase(".william1234", false)]
+        [TestCase("_a", true)]
+        [TestCase("Willi..amCraig1234", false)]
+        [TestCase(" qweqwe ", false)]
+        [TestCase("w.w", true)]
+        [TestCase("XY", true)]
+        public async Task Should_valid_first_last_names_against_regex(string testName, bool expectedResult)
+        {
+            //Arrange
+            var request = BuildRequest();
+            request.FirstName = testName;
+            request.LastName = testName;
+            //Act
+            var result = await _validator.ValidateAsync(request);
+            //Assert
+            result.IsValid.Should().Be(expectedResult);
+            if (!expectedResult)
+            {
+                result.Errors.Count.Should().Be(2);
+                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.FirstNameDoesntMatchRegex)
+                    .Should().BeTrue();
+                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.LastNameDoesntMatchRegex)
+                    .Should().BeTrue();
+            }
+        }
 
         private ParticipantRequest BuildRequest()
         {
