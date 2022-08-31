@@ -69,5 +69,55 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             payload.Hearing.ScheduledDateTime.Should().Be(request.ScheduledDateTime);
             payload.Hearing.HearingVenueName.Should().Be(request.HearingVenueName);
         }
+        [Test]
+        public async Task Should_send_message_to_BQS_when_judge_details_updated()
+        {
+            var videoHearing = GetHearing("Original Hearing");
+            videoHearing.UpdateStatus(BookingStatus.Created, "initial", null);
+            videoHearing.OtherInformation = "|JudgeEmail|test@test.com|JudgePhone|123";
+            var request = new UpdateHearingRequest
+            {
+                OtherInformation = "|JudgeEmail|aDifferentEmail@test.com|JudgePhone|123",
+                ScheduledDuration = 999,
+                UpdatedBy = "updated by test",
+                ScheduledDateTime = DateTime.Today.AddDays(2),
+                HearingRoomName = "Updated room name",
+                HearingVenueName = "Updated venue name",
+                QuestionnaireNotRequired = false,
+                AudioRecordingRequired = true,
+                Cases = null
+            };
+            var hearingVenueOriginal = videoHearing.HearingVenue;
+            var newVenue = new HearingVenue(111, request.HearingVenueName);
+            var updatedHearing = GetHearing("Case Update Test");
+            updatedHearing.SetProtected(nameof(updatedHearing.Id), videoHearing.Id);
+            updatedHearing.UpdateHearingDetails(newVenue,
+                request.ScheduledDateTime, request.ScheduledDuration, request.HearingRoomName, request.OtherInformation,
+                request.UpdatedBy, new List<Case>(), request.QuestionnaireNotRequired.Value,
+                request.AudioRecordingRequired.Value);
+
+            QueryHandlerMock
+                .SetupSequence(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(videoHearing).ReturnsAsync(updatedHearing);
+
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
+                .ReturnsAsync(new List<HearingVenue> { hearingVenueOriginal, newVenue });
+            
+            
+            var expectedResult = new HearingToDetailsResponseMapper().MapHearingToDetailedResponse(updatedHearing);
+            
+            var controller = GetControllerObject(true);
+            var result = await controller.UpdateHearingDetails(videoHearing.Id, request);
+            var ob = result.As<OkObjectResult>();
+            ob.Should().NotBeNull();
+            ob.Value.As<HearingDetailsResponse>().Should().BeEquivalentTo(expectedResult);
+
+            var message = SbQueueClient.ReadAllMessagesFromQueue();
+            var payload = message.FirstOrDefault(e => e.IntegrationEvent is JudgeUpdatedIntegrationEvent)?.IntegrationEvent.As<JudgeUpdatedIntegrationEvent>();
+            payload.Hearing.HearingId.Should().Be(updatedHearing.Id);
+            payload.Judge.ContactEmailForNonEJudJudgeUser.Should().Be("aDifferentEmail@test.com");
+
+        }
     }
 }
