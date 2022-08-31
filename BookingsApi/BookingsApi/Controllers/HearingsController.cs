@@ -30,7 +30,6 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
-using BookingsApi.Infrastructure.Services;
 
 namespace BookingsApi.Controllers
 {
