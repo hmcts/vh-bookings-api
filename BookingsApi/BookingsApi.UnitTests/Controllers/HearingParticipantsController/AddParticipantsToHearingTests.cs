@@ -8,6 +8,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -116,8 +117,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             request.Participants[0].LastName = hearing.Participants[0].Person.LastName;
             request.Participants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
             request.Participants[0].TelephoneNumber = hearing.Participants[0].Person.TelephoneNumber;
-            hearing.Participants[1].Person.ContactEmail = "judge@me.com";
-            hearing.Participants[1].HearingRole.UserRole.Name = "Judge";
+            hearing.Participants.First(e => e.HearingRole.Name == "Judge").Person.ContactEmail = "judge@me.com";
             request.Participants.Add(new ParticipantRequest
             {
                 CaseRoleName = "Test",
