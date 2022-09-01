@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.DAL.Helper;
 
 namespace BookingsApi.Controllers
 {
@@ -237,8 +238,8 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
 
-            var caseTypequery = new GetCaseTypeQuery(videoHearing.CaseType.Name);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypequery);
+            var caseTypeQuery = new GetCaseTypeQuery(videoHearing.CaseType.Name);
+            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypeQuery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
             var representatives = request.NewParticipants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
@@ -277,7 +278,7 @@ namespace BookingsApi.Controllers
                     TelephoneNumber = existingParticipantRequest.TelephoneNumber,
                     Title = existingParticipantRequest.Title
                 };
-
+                existingParticipantDetail.Person.ContactEmail = existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
                 existingParticipantDetails.Add(existingParticipantDetail);
             }
              
@@ -298,8 +299,7 @@ namespace BookingsApi.Controllers
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-            await PublishEventForUpdateParticipantsAysnc(hearing, existingParticipantDetails, newParticipants, 
-                request.RemovedParticipantIds, linkedParticipants);
+            await PublishEventForUpdateParticipantsAysnc(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
@@ -603,7 +603,12 @@ namespace BookingsApi.Controllers
             }
             else
                 foreach (var participant in eventExistingParticipants)
-                    await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));  
+                {
+                    if(participant.HearingRole.Name == HearingRoles.Judge)
+                        await _eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(hearing, participant));  
+                    else
+                        await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));  
+                }
             
         }
 

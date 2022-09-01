@@ -6,11 +6,10 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
     public class JudgeUpdatedIntegrationEvent: IIntegrationEvent
     {
-        public JudgeUpdatedIntegrationEvent(Hearing hearing, Participant judge, string otherInformation)
+        public JudgeUpdatedIntegrationEvent(Hearing hearing, Participant judge)
         {
             Hearing = HearingDtoMapper.MapToDto(hearing);
             Judge = ParticipantDtoMapper.MapToDto(judge);
-            Judge.SetOtherFieldsForNonEJudJudgeUser(otherInformation);
         }
 
         public HearingDto Hearing { get; }

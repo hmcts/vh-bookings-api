@@ -13,15 +13,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Domain.Participants;
 using Testing.Common.Assertions;
-using Testing.Common.Builders.Domain;
-
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 {
     public class UpdateHearingParticipantsTests : HearingParticipantsControllerTest
     {
         private UpdateHearingParticipantsRequest _request;
-
         private List<UpdateParticipantRequest> _existingParticipants { get; set; }
         private List<ParticipantRequest> _newParticipants { get; set; }
         private List<Guid> _removedParticipantIds { get; set; }
@@ -200,7 +198,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         {
             //Arrange
             var hearing = GetVideoHearing();
-            var part1 = hearing.Participants.FirstOrDefault(x => x.HearingRole.Name == "Name");
+            var part1 = hearing.Participants.First(x => x.HearingRole.Name == "Name");
             part1.Person.ContactEmail = "contactme@dontcontactme.com";
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
@@ -231,7 +229,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         {
             //Arrange
             var hearing = GetVideoHearing();
-            var part1 = hearing.Participants.FirstOrDefault(x => x.HearingRole.Name == "Name");
+            var part1 = hearing.Participants.First(x => x.HearingRole.Name == "Judge");
             part1.HearingRole = new HearingRole(102, "Judge") { UserRole = new UserRole(1, "Judge") };
             part1.Person.ContactEmail = "contactme@dontcontactme.com";
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
@@ -309,13 +307,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         }
 
         [Test]
-        public async Task Should_add_given_participants_to_hearing_with_judge_and_publishevent_if_several_matching_participant_with_contactemail()
+        public async Task Should_add_given_participants_to_hearing_with_judge_and_publish_event_if_several_matching_participant_with_contact_email()
         {
-            var hearing = GetVideoHearing(false);
-            hearing.Participants[0].HearingRole = new HearingRole(1, "Generic") { UserRole = new UserRole(1, "Judge"), };
+            var hearing = GetVideoHearing();
+            var judge = hearing.Participants.First(e => e is Judge);  
+            judge.HearingRole = new HearingRole(1, "Generic") { UserRole = new UserRole(1, "Judge")};
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
             _request = BuildRequest(withLinkedParticipants: false);
-            _request.NewParticipants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
+            _request.NewParticipants[0].ContactEmail = judge.Person.ContactEmail;
 
             var response = await Controller.UpdateHearingParticipants(hearingId, _request);
 
@@ -325,9 +324,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         }
 
         [Test]
-        public async Task Should_add_given_participants_to_hearing_without_judge_and_publishevent_if_several_matching_participant_with_contactemail()
+        public async Task Should_add_given_participants_to_hearing_without_judge_and_publish_event_if_several_matching_participant_with_contactemail()
         {
-            var hearing = GetVideoHearing(false);
+            var hearing = GetVideoHearing();
             hearing.Participants[0].HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
             _request = BuildRequest(withLinkedParticipants: false);
@@ -375,7 +374,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingParticipantsUpdatedIntegrationEvent>()), Times.Once);
         }  
         [Test]
-        public async Task Should_publish_ParticipantUpdatedIntegrationEvent_on_each_participant_when_no_new_participants_added()
+        public async Task Should_publish_Participant_and_Judge_UpdatedIntegrationEvent_on_each_participant_when_no_new_participants_added()
         {
             //Arrange
             var hearing = GetVideoHearing();
@@ -392,6 +391,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                     Representee = "Representee",
                     TelephoneNumber = "07123456789",
                     Title = "Title"
+                },     
+                new UpdateParticipantRequest
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants.First(e=>e is Judge).Id, 
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    ContactEmail = "new@email.com",
+                    Title = "Title"
                 }
             };
             _request = BuildRequest();
@@ -403,7 +412,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             await Controller.UpdateHearingParticipants(hearingId, _request);
 
             //Assert
-            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.Once);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<ParticipantUpdatedIntegrationEvent>()), Times.AtLeastOnce);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<JudgeUpdatedIntegrationEvent>()), Times.Once);
         }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)

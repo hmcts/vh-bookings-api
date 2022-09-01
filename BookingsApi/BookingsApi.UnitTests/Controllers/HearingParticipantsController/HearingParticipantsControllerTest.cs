@@ -57,7 +57,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             hearing.CaseType = CaseType;
             foreach (var participant in hearing.Participants)
             {
-                participant.HearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "User"), };
+                participant.HearingRole = participant is Judge 
+                    ? new HearingRole(1, "Judge") { UserRole = new UserRole(1, "Judge")}
+                    : new HearingRole(1, "Name") { UserRole = new UserRole(1, "User")};
                 participant.CaseRole = new CaseRole(1, "Generic");
             }
 
