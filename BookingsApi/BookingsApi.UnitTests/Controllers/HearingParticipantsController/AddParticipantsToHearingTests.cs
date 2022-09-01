@@ -40,7 +40,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             {
                 x.CaseRoleName = "Generic";
                 x.HearingRoleName = "Litigant in person";
-                x.FirstName = "Automation_Added Participant";
+                x.FirstName = "Automation_AddedParticipant";
             });
 
             return participants;

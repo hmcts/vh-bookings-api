@@ -5,6 +5,9 @@ namespace BookingsApi.Validations
 {
     public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
     {
+        private static readonly string _nameRegex = $"^(\\w+(?:\\w|[._-](?![._-]))*\\w+)$";
+        public static readonly string FirstNameDoesntMatchRegex = "First name must match regex RegularExpression";
+        public static readonly string LastNameDoesntMatchRegex = "Last name must match regex RegularExpression";
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
         public static readonly string NoCaseRoleNameErrorMessage = "Case role is required";
         public static readonly string NoHearingRoleNameErrorMessage = "Hearing role is required";
@@ -19,7 +22,9 @@ namespace BookingsApi.Validations
         public ParticipantRequestValidation()
         {
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
+            RuleFor(x => x.FirstName).Matches(_nameRegex).WithMessage(FirstNameDoesntMatchRegex);
             RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);
+            RuleFor(x => x.LastName).Matches(_nameRegex).WithMessage(LastNameDoesntMatchRegex);
             RuleFor(x => x.ContactEmail).NotEmpty().WithMessage(NoContactEmailErrorMessage).Must(x => x.IsValidEmail()).WithMessage(InvalidContactEmailErrorMessage);
 
             RuleFor(x => x.Username).NotEmpty().When(x => x.HearingRoleName == "Judge").WithMessage(NoUsernameErrorMessage);
