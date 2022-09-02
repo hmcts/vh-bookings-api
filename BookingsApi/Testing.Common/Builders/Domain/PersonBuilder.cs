@@ -19,7 +19,7 @@ namespace Testing.Common.Builders.Domain
                 
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", $"Automation_{RandomNumber.Next()}@hmcts.net", $"Automation_{RandomNumber.Next()}@hmcts.net"))
+                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", $"Automation_{RandomNumber.Next()}@hmcts.net", $"Automation_{RandomNumber.Next()}@hmcts.net"))
                 .With(x => x.UpdatedDate, DateTime.MinValue)
                 .Build();
         }
@@ -28,7 +28,7 @@ namespace Testing.Common.Builders.Domain
         {
             var settings = new BuilderSettings();
             _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", contactEmail, userId))
+                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", contactEmail, userId))
                 .Build();
         }
 
@@ -36,7 +36,7 @@ namespace Testing.Common.Builders.Domain
         {
             var settings = new BuilderSettings();
             _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), $"Automation_{Name.First()}", $"Automation_{Name.Last()}", contactEmail, contactEmail))
+                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", contactEmail, contactEmail))
                 .Build();
         }
 
