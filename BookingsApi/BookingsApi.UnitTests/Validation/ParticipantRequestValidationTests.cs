@@ -218,6 +218,9 @@ namespace BookingsApi.UnitTests.Validation
         [TestCase(" qweqwe ", false)]
         [TestCase("w.w", true)]
         [TestCase("XY", true)]
+        [TestCase("bill e boy", true)]
+        [TestCase("Test-Judge 1", true)]
+        [TestCase("Test-Judge  1", false)]
         public async Task Should_valid_first_last_names_against_regex(string testName, bool expectedResult)
         {
             //Arrange

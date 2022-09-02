@@ -52,8 +52,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(6).All()
                 .With(x => x.Title = "Mrs")
-                .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
-                .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
+                .With(x => x.FirstName = $"Automation_testName")
+                .With(x => x.LastName = $"Automation_LastName")
                 .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.TelephoneNumber = Faker.Phone.Number())
                 .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")

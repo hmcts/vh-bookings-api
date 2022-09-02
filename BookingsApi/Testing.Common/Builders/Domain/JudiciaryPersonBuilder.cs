@@ -1,5 +1,4 @@
-﻿using System;
-using Faker;
+﻿using Faker;
 using FizzWare.NBuilder;
 using BookingsApi.Domain;
 
@@ -17,8 +16,8 @@ namespace Testing.Common.Builders.Domain
                         externalRefId,
                         $"{RandomNumber.Next(0, 1000)}",
                         Name.Prefix(),
-                        $"Automation_{Name.First()}",
-                        $"Automation_{Name.Last()}",
+                        $"Automation_FirstName",
+                        $"Automation_LastName",
                         Name.FullName(),
                         $"{RandomNumber.Next(1000, 100000)}",
                         $"Automation_{RandomNumber.Next()}@hmcts.net", 
