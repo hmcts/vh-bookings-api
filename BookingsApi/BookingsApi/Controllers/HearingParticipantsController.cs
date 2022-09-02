@@ -24,7 +24,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.DAL.Helper;
 
 namespace BookingsApi.Controllers
 {
@@ -604,8 +603,14 @@ namespace BookingsApi.Controllers
             else
                 foreach (var participant in eventExistingParticipants)
                 {
-                    if(participant.HearingRole.Name == HearingRoles.Judge)
+                    if (participant is Judge)
+                    {
+                        var judgeRequest =
+                            existingParticipants.First(e => e.ParticipantId == participant.Id);
+                        participant.Person.ContactEmail = judgeRequest.Person.ContactEmail;
+                        participant.Person.TelephoneNumber = judgeRequest.Person.TelephoneNumber;
                         await _eventPublisher.PublishAsync(new JudgeUpdatedIntegrationEvent(hearing, participant));  
+                    }
                     else
                         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));  
                 }
