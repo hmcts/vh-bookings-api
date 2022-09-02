@@ -48,7 +48,7 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">The username of the person</param>
         /// <returns>Person</returns>
-        [HttpGet("username/{username}", Name = "GetPersonByUsername")]
+        [HttpGet("username/{**username}", Name = "GetPersonByUsername")]
         [OpenApiOperation("GetPersonByUsername")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -232,8 +232,7 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">username of person</param>
         /// <returns></returns>
-        [HttpPatch("username/{username}/anonymise-for-expired-hearings",
-            Name = "AnonymisePersonWithUsernameForExpiredHearings")]
+        [HttpPatch("username/{username}/anonymise-for-expired-hearings", Name = "AnonymisePersonWithUsernameForExpiredHearings")]
         [OpenApiOperation("AnonymisePersonWithUsernameForExpiredHearings")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]

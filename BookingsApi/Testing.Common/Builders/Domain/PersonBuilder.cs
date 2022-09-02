@@ -19,7 +19,11 @@ namespace Testing.Common.Builders.Domain
                 
             }
             _person = new Builder(_settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", $"Automation_{RandomNumber.Next()}@hmcts.net", $"Automation_{RandomNumber.Next()}@hmcts.net"))
+                    new Person(
+                        Name.Prefix(), 
+                        "Automation_FirstName", 
+                        "Automation_LastName", 
+                        $"Automation_{RandomNumber.Next()}@hmcts.net", $"Automation_{RandomNumber.Next()}@hmcts.net"))
                 .With(x => x.UpdatedDate, DateTime.MinValue)
                 .Build();
         }

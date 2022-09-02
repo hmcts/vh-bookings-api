@@ -595,7 +595,18 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
-            var judiciaryPersonStaging = new JudiciaryPersonStaging(Faker.Name.First(), Faker.Name.First(), Faker.Name.First(), Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First(),Faker.Name.First());
+            var judiciaryPersonStaging = 
+                new JudiciaryPersonStaging(
+                    Faker.Name.First(), 
+                    Faker.Name.First(), 
+                    Faker.Name.First(),
+                    Faker.Name.First(),
+                    Faker.Name.First(),
+                    Faker.Name.First(),
+                    Faker.Name.First(),
+                    Faker.Name.First(),
+                    Faker.Name.First(),
+                    Faker.Name.First());
             await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);
 
             await db.SaveChangesAsync();
