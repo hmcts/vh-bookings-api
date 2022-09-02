@@ -5,9 +5,9 @@ namespace BookingsApi.Validations
 {
     public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
     {
-        private static readonly string _nameRegex = $"^(\\w+(?:\\w|[._-](?![._-]))*\\w+)$";
-        public static readonly string FirstNameDoesntMatchRegex = "First name must match regex RegularExpression";
-        public static readonly string LastNameDoesntMatchRegex = "Last name must match regex RegularExpression";
+        private static readonly string _nameRegex = $"^(\\w+(?:\\w|[\\s._-](?![\\s._-]))*\\w+)$";
+        public static readonly string FirstNameDoesntMatchRegex = "First name must match regular expression";
+        public static readonly string LastNameDoesntMatchRegex = "Last name must match regular expression";
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
         public static readonly string NoCaseRoleNameErrorMessage = "Case role is required";
         public static readonly string NoHearingRoleNameErrorMessage = "Hearing role is required";
