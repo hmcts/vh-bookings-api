@@ -40,7 +40,7 @@ namespace Testing.Common.Builders.Domain
         {
             var settings = new BuilderSettings();
             _person = new Builder(settings).CreateNew<Person>().WithFactory(() =>
-                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", contactEmail, contactEmail))
+                    new Person(Name.Prefix(), $"Automation_FirstName", $"Automation_LastName", contactEmail, $"Automation_{RandomNumber.Next()}@hmcts.net"))
                 .Build();
         }
 
