@@ -1,4 +1,5 @@
-﻿using BookingsApi.DAL.Helper;
+﻿using System;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -11,41 +12,41 @@ namespace BookingsApi.DAL.Migrations
         {
             migrationBuilder.InsertData(
                nameof(CaseRole),
-               new[] { "Id", "Name", "Group", "CaseTypeId" },
+               new[] { "Id", "Name", "Group", "CaseTypeId", "CreatedDate" },
                new object[,]
                {
-                    { 343, "Applicant", (int) CaseRoleGroup.Applicant, 53 },
-                    { 344, "Respondant", (int) CaseRoleGroup.Respondent, 53 },
+                    { 343, "Applicant", (int) CaseRoleGroup.Applicant, 53, DateTime.UtcNow },
+                    { 344, "Respondent", (int) CaseRoleGroup.Respondent, 53, DateTime.UtcNow },
                });
 
             migrationBuilder.InsertData(
                 nameof(HearingRole),
-                new[] { "Id", "Name", "UserRoleId", "CaseRoleId", },
+                new[] { "Id", "Name", "UserRoleId", "CaseRoleId", "CreatedDate" },
                 new object[,]
                 {
                     //Applicants
-                    { 1094, HearingRoles.Appellant, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1095, HearingRoles.Expert, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1096, HearingRoles.Intermediary, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1097, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1098, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1099, HearingRoles.LitigationFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1100, HearingRoles.MacKenzieFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
-                    { 1101, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 343 },
-                    { 1102, HearingRoles.Solicitor, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 343 },
-                    { 1103, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343 },
+                    { 1094, HearingRoles.Appellant, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1095, HearingRoles.Expert, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1096, HearingRoles.Intermediary, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1097, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1098, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1099, HearingRoles.LitigationFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1100, HearingRoles.MacKenzieFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
+                    { 1101, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 343, DateTime.UtcNow },
+                    { 1102, HearingRoles.Solicitor, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 343, DateTime.UtcNow },
+                    { 1103, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 343, DateTime.UtcNow },
                     
                     //Respondent
-                    { 1104, HearingRoles.Appellant, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1105, HearingRoles.Expert, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1106, HearingRoles.Intermediary, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1107, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1108, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1109, HearingRoles.LitigationFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1110, HearingRoles.MacKenzieFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
-                    { 1111, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 344 },
-                    { 1112, HearingRoles.Solicitor, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 344 },
-                    { 1113, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344 },
+                    { 1104, HearingRoles.Appellant, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1105, HearingRoles.Expert, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1106, HearingRoles.Intermediary, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1107, HearingRoles.Interpreter, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1108, HearingRoles.LitigantInPerson, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1109, HearingRoles.LitigationFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1110, HearingRoles.MacKenzieFriend, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
+                    { 1111, HearingRoles.Representative, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 344, DateTime.UtcNow },
+                    { 1112, HearingRoles.Solicitor, UserRoleForHearingRole.UserRoleId[UserRoles.Representative], 344, DateTime.UtcNow },
+                    { 1113, HearingRoles.Witness, UserRoleForHearingRole.UserRoleId[UserRoles.Individual], 344, DateTime.UtcNow },
             });
         }
 
