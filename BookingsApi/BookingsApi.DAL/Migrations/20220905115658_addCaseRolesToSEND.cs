@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
@@ -15,8 +16,8 @@ namespace BookingsApi.DAL.Migrations
                new[] { "Id", "Name", "Group", "CaseTypeId", "CreatedDate" },
                new object[,]
                {
-                    { 343, "Applicant", (int) CaseRoleGroup.Applicant, 53, DateTime.UtcNow },
-                    { 344, "Respondent", (int) CaseRoleGroup.Respondent, 53, DateTime.UtcNow },
+                    { 343, "Applicant", (int) CaseRoleGroup.Applicant, 52, DateTime.UtcNow },
+                    { 344, "Respondent", (int) CaseRoleGroup.Respondent, 52, DateTime.UtcNow },
                });
 
             migrationBuilder.InsertData(
