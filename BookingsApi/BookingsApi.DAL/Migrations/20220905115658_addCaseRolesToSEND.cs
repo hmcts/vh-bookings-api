@@ -14,8 +14,8 @@ namespace BookingsApi.DAL.Migrations
                new[] { "Id", "Name", "Group", "CaseTypeId" },
                new object[,]
                {
-                    { 343, "Applicant", (int) CaseRoleGroup.Applicant, 52 },
-                    { 344, "Respondant", (int) CaseRoleGroup.Respondent, 52 },
+                    { 343, "Applicant", (int) CaseRoleGroup.Applicant, 53 },
+                    { 344, "Respondant", (int) CaseRoleGroup.Respondent, 53 },
                });
 
             migrationBuilder.InsertData(
