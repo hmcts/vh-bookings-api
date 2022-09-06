@@ -379,3 +379,5 @@ Feature: CaseTypes
       | Special Educational Needs and Disability      | Observer               |
       | Special Educational Needs and Disability      | Panel Member           |
       | Special Educational Needs and Disability      | Judge                  |
+      | Special Educational Needs and Disability      | Applicant              |
+      | Special Educational Needs and Disability      | Respondent             |
