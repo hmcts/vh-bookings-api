@@ -86,19 +86,37 @@ namespace BookingsApi.UnitTests.Validation
         }
         
         [Test]
-        public async Task Should_return_missing_hearing_type_name_error()
+        public async Task Should_return_missing_hearing_type_name_error_when_reference_data_feature_is_toggled_off()
         {
             var request = BuildRequest();
             request.HearingTypeName = string.Empty;
-           
-            var result = await _validator.ValidateAsync(request);
+            const bool referenceDataFeatureEnabled = false;
+
+            var validator = new BookNewHearingRequestValidation(referenceDataFeatureEnabled);
+            var result = await validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeNameErrorMessage)
                 .Should().BeTrue();
         }
-        
+
+        [Test]
+        public async Task Should_return_missing_hearing_code_error_when_reference_data_feature_is_toggled_on()
+        {
+            var request = BuildRequest();
+            request.HearingTypeCode = string.Empty;
+            const bool referenceDataFeatureEnabled = true;
+
+            var validator = new BookNewHearingRequestValidation(referenceDataFeatureEnabled);
+            var result = await validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeCodeErrorMessage)
+                .Should().BeTrue();
+        }
+
         [Test]
         public async Task Should_return_missing_participants_error()
         {

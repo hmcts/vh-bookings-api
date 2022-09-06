@@ -78,6 +78,11 @@ namespace BookingsApi.Contract.Requests
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
+        
+        /// <summary>
+        /// The code of the hearing type
+        /// </summary>
+        public string HearingTypeCode { get; set; }
 
         [DefaultValue(false)]
         public bool IsMultiDayHearing { get; set; } = false;

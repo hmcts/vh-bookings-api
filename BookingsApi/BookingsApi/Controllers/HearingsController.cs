@@ -218,12 +218,13 @@ namespace BookingsApi.Controllers
                     return ModelStateErrorLogger(rDataFlag ? nameof(request.CaseTypeServiceId) : nameof(request.CaseTypeName), "Case type does not exist", logCaseDoesNotExist, queryValue, SeverityLevel.Error);
                 }
 
-                var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
+                var hearingTypeQueryValue = rDataFlag ? request.HearingTypeCode : request.HearingTypeName;
+                var hearingType = rDataFlag ? caseType.HearingTypes.SingleOrDefault(x => x.Code == hearingTypeQueryValue)
+                        : caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
                 if (hearingType == null)
                 {
                     const string logHearingTypeDoesNotExist = "BookNewHearing Error: Hearing type does not exist";
-                    return ModelStateErrorLogger(nameof(request.HearingTypeName),
-                        "Hearing type does not exist", logHearingTypeDoesNotExist, request.HearingTypeName, SeverityLevel.Error);
+                    return ModelStateErrorLogger(rDataFlag ? nameof(request.HearingTypeCode) : nameof(request.HearingTypeName), "Hearing type does not exist", logHearingTypeDoesNotExist, hearingTypeQueryValue, SeverityLevel.Error);
                 }
 
                 var venue = await GetVenue(request.HearingVenueName);
