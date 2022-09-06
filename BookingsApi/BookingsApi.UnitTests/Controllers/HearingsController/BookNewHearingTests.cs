@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var caseType = new CaseType(1, "Civil")
             {
                 CaseRoles = CaseRoles,
-                HearingTypes = new List<HearingType> { new HearingType("Automated Test") }
+                HearingTypes = new List<HearingType> { new HearingType("Automated Test") { Code = "AutomatedTest" } }
             };
 
             QueryHandlerMock
@@ -206,13 +206,17 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.CaseTypeName), "Case type does not exist");
         }
 
-        [Test]
-        public async Task Should_return_badrequest_without_matching_hearingtype()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task Should_return_badrequest_without_matching_hearingtype(bool referenceDataToggle)
         {
+            if (referenceDataToggle)
+                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
+            
             var caseType = new CaseType(1, "Civil")
             {
                 CaseRoles = CaseRoles,
-                HearingTypes = new List<HearingType> { new HearingType("Not matching") }
+                HearingTypes = new List<HearingType> { new HearingType("Not matching") { Code = "NotMatching"} }
             };
 
             QueryHandlerMock
@@ -224,7 +228,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingTypeName), "Hearing type does not exist");
+            if (referenceDataToggle)
+            {
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingTypeCode), "Hearing type does not exist");
+            }
+            else
+            {
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingTypeName), "Hearing type does not exist");
+            }
         }
 
         [Test]

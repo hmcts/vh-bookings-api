@@ -12,12 +12,13 @@ namespace BookingsApi.Validations
         public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public const string ScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
         public const string CaseTypeNameErrorMessage = "Please provide a case type name";
-        public const string HearingTypeErrorMessage = "Please provide a hearing type name";
+        public const string HearingTypeNameErrorMessage = "Please provide a hearing type name";
         public const string ParticipantsErrorMessage = "Please provide at least one participant";
         public const string CasesErrorMessage = "Please provide at least one case";
         public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
+        public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
 
-        public BookNewHearingRequestValidation()
+        public BookNewHearingRequestValidation(bool referenceDataFeatureEnabled = false)
         {
             RuleFor(x => x.HearingVenueName)
                 .NotEmpty().WithMessage(HearingVenueErrorMessage);
@@ -31,8 +32,16 @@ namespace BookingsApi.Validations
             RuleFor(x => x.CaseTypeName)
                 .NotEmpty().WithMessage(CaseTypeNameErrorMessage);
 
-            RuleFor(x => x.HearingTypeName)
-                .NotEmpty().WithMessage(HearingTypeErrorMessage);
+            if (referenceDataFeatureEnabled)
+            {
+                RuleFor(x => x.HearingTypeCode)
+                    .NotEmpty().WithMessage(HearingTypeCodeErrorMessage);
+            }
+            else
+            {
+                RuleFor(x => x.HearingTypeName)
+                    .NotEmpty().WithMessage(HearingTypeNameErrorMessage);
+            }
 
             RuleFor(x => x.Participants).NotEmpty()
                 .NotEmpty().WithMessage(ParticipantsErrorMessage);
