@@ -53,8 +53,8 @@ namespace BookingsApi.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            for (int caseRoleId = 1094; caseRoleId <= 1113; caseRoleId++)
-                migrationBuilder.DeleteData(nameof(HearingRole), "Id", caseRoleId);
+            for (int hearingRoleId = 1094; hearingRoleId <= 1113; hearingRoleId++)
+                migrationBuilder.DeleteData(nameof(HearingRole), "Id", hearingRoleId);
 
             migrationBuilder.DeleteData(nameof(CaseRole), "Id", 344);
             migrationBuilder.DeleteData(nameof(CaseRole), "Id", 343);
