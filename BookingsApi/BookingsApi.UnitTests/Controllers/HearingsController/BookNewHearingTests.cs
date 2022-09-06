@@ -293,7 +293,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             Assert.ThrowsAsync<Exception>(async () => await Controller.BookNewHearing(newRequest));
             if (referenceDataToggle)
-              Logger.Verify(c => c.TrackError(It.IsAny<Exception>(), It.Is<Dictionary<string,string>>(e => e.Count == 6)), Times.Once());
+              Logger.Verify(c => c.TrackError(It.IsAny<Exception>(), It.Is<Dictionary<string,string>>(e => e.Count == 7)), Times.Once());
         }
     }
 }

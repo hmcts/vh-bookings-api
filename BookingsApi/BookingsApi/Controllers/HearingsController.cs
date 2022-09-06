@@ -299,7 +299,10 @@ namespace BookingsApi.Controllers
                         {keyHearingTypeName, request.HearingTypeName}
                     };
                     if (_featureToggles.ReferenceDataToggle())
+                    {
                         errorLog.Add("CaseTypeServiceId", request.CaseTypeServiceId);
+                        errorLog.Add("HearingTypeCode", request.HearingTypeCode);
+                    }
                     _logger.TrackError(ex, errorLog);
                 }
                 throw;
