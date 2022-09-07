@@ -47,7 +47,8 @@ namespace BookingsApi.Mappings
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
-                Endpoints = endpoints
+                Endpoints = endpoints,
+                HearingTypeCode = videoHearing.HearingType.Code
             };
 
             return response;
