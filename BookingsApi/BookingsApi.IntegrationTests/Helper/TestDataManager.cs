@@ -14,6 +14,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.IntegrationTests.Constants;
 using Faker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new List<Guid>();
         public List<string> JudiciaryPersons { get; } = new List<string>();
+        public readonly List<Guid> _seededJusticeUserIds = new List<Guid>();
         public string CaseNumber { get; } = "2222/3511";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
@@ -52,6 +54,27 @@ namespace BookingsApi.IntegrationTests.Helper
             BookingStatus status = BookingStatus.Booked, bool isMultiDayFirstHearing = false)
         {
             return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing:isMultiDayFirstHearing);
+        }
+
+        public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName, bool isTeamLead = false)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var justiceUser = db.JusticeUsers.Add(new JusticeUser
+            {
+                ContactEmail = userName,
+                Username = userName,
+                UserRoleId = isTeamLead ? (int)UserRoleId.vhTeamLead : (int)UserRoleId.vho,
+                CreatedBy = "integration.test@test.com",
+                CreatedDate = DateTime.Now,
+                FirstName = firstName,
+                Lastname = lastName,
+            });
+
+            await db.SaveChangesAsync();
+
+            _seededJusticeUserIds.Add(justiceUser.Entity.Id);
+
+            return justiceUser.Entity;
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
@@ -390,6 +413,28 @@ namespace BookingsApi.IntegrationTests.Helper
                 catch (JudiciaryPersonNotFoundException)
                 {
                     TestContext.WriteLine(@$"Ignoring cleanup for Judiciary Person: {externalRefId}. Does not exist.");
+                }
+            }
+        }
+
+        public async Task ClearJusticeUsersAsync()
+        {
+            foreach (var id in _seededJusticeUserIds)
+            {
+                try
+                {
+                    await using var db = new BookingsDbContext(_dbContextOptions);
+                    var justiceUser = await db.JusticeUsers.SingleOrDefaultAsync(x => x.Id == id);
+                    if (justiceUser != null)
+                    {
+                        db.JusticeUsers.Remove(justiceUser);
+                        await db.SaveChangesAsync();
+                    }
+                    TestContext.WriteLine(@$"Remove Justice User: {id}.");
+                }
+                catch (JudiciaryPersonNotFoundException)
+                {
+                    TestContext.WriteLine(@$"Ignoring cleanup for Justice User: {id}. Does not exist.");
                 }
             }
         }
