@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Mappings
                 ContactEmail = "email.test@email.com",
                 UserRoleName = "Video Hearings Team Lead",
                 CreatedBy = "created.by@email.com",
-                IsJudicialOfficeHolder = true,
+                IsVhTeamLeader = true,
                 Telephone = "0123456789",
                 UserRoleId = (int)UserRoleId.vhTeamLead
             };

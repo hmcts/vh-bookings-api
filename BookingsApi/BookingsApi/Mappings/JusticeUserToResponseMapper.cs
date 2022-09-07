@@ -17,7 +17,7 @@ namespace BookingsApi.Mappings
                 Telephone = judiciaryPersonStagingRequest.Telephone,
                 UserRoleId = judiciaryPersonStagingRequest.UserRoleId,
                 UserRoleName = judiciaryPersonStagingRequest.UserRole.Name,
-                IsJudicialOfficeHolder = judiciaryPersonStagingRequest.UserRole.IsVhTeamLead,
+                IsVhTeamLeader = judiciaryPersonStagingRequest.UserRole.IsVhTeamLead,
                 CreatedBy = judiciaryPersonStagingRequest.CreatedBy,
             };
         }
