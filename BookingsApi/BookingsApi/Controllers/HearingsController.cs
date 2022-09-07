@@ -195,7 +195,7 @@ namespace BookingsApi.Controllers
                 }
 
                 var rDataFlag = _featureToggles.ReferenceDataToggle();
-                var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
+                var result = await new BookNewHearingRequestValidation(rDataFlag).ValidateAsync(request);
                 if (!result.IsValid)
                 {
                     const string logBookNewHearingValidationError = "BookNewHearing Validation Errors";
