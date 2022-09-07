@@ -2,6 +2,7 @@
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings;
+using BookingsApi.UnitTests.Constants;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -22,10 +23,10 @@ namespace BookingsApi.UnitTests.Mappings
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
                 ContactEmail = "email.test@email.com",
-                UserRole = new UserRole(9, "Video Hearings Team Lead"),
+                UserRole = new UserRole((int)UserRoleId.vhTeamLead, "Video Hearings Team Lead"),
                 CreatedBy = "created.by@email.com",
                 Telephone = "0123456789",
-                UserRoleId = 9
+                UserRoleId = (int)UserRoleId.vhTeamLead
             };
 
             var expectedJusticeUserResponse = new JusticeUserResponse
@@ -38,7 +39,7 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsJudicialOfficeHolder = true,
                 Telephone = "0123456789",
-                UserRoleId = 9
+                UserRoleId = (int)UserRoleId.vhTeamLead
             };
 
             var expectedJusticeUserResponseJson = JsonConvert.SerializeObject(expectedJusticeUserResponse);
