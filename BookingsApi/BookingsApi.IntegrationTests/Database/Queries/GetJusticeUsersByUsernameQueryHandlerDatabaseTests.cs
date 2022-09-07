@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_empty_when_no_user_is_found()
+        public async Task Should_return_null_when_no_user_is_found()
         {
             var query = new GetJusticeUserByUsernameQuery("doesnt.existatall@hmcts.net");
             var participants = await _handler.Handle(query);
