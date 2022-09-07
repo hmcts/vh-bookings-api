@@ -42,7 +42,8 @@ namespace BookingsApi.Controllers
                     HearingTypes = caseType.HearingTypes.Where(ht => ht.Live).Select(hearingType => new HearingTypeResponse
                     {
                         Id = hearingType.Id,
-                        Name = hearingType.Name
+                        Name = hearingType.Name,
+                        Code = hearingType.Code
                     }).ToList()
                 }
             );

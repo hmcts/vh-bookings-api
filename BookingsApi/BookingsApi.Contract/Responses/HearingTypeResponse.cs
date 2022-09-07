@@ -14,5 +14,10 @@ namespace BookingsApi.Contract.Responses
         ///     Unique identifier for the hearing type
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        ///     The hearing type code
+        /// </summary>
+        public string Code { get; set; }
     }
 }

@@ -10,5 +10,7 @@ namespace BookingsApi.Domain.RefData
         }
         public string Name { get; set; }
         public bool Live { get; set; }
+        public string Code { get; set; }
+        public string WelshName { get; set; }
     }
 }
