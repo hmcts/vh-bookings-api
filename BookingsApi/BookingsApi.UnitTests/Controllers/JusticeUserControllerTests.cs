@@ -2,8 +2,11 @@
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -25,6 +28,7 @@ namespace BookingsApi.UnitTests.Controllers
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
                 ContactEmail = "email.test@email.com",
+                UserRole = new UserRole(9, "Video Hearings Team Lead")
             };
 
             _queryHandlerMock = new Mock<IQueryHandler>();
@@ -51,13 +55,16 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task GetJusticeUserByUsername_ReturnsUser_WhenUserIsFound()
         {
             // Arrange
+            var expectedJusticeUserReponse = JusticeUserToResponseMapper.Map(_justiceUser);
+            var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(expectedJusticeUserReponse);
 
             // Act
             var response = await _controller.GetJusticeUserByUsername(_justiceUser.Username) as OkObjectResult;
+            var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.AreEqual(_justiceUser, response.Value);
+            Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
         }
     }
 }

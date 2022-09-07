@@ -1,10 +1,8 @@
-﻿using BookingsApi.Domain.RefData;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace BookingsApi.Domain
+namespace BookingsApi.Contract.Responses
 {
-    public class JusticeUser : TrackableEntity<Guid>
+    public class JusticeUserResponse
     {
         public string FirstName { get; set; }
         public string Lastname { get; set; }
@@ -12,7 +10,8 @@ namespace BookingsApi.Domain
         public string Username { get; set; }
         public string Telephone { get; set; }
         public int UserRoleId { get; set; }
-        public UserRole UserRole { get; set; }
+        public string UserRoleName { get; set; }
+        public bool IsJudicialOfficeHolder { get; set; }
         public string CreatedBy { get; set; }
     }
 }

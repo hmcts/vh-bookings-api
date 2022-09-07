@@ -470,14 +470,14 @@ namespace BookingsApi.Client
         /// <param name="username">String to match the username with.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<JusticeUser> GetJusticeUserByUsernameAsync(string username);
+        System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Find justice user with matching username.</summary>
         /// <param name="username">String to match the username with.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<JusticeUser> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get a participants by username</summary>
         /// <param name="username">The username of the participant</param>
@@ -4096,7 +4096,7 @@ namespace BookingsApi.Client
         /// <param name="username">String to match the username with.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<JusticeUser> GetJusticeUserByUsernameAsync(string username)
+        public System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username)
         {
             return GetJusticeUserByUsernameAsync(username, System.Threading.CancellationToken.None);
         }
@@ -4106,7 +4106,7 @@ namespace BookingsApi.Client
         /// <param name="username">String to match the username with.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<JusticeUser> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/justiceuser/GetJusticeUserByUsername?");
@@ -4148,7 +4148,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<JusticeUser>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<JusticeUserResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

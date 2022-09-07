@@ -40,19 +40,21 @@ namespace BookingsApi.Controllers
         /// <returns>Person list</returns>
         [HttpGet("GetJusticeUserByUsername")]
         [OpenApiOperation("GetJusticeUserByUsername")]
-        [ProducesResponseType(typeof(JusticeUser), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(JusticeUserResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [AllowAnonymous]
         public async Task<IActionResult> GetJusticeUserByUsername(string username)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
-            var person =
+            var justiceUser =
                 await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(query);
 
-            if (person == null) 
+            if (justiceUser == null) 
                 return NotFound();
 
-            return Ok(person);
+            var justiceUserReponse = JusticeUserToResponseMapper.Map(justiceUser);
+
+            return Ok(justiceUserReponse);
         }
     }
 }
