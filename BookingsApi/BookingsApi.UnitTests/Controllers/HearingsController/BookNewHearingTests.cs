@@ -52,7 +52,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var caseType = new CaseType(1, "Civil")
             {
                 CaseRoles = CaseRoles,
-                HearingTypes = new List<HearingType> { new HearingType("Automated Test") { Code = "AutomatedTest" } }
+                HearingTypes = new List<HearingType> { new HearingType("Automated Test") }
             };
 
             QueryHandlerMock
@@ -216,7 +216,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var caseType = new CaseType(1, "Civil")
             {
                 CaseRoles = CaseRoles,
-                HearingTypes = new List<HearingType> { new HearingType("Not matching") { Code = "NotMatching"} }
+                HearingTypes = new List<HearingType> { new HearingType("Not matching") }
             };
 
             QueryHandlerMock

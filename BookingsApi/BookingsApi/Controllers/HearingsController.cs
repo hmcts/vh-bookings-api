@@ -219,8 +219,7 @@ namespace BookingsApi.Controllers
                 }
 
                 var hearingTypeQueryValue = rDataFlag ? request.HearingTypeCode : request.HearingTypeName;
-                var hearingType = rDataFlag ? caseType.HearingTypes.SingleOrDefault(x => x.Code == hearingTypeQueryValue)
-                        : caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
+                var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
                 if (hearingType == null)
                 {
                     const string logHearingTypeDoesNotExist = "BookNewHearing Error: Hearing type does not exist";
