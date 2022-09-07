@@ -11,7 +11,7 @@ namespace BookingsApi.Contract.Responses
         public string Telephone { get; set; }
         public int UserRoleId { get; set; }
         public string UserRoleName { get; set; }
-        public bool IsJudicialOfficeHolder { get; set; }
+        public bool IsVhTeamLeader { get; set; }
         public string CreatedBy { get; set; }
     }
 }
