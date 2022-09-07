@@ -14,6 +14,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.IntegrationTests.Constants;
 using Faker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -62,7 +63,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = isTeamLead ? 9 : 2,
+                UserRoleId = isTeamLead ? (int)UserRoleId.vhTeamLead : (int)UserRoleId.vho,
                 CreatedBy = "integration.test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
