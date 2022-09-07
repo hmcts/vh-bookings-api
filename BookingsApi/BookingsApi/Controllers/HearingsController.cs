@@ -195,7 +195,7 @@ namespace BookingsApi.Controllers
                 }
 
                 var rDataFlag = _featureToggles.ReferenceDataToggle();
-                var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
+                var result = await new BookNewHearingRequestValidation(rDataFlag).ValidateAsync(request);
                 if (!result.IsValid)
                 {
                     const string logBookNewHearingValidationError = "BookNewHearing Validation Errors";
@@ -218,12 +218,13 @@ namespace BookingsApi.Controllers
                     return ModelStateErrorLogger(rDataFlag ? nameof(request.CaseTypeServiceId) : nameof(request.CaseTypeName), "Case type does not exist", logCaseDoesNotExist, queryValue, SeverityLevel.Error);
                 }
 
-                var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == request.HearingTypeName);
+                var hearingTypeQueryValue = rDataFlag ? request.HearingTypeCode : request.HearingTypeName;
+                var hearingType = rDataFlag ? caseType.HearingTypes.SingleOrDefault(x => x.Code == hearingTypeQueryValue)
+                        : caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
                 if (hearingType == null)
                 {
                     const string logHearingTypeDoesNotExist = "BookNewHearing Error: Hearing type does not exist";
-                    return ModelStateErrorLogger(nameof(request.HearingTypeName),
-                        "Hearing type does not exist", logHearingTypeDoesNotExist, request.HearingTypeName, SeverityLevel.Error);
+                    return ModelStateErrorLogger(rDataFlag ? nameof(request.HearingTypeCode) : nameof(request.HearingTypeName), "Hearing type does not exist", logHearingTypeDoesNotExist, hearingTypeQueryValue, SeverityLevel.Error);
                 }
 
                 var venue = await GetVenue(request.HearingVenueName);
@@ -298,7 +299,10 @@ namespace BookingsApi.Controllers
                         {keyHearingTypeName, request.HearingTypeName}
                     };
                     if (_featureToggles.ReferenceDataToggle())
+                    {
                         errorLog.Add("CaseTypeServiceId", request.CaseTypeServiceId);
+                        errorLog.Add("HearingTypeCode", request.HearingTypeCode);
+                    }
                     _logger.TrackError(ex, errorLog);
                 }
                 throw;

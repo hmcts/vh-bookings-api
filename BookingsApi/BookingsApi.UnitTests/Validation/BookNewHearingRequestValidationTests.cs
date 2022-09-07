@@ -85,20 +85,37 @@ namespace BookingsApi.UnitTests.Validation
                 .Should().BeTrue();
         }
         
-        [Test]
-        public async Task Should_return_missing_hearing_type_name_error()
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task Should_return_missing_hearing_type_error(bool referenceDataToggle)
         {
             var request = BuildRequest();
-            request.HearingTypeName = string.Empty;
-           
-            var result = await _validator.ValidateAsync(request);
+            if (referenceDataToggle)
+            {
+                request.HearingTypeCode = string.Empty;   
+            }
+            else
+            {
+                request.HearingTypeName = string.Empty;
+            }
+
+            var validator = new BookNewHearingRequestValidation(referenceDataToggle);
+            var result = await validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeErrorMessage)
-                .Should().BeTrue();
+            if (referenceDataToggle)
+            {
+                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeCodeErrorMessage)
+                    .Should().BeTrue();
+            }
+            else
+            {
+                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeNameErrorMessage)
+                    .Should().BeTrue();
+            }
         }
-        
+
         [Test]
         public async Task Should_return_missing_participants_error()
         {

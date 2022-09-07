@@ -69,6 +69,7 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.AudioRecordingRequired = true)
                 .With(x => x.Endpoints = new List<EndpointRequest> {new EndpointRequest{ DisplayName = "New Endpoint"}})
+                .With(x => x.HearingTypeCode = "AutomatedTest")
                 .Build();
         }
 

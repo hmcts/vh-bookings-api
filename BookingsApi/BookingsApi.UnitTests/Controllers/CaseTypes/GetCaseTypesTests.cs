@@ -32,7 +32,7 @@ namespace BookingsApi.UnitTests.Controllers.CaseTypes
         [Test]
         public async Task Should_succesfully_return_casetyperesponse()
         {
-            var hearingTypes = new List<HearingType> { new HearingType("NewHearing") };
+            var hearingTypes = new List<HearingType> { new HearingType("NewHearing"){ Code = "NewHearingCode", WelshName = "NewHearingCodeInWelsh"} };
             var caseType = new CaseType(1, "Civil") { HearingTypes = hearingTypes };
             var caseTypes = new List<CaseType>() { caseType };
             
@@ -47,6 +47,7 @@ namespace BookingsApi.UnitTests.Controllers.CaseTypes
             response.Count.Should().Be(1);
             response[0].Name.Should().Be("Civil");
             response[0].HearingTypes[0].Name.Should().Be("NewHearing");
+            response[0].HearingTypes[0].Code.Should().Be("NewHearingCode");
         }
     }
 }
