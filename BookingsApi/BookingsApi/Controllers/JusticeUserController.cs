@@ -41,8 +41,7 @@ namespace BookingsApi.Controllers
         [HttpGet("GetJusticeUserByUsername")]
         [OpenApiOperation("GetJusticeUserByUsername")]
         [ProducesResponseType(typeof(JusticeUserResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [AllowAnonymous]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetJusticeUserByUsername(string username)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
