@@ -194,6 +194,8 @@ namespace BookingsApi.Controllers
                         null, SeverityLevel.Information);
                 }
 
+                SanitiseRequest(request);
+
                 var rDataFlag = _featureToggles.ReferenceDataToggle();
                 var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
                 if (!result.IsValid)
@@ -736,6 +738,15 @@ namespace BookingsApi.Controllers
             var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
+        }
+
+        private void SanitiseRequest(BookNewHearingRequest request)
+        {
+            foreach (var participant in request.Participants)
+            {
+                participant.FirstName = participant.FirstName?.Trim();
+                participant.LastName = participant.LastName?.Trim();
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ using NUnit.Framework;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Linq;
+using BookingsApi.Validations;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -283,6 +284,100 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             Assert.ThrowsAsync<Exception>(async () => await Controller.BookNewHearing(newRequest));
             if (referenceDataToggle)
               Logger.Verify(c => c.TrackError(It.IsAny<Exception>(), It.Is<Dictionary<string,string>>(e => e.Count == 6)), Times.Once());
+        }
+
+        [TestCase("FirstNameWithSpaces ")]
+        [TestCase(" FirstNameWithSpaces")]
+        [TestCase(" FirstNameWithSpaces ")]
+        [TestCase(" FirstName WithSpaces ")]
+        public async Task Should_successfully_book_hearing_with_participant_first_name_starting_or_ending_with_spaces(string firstName)
+        {
+            var newRequest = RequestBuilder.Build();
+            newRequest.Participants[0].FirstName = firstName;
+            
+            var response = await Controller.BookNewHearing(newRequest);
+            
+            response.Should().NotBeNull();
+            var result = (CreatedAtActionResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.Created);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+
+            RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
+
+            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
+                                                                                          && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
+                                                                                          && c.Endpoints[0].Sip == "@WhereAreYou.com"
+                                                                                          && c.Participants.Any(p => p.Person.FirstName == "FirstNameWithSpaces" || p.Person.FirstName == "FirstName WithSpaces"))), Times.Once);
+
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
+        }
+        
+        [TestCase("LastNameWithSpaces ")]
+        [TestCase(" LastNameWithSpaces")]
+        [TestCase(" LastNameWithSpaces ")]
+        [TestCase(" LastName WithSpaces ")]
+        public async Task Should_successfully_book_hearing_with_participant_last_name_starting_or_ending_with_spaces(string lastName)
+        {
+            var newRequest = RequestBuilder.Build();
+            newRequest.Participants[0].LastName = lastName;
+            
+            var response = await Controller.BookNewHearing(newRequest);
+            
+            response.Should().NotBeNull();
+            var result = (CreatedAtActionResult)response;
+            result.StatusCode.Should().Be((int)HttpStatusCode.Created);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
+
+            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
+
+            RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
+
+            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
+                                                                                          && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
+                                                                                          && c.Endpoints[0].Sip == "@WhereAreYou.com"
+                                                                                          && c.Participants.Any(p => p.Person.LastName == "LastNameWithSpaces" || p.Person.LastName == "LastName WithSpaces"))), Times.Once);
+
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
+            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
+        }
+        
+        [TestCase(null)]
+        [TestCase("")]
+        public async Task Should_return_badrequest_with_missing_first_name(string firstName)
+        {
+            var newRequest = RequestBuilder.Build();
+            newRequest.Participants[0].FirstName = firstName;
+            
+            var result = await Controller.BookNewHearing(newRequest);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Participants[0].FirstName", ParticipantRequestValidation.NoFirstNameErrorMessage);
+        }
+        
+        [TestCase(null)]
+        [TestCase("")]
+        public async Task Should_return_badrequest_with_missing_last_name(string lastName)
+        {
+            var newRequest = RequestBuilder.Build();
+            newRequest.Participants[0].LastName = lastName;
+            
+            var result = await Controller.BookNewHearing(newRequest);
+
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Participants[0].LastName", ParticipantRequestValidation.NoLastNameErrorMessage);
         }
     }
 }
