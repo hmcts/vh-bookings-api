@@ -194,6 +194,12 @@ namespace BookingsApi.Controllers
                         null, SeverityLevel.Information);
                 }
 
+                foreach (var participant in request.Participants)
+                {
+                    participant.FirstName = participant.FirstName?.Trim();
+                    participant.LastName = participant.LastName?.Trim();
+                }
+
                 var rDataFlag = _featureToggles.ReferenceDataToggle();
                 var result = await new BookNewHearingRequestValidation(rDataFlag).ValidateAsync(request);
                 if (!result.IsValid)
