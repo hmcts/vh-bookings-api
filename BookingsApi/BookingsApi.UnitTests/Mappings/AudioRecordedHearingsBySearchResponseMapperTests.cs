@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.UnitTests.Utilities;
+using Microsoft.IdentityModel.Tokens;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Mappings

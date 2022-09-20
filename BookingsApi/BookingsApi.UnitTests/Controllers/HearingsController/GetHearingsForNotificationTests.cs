@@ -11,6 +11,7 @@ using BookingsApi.Domain.RefData;
 using Castle.Core.Internal;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;

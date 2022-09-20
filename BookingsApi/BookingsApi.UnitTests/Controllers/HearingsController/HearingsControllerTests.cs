@@ -28,6 +28,7 @@ using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 using BookingsApi.DAL.Services;
 using FluentAssertions.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
