@@ -49,9 +49,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             _individualParticipant = new Individual(_individualPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Individual" };
             _judicialOfficeHolderParticipant = new JudicialOfficeHolder(_judicialOfficeHolderPerson, new HearingRole(123, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "JudicialOfficeHolder" };
             _staffMemberParticipant = new JudicialOfficeHolder(_staffMemberPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "StaffMember" };
-            _repParticipant = new JudicialOfficeHolder(_repPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Representative" };
+            _repParticipant = new Representative(_repPerson, new HearingRole(719, "hearingrole"), new CaseRole(345, "caserole")) { Discriminator = "Representative" };
 
-            _context.Persons.AddRange(_individualPerson, _judgePerson, _judicialOfficeHolderPerson, _staffMemberPerson);
+            _context.Persons.AddRange(_individualPerson, _judgePerson, _judicialOfficeHolderPerson, _staffMemberPerson, _repPerson);
             _context.Participants.AddRange(_individualParticipant, _judgeParticipant, _judicialOfficeHolderParticipant, _staffMemberParticipant, _repParticipant);
 
             _context.SaveChanges();
@@ -62,8 +62,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [TearDown]
         public void CleanUp()
         {
-            _context.Persons.RemoveRange(_individualPerson, _judgePerson, _judicialOfficeHolderPerson, _staffMemberPerson);
-            _context.Participants.RemoveRange(_individualParticipant, _judgeParticipant, _judicialOfficeHolderParticipant, _staffMemberParticipant);
+            _context.Persons.RemoveRange(_individualPerson, _judgePerson, _judicialOfficeHolderPerson, _staffMemberPerson, _repPerson);
+            _context.Participants.RemoveRange(_individualParticipant, _judgeParticipant, _judicialOfficeHolderParticipant, _staffMemberParticipant, _repParticipant);
         }
 
         [Test]
