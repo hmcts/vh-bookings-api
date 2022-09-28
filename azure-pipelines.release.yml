@@ -189,7 +189,7 @@ extends:
           - name: AzureAd:ClientSecret
             value: vh-bookings-api-key
             secret: true
-          
+           
           # Services          
           - name: Services:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
