@@ -36,13 +36,25 @@ namespace BookingsApi.Validations
 
                     if (containsNullTime && containsPopulatedTime)
                     {
-                        errors.Add(new ValidationFailure($"{request.Username}, Day ${dayWorkHours.DayOfWeekId}", "Day contains a blank start/end time along with a populated start/end time."));
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", "Day contains a blank start/end time along with a populated start/end time."));
+                        continue;
+                    }
+
+                    if (dayWorkHours.StartTimeMinutes < 0 || dayWorkHours.StartTimeMinutes > 59)
+                    {
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", $"Start time minutes is not within 0-59."));
+                        continue;
+                    }
+
+                    if (dayWorkHours.EndTimeMinutes < 0 || dayWorkHours.EndTimeMinutes > 59)
+                    {
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", $"End time minutes is not within 0-59."));
                         continue;
                     }
 
                     if (dayWorkHours.EndTime < dayWorkHours.StartTime)
                     {
-                        errors.Add(new ValidationFailure($"{request.Username}, Day ${dayWorkHours.DayOfWeekId}", $"End time {dayWorkHours.EndTime} is before {dayWorkHours.StartTime}."));
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", $"End time {dayWorkHours.EndTime} is before start time {dayWorkHours.StartTime}."));
                     }
                 }
             }

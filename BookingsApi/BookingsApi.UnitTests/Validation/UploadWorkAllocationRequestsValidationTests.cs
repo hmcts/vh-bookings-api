@@ -12,6 +12,14 @@ namespace BookingsApi.UnitTests.Validation
 {
     public class UploadWorkAllocationRequestsValidationTests
     {
+        private string _username;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _username = "username@email.com";
+        }
+
         [TestCase(null, 1, 1, 1)]
         [TestCase(null, null, 1, 1)]
         [TestCase(1, 1, null, null)]
@@ -23,6 +31,7 @@ namespace BookingsApi.UnitTests.Validation
             {
                 new UploadWorkAllocationRequest
                 {
+                    Username = _username,
                     DayWorkHours = new List<DayWorkHours> {
                         new DayWorkHours(1, endTimeHour, endTimeMinutes, startTimeHour, startTimeMinutes)
                     }
@@ -36,6 +45,8 @@ namespace BookingsApi.UnitTests.Validation
 
             // Assert
             result.IsValid.Should().BeFalse();
+            result.Errors[0].PropertyName.Should().Be($"{_username}, Day Number 1");
+            result.Errors[0].ErrorMessage.Should().Be("Day contains a blank start/end time along with a populated start/end time.");
         }
 
         [Test]
@@ -46,6 +57,7 @@ namespace BookingsApi.UnitTests.Validation
             {
                 new UploadWorkAllocationRequest
                 {
+                    Username = _username,
                     DayWorkHours = new List<DayWorkHours> {
                         new DayWorkHours(1, null, null, null, null)
                     }
@@ -61,6 +73,59 @@ namespace BookingsApi.UnitTests.Validation
             result.IsValid.Should().BeTrue();
         }
 
+        [TestCase(-1)]
+        [TestCase(60)]
+        public void Should_fail_validation_when_start_time_minutes_is_not_valid(int startTimeMinutes)
+        {
+            // Arrange
+            var requests = new List<UploadWorkAllocationRequest>
+            {
+                new UploadWorkAllocationRequest
+                {
+                    Username = _username,
+                    DayWorkHours = new List<DayWorkHours> {
+                        new DayWorkHours(1, 9, startTimeMinutes, 17, 0)
+                    }
+                }
+            };
+
+            var validator = new UploadWorkAllocationRequestsValidation();
+
+            // Act
+            var result = validator.ValidateRequests(requests);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors[0].PropertyName.Should().Be($"{_username}, Day Number 1");
+            result.Errors[0].ErrorMessage.Should().Be("Start time minutes is not within 0-59.");
+        }
+
+        [TestCase(-1)]
+        [TestCase(60)]
+        public void Should_fail_validation_when_end_time_minutes_is_not_valid(int endTimeMinutes)
+        {
+            // Arrange
+            var requests = new List<UploadWorkAllocationRequest>
+            {
+                new UploadWorkAllocationRequest
+                {
+                    Username = _username,
+                    DayWorkHours = new List<DayWorkHours> {
+                        new DayWorkHours(1, 09, 0, 17, endTimeMinutes)
+                    }
+                }
+            };
+
+            var validator = new UploadWorkAllocationRequestsValidation();
+
+            // Act
+            var result = validator.ValidateRequests(requests);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors[0].PropertyName.Should().Be($"{_username}, Day Number 1");
+            result.Errors[0].ErrorMessage.Should().Be("End time minutes is not within 0-59.");
+        }
 
         [Test]
         public void Should_fail_validation_when_end_time_is_before_start_time()
@@ -70,6 +135,7 @@ namespace BookingsApi.UnitTests.Validation
             {
                 new UploadWorkAllocationRequest
                 {
+                    Username = _username,
                     DayWorkHours = new List<DayWorkHours> {
                         new DayWorkHours(1, 17, 0, 9, 0)
                     }
@@ -83,6 +149,8 @@ namespace BookingsApi.UnitTests.Validation
 
             // Assert
             result.IsValid.Should().BeFalse();
+            result.Errors[0].PropertyName.Should().Be($"{_username}, Day Number 1");
+            result.Errors[0].ErrorMessage.Should().Be("End time 09:00:00 is before start time 17:00:00.");
         }
 
         [Test]
@@ -93,6 +161,7 @@ namespace BookingsApi.UnitTests.Validation
             {
                 new UploadWorkAllocationRequest
                 {
+                    Username = _username,
                     DayWorkHours = new List<DayWorkHours> {
                         new DayWorkHours(1, 9, 0, 17, 0)
                     }
