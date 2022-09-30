@@ -7,6 +7,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BookingsApi.DAL
 {
@@ -15,7 +16,10 @@ namespace BookingsApi.DAL
         public BookingsDbContext(DbContextOptions options) : base(options)
         {
         }
-
+        
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored, CoreEventId.NavigationBaseIncluded));
+        
         public DbSet<Allocation> Allocations { get; set; }
         public DbSet<Case> Cases { get; set; }
 
