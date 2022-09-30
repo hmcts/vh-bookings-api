@@ -1,0 +1,56 @@
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.Core;
+using BookingsApi.Extensions;
+using BookingsApi.Validations;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+
+namespace BookingsApi.Controllers
+{
+    [Produces("application/json")]
+    [Route("workallocation")]
+    [ApiController]
+    public class WorkAllocationController : Controller
+    {
+        private readonly ICommandHandler _commandHandler;
+
+        public WorkAllocationController(ICommandHandler commandHandler)
+        {
+            _commandHandler = commandHandler;
+        }
+
+        /// <summary>
+        /// Save vho work schedule
+        /// </summary>
+        /// <param name="uploadWorkAllocationRequests"></param>
+        /// <returns>Person list</returns>
+        [HttpPost("SaveWorkAllocations")]
+        [OpenApiOperation("SaveWorkAllocations")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [AllowAnonymous]
+        public async Task<IActionResult> SaveWorkAllocations([FromBody] List<UploadWorkAllocationRequest> uploadWorkAllocationRequests)
+        {
+
+            var validationResult = new UploadWorkAllocationRequestsValidation().ValidateRequests(uploadWorkAllocationRequests);
+
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var uploadWorkAllocationCommand = new UploadWorkAllocationCommand(uploadWorkAllocationRequests);
+
+            await _commandHandler.Handle(uploadWorkAllocationCommand);
+
+            return Ok();
+        }
+    }
+}
