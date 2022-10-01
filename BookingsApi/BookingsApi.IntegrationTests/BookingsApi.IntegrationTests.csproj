@@ -22,7 +22,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.70" />
+        <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.68" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\BookingsApi.Contract\BookingsApi.Contract.csproj" />
