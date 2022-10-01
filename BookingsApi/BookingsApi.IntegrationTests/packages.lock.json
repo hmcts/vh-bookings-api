@@ -32,6 +32,15 @@
           "System.Collections.Immutable": "1.7.1"
         }
       },
+      "Microsoft.EntityFrameworkCore.InMemory": {
+        "type": "Direct",
+        "requested": "[6.0.9, )",
+        "resolved": "6.0.9",
+        "contentHash": "uQWxbNXOSvvQWgcDRTIfP6xC6NvyH/B8TlhCumzrPOy681LOS9RAoMPTlClboE3NyK5ptfzZhkO2vRTki0lFFw==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "6.0.9"
+        }
+      },
       "NUnit": {
         "type": "Direct",
         "requested": "[3.13.1, )",
@@ -1207,14 +1216,6 @@
         "type": "Transitive",
         "resolved": "6.0.9",
         "contentHash": "rNIx4fr7KWH4ypghhI+78PhCUYBHdjVbQ3yKvj/KmUIe4d9pysHXT3lF9TuReVdMDsn5mEx+3Yez8s80J4/JLA=="
-      },
-      "Microsoft.EntityFrameworkCore.InMemory": {
-        "type": "Transitive",
-        "resolved": "6.0.9",
-        "contentHash": "uQWxbNXOSvvQWgcDRTIfP6xC6NvyH/B8TlhCumzrPOy681LOS9RAoMPTlClboE3NyK5ptfzZhkO2vRTki0lFFw==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "6.0.9"
-        }
       },
       "Microsoft.EntityFrameworkCore.Proxies": {
         "type": "Transitive",
@@ -3504,6 +3505,7 @@
           "Microsoft.Extensions.DependencyModel": "6.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "6.0.10",
           "NSwag.AspNetCore": "13.17.0",
+          "Newtonsoft.Json": "13.0.1",
           "System.IdentityModel.Tokens.Jwt": "6.23.1",
           "VH.Core.Configuration": "0.1.13",
           "ZymLabs.NSwag.FluentValidation": "0.4.0"
@@ -3524,6 +3526,7 @@
       "bookingsapi.contract": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.Configuration.Json": "6.0.0",
           "Newtonsoft.Json": "13.0.1",
           "System.ComponentModel.Annotations": "5.0.0"
         }
