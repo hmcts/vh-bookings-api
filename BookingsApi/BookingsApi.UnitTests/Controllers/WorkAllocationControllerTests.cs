@@ -69,7 +69,7 @@ namespace BookingsApi.UnitTests.Controllers
             var response = (await _controller.SaveWorkAllocations(uploadWorkAllocationRequests)) as OkObjectResult;
 
             // Assert
-            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadWorkAllocationCommand>()), Times.Once);
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadWorkHoursCommand>()), Times.Once);
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.IsInstanceOf<List<string>>(response.Value);
         }

@@ -45,7 +45,7 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var uploadWorkAllocationCommand = new UploadWorkAllocationCommand(uploadWorkAllocationRequests);
+            var uploadWorkAllocationCommand = new UploadWorkHoursCommand(uploadWorkAllocationRequests);
 
             await _commandHandler.Handle(uploadWorkAllocationCommand);
 
