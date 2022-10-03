@@ -22,7 +22,7 @@ namespace BookingsApi.Validations
 
             foreach (var request in requests)
             {
-                foreach (var workHours in request.WorkHours)
+                foreach (var workHours in request.WorkingHours)
                 {
                     var containsNullTime = workHours.GetType().GetProperties()
                         .Where(pi => pi.PropertyType == typeof(int?))
