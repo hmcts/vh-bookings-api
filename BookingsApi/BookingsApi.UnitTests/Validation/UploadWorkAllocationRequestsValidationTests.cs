@@ -32,8 +32,8 @@ namespace BookingsApi.UnitTests.Validation
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, endTimeHour, endTimeMinutes, startTimeHour, startTimeMinutes)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, endTimeHour, endTimeMinutes, startTimeHour, startTimeMinutes)
                     }
                 }
             };
@@ -58,8 +58,8 @@ namespace BookingsApi.UnitTests.Validation
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, null, null, null, null)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, null, null, null, null)
                     }
                 }
             };
@@ -83,8 +83,8 @@ namespace BookingsApi.UnitTests.Validation
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, 9, startTimeMinutes, 17, 0)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 9, startTimeMinutes, 17, 0)
                     }
                 }
             };
@@ -110,8 +110,8 @@ namespace BookingsApi.UnitTests.Validation
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, 09, 0, 17, endTimeMinutes)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 09, 0, 17, endTimeMinutes)
                     }
                 }
             };
@@ -136,8 +136,8 @@ namespace BookingsApi.UnitTests.Validation
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, 17, 0, 9, 0)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 17, 0, 9, 0)
                     }
                 }
             };
@@ -162,8 +162,8 @@ namespace BookingsApi.UnitTests.Validation
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, 9, 0, 17, 0)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 9, 0, 17, 0)
                     }
                 }
             };

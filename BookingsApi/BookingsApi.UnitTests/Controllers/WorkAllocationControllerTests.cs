@@ -37,8 +37,8 @@ namespace BookingsApi.UnitTests.Controllers
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, null, 1, 1, 1)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, null, 1, 1, 1)
                     }
                 }
             };
@@ -59,8 +59,8 @@ namespace BookingsApi.UnitTests.Controllers
                 new UploadWorkAllocationRequest
                 {
                     Username = _username,
-                    WorkHours = new List<WorkHours> {
-                        new WorkHours(1, 9, 0, 17, 0)
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 9, 0, 17, 0)
                     }
                 }
             };
