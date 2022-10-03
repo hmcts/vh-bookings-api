@@ -22,39 +22,39 @@ namespace BookingsApi.Validations
 
             foreach (var request in requests)
             {
-                foreach (var dayWorkHours in request.DayWorkHours)
+                foreach (var workHours in request.WorkHours)
                 {
-                    var containsNullTime = dayWorkHours.GetType().GetProperties()
+                    var containsNullTime = workHours.GetType().GetProperties()
                         .Where(pi => pi.PropertyType == typeof(int?))
-                        .Select(pi => (int?)pi.GetValue(dayWorkHours))
+                        .Select(pi => (int?)pi.GetValue(workHours))
                         .Any(value => value == null);
 
-                    var containsPopulatedTime = dayWorkHours.GetType().GetProperties()
+                    var containsPopulatedTime = workHours.GetType().GetProperties()
                         .Where(pi => pi.PropertyType == typeof(int?))
-                        .Select(pi => (int?)pi.GetValue(dayWorkHours))
+                        .Select(pi => (int?)pi.GetValue(workHours))
                         .Any(value => value != null);
 
                     if (containsNullTime && containsPopulatedTime)
                     {
-                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", "Day contains a blank start/end time along with a populated start/end time."));
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {workHours.DayOfWeekId}", "Day contains a blank start/end time along with a populated start/end time."));
                         continue;
                     }
 
-                    if (dayWorkHours.StartTimeMinutes < 0 || dayWorkHours.StartTimeMinutes > 59)
+                    if (workHours.StartTimeMinutes < 0 || workHours.StartTimeMinutes > 59)
                     {
-                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", $"Start time minutes is not within 0-59."));
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {workHours.DayOfWeekId}", $"Start time minutes is not within 0-59."));
                         continue;
                     }
 
-                    if (dayWorkHours.EndTimeMinutes < 0 || dayWorkHours.EndTimeMinutes > 59)
+                    if (workHours.EndTimeMinutes < 0 || workHours.EndTimeMinutes > 59)
                     {
-                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", $"End time minutes is not within 0-59."));
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {workHours.DayOfWeekId}", $"End time minutes is not within 0-59."));
                         continue;
                     }
 
-                    if (dayWorkHours.EndTime < dayWorkHours.StartTime)
+                    if (workHours.EndTime < workHours.StartTime)
                     {
-                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {dayWorkHours.DayOfWeekId}", $"End time {dayWorkHours.EndTime} is before start time {dayWorkHours.StartTime}."));
+                        errors.Add(new ValidationFailure($"{request.Username}, Day Number {workHours.DayOfWeekId}", $"End time {workHours.EndTime} is before start time {workHours.StartTime}."));
                     }
                 }
             }

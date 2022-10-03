@@ -3,7 +3,7 @@ using System;
 
 namespace BookingsApi.Contract.Requests
 {
-    public class DayWorkHours
+    public class WorkHours
     {
         public int DayOfWeekId { get; set; }
         public int? EndTimeHour { get; set; }
@@ -17,7 +17,7 @@ namespace BookingsApi.Contract.Requests
         [JsonIgnore]
         public TimeSpan? EndTime => EndTimeHour == null || EndTimeMinutes == null ? (TimeSpan?)null : new TimeSpan((int)EndTimeHour, (int)EndTimeMinutes, 0);
 
-        public DayWorkHours(int dayOfWeekId, int? startTimeHour, int? startTimeMinutes, int? endTimeHour, int? endTimeMinutes)
+        public WorkHours(int dayOfWeekId, int? startTimeHour, int? startTimeMinutes, int? endTimeHour, int? endTimeMinutes)
         {
             DayOfWeekId = dayOfWeekId;
             EndTimeHour = endTimeHour;
