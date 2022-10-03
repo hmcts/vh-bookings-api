@@ -29,11 +29,10 @@ namespace BookingsApi.Controllers
         /// Save vho work schedule
         /// </summary>
         /// <param name="uploadWorkAllocationRequests"></param>
-        /// <returns>Person list</returns>
+        /// <returns>List of usernames that were not found</returns>
         [HttpPost("SaveWorkAllocations")]
         [OpenApiOperation("SaveWorkAllocations")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
         [AllowAnonymous]
         public async Task<IActionResult> SaveWorkAllocations([FromBody] List<UploadWorkAllocationRequest> uploadWorkAllocationRequests)
         {
@@ -50,7 +49,7 @@ namespace BookingsApi.Controllers
 
             await _commandHandler.Handle(uploadWorkAllocationCommand);
 
-            return Ok();
+            return Ok(uploadWorkAllocationCommand.FailedUploadUsernames);
         }
     }
 }

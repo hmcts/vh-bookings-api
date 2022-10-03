@@ -66,11 +66,12 @@ namespace BookingsApi.UnitTests.Controllers
             };
 
             // Act
-            var response = (await _controller.SaveWorkAllocations(uploadWorkAllocationRequests)) as OkResult;
+            var response = (await _controller.SaveWorkAllocations(uploadWorkAllocationRequests)) as OkObjectResult;
 
             // Assert
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadWorkAllocationCommand>()), Times.Once);
-            Assert.IsInstanceOf<OkResult>(response);
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.IsInstanceOf<List<string>>(response.Value);
         }
     }
 }
