@@ -148,7 +148,9 @@ extends:
     PackageAcceptanceTests: ${{ parameters.PackageACTests }}
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     connectionStringSecretName: "VhBookingsDatabaseConnectionString"
+    netVersion: 6.x
     testParameters:
+      netVersion: 6.x
       baseAgent: windows-latest
       coreProjectPath: BookingsApi/BookingsApi
       nugetConfigPath: BookingsApi

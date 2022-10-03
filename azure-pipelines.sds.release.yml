@@ -58,6 +58,7 @@ stages:
         steps:
           - template: templates\dotnet\package-nuget-packages.yml@azTemplates
             parameters:
+              dotnetCoreVersion: "6.x"
               nugetProjectPath: 'BookingsApi/${{ variables.nuget_package_name }}'
               vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               gitVersionConfigPath: ${{ variables.git_version_config_path }}
