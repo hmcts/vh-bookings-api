@@ -1,5 +1,4 @@
 using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.Extensions;
@@ -16,11 +15,11 @@ namespace BookingsApi.Controllers
     [Produces("application/json")]
     [Route("workallocation")]
     [ApiController]
-    public class WorkAllocationController : Controller
+    public class WorkHoursController : Controller
     {
         private readonly ICommandHandler _commandHandler;
 
-        public WorkAllocationController(ICommandHandler commandHandler)
+        public WorkHoursController(ICommandHandler commandHandler)
         {
             _commandHandler = commandHandler;
         }
