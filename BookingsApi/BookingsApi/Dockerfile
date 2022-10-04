@@ -1,5 +1,5 @@
 # Create Base Image.
-FROM mcr.microsoft.com/dotnet/core/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
