@@ -27,9 +27,9 @@ namespace BookingsApi.UnitTests.Validation
         public void Should_fail_validation_when_some_times_are_populated_and_others_are_not(int? endTimeHour, int? endTimeMinutes, int? startTimeHour, int? startTimeMinutes)
         {
             // Arrange
-            var requests = new List<UploadWorkAllocationRequest>
+            var requests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -38,7 +38,7 @@ namespace BookingsApi.UnitTests.Validation
                 }
             };
 
-            var validator = new UploadWorkAllocationRequestsValidation();
+            var validator = new UploadWorkHoursRequestsValidation();
 
             // Act
             var result = validator.ValidateRequests(requests);
@@ -53,9 +53,9 @@ namespace BookingsApi.UnitTests.Validation
         public void Should_pass_validation_when_all_times_are_null()
         {
             // Arrange
-            var requests = new List<UploadWorkAllocationRequest>
+            var requests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -64,7 +64,7 @@ namespace BookingsApi.UnitTests.Validation
                 }
             };
 
-            var validator = new UploadWorkAllocationRequestsValidation();
+            var validator = new UploadWorkHoursRequestsValidation();
 
             // Act
             var result = validator.ValidateRequests(requests);
@@ -78,9 +78,9 @@ namespace BookingsApi.UnitTests.Validation
         public void Should_fail_validation_when_start_time_minutes_is_not_valid(int startTimeMinutes)
         {
             // Arrange
-            var requests = new List<UploadWorkAllocationRequest>
+            var requests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -89,7 +89,7 @@ namespace BookingsApi.UnitTests.Validation
                 }
             };
 
-            var validator = new UploadWorkAllocationRequestsValidation();
+            var validator = new UploadWorkHoursRequestsValidation();
 
             // Act
             var result = validator.ValidateRequests(requests);
@@ -105,9 +105,9 @@ namespace BookingsApi.UnitTests.Validation
         public void Should_fail_validation_when_end_time_minutes_is_not_valid(int endTimeMinutes)
         {
             // Arrange
-            var requests = new List<UploadWorkAllocationRequest>
+            var requests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -116,7 +116,7 @@ namespace BookingsApi.UnitTests.Validation
                 }
             };
 
-            var validator = new UploadWorkAllocationRequestsValidation();
+            var validator = new UploadWorkHoursRequestsValidation();
 
             // Act
             var result = validator.ValidateRequests(requests);
@@ -131,9 +131,9 @@ namespace BookingsApi.UnitTests.Validation
         public void Should_fail_validation_when_end_time_is_before_start_time()
         {
             // Arrange
-            var requests = new List<UploadWorkAllocationRequest>
+            var requests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -142,7 +142,7 @@ namespace BookingsApi.UnitTests.Validation
                 }
             };
 
-            var validator = new UploadWorkAllocationRequestsValidation();
+            var validator = new UploadWorkHoursRequestsValidation();
 
             // Act
             var result = validator.ValidateRequests(requests);
@@ -157,9 +157,9 @@ namespace BookingsApi.UnitTests.Validation
         public void Should_pass_validation_when_all_times_are_valid()
         {
             // Arrange
-            var requests = new List<UploadWorkAllocationRequest>
+            var requests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -168,7 +168,7 @@ namespace BookingsApi.UnitTests.Validation
                 }
             };
 
-            var validator = new UploadWorkAllocationRequestsValidation();
+            var validator = new UploadWorkHoursRequestsValidation();
 
             // Act
             var result = validator.ValidateRequests(requests);
