@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Controllers
         }
 
         [Test]
-        public async Task SaveWorkAllocations_ReturnsErrors_WhenValidationFails()
+        public async Task SaveWorkHours_ReturnsErrors_WhenValidationFails()
         {
             // Arrange
             var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
@@ -51,7 +51,7 @@ namespace BookingsApi.UnitTests.Controllers
         }
 
         [Test]
-        public async Task SaveWorkAllocations_CalllsUploadWorkAllocationCommand_AndReturnsResult()
+        public async Task SaveWorkHours_CalllsUploadWorkAllocationCommand_AndReturnsResult()
         {
             // Arrange
             var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>

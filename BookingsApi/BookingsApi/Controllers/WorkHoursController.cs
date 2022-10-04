@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace BookingsApi.Controllers
 {
     [Produces("application/json")]
-    [Route("workallocation")]
+    [Route("workhours")]
     [ApiController]
     public class WorkHoursController : Controller
     {
@@ -32,7 +32,6 @@ namespace BookingsApi.Controllers
         [HttpPost("SaveWorkHours")]
         [OpenApiOperation("SaveWorkHours")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
-        [AllowAnonymous]
         public async Task<IActionResult> SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
         {
 
