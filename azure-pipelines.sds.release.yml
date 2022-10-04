@@ -92,6 +92,8 @@ stages:
         condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
       ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         dependsOn: Approve_Entity_Framework
+      ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+        dependsOn: pre_run_tasks
       displayName: ${{ env }} EF Release
       variables:
         - ${{ if eq(env, 'Dev') }}:
@@ -102,7 +104,6 @@ stages:
           - template: variables/test.yaml
         - ${{ if eq(env, 'Prod') }}:
           - template: variables/production.yaml
-          
         - template: variables/shared.yaml
           parameters:
             env: ${{ variables.env }}
@@ -151,12 +152,7 @@ stages:
   - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
     - stage: Approve_Helm_Release
       displayName: 'Approve Helm Release'
-      ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
-        dependsOn:
-          - Run_Entity_Framework_Dev
-          - Run_Entity_Framework_Staging
-      ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
-        dependsOn: Run_Entity_Framework_Prod
+      dependsOn: Run_Entity_Framework_Prod
       pool:
         vmImage: 'ubuntu-latest'
       jobs:
@@ -176,12 +172,18 @@ stages:
 
   - stage: Docker_Build_Push
     displayName: Docker Build & Push Image
+    ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+      dependsOn:
+        - Run_Entity_Framework_Dev
+        - Run_Entity_Framework_Staging
+        - Run_Entity_Framework_Test
+    ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
+      dependsOn: Approve_Helm_Release
     variables:
       - ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         - template: variables/production.yaml
       - ${{ else }}:
         - template: variables/staging.yaml
-
       - template: variables/shared.yaml
     jobs:
       - job: Docker_Build
@@ -216,6 +218,11 @@ stages:
 #####################################################
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
+    ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+      dependsOn:
+        - Run_Entity_Framework_Dev
+        - Run_Entity_Framework_Staging
+        - Run_Entity_Framework_Test
     ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
       dependsOn: Approve_Helm_Release
     displayName: Deploy Nuget Packages
@@ -242,7 +249,6 @@ stages:
         - template: variables/production.yaml
       - ${{ else }}:
         - template: variables/staging.yaml
-        
       - template: variables/shared.yaml
       - group: vh-github-app-credentials
     jobs:
