@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace BookingsApi.Controllers
 {
     [Produces("application/json")]
-    [Route("workhours")]
+    [Route("work-hours")]
     [ApiController]
     public class WorkHoursController : Controller
     {

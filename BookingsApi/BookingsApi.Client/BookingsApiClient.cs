@@ -5617,7 +5617,7 @@ namespace BookingsApi.Client
                 throw new System.ArgumentNullException("uploadWorkHoursRequests");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/workhours/SaveWorkHours");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/work-hours/SaveWorkHours");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
