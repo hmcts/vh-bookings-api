@@ -99,8 +99,6 @@ stages:
           - template: variables/dev.yaml
         - ${{ if eq(env, 'Staging') }}:
           - template: variables/staging.yaml
-        - ${{ if eq(env, 'Demo') }}:
-          - template: variables/qa.yaml
         - ${{ if eq(env, 'Test') }}:
           - template: variables/test.yaml
         - ${{ if eq(env, 'Prod') }}:
@@ -157,7 +155,6 @@ stages:
       ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
         dependsOn:
           - Run_Entity_Framework_Dev
-          - Run_Entity_Framework_Demo
           - Run_Entity_Framework_Staging
       ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/release') }}:
         dependsOn: Run_Entity_Framework_Prod
