@@ -8,10 +8,6 @@ namespace BookingsApi.Validations
 {
     public class UploadWorkAllocationRequestsValidation : AbstractValidator<List<UploadWorkAllocationRequest>>
     {
-        public static readonly string NoParticipantEmail = "Contact email for participant is required";
-        public static readonly string NoLinkedParticipantEmail = "Contact email for linked participant is required";
-        public static readonly string InvalidType = "A valid linked participant type is required";
-        
         public UploadWorkAllocationRequestsValidation()
         {
         }
