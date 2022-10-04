@@ -25,8 +25,8 @@ namespace BookingsApi.DAL.Migrations
                 new[] { "Id", "Name", "CaseTypeId", "CreatedDate" },
                 new object[,]
                 {
-                    { 291, "Case Management Hearing", 53, DateTime.UtcNow },
-                    { 292, "Final Hearing", 53, DateTime.UtcNow }
+                    { 292, "Case Management Hearing", 53, DateTime.UtcNow },
+                    { 293, "Final Hearing", 53, DateTime.UtcNow }
                 });
 
             migrationBuilder.InsertData(
@@ -82,8 +82,8 @@ namespace BookingsApi.DAL.Migrations
                 migrationBuilder.DeleteData(nameof(CaseRole), "Id", caseRoleId);
             }
 
+            migrationBuilder.DeleteData(nameof(HearingType), "Id", 293);
             migrationBuilder.DeleteData(nameof(HearingType), "Id", 292);
-            migrationBuilder.DeleteData(nameof(HearingType), "Id", 291);
             migrationBuilder.DeleteData(nameof(CaseType), "Id", 53);
         }
     }
