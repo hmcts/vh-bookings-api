@@ -56,7 +56,7 @@ stages:
           - template: stages\dotnet-tests\unit-tests.yml@azTemplates
             parameters:
               #vstsFeedId: 'Video Hearings/vh-packages'
-              dotnetCoreVersion: '6.x.x'
+              dotnetCoreVersion: '6.x'
               nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
               unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
               coverletCoverageExclusions:
