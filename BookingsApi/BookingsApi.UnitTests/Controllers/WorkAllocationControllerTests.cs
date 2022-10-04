@@ -44,7 +44,7 @@ namespace BookingsApi.UnitTests.Controllers
             };
 
             // Act
-            var response = (await _controller.SaveWorkAllocations(uploadWorkAllocationRequests)) as BadRequestObjectResult;
+            var response = (await _controller.SaveWorkHours(uploadWorkAllocationRequests)) as BadRequestObjectResult;
 
             // Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
@@ -66,7 +66,7 @@ namespace BookingsApi.UnitTests.Controllers
             };
 
             // Act
-            var response = (await _controller.SaveWorkAllocations(uploadWorkAllocationRequests)) as OkObjectResult;
+            var response = (await _controller.SaveWorkHours(uploadWorkAllocationRequests)) as OkObjectResult;
 
             // Assert
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadWorkHoursCommand>()), Times.Once);
