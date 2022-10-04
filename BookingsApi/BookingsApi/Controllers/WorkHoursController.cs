@@ -26,18 +26,18 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
-        /// Save vho work schedule
+        /// Save vho work hours
         /// </summary>
-        /// <param name="uploadWorkAllocationRequests"></param>
+        /// <param name="uploadWorkHoursRequests"></param>
         /// <returns>List of usernames that were not found</returns>
-        [HttpPost("SaveWorkAllocations")]
-        [OpenApiOperation("SaveWorkAllocations")]
+        [HttpPost("SaveWorkHours")]
+        [OpenApiOperation("SaveWorkHours")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
         [AllowAnonymous]
-        public async Task<IActionResult> SaveWorkAllocations([FromBody] List<UploadWorkAllocationRequest> uploadWorkAllocationRequests)
+        public async Task<IActionResult> SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
         {
 
-            var validationResult = new UploadWorkAllocationRequestsValidation().ValidateRequests(uploadWorkAllocationRequests);
+            var validationResult = new UploadWorkHoursRequestsValidation().ValidateRequests(uploadWorkHoursRequests);
 
             if (!validationResult.IsValid)
             {
@@ -45,7 +45,7 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var uploadWorkAllocationCommand = new UploadWorkHoursCommand(uploadWorkAllocationRequests);
+            var uploadWorkAllocationCommand = new UploadWorkHoursCommand(uploadWorkHoursRequests);
 
             await _commandHandler.Handle(uploadWorkAllocationCommand);
 

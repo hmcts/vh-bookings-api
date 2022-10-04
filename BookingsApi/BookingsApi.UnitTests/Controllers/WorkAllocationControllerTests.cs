@@ -13,7 +13,7 @@ namespace BookingsApi.UnitTests.Controllers
     public class WorkAllocationControllerTests
     {
 
-        private WorkAllocationController _controller;
+        private WorkHoursController _controller;
         private Mock<ICommandHandler> _commandHandlerMock;
 
         private string _username;
@@ -25,16 +25,16 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock = new Mock<ICommandHandler>();
 
-            _controller = new WorkAllocationController(_commandHandlerMock.Object);
+            _controller = new WorkHoursController(_commandHandlerMock.Object);
         }
 
         [Test]
         public async Task SaveWorkAllocations_ReturnsErrors_WhenValidationFails()
         {
             // Arrange
-            var uploadWorkAllocationRequests = new List<UploadWorkAllocationRequest>
+            var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
@@ -54,9 +54,9 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task SaveWorkAllocations_CalllsUploadWorkAllocationCommand_AndReturnsResult()
         {
             // Arrange
-            var uploadWorkAllocationRequests = new List<UploadWorkAllocationRequest>
+            var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
