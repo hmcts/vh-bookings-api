@@ -62,7 +62,8 @@ Feature: CaseTypes
       | Criminal Injuries Compensation                | Case Management Discussion,Case Management Hearing,Oral Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
       | War Pensions Appeals                          | Case Management Hearing,Full Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
       | Upper Tribunal Lands Chamber                  | Substantive,Case Management Hearing,Preliminary Hearing,Interim Rights Hearing,Detailed Costs Assessment,For Mention,Application for permission to appeal,Simplified,First Hearing,Section 84(3A),Interloculatory/Directions,Closing Submissions,Representation for Costs                                                                                                                                                                                                                                                                                                                                             |
-      | Special Educational Needs and Disability      | Case Management Hearing,Final Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+      | Special Educational Needs and Disability      | Case Management Hearing, Final Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+      | Care Standards                                | Case Management Hearing, Final Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
     
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
@@ -134,6 +135,7 @@ Feature: CaseTypes
       | War Pensions Appeals                          |
       | Upper Tribunal Lands Chamber                  |
       | Special Educational Needs and Disability      |
+      | Care Standards                                |
 
   Scenario Outline: Get hearing roles for a case role of a case type
     Given I have a get hearing roles for a case type of '<CaseTypes>' and case role of '<CaseRole>' request
@@ -381,3 +383,8 @@ Feature: CaseTypes
       | Special Educational Needs and Disability      | Judge                  |
       | Special Educational Needs and Disability      | Applicant              |
       | Special Educational Needs and Disability      | Respondent             |
+      | Care Standards                                | Appellant              |
+      | Care Standards                                | Local Authority        |
+      | Care Standards                                | Observer               |
+      | Care Standards                                | Panel Member           |
+      | Care Standards                                | Judge                  |

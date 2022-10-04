@@ -282,3 +282,8 @@ Feature: CaseTypes
       | Special Educational Needs and Disability      | Judge                  |
       | Special Educational Needs and Disability      | Applicant              |
       | Special Educational Needs and Disability      | Respondent             |
+      | Care Standards                                | Appellant              |
+      | Care Standards                                | Local Authority        |
+      | Care Standards                                | Observer               |
+      | Care Standards                                | Panel Member           |
+      | Care Standards                                | Judge                  |
