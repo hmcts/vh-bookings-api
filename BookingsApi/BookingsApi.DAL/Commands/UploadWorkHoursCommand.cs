@@ -44,10 +44,10 @@ namespace BookingsApi.DAL.Commands
                 var vhoWorkHours = _context.VhoWorkHours
                     .Where(x => x.JusticeUser.Username == uploadWorkAllocationRequest.Username);
 
-                foreach (var dayWorkHours in uploadWorkAllocationRequest.WorkingHours)
+                foreach (var workHours in uploadWorkAllocationRequest.WorkingHours)
                 {
                     var vhoWorkHour = vhoWorkHours
-                        .SingleOrDefault(x => x.DayOfWeekId == dayWorkHours.DayOfWeekId);
+                        .SingleOrDefault(x => x.DayOfWeekId == workHours.DayOfWeekId);
 
                     bool doesVhoWorkHourExist = true;
 
@@ -57,10 +57,10 @@ namespace BookingsApi.DAL.Commands
                         vhoWorkHour = new VhoWorkHours();
                     }
 
-                    vhoWorkHour.DayOfWeekId = dayWorkHours.DayOfWeekId;
+                    vhoWorkHour.DayOfWeekId = workHours.DayOfWeekId;
                     vhoWorkHour.JusticeUserId = user.Id;
-                    vhoWorkHour.StartTime = dayWorkHours.StartTime;
-                    vhoWorkHour.EndTime = dayWorkHours.EndTime;
+                    vhoWorkHour.StartTime = workHours.StartTime;
+                    vhoWorkHour.EndTime = workHours.EndTime;
 
                     if (doesVhoWorkHourExist) 
                         _context.Update(vhoWorkHour);
