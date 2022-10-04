@@ -4,6 +4,7 @@ using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221003094745_AddDaysOfTheWeek")]
+    partial class AddDaysOfTheWeek
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -882,13 +884,13 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("DayOfWeekId")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan?>("EndTime")
+                    b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
                     b.Property<Guid>("JusticeUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<TimeSpan?>("StartTime")
+                    b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
                     b.Property<DateTime?>("UpdatedDate")
