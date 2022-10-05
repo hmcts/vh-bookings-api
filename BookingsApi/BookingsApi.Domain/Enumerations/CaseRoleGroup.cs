@@ -26,6 +26,7 @@ namespace BookingsApi.Domain.Enumerations
         Objector = 21,
         Operator = 22,
         SiteProviders = 23,
-        RespondentAuthority = 24
+        RespondentAuthority = 24,
+        LocalAuthority = 25
     }
 }
