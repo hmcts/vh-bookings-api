@@ -73,4 +73,3 @@ To update latest version of stryker please use the following command
 ```bash
 dotnet tool update --global dotnet-stryker
 ```
-
