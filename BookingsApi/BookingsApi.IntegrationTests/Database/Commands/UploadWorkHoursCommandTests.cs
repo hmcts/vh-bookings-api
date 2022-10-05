@@ -35,8 +35,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             var username = "dontexist@test.com";
-            var requests = new List<UploadWorkAllocationRequest> {
-                new UploadWorkAllocationRequest
+            var requests = new List<UploadWorkHoursRequest> {
+                new UploadWorkHoursRequest
                 {
                     Username = username,
                 }
@@ -64,8 +64,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserTwo = await Hooks
                 .SeedJusticeUser("team.lead.2@hearings.reform.hmcts.net", "firstName2", "secondname2", true);
 
-            var requests = new List<UploadWorkAllocationRequest> {
-                new UploadWorkAllocationRequest
+            var requests = new List<UploadWorkHoursRequest> {
+                new UploadWorkHoursRequest
                 {
                     Username = justiceUserOne.Username,
                     WorkingHours = new List<WorkingHours>
@@ -73,7 +73,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                         new WorkingHours(1, 9, 0, 17, 0)
                     }
                 },
-                new UploadWorkAllocationRequest
+                new UploadWorkHoursRequest
                 {
                     Username = justiceUserTwo.Username,
                     WorkingHours = new List<WorkingHours>
