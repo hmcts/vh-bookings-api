@@ -122,13 +122,13 @@ stages:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
-        
-        - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-          parameters:
-            outputPath: $(Build.StagingDirectory)
-            contextName: ${{ variables.efContextName }}
-            workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-            projectName: ${{ variables.efProjectName }}
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: ${{ variables.efContextName }}
+              workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+              migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
+              projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
         displayName: "Package NuGet Packages"
