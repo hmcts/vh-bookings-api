@@ -125,7 +125,7 @@ stages:
         
         - template: templates/Github\check-for-changes.yaml@azTemplates
           parameters:
-            migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi\BookingsApi.DAL\Migrations
+            migrationsPath: $(System.DefaultWorkingDirectory) #/BookingsApi\BookingsApi.DAL\Migrations
 
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
