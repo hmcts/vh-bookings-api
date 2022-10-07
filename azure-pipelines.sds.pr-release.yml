@@ -125,7 +125,12 @@ stages:
         
         - template: templates/Github\check-for-changes.yaml@azTemplates
           parameters:
-            migrationsPath: $(System.DefaultWorkingDirectory) #/BookingsApi\BookingsApi.DAL\Migrations
+            migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi\BookingsApi.DAL\Migrations
+
+        - powershell: |
+            Write-Host $env:HadChange
+          env:
+            HadChange: $(git.hasChanged)
 
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
@@ -161,7 +166,7 @@ stages:
   - stage: Run_Entity_Framework_Dev
     dependsOn: Dock
     displayName: Run Entity Framework Dev
-    condition: eq(dependencies.Dock.outputs['Generate_Entity_Framework_Script.git.hasChanged'], 'True')
+    condition: eq(lower(dependencies.Dock.outputs['Generate_Entity_Framework_Script.git.hasChanged']), 'true')
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
