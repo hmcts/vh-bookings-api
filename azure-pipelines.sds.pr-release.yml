@@ -129,6 +129,7 @@ stages:
 
         - powershell: |
             Write-Host $env:HadChange
+            
           env:
             HadChange: $(git.hasChanged)
 
