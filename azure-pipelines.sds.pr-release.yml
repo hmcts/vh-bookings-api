@@ -123,23 +123,12 @@ stages:
         displayName: "Generate Entity Framework Script"
         steps:
         
-        - template: templates/Github\check-for-changes.yaml@azTemplates
-          parameters:
-            migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
-
-        - powershell: |
-            Write-Host $env:HadChange
-            
-          env:
-            HadChange: $(git.hasChanged)
-
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
             outputPath: $(Build.StagingDirectory)
             contextName: ${{ variables.efContextName }}
             workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
             projectName: ${{ variables.efProjectName }}
-            execute: $(git.hasChanged)
 
       - job: package_nuget
         displayName: "Package NuGet Packages"
