@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: VIH-9241-ef-changes
       endpoint: hmcts
       
 trigger: none
@@ -122,6 +122,10 @@ stages:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
+        
+        - template: templates/Github\check-for-changes.yaml@azTemplates
+          parameters:
+            migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi\BookingsApi.DAL\Migrations
 
         - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
           parameters:
@@ -129,6 +133,7 @@ stages:
             contextName: ${{ variables.efContextName }}
             workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
             projectName: ${{ variables.efProjectName }}
+            execute: $(git.hasChanged)
 
       - job: package_nuget
         displayName: "Package NuGet Packages"
@@ -156,6 +161,7 @@ stages:
   - stage: Run_Entity_Framework_Dev
     dependsOn: Dock
     displayName: Run Entity Framework Dev
+    condition: eq(dependencies.Dock.outputs['Generate_Entity_Framework_Script.git.hasChanged'], 'True')
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
