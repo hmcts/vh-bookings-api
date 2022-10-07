@@ -187,12 +187,13 @@ stages:
               kvName: ${{ variables.vhKeyVault }}
               kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
               kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
-              
+
 
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
   - stage: Install
     dependsOn: Run_Entity_Framework_Dev
+    condition: in(dependencies.Run_Entity_Framework_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     displayName: Deploy Helm Chart Dev AKS
     variables:
       - template: variables/dev.yaml
