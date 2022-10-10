@@ -19,7 +19,7 @@ variables:
     value: 'BookingsApi'
   - group: vh-bookings-api
   - name: run_acceptance_tests
-    value: false
+    value: true
 
 stages:
 #####################################################
