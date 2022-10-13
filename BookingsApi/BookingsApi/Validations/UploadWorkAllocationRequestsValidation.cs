@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace BookingsApi.Validations
 {
-    public class UploadWorkHoursRequestsValidation : AbstractValidator<List<UploadWorkHoursRequest>>
+    public class UploadWorkAllocationRequestsValidation : AbstractValidator<List<UploadWorkAllocationRequest>>
     {
-        public UploadWorkHoursRequestsValidation()
+        public UploadWorkAllocationRequestsValidation()
         {
         }
 
-        public ValidationResult ValidateRequests(List<UploadWorkHoursRequest> requests)
+        public ValidationResult ValidateRequests(List<UploadWorkAllocationRequest> requests)
         {
             var errors = new List<ValidationFailure>();
 

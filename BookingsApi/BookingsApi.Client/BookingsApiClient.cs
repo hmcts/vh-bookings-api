@@ -656,16 +656,16 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<SuitabilityAnswersResponse> GetSuitabilityAnswersAsync(string cursor, int? limit, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Save vho work hours</summary>
+        /// <summary>Save vho work schedule</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkHoursAsync(System.Collections.Generic.IEnumerable<UploadWorkHoursRequest> uploadWorkHoursRequests);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkAllocationsAsync(System.Collections.Generic.IEnumerable<UploadWorkAllocationRequest> uploadWorkAllocationRequests);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Save vho work hours</summary>
+        /// <summary>Save vho work schedule</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkHoursAsync(System.Collections.Generic.IEnumerable<UploadWorkHoursRequest> uploadWorkHoursRequests, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkAllocationsAsync(System.Collections.Generic.IEnumerable<UploadWorkAllocationRequest> uploadWorkAllocationRequests, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -5599,25 +5599,25 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Save vho work hours</summary>
+        /// <summary>Save vho work schedule</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkHoursAsync(System.Collections.Generic.IEnumerable<UploadWorkHoursRequest> uploadWorkHoursRequests)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkAllocationsAsync(System.Collections.Generic.IEnumerable<UploadWorkAllocationRequest> uploadWorkAllocationRequests)
         {
-            return SaveWorkHoursAsync(uploadWorkHoursRequests, System.Threading.CancellationToken.None);
+            return SaveWorkAllocationsAsync(uploadWorkAllocationRequests, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Save vho work hours</summary>
+        /// <summary>Save vho work schedule</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkHoursAsync(System.Collections.Generic.IEnumerable<UploadWorkHoursRequest> uploadWorkHoursRequests, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkAllocationsAsync(System.Collections.Generic.IEnumerable<UploadWorkAllocationRequest> uploadWorkAllocationRequests, System.Threading.CancellationToken cancellationToken)
         {
-            if (uploadWorkHoursRequests == null)
-                throw new System.ArgumentNullException("uploadWorkHoursRequests");
+            if (uploadWorkAllocationRequests == null)
+                throw new System.ArgumentNullException("uploadWorkAllocationRequests");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/work-hours/SaveWorkHours");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/workallocation/SaveWorkAllocations");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -5625,7 +5625,7 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(uploadWorkHoursRequests, _settings.Value));
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(uploadWorkAllocationRequests, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");

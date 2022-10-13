@@ -1,4 +1,5 @@
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.Extensions;
@@ -13,29 +14,30 @@ using System.Threading.Tasks;
 namespace BookingsApi.Controllers
 {
     [Produces("application/json")]
-    [Route("work-hours")]
+    [Route("workallocation")]
     [ApiController]
-    public class WorkHoursController : Controller
+    public class WorkAllocationController : Controller
     {
         private readonly ICommandHandler _commandHandler;
 
-        public WorkHoursController(ICommandHandler commandHandler)
+        public WorkAllocationController(ICommandHandler commandHandler)
         {
             _commandHandler = commandHandler;
         }
 
         /// <summary>
-        /// Save vho work hours
+        /// Save vho work schedule
         /// </summary>
-        /// <param name="uploadWorkHoursRequests"></param>
+        /// <param name="uploadWorkAllocationRequests"></param>
         /// <returns>List of usernames that were not found</returns>
-        [HttpPost("SaveWorkHours")]
-        [OpenApiOperation("SaveWorkHours")]
+        [HttpPost("SaveWorkAllocations")]
+        [OpenApiOperation("SaveWorkAllocations")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
+        [AllowAnonymous]
+        public async Task<IActionResult> SaveWorkAllocations([FromBody] List<UploadWorkAllocationRequest> uploadWorkAllocationRequests)
         {
 
-            var validationResult = new UploadWorkHoursRequestsValidation().ValidateRequests(uploadWorkHoursRequests);
+            var validationResult = new UploadWorkAllocationRequestsValidation().ValidateRequests(uploadWorkAllocationRequests);
 
             if (!validationResult.IsValid)
             {
@@ -43,7 +45,7 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var uploadWorkAllocationCommand = new UploadWorkHoursCommand(uploadWorkHoursRequests);
+            var uploadWorkAllocationCommand = new UploadWorkHoursCommand(uploadWorkAllocationRequests);
 
             await _commandHandler.Handle(uploadWorkAllocationCommand);
 
