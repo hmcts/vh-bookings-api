@@ -81,13 +81,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = _username,
-                    NonWorkingHours = new List<NonWorkingHours> {
-                        new NonWorkingHours(new DateTime(2022, 2, 1), new DateTime(2022, 1, 1))
-                    }
-                }
+                new UploadNonWorkingHoursRequest(_username, new DateTime(2022, 2, 1), new DateTime(2022, 1, 1))
             };
 
             // Act
@@ -103,13 +97,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = _username,
-                    NonWorkingHours = new List<NonWorkingHours> {
-                        new NonWorkingHours(new DateTime(2022, 1, 1), new DateTime(2022, 2, 1))
-                    }
-                }
+                new UploadNonWorkingHoursRequest(_username, new DateTime(2022, 1, 1), new DateTime(2022, 2, 1))
             };
 
             // Act

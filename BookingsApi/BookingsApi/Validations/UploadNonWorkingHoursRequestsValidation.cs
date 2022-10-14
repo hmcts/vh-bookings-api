@@ -17,12 +17,9 @@ namespace BookingsApi.Validations
 
             foreach (var request in requests)
             {
-                foreach (var nonWorkingHours in request.NonWorkingHours)
+                if (request.EndTime < request.StartTime)
                 {
-                    if (nonWorkingHours.EndTime < nonWorkingHours.StartTime)
-                    {
-                        errors.Add(new ValidationFailure($"{request.Username}", $"End time {nonWorkingHours.EndTime} is before start time {nonWorkingHours.StartTime}."));
-                    }
+                    errors.Add(new ValidationFailure($"{request.Username}", $"End time {request.EndTime} is before start time {request.StartTime}."));
                 }
             }
 

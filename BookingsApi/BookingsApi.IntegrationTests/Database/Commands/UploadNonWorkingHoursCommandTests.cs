@@ -28,10 +28,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Arrange
             var username = "dontexist@test.com";
             var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = username,
-                }
+                new UploadNonWorkingHoursRequest(
+                    username,
+                    DateTime.Now,
+                    DateTime.Now.AddDays(2)
+                )
             };
 
             var command = new UploadNonWorkingHoursCommand(requests);
@@ -61,30 +62,23 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 new NonWorkingHours(new DateTime(2022, 2, 10, 9, 0, 0), new DateTime(2022, 2, 11, 16, 30, 0));
 
             var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = justiceUserOne.Username,
-                    NonWorkingHours = new List<NonWorkingHours>
-                    {
-                        justiceUserOneNonWorkingHours
-                    }
-                },
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = justiceUserTwo.Username,
-                    NonWorkingHours = new List<NonWorkingHours>
-                    {
-                        justiceUserTwoNonWorkingHours
-                    }
-                }
+                new UploadNonWorkingHoursRequest(
+                    justiceUserOne.Username,
+                    justiceUserOneNonWorkingHours.StartTime,
+                    justiceUserOneNonWorkingHours.EndTime
+                ),
+                new UploadNonWorkingHoursRequest(
+                    justiceUserTwo.Username,
+                    justiceUserTwoNonWorkingHours.StartTime,
+                    justiceUserTwoNonWorkingHours.EndTime
+                )
             };
 
             var command = new UploadNonWorkingHoursCommand(requests);
             await _commandHandler.Handle(command);
 
             // Test user with existing non-working hours gets updated
-            requests[1].NonWorkingHours[0].EndTime
-                = requests[1].NonWorkingHours[0].EndTime.AddHours(1);
+            requests[1].EndTime = requests[1].EndTime.AddHours(1);
 
             command = new UploadNonWorkingHoursCommand(requests);
 

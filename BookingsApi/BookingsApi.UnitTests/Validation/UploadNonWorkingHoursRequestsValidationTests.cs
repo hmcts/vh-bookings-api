@@ -26,13 +26,7 @@ namespace BookingsApi.UnitTests.Validation
 
             var requests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = _username,
-                    NonWorkingHours = new List<NonWorkingHours> {
-                        new NonWorkingHours(startTime, endTime)
-                    }
-                }
+                new UploadNonWorkingHoursRequest(_username, startTime, endTime)
             };
 
             var validator = new UploadNonWorkingHoursRequestsValidation();
@@ -55,13 +49,7 @@ namespace BookingsApi.UnitTests.Validation
 
             var requests = new List<UploadNonWorkingHoursRequest>
             {
-                new UploadNonWorkingHoursRequest
-                {
-                    Username = _username,
-                    NonWorkingHours = new List<NonWorkingHours> {
-                        new NonWorkingHours(startTime, endTime)
-                    }
-                }
+                new UploadNonWorkingHoursRequest(_username, startTime, endTime)
             };
 
             var validator = new UploadNonWorkingHoursRequestsValidation();

@@ -1,10 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace BookingsApi.Contract.Requests
 {
     public class UploadNonWorkingHoursRequest
     {
         public string Username { get; set; }
-        public List<NonWorkingHours> NonWorkingHours { get; set; } = new List<NonWorkingHours>();
+        public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; }
+
+        public UploadNonWorkingHoursRequest(string username, DateTime startTime, DateTime endTime)
+        {
+            Username = username;
+            EndTime = endTime;
+            StartTime = startTime;
+        }
     }
 }

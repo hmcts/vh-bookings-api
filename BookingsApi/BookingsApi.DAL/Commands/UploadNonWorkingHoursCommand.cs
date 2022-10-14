@@ -44,29 +44,26 @@ namespace BookingsApi.DAL.Commands
                 var vhoNonAvailabilities = _context.VhoNonAvailabilities
                     .Where(x => x.JusticeUser.Username == uploadNonWorkingHoursRequest.Username);
 
-                foreach (var nonWorkingHours in uploadNonWorkingHoursRequest.NonWorkingHours)
+                var vhoNonWorkingHours = vhoNonAvailabilities
+                    .SingleOrDefault(x => x.StartTime == uploadNonWorkingHoursRequest.StartTime
+                        || x.EndTime == uploadNonWorkingHoursRequest.EndTime);
+
+                bool doesVhoNonWorkingHoursExist = true;
+
+                if (vhoNonWorkingHours == null)
                 {
-                    var vhoNonWorkingHours = vhoNonAvailabilities
-                        .SingleOrDefault(x => x.StartTime == nonWorkingHours.StartTime
-                            || x.EndTime == nonWorkingHours.EndTime);
-
-                    bool doesVhoNonWorkingHoursExist = true;
-
-                    if (vhoNonWorkingHours == null)
-                    {
-                        doesVhoNonWorkingHoursExist = false;
-                        vhoNonWorkingHours = new VhoNonAvailability();
-                    }
-
-                    vhoNonWorkingHours.JusticeUserId = user.Id;
-                    vhoNonWorkingHours.StartTime = nonWorkingHours.StartTime;
-                    vhoNonWorkingHours.EndTime = nonWorkingHours.EndTime;
-
-                    if (doesVhoNonWorkingHoursExist)
-                        _context.Update(vhoNonWorkingHours);
-                    else
-                        _context.Add(vhoNonWorkingHours);
+                    doesVhoNonWorkingHoursExist = false;
+                    vhoNonWorkingHours = new VhoNonAvailability();
                 }
+
+                vhoNonWorkingHours.JusticeUserId = user.Id;
+                vhoNonWorkingHours.StartTime = uploadNonWorkingHoursRequest.StartTime;
+                vhoNonWorkingHours.EndTime = uploadNonWorkingHoursRequest.EndTime;
+
+                if (doesVhoNonWorkingHoursExist)
+                    _context.Update(vhoNonWorkingHours);
+                else
+                    _context.Add(vhoNonWorkingHours);
             }
             await _context.SaveChangesAsync();
         }
