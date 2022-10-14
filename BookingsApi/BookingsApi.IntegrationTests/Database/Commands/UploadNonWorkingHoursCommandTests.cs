@@ -56,21 +56,21 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserTwo = await Hooks
                 .SeedJusticeUser("team.lead.2@hearings.reform.hmcts.net", "firstName2", "secondname2", true);
 
-            var justiceUserOneNonWorkingHours = 
-                new NonWorkingHours(new DateTime(2022, 2, 1), new DateTime(2022, 1, 1));
-            var justiceUserTwoNonWorkingHours = 
-                new NonWorkingHours(new DateTime(2022, 2, 10, 9, 0, 0), new DateTime(2022, 2, 11, 16, 30, 0));
+            var justiceUserOneNonWorkingHoursStartTime = new DateTime(2022, 2, 1);
+            var justiceUserOneNonWorkingHoursEndTime = new DateTime(2022, 1, 1);
+            var justiceUserTwoNonWorkingHoursStartTime = new DateTime(2022, 2, 10, 9, 0, 0);
+            var justiceUserTwoNonWorkingHoursEndTime = new DateTime(2022, 2, 11, 16, 30, 0);
 
             var requests = new List<UploadNonWorkingHoursRequest> {
                 new UploadNonWorkingHoursRequest(
                     justiceUserOne.Username,
-                    justiceUserOneNonWorkingHours.StartTime,
-                    justiceUserOneNonWorkingHours.EndTime
+                    justiceUserOneNonWorkingHoursStartTime,
+                    justiceUserOneNonWorkingHoursEndTime
                 ),
                 new UploadNonWorkingHoursRequest(
                     justiceUserTwo.Username,
-                    justiceUserTwoNonWorkingHours.StartTime,
-                    justiceUserTwoNonWorkingHours.EndTime
+                    justiceUserTwoNonWorkingHoursStartTime,
+                    justiceUserTwoNonWorkingHoursEndTime
                 )
             };
 
@@ -91,9 +91,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             // Assert
             nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 2);
-            justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHours.StartTime);
-            justiceUserOneNonWorkHours.EndTime.Should().Be(justiceUserOneNonWorkingHours.EndTime);
-            justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHours.StartTime);
+            justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHoursStartTime);
+            justiceUserOneNonWorkHours.EndTime.Should().Be(justiceUserOneNonWorkingHoursEndTime);
+            justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHoursStartTime);
             justiceUserTwoNonWorkHours.EndTime.Should().Be(new DateTime(2022, 2, 11, 17, 30, 0));
         }
     }
