@@ -8,9 +8,8 @@ namespace BookingsApi.Domain
     {
         public Guid JusticeUserId { get; set; }
         public JusticeUser JusticeUser { get; set; }
-        public DateTime Date { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; }
         public string CreatedBy { get; set; }
     }
 }
