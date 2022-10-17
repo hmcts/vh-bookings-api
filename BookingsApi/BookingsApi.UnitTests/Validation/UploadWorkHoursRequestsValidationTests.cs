@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Validations;
-using BookingsApi.Common;
 using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders.Domain;
+using System.Collections.Generic;
 
 namespace BookingsApi.UnitTests.Validation
 {
-    public class UploadWorkAllocationRequestsValidationTests
+    public class UploadWorkHoursRequestsValidationTests
     {
         private string _username;
 

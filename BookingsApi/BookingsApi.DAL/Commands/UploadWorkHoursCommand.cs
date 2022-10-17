@@ -10,12 +10,12 @@ namespace BookingsApi.DAL.Commands
 {
     public class UploadWorkHoursCommand : ICommand
     {
-        public List<UploadWorkHoursRequest> UploadWorkAllocationRequests { get; set; }
+        public List<UploadWorkHoursRequest> UploadWorkHoursRequests { get; set; }
         public List<string> FailedUploadUsernames { get; set; } = new List<string>();
 
-        public UploadWorkHoursCommand(List<UploadWorkHoursRequest> uploadWorkAllocationRequests)
+        public UploadWorkHoursCommand(List<UploadWorkHoursRequest> uploadWorkHoursRequests)
         {
-            UploadWorkAllocationRequests = uploadWorkAllocationRequests;
+            UploadWorkHoursRequests = uploadWorkHoursRequests;
         }
     }
 
@@ -30,21 +30,21 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(UploadWorkHoursCommand command)
         {
-            foreach (var uploadWorkAllocationRequest in command.UploadWorkAllocationRequests)
+            foreach (var uploadWorkHoursRequest in command.UploadWorkHoursRequests)
             {
                 var user = await _context.JusticeUsers
-                    .SingleOrDefaultAsync(x => x.Username == uploadWorkAllocationRequest.Username);
+                    .SingleOrDefaultAsync(x => x.Username == uploadWorkHoursRequest.Username);
 
                 if (user == null)
                 {
-                    command.FailedUploadUsernames.Add(uploadWorkAllocationRequest.Username);
+                    command.FailedUploadUsernames.Add(uploadWorkHoursRequest.Username);
                     continue;
                 }
 
                 var vhoWorkHours = _context.VhoWorkHours
-                    .Where(x => x.JusticeUser.Username == uploadWorkAllocationRequest.Username);
+                    .Where(x => x.JusticeUser.Username == uploadWorkHoursRequest.Username);
 
-                foreach (var workHours in uploadWorkAllocationRequest.WorkingHours)
+                foreach (var workHours in uploadWorkHoursRequest.WorkingHours)
                 {
                     var vhoWorkHour = vhoWorkHours
                         .SingleOrDefault(x => x.DayOfWeekId == workHours.DayOfWeekId);

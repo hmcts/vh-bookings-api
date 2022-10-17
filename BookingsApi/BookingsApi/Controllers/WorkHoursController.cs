@@ -43,11 +43,39 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var uploadWorkAllocationCommand = new UploadWorkHoursCommand(uploadWorkHoursRequests);
+            var uploadWorkHoursCommand = new UploadWorkHoursCommand(uploadWorkHoursRequests);
 
-            await _commandHandler.Handle(uploadWorkAllocationCommand);
+            await _commandHandler.Handle(uploadWorkHoursCommand);
 
-            return Ok(uploadWorkAllocationCommand.FailedUploadUsernames);
+            return Ok(uploadWorkHoursCommand.FailedUploadUsernames);
+        }
+
+
+        /// <summary>
+        /// Save vho non-working hours
+        /// </summary>
+        /// <param name="uploadNonWorkingHoursRequests"></param>
+        /// <returns>List of usernames that were not found</returns>
+        [HttpPost("SaveNonWorkingHours")]
+        [OpenApiOperation("SaveNonWorkingHours")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
+        {
+
+            var validationResult = new UploadNonWorkingHoursRequestsValidation().ValidateRequests(uploadNonWorkingHoursRequests);
+
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var uploadNonWorkingHoursCommand = new UploadNonWorkingHoursCommand(uploadNonWorkingHoursRequests);
+
+            await _commandHandler.Handle(uploadNonWorkingHoursCommand);
+
+            return Ok(uploadNonWorkingHoursCommand.FailedUploadUsernames);
         }
     }
 }
