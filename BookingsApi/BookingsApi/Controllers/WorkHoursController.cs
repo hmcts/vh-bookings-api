@@ -65,7 +65,6 @@ namespace BookingsApi.Controllers
         /// <returns>List of usernames that were not found</returns>
         [HttpPost("SaveNonWorkingHours")]
         [OpenApiOperation("SaveNonWorkingHours")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
         {
