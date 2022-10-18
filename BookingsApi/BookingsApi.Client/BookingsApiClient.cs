@@ -667,16 +667,16 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveWorkHoursAsync(System.Collections.Generic.IEnumerable<UploadWorkHoursRequest> uploadWorkHoursRequests, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Save vho non-working hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveNonWorkingHoursAsync(System.Collections.Generic.IEnumerable<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Save vho non-working hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveNonWorkingHoursAsync(System.Collections.Generic.IEnumerable<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -5692,27 +5692,25 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Save vho non-working hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveNonWorkingHoursAsync(System.Collections.Generic.IEnumerable<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
         {
-            return GetVhoWorkHoursAsync(username, System.Threading.CancellationToken.None);
+            return SaveNonWorkingHoursAsync(uploadNonWorkingHoursRequests, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Save vho non-working hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveNonWorkingHoursAsync(System.Collections.Generic.IEnumerable<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests, System.Threading.CancellationToken cancellationToken)
         {
+            if (uploadNonWorkingHoursRequests == null)
+                throw new System.ArgumentNullException("uploadNonWorkingHoursRequests");
+    
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/work-hours?");
-            if (username != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("username") + "=").Append(System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/work-hours/SaveNonWorkingHours");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -5720,7 +5718,10 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(uploadNonWorkingHoursRequests, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -5746,7 +5747,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<VhoSearchResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<string>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

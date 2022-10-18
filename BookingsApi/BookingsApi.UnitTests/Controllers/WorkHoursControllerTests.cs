@@ -15,7 +15,7 @@ using FluentAssertions;
 
 namespace BookingsApi.UnitTests.Controllers
 {
-    public class WorkAllocationControllerTests
+    public class WorkHoursControllerTests
     {
 
         private WorkHoursController _controller;
@@ -123,6 +123,40 @@ namespace BookingsApi.UnitTests.Controllers
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
             Assert.IsInstanceOf<NotFoundObjectResult>(response);
             response?.Value.Should().Be("Vho user not found");
+        }
+
+        [Test]
+        public async Task SaveNonWorkingHours_ReturnsErrors_WhenValidationFails()
+        {
+            // Arrange
+            var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
+            {
+                new UploadNonWorkingHoursRequest(_username, new DateTime(2022, 2, 1), new DateTime(2022, 1, 1))
+            };
+
+            // Act
+            var response = (await _controller.SaveNonWorkingHours(uploadNonWorkingHoursRequests)) as BadRequestObjectResult;
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+        }
+
+        [Test]
+        public async Task SaveNonWorkingHours_CalllsUploadNonWorkingHoursCommand_AndReturnsResult()
+        {
+            // Arrange
+            var uploadNonWorkingHoursRequests = new List<UploadNonWorkingHoursRequest>
+            {
+                new UploadNonWorkingHoursRequest(_username, new DateTime(2022, 1, 1), new DateTime(2022, 2, 1))
+            };
+
+            // Act
+            var response = (await _controller.SaveNonWorkingHours(uploadNonWorkingHoursRequests)) as OkObjectResult;
+
+            // Assert
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadNonWorkingHoursCommand>()), Times.Once);
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.IsInstanceOf<List<string>>(response.Value);
         }
     }
 }
