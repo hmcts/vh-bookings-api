@@ -92,7 +92,7 @@ namespace BookingsApi.UnitTests.Controllers
                 .Setup(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()))
                 .ReturnsAsync(queryResponse);
             // Act
-            var response = await _controller.GetVhoWorkHours(userName) as OkObjectResult;
+            var response = await _controller.GetVhoWorkAvailabilityHours(userName) as OkObjectResult;
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
             Assert.IsInstanceOf<OkObjectResult>(response);
@@ -106,7 +106,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var userName = "test.user@@hearings.reform.hmcts.net";
             // Act
-            var response = await _controller.GetVhoWorkHours(userName);
+            var response = await _controller.GetVhoWorkAvailabilityHours(userName);
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Never);
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
@@ -119,7 +119,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var userName = "test.user@hearings.reform.hmcts.net";
             // Act
-            var response = await _controller.GetVhoWorkHours(userName) as NotFoundObjectResult;
+            var response = await _controller.GetVhoWorkAvailabilityHours(userName) as NotFoundObjectResult;
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
             Assert.IsInstanceOf<NotFoundObjectResult>(response);

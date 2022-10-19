@@ -85,14 +85,14 @@ namespace BookingsApi.Controllers
         }
                 
         /// <summary>
-        /// Search for a vho and return work hours
+        /// Search for a vho and return with availability work hours
         /// </summary>
-        /// <param name="uploadWorkHoursRequests"></param>
+        /// <param name="username"></param>
         /// <returns>List of usernames that were not found</returns>
         [HttpGet]
-        [OpenApiOperation("GetVhoWorkHours")]
+        [OpenApiOperation("GetVhoWorkAvailabilityHours")]
         [ProducesResponseType(typeof(VhoSearchResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetVhoWorkHours(string username)
+        public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
         {
             if (!username.IsValidEmail())
             {

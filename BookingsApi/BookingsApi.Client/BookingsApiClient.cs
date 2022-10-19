@@ -678,16 +678,16 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> SaveNonWorkingHoursAsync(System.Collections.Generic.IEnumerable<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username);
+        System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkAvailabilityHoursAsync(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -5785,19 +5785,19 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username)
+        public System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkAvailabilityHoursAsync(string username)
         {
-            return GetVhoWorkHoursAsync(username, System.Threading.CancellationToken.None);
+            return GetVhoWorkAvailabilityHoursAsync(username, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Search for a vho and return work hours</summary>
+        /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>List of usernames that were not found</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<VhoSearchResponse> GetVhoWorkAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/work-hours?");
