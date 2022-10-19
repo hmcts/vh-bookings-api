@@ -16,7 +16,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         private const string Username = "integrationtest@hearings.reform.hmcts.net";
 
         [TearDown]
-        public void TearDown()
+        public void DbCleanup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.Where(e => e.JusticeUser.Username == Username));
