@@ -63,7 +63,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_null_when_no_user_is_found()
+        public async Task Should_return_empty_list_when_no_user_is_found()
         {
             var query = new GetVhoWorkHoursQuery("doesnt.existatall@hmcts.net");
             var vhoWorkHours = await _handler.Handle(query);

@@ -23,6 +23,7 @@ namespace BookingsApi.DAL.Queries
         
         public async Task<List<VhoWorkHours>> Handle(GetVhoWorkHoursQuery query)
             => await _context.VhoWorkHours.Include(x => x.JusticeUser)
+                                          .Include(x => x.DayOfWeek)
                                           .Where(x => x.JusticeUser.Username == query.UserName)
                                           .ToListAsync();
     }

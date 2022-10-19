@@ -9,9 +9,15 @@ namespace BookingsApi.Mappings
     {
         public static VhoSearchResponse Map(List<VhoWorkHours> vhoWorkHours)
         {
+            var justiceUser = vhoWorkHours.First().JusticeUser;
             return new VhoSearchResponse
             {
-                Username = vhoWorkHours.First().JusticeUser?.Username,
+                Username = justiceUser?.Username,
+                FirstName = justiceUser?.FirstName,
+                Lastname = justiceUser?.Lastname,
+                UserRole = justiceUser?.UserRole?.Name,
+                ContactEmail = justiceUser?.ContactEmail,
+                Telephone = justiceUser?.Telephone,
                 VhoWorkHours = vhoWorkHours.Select(vwh => new VhoWorkHoursResponse
                 {
                     DayOfWeekId = vwh.DayOfWeekId,
