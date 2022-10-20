@@ -3,12 +3,17 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.Extensions;
 using BookingsApi.Validations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
+using BookingsApi.Mappings;
 
 namespace BookingsApi.Controllers
 {
@@ -18,10 +23,12 @@ namespace BookingsApi.Controllers
     public class WorkHoursController : Controller
     {
         private readonly ICommandHandler _commandHandler;
+        private readonly IQueryHandler _queryHandler;
 
-        public WorkHoursController(ICommandHandler commandHandler)
+        public WorkHoursController(ICommandHandler commandHandler, IQueryHandler queryHandler)
         {
             _commandHandler = commandHandler;
+            _queryHandler = queryHandler;
         }
 
         /// <summary>
@@ -58,7 +65,6 @@ namespace BookingsApi.Controllers
         /// <returns>List of usernames that were not found</returns>
         [HttpPost("SaveNonWorkingHours")]
         [OpenApiOperation("SaveNonWorkingHours")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
         {
@@ -76,6 +82,30 @@ namespace BookingsApi.Controllers
             await _commandHandler.Handle(uploadNonWorkingHoursCommand);
 
             return Ok(uploadNonWorkingHoursCommand.FailedUploadUsernames);
+        }
+                
+        /// <summary>
+        /// Search for a vho and return with availability work hours
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>List of usernames that were not found</returns>
+        [HttpGet]
+        [OpenApiOperation("GetVhoWorkAvailabilityHours")]
+        [ProducesResponseType(typeof(VhoSearchResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
+        {
+            if (!username.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
+                return BadRequest(ModelState);
+            }
+
+            var results = await _queryHandler.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(new GetVhoWorkHoursQuery(username));
+
+            if (results == null || !results.Any())
+                return NotFound("Vho user not found");
+            
+            return Ok(VhoSearchResponseMapper.Map(results));
         }
     }
 }
