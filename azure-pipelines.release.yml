@@ -172,8 +172,6 @@ extends:
           # Feature Flags
           - name: FeatureFlags:StaffMemberFeature
             value: $(StaffMemberFeature)
-          - name: FeatureFlags:EJudFeature
-            value: $(EJudFeature)
 
         acceptanceTestSettings:
           # AzureAd

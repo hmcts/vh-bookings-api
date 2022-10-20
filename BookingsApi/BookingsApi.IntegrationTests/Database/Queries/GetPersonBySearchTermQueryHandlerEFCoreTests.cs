@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -22,6 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         private Participant IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant, StaffMemberParticipant;
         private Organisation organisation;
         private Mock<IOptions<FeatureFlagConfiguration>> _configOptions;
+        private Mock<IFeatureToggles> _featureToggles;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -29,6 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>().UseInMemoryDatabase(databaseName: "VhBookings").Options;
             _context = new BookingsDbContext(contextOptions);
             _configOptions = new Mock<IOptions<FeatureFlagConfiguration>>();
+            _featureToggles = new Mock<IFeatureToggles>();
         }
 
         [OneTimeTearDown]
@@ -59,12 +62,10 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             _context.Persons.AddRange(IndividualPerson, JudgePerson, JudicialOfficeHolderPerson, StaffMemberPerson);
             _context.Participants.AddRange(IndividualParticipant, IndividualParticipant2, JudgeParticipant, JudicialOfficeHolderParticipant, StaffMemberParticipant);
             _context.SaveChanges();
-            _configOptions.Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                EJudFeature = true
-            });
+            
+            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(true);
 
-            _handler = new GetPersonBySearchTermQueryHandler(_context, _configOptions.Object);
+            _handler = new GetPersonBySearchTermQueryHandler(_context, _featureToggles.Object);
         }
 
         [TearDown]
@@ -88,11 +89,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Returns_Persons_Record_By_Search_Term_Ejud_OFF()
         {
-            _configOptions.Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                EJudFeature = false
-            });
-            _handler = new GetPersonBySearchTermQueryHandler(_context, _configOptions.Object);
+            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(true);
+            _handler = new GetPersonBySearchTermQueryHandler(_context, _featureToggles.Object);
             var persons = await _handler.Handle(new GetPersonBySearchTermQuery("luff"));
 
             Assert.AreEqual(3, persons.Count);
@@ -104,11 +102,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Handle_Should_Not_Filters_Out_Participant_With_Discriminator_Of_Judge_And_JudicialOfficeHolder()
         {
-            _configOptions.Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                EJudFeature = false
-            });
-            _handler = new GetPersonBySearchTermQueryHandler(_context, _configOptions.Object);
+            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(false);
+            _handler = new GetPersonBySearchTermQueryHandler(_context, _featureToggles.Object);
             var persons = await _handler.Handle(new GetPersonBySearchTermQuery("luff"));
 
             Assert.AreEqual(3, persons.Count);
