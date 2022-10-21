@@ -78,6 +78,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Returns_Persons_Record_By_Search_Term_EJjud_ON()
         {
+            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(true);
+            _handler = new GetPersonBySearchTermQueryHandler(_context, _featureToggles.Object);
             var persons = await _handler.Handle(new GetPersonBySearchTermQuery("luff"));
 
             Assert.AreEqual(1, persons.Count);
@@ -89,7 +91,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Returns_Persons_Record_By_Search_Term_Ejud_OFF()
         {
-            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(true);
+            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(false);
             _handler = new GetPersonBySearchTermQueryHandler(_context, _featureToggles.Object);
             var persons = await _handler.Handle(new GetPersonBySearchTermQuery("luff"));
 
