@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -14,18 +15,21 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     {
         private GetPersonBySearchTermQueryHandler _handler;
         private Mock<IOptions<FeatureFlagConfiguration>> _configOptions;
+        private Mock<IFeatureToggles> _featureToggles;
 
 
         [SetUp]
         public void Setup()
         {
             _configOptions = new Mock<IOptions<FeatureFlagConfiguration>>();
+            _featureToggles = new Mock<IFeatureToggles>();
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _configOptions.Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
             {
                 StaffMemberFeature = true
             });
-            _handler = new GetPersonBySearchTermQueryHandler(context, _configOptions.Object);
+            _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(false);
+            _handler = new GetPersonBySearchTermQueryHandler(context, _featureToggles.Object);
         }
 
         [Test]

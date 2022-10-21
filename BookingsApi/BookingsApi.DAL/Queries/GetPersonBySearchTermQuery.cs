@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -22,19 +23,19 @@ namespace BookingsApi.DAL.Queries
     public class GetPersonBySearchTermQueryHandler : IQueryHandler<GetPersonBySearchTermQuery, List<Person>>
     {
         private readonly BookingsDbContext _context;
-        private readonly FeatureFlagConfiguration _featureFlagConfiguration;
+        private readonly IFeatureToggles _featureToggles;
         public static readonly List<string> excludedRoles = new List<string>() { "Judge", "JudicialOfficeHolder", "StaffMember" };
 
-        public GetPersonBySearchTermQueryHandler(BookingsDbContext context, IOptions<FeatureFlagConfiguration> featureFlagConfigurationOptions)
+        public GetPersonBySearchTermQueryHandler(BookingsDbContext context, IFeatureToggles featureToggles)
         {
             _context = context;
-            _featureFlagConfiguration = featureFlagConfigurationOptions.Value;
+            _featureToggles = featureToggles;
         }
 
         public async Task<List<Person>> Handle(GetPersonBySearchTermQuery query)
         {
             List<Person> results;
-            if (_featureFlagConfiguration.EJudFeature)
+            if (_featureToggles.EJudFeature())
             {
                 results = await (from person in _context.Persons
                                  join participant in _context.Participants on person.Id equals participant.PersonId

@@ -1,9 +1,11 @@
 ﻿using Autofac.Extras.Moq;
 using BookingsApi.Common.Exceptions;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
+using Moq;
 using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.DAL.Services
@@ -17,6 +19,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public void SetUp()
         {
             _mocker = AutoMock.GetLoose();
+            
         }
 
         [Test]
@@ -50,10 +53,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         [Test]
         public void GetFeatureFlag_Should_Return_True_for_EJud_Feature()
         {
-            _mocker.Mock<IOptions<FeatureFlagConfiguration>>().Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                EJudFeature = true
-            });
+            _mocker.Mock<IFeatureToggles>().Setup(opt => opt.EJudFeature()).Returns(true);
             _service = _mocker.Create<FeatureFlagService>();
 
             var featureFlag = _service.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
@@ -64,14 +64,12 @@ namespace BookingsApi.UnitTests.DAL.Services
         [Test]
         public void GetFeatureFlag_Should_Return_False_for_EJud_Feature()
         {
-            _mocker.Mock<IOptions<FeatureFlagConfiguration>>().Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                EJudFeature = false
-            });
+            _mocker.Mock<IFeatureToggles>().Setup(opt => opt.EJudFeature()).Returns(false);
+            
             _service = _mocker.Create<FeatureFlagService>();
-
+            
             var featureFlag = _service.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
-
+        
             featureFlag.Should().BeFalse();
         }
 
