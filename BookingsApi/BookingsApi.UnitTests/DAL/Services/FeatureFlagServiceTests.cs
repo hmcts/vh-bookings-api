@@ -54,10 +54,6 @@ namespace BookingsApi.UnitTests.DAL.Services
         public void GetFeatureFlag_Should_Return_True_for_EJud_Feature()
         {
             _mocker.Mock<IFeatureToggles>().Setup(opt => opt.EJudFeature()).Returns(true);
-            _mocker.Mock<IOptions<FeatureFlagConfiguration>>().Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                StaffMemberFeature = false
-            });
             _service = _mocker.Create<FeatureFlagService>();
 
             var featureFlag = _service.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
@@ -69,10 +65,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public void GetFeatureFlag_Should_Return_False_for_EJud_Feature()
         {
             _mocker.Mock<IFeatureToggles>().Setup(opt => opt.EJudFeature()).Returns(false);
-            _mocker.Mock<IOptions<FeatureFlagConfiguration>>().Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                StaffMemberFeature = false
-            });
+            
             _service = _mocker.Create<FeatureFlagService>();
             
             var featureFlag = _service.GetFeatureFlag(nameof(FeatureFlags.EJudFeature));
