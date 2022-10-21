@@ -122,13 +122,13 @@ stages:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
         steps:
-
-        - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-          parameters:
-            outputPath: $(Build.StagingDirectory)
-            contextName: ${{ variables.efContextName }}
-            workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-            projectName: ${{ variables.efProjectName }}
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: ${{ variables.efContextName }}
+              workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+              migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
+              projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
         displayName: "Package NuGet Packages"
@@ -156,6 +156,7 @@ stages:
   - stage: Run_Entity_Framework_Dev
     dependsOn: Dock
     displayName: Run Entity Framework Dev
+    condition: eq(lower(dependencies.Dock.outputs['Generate_Entity_Framework_Script.git.hasChanged']), 'true')
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
@@ -182,10 +183,12 @@ stages:
               kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
               kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
+
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
   - stage: Install
     dependsOn: Run_Entity_Framework_Dev
+    condition: in(dependencies.Run_Entity_Framework_Dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     displayName: Deploy Helm Chart Dev AKS
     variables:
       - template: variables/dev.yaml
