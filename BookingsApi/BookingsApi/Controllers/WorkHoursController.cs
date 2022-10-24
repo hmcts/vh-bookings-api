@@ -132,5 +132,32 @@ namespace BookingsApi.Controllers
             
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
         }
+        
+        [HttpPatch("/NonAvailability/VHO")]
+        [OpenApiOperation("UpdateVhoNonAvailabilityHours")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> UpdateVhoNonAvailabilityHours(UpdateNonWorkingHoursRequest request)
+        {
+            // TODO refactor validation - see existing Validation classes that do this
+            
+            int i = 0;
+            
+            foreach (var hour in request.Hours)
+            {
+                if (hour.EndTime <= hour.StartTime)
+                {
+                    ModelState.AddModelError($"Hours[{i}].EndTime", "EndTime must be after StartTime");
+                }
+
+                i++;
+            }
+
+            if (ModelState.ErrorCount > 0)
+            {
+                return BadRequest(ModelState);
+            }
+ 
+            return NoContent();
+        }
     }
 }

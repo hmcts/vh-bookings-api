@@ -7,12 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Validations;
 using FluentAssertions;
+using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers
 {
@@ -202,6 +205,91 @@ namespace BookingsApi.UnitTests.Controllers
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadNonWorkingHoursCommand>()), Times.Once);
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.IsInstanceOf<List<string>>(response.Value);
+        }
+
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_Returns_NoContent()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1), EndTime = new DateTime(2022, 1, 2) }
+                }
+            };
+
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+
+            // Assert
+            var objectResult = (NoContentResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+        }
+
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_EndTime_Before_StartTime_Returns_BadRequest()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc) },
+                    new() { Id = 2, StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc) },
+                    new() { Id = 3, StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc) }
+                }
+            };
+            
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+
+            // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", "EndTime must be after StartTime");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[2].EndTime", "EndTime must be after StartTime");
+        }
+        
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_EndTime_EqualTo_StartTime_Returns_BadRequest()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc) },
+                    new() { Id = 2, StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc) },
+                    new() { Id = 3, StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 10, 0, 0, DateTimeKind.Utc) }
+                }
+            };
+            
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+
+            // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[0].EndTime", "EndTime must be after StartTime");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", "EndTime must be after StartTime");
+        }
+
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_Overlapping_Times_For_Single_User_Returns_BadRequest()
+        {
+            // TODO - may require mocks
+            
+            // Arrange
+            // Act
+            // Assert
+        }
+
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_NonExistent_Hours_Returns_BadRequest()
+        {
+            // TODO - eg hour ids that don't exist in the db
+            // May require mocks
         }
     }
 }
