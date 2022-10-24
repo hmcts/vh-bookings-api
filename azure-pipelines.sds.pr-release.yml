@@ -183,7 +183,6 @@ stages:
               kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
               kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
-
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
   - stage: Install
