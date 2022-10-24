@@ -10,7 +10,6 @@ namespace BookingsApi.DAL.Queries
     public class GetVhoWorkHoursQuery : IQuery
     {
         public string UserName { get; }
-
         public GetVhoWorkHoursQuery(string userName) => UserName = userName.ToLowerInvariant();
         
     }
@@ -22,8 +21,7 @@ namespace BookingsApi.DAL.Queries
         public GetVhoWorkHoursQueryHandler(BookingsDbContext context) => _context = context;
         
         public async Task<List<VhoWorkHours>> Handle(GetVhoWorkHoursQuery query)
-            => await _context.VhoWorkHours.Include(x => x.JusticeUser)
-                                          .Include(x => x.DayOfWeek)
+            => await _context.VhoWorkHours.Include(x => x.DayOfWeek)
                                           .Where(x => x.JusticeUser.Username == query.UserName)
                                           .ToListAsync();
     }

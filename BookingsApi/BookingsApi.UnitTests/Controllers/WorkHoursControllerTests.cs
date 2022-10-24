@@ -96,7 +96,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
             Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<VhoSearchResponse>(response.Value);
+            Assert.IsInstanceOf<List<VhoWorkHoursResponse>>(response.Value);
         }
         
                 
@@ -122,6 +122,50 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoWorkAvailabilityHours(userName) as NotFoundObjectResult;
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Once);
+            Assert.IsInstanceOf<NotFoundObjectResult>(response);
+            response?.Value.Should().Be("Vho user not found");
+        }
+ 
+        [Test]
+        public async Task GetVhoNonAvailableWorkHours_InvokesGetVhoWorkAllocation_AndReturnsResult()
+        {
+            // Arrange
+            var userName = "test.user@hearings.reform.hmcts.net";
+            var queryResponse = new List<VhoNonAvailability>{Mock.Of<VhoNonAvailability>()};
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()))
+                .ReturnsAsync(queryResponse);
+            // Act
+            var response = await _controller.GetVhoNonAvailabilityHours(userName) as OkObjectResult;
+            // Assert
+            _queryHandlerMock.Verify(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Once);
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.IsInstanceOf<List<VhoNonAvailabilityWorkHoursResponse>>(response.Value);
+        }
+        
+                
+        [Test]
+        public async Task GetVhoNonAvailableWorkHours_InvokesGetVhoWorkAllocation_AndReturnsBadRequest()
+        {
+            // Arrange
+            var userName = "test.user@@hearings.reform.hmcts.net";
+            // Act
+            var response = await _controller.GetVhoNonAvailabilityHours(userName);
+            // Assert
+            _queryHandlerMock.Verify(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Never);
+            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+        }
+        
+                        
+        [Test]
+        public async Task GetVhoNonAvailableWorkHours_InvokesGetVhoWorkAllocation_AndReturnsNotFound()
+        {
+            // Arrange
+            var userName = "test.user@hearings.reform.hmcts.net";
+            // Act
+            var response = await _controller.GetVhoNonAvailabilityHours(userName) as NotFoundObjectResult;
+            // Assert
+            _queryHandlerMock.Verify(x =>  x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Once);
             Assert.IsInstanceOf<NotFoundObjectResult>(response);
             response?.Value.Should().Be("Vho user not found");
         }

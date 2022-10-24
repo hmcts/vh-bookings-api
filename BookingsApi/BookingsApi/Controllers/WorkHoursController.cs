@@ -1,3 +1,4 @@
+using System;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -88,10 +89,11 @@ namespace BookingsApi.Controllers
         /// Search for a vho and return with availability work hours
         /// </summary>
         /// <param name="username"></param>
-        /// <returns>List of usernames that were not found</returns>
-        [HttpGet]
+        /// <returns>vho with list of availability work hours</returns>
+        [HttpGet("VHO")]
         [OpenApiOperation("GetVhoWorkAvailabilityHours")]
-        [ProducesResponseType(typeof(VhoSearchResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(VhoNonAvailabilityWorkHoursResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(VhoNonAvailabilityWorkHoursResponse), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
         {
             if (!username.IsValidEmail())
@@ -105,7 +107,32 @@ namespace BookingsApi.Controllers
             if (results == null || !results.Any())
                 return NotFound("Vho user not found");
             
-            return Ok(VhoSearchResponseMapper.Map(results));
+            return Ok(VhoWorkHoursToResponseMapper.Map(results));
+        }
+        
+        /// <summary>
+        /// Search for a vho and return with non availability work hours
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>vho with list of non availability work hours</returns>
+        [HttpGet("/NonAvailability/VHO")]
+        [OpenApiOperation("GetVhoNonAvailabilityHours")]
+        [ProducesResponseType(typeof(VhoNonAvailabilityWorkHoursResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(VhoNonAvailabilityWorkHoursResponse), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetVhoNonAvailabilityHours(string username)
+        {
+            if (!username.IsValidEmail())
+            {
+                ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
+                return BadRequest(ModelState);
+            }
+
+            var results = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(new GetVhoNonAvailableWorkHoursQuery(username));
+
+            if (results == null || !results.Any())
+                return NotFound("Vho user not found");
+            
+            return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
         }
     }
 }
