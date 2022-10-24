@@ -92,7 +92,7 @@ namespace BookingsApi.Controllers
         /// <returns>vho with list of availability work hours</returns>
         [HttpGet("VHO")]
         [OpenApiOperation("GetVhoWorkAvailabilityHours")]
-        [ProducesResponseType(typeof(VhoWorkHoursResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<VhoWorkHoursResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
         {
@@ -117,7 +117,7 @@ namespace BookingsApi.Controllers
         /// <returns>vho with list of non availability work hours</returns>
         [HttpGet("/NonAvailability/VHO")]
         [OpenApiOperation("GetVhoNonAvailabilityHours")]
-        [ProducesResponseType(typeof(VhoNonAvailabilityWorkHoursResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<VhoNonAvailabilityWorkHoursResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetVhoNonAvailabilityHours(string username)
         {

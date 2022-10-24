@@ -681,24 +681,24 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>vho with list of availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoWorkHoursResponse> GetVhoWorkAvailabilityHoursAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoWorkHoursResponse>> GetVhoWorkAvailabilityHoursAsync(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>vho with list of availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoWorkHoursResponse> GetVhoWorkAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoWorkHoursResponse>> GetVhoWorkAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoNonAvailabilityWorkHoursResponse> GetVhoNonAvailabilityHoursAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> GetVhoNonAvailabilityHoursAsync(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<VhoNonAvailabilityWorkHoursResponse> GetVhoNonAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> GetVhoNonAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -5799,7 +5799,7 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>vho with list of availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<VhoWorkHoursResponse> GetVhoWorkAvailabilityHoursAsync(string username)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoWorkHoursResponse>> GetVhoWorkAvailabilityHoursAsync(string username)
         {
             return GetVhoWorkAvailabilityHoursAsync(username, System.Threading.CancellationToken.None);
         }
@@ -5808,7 +5808,7 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with availability work hours</summary>
         /// <returns>vho with list of availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<VhoWorkHoursResponse> GetVhoWorkAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoWorkHoursResponse>> GetVhoWorkAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/work-hours/VHO?");
@@ -5850,7 +5850,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<VhoWorkHoursResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<VhoWorkHoursResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -5890,7 +5890,7 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<VhoNonAvailabilityWorkHoursResponse> GetVhoNonAvailabilityHoursAsync(string username)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> GetVhoNonAvailabilityHoursAsync(string username)
         {
             return GetVhoNonAvailabilityHoursAsync(username, System.Threading.CancellationToken.None);
         }
@@ -5899,7 +5899,7 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<VhoNonAvailabilityWorkHoursResponse> GetVhoNonAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> GetVhoNonAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability/VHO?");
@@ -5941,7 +5941,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<VhoNonAvailabilityWorkHoursResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
