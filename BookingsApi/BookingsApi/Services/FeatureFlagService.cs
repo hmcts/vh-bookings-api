@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Common.Exceptions;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -7,9 +8,11 @@ namespace BookingsApi.Services
     public class FeatureFlagService : IFeatureFlagService
     {
         private readonly FeatureFlagConfiguration _featureFlagConfigurationOptions;
-        public FeatureFlagService(IOptions<FeatureFlagConfiguration> featureFlagConfigurationOptions)
+        private readonly IFeatureToggles _featureToggles;
+        public FeatureFlagService(IOptions<FeatureFlagConfiguration> featureFlagConfigurationOptions, IFeatureToggles featureToggles)
         {
             _featureFlagConfigurationOptions = featureFlagConfigurationOptions.Value;
+            _featureToggles = featureToggles;
         }
         
         public bool GetFeatureFlag(string featureName)
@@ -17,7 +20,7 @@ namespace BookingsApi.Services
             return featureName switch
             {
                 nameof(FeatureFlags.StaffMemberFeature) => _featureFlagConfigurationOptions.StaffMemberFeature,
-                nameof(FeatureFlags.EJudFeature) => _featureFlagConfigurationOptions.EJudFeature,
+                nameof(FeatureFlags.EJudFeature) => _featureToggles.EJudFeature(),
                 _ => throw new FeatureFlagNotFoundException(featureName)
             };
         }

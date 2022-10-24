@@ -4,9 +4,9 @@
     "net6.0": {
       "coverlet.msbuild": {
         "type": "Direct",
-        "requested": "[3.0.1, )",
-        "resolved": "3.0.1",
-        "contentHash": "qSS2jZAFd3cPCbH4HESrvekg/zjmU+y5mfqwCfSFdnjL38/6rI1ov6QHGVsSKSlQCcEdqdjBZvO4IL9cEnBh8Q=="
+        "requested": "[3.1.2, )",
+        "resolved": "3.1.2",
+        "contentHash": "QhM0fnDtmIMImY7oxyQ/kh1VYtRxPyRVeLwRUGuUvI6Xp83pSYG9gerK8WgJj4TzUl7ISziADUGtIWKhtlbkbQ=="
       },
       "FluentAssertions": {
         "type": "Direct",
@@ -58,9 +58,9 @@
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[8.17.0.26580, )",
-        "resolved": "8.17.0.26580",
-        "contentHash": "QIz3aB7Ir4iImzX6rNmNMwGKTUDIhzQ0Iz4VhBnpzurIhKAmFSsSx7l04xM/nIojqNzAYahXdVTcokAdlHaRiw=="
+        "requested": "[8.47.0.55603, )",
+        "resolved": "8.47.0.55603",
+        "contentHash": "5a5Kvu+StydHjVetBKcQWcsmvE9cece4NLc1d5qrKJR/ZEddA4VMwlX8dUUo3MyhCbnOCEv9+tB13ugP2Dl3NA=="
       },
       "System.IdentityModel.Tokens.Jwt": {
         "type": "Direct",
@@ -3492,56 +3492,56 @@
       "bookingsapi": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Common": "1.0.0",
-          "BookingsApi.Contract": "1.0.0",
-          "BookingsApi.DAL": "1.0.0",
-          "BookingsApi.Domain": "1.0.0",
-          "BookingsApi.Infrastructure.Services": "1.0.0",
-          "FluentValidation": "9.3.0",
-          "FluentValidation.AspNetCore": "9.3.0",
-          "Microsoft.ApplicationInsights.AspNetCore": "2.21.0",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.9",
-          "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "6.0.9",
-          "Microsoft.Extensions.DependencyModel": "6.0.0",
-          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "6.0.10",
-          "NSwag.AspNetCore": "13.17.0",
-          "Newtonsoft.Json": "13.0.1",
-          "System.IdentityModel.Tokens.Jwt": "6.23.1",
-          "VH.Core.Configuration": "0.1.13",
-          "ZymLabs.NSwag.FluentValidation": "0.4.0"
+          "BookingsApi.Common": "[1.0.0, )",
+          "BookingsApi.Contract": "[1.0.0, )",
+          "BookingsApi.DAL": "[1.0.0, )",
+          "BookingsApi.Domain": "[1.0.0, )",
+          "BookingsApi.Infrastructure.Services": "[1.0.0, )",
+          "FluentValidation": "[9.3.0, )",
+          "FluentValidation.AspNetCore": "[9.3.0, )",
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.21.0, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[6.0.9, )",
+          "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "[6.0.9, )",
+          "Microsoft.Extensions.DependencyModel": "[6.0.0, )",
+          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "[6.0.10, )",
+          "NSwag.AspNetCore": "[13.17.0, )",
+          "Newtonsoft.Json": "[13.0.1, )",
+          "System.IdentityModel.Tokens.Jwt": "[6.23.1, )",
+          "VH.Core.Configuration": "[0.1.13, )",
+          "ZymLabs.NSwag.FluentValidation": "[0.4.0, )"
         }
       },
       "bookingsapi.common": {
         "type": "Project",
         "dependencies": {
-          "LaunchDarkly.ServerSdk": "6.3.2",
-          "Microsoft.ApplicationInsights": "2.21.0",
-          "Microsoft.ApplicationInsights.AspNetCore": "2.21.0",
-          "Microsoft.Extensions.Caching.Abstractions": "6.0.0",
-          "Microsoft.Extensions.Configuration.UserSecrets": "6.0.1",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.9",
-          "Newtonsoft.Json": "13.0.1"
+          "LaunchDarkly.ServerSdk": "[6.3.2, )",
+          "Microsoft.ApplicationInsights": "[2.21.0, )",
+          "Microsoft.ApplicationInsights.AspNetCore": "[2.21.0, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[6.0.0, )",
+          "Microsoft.Extensions.Configuration.UserSecrets": "[6.0.1, )",
+          "Microsoft.IdentityModel.Clients.ActiveDirectory": "[5.2.9, )",
+          "Newtonsoft.Json": "[13.0.1, )"
         }
       },
       "bookingsapi.contract": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Json": "6.0.0",
-          "Newtonsoft.Json": "13.0.1",
-          "System.ComponentModel.Annotations": "5.0.0"
+          "Microsoft.Extensions.Configuration.Json": "[6.0.0, )",
+          "Newtonsoft.Json": "[13.0.1, )",
+          "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
       "bookingsapi.dal": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Common": "1.0.0",
-          "BookingsApi.Contract": "1.0.0",
-          "BookingsApi.Domain": "1.0.0",
-          "Microsoft.Data.SqlClient": "5.0.0",
-          "Microsoft.EntityFrameworkCore": "6.0.9",
-          "Microsoft.EntityFrameworkCore.Proxies": "6.0.9",
-          "Microsoft.EntityFrameworkCore.SqlServer": "6.0.9",
-          "System.IdentityModel.Tokens.Jwt": "6.23.1"
+          "BookingsApi.Common": "[1.0.0, )",
+          "BookingsApi.Contract": "[1.0.0, )",
+          "BookingsApi.Domain": "[1.0.0, )",
+          "Microsoft.Data.SqlClient": "[5.0.0, )",
+          "Microsoft.EntityFrameworkCore": "[6.0.9, )",
+          "Microsoft.EntityFrameworkCore.Proxies": "[6.0.9, )",
+          "Microsoft.EntityFrameworkCore.SqlServer": "[6.0.9, )",
+          "System.IdentityModel.Tokens.Jwt": "[6.23.1, )"
         }
       },
       "bookingsapi.domain": {
@@ -3550,30 +3550,30 @@
       "bookingsapi.infrastructure.services": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Domain": "1.0.0",
-          "Microsoft.Azure.ServiceBus": "5.2.0",
-          "Microsoft.Extensions.Options": "6.0.0",
-          "Newtonsoft.Json": "13.0.1"
+          "BookingsApi.Domain": "[1.0.0, )",
+          "Microsoft.Azure.ServiceBus": "[5.2.0, )",
+          "Microsoft.Extensions.Options": "[6.0.0, )",
+          "Newtonsoft.Json": "[13.0.1, )"
         }
       },
       "testing.common": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Common": "1.0.0",
-          "BookingsApi.Contract": "1.0.0",
-          "BookingsApi.Domain": "1.0.0",
-          "Faker.NETCore": "1.0.2",
-          "FluentAssertions": "5.10.3",
-          "Microsoft.AspNetCore.Mvc": "2.2.0",
-          "Microsoft.EntityFrameworkCore": "6.0.9",
-          "Microsoft.EntityFrameworkCore.InMemory": "6.0.9",
-          "Microsoft.Extensions.Configuration": "6.0.1",
-          "Microsoft.Extensions.Configuration.Binder": "6.0.0",
-          "Microsoft.Extensions.Configuration.Json": "6.0.0",
-          "Microsoft.Extensions.Configuration.UserSecrets": "6.0.1",
-          "Microsoft.NET.Test.Sdk": "17.3.2",
-          "Moq": "4.13.1",
-          "NBuilder": "6.1.0"
+          "BookingsApi.Common": "[1.0.0, )",
+          "BookingsApi.Contract": "[1.0.0, )",
+          "BookingsApi.Domain": "[1.0.0, )",
+          "Faker.NETCore": "[1.0.2, )",
+          "FluentAssertions": "[5.10.3, )",
+          "Microsoft.AspNetCore.Mvc": "[2.2.0, )",
+          "Microsoft.EntityFrameworkCore": "[6.0.9, )",
+          "Microsoft.EntityFrameworkCore.InMemory": "[6.0.9, )",
+          "Microsoft.Extensions.Configuration": "[6.0.1, )",
+          "Microsoft.Extensions.Configuration.Binder": "[6.0.0, )",
+          "Microsoft.Extensions.Configuration.Json": "[6.0.0, )",
+          "Microsoft.Extensions.Configuration.UserSecrets": "[6.0.1, )",
+          "Microsoft.NET.Test.Sdk": "[17.3.2, )",
+          "Moq": "[4.13.1, )",
+          "NBuilder": "[6.1.0, )"
         }
       }
     }

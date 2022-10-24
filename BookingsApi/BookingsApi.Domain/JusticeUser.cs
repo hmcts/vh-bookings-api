@@ -1,6 +1,5 @@
 ﻿using BookingsApi.Domain.RefData;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace BookingsApi.Domain
 {
