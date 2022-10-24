@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Mappings
 
             var vhoWorkHoursResponse = new List<VhoWorkHoursResponse>()
             {
-                new VhoWorkHoursResponse
+                new()
                 {
                     StartTime = start,
                     EndTime = end,

@@ -17,9 +17,9 @@ namespace BookingsApi.UnitTests.Mappings
             // Arrange
             var start = DateTime.Now;
             var end = DateTime.Now;
-            var VhoNonAvailability = new List<VhoNonAvailability>
+            var vhoNonAvailability = new List<VhoNonAvailability>
             {
-                new VhoNonAvailability
+                new()
                 {
                     StartTime = start, 
                     EndTime = end,
@@ -28,19 +28,19 @@ namespace BookingsApi.UnitTests.Mappings
                 }
             };
 
-            var VhoNonAvailabilityWorkHoursResponse = new List<VhoNonAvailabilityWorkHoursResponse>()
+            var vhoNonAvailabilityWorkHoursResponse = new List<VhoNonAvailabilityWorkHoursResponse>()
             {
-                new VhoNonAvailabilityWorkHoursResponse
+                new()
                 {
                     StartTime = start, 
                     EndTime = end
                 }
             };
 
-            var expectedNonAvailabilityJson = JsonConvert.SerializeObject(VhoNonAvailabilityWorkHoursResponse);
+            var expectedNonAvailabilityJson = JsonConvert.SerializeObject(vhoNonAvailabilityWorkHoursResponse);
 
             // Act
-            var result = VhoNonAvailabilityWorkHoursResponseMapper.Map(VhoNonAvailability);
+            var result = VhoNonAvailabilityWorkHoursResponseMapper.Map(vhoNonAvailability);
             var actualVhoNonAvailabilityResponseJson = JsonConvert.SerializeObject(result);
 
             // Assert
