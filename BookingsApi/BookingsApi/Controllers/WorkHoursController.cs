@@ -152,20 +152,15 @@ namespace BookingsApi.Controllers
             {
                 return NotFound();
             }
-            
-            var requestedWorkHourIds = request.Hours.Select(h => h.Id).ToList();
-            var foundWorkHourIds = existingHours.Select(h => h.Id).ToList();
-
-            var workHourIdsAreValid = requestedWorkHourIds.All(foundWorkHourIds.Contains);
-            
-            if (!workHourIdsAreValid)
-            {
-                return NotFound();
-            }
 
             var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
             if (!hourValidationResult.IsValid)
             {
+                if (hourValidationResult.Errors.Any(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))
+                {
+                    return NotFound();
+                }
+                
                 ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
                 return BadRequest(ModelState);
             }
