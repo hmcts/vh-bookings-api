@@ -19,10 +19,16 @@ namespace BookingsApi.DAL.Queries
         private readonly BookingsDbContext _context;
 
         public GetVhoWorkHoursQueryHandler(BookingsDbContext context) => _context = context;
-        
+
         public async Task<List<VhoWorkHours>> Handle(GetVhoWorkHoursQuery query)
-            => await _context.VhoWorkHours.Include(x => x.DayOfWeek)
-                                          .Where(x => x.JusticeUser.Username == query.UserName)
-                                          .ToListAsync();
+        {
+            var justiceUser = await _context.JusticeUsers.FirstOrDefaultAsync(e => e.Username == query.UserName);
+            
+            if(justiceUser == null)
+                return null;
+            
+            return justiceUser.VhoWorkHours?.ToList() ?? new List<VhoWorkHours>();
+        }
+         
     }
 }

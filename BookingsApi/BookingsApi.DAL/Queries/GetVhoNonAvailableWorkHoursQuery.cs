@@ -20,9 +20,15 @@ namespace BookingsApi.DAL.Queries
         private readonly BookingsDbContext _context;
 
         public GetVhoNonAvailableWorkHoursQueryHandler(BookingsDbContext context) => _context = context;
-        
+
         public async Task<List<VhoNonAvailability>> Handle(GetVhoNonAvailableWorkHoursQuery query)
-            => await _context.VhoNonAvailabilities.Where(x => x.JusticeUser.Username == query.UserName)
-                                                  .ToListAsync();
+        {
+            var justiceUser = await _context.JusticeUsers.FirstOrDefaultAsync(e => e.Username == query.UserName);
+            
+            if(justiceUser == null)    
+                return null;
+            
+            return justiceUser.VhoNonAvailability?.ToList() ?? new List<VhoNonAvailability>();
+        }
     }
 }

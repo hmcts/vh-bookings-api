@@ -19,18 +19,18 @@ namespace BookingsApi.UnitTests.Mappings
             var end = DateTime.Now;
             var vhoNonAvailability = new List<VhoNonAvailability>
             {
-                new()
+                new VhoNonAvailability()
                 {
                     StartTime = start, 
                     EndTime = end,
                     CreatedBy = "created.by@email.com",
-                    JusticeUserId = new Guid()
+                    JusticeUserId = Guid.NewGuid()
                 }
             };
 
             var vhoNonAvailabilityWorkHoursResponse = new List<VhoNonAvailabilityWorkHoursResponse>()
             {
-                new()
+                new VhoNonAvailabilityWorkHoursResponse()
                 {
                     StartTime = start, 
                     EndTime = end

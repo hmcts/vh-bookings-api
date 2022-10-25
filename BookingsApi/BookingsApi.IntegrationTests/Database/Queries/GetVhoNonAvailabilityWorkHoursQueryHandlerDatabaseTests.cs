@@ -13,14 +13,16 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests : DatabaseTestsBase
     {
         private GetVhoNonAvailableWorkHoursQueryHandler _handler;
-        private const string Username = "TestGetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests@hearings.reform.hmcts.net";
+        private const string UserWithRecords = "Test.Integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests@hearings1.reform.hmcts.net";
+        private const string UserWithoutRecords = "Test.Integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests@hearings2.reform.hmcts.net";
 
         [TearDown]
         public void DbCleanup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            context.VhoNonAvailabilities.RemoveRange(context.VhoNonAvailabilities.Where(e => e.JusticeUser.Username == Username));
-            context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == Username));
+            context.VhoNonAvailabilities.RemoveRange(context.VhoNonAvailabilities.Where(e => e.JusticeUser.Username == UserWithRecords));
+            context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithRecords));
+            context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithoutRecords));
             context.SaveChanges();
         }
 
@@ -30,30 +32,40 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.JusticeUsers.Add(new JusticeUser
             {
-                ContactEmail = "contact@email.com",
-                Username = Username,
-                UserRoleId = (int)UserRoleId.vho,
-                CreatedBy = "integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests.UnitTest",
-                CreatedDate = DateTime.Now,
-                FirstName = "test",
-                Lastname = "test",
+                ContactEmail = UserWithRecords,
+                Username     = UserWithRecords,
+                UserRoleId   = (int)UserRoleId.vho,
+                CreatedBy    = "integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests.UnitTest",
+                CreatedDate  = DateTime.Now,
+                FirstName    = "test",
+                Lastname     = "test",
+            });
+            context.JusticeUsers.Add(new JusticeUser
+            {
+                ContactEmail = UserWithoutRecords,
+                Username     = UserWithoutRecords,
+                UserRoleId   = (int)UserRoleId.vho,
+                CreatedBy    = "integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests.UnitTest",
+                CreatedDate  = DateTime.Now,
+                FirstName    = "test",
+                Lastname     = "test",
             });
             context.SaveChanges();
             var vhoWorkHours1 = new VhoNonAvailability()
             {
-                StartTime = DateTime.Now,
-                EndTime = DateTime.Now,
-                JusticeUser = context.JusticeUsers.First(e => e.Username == Username),
+                StartTime   = DateTime.Now,
+                EndTime     = DateTime.Now,
+                JusticeUser = context.JusticeUsers.First(e => e.Username == UserWithRecords),
                 CreatedDate = DateTime.Now,
-                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedBy   = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
             };
             var vhoWorkHours2 = new VhoNonAvailability()
             {
-                StartTime = DateTime.Now,
-                EndTime = DateTime.Now,
-                JusticeUser = context.JusticeUsers.First(e => e.Username == Username),
+                StartTime   = DateTime.Now,
+                EndTime     = DateTime.Now,
+                JusticeUser = context.JusticeUsers.First(e => e.Username == UserWithRecords),
                 CreatedDate = DateTime.Now,
-                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedBy   = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
             };
             context.VhoNonAvailabilities.AddRange(vhoWorkHours1, vhoWorkHours2);
             context.SaveChanges();
@@ -61,22 +73,30 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_empty_list_when_no_user_is_found()
+        public async Task Should_return_null_when_no_user_is_found()
         {
             var query = new GetVhoNonAvailableWorkHoursQuery("doesnt.existatall@hmcts.net");
             var vhoWorkHours = await _handler.Handle(query);
-            vhoWorkHours.Should().BeEmpty();
+            vhoWorkHours.Should().BeNull();
         }
         
         [Test]
         public async Task Should_return_VhoWorkHours_when_that_user_exists()
         {
-            var query = new GetVhoNonAvailableWorkHoursQuery(Username);
+            var query = new GetVhoNonAvailableWorkHoursQuery(UserWithRecords);
             var vhoWorkHours = await _handler.Handle(query);
 
             vhoWorkHours.Should().NotBeNull();
-            vhoWorkHours[0].JusticeUser.Username.Should().Be(Username);
+            vhoWorkHours[0].JusticeUser.Username.Should().Be(UserWithRecords);
             vhoWorkHours.Count.Should().Be(2);
+        }
+        
+        [Test]
+        public async Task Should_return_empty_list_when_user_exists_but_not_work_hours_exist()
+        {
+            var query = new GetVhoNonAvailableWorkHoursQuery(UserWithoutRecords);
+            var vhoWorkHours = await _handler.Handle(query);
+            vhoWorkHours.Should().NotBeEmpty();
         }
     }
 }
