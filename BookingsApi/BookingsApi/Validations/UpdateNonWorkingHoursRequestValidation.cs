@@ -51,8 +51,8 @@ namespace BookingsApi.Validations
                 newWorkHour.EndTime = requestedHour.EndTime;
             }
 
-            var datesOverlap = CheckOverlappingDates(newWorkHours);
-            if (datesOverlap)
+            var hoursOverlap = CheckForOverlappingHours(newWorkHours);
+            if (hoursOverlap)
             {
                 errors.Add(new ValidationFailure(nameof(request.Hours), HoursOverlapErrorMessage));
             }
@@ -60,36 +60,28 @@ namespace BookingsApi.Validations
             return new ValidationResult(errors);
         }
 
-        private static bool CheckOverlappingDates(IList<VhoNonAvailability> nonWorkingHours)
+        private static bool CheckForOverlappingHours(IList<VhoNonAvailability> nonWorkingHours)
         {
-            var userIds = nonWorkingHours.Select(h => h.JusticeUserId)
-                .Distinct()
+            var hoursForUser = nonWorkingHours
+                .OrderBy(h => h.StartTime)
                 .ToList();
 
-            foreach (var userId in userIds)
-            {
-                var hoursForUser = nonWorkingHours
-                    .Where(h => h.JusticeUserId == userId)
-                    .OrderBy(h => h.StartTime)
-                    .ToList();
+            var firstHour = (VhoNonAvailability)null;
+            var checkedHours = new List<VhoNonAvailability>();
 
-                var firstHour = (VhoNonAvailability)null;
-                var checkedHours = new List<VhoNonAvailability>();
-    
-                foreach (var hour in hoursForUser)
+            foreach (var hour in hoursForUser)
+            {
+                if (firstHour != null)
                 {
-                    if (firstHour != null)
+                    checkedHours.Add(firstHour);
+                    var uncheckedHours = hoursForUser.Where(x => (x.StartTime >= firstHour.StartTime && x != firstHour) && checkedHours.All(m => m != x));
+        
+                    if (uncheckedHours.Any(uncheckedHour => OverlapsWith(firstHour, uncheckedHour)))
                     {
-                        checkedHours.Add(firstHour);
-                        var uncheckedHours = hoursForUser.Where(x => (x.StartTime >= firstHour.StartTime && x != firstHour) && checkedHours.All(m => m != x));
-            
-                        if (uncheckedHours.Any(uncheckedHour => OverlapsWith(firstHour, uncheckedHour)))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    firstHour = hour;
                 }
+                firstHour = hour;
             }
 
             return false;

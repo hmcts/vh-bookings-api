@@ -134,10 +134,16 @@ namespace BookingsApi.Controllers
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
         }
         
-        [HttpPatch("/NonAvailability/VHO")]
+        /// <summary>
+        /// Updates non availability hours for a vho
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="request"></param>
+        /// <returns>Success status</returns>
+        [HttpPatch("/NonAvailability/VHO/{username}")]
         [OpenApiOperation("UpdateVhoNonAvailabilityHours")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateVhoNonAvailabilityHours(UpdateNonWorkingHoursRequest request)
+        public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
         {
             var validationResult = await new UpdateNonWorkingHoursRequestValidation().ValidateAsync(request);
             if (!validationResult.IsValid)
@@ -146,8 +152,8 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var getNonWorkHoursByIdsQuery = new GetVhoNonAvailableWorkHoursByIdsQuery(request.Hours.Select(h => h.Id).ToList());
-            var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(getNonWorkHoursByIdsQuery);
+            var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
+            var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
 
             if (existingHours == null || !existingHours.Any())
             {

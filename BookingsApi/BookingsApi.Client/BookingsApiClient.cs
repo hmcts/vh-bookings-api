@@ -700,12 +700,16 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> GetVhoNonAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Updates non availability hours for a vho</summary>
+        /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(UpdateNonWorkingHoursRequest request);
+        System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(string username, UpdateNonWorkingHoursRequest request);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Updates non availability hours for a vho</summary>
+        /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(UpdateNonWorkingHoursRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(string username, UpdateNonWorkingHoursRequest request, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -5985,21 +5989,26 @@ namespace BookingsApi.Client
             }
         }
     
+        /// <summary>Updates non availability hours for a vho</summary>
+        /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(UpdateNonWorkingHoursRequest request)
+        public System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(string username, UpdateNonWorkingHoursRequest request)
         {
-            return UpdateVhoNonAvailabilityHoursAsync(request, System.Threading.CancellationToken.None);
+            return UpdateVhoNonAvailabilityHoursAsync(username, request, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Updates non availability hours for a vho</summary>
+        /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(UpdateNonWorkingHoursRequest request, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task UpdateVhoNonAvailabilityHoursAsync(string username, UpdateNonWorkingHoursRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability/VHO");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability/VHO/{username}");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             var disposeClient_ = false;
