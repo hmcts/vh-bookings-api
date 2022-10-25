@@ -269,8 +269,8 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", "EndTime must be after StartTime");
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[2].EndTime", "EndTime must be after StartTime");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime",  NonWorkingHoursRequestValidation.EndTimeErrorMessage);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[2].EndTime", NonWorkingHoursRequestValidation.EndTimeErrorMessage);
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
@@ -306,8 +306,8 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[0].EndTime", "EndTime must be after StartTime");
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", "EndTime must be after StartTime");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[0].EndTime", NonWorkingHoursRequestValidation.EndTimeErrorMessage);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", NonWorkingHoursRequestValidation.EndTimeErrorMessage);
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
@@ -394,7 +394,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", "Hours cannot overlap for a single user");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", UpdateNonWorkingHoursRequestValidation.HoursOverlapErrorMessage);
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
@@ -448,7 +448,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", "Hours cannot be null or empty");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", UpdateNonWorkingHoursRequestValidation.HoursEmptyErrorMessage);
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
@@ -468,7 +468,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", "Hours cannot be null or empty");
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", UpdateNonWorkingHoursRequestValidation.HoursEmptyErrorMessage);
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }

@@ -138,99 +138,35 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateVhoNonAvailabilityHours(UpdateNonWorkingHoursRequest request)
         {
-            // TODO refactor validation - see existing Validation classes that do this
-
-            if (request.Hours == null || !request.Hours.Any())
+            var validationResult = await new UpdateNonWorkingHoursRequestValidation().ValidateAsync(request);
+            if (!validationResult.IsValid)
             {
-                ModelState.AddModelError("Hours", "Hours cannot be null or empty");
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
                 return BadRequest(ModelState);
             }
-            
-            int i = 0;
-            
-            foreach (var hour in request.Hours)
-            {
-                if (hour.EndTime <= hour.StartTime)
-                {
-                    ModelState.AddModelError($"Hours[{i}].EndTime", "EndTime must be after StartTime");
-                }
 
-                i++;
-            }
-
-            if (ModelState.ErrorCount > 0)
-            {
-                return BadRequest(ModelState);
-            }
-            
             var getNonWorkHoursByIdsQuery = new GetVhoNonAvailableWorkHoursByIdsQuery(request.Hours.Select(h => h.Id).ToList());
-            var workHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(getNonWorkHoursByIdsQuery);
+            var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(getNonWorkHoursByIdsQuery);
 
-            if (workHours == null || !workHours.Any())
+            if (existingHours == null || !existingHours.Any())
             {
                 return NotFound();
             }
             
             var requestedWorkHourIds = request.Hours.Select(h => h.Id).ToList();
-            var foundWorkHourIds = workHours.Select(h => h.Id).ToList();
+            var foundWorkHourIds = existingHours.Select(h => h.Id).ToList();
 
-            if (!requestedWorkHourIds.All(foundWorkHourIds.Contains))
+            var workHourIdsAreValid = requestedWorkHourIds.All(foundWorkHourIds.Contains);
+            
+            if (!workHourIdsAreValid)
             {
                 return NotFound();
             }
 
-            var newWorkHours = workHours.ToList();
-            foreach (var newWorkHour in newWorkHours)
+            var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            if (!hourValidationResult.IsValid)
             {
-                var requestedHour = request.Hours.SingleOrDefault(h => h.Id == newWorkHour.Id);
-
-                newWorkHour.StartTime = requestedHour.StartTime;
-                newWorkHour.EndTime = requestedHour.EndTime;
-            }
-            
-            // TODO check if dates overlap for a single user
-            var userIds = newWorkHours.Select(h => h.JusticeUserId)
-                .Distinct()
-                .ToList();
-
-            foreach (var userId in userIds)
-            {
-                var hoursForUser = newWorkHours
-                    .Where(h => h.JusticeUserId == userId)
-                    .OrderBy(h => h.StartTime)
-                    .ToList();
-
-                var first = (VhoNonAvailability)null;
-                var checkedHours = new List<VhoNonAvailability>();
-    
-                foreach (var hour in hoursForUser)
-                {
-                    if (first != null)
-                    {
-                        checkedHours.Add(first);
-                        var uncheckedHours = hoursForUser.Where(x => (x.StartTime >= first.StartTime && !(x == first)) && !checkedHours.Any(m => m == x));
-            
-                        foreach (var uncheckedHour in uncheckedHours)
-                        {
-                            if (OverlapsWith(first, uncheckedHour))
-                            {
-                                ModelState.AddModelError("Hours", "Hours cannot overlap for a single user");
-                                //yield return new[] { first, meet };
-                                break;
-                            }
-                        }
-                    }
-                    first = hour;
-
-                    bool OverlapsWith(VhoNonAvailability first, VhoNonAvailability second)
-                    {
-                        return first.EndTime > second.StartTime;
-                    }
-                }
-            }
-            
-            if (ModelState.ErrorCount > 0)
-            {
+                ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
                 return BadRequest(ModelState);
             }
 
