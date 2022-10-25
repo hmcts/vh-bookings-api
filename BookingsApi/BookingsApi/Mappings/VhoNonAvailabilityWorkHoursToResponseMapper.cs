@@ -11,6 +11,7 @@ namespace BookingsApi.Mappings
         {
             return vhoWorkHours.Select(vna => new VhoNonAvailabilityWorkHoursResponse
             {
+                Id = vna.Id,
                 StartTime = vna.StartTime,
                 EndTime = vna.EndTime
             }).ToList();
