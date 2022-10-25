@@ -96,7 +96,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var query = new GetVhoNonAvailableWorkHoursQuery(UserWithoutRecords);
             var vhoWorkHours = await _handler.Handle(query);
-            vhoWorkHours.Should().NotBeEmpty();
+            vhoWorkHours.Should().BeEmpty();
         }
     }
 }

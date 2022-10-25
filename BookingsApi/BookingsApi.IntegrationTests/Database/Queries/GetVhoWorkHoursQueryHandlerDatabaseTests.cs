@@ -78,7 +78,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var query = new GetVhoWorkHoursQuery("doesnt.existatall@hmcts.net");
             var vhoWorkHours = await _handler.Handle(query);
-            vhoWorkHours.Should().BeEmpty();
+            vhoWorkHours.Should().BeNull();
         }
         
         [Test]
@@ -97,7 +97,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var query        = new GetVhoWorkHoursQuery(UserWithoutRecords);
             var vhoWorkHours = await _handler.Handle(query);
-            vhoWorkHours.Should().NotBeEmpty();
+            vhoWorkHours.Should().BeEmpty();
         }
     }
 }

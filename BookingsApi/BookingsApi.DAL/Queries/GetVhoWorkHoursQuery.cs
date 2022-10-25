@@ -22,7 +22,9 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<VhoWorkHours>> Handle(GetVhoWorkHoursQuery query)
         {
-            var justiceUser = await _context.JusticeUsers.FirstOrDefaultAsync(e => e.Username == query.UserName);
+            var justiceUser = await _context.JusticeUsers
+                .Include(e => e.VhoWorkHours)
+                .FirstOrDefaultAsync(e => e.Username == query.UserName);
             
             if(justiceUser == null)
                 return null;
