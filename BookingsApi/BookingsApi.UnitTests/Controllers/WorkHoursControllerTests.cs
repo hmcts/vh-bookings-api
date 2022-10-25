@@ -208,23 +208,34 @@ namespace BookingsApi.UnitTests.Controllers
         }
 
         [Test]
-        public async Task UpdateVhoNonAvailabilityHours_Returns_NoContent()
+        public async Task UpdateVhoNonAvailabilityHours_With_Valid_Request_Returns_NoContent()
         {
             // Arrange
+            var userId = Guid.NewGuid();
+
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1), EndTime = new DateTime(2022, 1, 2) }
+                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc) }
                 }
             };
 
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync(new List<VhoNonAvailability>
+                {
+                    new(1) { StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 11, 0, 0, DateTimeKind.Utc), JusticeUserId = userId}
+                });
+            
             // Act
             var response = await _controller.UpdateVhoNonAvailabilityHours(request);
 
             // Assert
             var objectResult = (NoContentResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Once);
         }
 
         [Test]
@@ -249,6 +260,8 @@ namespace BookingsApi.UnitTests.Controllers
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", "EndTime must be after StartTime");
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[2].EndTime", "EndTime must be after StartTime");
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
         
         [Test]
@@ -273,23 +286,169 @@ namespace BookingsApi.UnitTests.Controllers
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[0].EndTime", "EndTime must be after StartTime");
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours[1].EndTime", "EndTime must be after StartTime");
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
 
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_NonExistent_Hours_Returns_NotFound()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 99, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc) }
+                }
+            };
+            
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync(new List<VhoNonAvailability>
+                {
+                    new() { StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc)}
+                });
+            
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+            
+            // Assert
+            var objectResult = (NotFoundResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
+        }
+        
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_No_Existing_Hours_Returns_NotFound()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 99, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc) }
+                }
+            };
+            
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync((List<VhoNonAvailability>)null);
+            
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+            
+            // Assert
+            var objectResult = (NotFoundResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
+        }
+        
         [Test]
         public async Task UpdateVhoNonAvailabilityHours_With_Overlapping_Times_For_Single_User_Returns_BadRequest()
         {
-            // TODO - may require mocks
-            
             // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc) },
+                    new() { Id = 2, StartTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 13, 0, 0, DateTimeKind.Utc) }
+                }
+            };
+            
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync(new List<VhoNonAvailability>
+                {
+                    new(1) { StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc) },
+                    new(2) { StartTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 13, 0, 0, DateTimeKind.Utc) },
+                });
+            
             // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+            
             // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", "Hours cannot overlap for a single user");
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
 
         [Test]
-        public async Task UpdateVhoNonAvailabilityHours_With_NonExistent_Hours_Returns_BadRequest()
+        public async Task UpdateVhoNonAvailabilityHours_With_Overlapping_Times_Across_Multiple_Users_Returns_NoContent()
         {
-            // TODO - eg hour ids that don't exist in the db
-            // May require mocks
+            // Arrange
+            var user1Id = Guid.NewGuid();
+            var user2Id = Guid.NewGuid();
+            
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>
+                {
+                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc) },
+                    new() { Id = 2, StartTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 13, 0, 0, DateTimeKind.Utc) }
+                }
+            };
+            
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync(new List<VhoNonAvailability>
+                {
+                    new(1) { StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc), JusticeUserId = user1Id},
+                    new(2) { StartTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 13, 0, 0, DateTimeKind.Utc), JusticeUserId = user2Id},
+                });
+            
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+            
+            // Assert
+            var objectResult = (NoContentResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_Empty_Hours_List_In_Request_BadRequest()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = new List<NonWorkingHours>()
+            };
+
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+            
+            // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", "Hours cannot be null or empty");
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
+        }
+        
+        [Test]
+        public async Task UpdateVhoNonAvailabilityHours_With_Null_Hours_List_In_Request_BadRequest()
+        {
+            // Arrange
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = null
+            };
+
+            // Act
+            var response = await _controller.UpdateVhoNonAvailabilityHours(request);
+            
+            // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", "Hours cannot be null or empty");
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
     }
 }
