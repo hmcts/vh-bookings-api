@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Exceptions;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -31,6 +32,11 @@ namespace BookingsApi.DAL.Commands
             {
                 var nonWorkingHour = _context.VhoNonAvailabilities.SingleOrDefault(a => a.Id == hour.Id);
 
+                if (nonWorkingHour == null)
+                {
+                    throw new NonWorkingHoursNotFoundException(hour.Id);
+                }
+                
                 nonWorkingHour.StartTime = hour.StartTime;
                 nonWorkingHour.EndTime = hour.EndTime;
 

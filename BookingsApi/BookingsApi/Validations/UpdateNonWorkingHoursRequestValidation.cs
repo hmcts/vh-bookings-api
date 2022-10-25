@@ -42,6 +42,11 @@ namespace BookingsApi.Validations
             {
                 var requestedHour = request.Hours.SingleOrDefault(h => h.Id == newWorkHour.Id);
 
+                if (requestedHour == null)
+                {
+                    continue;
+                }
+                
                 newWorkHour.StartTime = requestedHour.StartTime;
                 newWorkHour.EndTime = requestedHour.EndTime;
             }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
 using FluentAssertions;
 using NUnit.Framework;
@@ -72,6 +73,33 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var updatedHour2 = nonWorkingHours.FirstOrDefault(h => h.Id == _hourIdMappings[2]);
             updatedHour2.StartTime.Should().Be(newHour2.StartTime);
             updatedHour2.EndTime.Should().Be(newHour2.EndTime);
+        }
+
+        [Test]
+        public async Task Should_throw_exception_when_working_hours_not_found()
+        {
+            // Arrange
+
+            // Hours to update
+            var newHour1 = new
+            {
+                StartTime = new DateTime(2022, 2, 1, 6, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(2022, 2, 1, 10, 0, 0, DateTimeKind.Utc)
+            };
+
+            var newHours = new List<NonWorkingHours>
+            {
+                new()
+                {
+                    Id = 1,
+                    StartTime = newHour1.StartTime,
+                    EndTime = newHour1.EndTime
+                }
+            };
+
+            // Act & Assert
+            Assert.ThrowsAsync<NonWorkingHoursNotFoundException>(() => _commandHandler.Handle(
+                new UpdateNonWorkingHoursCommand(newHours)));
         }
         
         private async Task SeedNonWorkingHours()
