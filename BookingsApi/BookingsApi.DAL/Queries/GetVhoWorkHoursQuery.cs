@@ -23,7 +23,7 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<VhoWorkHours>> Handle(GetVhoWorkHoursQuery query)
         {
             var justiceUser = await _context.JusticeUsers
-                .Include(e => e.VhoWorkHours)
+                .Include(e => e.VhoWorkHours).ThenInclude(e=>e.DayOfWeek)
                 .FirstOrDefaultAsync(e => e.Username == query.UserName);
             
             if(justiceUser == null)
