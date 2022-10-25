@@ -183,7 +183,6 @@ stages:
               kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
               kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
-
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
   - stage: Install
@@ -284,16 +283,17 @@ stages:
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
     dependsOn: Install
+    condition: in(dependencies.Install.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     displayName: Deploy NuGet Packages
     variables:
-      - template: variables/dev.yaml
-      - template: variables/shared.yaml
-        parameters:
-          env: ${{ variables.env }}
+    - template: variables/dev.yaml
+    - template: variables/shared.yaml
+      parameters:
+        env: ${{ variables.env }}
     jobs: 
-      - job: Publish_Nuget
-        displayName: Publish NuGet Packages
-        steps:
-          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
-            parameters:
-              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+    - job: Publish_Nuget
+      displayName: Publish NuGet Packages
+      steps:
+        - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+          parameters:
+            vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
