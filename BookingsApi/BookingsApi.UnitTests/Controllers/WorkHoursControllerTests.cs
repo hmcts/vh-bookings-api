@@ -242,6 +242,8 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_EndTime_Before_StartTime_Returns_BadRequest()
         {
             // Arrange
+            var userId = Guid.NewGuid();
+            
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
@@ -251,6 +253,15 @@ namespace BookingsApi.UnitTests.Controllers
                     new() { Id = 3, StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc) }
                 }
             };
+            
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync(new List<VhoNonAvailability>
+                {
+                    new(1) { StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId},
+                    new(2) { StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId },
+                    new(3) { StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId }
+                });
             
             // Act
             var response = await _controller.UpdateVhoNonAvailabilityHours(request);
@@ -268,6 +279,8 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_EndTime_EqualTo_StartTime_Returns_BadRequest()
         {
             // Arrange
+            var userId = Guid.NewGuid();
+            
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
@@ -277,6 +290,15 @@ namespace BookingsApi.UnitTests.Controllers
                     new() { Id = 3, StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 10, 0, 0, DateTimeKind.Utc) }
                 }
             };
+            
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursByIdsQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursByIdsQuery>()))
+                .ReturnsAsync(new List<VhoNonAvailability>
+                {
+                    new(1) { StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId},
+                    new(2) { StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId },
+                    new(3) { StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId }
+                });
             
             // Act
             var response = await _controller.UpdateVhoNonAvailabilityHours(request);
