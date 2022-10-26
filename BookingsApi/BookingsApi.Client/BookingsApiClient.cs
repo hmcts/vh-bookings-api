@@ -703,13 +703,13 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> DeleteVhoNonAvailabilityHoursAsync(long? id);
+        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -5992,7 +5992,7 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> DeleteVhoNonAvailabilityHoursAsync(long? id)
+        public System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id)
         {
             return DeleteVhoNonAvailabilityHoursAsync(id, System.Threading.CancellationToken.None);
         }
@@ -6001,7 +6001,7 @@ namespace BookingsApi.Client
         /// <summary>Search for a vho and return with non availability work hours</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability?");
@@ -6018,7 +6018,6 @@ namespace BookingsApi.Client
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
     
@@ -6043,22 +6042,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            return;
                         }
                         else
                         {
