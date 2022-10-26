@@ -218,7 +218,12 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc) }
+                    new()
+                    {
+                        Id = 1, 
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc)
+                    }
                 }
             };
 
@@ -226,7 +231,11 @@ namespace BookingsApi.UnitTests.Controllers
                 .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()))
                 .ReturnsAsync(new List<VhoNonAvailability>
                 {
-                    new(1) { StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 11, 0, 0, DateTimeKind.Utc), JusticeUserId = userId}
+                    new(1)
+                    {
+                        StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 11, 0, 0, DateTimeKind.Utc)
+                    }
                 });
             
             // Act
@@ -250,9 +259,24 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc) },
-                    new() { Id = 2, StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc) },
-                    new() { Id = 3, StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc) }
+                    new()
+                    {
+                        Id = 1, 
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc)
+                    },
+                    new()
+                    {
+                        Id = 2, 
+                        StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc)
+                    },
+                    new()
+                    {
+                        Id = 3, 
+                        StartTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc)
+                    }
                 }
             };
             
@@ -260,9 +284,21 @@ namespace BookingsApi.UnitTests.Controllers
                 .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()))
                 .ReturnsAsync(new List<VhoNonAvailability>
                 {
-                    new(1) { StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId},
-                    new(2) { StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId },
-                    new(3) { StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId }
+                    new(1)
+                    {
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc)
+                    },
+                    new(2)
+                    {
+                        StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc)
+                    },
+                    new(3)
+                    {
+                        StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 3, 8, 0, 0, DateTimeKind.Utc)
+                    }
                 });
             
             // Act
@@ -288,9 +324,24 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc) },
-                    new() { Id = 2, StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc) },
-                    new() { Id = 3, StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 10, 0, 0, DateTimeKind.Utc) }
+                    new()
+                    {
+                        Id = 1, 
+                        StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc)
+                    },
+                    new()
+                    {
+                        Id = 2, 
+                        StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc)
+                    },
+                    new()
+                    {
+                        Id = 3, 
+                        StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 3, 10, 0, 0, DateTimeKind.Utc)
+                    }
                 }
             };
             
@@ -298,9 +349,21 @@ namespace BookingsApi.UnitTests.Controllers
                 .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()))
                 .ReturnsAsync(new List<VhoNonAvailability>
                 {
-                    new(1) { StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId},
-                    new(2) { StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId },
-                    new(3) { StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 3, 8, 0, 0, DateTimeKind.Utc), JusticeUserId = userId }
+                    new(1)
+                    {
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc)
+                    },
+                    new(2)
+                    {
+                        StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 8, 0, 0, DateTimeKind.Utc)
+                    },
+                    new(3)
+                    {
+                        StartTime = new DateTime(2022, 1, 3, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 3, 8, 0, 0, DateTimeKind.Utc)
+                    }
                 });
             
             // Act
@@ -324,7 +387,12 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 99, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc) }
+                    new()
+                    {
+                        Id = 99, 
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc)
+                    }
                 }
             };
             
@@ -332,7 +400,11 @@ namespace BookingsApi.UnitTests.Controllers
                 .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()))
                 .ReturnsAsync(new List<VhoNonAvailability>
                 {
-                    new() { StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc)}
+                    new()
+                    {
+                        StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc)
+                    }
                 });
             
             // Act
@@ -354,7 +426,12 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 99, StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc) }
+                    new()
+                    {
+                        Id = 99, 
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc)
+                    }
                 }
             };
             
@@ -381,8 +458,18 @@ namespace BookingsApi.UnitTests.Controllers
             {
                 Hours = new List<NonWorkingHours>
                 {
-                    new() { Id = 1, StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc) },
-                    new() { Id = 2, StartTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 13, 0, 0, DateTimeKind.Utc) }
+                    new()
+                    {
+                        Id = 1, 
+                        StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc)
+                    },
+                    new()
+                    {
+                        Id = 2, 
+                        StartTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 13, 0, 0, DateTimeKind.Utc)
+                    }
                 }
             };
             
@@ -390,8 +477,16 @@ namespace BookingsApi.UnitTests.Controllers
                 .Setup(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()))
                 .ReturnsAsync(new List<VhoNonAvailability>
                 {
-                    new(1) { StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc) },
-                    new(2) { StartTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc), EndTime = new DateTime(2022, 1, 2, 13, 0, 0, DateTimeKind.Utc) },
+                    new(1)
+                    {
+                        StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 1, 12, 0, 0, DateTimeKind.Utc)
+                    },
+                    new(2)
+                    {
+                        StartTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 13, 0, 0, DateTimeKind.Utc)
+                    },
                 });
             
             // Act
