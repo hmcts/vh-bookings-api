@@ -134,5 +134,29 @@ namespace BookingsApi.Controllers
             
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
         }
+        
+        /// <summary>
+        /// Search for a vho and return with non availability work hours
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>vho with list of non availability work hours</returns>
+        [HttpDelete("/NonAvailability")]
+        [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
+        [ProducesResponseType(typeof(List<VhoNonAvailabilityWorkHoursResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
+        {
+            if (id <= 0)
+            {
+                ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
+                return BadRequest(ModelState);
+            }
+
+            var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(id);
+
+            await _commandHandler.Handle(deleteNonWorkingHoursCommand);
+            
+            return Ok();
+        }
     }
 }
