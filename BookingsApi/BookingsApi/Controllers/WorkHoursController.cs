@@ -142,8 +142,7 @@ namespace BookingsApi.Controllers
         /// <returns>vho with list of non availability work hours</returns>
         [HttpDelete("/NonAvailability")]
         [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
-        [ProducesResponseType(typeof(List<VhoNonAvailabilityWorkHoursResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
         {
             if (id <= 0)
