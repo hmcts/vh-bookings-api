@@ -37,21 +37,21 @@ namespace BookingsApi.Validations
                 return new ValidationResult(errors);
             }
             
-            var newWorkHours = existingHours.ToList();
-            foreach (var newWorkHour in newWorkHours)
+            var updatedWorkHours = existingHours.ToList();
+            foreach (var updatedWorkHour in updatedWorkHours)
             {
-                var requestedHour = request.Hours.SingleOrDefault(h => h.Id == newWorkHour.Id);
+                var hourInRequest = request.Hours.SingleOrDefault(h => h.Id == updatedWorkHour.Id);
 
-                if (requestedHour == null)
+                if (hourInRequest == null)
                 {
                     continue;
                 }
                 
-                newWorkHour.StartTime = requestedHour.StartTime;
-                newWorkHour.EndTime = requestedHour.EndTime;
+                updatedWorkHour.StartTime = hourInRequest.StartTime;
+                updatedWorkHour.EndTime = hourInRequest.EndTime;
             }
 
-            var hoursOverlap = CheckForOverlappingHours(newWorkHours);
+            var hoursOverlap = CheckForOverlappingHours(updatedWorkHours);
             if (hoursOverlap)
             {
                 errors.Add(new ValidationFailure(nameof(request.Hours), HoursOverlapErrorMessage));
