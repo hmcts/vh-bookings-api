@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -7,7 +6,6 @@ using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
@@ -101,10 +99,10 @@ namespace BookingsApi.Controllers
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
                 return BadRequest(ModelState);
             }
-
+            
             var results = await _queryHandler.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(new GetVhoWorkHoursQuery(username));
 
-            if (results == null || !results.Any())
+            if (results == null)
                 return NotFound("Vho user not found");
             
             return Ok(VhoWorkHoursToResponseMapper.Map(results));
@@ -129,7 +127,7 @@ namespace BookingsApi.Controllers
 
             var results = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(new GetVhoNonAvailableWorkHoursQuery(username));
 
-            if (results == null || !results.Any())
+            if (results == null)
                 return NotFound("Vho user not found");
             
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
