@@ -15,11 +15,12 @@ namespace BookingsApi.UnitTests.Mappings
         public void Map_NonAvailability_VhoNonAvailabilityWorkHoursToResponseMapper()
         {
             // Arrange
+            var id = 1;
             var start = DateTime.Now;
             var end = DateTime.Now;
             var vhoNonAvailability = new List<VhoNonAvailability>
             {
-                new VhoNonAvailability()
+                new VhoNonAvailability(id)
                 {
                     StartTime = start, 
                     EndTime = end,
@@ -32,6 +33,7 @@ namespace BookingsApi.UnitTests.Mappings
             {
                 new VhoNonAvailabilityWorkHoursResponse()
                 {
+                    Id = id,
                     StartTime = start, 
                     EndTime = end
                 }
