@@ -4,6 +4,7 @@ namespace BookingsApi.Domain
 {
     public class VhoNonAvailability : TrackableEntity<long>
     {
+        public long Id { get; set; }
         public Guid JusticeUserId { get; set; }
         public JusticeUser JusticeUser { get; set; }
         public DateTime EndTime { get; set; }
