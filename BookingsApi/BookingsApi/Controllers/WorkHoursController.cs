@@ -6,6 +6,7 @@ using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
@@ -131,6 +132,50 @@ namespace BookingsApi.Controllers
                 return NotFound("Vho user not found");
             
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
+        }
+        
+        /// <summary>
+        /// Updates non availability hours for a vho
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="request"></param>
+        /// <returns>Success status</returns>
+        [HttpPatch("/NonAvailability/VHO/{username}")]
+        [OpenApiOperation("UpdateVhoNonAvailabilityHours")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
+        {
+            var validationResult = await new UpdateNonWorkingHoursRequestValidation().ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
+            var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
+
+            if (existingHours == null || !existingHours.Any())
+            {
+                return NotFound();
+            }
+
+            var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            if (!hourValidationResult.IsValid)
+            {
+                if (hourValidationResult.Errors.Any(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))
+                {
+                    return NotFound();
+                }
+                
+                ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
+                return BadRequest(ModelState);
+            }
+
+            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(request.Hours);
+            await _commandHandler.Handle(updateNonWorkingHoursCommand);
+            
+            return NoContent();
         }
         
         /// <summary>
