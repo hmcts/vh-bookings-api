@@ -700,13 +700,13 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VhoNonAvailabilityWorkHoursResponse>> GetVhoNonAvailabilityHoursAsync(string username, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Search for a vho and return with non availability work hours</summary>
+        /// <summary>Delete non availability work hours for vho</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Search for a vho and return with non availability work hours</summary>
+        /// <summary>Delete non availability work hours for vho</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken);
@@ -5989,7 +5989,7 @@ namespace BookingsApi.Client
             }
         }
     
-        /// <summary>Search for a vho and return with non availability work hours</summary>
+        /// <summary>Delete non availability work hours for vho</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id)
@@ -5998,7 +5998,7 @@ namespace BookingsApi.Client
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Search for a vho and return with non availability work hours</summary>
+        /// <summary>Delete non availability work hours for vho</summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken)

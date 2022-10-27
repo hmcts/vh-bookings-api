@@ -136,9 +136,9 @@ namespace BookingsApi.Controllers
         }
         
         /// <summary>
-        /// Search for a vho and return with non availability work hours
+        /// Delete non availability work hours for vho
         /// </summary>
-        /// <param name="username"></param>
+        /// <param name="id"></param>
         /// <returns>vho with list of non availability work hours</returns>
         [HttpDelete("/NonAvailability")]
         [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
