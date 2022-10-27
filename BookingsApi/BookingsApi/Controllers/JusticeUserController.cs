@@ -1,21 +1,10 @@
-using BookingsApi.Contract.Configuration;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Mappings;
-using BookingsApi.Services;
-using BookingsApi.Validations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -51,9 +40,9 @@ namespace BookingsApi.Controllers
             if (justiceUser == null) 
                 return NotFound();
 
-            var justiceUserReponse = JusticeUserToResponseMapper.Map(justiceUser);
+            var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
 
-            return Ok(justiceUserReponse);
+            return Ok(justiceUserResponse);
         }
     }
 }
