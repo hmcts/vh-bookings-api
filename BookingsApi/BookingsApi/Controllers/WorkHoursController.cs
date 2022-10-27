@@ -151,15 +151,12 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
                 return BadRequest(ModelState);
             }
-
             var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
             var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
-
             if (existingHours == null || !existingHours.Any())
             {
                 return NotFound();
             }
-
             var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
             if (!hourValidationResult.IsValid)
             {
@@ -171,7 +168,6 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
                 return BadRequest(ModelState);
             }
-
             var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(request.Hours);
             await _commandHandler.Handle(updateNonWorkingHoursCommand);
             
@@ -193,9 +189,7 @@ namespace BookingsApi.Controllers
                 ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
                 return BadRequest(ModelState);
             }
-
             var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(id);
-
             await _commandHandler.Handle(deleteNonWorkingHoursCommand);
             
             return Ok();
