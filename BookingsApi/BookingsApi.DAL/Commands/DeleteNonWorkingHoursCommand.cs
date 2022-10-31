@@ -32,17 +32,29 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(DeleteNonWorkingHoursCommand command)
         {
-            var hours = await _context.VhoNonAvailabilities
-                .SingleOrDefaultAsync(x => x.Id == command.Id);
-
-            if (hours == null)
+            try
             {
-                throw new NonWorkingHoursNotFoundException(command.Id);
+                
+                var hours = await _context.VhoNonAvailabilities
+                    .FirstOrDefaultAsync(x => x.Id == command.Id);
+                
+                if (hours == null)
+                {
+                    throw new NonWorkingHoursNotFoundException(command.Id);
+                }
+    
+                hours.Deleted = true;
+                
+                _context.Update(hours);
             }
-
-            hours.Deleted = true;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             
-            _context.Update(hours);
+
+            
             
             await _context.SaveChangesAsync();
         }

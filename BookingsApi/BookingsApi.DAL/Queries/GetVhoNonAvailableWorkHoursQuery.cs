@@ -29,8 +29,10 @@ namespace BookingsApi.DAL.Queries
             
             if(justiceUser == null)    
                 return null;
+
+            var hours = justiceUser.VhoNonAvailability.Where(x => x.Deleted != true).ToList();
             
-            return justiceUser.VhoNonAvailability?.ToList() ?? new List<VhoNonAvailability>();
+            return hours ?? new List<VhoNonAvailability>();
         }
     }
 }

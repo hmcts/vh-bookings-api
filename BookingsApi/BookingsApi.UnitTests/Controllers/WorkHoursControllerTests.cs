@@ -541,5 +541,42 @@ namespace BookingsApi.UnitTests.Controllers
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
         }
+        
+        [Test]
+        public async Task DeleteVhoNonAvailabilityHours_Not_Valid_Id()
+        {
+            // Arrange
+            var username = "test.user@hearings.reform.hmcts.net";
+            var request = new UpdateNonWorkingHoursRequest
+            {
+                Hours = null
+            };
+
+            // Act
+            var response = await _controller.DeleteVhoNonAvailabilityHours(0);
+            
+            // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()), Times.Never);
+        }
+        
+        [Test]
+        public async Task DeleteVhoNonAvailabilityHours_Valid_Id()
+        {
+            // Arrange
+            var username = "test.user@hearings.reform.hmcts.net";
+            
+            // Act
+            var response = await _controller.DeleteVhoNonAvailabilityHours(1);
+            
+            // Assert
+            response.Should().NotBeNull();
+            var objectResult = (OkResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()), Times.Once);
+        }
     }
 }

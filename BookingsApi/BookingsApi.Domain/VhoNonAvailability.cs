@@ -18,6 +18,6 @@ namespace BookingsApi.Domain
         {
             Id = id;
         }
-        public Boolean Deleted { get; set; }
+        public bool? Deleted { get; set; }
     }
 }
