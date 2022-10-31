@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
@@ -184,15 +185,22 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
         {
-            if (id <= 0)
+            try
             {
-                ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
-                return BadRequest(ModelState);
+                if (id <= 0)
+                {
+                    ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
+                    return BadRequest(ModelState);
+                }
+                var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(id);
+                await _commandHandler.Handle(deleteNonWorkingHoursCommand);
+                return Ok();
             }
-            var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(id);
-            await _commandHandler.Handle(deleteNonWorkingHoursCommand);
-            
-            return Ok();
+            catch (NonWorkingHoursNotFoundException ex)
+            {
+                ModelState.AddModelError(nameof(id), $"Id has not been found {nameof(id)}");
+                return NotFound(ModelState);
+            }
         }
     }
 }

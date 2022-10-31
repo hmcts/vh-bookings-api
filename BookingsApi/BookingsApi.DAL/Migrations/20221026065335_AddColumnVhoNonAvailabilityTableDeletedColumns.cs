@@ -12,7 +12,8 @@ namespace BookingsApi.DAL.Migrations
             migrationBuilder.AddColumn<Boolean>(
                 name: "Deleted",
                 table: "VhoNonAvailability",
-                nullable: true);
+                defaultValue: false,
+                nullable: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
