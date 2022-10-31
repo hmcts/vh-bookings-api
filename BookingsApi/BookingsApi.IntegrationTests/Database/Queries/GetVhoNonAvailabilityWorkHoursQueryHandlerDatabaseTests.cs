@@ -67,7 +67,16 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 CreatedDate = DateTime.Now,
                 CreatedBy   = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
             };
-            context.VhoNonAvailabilities.AddRange(vhoWorkHours1, vhoWorkHours2);
+            var vhoWorkHours3 = new VhoNonAvailability()
+            {
+                StartTime   = DateTime.Now,
+                EndTime     = DateTime.Now,
+                JusticeUser = context.JusticeUsers.First(e => e.Username == UserWithRecords),
+                CreatedDate = DateTime.Now,
+                CreatedBy   = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                Deleted = true
+            };
+            context.VhoNonAvailabilities.AddRange(vhoWorkHours1, vhoWorkHours2, vhoWorkHours3);
             context.SaveChanges();
             _handler = new GetVhoNonAvailableWorkHoursQueryHandler(context);
         }
