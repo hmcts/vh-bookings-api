@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
@@ -211,7 +212,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_Valid_Request_Returns_NoContent()
         {
             // Arrange
-            var userId = Guid.NewGuid();
             var username = "test.user@hearings.reform.hmcts.net";
 
             var request = new UpdateNonWorkingHoursRequest
@@ -252,7 +252,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_EndTime_Before_StartTime_Returns_BadRequest()
         {
             // Arrange
-            var userId = Guid.NewGuid();
             var username = "test.user@hearings.reform.hmcts.net";
             
             var request = new UpdateNonWorkingHoursRequest
@@ -317,7 +316,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_EndTime_EqualTo_StartTime_Returns_BadRequest()
         {
             // Arrange
-            var userId = Guid.NewGuid();
             var username = "test.user@hearings.reform.hmcts.net";
             
             var request = new UpdateNonWorkingHoursRequest
@@ -540,6 +538,50 @@ namespace BookingsApi.UnitTests.Controllers
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hours", UpdateNonWorkingHoursRequestValidation.HoursEmptyErrorMessage);
             
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateNonWorkingHoursCommand>()), Times.Never);
+        }
+        
+        [Test]
+        public async Task DeleteVhoNonAvailabilityHours_Not_Valid_Id()
+        {
+            // Act
+            var response = await _controller.DeleteVhoNonAvailabilityHours(0);
+            
+            // Assert
+            var objectResult = (BadRequestObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            
+            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()), Times.Never);
+        }
+        
+        
+        [Test]
+        public async Task DeleteVhoNonAvailabilityHours_Not_Found_Id()
+        {
+            _commandHandlerMock
+                .Setup(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()))
+                .ThrowsAsync(new NonWorkingHoursNotFoundException(1));
+            
+            // Act
+            var response = await _controller.DeleteVhoNonAvailabilityHours(1);
+            
+            // Assert
+            response.Should().NotBeNull();
+            // Assert
+            var objectResult = (NotFoundObjectResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+        
+        [Test]
+        public async Task DeleteVhoNonAvailabilityHours_Valid_Id()
+        {
+            // Act
+            var response = await _controller.DeleteVhoNonAvailabilityHours(1);
+            
+            // Assert
+            response.Should().NotBeNull();
+            // Assert
+            var objectResult = (OkResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
     }
 }

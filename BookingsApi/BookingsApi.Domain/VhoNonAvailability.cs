@@ -18,5 +18,6 @@ namespace BookingsApi.Domain
         {
             Id = id;
         }
+        public bool Deleted { get; set; }
     }
 }
