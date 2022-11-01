@@ -553,21 +553,9 @@ namespace BookingsApi.UnitTests.Controllers
             _commandHandlerMock.Verify(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()), Times.Never);
         }
         
-        [Test]
-        public async Task DeleteVhoNonAvailabilityHours_Not_Found()
-        {
-            // Act
-            var response = await _controller.DeleteVhoNonAvailabilityHours(2);
-            
-            // Assert
-            var objectResult = (BadRequestObjectResult)response;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            
-            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()), Times.Never);
-        }
         
         [Test]
-        public async Task DeleteVhoNonAvailabilityHours_Valid_Id()
+        public async Task DeleteVhoNonAvailabilityHours_Not_Found_Id()
         {
             _commandHandlerMock
                 .Setup(x => x.Handle(It.IsAny<DeleteNonWorkingHoursCommand>()))
@@ -581,6 +569,19 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = (NotFoundObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+        
+        [Test]
+        public async Task DeleteVhoNonAvailabilityHours_Valid_Id()
+        {
+            // Act
+            var response = await _controller.DeleteVhoNonAvailabilityHours(1);
+            
+            // Assert
+            response.Should().NotBeNull();
+            // Assert
+            var objectResult = (OkResult)response;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
     }
 }
