@@ -51,7 +51,6 @@ namespace BookingsApi
                         .SetIsOriginAllowed((host) => true)
                         .AllowCredentials();
                 }));
-
             services.AddJsonOptions();
             RegisterSettings(services);
             RegisterInfrastructureServices(services);
