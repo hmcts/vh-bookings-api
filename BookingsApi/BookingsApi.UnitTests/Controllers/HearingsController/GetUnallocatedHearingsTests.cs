@@ -39,7 +39,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             
             var hearingList = new List<VideoHearing> { hearing1, hearing2 };
 
-            HearingBusinessMock.Setup(x => x.GetUnallocatedHearings()).ReturnsAsync(hearingList);
+            HearingServiceMock.Setup(x => x.GetUnallocatedHearings()).ReturnsAsync(hearingList);
 
              var result = await Controller.GetUnallocatedHearings();
 
@@ -56,7 +56,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             response.First(x => x.Id == hearing1.Id).Should().NotBeNull();
             response.First(x => x.Id == hearing2.Id).Should().NotBeNull();
 
-            HearingBusinessMock.Verify(
+            HearingServiceMock.Verify(
                 x => x.GetUnallocatedHearings(),
                 Times.Once);
         }
@@ -66,7 +66,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             
 
-            HearingBusinessMock.Setup(x => x.GetUnallocatedHearings()).ReturnsAsync(new List<VideoHearing>());
+            HearingServiceMock.Setup(x => x.GetUnallocatedHearings()).ReturnsAsync(new List<VideoHearing>());
             var result = await Controller.GetUnallocatedHearings();
 
             result.Should().NotBeNull();
@@ -80,7 +80,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             response.Should().Be("could not find any unallocated hearings");
 
 
-            HearingBusinessMock.Verify(
+            HearingServiceMock.Verify(
                 x => x.GetUnallocatedHearings(),
                 Times.Once);
         }

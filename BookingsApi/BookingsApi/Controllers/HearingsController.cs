@@ -48,7 +48,6 @@ namespace BookingsApi.Controllers
         private readonly IHearingService _hearingService;
         private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
-        private readonly IHearingBusiness _hearingBusiness;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IEventPublisher eventPublisher,
@@ -56,7 +55,6 @@ namespace BookingsApi.Controllers
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IFeatureToggles featureToggles,
-            IHearingBusiness hearingBusiness,
             ILogger logger)
         {
             _queryHandler = queryHandler;
@@ -65,7 +63,6 @@ namespace BookingsApi.Controllers
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
             _featureToggles = featureToggles;
-            _hearingBusiness = hearingBusiness;
             _logger = logger;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
@@ -758,7 +755,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnallocatedHearings()
         {
-            var results = await _hearingBusiness.GetUnallocatedHearings();
+
+            var results = await _hearingService.GetUnallocatedHearings();
 
             if (results.Count <= 0)
                 return NotFound("could not find any unallocated hearings");

@@ -46,7 +46,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         private IEventPublisher _eventPublisher;
         protected Mock<IEventPublisher> EventPublisherMock;
         protected ServiceBusQueueClientFake SbQueueClient;
-        protected Mock<IHearingBusiness> HearingBusinessMock;
 
         [SetUp]
         public void Setup()
@@ -61,7 +60,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<ILogger>();
-            HearingBusinessMock = new Mock<IHearingBusiness>();
 
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
             FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(false);
@@ -75,7 +73,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             return  new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
                 CommandHandlerMock.Object,
                 withQueueClient ? _eventPublisher: EventPublisherMock.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, FeatureTogglesMock.Object, HearingBusinessMock.Object, Logger.Object);
+                HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);
         }
 
         [Test]

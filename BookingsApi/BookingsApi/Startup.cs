@@ -116,8 +116,6 @@ namespace BookingsApi
             }
 
             services.AddScoped<IEventPublisher, EventPublisher>();
-
-            services.AddScoped<IHearingBusiness, HearingBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

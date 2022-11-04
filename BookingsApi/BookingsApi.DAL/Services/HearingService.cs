@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Const;
+using BookingsApi.DAL.Queries;
 
 namespace BookingsApi.DAL.Services
 {
@@ -54,6 +56,12 @@ namespace BookingsApi.DAL.Services
         /// <param name="participants">List of participants</param>
         /// <returns></returns>
         void ValidateHostCount(IList<Participant> participants);
+
+        /// <summary>
+        /// Get unallocated hearings
+        /// </summary>
+        /// <returns></returns>
+        Task<List<VideoHearing>> GetUnallocatedHearings();
     }
     public class HearingService : IHearingService
     {
@@ -199,7 +207,44 @@ namespace BookingsApi.DAL.Services
                 throw new DomainRuleException("Host", "A hearing must have at least one host");
             }
         }
+        
+        public async Task<List<VideoHearing>> GetUnallocatedHearings()
+        {
+            var startDate = DateTime.Today; 
+            var endDate = DateTime.Today.AddDays(30);    // 30 days is 1 month.
 
+            var hearings =  _context.VideoHearings.Where(x =>
+                (x.Status == Domain.Enumerations.BookingStatus.Created || x.Status == Domain.Enumerations.BookingStatus.Booked)
+                && x.Status != Domain.Enumerations.BookingStatus.Cancelled
+                && x.ScheduledDateTime >= startDate
+                && x.ScheduledDateTime < endDate
+                && x.CaseTypeId != 3); // Generic Case Type
+
+            var unAllocatedHearings =   
+                hearings.Where(x => 
+                    _context.Allocations.FirstOrDefault(a => a.HearingId == x.Id) == null).OrderBy(x=>x.ScheduledDateTime);
+            
+            unAllocatedHearings = (IOrderedQueryable<VideoHearing>) unAllocatedHearings.Where(x=> !ScottishHearingVenuesList.Any(venueName => venueName == x.HearingVenueName));
+
+            
+            return await unAllocatedHearings.ToListAsync();
+        }
+
+        private readonly List<string> ScottishHearingVenuesList = new List<string> { 
+            HearingScottishVenueNames.Aberdeen,
+            HearingScottishVenueNames.Ayr,
+            HearingScottishVenueNames.Dundee,
+            HearingScottishVenueNames.Edinburgh,
+            HearingScottishVenueNames.Glasgow,
+            HearingScottishVenueNames.HamiltonBrandonGate,
+            HearingScottishVenueNames.Inverness,
+            HearingScottishVenueNames.StirlingWallaceHouse,
+            HearingScottishVenueNames.EdinburghEmploymentAppealTribunal,
+            HearingScottishVenueNames.InvernessJusticeCentre,
+            HearingScottishVenueNames.EdinburghSocialSecurityAndChildSupportTribunal,
+            HearingScottishVenueNames.EdinburghUpperTribunal,
+        };
+        
         private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
         {
             participant1.AddLink(participant2.Id, linkType);
