@@ -31,7 +31,6 @@ using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers
 {
@@ -755,16 +754,17 @@ namespace BookingsApi.Controllers
         /// <returns>unallocated hearings</returns>
         [HttpGet("unallocated")]
         [OpenApiOperation("GetUnallocatedHearings")]
-        [ProducesResponseType(typeof(List<VideoHearing>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnallocatedHearings()
         {
-            var results = await this._hearingBusiness.GetUnallocatedHearings();
+            var results = await _hearingBusiness.GetUnallocatedHearings();
 
             if (results.Count <= 0)
                 return NotFound("could not find any unallocated hearings");
-            
-            return Ok(results);
+            var hearingMapper = new HearingToDetailsResponseMapper();
+            var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            return Ok(response);
         }
 
         private void SanitiseRequest(BookNewHearingRequest request)

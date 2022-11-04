@@ -389,13 +389,13 @@ namespace BookingsApi.Client
         /// <summary>Get all the unallocated hearings</summary>
         /// <returns>unallocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VideoHearing>> GetUnallocatedHearingsAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetUnallocatedHearingsAsync();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get all the unallocated hearings</summary>
         /// <returns>unallocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VideoHearing>> GetUnallocatedHearingsAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetUnallocatedHearingsAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>List of hearing venues</returns>
@@ -3499,7 +3499,7 @@ namespace BookingsApi.Client
         /// <summary>Get all the unallocated hearings</summary>
         /// <returns>unallocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VideoHearing>> GetUnallocatedHearingsAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetUnallocatedHearingsAsync()
         {
             return GetUnallocatedHearingsAsync(System.Threading.CancellationToken.None);
         }
@@ -3508,7 +3508,7 @@ namespace BookingsApi.Client
         /// <summary>Get all the unallocated hearings</summary>
         /// <returns>unallocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<VideoHearing>> GetUnallocatedHearingsAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetUnallocatedHearingsAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/unallocated");
@@ -3545,7 +3545,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<VideoHearing>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingDetailsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

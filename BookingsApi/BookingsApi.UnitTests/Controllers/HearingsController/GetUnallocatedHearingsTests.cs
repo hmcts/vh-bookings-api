@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
@@ -47,7 +48,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var objectResult = (OkObjectResult)result;
 
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var response = (List<VideoHearing>)objectResult.Value;
+            var response = (List<HearingDetailsResponse>)objectResult.Value;
 
             response.Should().NotBeNull();
             response.Count.Should().Be(2);
