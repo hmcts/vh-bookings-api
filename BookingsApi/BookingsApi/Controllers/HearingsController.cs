@@ -30,6 +30,8 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
+using BookingsApi.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers
 {
@@ -47,6 +49,7 @@ namespace BookingsApi.Controllers
         private readonly IHearingService _hearingService;
         private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
+        private readonly IHearingBusiness _hearingBusiness;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IEventPublisher eventPublisher,
@@ -54,6 +57,7 @@ namespace BookingsApi.Controllers
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IFeatureToggles featureToggles,
+            IHearingBusiness hearingBusiness,
             ILogger logger)
         {
             _queryHandler = queryHandler;
@@ -62,6 +66,7 @@ namespace BookingsApi.Controllers
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
             _featureToggles = featureToggles;
+            _hearingBusiness = hearingBusiness;
             _logger = logger;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
@@ -742,6 +747,24 @@ namespace BookingsApi.Controllers
             var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
+        }
+        
+        /// <summary>
+        /// Get all the unallocated hearings
+        /// </summary>
+        /// <returns>unallocated hearings</returns>
+        [HttpGet("unallocated")]
+        [OpenApiOperation("GetUnallocatedHearings")]
+        [ProducesResponseType(typeof(List<VideoHearing>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUnallocatedHearings()
+        {
+            var results = await this._hearingBusiness.GetUnallocatedHearings();
+
+            if (results.Count <= 0)
+                return NotFound("could not find any unallocated hearings");
+            
+            return Ok(results);
         }
 
         private void SanitiseRequest(BookNewHearingRequest request)

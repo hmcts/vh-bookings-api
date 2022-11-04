@@ -17,6 +17,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
+using BookingsApi.Services;
 
 namespace BookingsApi
 {
@@ -115,6 +116,8 @@ namespace BookingsApi
             }
 
             services.AddScoped<IEventPublisher, EventPublisher>();
+
+            services.AddScoped<IHearingBusiness, HearingBusiness>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
