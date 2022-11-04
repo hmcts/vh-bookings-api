@@ -16,6 +16,6 @@ namespace BookingsApi.Domain
         public string CreatedBy { get; set; }
 
         public virtual IList<VhoNonAvailability> VhoNonAvailability { get; }
-        public virtual IList<VhoWorkHours> VhoWorkHours { get; }
+        public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
     }
 }
