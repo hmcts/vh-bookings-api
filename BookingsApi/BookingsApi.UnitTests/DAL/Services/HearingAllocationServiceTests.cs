@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
@@ -23,19 +24,15 @@ namespace BookingsApi.UnitTests.DAL.Services
         private CaseType _caseType;
         private HearingType _hearingType;
         private HearingVenue _hearingVenue;
-        private readonly Mock<IRandomNumberGenerator> _randomNumberGenerator;
+        private Mock<IRandomNumberGenerator> _randomNumberGenerator;
 
-        public HearingAllocationServiceTests()
-        {
-            _randomNumberGenerator = new Mock<IRandomNumberGenerator>();
-        }
-        
         [OneTimeSetUp]
         public void InitialSetup()
         {
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;
             _context = new BookingsDbContext(contextOptions);
+            _randomNumberGenerator = new Mock<IRandomNumberGenerator>();
             _service = new HearingAllocationService(_context, _randomNumberGenerator.Object);
             SeedRefData();
         }
@@ -511,14 +508,14 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
 
             var allocationCandidates = new List<Guid> { cso2.Id, cso3.Id };
-            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>())).Returns(generatedRandomNumber);
+            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
             
             // Act
             var result = await _service.AllocateCso(hearing2.Id);
             
             // Assert
             result.Should().NotBeNull();
-            _randomNumberGenerator.Verify(c => c.Generate(allocationCandidates.Count), Times.AtLeastOnce);
+            _randomNumberGenerator.Verify(c => c.Generate(1, allocationCandidates.Count), Times.AtLeastOnce);
             Assert.That(allocationCandidates.Contains(result.Id));
         }
         
@@ -576,14 +573,14 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateCsoToHearing(cso3.Id, hearing3.Id);
             
             var allocationCandidates = new List<Guid> { cso2.Id, cso3.Id };
-            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>())).Returns(generatedRandomNumber);
+            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
             
             // Act
             var result = await _service.AllocateCso(hearing5.Id);
             
             // Assert
             result.Should().NotBeNull();
-            _randomNumberGenerator.Verify(c => c.Generate(allocationCandidates.Count), Times.AtLeastOnce);
+            _randomNumberGenerator.Verify(c => c.Generate(1, allocationCandidates.Count), Times.AtLeastOnce);
             Assert.That(allocationCandidates.Contains(result.Id));
         }
         
@@ -650,14 +647,14 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateCsoToHearing(cso3.Id, hearing6.Id);
             
             var allocationCandidates = new List<Guid> { cso2.Id, cso3.Id };
-            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>())).Returns(generatedRandomNumber);
+            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
             
             // Act
             var result = await _service.AllocateCso(hearing8.Id);
             
             // Assert
             result.Should().NotBeNull();
-            _randomNumberGenerator.Verify(c => c.Generate(allocationCandidates.Count), Times.AtLeastOnce);
+            _randomNumberGenerator.Verify(c => c.Generate(1, allocationCandidates.Count), Times.AtLeastOnce);
             Assert.That(allocationCandidates.Contains(result.Id));
         }
         

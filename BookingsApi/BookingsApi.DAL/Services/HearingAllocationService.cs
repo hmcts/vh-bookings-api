@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,19 +13,6 @@ namespace BookingsApi.DAL.Services
         Task<JusticeUser> AllocateCso(Guid hearingId);
     }
 
-    public interface IRandomNumberGenerator
-    {
-        int Generate(int max);
-    }
-
-    public class RandomNumberGenerator : IRandomNumberGenerator
-    {
-        public int Generate(int max)
-        {
-            return new Random().Next(1, max);
-        }
-    }
-    
     public class HearingAllocationService : IHearingAllocationService
     {
         private readonly BookingsDbContext _context;
@@ -44,8 +32,6 @@ namespace BookingsApi.DAL.Services
                 throw new ArgumentException($"Hearing {hearingId} not found");   
             }
 
-            //var allocations = _context.Allocations.ToList();
-            
             // CSOs with work hours that fall within the hearing scheduled time
             var availableCsos = GetAvailableCsos(hearing.ScheduledDateTime);
 
@@ -62,6 +48,8 @@ namespace BookingsApi.DAL.Services
             if (availableCsos.Count() > 1)
             {
                 var csosWithNoAllocations = new List<JusticeUser>();
+                var csosWithOneAllocation = new List<JusticeUser>();
+                var csosWithTwoAllocations = new List<JusticeUser>();
                 
                 foreach (var availableCso in availableCsos)
                 {
@@ -69,9 +57,20 @@ namespace BookingsApi.DAL.Services
                     var allocations = _context.Allocations
                         .Where(a => a.JusticeUserId == availableCso.Id)
                         .ToList();
+                    
                     if (!allocations.Any())
                     {
                         csosWithNoAllocations.Add(availableCso); 
+                    }
+                    
+                    if (allocations.Count == 1)
+                    {
+                        csosWithOneAllocation.Add(availableCso); 
+                    }
+                    
+                    if (allocations.Count == 2)
+                    {
+                        csosWithTwoAllocations.Add(availableCso); 
                     }
                 }
 
@@ -85,20 +84,6 @@ namespace BookingsApi.DAL.Services
                     return AllocateRandomly(csosWithNoAllocations);
                 }
 
-                var csosWithOneAllocation = new List<JusticeUser>();
-                
-                foreach (var availableCso in availableCsos)
-                {
-                    // Get allocations for this cso
-                    var allocations = _context.Allocations
-                        .Where(a => a.JusticeUserId == availableCso.Id)
-                        .ToList();
-                    if (allocations.Count == 1)
-                    {
-                        csosWithOneAllocation.Add(availableCso); 
-                    }
-                }
-
                 if (csosWithOneAllocation.Count == 1)
                 {
                     return csosWithOneAllocation.SingleOrDefault();
@@ -107,20 +92,6 @@ namespace BookingsApi.DAL.Services
                 if (csosWithOneAllocation.Count > 1)
                 {
                     return AllocateRandomly(csosWithOneAllocation);
-                }
-                
-                var csosWithTwoAllocations = new List<JusticeUser>();
-                
-                foreach (var availableCso in availableCsos)
-                {
-                    // Get allocations for this cso
-                    var allocations = _context.Allocations
-                        .Where(a => a.JusticeUserId == availableCso.Id)
-                        .ToList();
-                    if (allocations.Count == 2)
-                    {
-                        csosWithTwoAllocations.Add(availableCso); 
-                    }
                 }
 
                 if (csosWithTwoAllocations.Count == 1)
@@ -139,8 +110,6 @@ namespace BookingsApi.DAL.Services
 
         private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingScheduledDatetime)
         {
-            var users = _context.JusticeUsers.ToList(); // For testing/debugging only
-
             var hearingTime = hearingScheduledDatetime.TimeOfDay;
             
             var availableCsos = new List<JusticeUser>();
@@ -182,7 +151,7 @@ namespace BookingsApi.DAL.Services
 
         private JusticeUser AllocateRandomly(IList<JusticeUser> csos)
         {
-            var csoIndex = _randomNumberGenerator.Generate(csos.Count);
+            var csoIndex = _randomNumberGenerator.Generate(1, csos.Count);
             var cso = csos[csoIndex-1];
             return cso;
         }
