@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Services
@@ -114,7 +115,7 @@ namespace BookingsApi.DAL.Services
             
             var availableCsos = new List<JusticeUser>();
 
-            foreach (var justiceUser in _context.JusticeUsers)
+            foreach (var justiceUser in _context.JusticeUsers.Where(u => u.UserRoleId == (int)UserRoleId.Vho).ToList())
             {
                 var workHoursFallingOnThisDay = justiceUser.VhoWorkHours.FirstOrDefault(h => DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingScheduledDatetime.DayOfWeek);
                 if (workHoursFallingOnThisDay == null)

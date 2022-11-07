@@ -6,8 +6,8 @@ using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using BookingsApi.UnitTests.Constants;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -657,13 +657,100 @@ namespace BookingsApi.UnitTests.DAL.Services
             _randomNumberGenerator.Verify(c => c.Generate(1, allocationCandidates.Count), Times.AtLeastOnce);
             Assert.That(allocationCandidates.Contains(result.Id));
         }
+
+        [Test]
+        public async Task Should_ignore_non_availabilities_oustide_hearing_datetime()
+        {
+            // Arrange
+            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
+            var hearing = CreateHearing(hearingScheduledDateTime);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            cso.VhoNonAvailability.Add(new VhoNonAvailability
+            {
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year + 1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year + 1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+            });
+            cso.VhoNonAvailability.Add(new VhoNonAvailability
+            {
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+            });
+
+            // Act
+            var result = await _service.AllocateCso(hearing.Id);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(cso.Id);
+        }
+
+        [Test]
+        public async Task Should_target_cso_justice_users_only()
+        {
+            // Arrange
+            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
+            var hearing = CreateHearing(hearingScheduledDateTime);
+
+            var cso = SeedJusticeUser("cso@email.com", "Cso", "1", (int)UserRoleId.Vho);
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            cso.VhoNonAvailability.Add(new VhoNonAvailability
+            {
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+            });
+
+            int userRoleIndex = 1;
+            foreach (int userRoleId in Enum.GetValues(typeof(UserRoleId)))
+            {
+                if (userRoleId == (int)UserRoleId.Vho)
+                {
+                    continue;
+                }
+
+                var nonCso = SeedJusticeUser($"nonCso{userRoleIndex}@email.com", "NonCso{i}", userRoleIndex.ToString(), userRoleId: userRoleId);
+                for (var i = 1; i <= 7; i++)
+                {
+                    nonCso.VhoWorkHours.Add(new VhoWorkHours
+                    {
+                        DayOfWeekId = i,
+                        StartTime = new TimeSpan(8, 0, 0),
+                        EndTime = new TimeSpan(17, 0, 0)
+                    });
+                }
+
+                userRoleIndex++;
+            }
+
+            // Act
+            var action = async () => await _service.AllocateCso(hearing.Id);
+
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
         
         /*
          * Questions and testing improvements
          *
          * Should we avoid allocating csos to hearings that overlap with one they are already assigned to?
          * Need to test that it doesn't try to assign to a non-CSO
-         * Need to test that the query which gets a cso's allocations only gets those in the same time frame as the hearing
          */
 
         private IList<JusticeUser> SeedJusticeUsers()
@@ -676,13 +763,13 @@ namespace BookingsApi.UnitTests.DAL.Services
             return justiceUsers;
         }
 
-        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, bool isTeamLead = false)
+        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, int userRoleId = 2)
         {
             var justiceUser = new JusticeUser
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = isTeamLead ? (int)UserRoleId.vhTeamLead : (int)UserRoleId.vho,
+                UserRoleId = userRoleId,
                 CreatedBy = "test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
