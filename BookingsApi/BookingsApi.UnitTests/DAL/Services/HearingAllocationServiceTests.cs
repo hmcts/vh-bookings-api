@@ -205,12 +205,9 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_successfully_when_multiple_csos_available_and_one_with_no_allocations()
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45);
-            var hearing3ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
-            var hearing3 = CreateHearing(hearing3ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45));
             
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -259,18 +256,12 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_successfully_when_multiple_csos_available_and_zero_with_no_allocations_and_one_with_one_allocation()
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45);
-            var hearing3ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
-            var hearing4ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45);
-            var hearing5ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45);
-            var hearing6ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
-            var hearing3 = CreateHearing(hearing3ScheduledDateTime);
-            var hearing4 = CreateHearing(hearing4ScheduledDateTime);
-            var hearing5 = CreateHearing(hearing5ScheduledDateTime);
-            var hearing6 = CreateHearing(hearing6ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+            var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45));
             
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -323,24 +314,15 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_successfully_when_multiple_csos_available_and_zero_with_no_allocations_and_zero_with_one_allocation_and_one_with_two_allocations()
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(8).AddMinutes(45);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45);
-            var hearing3ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45);
-            var hearing4ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
-            var hearing5ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45);
-            var hearing6ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45);
-            var hearing7ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45);
-            var hearing8ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45);
-            var hearing9ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(16).AddMinutes(45);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
-            var hearing3 = CreateHearing(hearing3ScheduledDateTime);
-            var hearing4 = CreateHearing(hearing4ScheduledDateTime);
-            var hearing5 = CreateHearing(hearing5ScheduledDateTime);
-            var hearing6 = CreateHearing(hearing6ScheduledDateTime);
-            var hearing7 = CreateHearing(hearing7ScheduledDateTime);
-            var hearing8 = CreateHearing(hearing8ScheduledDateTime);
-            var hearing9 = CreateHearing(hearing9ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(8).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+            var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+            var hearing7 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45));
+            var hearing8 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45));
+            var hearing9 = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(45));
             
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -395,30 +377,18 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_return_error_when_multiple_csos_available_and_zero_with_no_allocations_and_zero_with_one_allocation_and_zero_with_two_allocations()
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(8).AddMinutes(30);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0);
-            var hearing3ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(9).AddMinutes(30);
-            var hearing4ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0);
-            var hearing5ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var hearing6ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(0);
-            var hearing7ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(30);
-            var hearing8ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(12).AddMinutes(0);
-            var hearing9ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(12).AddMinutes(30);
-            var hearing10ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(0);
-            var hearing11ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(30);
-            var hearing12ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(14).AddMinutes(0);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
-            var hearing3 = CreateHearing(hearing3ScheduledDateTime);
-            var hearing4 = CreateHearing(hearing4ScheduledDateTime);
-            var hearing5 = CreateHearing(hearing5ScheduledDateTime);
-            var hearing6 = CreateHearing(hearing6ScheduledDateTime);
-            var hearing7 = CreateHearing(hearing7ScheduledDateTime);
-            var hearing8 = CreateHearing(hearing8ScheduledDateTime);
-            var hearing9 = CreateHearing(hearing9ScheduledDateTime);
-            var hearing10 = CreateHearing(hearing10ScheduledDateTime);
-            var hearing11 = CreateHearing(hearing11ScheduledDateTime);
-            var hearing12 = CreateHearing(hearing12ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(8).AddMinutes(30));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(30));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30));
+            var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(0));
+            var hearing7 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(30));
+            var hearing8 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(0));
+            var hearing9 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(30));
+            var hearing10 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(0));
+            var hearing11 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(30));
+            var hearing12 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(0));
             
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -476,10 +446,8 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_randomly_when_multiple_csos_available_and_more_than_one_with_no_allocations(int generatedRandomNumber)
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
 
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -532,16 +500,11 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_randomly_when_multiple_csos_available_and_zero_with_no_allocations_and_more_than_one_with_one_allocation(int generatedRandomNumber)
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45);
-            var hearing3ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
-            var hearing4ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45);
-            var hearing5ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
-            var hearing3 = CreateHearing(hearing3ScheduledDateTime);
-            var hearing4 = CreateHearing(hearing4ScheduledDateTime);
-            var hearing5 = CreateHearing(hearing5ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
 
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -597,22 +560,14 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_randomly_when_multiple_csos_available_and_zero_with_no_allocations_and_zero_with_one_allocation_and_more_than_one_with_two_allocations(int generatedRandomNumber)
         {
             // Arrange
-            var hearing1ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(8).AddMinutes(45);
-            var hearing2ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45);
-            var hearing3ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45);
-            var hearing4ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
-            var hearing5ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45);
-            var hearing6ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45);
-            var hearing7ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45);
-            var hearing8ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45);
-            var hearing1 = CreateHearing(hearing1ScheduledDateTime);
-            var hearing2 = CreateHearing(hearing2ScheduledDateTime);
-            var hearing3 = CreateHearing(hearing3ScheduledDateTime);
-            var hearing4 = CreateHearing(hearing4ScheduledDateTime);
-            var hearing5 = CreateHearing(hearing5ScheduledDateTime);
-            var hearing6 = CreateHearing(hearing6ScheduledDateTime);
-            var hearing7 = CreateHearing(hearing7ScheduledDateTime);
-            var hearing8 = CreateHearing(hearing8ScheduledDateTime);
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(8).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+            var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+            var hearing7 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45));
+            var hearing8 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45));
 
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -670,8 +625,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_ignore_non_availabilities_oustide_hearing_datetime()
         {
             // Arrange
-            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
 
             var cso = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -706,8 +660,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_target_cso_justice_users_only()
         {
             // Arrange
-            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
 
             var cso = SeedJusticeUser("cso@email.com", "Cso", "1", (int)UserRoleId.Vho);
             for (var i = 1; i <= 7; i++)
@@ -758,7 +711,7 @@ namespace BookingsApi.UnitTests.DAL.Services
          * Questions and testing improvements
          *
          * Should we avoid allocating csos to hearings that overlap with one they are already assigned to?
-         * Need to test that it doesn't try to assign to a non-CSO
+         * Will these tests have BST/UTC issues
          */
 
         private IList<JusticeUser> SeedJusticeUsers()
