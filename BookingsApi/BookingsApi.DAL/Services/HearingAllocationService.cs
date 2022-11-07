@@ -33,7 +33,6 @@ namespace BookingsApi.DAL.Services
                 throw new ArgumentException($"Hearing {hearingId} not found");   
             }
 
-            // CSOs with work hours that fall within the hearing scheduled time
             var availableCsos = GetAvailableCsos(hearing.ScheduledDateTime);
 
             if (!availableCsos.Any())
@@ -46,64 +45,60 @@ namespace BookingsApi.DAL.Services
                 return availableCsos.SingleOrDefault();
             }
 
-            if (availableCsos.Count() > 1)
+            var csosWithNoAllocations = new List<JusticeUser>();
+            var csosWithOneAllocation = new List<JusticeUser>();
+            var csosWithTwoAllocations = new List<JusticeUser>();
+
+            foreach (var cso in availableCsos)
             {
-                var csosWithNoAllocations = new List<JusticeUser>();
-                var csosWithOneAllocation = new List<JusticeUser>();
-                var csosWithTwoAllocations = new List<JusticeUser>();
-                
-                foreach (var availableCso in availableCsos)
+                var allocations = _context.Allocations
+                    .Where(a => a.JusticeUserId == cso.Id)
+                    .ToList();
+
+                if (!allocations.Any())
                 {
-                    // Get allocations for this cso
-                    var allocations = _context.Allocations
-                        .Where(a => a.JusticeUserId == availableCso.Id)
-                        .ToList();
-                    
-                    if (!allocations.Any())
-                    {
-                        csosWithNoAllocations.Add(availableCso); 
-                    }
-                    
-                    if (allocations.Count == 1)
-                    {
-                        csosWithOneAllocation.Add(availableCso); 
-                    }
-                    
-                    if (allocations.Count == 2)
-                    {
-                        csosWithTwoAllocations.Add(availableCso); 
-                    }
+                    csosWithNoAllocations.Add(cso);
                 }
 
-                if (csosWithNoAllocations.Count == 1)
+                if (allocations.Count == 1)
                 {
-                    return csosWithNoAllocations.SingleOrDefault();
+                    csosWithOneAllocation.Add(cso);
                 }
 
-                if (csosWithNoAllocations.Count > 1)
+                if (allocations.Count == 2)
                 {
-                    return AllocateRandomly(csosWithNoAllocations);
+                    csosWithTwoAllocations.Add(cso);
                 }
+            }
 
-                if (csosWithOneAllocation.Count == 1)
-                {
-                    return csosWithOneAllocation.SingleOrDefault();
-                }
+            if (csosWithNoAllocations.Count == 1)
+            {
+                return csosWithNoAllocations.SingleOrDefault();
+            }
 
-                if (csosWithOneAllocation.Count > 1)
-                {
-                    return AllocateRandomly(csosWithOneAllocation);
-                }
+            if (csosWithNoAllocations.Count > 1)
+            {
+                return AllocateRandomly(csosWithNoAllocations);
+            }
 
-                if (csosWithTwoAllocations.Count == 1)
-                {
-                    return csosWithTwoAllocations.SingleOrDefault();
-                }
-                
-                if (csosWithTwoAllocations.Count > 1)
-                {
-                    return AllocateRandomly(csosWithTwoAllocations);
-                }
+            if (csosWithOneAllocation.Count == 1)
+            {
+                return csosWithOneAllocation.SingleOrDefault();
+            }
+
+            if (csosWithOneAllocation.Count > 1)
+            {
+                return AllocateRandomly(csosWithOneAllocation);
+            }
+
+            if (csosWithTwoAllocations.Count == 1)
+            {
+                return csosWithTwoAllocations.SingleOrDefault();
+            }
+
+            if (csosWithTwoAllocations.Count > 1)
+            {
+                return AllocateRandomly(csosWithTwoAllocations);
             }
 
             throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
