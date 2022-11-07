@@ -11,14 +11,29 @@ namespace BookingsApi.DAL.Services
     {
         Task<JusticeUser> AllocateCso(Guid hearingId);
     }
+
+    public interface IRandomNumberGenerator
+    {
+        int Generate(int max);
+    }
+
+    public class RandomNumberGenerator : IRandomNumberGenerator
+    {
+        public int Generate(int max)
+        {
+            return new Random().Next(1, max);
+        }
+    }
     
     public class HearingAllocationService : IHearingAllocationService
     {
         private readonly BookingsDbContext _context;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
 
-        public HearingAllocationService(BookingsDbContext context)
+        public HearingAllocationService(BookingsDbContext context, IRandomNumberGenerator randomNumberGenerator)
         {
             _context = context;
+            _randomNumberGenerator = randomNumberGenerator;
         }
         
         public async Task<JusticeUser> AllocateCso(Guid hearingId)
@@ -29,6 +44,8 @@ namespace BookingsApi.DAL.Services
                 throw new ArgumentException($"Hearing {hearingId} not found");   
             }
 
+            //var allocations = _context.Allocations.ToList();
+            
             // CSOs with work hours that fall within the hearing scheduled time
             var availableCsos = GetAvailableCsos(hearing.ScheduledDateTime);
 
@@ -42,7 +59,82 @@ namespace BookingsApi.DAL.Services
                 return availableCsos.SingleOrDefault();
             }
 
-            return null;
+            if (availableCsos.Count() > 1)
+            {
+                var csosWithNoAllocations = new List<JusticeUser>();
+                
+                foreach (var availableCso in availableCsos)
+                {
+                    // Get allocations for this cso
+                    var allocations = _context.Allocations
+                        .Where(a => a.JusticeUserId == availableCso.Id)
+                        .ToList();
+                    if (!allocations.Any())
+                    {
+                        csosWithNoAllocations.Add(availableCso); 
+                    }
+                }
+
+                if (csosWithNoAllocations.Count == 1)
+                {
+                    return csosWithNoAllocations.SingleOrDefault();
+                }
+
+                if (csosWithNoAllocations.Count > 1)
+                {
+                    return AllocateRandomly(csosWithNoAllocations);
+                }
+
+                var csosWithOneAllocation = new List<JusticeUser>();
+                
+                foreach (var availableCso in availableCsos)
+                {
+                    // Get allocations for this cso
+                    var allocations = _context.Allocations
+                        .Where(a => a.JusticeUserId == availableCso.Id)
+                        .ToList();
+                    if (allocations.Count == 1)
+                    {
+                        csosWithOneAllocation.Add(availableCso); 
+                    }
+                }
+
+                if (csosWithOneAllocation.Count == 1)
+                {
+                    return csosWithOneAllocation.SingleOrDefault();
+                }
+
+                if (csosWithOneAllocation.Count > 1)
+                {
+                    return AllocateRandomly(csosWithOneAllocation);
+                }
+                
+                var csosWithTwoAllocations = new List<JusticeUser>();
+                
+                foreach (var availableCso in availableCsos)
+                {
+                    // Get allocations for this cso
+                    var allocations = _context.Allocations
+                        .Where(a => a.JusticeUserId == availableCso.Id)
+                        .ToList();
+                    if (allocations.Count == 2)
+                    {
+                        csosWithTwoAllocations.Add(availableCso); 
+                    }
+                }
+
+                if (csosWithTwoAllocations.Count == 1)
+                {
+                    return csosWithTwoAllocations.SingleOrDefault();
+                }
+                
+                if (csosWithTwoAllocations.Count > 1)
+                {
+                    return AllocateRandomly(csosWithTwoAllocations);
+                }
+            }
+
+            throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
 
         private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingScheduledDatetime)
@@ -55,7 +147,7 @@ namespace BookingsApi.DAL.Services
 
             foreach (var justiceUser in _context.JusticeUsers)
             {
-                var workHoursFallingOnThisDay = justiceUser.VhoWorkHours.FirstOrDefault(h => MapVhDayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingScheduledDatetime.DayOfWeek);
+                var workHoursFallingOnThisDay = justiceUser.VhoWorkHours.FirstOrDefault(h => DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingScheduledDatetime.DayOfWeek);
                 if (workHoursFallingOnThisDay == null)
                 {
                     continue;
@@ -74,27 +166,25 @@ namespace BookingsApi.DAL.Services
                     availableCsos.Add(justiceUser);
                 }
             }
-            
-            // var availableCsos = (from justiceUser in _context.JusticeUsers
-            //     let workHoursFallingOnThisDay = justiceUser.VhoWorkHours.FirstOrDefault(h => MapVhDayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingScheduledDatetime.DayOfWeek)
-            //     where workHoursFallingOnThisDay != null
-            //     let hearingTime = hearingScheduledDatetime.TimeOfDay
-            //     let workHourStartTime = workHoursFallingOnThisDay.StartTime
-            //     let workHourEndTime = workHoursFallingOnThisDay.EndTime
-            //     where hearingTime > workHourStartTime && hearingTime < workHourEndTime
-            //     select justiceUser).ToList();
 
             return availableCsos;
         }
         
-        private System.DayOfWeek MapVhDayOfWeekIdToSystemDayOfWeek(int vhDayOfWeekId)
+        private System.DayOfWeek DayOfWeekIdToSystemDayOfWeek(int dayOfWeekId)
         {
-            if (vhDayOfWeekId == 7)
+            if (dayOfWeekId == 7)
             {
                 return System.DayOfWeek.Sunday;
             }
 
-            return (System.DayOfWeek)vhDayOfWeekId;
+            return (System.DayOfWeek)dayOfWeekId;
+        }
+
+        private JusticeUser AllocateRandomly(IList<JusticeUser> csos)
+        {
+            var csoIndex = _randomNumberGenerator.Generate(csos.Count);
+            var cso = csos[csoIndex-1];
+            return cso;
         }
     }
 }
