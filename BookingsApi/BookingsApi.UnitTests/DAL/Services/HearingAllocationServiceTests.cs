@@ -29,13 +29,27 @@ namespace BookingsApi.UnitTests.DAL.Services
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;
             _context = new BookingsDbContext(contextOptions);
             _service = new HearingAllocationService(_context);
-            SeedData();
+            SeedHearing();
         }
-        
+
         [OneTimeTearDown]
         public void FinalCleanUp()
         {
             _context.Database.EnsureDeleted();
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            SeedJusticeUsers();
+        }
+        
+        [TearDown]
+        public async Task TearDown()
+        {
+            _seededJusticeUsers.Clear();
+            _context.JusticeUsers.RemoveRange(_context.Set<JusticeUser>().ToList());
+            await _context.SaveChangesAsync();
         }
 
         [Test]
@@ -62,7 +76,6 @@ namespace BookingsApi.UnitTests.DAL.Services
             {
                 for (var i = 1; i <= 7; i++)
                 {
-                    // TODO clear these down between tests
                     justiceUser.VhoWorkHours.Add(new VhoWorkHours
                     {
                         DayOfWeekId = i, 
@@ -81,25 +94,104 @@ namespace BookingsApi.UnitTests.DAL.Services
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
         
-        // [Test]
-        // public async Task Should_fail_when_no_csos_available_due_to_non_availability_hours_coinciding()
-        // {
-        //     // Arrange
-        //     var hearingId = _hearing.Id;
-        //
-        //     // Act
-        //     var action = async() => await _service.AllocateCso(hearingId);
-        //     
-        //     // Assert
-        //     action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate, no CSOs available");
-        // }
+        // TODO need to test that it doesn't try to assign to a non-CSO
+        
+        [Test]
+        public async Task Should_fail_when_no_csos_available_due_to_non_availability_hours_coinciding()
+        {
+            // Arrange
+            var hearingId = _hearing.Id;
+            SetHearingTime(_hearing, 15, 0, 0);
+        
+            foreach (var justiceUser in _seededJusticeUsers)
+            {
+                for (var i = 1; i <= 7; i++)
+                {
+                    justiceUser.VhoWorkHours.Add(new VhoWorkHours
+                    {
+                        DayOfWeekId = i, 
+                        StartTime = new TimeSpan(8, 0, 0), 
+                        EndTime = new TimeSpan(17, 0, 0)
+                    });
+                }
+                
+                justiceUser.VhoNonAvailability.Add(new VhoNonAvailability
+                {
+                    StartTime = new DateTime(_hearing.ScheduledDateTime.Year, _hearing.ScheduledDateTime.Month, _hearing.ScheduledDateTime.Day, 13, 0 ,0),
+                    EndTime = new DateTime(_hearing.ScheduledDateTime.Year, _hearing.ScheduledDateTime.Month, _hearing.ScheduledDateTime.Day, 17, 0 ,0)
+                });
+            }
+            
+            // Act
+            var action = async() => await _service.AllocateCso(hearingId);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
+        }
 
-        //
-        // [Test]
-        // public async Task Should_allocate_successfully_when_one_cso_available()
-        // {
-        //     
-        // }
+        [Test]
+        public async Task Should_allocate_successfully_when_one_cso_available_due_to_work_hours()
+        {
+            // Arrange
+            var hearingId = _hearing.Id;
+            SetHearingTime(_hearing, 15, 0, 0);
+
+            var availableCso = _seededJusticeUsers.First();
+            for (var i = 1; i <= 7; i++)
+            {
+                availableCso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            
+            // Act
+            var result = await _service.AllocateCso(hearingId);
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(availableCso.Id);
+        }
+        
+        [Test]
+        public async Task Should_allocate_successfully_when_one_cso_available_due_to_non_availabilities()
+        {
+            // Arrange
+            var hearingId = _hearing.Id;
+            SetHearingTime(_hearing, 15, 0, 0);
+
+            foreach (var justiceUser in _seededJusticeUsers)
+            {
+                for (var i = 1; i <= 7; i++)
+                {
+                    justiceUser.VhoWorkHours.Add(new VhoWorkHours
+                    {
+                        DayOfWeekId = i, 
+                        StartTime = new TimeSpan(8, 0, 0), 
+                        EndTime = new TimeSpan(17, 0, 0)
+                    });
+                }
+                
+                justiceUser.VhoNonAvailability.Add(new VhoNonAvailability
+                {
+                    StartTime = new DateTime(_hearing.ScheduledDateTime.Year, _hearing.ScheduledDateTime.Month, _hearing.ScheduledDateTime.Day, 13, 0 ,0),
+                    EndTime = new DateTime(_hearing.ScheduledDateTime.Year, _hearing.ScheduledDateTime.Month, _hearing.ScheduledDateTime.Day, 17, 0 ,0)
+                });
+            }
+
+            var availableCso = _seededJusticeUsers.First();
+            availableCso.VhoNonAvailability.Clear();
+            
+            // Act
+            var result = await _service.AllocateCso(hearingId);
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(availableCso.Id);
+        }
+        
         //
         // [Test]
         // public async Task Should_allocate_successfully_when_multiple_csos_available_and_one_with_no_allocations()
@@ -224,6 +316,9 @@ namespace BookingsApi.UnitTests.DAL.Services
 
             var workHours = new List<VhoWorkHours>();
             justiceUser.SetProtected(nameof(justiceUser.VhoWorkHours), workHours);
+
+            var nonAvailabilities = new List<VhoNonAvailability>();
+            justiceUser.SetProtected(nameof(justiceUser.VhoNonAvailability), nonAvailabilities);
 
             _context.JusticeUsers.Add(justiceUser);
             _context.SaveChanges();
