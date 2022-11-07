@@ -108,5 +108,20 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             return hearing;
         }
+        
+        protected static VideoHearing GetHearing(string caseNumber)
+        {
+            var hearing = new VideoHearingBuilder().Build();
+
+            if (!caseNumber.IsNullOrEmpty())
+            {
+                hearing.AddCase(caseNumber, "Case name", true);
+            }
+
+            hearing.AddEndpoints(new List<Endpoint>
+                { new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null) });
+
+            return hearing;
+        }
     }
 }
