@@ -98,8 +98,6 @@ parameters:
       # Feature Flags
       - name: FeatureFlags:StaffMemberFeature
         value: $(StaffMemberFeature)
-      - name: FeatureFlags:EJudFeature
-        value: $(EJudFeature)
   
 variables:
   - group: vh-domains-and-urls

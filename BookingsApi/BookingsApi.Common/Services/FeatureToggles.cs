@@ -10,6 +10,7 @@ namespace BookingsApi.Common.Services
     {
         public bool AdminSearchToggle();
         public bool ReferenceDataToggle();
+        public bool EJudFeature();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -19,6 +20,7 @@ namespace BookingsApi.Common.Services
         private const string LdUser = "vh-booking-api";
         private const string AdminSearchToggleKey = "admin_search";
         private const string ReferenceDataToggleKey = "reference-data";
+        private const string EJudFeatureKey = "ejud-feature";
         public FeatureToggles(string sdkKey)
         {
             var config = LaunchDarkly.Sdk.Server.Configuration.Builder(sdkKey)
@@ -32,6 +34,7 @@ namespace BookingsApi.Common.Services
 
         public bool AdminSearchToggle() => _ldClient.BoolVariation(AdminSearchToggleKey, _user);
         public bool ReferenceDataToggle() => _ldClient.BoolVariation(ReferenceDataToggleKey, _user);
+        public bool EJudFeature() => _ldClient.BoolVariation(EJudFeatureKey, _user);
     }
 }
  
