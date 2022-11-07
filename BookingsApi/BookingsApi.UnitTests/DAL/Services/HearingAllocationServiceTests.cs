@@ -64,12 +64,15 @@ namespace BookingsApi.UnitTests.DAL.Services
             action.Should().Throw<ArgumentException>().And.Message.Should().Be($"Hearing {hearingId} not found");
         }
         
-        [Test]
-        public async Task Should_fail_when_no_csos_available_due_to_work_hours_not_coinciding()
+        [TestCase("08:00", "10:00")]
+        [TestCase("12:00", "15:30")]
+        [TestCase("15:30", "18:00")]
+        [TestCase("18:00", "20:00")]
+        public async Task Should_fail_when_no_csos_available_due_to_work_hours_not_coinciding(string workHourStartTime, string workHourEndTime)
         {
             // Arrange
             var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime);
+            var hearing = CreateHearing(hearingScheduledDateTime, duration: 60);
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -79,8 +82,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                     justiceUser.VhoWorkHours.Add(new VhoWorkHours
                     {
                         DayOfWeekId = i, 
-                        StartTime = new TimeSpan(8, 0, 0), 
-                        EndTime = new TimeSpan(10, 0, 0)
+                        StartTime = TimeSpan.Parse(workHourStartTime), 
+                        EndTime = TimeSpan.Parse(workHourEndTime)
                     });
                 }
             }
@@ -93,13 +96,16 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
         }
- 
-        [Test]
-        public async Task Should_fail_when_no_csos_available_due_to_non_availability_hours_coinciding()
+
+        [TestCase("08:00", "10:00")]
+        [TestCase("12:00", "15:30")]
+        [TestCase("15:30", "18:00")]
+        [TestCase("18:00", "20:00")]
+        public async Task Should_fail_when_no_csos_available_due_to_non_availability_hours_coinciding(string nonAvailabilityStartTime, string nonAvailabilityEndTime)
         {
             // Arrange
             var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime);
+            var hearing = CreateHearing(hearingScheduledDateTime, duration: 60);
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -116,8 +122,10 @@ namespace BookingsApi.UnitTests.DAL.Services
                 
                 justiceUser.VhoNonAvailability.Add(new VhoNonAvailability
                 {
-                    StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 13, 0 ,0),
-                    EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 17, 0 ,0)
+                    StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day)
+                        .Add(TimeSpan.Parse(nonAvailabilityStartTime)),
+                    EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day)
+                        .Add(TimeSpan.Parse(nonAvailabilityEndTime))
                 });
             }
             
@@ -806,9 +814,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             _context.SaveChanges();
         }
 
-        private VideoHearing CreateHearing(DateTime scheduledDateTime)
+        private VideoHearing CreateHearing(DateTime scheduledDateTime, int duration = 60)
         {
-            var duration = 80;
             var hearingRoomName = "Room03";
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
