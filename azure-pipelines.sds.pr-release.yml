@@ -144,12 +144,15 @@ stages:
         - job: PublishAcceptanceTests
           displayName: Publish Acceptance Tests 
           variables:
-            projectPath: BookingsApi/BookingsApi
+            projectPath: "$(app_path)/$(app_path)"
           steps:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
+              netVersion: 6.x
               coreProjectPath: $(projectPath)
               nugetProjectPath: $(projectPath)
+              nugetConfigPath: $(app_path)
+              useNugetConfig: true
           
 #####################################################
 # Run Entity Framework Dev. #########################
@@ -246,6 +249,7 @@ stages:
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: AcceptanceTestsDev
           pool: VH Self Hosted
+          dependsOn: aks_push
           displayName: Acceptance Tests Dev
           steps:
           - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
