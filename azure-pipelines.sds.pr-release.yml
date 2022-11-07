@@ -127,7 +127,7 @@ stages:
               outputPath: $(Build.StagingDirectory)
               contextName: ${{ variables.efContextName }}
               workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-              migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
+              #migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
               projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
