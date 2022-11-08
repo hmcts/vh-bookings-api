@@ -27,7 +27,6 @@ using NUnit.Framework;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 using BookingsApi.DAL.Services;
-using BookingsApi.Services;
 using FluentAssertions.Common;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController

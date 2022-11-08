@@ -1,24 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac.Extras.Moq;
-using BookingsApi.Common.Exceptions;
-using BookingsApi.Common.Services;
-using BookingsApi.Contract.Configuration;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using BookingsApi.Services;
-using Castle.Core.Internal;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Moq;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
@@ -26,10 +15,8 @@ namespace BookingsApi.UnitTests.DAL.Services
 {
     public class HearingServiceTests
     {
-        private AutoMock _mocker;
         private HearingService _service;
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
-        private string _databaseConnectionString;
         private BookingsDbContext _context;
         private VideoHearing _hearing;
         

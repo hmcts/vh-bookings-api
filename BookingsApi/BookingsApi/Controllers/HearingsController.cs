@@ -717,7 +717,7 @@ namespace BookingsApi.Controllers
             return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
         }
 
-        private List<Case> MapCase(List<CaseRequest> caseRequestList)
+        private static List<Case> MapCase(List<CaseRequest> caseRequestList)
         {
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
@@ -759,13 +759,13 @@ namespace BookingsApi.Controllers
             var results = await _hearingService.GetUnallocatedHearings();
 
             if (results.Count <= 0)
-                return NotFound("could not find any unallocated hearings");
+                _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
             var hearingMapper = new HearingToDetailsResponseMapper();
             var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
             return Ok(response);
         }
 
-        private void SanitiseRequest(BookNewHearingRequest request)
+        private static void SanitiseRequest(BookNewHearingRequest request)
         {
             foreach (var participant in request.Participants)
             {

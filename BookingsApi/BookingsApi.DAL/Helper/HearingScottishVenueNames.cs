@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BookingsApi.Common.Const;
+namespace BookingsApi.DAL.Helper;
 
 public static class HearingScottishVenueNames
 {

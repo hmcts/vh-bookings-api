@@ -71,13 +71,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             result.Should().NotBeNull();
 
-            var objectResult = (NotFoundObjectResult)result;
+            var objectResult = (OkObjectResult)result;
 
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-            var response = (string)objectResult.Value;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var response = (List<HearingDetailsResponse>)objectResult.Value;
 
             response.Should().NotBeNull();
-            response.Should().Be("could not find any unallocated hearings");
+            response.Count.Should().Be(0);
 
 
             HearingServiceMock.Verify(
