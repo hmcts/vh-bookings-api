@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
@@ -25,6 +26,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         private HearingType _hearingType;
         private HearingVenue _hearingVenue;
         private Mock<IRandomNumberGenerator> _randomNumberGenerator;
+        private AllocateCsoConfiguration _configuration;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -33,7 +35,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;
             _context = new BookingsDbContext(contextOptions);
             _randomNumberGenerator = new Mock<IRandomNumberGenerator>();
-            _service = new HearingAllocationService(_context, _randomNumberGenerator.Object);
+            _configuration = new AllocateCsoConfiguration();
+            _service = new HearingAllocationService(_context, _randomNumberGenerator.Object, _configuration);
             SeedRefData();
         }
 
@@ -51,6 +54,271 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
         }
 
+        #region ACs
+        [Test]
+        public async Task Should_allocate_successfully()
+        {
+            // Arrange
+            var hearings = new List<VideoHearing>
+            {
+                CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0), duration: 120),
+                CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(30), duration: 150),
+                CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 420),
+                CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(0), duration: 90)
+            };
+            
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });   
+            }
+
+            foreach (var hearing in hearings)
+            {
+                // Act
+                var result = await _service.AllocateCso(hearing.Id);
+                
+                // Assert
+                result.Should().NotBeNull();
+                result.Id.Should().Be(cso.Id);
+            }
+        }
+        
+        [Test]
+        public async Task Should_fail_when_cso_has_no_work_hours()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            cso.VhoWorkHours.Clear();
+
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var action = async() => await _service.AllocateCso(hearing.Id);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+
+        [Test]
+        public async Task Should_fail_when_cso_is_already_allocated_to_3_concurrent_hearings()
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0), duration: 120);
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(40), duration: 120);
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 120);
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(40), duration: 120);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });   
+            }
+            AllocateCsoToHearing(cso.Id, hearing1.Id);
+            AllocateCsoToHearing(cso.Id, hearing2.Id);
+            AllocateCsoToHearing(cso.Id, hearing3.Id);
+
+            // Act
+            var action = async() => await _service.AllocateCso(hearing4.Id);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing4.Id}, no CSOs available");
+        }
+
+        [TestCase("14:31")]
+        [TestCase("15:29")]
+        public async Task Should_fail_when_hearing_start_time_is_less_than_30_minutes_of_existing_allocation(string hearingStartTime)
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
+            var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime);
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(hearingStartTimeTimespan.Hours).AddMinutes(hearingStartTimeTimespan.Minutes));
+            
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });   
+            }
+            AllocateCsoToHearing(cso.Id, hearing1.Id);
+            
+            // Act
+            var action = async() => await _service.AllocateCso(hearing2.Id);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing2.Id}, no CSOs available");
+        }
+
+        [Test]
+        public async Task Should_allocate_successfully_to_cso_with_fewest_hearings_allocated()
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+            var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45));
+            var hearing7 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45));
+            
+            var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso1.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso1.Id, hearing1.Id);
+            AllocateCsoToHearing(cso1.Id, hearing4.Id);
+            AllocateCsoToHearing(cso1.Id, hearing6.Id);
+            
+            var cso2 = SeedJusticeUser("user2@email.com", "User", "2");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso2.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso2.Id, hearing2.Id);
+            AllocateCsoToHearing(cso2.Id, hearing5.Id);
+            
+            var cso3 = SeedJusticeUser("user3@email.com", "User", "3");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso3.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso3.Id, hearing3.Id);
+            
+            // Act
+            var result = await _service.AllocateCso(hearing7.Id);
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(cso3.Id);
+        }
+        
+        [TestCase(1)]
+        [TestCase(2)]
+        public async Task Should_allocate_randomly_when_multiple_csos_have_same_number_of_fewest_hearings(int generatedRandomNumber)
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+
+            var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso1.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso1.Id, hearing1.Id);
+            AllocateCsoToHearing(cso1.Id, hearing4.Id);
+
+            var cso2 = SeedJusticeUser("user2@email.com", "User", "2");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso2.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso2.Id, hearing2.Id);
+
+            var cso3 = SeedJusticeUser("user3@email.com", "User", "3");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso3.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso3.Id, hearing3.Id);
+            
+            var allocationCandidates = new List<Guid> { cso2.Id, cso3.Id };
+            _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
+            
+            // Act
+            var result = await _service.AllocateCso(hearing4.Id);
+            
+            // Assert
+            result.Should().NotBeNull();
+            _randomNumberGenerator.Verify(c => c.Generate(1, allocationCandidates.Count), Times.AtLeastOnce);
+            Assert.That(allocationCandidates.Contains(result.Id));
+        }
+
+        [Test]
+        public async Task Should_allocate_successfully_when_hearing_ends_after_cso_work_hours_and_setting_is_enabled()
+        {
+            // Arrange
+            // Act
+            // Assert
+        }
+        
+        [Test]
+        public async Task Should_fail_when_hearing_ends_after_cso_work_hours_and_setting_is_disabled()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var action = async() => await _service.AllocateCso(hearing.Id);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+        #endregion ACs
+        
+        #region Diagram and extra
         [Test]
         public void Should_fail_when_hearing_does_not_exist()
         {
@@ -132,6 +400,32 @@ namespace BookingsApi.UnitTests.DAL.Services
             
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+
+        [Test]
+        public async Task Should_fail_with_unsupported_error_when_hearing_spans_multiple_days()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(22).AddMinutes(0), 240);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+        
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var action = async() => await _service.AllocateCso(hearing.Id);
+            
+            // Assert
+            action.Should().Throw<NotSupportedException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
         }
 
         [Test]
@@ -704,7 +998,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
         }
-        
+        #endregion Diagram and extra
+   
         /*
          * Questions and testing improvements
          *
