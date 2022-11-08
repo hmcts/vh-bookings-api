@@ -33,7 +33,10 @@ namespace BookingsApi.DAL.Services
                 throw new ArgumentException($"Hearing {hearingId} not found");   
             }
 
-            var availableCsos = GetAvailableCsos(hearing.ScheduledDateTime);
+            var hearingStartTime = hearing.ScheduledDateTime;
+            var hearingEndTime = hearing.ScheduledDateTime.AddMinutes(hearing.ScheduledDuration);
+            
+            var availableCsos = GetAvailableCsos(hearingStartTime, hearingEndTime);
 
             if (!availableCsos.Any())
             {
@@ -104,29 +107,39 @@ namespace BookingsApi.DAL.Services
             throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
 
-        private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingScheduledDatetime)
+        private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
         {
-            var hearingTime = hearingScheduledDatetime.TimeOfDay;
-            
             var availableCsos = new List<JusticeUser>();
 
             foreach (var justiceUser in _context.JusticeUsers.Where(u => u.UserRoleId == (int)UserRoleId.Vho).ToList())
             {
-                var workHoursFallingOnThisDay = justiceUser.VhoWorkHours.FirstOrDefault(h => DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingScheduledDatetime.DayOfWeek);
+                var workHoursFallingOnThisDay = justiceUser.VhoWorkHours
+                    .FirstOrDefault(h => 
+                        DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingStartTime.DayOfWeek); // Note we are assuming here that a hearing will not span multiple days
                 if (workHoursFallingOnThisDay == null)
                 {
                     continue;
                 }
 
-                if (justiceUser.VhoNonAvailability.Any(na => hearingScheduledDatetime > na.StartTime && hearingScheduledDatetime < na.EndTime))
+                // eg if the user is unavailable from 15:30 - 18:00
+                // and the hearing is scheduled from 15:00 - 16:00
+                // then they are not available for the entire hearing
+                
+                if (justiceUser.VhoNonAvailability.Any(na => 
+                        (na.StartTime <= hearingStartTime && na.EndTime >= hearingStartTime) ||
+                        (na.StartTime <= hearingEndTime && na.StartTime >= hearingStartTime)))
                 {
                     continue;
                 }
+
+                // eg if the user works from 15:30 - 18:00
+                // and the hearing is scheduled from 15:00 - 16:00
+                // then they are not available for the entire hearing
                 
                 var workHourStartTime = workHoursFallingOnThisDay.StartTime;
                 var workHourEndTime = workHoursFallingOnThisDay.EndTime;
 
-                if (hearingTime > workHourStartTime && hearingTime < workHourEndTime)
+                if (workHourStartTime <= hearingStartTime.TimeOfDay && workHourEndTime >= hearingEndTime.TimeOfDay)
                 {
                     availableCsos.Add(justiceUser);
                 }
