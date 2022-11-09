@@ -111,16 +111,12 @@ namespace BookingsApi.DAL.Services
             {
                 var workHoursFallingOnThisDay = justiceUser.VhoWorkHours
                     .FirstOrDefault(h => 
-                        DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingStartTime.DayOfWeek); // Note we are assuming here that a hearing will not span multiple days
+                        DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingStartTime.DayOfWeek);
                 if (workHoursFallingOnThisDay == null)
                 {
                     continue;
                 }
 
-                // eg if the user is unavailable from 15:30 - 18:00
-                // and the hearing is scheduled from 15:00 - 16:00
-                // then they are not available for the entire hearing
-                
                 if (justiceUser.VhoNonAvailability.Any(na => 
                         (na.StartTime <= hearingStartTime && na.EndTime >= hearingStartTime) ||
                         (na.StartTime <= hearingEndTime && na.StartTime >= hearingStartTime)))
@@ -128,53 +124,19 @@ namespace BookingsApi.DAL.Services
                     continue;
                 }
 
-                // If the hearing is less than 30 minutes of another allocation, we cannot allocate to that cso
-                var allocations = _context.Allocations
-                    .Where(a => a.JusticeUserId == justiceUser.Id)
-                    .ToList();
+                var allocations = justiceUser.Allocations ?? new List<Allocation>();
                 
                 if (allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < _configuration.MinimumGapBetweenHearingsInMinutes))
                 {
                     continue;
                 }
-                
-                // Cso can have a maximum of 3 concurrent hearings
-                var hearing = new DateRange(hearingStartTime, hearingEndTime);
-                var concurrentAllocations = new List<DateRange>();
-                var index = 0;
-                var allocationsToCheck = allocations
-                    .Select(a => new DateRange(a.Hearing.ScheduledDateTime, a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration)))
-                    .Union(new List<DateRange>{ hearing })
-                    .OrderBy(a => a.StartDate)
-                    .ToList();
-                foreach (var allocation in allocationsToCheck)
-                {
-                    if (index > 0)
-                    {
-                        var previousAllocation = allocationsToCheck[index - 1];
-                        var isConcurrent = DatesAreInRange(allocation, previousAllocation);
-                        if (isConcurrent)
-                        {
-                            concurrentAllocations.Add(allocation);
-                            if (!concurrentAllocations.Contains(previousAllocation))
-                            {
-                                concurrentAllocations.Add(previousAllocation);
-                            }
-                        }
-                    }
-                    
-                    index++;
-                }
 
-                if (concurrentAllocations.Count > 3)
+                var concurrentAllocations = GetConcurrentAllocations(hearingStartTime, hearingEndTime, allocations);
+                if (concurrentAllocations.Count > _configuration.MaximumConcurrentHearings)
                 {
                     continue;
                 }
-                
-                // eg if the user works from 15:30 - 18:00
-                // and the hearing is scheduled from 15:00 - 16:00
-                // then they are not available for the entire hearing
-                
+
                 var workHourStartTime = workHoursFallingOnThisDay.StartTime;
                 var workHourEndTime = workHoursFallingOnThisDay.EndTime;
 
@@ -186,6 +148,39 @@ namespace BookingsApi.DAL.Services
             }
 
             return availableCsos;
+        }
+
+        private IList<DateRange> GetConcurrentAllocations(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
+        {
+            var hearing = new DateRange(hearingStartTime, hearingEndTime);
+            var concurrentAllocations = new List<DateRange>();
+            var index = 0;
+            var allocationsToCheck = allocations
+                .Select(a => new DateRange(a.Hearing.ScheduledDateTime, a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration)))
+                .Union(new List<DateRange>{ hearing })
+                .OrderBy(a => a.StartDate)
+                .ToList();
+            
+            foreach (var allocation in allocationsToCheck)
+            {
+                if (index > 0)
+                {
+                    var previousAllocation = allocationsToCheck[index - 1];
+                    var isConcurrent = DatesAreInRange(allocation, previousAllocation);
+                    if (isConcurrent)
+                    {
+                        concurrentAllocations.Add(allocation);
+                        if (!concurrentAllocations.Contains(previousAllocation))
+                        {
+                            concurrentAllocations.Add(previousAllocation);
+                        }
+                    }
+                }
+                    
+                index++;
+            }
+
+            return concurrentAllocations;
         }
         
         private System.DayOfWeek DayOfWeekIdToSystemDayOfWeek(int dayOfWeekId)
