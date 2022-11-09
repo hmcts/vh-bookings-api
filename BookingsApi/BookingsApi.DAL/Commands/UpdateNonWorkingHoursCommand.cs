@@ -1,18 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.Domain;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateNonWorkingHoursCommand : ICommand
     {
+        public Guid JusticeUserId { get; set; }
         public IList<NonWorkingHours> Hours { get; set; }
 
-        public UpdateNonWorkingHoursCommand(IList<NonWorkingHours> hours)
+        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkingHours> hours)
         {
+            JusticeUserId = justiceUserId;
             Hours = hours;
         }
     }
@@ -32,15 +36,21 @@ namespace BookingsApi.DAL.Commands
             {
                 var nonWorkingHour = _context.VhoNonAvailabilities.SingleOrDefault(a => a.Id == hour.Id);
 
-                if (nonWorkingHour == null)
+                var isNewNonWorkingHourEntry = nonWorkingHour == null;
+
+                if (isNewNonWorkingHourEntry)
                 {
-                    throw new NonWorkingHoursNotFoundException(hour.Id);
+                    nonWorkingHour = new VhoNonAvailability();
+                    nonWorkingHour.JusticeUserId = command.JusticeUserId;
                 }
                 
                 nonWorkingHour.StartTime = hour.StartTime;
                 nonWorkingHour.EndTime = hour.EndTime;
 
-                _context.Update(nonWorkingHour);
+                if (isNewNonWorkingHourEntry)
+                    _context.Add(nonWorkingHour);
+                else
+                    _context.Update(nonWorkingHour);
             }
 
             await _context.SaveChangesAsync();
