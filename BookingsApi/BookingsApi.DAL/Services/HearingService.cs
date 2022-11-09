@@ -208,14 +208,12 @@ namespace BookingsApi.DAL.Services
         
         public async Task<List<VideoHearing>> GetUnallocatedHearings()
         {
-            var startDate = DateTime.Today; 
-            var endDate = DateTime.Today.AddDays(30);    // 30 days is 1 month.
+            var startDate = DateTime.Today;  
 
             var hearings =  _context.VideoHearings.Where(x =>
                 (x.Status == Domain.Enumerations.BookingStatus.Created || x.Status == Domain.Enumerations.BookingStatus.Booked)
                 && x.Status != Domain.Enumerations.BookingStatus.Cancelled
                 && x.ScheduledDateTime >= startDate
-                && x.ScheduledDateTime < endDate
                 && x.CaseTypeId != 3); // Generic Case Type
 
             var unAllocatedHearings =   
