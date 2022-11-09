@@ -58,12 +58,23 @@ namespace BookingsApi.DAL.Services
             {
                 throw new NotSupportedException($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
             }
-            
+
+            var cso = SelectCso(hearingStartTime, hearingEndTime);
+            if (cso == null)
+            {
+                throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
+            }
+
+            return cso;
+        }
+
+        private JusticeUser SelectCso(DateTime hearingStartTime, DateTime hearingEndTime)
+        {
             var availableCsos = GetAvailableCsos(hearingStartTime, hearingEndTime);
 
             if (!availableCsos.Any())
             {
-                throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
+                return null;
             }
 
             if (availableCsos.Count() == 1)
@@ -127,7 +138,7 @@ namespace BookingsApi.DAL.Services
                 return AllocateRandomly(csosWithTwoAllocations);
             }
 
-            throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
+            return null;
         }
 
         private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
