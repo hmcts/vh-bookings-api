@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Configuration;
+using BookingsApi.Common.Helpers;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
@@ -15,18 +16,6 @@ namespace BookingsApi.DAL.Services
         Task<JusticeUser> AllocateCso(Guid hearingId);
     }
 
-    public class DateRange
-    {
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-
-        public DateRange(DateTime startDate, DateTime endDate)
-        {
-            StartDate = startDate;
-            EndDate = endDate;
-        }
-    }
-    
     public class HearingAllocationService : IHearingAllocationService
     {
         private readonly BookingsDbContext _context;
@@ -92,12 +81,13 @@ namespace BookingsApi.DAL.Services
             
             var lowestAllocationCount = csos.Min(c => c.AllocationCount);
             var csosWithFewestAllocations = csos.Where(c => c.AllocationCount == lowestAllocationCount).ToList();
-            return csosWithFewestAllocations.Count switch
+
+            if (csosWithFewestAllocations.Count == 1)
             {
-                1 => csosWithFewestAllocations.SingleOrDefault().Cso,
-                > 1 => AllocateRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList()),
-                _ => null
-            };
+                return csosWithFewestAllocations.Single().Cso;
+            }
+
+            return AllocateRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList());
         }
 
         private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
@@ -110,19 +100,24 @@ namespace BookingsApi.DAL.Services
             foreach (var justiceUser in users)
             {
                 var workHoursFallingOnThisDay = justiceUser.VhoWorkHours
-                    .FirstOrDefault(h => 
-                        DayOfWeekIdToSystemDayOfWeek(h.DayOfWeekId) == hearingStartTime.DayOfWeek);
+                    .FirstOrDefault(h => h.SystemDayOfWeek == hearingStartTime.DayOfWeek);
                 if (workHoursFallingOnThisDay == null)
                 {
                     continue;
                 }
 
                 if (justiceUser.VhoNonAvailability.Any(na => 
-                        (na.StartTime <= hearingStartTime && na.EndTime >= hearingStartTime) ||
-                        (na.StartTime <= hearingEndTime && na.StartTime >= hearingStartTime)))
+                        new DateRange(na.StartTime, na.EndTime).IsInRange(hearingStartTime, hearingEndTime)))
                 {
                     continue;
                 }
+                
+                // if (justiceUser.VhoNonAvailability.Any(na => 
+                //         (na.StartTime <= hearingStartTime && na.EndTime >= hearingStartTime) ||
+                //         (na.StartTime <= hearingEndTime && na.StartTime >= hearingStartTime)))
+                // {
+                //     continue;
+                // }
 
                 var allocations = justiceUser.Allocations ?? new List<Allocation>();
                 
@@ -166,7 +161,7 @@ namespace BookingsApi.DAL.Services
                 if (index > 0)
                 {
                     var previousAllocation = allocationsToCheck[index - 1];
-                    var isConcurrent = DatesAreInRange(allocation, previousAllocation);
+                    var isConcurrent = allocation.IsInRange(previousAllocation);
                     if (isConcurrent)
                     {
                         concurrentAllocations.Add(allocation);
@@ -182,27 +177,12 @@ namespace BookingsApi.DAL.Services
 
             return concurrentAllocations;
         }
-        
-        private System.DayOfWeek DayOfWeekIdToSystemDayOfWeek(int dayOfWeekId)
-        {
-            if (dayOfWeekId == 7)
-            {
-                return System.DayOfWeek.Sunday;
-            }
-
-            return (System.DayOfWeek)dayOfWeekId;
-        }
 
         private JusticeUser AllocateRandomly(IList<JusticeUser> csos)
         {
             var csoIndex = _randomNumberGenerator.Generate(1, csos.Count);
             var cso = csos[csoIndex-1];
             return cso;
-        }
-
-        private bool DatesAreInRange(DateRange dateRange1, DateRange dateRange2)
-        {
-            return dateRange1.StartDate <= dateRange2.EndDate && dateRange2.StartDate <= dateRange1.EndDate;
         }
     }
 }
