@@ -111,13 +111,6 @@ namespace BookingsApi.DAL.Services
                 {
                     continue;
                 }
-                
-                // if (justiceUser.VhoNonAvailability.Any(na => 
-                //         (na.StartTime <= hearingStartTime && na.EndTime >= hearingStartTime) ||
-                //         (na.StartTime <= hearingEndTime && na.StartTime >= hearingStartTime)))
-                // {
-                //     continue;
-                // }
 
                 var allocations = justiceUser.Allocations ?? new List<Allocation>();
                 

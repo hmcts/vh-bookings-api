@@ -53,9 +53,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
         }
 
-        #region ACs
         [Test]
-        public async Task Should_allocate_successfully()
+        public async Task AllocateCso_Should_Allocate_Successfully()
         {
             // Arrange
             var hearings = new List<VideoHearing>
@@ -89,7 +88,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
         
         [Test]
-        public async Task Should_fail_when_cso_has_no_work_hours()
+        public async Task AllocateCso_Should_Fail_When_Cso_Has_No_Work_Hours()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
@@ -107,7 +106,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_fail_when_cso_is_already_allocated_to_maximum_number_of_concurrent_hearings()
+        public async Task AllocateCso_Should_Fail_When_Cso_Is_Already_Allocated_To_Maximum_Concurrent_Hearings()
         {
             // Arrange
             var configuration = GetDefaultSettings();
@@ -141,7 +140,7 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         [TestCase("14:31")]
         [TestCase("15:29")]
-        public async Task Should_fail_when_hearing_start_time_is_less_than_minimum_gap_of_existing_allocation(string hearingStartTime)
+        public async Task AllocateCso_Should_Fail_When_Time_Gap_Between_Hearings_Is_Less_Than_Minimum(string hearingStartTime)
         {
             // Arrange
             var configuration = GetDefaultSettings();
@@ -171,7 +170,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_allocate_successfully_to_cso_with_fewest_hearings_allocated()
+        public async Task AllocateCso_Should_Allocate_Successfully_To_Cso_With_Fewest_Hearings_Allocated()
         {
             // Arrange
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
@@ -231,7 +230,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         
         [TestCase(1)]
         [TestCase(2)]
-        public async Task Should_allocate_randomly_when_multiple_csos_have_same_number_of_fewest_hearings(int generatedRandomNumber)
+        public async Task AllocateCso_Should_Allocate_Randomly_When_Multiple_Csos_Have_Same_Number_Of_Fewest_Hearings(int generatedRandomNumber)
         {
             // Arrange
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
@@ -289,7 +288,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_fail_when_hearing_starts_before_cso_work_hours_start_time_and_setting_is_disabled()
+        public async Task AllocateCso_Should_Fail_When_Hearing_Starts_Before_Cso_Work_Hours_Start_Time_And_Setting_Is_Disabled()
         {
             // Arrange
             var configuration = GetDefaultSettings();
@@ -318,7 +317,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
         
         [Test]
-        public async Task Should_allocate_successfully_when_hearing_starts_after_cso_work_hours_start_time_and_setting_is_enabled()
+        public async Task AllocateCso_Should_Allocate_Successfully_When_Hearing_Starts_After_Cso_Work_Hours_Start_Time_And_Setting_Is_Enabled()
         {
             // Arrange
             var configuration = GetDefaultSettings();
@@ -348,7 +347,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
         
         [Test]
-        public async Task Should_fail_when_hearing_ends_after_cso_work_hours_and_setting_is_disabled()
+        public async Task AllocateCso_Should_Fail_When_Hearing_Ends_After_Cso_Work_Hours_And_Setting_Is_Disabled()
         {
             // Arrange
             var configuration = GetDefaultSettings();
@@ -377,7 +376,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
         
         [Test]
-        public async Task Should_allocate_successfully_when_hearing_ends_after_cso_work_hours_and_setting_is_enabled()
+        public async Task AllocateCso_Should_Allocate_Successfully_When_Hearing_Ends_After_Cso_Work_Hours_And_Setting_Is_Enabled()
         {
             // Arrange
             var configuration = GetDefaultSettings();
@@ -405,11 +404,9 @@ namespace BookingsApi.UnitTests.DAL.Services
             result.Should().NotBeNull();
             result.Id.Should().Be(cso.Id);
         }
-        #endregion ACs
-        
-        #region Diagram and extra
+
         [Test]
-        public void Should_fail_when_hearing_does_not_exist()
+        public void AllocateCso_Should_Fail_When_Hearing_Does_Not_Exist()
         {
             // Arrange
             var hearingId = Guid.NewGuid();
@@ -425,7 +422,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         [TestCase("12:00", "15:30")]
         [TestCase("15:30", "18:00")]
         [TestCase("18:00", "20:00")]
-        public async Task Should_fail_when_no_csos_available_due_to_work_hours_not_coinciding(string workHourStartTime, string workHourEndTime)
+        public async Task AllocateCso_Should_Fail_When_No_Csos_Available_Due_To_Work_Hours_Not_Coinciding(string workHourStartTime, string workHourEndTime)
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
@@ -455,7 +452,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         
         [TestCase("12:00", "15:30")]
         [TestCase("15:30", "18:00")]
-        public async Task Should_fail_when_no_csos_available_due_to_non_availability_hours_coinciding(string nonAvailabilityStartTime, string nonAvailabilityEndTime)
+        public async Task AllocateCso_Should_Fail_When_No_Csos_Available_Due_To_Non_Availability_Hours_Coinciding(string nonAvailabilityStartTime, string nonAvailabilityEndTime)
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
@@ -490,7 +487,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_fail_when_work_hour_start_and_end_times_are_null()
+        public async Task AllocateCso_Should_Fail_When_Work_Hour_Start_And_End_Times_Are_Null()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), 240);
@@ -516,7 +513,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_fail_with_unsupported_error_when_hearing_spans_multiple_days()
+        public async Task AllocateCso_Should_Fail_With_Unsupported_Error_When_Hearing_Spans_Multiple_Days()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(22).AddMinutes(0), 240);
@@ -542,7 +539,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_allocate_successfully_when_one_cso_available_due_to_work_hours()
+        public async Task AllocateCso_Should_Allocate_Successfully_When_One_Cso_Available_Due_To_Work_Hours()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
@@ -568,7 +565,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
         
         [Test]
-        public async Task Should_allocate_successfully_when_one_cso_available_due_to_non_availabilities()
+        public async Task AllocateCso_Should_Allocate_Successfully_When_One_Cso_Available_Due_To_Non_Availabilities()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
@@ -605,7 +602,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_ignore_non_availabilities_oustide_hearing_datetime()
+        public async Task AllocateCso_Should_Ignore_Non_Availabilities_Oustide_Hearing_Datetime()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
@@ -640,7 +637,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_target_cso_justice_users_only()
+        public async Task AllocateCso_Should_Target_Cso_Justice_Users_Only()
         {
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
@@ -689,7 +686,6 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
         }
-        #endregion Diagram and extra
 
         private IList<JusticeUser> SeedJusticeUsers()
         {
@@ -771,7 +767,6 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         private void AllocateCsoToHearing(Guid justiceUserId, Guid hearingId)
         {
-            // TODO can we move this to the Hearing domain model?
             _context.Allocations.Add(new Allocation
             {
                 HearingId = hearingId,
