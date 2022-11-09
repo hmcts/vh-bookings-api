@@ -208,7 +208,7 @@ namespace BookingsApi.DAL.Services
         
         public async Task<List<VideoHearing>> GetUnallocatedHearings()
         {
-            var startDate = DateTime.Today;  
+            var startDate = DateTime.UtcNow;  
 
             var hearings =  _context.VideoHearings.Where(x =>
                 (x.Status == Domain.Enumerations.BookingStatus.Created || x.Status == Domain.Enumerations.BookingStatus.Booked)
