@@ -243,13 +243,13 @@ namespace BookingsApi.DAL.Services
             HearingScottishVenueNames.EdinburghUpperTribunal,
         };
         
-        private void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
+        private static void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
         {
             participant1.AddLink(participant2.Id, linkType);
             participant2.AddLink(participant1.Id, linkType);
         }
 
-        private void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)
+        private static void UpdateOrganisationDetails(Person newPersonDetails, Participant participantToUpdate)
         {
             var newOrganisation = newPersonDetails.Organisation;
             var existingPerson = participantToUpdate.Person;

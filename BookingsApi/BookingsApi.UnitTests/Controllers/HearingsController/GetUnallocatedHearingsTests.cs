@@ -108,8 +108,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             return hearing;
         }
-        
-        protected static VideoHearing GetHearing(string caseNumber)
+
+        private new static VideoHearing GetHearing(string caseNumber)
         {
             var hearing = new VideoHearingBuilder().Build();
 
