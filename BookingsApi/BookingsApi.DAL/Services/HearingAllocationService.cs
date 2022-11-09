@@ -160,7 +160,7 @@ namespace BookingsApi.DAL.Services
                     .Where(a => a.JusticeUserId == justiceUser.Id)
                     .ToList();
                 
-                if (allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < 30))
+                if (allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < _configuration.MinimumGapBetweenHearingsInMinutes))
                 {
                     continue;
                 }
@@ -205,7 +205,8 @@ namespace BookingsApi.DAL.Services
                 var workHourStartTime = workHoursFallingOnThisDay.StartTime;
                 var workHourEndTime = workHoursFallingOnThisDay.EndTime;
 
-                if (workHourStartTime <= hearingStartTime.TimeOfDay && workHourEndTime >= hearingEndTime.TimeOfDay)
+                if ((workHourStartTime <= hearingStartTime.TimeOfDay || _configuration.AllowHearingToStartBeforeWorkStartTime) && 
+                    (workHourEndTime >= hearingEndTime.TimeOfDay || _configuration.AllowHearingToEndAfterWorkEndTime))
                 {
                     availableCsos.Add(justiceUser);
                 }

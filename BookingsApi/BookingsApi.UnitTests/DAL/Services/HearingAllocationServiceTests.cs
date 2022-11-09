@@ -26,7 +26,6 @@ namespace BookingsApi.UnitTests.DAL.Services
         private HearingType _hearingType;
         private HearingVenue _hearingVenue;
         private Mock<IRandomNumberGenerator> _randomNumberGenerator;
-        private AllocateCsoConfiguration _configuration;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -35,8 +34,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;
             _context = new BookingsDbContext(contextOptions);
             _randomNumberGenerator = new Mock<IRandomNumberGenerator>();
-            _configuration = new AllocateCsoConfiguration();
-            _service = new HearingAllocationService(_context, _randomNumberGenerator.Object, _configuration);
+            var configuration = GetDefaultSettings();
+            _service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
             SeedRefData();
         }
 
@@ -108,9 +107,12 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_fail_when_cso_is_already_allocated_to_3_concurrent_hearings()
+        public async Task Should_fail_when_cso_is_already_allocated_to_maximum_number_of_concurrent_hearings()
         {
             // Arrange
+            var configuration = GetDefaultSettings();
+            configuration.MaximumConcurrentHearings = 3;
+            var service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0), duration: 120);
             var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(40), duration: 120);
             var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 120);
@@ -131,7 +133,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateCsoToHearing(cso.Id, hearing3.Id);
 
             // Act
-            var action = async() => await _service.AllocateCso(hearing4.Id);
+            var action = async() => await service.AllocateCso(hearing4.Id);
             
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing4.Id}, no CSOs available");
@@ -139,9 +141,12 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         [TestCase("14:31")]
         [TestCase("15:29")]
-        public async Task Should_fail_when_hearing_start_time_is_less_than_30_minutes_of_existing_allocation(string hearingStartTime)
+        public async Task Should_fail_when_hearing_start_time_is_less_than_minimum_gap_of_existing_allocation(string hearingStartTime)
         {
             // Arrange
+            var configuration = GetDefaultSettings();
+            configuration.MinimumGapBetweenHearingsInMinutes = 30;
+            var service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
             var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime);
             var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(hearingStartTimeTimespan.Hours).AddMinutes(hearingStartTimeTimespan.Minutes));
@@ -159,7 +164,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateCsoToHearing(cso.Id, hearing1.Id);
             
             // Act
-            var action = async() => await _service.AllocateCso(hearing2.Id);
+            var action = async() => await service.AllocateCso(hearing2.Id);
             
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing2.Id}, no CSOs available");
@@ -284,17 +289,71 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task Should_allocate_successfully_when_hearing_ends_after_cso_work_hours_and_setting_is_enabled()
+        public async Task Should_fail_when_hearing_starts_before_cso_work_hours_start_time_and_setting_is_disabled()
         {
             // Arrange
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToStartBeforeWorkStartTime = false;
+            var service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            
             // Act
+            var action = async() => await service.AllocateCso(hearing.Id);
+            
             // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+        
+        [Test]
+        public async Task Should_allocate_successfully_when_hearing_starts_after_cso_work_hours_start_time_and_setting_is_enabled()
+        {
+            // Arrange
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToStartBeforeWorkStartTime = true;
+            var service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var result = await service.AllocateCso(hearing.Id);
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(cso.Id);
         }
         
         [Test]
         public async Task Should_fail_when_hearing_ends_after_cso_work_hours_and_setting_is_disabled()
         {
             // Arrange
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToEndAfterWorkEndTime = false;
+            var service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
 
             var cso = SeedJusticeUser("user1@email.com", "User", "1");
@@ -311,10 +370,40 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await _service.AllocateCso(hearing.Id);
+            var action = async() => await service.AllocateCso(hearing.Id);
             
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+        
+        [Test]
+        public async Task Should_allocate_successfully_when_hearing_ends_after_cso_work_hours_and_setting_is_enabled()
+        {
+            // Arrange
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToEndAfterWorkEndTime = true;
+            var service = new HearingAllocationService(_context, _randomNumberGenerator.Object, configuration);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var result = await service.AllocateCso(hearing.Id);
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(cso.Id);
         }
         #endregion ACs
         
@@ -394,6 +483,32 @@ namespace BookingsApi.UnitTests.DAL.Services
                         .Add(TimeSpan.Parse(nonAvailabilityEndTime))
                 });
             }
+            
+            // Act
+            var action = async() => await _service.AllocateCso(hearing.Id);
+            
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+
+        [Test]
+        public async Task Should_fail_when_work_hour_start_and_end_times_are_null()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), 240);
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = null, 
+                    EndTime = null
+                });
+            }
+        
+            await _context.SaveChangesAsync();
             
             // Act
             var action = async() => await _service.AllocateCso(hearing.Id);
@@ -1094,6 +1209,17 @@ namespace BookingsApi.UnitTests.DAL.Services
                 JusticeUserId = justiceUserId
             });
             _context.SaveChanges();
+        }
+
+        private AllocateCsoConfiguration GetDefaultSettings()
+        {
+            return new AllocateCsoConfiguration
+            {
+                AllowHearingToStartBeforeWorkStartTime = false,
+                AllowHearingToEndAfterWorkEndTime = false,
+                MinimumGapBetweenHearingsInMinutes = 30,
+                MaximumConcurrentHearings = 3
+            };
         }
     }
 }
