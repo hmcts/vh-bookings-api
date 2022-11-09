@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: VIH-9999-remove-json-replace
       endpoint: hmcts
       
 trigger: none
@@ -127,7 +127,7 @@ stages:
               outputPath: $(Build.StagingDirectory)
               contextName: ${{ variables.efContextName }}
               workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-              #migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
+              migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
               projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
@@ -144,7 +144,7 @@ stages:
         - job: PublishAcceptanceTests
           displayName: Publish Acceptance Tests 
           variables:
-            projectPath: "$(app_path)/$(app_path)"
+            projectPath: "$(app_path)/$(app_path).AcceptanceTests"
           steps:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
