@@ -90,6 +90,8 @@ namespace BookingsApi.Domain
             }
         }
 
+        public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
+
         public void CancelHearing()
         {
             Status = BookingStatus.Cancelled;

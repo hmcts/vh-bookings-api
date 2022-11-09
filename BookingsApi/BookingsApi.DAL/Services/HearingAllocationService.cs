@@ -41,7 +41,7 @@ namespace BookingsApi.DAL.Services
             }
 
             var hearingStartTime = hearing.ScheduledDateTime;
-            var hearingEndTime = hearing.ScheduledDateTime.AddMinutes(hearing.ScheduledDuration);
+            var hearingEndTime = hearing.ScheduledEndTime;
 
             if (hearingStartTime.Date != hearingEndTime.Date)
             {
@@ -151,7 +151,7 @@ namespace BookingsApi.DAL.Services
             var concurrentAllocations = new List<DateRange>();
             var index = 0;
             var allocationsToCheck = allocations
-                .Select(a => new DateRange(a.Hearing.ScheduledDateTime, a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration)))
+                .Select(a => new DateRange(a.Hearing.ScheduledDateTime, a.Hearing.ScheduledEndTime))
                 .Union(new List<DateRange>{ hearing })
                 .OrderBy(a => a.StartDate)
                 .ToList();

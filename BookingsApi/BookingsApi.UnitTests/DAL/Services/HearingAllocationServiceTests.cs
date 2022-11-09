@@ -428,8 +428,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_fail_when_no_csos_available_due_to_work_hours_not_coinciding(string workHourStartTime, string workHourEndTime)
         {
             // Arrange
-            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime, duration: 60);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -459,8 +458,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_fail_when_no_csos_available_due_to_non_availability_hours_coinciding(string nonAvailabilityStartTime, string nonAvailabilityEndTime)
         {
             // Arrange
-            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime, duration: 60);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -547,8 +545,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_successfully_when_one_cso_available_due_to_work_hours()
         {
             // Arrange
-            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
 
             var justiceUsers = SeedJusticeUsers();
             var availableCso = justiceUsers.First();
@@ -574,8 +571,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task Should_allocate_successfully_when_one_cso_available_due_to_non_availabilities()
         {
             // Arrange
-            var hearingScheduledDateTime = DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0);
-            var hearing = CreateHearing(hearingScheduledDateTime);
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
