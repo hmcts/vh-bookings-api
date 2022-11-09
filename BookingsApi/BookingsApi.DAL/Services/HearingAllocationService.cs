@@ -82,70 +82,32 @@ namespace BookingsApi.DAL.Services
                 return availableCsos.SingleOrDefault();
             }
 
-            var csosWithNoAllocations = new List<JusticeUser>();
-            var csosWithOneAllocation = new List<JusticeUser>();
-            var csosWithTwoAllocations = new List<JusticeUser>();
-
-            foreach (var cso in availableCsos)
-            {
-                var allocations = _context.Allocations
-                    .Where(a => a.JusticeUserId == cso.Id)
-                    .ToList();
-
-                if (!allocations.Any())
+            var csos = availableCsos
+                .Select(c => new
                 {
-                    csosWithNoAllocations.Add(cso);
-                }
-
-                if (allocations.Count == 1)
-                {
-                    csosWithOneAllocation.Add(cso);
-                }
-
-                if (allocations.Count == 2)
-                {
-                    csosWithTwoAllocations.Add(cso);
-                }
-            }
-
-            if (csosWithNoAllocations.Count == 1)
+                    Cso = c,
+                    AllocationCount = c.Allocations?.Count ?? 0
+                })
+                .ToList();
+            
+            var lowestAllocationCount = csos.Min(c => c.AllocationCount);
+            var csosWithFewestAllocations = csos.Where(c => c.AllocationCount == lowestAllocationCount).ToList();
+            return csosWithFewestAllocations.Count switch
             {
-                return csosWithNoAllocations.SingleOrDefault();
-            }
-
-            if (csosWithNoAllocations.Count > 1)
-            {
-                return AllocateRandomly(csosWithNoAllocations);
-            }
-
-            if (csosWithOneAllocation.Count == 1)
-            {
-                return csosWithOneAllocation.SingleOrDefault();
-            }
-
-            if (csosWithOneAllocation.Count > 1)
-            {
-                return AllocateRandomly(csosWithOneAllocation);
-            }
-
-            if (csosWithTwoAllocations.Count == 1)
-            {
-                return csosWithTwoAllocations.SingleOrDefault();
-            }
-
-            if (csosWithTwoAllocations.Count > 1)
-            {
-                return AllocateRandomly(csosWithTwoAllocations);
-            }
-
-            return null;
+                1 => csosWithFewestAllocations.SingleOrDefault().Cso,
+                > 1 => AllocateRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList()),
+                _ => null
+            };
         }
 
         private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
         {
             var availableCsos = new List<JusticeUser>();
 
-            foreach (var justiceUser in _context.JusticeUsers.Where(u => u.UserRoleId == (int)UserRoleId.Vho).ToList())
+            var users = _context.JusticeUsers.Where(u => u.UserRoleId == (int)UserRoleId.Vho)
+                .ToList();
+            
+            foreach (var justiceUser in users)
             {
                 var workHoursFallingOnThisDay = justiceUser.VhoWorkHours
                     .FirstOrDefault(h => 
