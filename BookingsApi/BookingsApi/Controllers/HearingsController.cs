@@ -48,6 +48,7 @@ namespace BookingsApi.Controllers
         private readonly IHearingService _hearingService;
         private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
+        private readonly IHearingAllocationService _hearingAllocationService;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IEventPublisher eventPublisher,
@@ -55,7 +56,8 @@ namespace BookingsApi.Controllers
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IFeatureToggles featureToggles,
-            ILogger logger)
+            ILogger logger,
+            IHearingAllocationService hearingAllocationService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -64,6 +66,7 @@ namespace BookingsApi.Controllers
             _hearingService = hearingService;
             _featureToggles = featureToggles;
             _logger = logger;
+            _hearingAllocationService = hearingAllocationService;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
@@ -628,6 +631,38 @@ namespace BookingsApi.Controllers
             };
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Automatically allocates a user to a hearing
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to allocate to</param>
+        /// <returns>Details of the allocated user</returns>
+        [HttpPost("{hearingId}/allocations/automatic")]
+        [OpenApiOperation("AllocateHearingAutomatically")]
+        [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
+        {
+            // TODO test this endpoint manually
+            
+            try
+            {
+                var justiceUser = await _hearingAllocationService.AllocateCso(hearingId);
+                
+                if (justiceUser == null)
+                    return NotFound();
+
+                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+
+                return Ok(justiceUserResponse);
+            }
+            catch (DomainRuleException e)
+            {
+                ModelState.AddDomainRuleErrors(e.ValidationFailures);
+                return BadRequest(ModelState);
+            }
         }
 
         private async Task<Hearing> GetHearingAsync(Guid hearingId)

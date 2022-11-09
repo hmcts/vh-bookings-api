@@ -7,6 +7,7 @@ using BookingsApi.Common.Helpers;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Services
@@ -37,13 +38,15 @@ namespace BookingsApi.DAL.Services
             var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
-                throw new ArgumentException($"Hearing {hearingId} not found");   
+                throw new DomainRuleException("HearingNotFound",
+                    $"Hearing {hearingId} not found");
             }
 
             var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
             if (allocations.Any())
             {
-                throw new InvalidOperationException($"Hearing {hearing.Id} has already been allocated");
+                throw new DomainRuleException("HearingAlreadyAllocated",
+                    $"Hearing {hearing.Id} has already been allocated");
             }
 
             var hearingStartTime = hearing.ScheduledDateTime;
@@ -51,13 +54,15 @@ namespace BookingsApi.DAL.Services
 
             if (hearingStartTime.Date != hearingEndTime.Date)
             {
-                throw new NotSupportedException($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
+                throw new DomainRuleException("AllocationNotSupported",
+                    $"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
             }
 
             var cso = SelectCso(hearingStartTime, hearingEndTime);
             if (cso == null)
             {
-                throw new InvalidOperationException($"Unable to allocate to hearing {hearingId}, no CSOs available");
+                throw new DomainRuleException("NoCsosAvailable",
+                    $"Unable to allocate to hearing {hearingId}, no CSOs available");
             }
 
             return cso;
