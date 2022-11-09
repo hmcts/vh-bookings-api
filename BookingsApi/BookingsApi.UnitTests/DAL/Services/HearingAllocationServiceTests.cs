@@ -237,6 +237,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
             var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
             var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
+            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
 
             var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -279,7 +280,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
             
             // Act
-            var result = await _service.AllocateCso(hearing4.Id);
+            var result = await _service.AllocateCso(hearing5.Id);
             
             // Assert
             result.Should().NotBeNull();
@@ -685,6 +686,31 @@ namespace BookingsApi.UnitTests.DAL.Services
 
             // Assert
             action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        }
+
+        [Test]
+        public async Task AllocateCso_Should_Fail_When_Hearing_Already_Allocated()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+
+            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateCsoToHearing(cso.Id, hearing.Id);
+
+            // Assert
+            var action = async () => await _service.AllocateCso(hearing.Id);
+
+            // Assert
+            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Hearing {hearing.Id} has already been allocated");
         }
 
         private IList<JusticeUser> SeedJusticeUsers()

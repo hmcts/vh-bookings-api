@@ -40,6 +40,12 @@ namespace BookingsApi.DAL.Services
                 throw new ArgumentException($"Hearing {hearingId} not found");   
             }
 
+            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
+            if (allocations.Any())
+            {
+                throw new InvalidOperationException($"Hearing {hearing.Id} has already been allocated");
+            }
+
             var hearingStartTime = hearing.ScheduledDateTime;
             var hearingEndTime = hearing.ScheduledEndTime;
 
