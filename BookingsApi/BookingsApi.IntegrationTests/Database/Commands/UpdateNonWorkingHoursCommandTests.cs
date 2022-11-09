@@ -61,7 +61,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
             
             // Act
-            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(newHours));
+            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(Guid.NewGuid(), newHours));
             
             // Assert
             var nonWorkingHours = _context.VhoNonAvailabilities;
@@ -76,11 +76,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task Should_throw_exception_when_working_hours_not_found()
+        public async Task Should_add_non_working_hour_when_not_found()
         {
             // Arrange
+            var justiceUserId = _context.JusticeUsers.First().Id;
+            var originalNonWorkingHoursLength = _context.VhoNonAvailabilities.Where(x => x.JusticeUserId == justiceUserId).Count();
 
-            // Hours to update
             var newHour1 = new
             {
                 StartTime = new DateTime(2022, 2, 1, 6, 0, 0, DateTimeKind.Utc),
@@ -97,9 +98,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 }
             };
 
-            // Act & Assert
-            Assert.ThrowsAsync<NonWorkingHoursNotFoundException>(() => _commandHandler.Handle(
-                new UpdateNonWorkingHoursCommand(newHours)));
+            // Act
+            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(justiceUserId, newHours));
+            var newNonWorkingHoursLength = _context.VhoNonAvailabilities.Where(x => x.JusticeUserId == justiceUserId).Count();
+
+            // Assert
+            Assert.AreEqual(originalNonWorkingHoursLength + 1, newNonWorkingHoursLength);
         }
         
         private async Task SeedNonWorkingHours()
