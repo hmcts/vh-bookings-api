@@ -129,14 +129,12 @@ namespace BookingsApi.DAL.Services
                     continue;
                 }
 
-                var allocations = justiceUser.Allocations;
-                
                 if (justiceUser.Allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < _configuration.MinimumGapBetweenHearingsInMinutes))
                 {
                     continue;
                 }
 
-                var concurrentAllocations = GetConcurrentAllocations(hearingStartTime, hearingEndTime, allocations);
+                var concurrentAllocations = GetConcurrentAllocations(hearingStartTime, hearingEndTime, justiceUser.Allocations);
                 if (concurrentAllocations.Count > _configuration.MaximumConcurrentHearings)
                 {
                     continue;
