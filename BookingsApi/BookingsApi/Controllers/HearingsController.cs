@@ -30,6 +30,7 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
+using BookingsApi.Services;
 
 namespace BookingsApi.Controllers
 {
@@ -716,7 +717,7 @@ namespace BookingsApi.Controllers
             return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
         }
 
-        private List<Case> MapCase(List<CaseRequest> caseRequestList)
+        private static List<Case> MapCase(List<CaseRequest> caseRequestList)
         {
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
@@ -743,8 +744,28 @@ namespace BookingsApi.Controllers
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
         }
+        
+        /// <summary>
+        /// Get all the unallocated hearings
+        /// </summary>
+        /// <returns>unallocated hearings</returns>
+        [HttpGet("unallocated")]
+        [OpenApiOperation("GetUnallocatedHearings")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUnallocatedHearings()
+        {
 
-        private void SanitiseRequest(BookNewHearingRequest request)
+            var results = await _hearingService.GetUnallocatedHearings();
+
+            if (results.Count <= 0)
+                _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
+            var hearingMapper = new HearingToDetailsResponseMapper();
+            var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            return Ok(response);
+        }
+
+        private static void SanitiseRequest(BookNewHearingRequest request)
         {
             foreach (var participant in request.Participants)
             {
