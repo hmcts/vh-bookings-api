@@ -9,6 +9,7 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -102,7 +103,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -135,7 +136,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateCso(hearing4.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing4.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing4.Id);
         }
 
         [TestCase("14:31")]
@@ -166,7 +167,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateCso(hearing2.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing2.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing2.Id);
         }
 
         [Test]
@@ -314,7 +315,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
         
         [Test]
@@ -373,7 +374,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
         
         [Test]
@@ -416,7 +417,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateCso(hearingId);
 
             // Assert
-            action.Should().Throw<ArgumentException>().And.Message.Should().Be($"Hearing {hearingId} not found");
+            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Hearing {hearingId} not found");
         }
         
         [TestCase("08:00", "10:00")]
@@ -448,7 +449,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
         
         [TestCase("12:00", "15:30")]
@@ -484,7 +485,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -510,7 +511,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -536,7 +537,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateCso(hearing.Id);
             
             // Assert
-            action.Should().Throw<NotSupportedException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
+            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
         }
 
         [Test]
@@ -685,7 +686,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async () => await _service.AllocateCso(hearing.Id);
 
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+            AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -710,7 +711,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async () => await _service.AllocateCso(hearing.Id);
 
             // Assert
-            action.Should().Throw<InvalidOperationException>().And.Message.Should().Be($"Hearing {hearing.Id} has already been allocated");
+            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Hearing {hearing.Id} has already been allocated");
         }
 
         private IList<JusticeUser> SeedJusticeUsers()
@@ -810,6 +811,11 @@ namespace BookingsApi.UnitTests.DAL.Services
                 MinimumGapBetweenHearingsInMinutes = 30,
                 MaximumConcurrentHearings = 3
             };
+        }
+
+        private void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
+        {
+            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
     }
 }
