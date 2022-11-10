@@ -1,6 +1,6 @@
 namespace BookingsApi.Common.Configuration
 {
-    public class AllocateCsoConfiguration
+    public class AllocateHearingConfiguration
     {
         public bool AllowHearingToStartBeforeWorkStartTime { get; set; }
         public bool AllowHearingToEndAfterWorkEndTime { get; set; }

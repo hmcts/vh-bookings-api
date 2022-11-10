@@ -14,26 +14,26 @@ namespace BookingsApi.DAL.Services
 {
     public interface IHearingAllocationService
     {
-        Task<JusticeUser> AllocateCso(Guid hearingId);
+        Task<JusticeUser> AllocateAutomatically(Guid hearingId);
     }
 
     public class HearingAllocationService : IHearingAllocationService
     {
         private readonly BookingsDbContext _context;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
-        private readonly AllocateCsoConfiguration _configuration;
+        private readonly AllocateHearingConfiguration _configuration;
 
         public HearingAllocationService(
             BookingsDbContext context, 
             IRandomNumberGenerator randomNumberGenerator,
-            AllocateCsoConfiguration configuration)
+            AllocateHearingConfiguration configuration)
         {
             _context = context;
             _randomNumberGenerator = randomNumberGenerator;
             _configuration = configuration;
         }
         
-        public async Task<JusticeUser> AllocateCso(Guid hearingId)
+        public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
         {
             var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
@@ -98,7 +98,7 @@ namespace BookingsApi.DAL.Services
                 return csosWithFewestAllocations.Single().Cso;
             }
 
-            return AllocateRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList());
+            return SelectRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList());
         }
 
         private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
@@ -182,7 +182,7 @@ namespace BookingsApi.DAL.Services
             return concurrentAllocations;
         }
 
-        private JusticeUser AllocateRandomly(IList<JusticeUser> csos)
+        private JusticeUser SelectRandomly(IList<JusticeUser> csos)
         {
             var csoIndex = _randomNumberGenerator.Generate(1, csos.Count);
             var cso = csos[csoIndex-1];
