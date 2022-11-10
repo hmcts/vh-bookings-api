@@ -9,6 +9,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BookingsApi.DAL.Services
 {
@@ -26,11 +27,11 @@ namespace BookingsApi.DAL.Services
         public HearingAllocationService(
             BookingsDbContext context, 
             IRandomNumberGenerator randomNumberGenerator,
-            AllocateHearingConfiguration configuration)
+            IOptions<AllocateHearingConfiguration> configuration)
         {
             _context = context;
             _randomNumberGenerator = randomNumberGenerator;
-            _configuration = configuration;
+            _configuration = configuration.Value;
         }
         
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
