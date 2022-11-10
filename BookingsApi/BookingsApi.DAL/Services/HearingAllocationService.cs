@@ -106,7 +106,12 @@ namespace BookingsApi.DAL.Services
         {
             var availableCsos = new List<JusticeUser>();
 
-            var users = _context.JusticeUsers.Where(u => u.UserRoleId == (int)UserRoleId.Vho)
+            var users = _context.JusticeUsers
+                .Include(u => u.VhoWorkHours)
+                .Include(u => u.VhoNonAvailability)
+                .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
+                .Include(u => u.UserRole)
+                .Where(u => u.UserRoleId == (int)UserRoleId.Vho)
                 .ToList();
             
             foreach (var justiceUser in users)
@@ -124,9 +129,9 @@ namespace BookingsApi.DAL.Services
                     continue;
                 }
 
-                var allocations = justiceUser.Allocations ?? new List<Allocation>();
+                var allocations = justiceUser.Allocations;
                 
-                if (allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < _configuration.MinimumGapBetweenHearingsInMinutes))
+                if (justiceUser.Allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < _configuration.MinimumGapBetweenHearingsInMinutes))
                 {
                     continue;
                 }

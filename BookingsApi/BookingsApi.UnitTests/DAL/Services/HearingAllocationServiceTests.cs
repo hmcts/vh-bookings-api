@@ -28,6 +28,8 @@ namespace BookingsApi.UnitTests.DAL.Services
         private HearingType _hearingType;
         private HearingVenue _hearingVenue;
         private Mock<IRandomNumberGenerator> _randomNumberGenerator;
+        private UserRole _userRoleCso;
+        private UserRole _userRoleVhTeamLead;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -69,7 +71,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(0), duration: 90)
             };
             
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -97,7 +99,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             cso.VhoWorkHours.Clear();
 
             await _context.SaveChangesAsync();
@@ -123,7 +125,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 120);
             var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(40), duration: 120);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -158,7 +160,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime);
             var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(hearingStartTimeTimespan.Hours).AddMinutes(hearingStartTimeTimespan.Minutes));
             
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -189,7 +191,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45));
             var hearing7 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45));
             
-            var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso1.VhoWorkHours.Add(new VhoWorkHours
@@ -203,7 +205,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateAutomaticallyToHearing(cso1.Id, hearing4.Id);
             AllocateAutomaticallyToHearing(cso1.Id, hearing6.Id);
             
-            var cso2 = SeedJusticeUser("user2@email.com", "User", "2");
+            var cso2 = SeedCso("user2@email.com", "User", "2");
             for (var i = 1; i <= 7; i++)
             {
                 cso2.VhoWorkHours.Add(new VhoWorkHours
@@ -216,7 +218,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateAutomaticallyToHearing(cso2.Id, hearing2.Id);
             AllocateAutomaticallyToHearing(cso2.Id, hearing5.Id);
             
-            var cso3 = SeedJusticeUser("user3@email.com", "User", "3");
+            var cso3 = SeedCso("user3@email.com", "User", "3");
             for (var i = 1; i <= 7; i++)
             {
                 cso3.VhoWorkHours.Add(new VhoWorkHours
@@ -247,7 +249,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
             var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
 
-            var cso1 = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso1.VhoWorkHours.Add(new VhoWorkHours
@@ -260,7 +262,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateAutomaticallyToHearing(cso1.Id, hearing1.Id);
             AllocateAutomaticallyToHearing(cso1.Id, hearing4.Id);
 
-            var cso2 = SeedJusticeUser("user2@email.com", "User", "2");
+            var cso2 = SeedCso("user2@email.com", "User", "2");
             for (var i = 1; i <= 7; i++)
             {
                 cso2.VhoWorkHours.Add(new VhoWorkHours
@@ -272,7 +274,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             AllocateAutomaticallyToHearing(cso2.Id, hearing2.Id);
 
-            var cso3 = SeedJusticeUser("user3@email.com", "User", "3");
+            var cso3 = SeedCso("user3@email.com", "User", "3");
             for (var i = 1; i <= 7; i++)
             {
                 cso3.VhoWorkHours.Add(new VhoWorkHours
@@ -307,7 +309,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration));
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -339,7 +341,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration));
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -372,7 +374,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration));
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -403,7 +405,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration));
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -511,7 +513,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), 240);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -537,7 +539,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(22).AddMinutes(0), 240);
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -626,7 +628,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -661,7 +663,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
 
-            var cso = SeedJusticeUser("cso@email.com", "Cso", "1", (int)UserRoleId.Vho);
+            var cso = SeedCso("cso@email.com", "Cso", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -677,26 +679,15 @@ namespace BookingsApi.UnitTests.DAL.Services
                 EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
             });
 
-            int userRoleIndex = 1;
-            foreach (int userRoleId in Enum.GetValues(typeof(UserRoleId)))
+            var nonCso = SeedNonCso($"nonCso@email.com", "NonCso", "1");
+            for (var i = 1; i <= 7; i++)
             {
-                if (userRoleId == (int)UserRoleId.Vho)
+                nonCso.VhoWorkHours.Add(new VhoWorkHours
                 {
-                    continue;
-                }
-
-                var nonCso = SeedJusticeUser($"nonCso{userRoleIndex}@email.com", "NonCso{i}", userRoleIndex.ToString(), userRoleId: userRoleId);
-                for (var i = 1; i <= 7; i++)
-                {
-                    nonCso.VhoWorkHours.Add(new VhoWorkHours
-                    {
-                        DayOfWeekId = i,
-                        StartTime = new TimeSpan(8, 0, 0),
-                        EndTime = new TimeSpan(17, 0, 0)
-                    });
-                }
-
-                userRoleIndex++;
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
             }
 
             // Act
@@ -712,7 +703,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
 
-            var cso = SeedJusticeUser("user1@email.com", "User", "1");
+            var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
                 cso.VhoWorkHours.Add(new VhoWorkHours
@@ -733,25 +724,36 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         private IList<JusticeUser> SeedJusticeUsers()
         {
-            var user1 = SeedJusticeUser("user1@email.com", "User", "1");
-            var user2 = SeedJusticeUser("user2@email.com", "User", "2");
-            var user3 = SeedJusticeUser("user3@email.com", "User", "3");
+            var user1 = SeedCso("user1@email.com", "User", "1");
+            var user2 = SeedCso("user2@email.com", "User", "2");
+            var user3 = SeedCso("user3@email.com", "User", "3");
 
             var justiceUsers = new List<JusticeUser> { user1, user2, user3 };
             return justiceUsers;
         }
 
-        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, int userRoleId = 2)
+        private JusticeUser SeedCso(string userName, string firstName, string lastName)
+        {
+            return SeedJusticeUser(userName, firstName, lastName, _userRoleCso);
+        }
+
+        private JusticeUser SeedNonCso(string userName, string firstName, string lastName)
+        {
+            return SeedJusticeUser(userName, firstName, lastName, _userRoleVhTeamLead);
+        }
+
+        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, UserRole userRole)
         {
             var justiceUser = new JusticeUser
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = userRoleId,
+                UserRoleId = userRole.Id,
                 CreatedBy = "test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
-                Lastname = lastName
+                Lastname = lastName,
+                UserRole = userRole
             };
 
             var workHours = new List<VhoWorkHours>();
@@ -781,6 +783,9 @@ namespace BookingsApi.UnitTests.DAL.Services
             var refDataBuilder = new RefDataBuilder();
             _hearingVenue = refDataBuilder.HearingVenues.First( x=> x.Name == hearingVenueName);
 
+            _userRoleCso = new UserRole((int)UserRoleId.Vho, "Video hearings officer");
+            _userRoleVhTeamLead = new UserRole((int)UserRoleId.VhTeamLead, "Video hearings team lead");
+            
             _context.SaveChanges();
         }
 
