@@ -111,16 +111,16 @@ namespace BookingsApi.DAL.Services
                 .Where(u => u.UserRoleId == (int)UserRoleId.Vho)
                 .ToList();
 
-            var userIds = csos.Select(u => u.Id).ToList();
+            var csoUserIds = csos.Select(u => u.Id).ToList();
 
             var workHours = _context.VhoWorkHours
-                .Where(wh => userIds.Contains(wh.JusticeUserId))
+                .Where(wh => csoUserIds.Contains(wh.JusticeUserId))
                 .AsEnumerable()
                 .Where(wh => wh.SystemDayOfWeek == hearingStartTime.DayOfWeek)
                 .ToList();
 
             var nonAvailabilities = _context.VhoNonAvailabilities
-                .Where(na => userIds.Contains(na.JusticeUserId))
+                .Where(na => csoUserIds.Contains(na.JusticeUserId))
                 .Where(na => na.StartTime <= hearingEndTime)
                 .Where(na => hearingStartTime <= na.EndTime)
                 .Where(na => !na.Deleted)
@@ -128,20 +128,20 @@ namespace BookingsApi.DAL.Services
 
             var allocations = _context.Allocations
                 .Include(a => a.Hearing)
-                .Where(a => userIds.Contains(a.JusticeUserId))
+                .Where(a => csoUserIds.Contains(a.JusticeUserId))
                 // Only those that end on or after this hearing's start time, plus our minimum allowed gap
                 .Where(a => a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration + _configuration.MinimumGapBetweenHearingsInMinutes) >= hearingStartTime)
                 .ToList();
 
-            var csosWithAvailabilties = csos.Select(u => new
+            var csoAvailabilities = csos.Select(c => new
             {
-                User = u,
-                WorkHours = workHours.Where(wh => wh.JusticeUserId == u.Id).ToList(),
-                NonAvailabilities = nonAvailabilities.Where(na => na.JusticeUserId == u.Id).ToList(),
-                Allocations = allocations.Where(a => a.JusticeUserId == u.Id).ToList()
+                CsoUser = c,
+                WorkHours = workHours.Where(wh => wh.JusticeUserId == c.Id).ToList(),
+                NonAvailabilities = nonAvailabilities.Where(na => na.JusticeUserId == c.Id).ToList(),
+                Allocations = allocations.Where(a => a.JusticeUserId == c.Id).ToList()
             }).ToList();
             
-            foreach (var cso in csosWithAvailabilties)
+            foreach (var cso in csoAvailabilities)
             {
                 var workHoursForThisHearing = cso.WorkHours.FirstOrDefault();
                 if (workHoursForThisHearing == null)
@@ -172,7 +172,7 @@ namespace BookingsApi.DAL.Services
                 if ((workHourStartTime <= hearingStartTime.TimeOfDay || _configuration.AllowHearingToStartBeforeWorkStartTime) && 
                     (workHourEndTime >= hearingEndTime.TimeOfDay || _configuration.AllowHearingToEndAfterWorkEndTime))
                 {
-                    availableCsos.Add(cso.User);
+                    availableCsos.Add(cso.CsoUser);
                 }
             }
 
