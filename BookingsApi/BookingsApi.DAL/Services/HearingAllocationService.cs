@@ -124,7 +124,7 @@ namespace BookingsApi.DAL.Services
                 }
 
                 if (justiceUser.VhoNonAvailability.Any(na => 
-                        new DateRange(na.StartTime, na.EndTime).IsInRange(hearingStartTime, hearingEndTime)))
+                        !na.Deleted && new DateRange(na.StartTime, na.EndTime).IsInRange(hearingStartTime, hearingEndTime)))
                 {
                     continue;
                 }
