@@ -311,6 +311,7 @@ namespace BookingsApi.Domain
         {
             //It has been assumed that only one case exists for a given hearing, for now.
             var existingCase = GetCases().FirstOrDefault();
+            if (existingCase == null) return;
             existingCase.Number = @case.Number;
             existingCase.Name = @case.Name;
         }
