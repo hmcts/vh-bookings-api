@@ -82,6 +82,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });   
             }
 
+            await _context.SaveChangesAsync();
+
             foreach (var hearing in hearings)
             {
                 // Act
@@ -139,6 +141,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             AllocateAutomaticallyToHearing(cso.Id, hearing2.Id);
             AllocateAutomaticallyToHearing(cso.Id, hearing3.Id);
 
+            await _context.SaveChangesAsync();
+            
             // Act
             var action = async() => await service.AllocateAutomatically(hearing4.Id);
             
@@ -171,6 +175,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });   
             }
             AllocateAutomaticallyToHearing(cso.Id, hearing1.Id);
+            
+            await _context.SaveChangesAsync();
             
             // Act
             var action = async() => await service.AllocateAutomatically(hearing2.Id);
@@ -230,6 +236,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             AllocateAutomaticallyToHearing(cso3.Id, hearing3.Id);
             
+            await _context.SaveChangesAsync();
+            
             // Act
             var result = await _service.AllocateAutomatically(hearing7.Id);
             
@@ -285,6 +293,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             AllocateAutomaticallyToHearing(cso3.Id, hearing3.Id);
+            
+            await _context.SaveChangesAsync();
             
             var allocationCandidates = new List<Guid> { cso2.Id, cso3.Id };
             _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
@@ -500,6 +510,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             
+            await _context.SaveChangesAsync();
+            
             // Act
             var action = async() => await _service.AllocateAutomatically(hearing.Id);
             
@@ -577,6 +589,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             
+            await _context.SaveChangesAsync();
+            
             // Act
             var result = await _service.AllocateAutomatically(hearing.Id);
             
@@ -614,6 +628,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             var availableCso = justiceUsers.First();
             availableCso.VhoNonAvailability.Clear();
             
+            await _context.SaveChangesAsync();
+            
             // Act
             var result = await _service.AllocateAutomatically(hearing.Id);
             
@@ -649,6 +665,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 EndTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
             });
 
+            await _context.SaveChangesAsync();
+            
             // Act
             var result = await _service.AllocateAutomatically(hearing.Id);
 
@@ -690,6 +708,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
 
+            await _context.SaveChangesAsync();
+            
             // Act
             var action = async () => await _service.AllocateAutomatically(hearing.Id);
 
@@ -715,6 +735,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             AllocateAutomaticallyToHearing(cso.Id, hearing.Id);
 
+            await _context.SaveChangesAsync();
+            
             // Assert
             var action = async () => await _service.AllocateAutomatically(hearing.Id);
 
@@ -745,6 +767,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 Deleted = true
             });
 
+            await _context.SaveChangesAsync();
+            
             // Act
             var result = await _service.AllocateAutomatically(hearing.Id);
 
@@ -855,7 +879,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             _context.SaveChanges();
         }
 
-        private AllocateHearingConfiguration GetDefaultSettings()
+        private static AllocateHearingConfiguration GetDefaultSettings()
         {
             return new AllocateHearingConfiguration
             {
@@ -866,7 +890,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             };
         }
 
-        private void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
+        private static void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
         {
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }

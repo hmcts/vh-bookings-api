@@ -645,8 +645,6 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
         {
-            // TODO test this endpoint manually
-            
             try
             {
                 var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);

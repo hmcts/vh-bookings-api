@@ -153,7 +153,7 @@ namespace BookingsApi.DAL.Services
             return availableCsos;
         }
 
-        private IList<DateRange> GetConcurrentAllocations(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
+        private static IList<DateRange> GetConcurrentAllocations(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
         {
             var hearing = new DateRange(hearingStartTime, hearingEndTime);
             var concurrentAllocations = new List<DateRange>();
