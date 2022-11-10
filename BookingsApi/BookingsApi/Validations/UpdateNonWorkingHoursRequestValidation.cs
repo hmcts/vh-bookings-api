@@ -26,7 +26,7 @@ namespace BookingsApi.Validations
         {
             var errors = new List<ValidationFailure>();
             
-            var requestedWorkHourIds = request.Hours.Select(h => h.Id).ToList();
+            var requestedWorkHourIds = request.Hours.Select(h => h.Id).Where(x => x != 0).ToList();
             var foundWorkHourIds = existingHours.Select(h => h.Id).ToList();
 
             var requestedWorkHourIdsFound = requestedWorkHourIds.All(foundWorkHourIds.Contains);

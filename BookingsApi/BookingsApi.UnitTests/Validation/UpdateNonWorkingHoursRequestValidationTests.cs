@@ -21,6 +21,12 @@ namespace BookingsApi.UnitTests.Validation
                     Id = 1,
                     StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc),
                     EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc)
+                },
+                new()
+                {
+                    Id = 0,
+                    StartTime = new DateTime(2022, 2, 1, 8, 0, 0, DateTimeKind.Utc),
+                    EndTime = new DateTime(2022, 2, 1, 10, 0, 0, DateTimeKind.Utc)
                 }
             };
 

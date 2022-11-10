@@ -169,7 +169,7 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
                 return BadRequest(ModelState);
             }
-            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(request.Hours);
+            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(existingHours[0].JusticeUserId, request.Hours);
             await _commandHandler.Handle(updateNonWorkingHoursCommand);
             
             return NoContent();
