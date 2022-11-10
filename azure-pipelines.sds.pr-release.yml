@@ -143,6 +143,7 @@ stages:
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
           displayName: Publish Acceptance Tests 
+          dependsOn: package_nuget
           variables:
             projectPath: "$(app_path)/$(app_path)"
           steps:
