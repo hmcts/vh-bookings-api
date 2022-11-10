@@ -259,7 +259,7 @@ stages:
               azureSubscription: ${{ variables.subscriptionName }}
               acceptanceTestSettings:
                 - name: Services:BookingsApiUrl
-                  value: "https://vh-bookings-api.dev.platform.hmcts.net"
+                  value: https://vh-bookings-api-pr-$(System.PullRequest.PullRequestNumber).dev.platform.hmcts.net
                 - name: ApplicationInsights:InstrumentationKey
                   value: applicationinsights--instrumentationkey
                   keyVaultName: vh-infra-core-${{ variables.env }}
