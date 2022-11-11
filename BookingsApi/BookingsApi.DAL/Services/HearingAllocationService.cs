@@ -102,7 +102,7 @@ namespace BookingsApi.DAL.Services
             return SelectRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList());
         }
 
-        private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
+        private List<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
         {
             var availableCsos = new List<JusticeUser>();
 
