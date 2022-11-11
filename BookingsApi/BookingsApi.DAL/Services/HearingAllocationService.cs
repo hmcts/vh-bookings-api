@@ -160,8 +160,8 @@ namespace BookingsApi.DAL.Services
                     continue;
                 }
 
-                var concurrentAllocations = GetConcurrentAllocations(hearingStartTime, hearingEndTime, cso.Allocations);
-                if (concurrentAllocations.Count > _configuration.MaximumConcurrentHearings)
+                var concurrentAllocatedHearings = CountConcurrentAllocatedHearings(hearingStartTime, hearingEndTime, cso.Allocations);
+                if (concurrentAllocatedHearings > _configuration.MaximumConcurrentHearings)
                 {
                     continue;
                 }
@@ -179,37 +179,19 @@ namespace BookingsApi.DAL.Services
             return availableCsos;
         }
 
-        private static IList<DateRange> GetConcurrentAllocations(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
+        private static int CountConcurrentAllocatedHearings(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
         {
             var hearing = new DateRange(hearingStartTime, hearingEndTime);
-            var concurrentAllocations = new List<DateRange>();
-            var index = 0;
-            var allocationsToCheck = allocations
+            var hearingsToCheck = allocations
                 .Select(a => new DateRange(a.Hearing.ScheduledDateTime, a.Hearing.ScheduledEndTime))
                 .Union(new List<DateRange>{ hearing })
                 .OrderBy(a => a.StartDate)
                 .ToList();
-            
-            foreach (var allocation in allocationsToCheck)
-            {
-                if (index > 0)
-                {
-                    var previousAllocation = allocationsToCheck[index - 1];
-                    var isConcurrent = allocation.IsInRange(previousAllocation);
-                    if (isConcurrent)
-                    {
-                        concurrentAllocations.Add(allocation);
-                        if (!concurrentAllocations.Contains(previousAllocation))
-                        {
-                            concurrentAllocations.Add(previousAllocation);
-                        }
-                    }
-                }
-                    
-                index++;
-            }
+    
+            var minEndTime = hearingsToCheck.Min(a => a.EndDate);
+            var count = hearingsToCheck.Count(a => a.StartDate < minEndTime);
 
-            return concurrentAllocations;
+            return count;
         }
 
         private JusticeUser SelectRandomly(IList<JusticeUser> csos)

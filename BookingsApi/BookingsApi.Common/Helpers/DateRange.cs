@@ -1,4 +1,5 @@
 using System;
+
 namespace BookingsApi.Common.Helpers
 {
     public class DateRange
@@ -10,21 +11,6 @@ namespace BookingsApi.Common.Helpers
         {
             StartDate = startDate;
             EndDate = endDate;
-        }
-        
-        /// <summary>
-        /// Checks whether the current date range falls within another date range.
-        /// </summary>
-        /// <param name="dateRange"></param>
-        /// <returns></returns>
-        public bool IsInRange(DateRange dateRange)
-        {
-            return IsInRange(dateRange.StartDate, dateRange.EndDate);
-        }
-
-        public bool IsInRange(DateTime startDate, DateTime endDate)
-        {
-            return StartDate <= endDate && startDate <= EndDate;
         }
     }
 }
