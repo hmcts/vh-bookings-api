@@ -31,6 +31,7 @@ using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers
 {
@@ -643,6 +644,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [AllowAnonymous]
         public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
         {
             try

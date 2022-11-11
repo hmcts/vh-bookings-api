@@ -8,6 +8,7 @@ using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -36,6 +37,10 @@ namespace BookingsApi.DAL.Services
         
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
         {
+            Console.WriteLine($"Allocation settings: {System.Text.Json.JsonSerializer.Serialize(_configuration)}");
+
+            return new JusticeUser();
+            
             var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
@@ -71,7 +76,7 @@ namespace BookingsApi.DAL.Services
 
         private JusticeUser SelectCso(DateTime hearingStartTime, DateTime hearingEndTime)
         {
-            var availableCsos = GetAvailableCsos(hearingStartTime, hearingEndTime);
+            var availableCsos = GetAvailableCsos(hearingStartTime, hearingEndTime).ToArray();
 
             if (!availableCsos.Any())
             {
@@ -102,7 +107,7 @@ namespace BookingsApi.DAL.Services
             return SelectRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList());
         }
 
-        private IEnumerable<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
+        private List<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
         {
             var availableCsos = new List<JusticeUser>();
 
