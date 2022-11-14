@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Common.Configuration;
-using BookingsApi.Common.Helpers;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
@@ -50,16 +49,7 @@ namespace BookingsApi.DAL.Services
                     $"Hearing {hearing.Id} has already been allocated");
             }
 
-            var hearingStartTime = hearing.ScheduledDateTime;
-            var hearingEndTime = hearing.ScheduledEndTime;
-
-            if (hearingStartTime.Date != hearingEndTime.Date)
-            {
-                throw new DomainRuleException("AllocationNotSupported",
-                    $"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
-            }
-
-            var cso = SelectCso(hearingStartTime, hearingEndTime);
+            var cso = SelectCso(hearing);
             if (cso == null)
             {
                 throw new DomainRuleException("NoCsosAvailable",
@@ -76,9 +66,9 @@ namespace BookingsApi.DAL.Services
             return cso;
         }
 
-        private JusticeUser SelectCso(DateTime hearingStartTime, DateTime hearingEndTime)
+        private JusticeUser SelectCso(Hearing hearing)
         {
-            var availableCsos = GetAvailableCsos(hearingStartTime, hearingEndTime);
+            var availableCsos = GetAvailableCsos(hearing);
 
             if (!availableCsos.Any())
             {
@@ -109,96 +99,19 @@ namespace BookingsApi.DAL.Services
             return SelectRandomly(csosWithFewestAllocations.Select(c => c.Cso).ToList());
         }
 
-        private List<JusticeUser> GetAvailableCsos(DateTime hearingStartTime, DateTime hearingEndTime)
+        private List<JusticeUser> GetAvailableCsos(Hearing hearing)
         {
-            var availableCsos = new List<JusticeUser>();
-
             var csos = _context.JusticeUsers
                 .Include(u => u.UserRole)
                 .Where(u => u.UserRoleId == (int)UserRoleId.Vho)
+                .Include(u => u.VhoWorkHours)
+                .Include(u => u.VhoNonAvailability)
+                .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
                 .ToList();
 
-            var csoUserIds = csos.Select(u => u.Id).ToList();
-
-            var workHours = _context.VhoWorkHours
-                .Where(wh => csoUserIds.Contains(wh.JusticeUserId))
-                .AsEnumerable()
-                .Where(wh => wh.SystemDayOfWeek == hearingStartTime.DayOfWeek)
+            return csos
+                .Where(cso => hearing.CanAllocate(cso, _configuration))
                 .ToList();
-
-            var nonAvailabilities = _context.VhoNonAvailabilities
-                .Where(na => csoUserIds.Contains(na.JusticeUserId))
-                .Where(na => na.StartTime <= hearingEndTime)
-                .Where(na => hearingStartTime <= na.EndTime)
-                .Where(na => !na.Deleted)
-                .ToList();
-
-            var allocations = _context.Allocations
-                .Include(a => a.Hearing)
-                .Where(a => csoUserIds.Contains(a.JusticeUserId))
-                // Only those that end on or after this hearing's start time, plus our minimum allowed gap
-                .Where(a => a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration + _configuration.MinimumGapBetweenHearingsInMinutes) >= hearingStartTime)
-                .ToList();
-
-            var csoAvailabilities = csos.Select(c => new
-            {
-                CsoUser = c,
-                WorkHours = workHours.Where(wh => wh.JusticeUserId == c.Id).ToList(),
-                NonAvailabilities = nonAvailabilities.Where(na => na.JusticeUserId == c.Id).ToList(),
-                Allocations = allocations.Where(a => a.JusticeUserId == c.Id).ToList()
-            }).ToList();
-            
-            foreach (var cso in csoAvailabilities)
-            {
-                var workHoursForThisHearing = cso.WorkHours.FirstOrDefault();
-                if (workHoursForThisHearing == null)
-                {
-                    continue;
-                }
-                
-                if (cso.NonAvailabilities.Any())
-                {
-                    continue;
-                }
-
-                var gapBetweenHearingsIsInsufficient = cso.Allocations.Any(a => (hearingStartTime - a.Hearing.ScheduledDateTime).TotalMinutes < _configuration.MinimumGapBetweenHearingsInMinutes);
-                if (gapBetweenHearingsIsInsufficient)
-                {
-                    continue;
-                }
-
-                var concurrentAllocatedHearings = CountConcurrentAllocatedHearings(hearingStartTime, hearingEndTime, cso.Allocations);
-                if (concurrentAllocatedHearings > _configuration.MaximumConcurrentHearings)
-                {
-                    continue;
-                }
-
-                var workHourStartTime = workHoursForThisHearing.StartTime;
-                var workHourEndTime = workHoursForThisHearing.EndTime;
-
-                if ((workHourStartTime <= hearingStartTime.TimeOfDay || _configuration.AllowHearingToStartBeforeWorkStartTime) && 
-                    (workHourEndTime >= hearingEndTime.TimeOfDay || _configuration.AllowHearingToEndAfterWorkEndTime))
-                {
-                    availableCsos.Add(cso.CsoUser);
-                }
-            }
-
-            return availableCsos;
-        }
-
-        private static int CountConcurrentAllocatedHearings(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
-        {
-            var hearing = new DateRange(hearingStartTime, hearingEndTime);
-            var hearingsToCheck = allocations
-                .Select(a => new DateRange(a.Hearing.ScheduledDateTime, a.Hearing.ScheduledEndTime))
-                .Union(new List<DateRange>{ hearing })
-                .OrderBy(a => a.StartDate)
-                .ToList();
-    
-            var minEndTime = hearingsToCheck.Min(a => a.EndDate);
-            var count = hearingsToCheck.Count(a => a.StartDate < minEndTime);
-
-            return count;
         }
 
         private JusticeUser SelectRandomly(IList<JusticeUser> csos)

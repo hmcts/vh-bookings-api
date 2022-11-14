@@ -1,4 +1,4 @@
-namespace BookingsApi.Common.Configuration
+namespace BookingsApi.Domain.Configuration
 {
     public class AllocateHearingConfiguration
     {
