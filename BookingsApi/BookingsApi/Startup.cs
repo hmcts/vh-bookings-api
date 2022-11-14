@@ -17,6 +17,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
+using BookingsApi.Domain.Configuration;
 
 namespace BookingsApi
 {

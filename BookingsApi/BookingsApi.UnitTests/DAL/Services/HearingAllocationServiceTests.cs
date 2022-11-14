@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
@@ -90,8 +90,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 var result = await _service.AllocateAutomatically(hearing.Id);
                 
                 // Assert
-                result.Should().NotBeNull();
-                result.Id.Should().Be(cso.Id);
+                AssertCsoAllocated(result, cso, hearing);
             }
         }
         
@@ -242,8 +241,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await _service.AllocateAutomatically(hearing7.Id);
             
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(cso3.Id);
+            AssertCsoAllocated(result, cso3, hearing7);
         }
         
         [TestCase(1)]
@@ -368,8 +366,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(cso.Id);
+            AssertCsoAllocated(result, cso, hearing);
         }
         
         [Test]
@@ -432,8 +429,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(cso.Id);
+            AssertCsoAllocated(result, cso, hearing);
         }
 
         [Test]
@@ -595,8 +591,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(availableCso.Id);
+            AssertCsoAllocated(result, availableCso, hearing);
         }
         
         [Test]
@@ -634,8 +629,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(availableCso.Id);
+            AssertCsoAllocated(result, availableCso, hearing);
         }
 
         [Test]
@@ -671,8 +665,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await _service.AllocateAutomatically(hearing.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(cso.Id);
+            AssertCsoAllocated(result, cso, hearing);
         }
 
         [Test]
@@ -773,8 +766,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var result = await _service.AllocateAutomatically(hearing.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(cso.Id);
+            AssertCsoAllocated(result, cso, hearing);
         }
 
         private IList<JusticeUser> SeedJusticeUsers()
@@ -893,6 +885,14 @@ namespace BookingsApi.UnitTests.DAL.Services
         private static void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
         {
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
+        }
+
+        private void AssertCsoAllocated(JusticeUser actualCso, JusticeUser expectedCso, Hearing hearing)
+        {
+            actualCso.Should().NotBeNull();
+            actualCso.Id.Should().Be(expectedCso.Id);
+            var allocation = _context.Allocations.SingleOrDefault(a => a.HearingId == hearing.Id && a.JusticeUserId == expectedCso.Id);
+            allocation.Should().NotBeNull();
         }
     }
 }
