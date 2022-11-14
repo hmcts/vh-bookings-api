@@ -1,13 +1,10 @@
 ﻿using BookingsApi.Contract.Responses;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings;
-using BookingsApi.UnitTests.Constants;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookingsApi.UnitTests.Mappings
 {
@@ -23,10 +20,10 @@ namespace BookingsApi.UnitTests.Mappings
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
                 ContactEmail = "email.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.vhTeamLead, "Video Hearings Team Lead"),
+                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead"),
                 CreatedBy = "created.by@email.com",
                 Telephone = "0123456789",
-                UserRoleId = (int)UserRoleId.vhTeamLead
+                UserRoleId = (int)UserRoleId.VhTeamLead
             };
 
             var expectedJusticeUserResponse = new JusticeUserResponse
@@ -39,7 +36,7 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
-                UserRoleId = (int)UserRoleId.vhTeamLead
+                UserRoleId = (int)UserRoleId.VhTeamLead
             };
 
             var expectedJusticeUserResponseJson = JsonConvert.SerializeObject(expectedJusticeUserResponse);

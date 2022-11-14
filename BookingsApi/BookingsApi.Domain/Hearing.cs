@@ -90,6 +90,8 @@ namespace BookingsApi.Domain
             }
         }
 
+        public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
+
         public void CancelHearing()
         {
             Status = BookingStatus.Cancelled;
@@ -309,6 +311,7 @@ namespace BookingsApi.Domain
         {
             //It has been assumed that only one case exists for a given hearing, for now.
             var existingCase = GetCases().FirstOrDefault();
+            if (existingCase == null) return;
             existingCase.Number = @case.Number;
             existingCase.Name = @case.Name;
         }
