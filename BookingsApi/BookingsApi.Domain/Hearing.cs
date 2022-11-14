@@ -398,7 +398,7 @@ namespace BookingsApi.Domain
                 return false;
             }
             
-            var concurrentAllocatedHearings = CountConcurrentAllocatedHearings(ScheduledDateTime, ScheduledEndTime, allocations);
+            var concurrentAllocatedHearings = CountConcurrentAllocatedHearings(allocations);
             if (concurrentAllocatedHearings > configuration.MaximumConcurrentHearings)
             {
                 return false;
@@ -416,7 +416,7 @@ namespace BookingsApi.Domain
             return true;
         }
         
-        private static int CountConcurrentAllocatedHearings(DateTime hearingStartTime, DateTime hearingEndTime, IList<Allocation> allocations)
+        private int CountConcurrentAllocatedHearings(IEnumerable<Allocation> allocations)
         {
             var hearingsToCheck = allocations
                 .Select(a => new
@@ -427,7 +427,11 @@ namespace BookingsApi.Domain
                 .OrderBy(a => a.StartDate)
                 .ToList();
     
-            hearingsToCheck.Add(new { StartDate = hearingStartTime, EndDate = hearingEndTime });
+            hearingsToCheck.Add(new
+            {
+                StartDate = ScheduledDateTime, 
+                EndDate = ScheduledEndTime
+            });
             
             var minEndTime = hearingsToCheck.Min(a => a.EndDate);
             var count = hearingsToCheck.Count(a => a.StartDate < minEndTime);
