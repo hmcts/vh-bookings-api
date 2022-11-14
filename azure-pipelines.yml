@@ -98,6 +98,15 @@ parameters:
       # Feature Flags
       - name: FeatureFlags:StaffMemberFeature
         value: $(StaffMemberFeature)
+      # Allocate Hearing
+      - name: AllocateHearing:AllowHearingToStartBeforeWorkStartTime
+        value: $(AllocateHearing:AllowHearingToStartBeforeWorkStartTime)
+      - name: AllocateHearing:AllowHearingToEndAfterWorkEndTime
+        value: $(AllocateHearing:AllowHearingToEndAfterWorkEndTime)
+      - name: AllocateHearing:MinimumGapBetweenHearingsInMinutes
+        value: $(AllocateHearing:MinimumGapBetweenHearingsInMinutes)
+      - name: AllocateHearing:MaximumConcurrentHearings
+        value: $(AllocateHearing:MaximumConcurrentHearings)
   
 variables:
   - group: vh-domains-and-urls

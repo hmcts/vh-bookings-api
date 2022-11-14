@@ -74,6 +74,7 @@ namespace BookingsApi
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
             services.Configure<KinlyConfiguration>(options => Configuration.Bind("KinlyConfiguration", options));
             services.Configure<FeatureFlagConfiguration>(featureFlagConfigurationOptions => Configuration.Bind("FeatureFlags", featureFlagConfigurationOptions));
+            services.Configure<AllocateHearingConfiguration>(options => Configuration.Bind("AllocateHearing", options));
         }
 
         private void RegisterAuth(IServiceCollection serviceCollection)

@@ -30,6 +30,7 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
+using BookingsApi.Services;
 
 namespace BookingsApi.Controllers
 {
@@ -47,6 +48,7 @@ namespace BookingsApi.Controllers
         private readonly IHearingService _hearingService;
         private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
+        private readonly IHearingAllocationService _hearingAllocationService;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IEventPublisher eventPublisher,
@@ -54,7 +56,8 @@ namespace BookingsApi.Controllers
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IFeatureToggles featureToggles,
-            ILogger logger)
+            ILogger logger,
+            IHearingAllocationService hearingAllocationService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -63,6 +66,7 @@ namespace BookingsApi.Controllers
             _hearingService = hearingService;
             _featureToggles = featureToggles;
             _logger = logger;
+            _hearingAllocationService = hearingAllocationService;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
@@ -629,6 +633,36 @@ namespace BookingsApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Automatically allocates a user to a hearing
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to allocate to</param>
+        /// <returns>Details of the allocated user</returns>
+        [HttpPost("{hearingId}/allocations/automatic")]
+        [OpenApiOperation("AllocateHearingAutomatically")]
+        [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
+        {
+            try
+            {
+                var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);
+                
+                if (justiceUser == null)
+                    return NotFound();
+
+                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+
+                return Ok(justiceUserResponse);
+            }
+            catch (DomainRuleException e)
+            {
+                ModelState.AddDomainRuleErrors(e.ValidationFailures);
+                return BadRequest(ModelState);
+            }
+        }
+
         private async Task<Hearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -716,7 +750,7 @@ namespace BookingsApi.Controllers
             return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
         }
 
-        private List<Case> MapCase(List<CaseRequest> caseRequestList)
+        private static List<Case> MapCase(List<CaseRequest> caseRequestList)
         {
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
@@ -743,8 +777,28 @@ namespace BookingsApi.Controllers
             var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
             return Ok(response);
         }
+        
+        /// <summary>
+        /// Get all the unallocated hearings
+        /// </summary>
+        /// <returns>unallocated hearings</returns>
+        [HttpGet("unallocated")]
+        [OpenApiOperation("GetUnallocatedHearings")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUnallocatedHearings()
+        {
 
-        private void SanitiseRequest(BookNewHearingRequest request)
+            var results = await _hearingService.GetUnallocatedHearings();
+
+            if (results.Count <= 0)
+                _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
+            var hearingMapper = new HearingToDetailsResponseMapper();
+            var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            return Ok(response);
+        }
+
+        private static void SanitiseRequest(BookNewHearingRequest request)
         {
             foreach (var participant in request.Participants)
             {

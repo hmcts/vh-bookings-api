@@ -45,6 +45,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         private IEventPublisher _eventPublisher;
         protected Mock<IEventPublisher> EventPublisherMock;
         protected ServiceBusQueueClientFake SbQueueClient;
+        protected Mock<IHearingAllocationService> HearingAllocationServiceMock;
 
         [SetUp]
         public void Setup()
@@ -59,6 +60,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<ILogger>();
+            HearingAllocationServiceMock = new Mock<IHearingAllocationService>();
 
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
             FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(false);
@@ -72,7 +74,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             return  new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
                 CommandHandlerMock.Object,
                 withQueueClient ? _eventPublisher: EventPublisherMock.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);
+                HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object, HearingAllocationServiceMock.Object);
         }
 
         [Test]
@@ -638,7 +640,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
-
+  
         protected static VideoHearing GetHearing(string caseNumber)
         {
             var hearing = new VideoHearingBuilder().Build();

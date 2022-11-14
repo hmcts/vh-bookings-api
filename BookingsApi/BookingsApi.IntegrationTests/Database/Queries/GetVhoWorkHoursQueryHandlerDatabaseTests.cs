@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
-using BookingsApi.IntegrationTests.Constants;
+using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -33,7 +33,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = "contact@email.com",
                 Username     = UserWithRecords,
-                UserRoleId   = (int)UserRoleId.vho,
+                UserRoleId   = (int)UserRoleId.Vho,
                 CreatedBy    = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
@@ -43,7 +43,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = "contact@email.com",
                 Username     = UserWithoutRecords,
-                UserRoleId   = (int)UserRoleId.vho,
+                UserRoleId   = (int)UserRoleId.Vho,
                 CreatedBy    = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
