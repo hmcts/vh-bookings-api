@@ -66,6 +66,13 @@ namespace BookingsApi.DAL.Services
                     $"Unable to allocate to hearing {hearingId}, no CSOs available");
             }
 
+            _context.Allocations.Add(new Allocation
+            {
+                Hearing = hearing,
+                JusticeUser = cso
+            });
+            await _context.SaveChangesAsync();
+            
             return cso;
         }
 
@@ -78,7 +85,7 @@ namespace BookingsApi.DAL.Services
                 return null;
             }
 
-            if (availableCsos.Count() == 1)
+            if (availableCsos.Count == 1)
             {
                 return availableCsos.SingleOrDefault();
             }
