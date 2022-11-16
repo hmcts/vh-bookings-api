@@ -17,6 +17,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
+using BookingsApi.Domain.Configuration;
 
 namespace BookingsApi
 {
@@ -51,7 +52,6 @@ namespace BookingsApi
                         .SetIsOriginAllowed((host) => true)
                         .AllowCredentials();
                 }));
-
             services.AddJsonOptions();
             RegisterSettings(services);
             RegisterInfrastructureServices(services);
@@ -75,6 +75,7 @@ namespace BookingsApi
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
             services.Configure<KinlyConfiguration>(options => Configuration.Bind("KinlyConfiguration", options));
             services.Configure<FeatureFlagConfiguration>(featureFlagConfigurationOptions => Configuration.Bind("FeatureFlags", featureFlagConfigurationOptions));
+            services.Configure<AllocateHearingConfiguration>(options => Configuration.Bind("AllocateHearing", options));
         }
 
         private void RegisterAuth(IServiceCollection serviceCollection)
@@ -121,7 +122,6 @@ namespace BookingsApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
             app.UseOpenApi();
             app.UseSwaggerUi3(c =>
             {

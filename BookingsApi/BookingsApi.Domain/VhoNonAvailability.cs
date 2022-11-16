@@ -9,5 +9,15 @@ namespace BookingsApi.Domain
         public DateTime EndTime { get; set; }
         public DateTime StartTime { get; set; }
         public string CreatedBy { get; set; }
+
+        public VhoNonAvailability()
+        {
+        }
+        
+        public VhoNonAvailability(long id)
+        {
+            Id = id;
+        }
+        public bool Deleted { get; set; }
     }
 }

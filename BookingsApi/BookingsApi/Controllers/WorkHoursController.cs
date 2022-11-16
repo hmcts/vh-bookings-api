@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
@@ -101,10 +101,10 @@ namespace BookingsApi.Controllers
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
                 return BadRequest(ModelState);
             }
-
+            
             var results = await _queryHandler.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(new GetVhoWorkHoursQuery(username));
 
-            if (results == null || !results.Any())
+            if (results == null)
                 return NotFound("Vho user not found");
             
             return Ok(VhoWorkHoursToResponseMapper.Map(results));
@@ -129,10 +129,78 @@ namespace BookingsApi.Controllers
 
             var results = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(new GetVhoNonAvailableWorkHoursQuery(username));
 
-            if (results == null || !results.Any())
+            if (results == null)
                 return NotFound("Vho user not found");
             
             return Ok(VhoNonAvailabilityWorkHoursResponseMapper.Map(results));
+        }
+        
+        /// <summary>
+        /// Updates non availability hours for a vho
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="request"></param>
+        /// <returns>Success status</returns>
+        [HttpPatch("/NonAvailability/VHO/{username}")]
+        [OpenApiOperation("UpdateVhoNonAvailabilityHours")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
+        {
+            var validationResult = await new UpdateNonWorkingHoursRequestValidation().ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return BadRequest(ModelState);
+            }
+            var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
+            var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
+            if (existingHours == null || !existingHours.Any())
+            {
+                return NotFound();
+            }
+            var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            if (!hourValidationResult.IsValid)
+            {
+                if (hourValidationResult.Errors.Any(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))
+                {
+                    return NotFound();
+                }
+                
+                ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
+                return BadRequest(ModelState);
+            }
+            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(existingHours[0].JusticeUserId, request.Hours);
+            await _commandHandler.Handle(updateNonWorkingHoursCommand);
+            
+            return NoContent();
+        }
+        
+        /// <summary>
+        /// Delete non availability work hours for vho
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>vho with list of non availability work hours</returns>
+        [HttpDelete("/NonAvailability")]
+        [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
+                    return BadRequest(ModelState);
+                }
+                var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(id);
+                await _commandHandler.Handle(deleteNonWorkingHoursCommand);
+                return Ok();
+            }
+            catch (NonWorkingHoursNotFoundException ex)
+            {
+                ModelState.AddModelError(nameof(id), $"Id has not been found {nameof(id)}");
+                return NotFound(ModelState);
+            }
         }
     }
 }

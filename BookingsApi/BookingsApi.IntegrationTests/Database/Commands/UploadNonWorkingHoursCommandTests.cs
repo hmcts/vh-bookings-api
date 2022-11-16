@@ -96,5 +96,49 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHoursStartTime);
             justiceUserTwoNonWorkHours.EndTime.Should().Be(new DateTime(2022, 2, 11, 17, 30, 0));
         }
+
+        [Test]
+        public async Task Should_not_duplicate_overlapping_non_working_hours_to_database()
+        {
+            // Arrange
+            var oldNonAvailabilitiesCount = _context.VhoNonAvailabilities.Count();
+
+            var justiceUser = await Hooks
+                .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
+
+            var justiceUserNonWorkingHoursStartTime1 = new DateTime(2022, 2, 1);
+            var justiceUserNonWorkingHoursEndTime1 = new DateTime(2022, 1, 1);
+            var justiceUserNonWorkingHoursStartTime2 = new DateTime(2022, 2, 1);
+            var justiceUserNonWorkingHoursEndTime2 = new DateTime(2022, 2, 11, 16, 30, 0);
+
+            var requests = new List<UploadNonWorkingHoursRequest> {
+                new UploadNonWorkingHoursRequest(
+                    justiceUser.Username,
+                    justiceUserNonWorkingHoursStartTime1,
+                    justiceUserNonWorkingHoursEndTime1
+                ),
+                new UploadNonWorkingHoursRequest(
+                    justiceUser.Username,
+                    justiceUserNonWorkingHoursStartTime2,
+                    justiceUserNonWorkingHoursEndTime2
+                )
+            };
+
+            var command = new UploadNonWorkingHoursCommand(requests);
+            await _commandHandler.Handle(command);
+
+            command = new UploadNonWorkingHoursCommand(requests);
+
+            // Act
+            await _commandHandler.Handle(command);
+
+            var nonAvailabilities = _context.VhoNonAvailabilities;
+            var justiceUserNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUser.Id);
+
+            // Assert
+            nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 1);
+            justiceUserNonWorkHours.StartTime.Should().Be(justiceUserNonWorkingHoursStartTime2);
+            justiceUserNonWorkHours.EndTime.Should().Be(justiceUserNonWorkingHoursEndTime2);
+        }
     }
 }

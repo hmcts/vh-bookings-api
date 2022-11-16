@@ -20,20 +20,20 @@ namespace BookingsApi.UnitTests.Mappings
             var end = TimeSpan.Zero;
             var vhoWorkHours = new List<VhoWorkHours>
             {
-                new()
+                new VhoWorkHours
                 {
                     StartTime = start,
                     EndTime = end,
                     CreatedBy = "created.by@email.com",
                     JusticeUserId = Guid.NewGuid(),
                     DayOfWeekId = 1,
-                    DayOfWeek = new DayOfWeek {Day = "Monday"}
+                    DayOfWeek = new DayOfWeek {Day = "Monday"},
                 }
             };
 
             var vhoWorkHoursResponse = new List<VhoWorkHoursResponse>()
             {
-                new()
+                new VhoWorkHoursResponse
                 {
                     StartTime = start,
                     EndTime = end,

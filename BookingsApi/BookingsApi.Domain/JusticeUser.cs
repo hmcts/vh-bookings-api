@@ -1,5 +1,6 @@
 ﻿using BookingsApi.Domain.RefData;
 using System;
+using System.Collections.Generic;
 
 namespace BookingsApi.Domain
 {
@@ -13,5 +14,9 @@ namespace BookingsApi.Domain
         public int UserRoleId { get; set; }
         public UserRole UserRole { get; set; }
         public string CreatedBy { get; set; }
+
+        public virtual IList<VhoNonAvailability> VhoNonAvailability { get; protected set; }
+        public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
+        public virtual IList<Allocation> Allocations { get; protected set; }
     }
 }

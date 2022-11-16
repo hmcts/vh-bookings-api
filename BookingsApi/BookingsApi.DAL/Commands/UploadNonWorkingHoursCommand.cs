@@ -42,7 +42,7 @@ namespace BookingsApi.DAL.Commands
                 }
 
                 var vhoNonAvailabilities = _context.VhoNonAvailabilities
-                    .Where(x => x.JusticeUser.Username == uploadNonWorkingHoursRequest.Username);
+                    .Where(x => x.JusticeUser.Username == uploadNonWorkingHoursRequest.Username && !x.Deleted);
 
                 var vhoNonWorkingHours = vhoNonAvailabilities
                     .SingleOrDefault(x => x.StartTime == uploadNonWorkingHoursRequest.StartTime
@@ -64,8 +64,9 @@ namespace BookingsApi.DAL.Commands
                     _context.Update(vhoNonWorkingHours);
                 else
                     _context.Add(vhoNonWorkingHours);
+
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
         }
     }
 }

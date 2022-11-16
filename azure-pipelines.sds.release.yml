@@ -44,6 +44,7 @@ stages:
             contextName: ${{ variables.efContextName }}
             workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
             projectName: ${{ variables.efProjectName }}
+            migrationsPath: BookingsApi/BookingsApi.DAL/Migrations
 
       - job: package_nuget
         displayName: "Package Nuget Packages"
