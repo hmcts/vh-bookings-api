@@ -210,11 +210,14 @@ namespace BookingsApi.DAL.Services
         {
             var startDate = DateTime.UtcNow;  
 
-            var hearings =  _context.VideoHearings.Where(x =>
-                (x.Status == Domain.Enumerations.BookingStatus.Created || x.Status == Domain.Enumerations.BookingStatus.Booked)
-                && x.Status != Domain.Enumerations.BookingStatus.Cancelled
-                && x.ScheduledDateTime >= startDate
-                && x.CaseTypeId != 3); // Generic Case Type
+            var hearings =  _context.VideoHearings
+                .Include(h => h.CaseType)
+                .Include(h => h.HearingType)
+                .Where(x =>
+                    (x.Status == Domain.Enumerations.BookingStatus.Created || x.Status == Domain.Enumerations.BookingStatus.Booked)
+                    && x.Status != Domain.Enumerations.BookingStatus.Cancelled
+                    && x.ScheduledDateTime >= startDate
+                    && x.CaseTypeId != 3); // Generic Case Type
 
             var unAllocatedHearings =   
                 hearings.Where(x => 
