@@ -8,13 +8,13 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS publish
 WORKDIR /src
 COPY BookingsApi .
-RUN dotnet restore --configfile nuget.sds.config "BookingsApi/BookingsApi.csproj"
+RUN dotnet restore --configfile nuget.config "BookingsApi/BookingsApi.csproj"
 WORKDIR "/src/BookingsApi"
 RUN dotnet publish "BookingsApi.csproj" -c Release -o /app/publish
 
 # Create Final Image.
 FROM base AS final
-RUN apt-get update && apt-get install curl
+RUN apt-get update && apt-get install -y curl
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "BookingsApi.dll"]
