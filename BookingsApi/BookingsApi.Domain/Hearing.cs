@@ -92,6 +92,8 @@ namespace BookingsApi.Domain
         }
 
         public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
+        public virtual IList<Allocation> Allocations { get; }
+        public JusticeUser AllocatedTo => Allocations?.FirstOrDefault()?.JusticeUser;
 
         public void CancelHearing()
         {
@@ -521,6 +523,16 @@ namespace BookingsApi.Domain
                 ConfirmedBy = updatedBy;
                 ConfirmedDate = DateTime.UtcNow;
             }
+
+            if (newStatus == BookingStatus.Cancelled)
+            {
+                Deallocate();
+            }
+        }
+
+        private void Deallocate()
+        {
+            Allocations?.Clear();
         }
     }
 }
