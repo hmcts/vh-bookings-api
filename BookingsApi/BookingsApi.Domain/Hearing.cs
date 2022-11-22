@@ -92,7 +92,7 @@ namespace BookingsApi.Domain
         }
 
         public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
-        public virtual IList<Allocation> Allocations { get; }
+        public virtual IList<Allocation> Allocations { get; protected set; }
         public JusticeUser AllocatedTo => Allocations?.FirstOrDefault()?.JusticeUser;
 
         public void CancelHearing()
@@ -351,6 +351,11 @@ namespace BookingsApi.Domain
                 UpdateCase(cases.First());
             }
 
+            if (ScheduledDateTime != scheduledDateTime)
+            {
+                Deallocate();
+            }
+            
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
 

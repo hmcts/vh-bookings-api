@@ -65,5 +65,71 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.AudioRecordingRequired.Should().BeTrue();
             returnedVideoHearing.UpdatedDate.Should().BeAfter(returnedVideoHearing.CreatedDate);
         }
+
+        [Test]
+        public async Task Should_deallocate_when_scheduled_datetime_changes()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing.Id,
+                JusticeUserId = allocatedUser.Id
+            });
+            await db.SaveChangesAsync();
+            var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            hearing.AllocatedTo.Should().NotBeNull();
+            hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
+
+            var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
+            var newVenue = allVenues.Last();
+            var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
+            var updatedBy = "testuser";
+            var casesToUpdate = new List<Case>();
+            
+            await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, seededHearing.ScheduledDuration, 
+                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate,
+                seededHearing.QuestionnaireNotRequired, seededHearing.AudioRecordingRequired));
+            
+            var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+
+            returnedVideoHearing.AllocatedTo.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Should_not_deallocate_when_scheduled_datetime_has_not_changed()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing.Id,
+                JusticeUserId = allocatedUser.Id
+            });
+            await db.SaveChangesAsync();
+            var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            hearing.AllocatedTo.Should().NotBeNull();
+            hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
+            
+            var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
+            var newVenue = allVenues.Last();
+            var updatedBy = "testuser";
+            var casesToUpdate = new List<Case>();
+            
+            await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, seededHearing.ScheduledDateTime, seededHearing.ScheduledDuration, 
+                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate,
+                seededHearing.QuestionnaireNotRequired, seededHearing.AudioRecordingRequired));
+            
+            var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+
+            returnedVideoHearing.AllocatedTo.Should().NotBeNull();
+            returnedVideoHearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
+        }
     }
 }
