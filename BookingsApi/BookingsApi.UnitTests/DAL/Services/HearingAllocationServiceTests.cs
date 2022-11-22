@@ -769,6 +769,303 @@ namespace BookingsApi.UnitTests.DAL.Services
             AssertCsoAllocated(result, cso, hearing);
         }
 
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Work_Hours()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = new TimeSpan(20, 0, 0);
+                workHour.EndTime = new TimeSpan(22, 0, 0);
+            }
+            await _context.SaveChangesAsync();
+
+            // Act
+            await _service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().BeNull();
+        }
+        
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Non_Availabilties()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            cso.VhoNonAvailability.Add(new VhoNonAvailability
+            {
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+            });
+            await _context.SaveChangesAsync();
+
+            // Act
+            await _service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().BeNull();
+        }
+
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_Hearing_Starts_Before_Work_Hours_Start_Time_And_Setting_Is_Disabled()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = new TimeSpan(20, 0, 0);
+                workHour.EndTime = new TimeSpan(22, 0, 0);
+            }
+            await _context.SaveChangesAsync();
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToStartBeforeWorkStartTime = false;
+            var service = new HearingAllocationService(_context, 
+                _randomNumberGenerator.Object, 
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+
+            // Act
+            await service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().BeNull();
+        }
+
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_Hearing_Ends_After_Work_Hours_Start_Time_And_Setting_Is_Disabled()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = new TimeSpan(10, 0, 0);
+                workHour.EndTime = new TimeSpan(12, 0, 0);
+            }
+            await _context.SaveChangesAsync();
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToEndAfterWorkEndTime = false;
+            var service = new HearingAllocationService(_context, 
+                _randomNumberGenerator.Object, 
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+
+            // Act
+            await service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().BeNull();
+        }
+        
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Not_Deallocate_When_Hearing_Starts_Before_Work_Hours_Start_Time_And_Setting_Is_Enabled()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = new TimeSpan(20, 0, 0);
+                workHour.EndTime = new TimeSpan(22, 0, 0);
+            }
+            await _context.SaveChangesAsync();
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToStartBeforeWorkStartTime = true;
+            var service = new HearingAllocationService(_context, 
+                _randomNumberGenerator.Object, 
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+
+            // Act
+            await service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+        }
+
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Not_Deallocate_When_Hearing_Ends_After_Work_Hours_Start_Time_And_Setting_Is_Enabled()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = new TimeSpan(10, 0, 0);
+                workHour.EndTime = new TimeSpan(12, 0, 0);
+            }
+            await _context.SaveChangesAsync();
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToEndAfterWorkEndTime = true;
+            var service = new HearingAllocationService(_context, 
+                _randomNumberGenerator.Object, 
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+
+            // Act
+            await service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+        }
+
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Ignore_Historical_Allocations()
+        {
+            // Arrange
+            var historicalHearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var historicalStartDate = DateTime.Today.AddDays(-1).AddHours(15).AddMinutes(0);
+            historicalHearing.SetProtected(nameof(historicalHearing.ScheduledDateTime), historicalStartDate); // Necessary to bypass the validation for start date being in the past
+            var futureHearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            await _service.AllocateAutomatically(historicalHearing.Id);
+            await _service.AllocateAutomatically(futureHearing.Id);
+            var foundHistoricalHearing = await _context.VideoHearings.FindAsync(historicalHearing.Id);
+            foundHistoricalHearing.AllocatedTo.Should().NotBeNull();
+            foundHistoricalHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            var foundFutureHearing = await _context.VideoHearings.FindAsync(futureHearing.Id);
+            foundFutureHearing.AllocatedTo.Should().NotBeNull();
+            foundFutureHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = new TimeSpan(20, 0, 0);
+                workHour.EndTime = new TimeSpan(22, 0, 0);
+            }
+            await _context.SaveChangesAsync();
+            
+            // Act
+            await _service.DeallocateFromUnavailableHearings(cso.Id);
+            
+            // Assert
+            foundHistoricalHearing = await _context.VideoHearings.FindAsync(historicalHearing.Id);
+            foundHistoricalHearing.AllocatedTo.Should().NotBeNull();
+            foundHistoricalHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foundFutureHearing = await _context.VideoHearings.FindAsync(futureHearing.Id);
+            foundFutureHearing.AllocatedTo.Should().BeNull();
+        }
+
+        [Test]
+        public async Task DeallocateFromUnavailableHearings_Should_Throw_Exception_When_User_Not_Found()
+        {
+            // Arrange
+            var justiceUserId = Guid.NewGuid();
+
+            // Assert
+            var action = async () => await _service.DeallocateFromUnavailableHearings(justiceUserId);
+
+            // Assert
+            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Justice user {justiceUserId} not found");
+        }
+
         private IList<JusticeUser> SeedJusticeUsers()
         {
             var user1 = SeedCso("user1@email.com", "User", "1");
@@ -870,8 +1167,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             });
             _context.SaveChanges();
         }
-
-        private static AllocateHearingConfiguration GetDefaultSettings()
+private static AllocateHearingConfiguration GetDefaultSettings()
         {
             return new AllocateHearingConfiguration
             {
@@ -881,6 +1177,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 MaximumConcurrentHearings = 3
             };
         }
+        
 
         private static void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
         {

@@ -15,6 +15,7 @@ namespace BookingsApi.DAL.Services
     public interface IHearingAllocationService
     {
         Task<JusticeUser> AllocateAutomatically(Guid hearingId);
+        Task DeallocateFromUnavailableHearings(Guid justiceUserId);
     }
 
     public class HearingAllocationService : IHearingAllocationService
@@ -64,6 +65,37 @@ namespace BookingsApi.DAL.Services
             await _context.SaveChangesAsync();
             
             return cso;
+        }
+        
+        /// <summary>
+        /// Deallocates the user from any hearings they are no longer available for
+        /// </summary>
+        /// <param name="justiceUserId"></param>
+        /// <exception cref="DomainRuleException"></exception>
+        public async Task DeallocateFromUnavailableHearings(Guid justiceUserId)
+        {
+            var user = await _context.JusticeUsers
+                .Include(x => x.Allocations).ThenInclude(x => x.Hearing)
+                .Include(x => x.VhoWorkHours)
+                .Include(x => x.VhoNonAvailability)
+                .SingleOrDefaultAsync(x => x.Id == justiceUserId);
+            if (user == null)
+            {
+                throw new DomainRuleException("JusticeUserNotFound",
+                    $"Justice user {justiceUserId} not found");
+            }
+
+            var allocations = user.Allocations
+                .Where(x => x.Hearing.ScheduledDateTime > DateTime.UtcNow)
+                .ToList();
+            
+            foreach (var hearing in allocations.Select(allocation => allocation.Hearing).ToList())
+            {
+                if (!user.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
+                {
+                    hearing.Deallocate();
+                }
+            }
         }
 
         private JusticeUser SelectCso(Hearing hearing)

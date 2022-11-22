@@ -2,12 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Configuration;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -15,15 +20,23 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     public class UpdateNonWorkingHoursCommandTests : DatabaseTestsBase
     {
         private UpdateNonWorkingHoursCommandHandler _commandHandler;
+        private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private BookingsDbContext _context;
         private Dictionary<long, long> _hourIdMappings;
         private const string Username = "team.lead.1@hearings.reform.hmcts.net";
+        private Guid _justiceUserId;
         
         [SetUp]
         public void Setup()
         {
             _context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new UpdateNonWorkingHoursCommandHandler(_context);
+            var randomNumberGenerator = new RandomNumberGenerator();
+            var allocationConfiguration = GetDefaultAllocationSettings();
+            var hearingAllocationService = new HearingAllocationService(_context, 
+                randomNumberGenerator, 
+                new OptionsWrapper<AllocateHearingConfiguration>(allocationConfiguration));
+            _commandHandler = new UpdateNonWorkingHoursCommandHandler(_context, hearingAllocationService);
+            _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
         }
 
         [Test]
@@ -59,9 +72,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                     EndTime = newHour2.EndTime
                 }
             };
-            
+
             // Act
-            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(Guid.NewGuid(), newHours));
+            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(_justiceUserId, newHours));
             
             // Assert
             var nonWorkingHours = _context.VhoNonAvailabilities;
@@ -79,7 +92,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_add_non_working_hour_when_not_found()
         {
             // Arrange
-            var justiceUserId = _context.JusticeUsers.First().Id;
+            await SeedNonWorkingHours();
+            
+            var justiceUserId = _justiceUserId;
             var originalNonWorkingHoursLength = _context.VhoNonAvailabilities.Where(x => x.JusticeUserId == justiceUserId).Count();
 
             var newHour1 = new
@@ -92,7 +107,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 new()
                 {
-                    Id = 1,
+                    Id = 3,
                     StartTime = newHour1.StartTime,
                     EndTime = newHour1.EndTime
                 }
@@ -106,10 +121,64 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             Assert.AreEqual(originalNonWorkingHoursLength + 1, newNonWorkingHoursLength);
         }
         
+        [Test]
+        public async Task Should_deallocate_hearings_when_users_no_longer_available()
+        {
+            // Arrange
+            await SeedNonWorkingHours();
+            var userId = _justiceUserId;
+            var seededHearing = await Hooks.SeedVideoHearing();
+            _context.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing.Id,
+                JusticeUserId = userId
+            });
+            await _context.SaveChangesAsync();
+            var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            hearing.AllocatedTo.Should().NotBeNull();
+            hearing.AllocatedTo.Id.Should().Be(userId);
+
+            // Hours to update
+            var newHour1 = new
+            {
+                StartTime = seededHearing.ScheduledDateTime.Date.AddHours(1),
+                EndTime = seededHearing.ScheduledDateTime.Date.AddHours(12)
+            };
+            var newHour2 = new
+            {
+                StartTime = seededHearing.ScheduledDateTime.Date.AddHours(12),
+                EndTime = seededHearing.ScheduledDateTime.Date.AddHours(23)
+            };
+            
+            var newHours = new List<NonWorkingHours>
+            {
+                new()
+                {
+                    Id = _hourIdMappings[1],
+                    StartTime = newHour1.StartTime,
+                    EndTime = newHour1.EndTime
+                },
+                new()
+                {
+                    Id = _hourIdMappings[2],
+                    StartTime = newHour2.StartTime,
+                    EndTime = newHour2.EndTime
+                }
+            };
+            
+            // Act
+            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(userId, newHours));
+            
+            // Assert
+            hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
+            hearing.AllocatedTo.Should().BeNull();
+        }
+        
         private async Task SeedNonWorkingHours()
         {
             var user = await Hooks
                 .SeedJusticeUser(Username, "firstName", "secondname", true);
+            _justiceUserId = user.Id;
             
             _hourIdMappings = new Dictionary<long, long>();
             
@@ -142,6 +211,17 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
                 _hourIdMappings[hour.Id] = vhoNonWorkingHour.Entity.Id;
             }
+        }
+        
+        private static AllocateHearingConfiguration GetDefaultAllocationSettings()
+        {
+            return new AllocateHearingConfiguration
+            {
+                AllowHearingToStartBeforeWorkStartTime = false,
+                AllowHearingToEndAfterWorkEndTime = false,
+                MinimumGapBetweenHearingsInMinutes = 30,
+                MaximumConcurrentHearings = 3
+            };
         }
     }
 }

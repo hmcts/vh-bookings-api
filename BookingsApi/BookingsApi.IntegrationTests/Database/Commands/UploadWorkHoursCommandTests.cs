@@ -7,19 +7,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Services;
+using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Services;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class UploadWorkHoursCommandTests : DatabaseTestsBase
     {
         private UploadWorkHoursCommandHandler _commandHandler;
+        private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private BookingsDbContext _context;
 
         [SetUp]
         public void Setup()
         {
             _context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new UploadWorkHoursCommandHandler(_context);
+            var randomNumberGenerator = new RandomNumberGenerator();
+            var allocationConfiguration = GetDefaultAllocationSettings();
+            var hearingAllocationService = new HearingAllocationService(_context, 
+                randomNumberGenerator, 
+                new OptionsWrapper<AllocateHearingConfiguration>(allocationConfiguration));
+            _commandHandler = new UploadWorkHoursCommandHandler(_context, hearingAllocationService);
+            _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
         }
 
         [Test]
@@ -98,6 +111,75 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             justiceUserTwoWorkHours.DayOfWeekId.Should().Be(2);
             justiceUserTwoWorkHours.StartTime.Should().Be(new TimeSpan(9, 30, 0));
             justiceUserTwoWorkHours.EndTime.Should().Be(new TimeSpan(17, 30, 0));
+        }
+
+        [Test]
+        public async Task Should_deallocate_hearings_when_users_no_longer_available()
+        {
+            // Arrange
+            var seededHearing1 = await Hooks.SeedVideoHearing();
+            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var allocatedUser1 = await Hooks.SeedJusticeUser("cso1@email.com", "Cso1", "Test");
+            var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing1.Id,
+                JusticeUserId = allocatedUser1.Id
+            });
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing2.Id,
+                JusticeUserId = allocatedUser2.Id
+            });
+            await db.SaveChangesAsync();
+            var hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
+            hearing1.AllocatedTo.Should().NotBeNull();
+            hearing1.AllocatedTo.Id.Should().Be(allocatedUser1.Id);
+            var hearing2 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing2.Id));
+            hearing2.AllocatedTo.Should().NotBeNull();
+            hearing2.AllocatedTo.Id.Should().Be(allocatedUser2.Id);
+
+            var requests = new List<UploadWorkHoursRequest> {
+                new()
+                {
+                    Username = allocatedUser1.Username,
+                    WorkingHours = new List<WorkingHours>
+                    {
+                        new WorkingHours(1, 22, 0, 23, 0)
+                    }
+                },
+                new()
+                {
+                    Username = allocatedUser2.Username,
+                    WorkingHours = new List<WorkingHours>
+                    {
+                        new WorkingHours(1, 22, 0, 23, 0)
+                    }
+                }
+            };
+            
+            var command = new UploadWorkHoursCommand(requests);
+            
+            // Act
+            await _commandHandler.Handle(command);
+            
+            // Assert
+            hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
+            hearing1.AllocatedTo.Should().BeNull();
+            hearing2 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing2.Id));
+            hearing2.AllocatedTo.Should().BeNull();
+        }
+        
+        private static AllocateHearingConfiguration GetDefaultAllocationSettings()
+        {
+            return new AllocateHearingConfiguration
+            {
+                AllowHearingToStartBeforeWorkStartTime = false,
+                AllowHearingToEndAfterWorkEndTime = false,
+                MinimumGapBetweenHearingsInMinutes = 30,
+                MaximumConcurrentHearings = 3
+            };
         }
     }
 }
