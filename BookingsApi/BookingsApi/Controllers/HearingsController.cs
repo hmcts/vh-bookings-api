@@ -176,6 +176,7 @@ namespace BookingsApi.Controllers
         }
 
 
+        
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
