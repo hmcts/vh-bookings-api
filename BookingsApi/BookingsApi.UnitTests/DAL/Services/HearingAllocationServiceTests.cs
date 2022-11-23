@@ -961,8 +961,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
             foreach (var workHour in cso.VhoWorkHours)
             {
-                workHour.StartTime = new TimeSpan(20, 0, 0);
-                workHour.EndTime = new TimeSpan(22, 0, 0);
+                workHour.StartTime = new TimeSpan(15, 30, 0);
+                workHour.EndTime = new TimeSpan(20, 0, 0);
             }
             await _context.SaveChangesAsync();
             var configuration = GetDefaultSettings();
@@ -1004,8 +1004,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
             foreach (var workHour in cso.VhoWorkHours)
             {
-                workHour.StartTime = new TimeSpan(10, 0, 0);
-                workHour.EndTime = new TimeSpan(12, 0, 0);
+                workHour.StartTime = new TimeSpan(12, 0, 0);
+                workHour.EndTime = new TimeSpan(15, 30, 0);
             }
             await _context.SaveChangesAsync();
             var configuration = GetDefaultSettings();
@@ -1022,6 +1022,59 @@ namespace BookingsApi.UnitTests.DAL.Services
             foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+        }
+
+        [TestCase("08:00", "10:00", false, false)]
+        [TestCase("20:00", "22:00", false, false)]
+        [TestCase("08:00", "10:00", true, false)]
+        [TestCase("20:00", "22:00", true, false)]
+        [TestCase("08:00", "10:00", false, true)]
+        [TestCase("20:00", "22:00", false, true)]
+        [TestCase("08:00", "10:00", true, true)]
+        [TestCase("20:00", "22:00", true, true)]
+        public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_Work_Hours_Are_Outside_Hearing_Datetime(string workHoursStartTime, 
+            string workHoursEndTime,
+            bool allowHearingToStartBeforeWorkStartTime,
+            bool allowHearingToEndAfterWorkEndTime)
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            await _context.SaveChangesAsync();
+            var configuration = GetDefaultSettings();
+            configuration.AllowHearingToStartBeforeWorkStartTime = allowHearingToStartBeforeWorkStartTime;
+            configuration.AllowHearingToEndAfterWorkEndTime = allowHearingToEndAfterWorkEndTime;
+            var service = new HearingAllocationService(_context, 
+                _randomNumberGenerator.Object, 
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
+            await service.AllocateAutomatically(hearing.Id);
+            var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().NotBeNull();
+            foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
+            foreach (var workHour in cso.VhoWorkHours)
+            {
+                workHour.StartTime = TimeSpan.Parse(workHoursStartTime);
+                workHour.EndTime = TimeSpan.Parse(workHoursEndTime);
+            }
+            await _context.SaveChangesAsync();
+
+            // Act
+            await service.DeallocateFromUnavailableHearings(cso.Id);
+
+            // Assert
+            foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
+            foundHearing.AllocatedTo.Should().BeNull();
         }
 
         [Test]

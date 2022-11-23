@@ -45,6 +45,16 @@ namespace BookingsApi.Domain
             var workHourStartTime = workHours.StartTime;
             var workHourEndTime = workHours.EndTime;
 
+            if (workHourStartTime < startDate.TimeOfDay && workHourEndTime < startDate.TimeOfDay)
+            {
+                return false;
+            }
+            
+            if (workHourStartTime > endDate.TimeOfDay && workHourEndTime > endDate.TimeOfDay)
+            {
+                return false;
+            }
+            
             if (!((workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
                   (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime)))
             {
