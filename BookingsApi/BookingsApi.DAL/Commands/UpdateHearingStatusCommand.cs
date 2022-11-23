@@ -33,7 +33,9 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(UpdateHearingStatusCommand command)
         {
-            var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == command.HearingId);
+            var hearing = await _context.VideoHearings
+                .Include(x => x.Allocations)
+                .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
             {

@@ -66,5 +66,73 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             hearing.UpdatedDate.Should().Be(beforeUpdatedDate);
         }
+
+        [Test]
+        public void Should_deallocate_when_scheduled_datetime_changes()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var allocatedUser = new JusticeUser
+            {
+                Username = "user@email.com"
+            };
+            hearing.SetProtected(nameof(hearing.Allocations), new List<Allocation>
+            {
+                new()
+                {
+                    Hearing = hearing,
+                    JusticeUser = allocatedUser
+                }
+            });
+            hearing.AllocatedTo.Should().NotBeNull();
+            hearing.AllocatedTo.Username.Should().Be(allocatedUser.Username);
+            var newDateTime = DateTime.Today.AddDays(1);
+            var updatedBy = "testuser";
+            
+            hearing.UpdateHearingDetails(hearing.HearingVenue, 
+                newDateTime, 
+                hearing.ScheduledDuration, 
+                hearing.HearingRoomName,
+                hearing.OtherInformation, 
+                updatedBy, 
+                new List<Case>(), 
+                hearing.QuestionnaireNotRequired, 
+                hearing.AudioRecordingRequired);
+
+            hearing.AllocatedTo.Should().BeNull();
+        }
+
+        [Test]
+        public void Should_not_deallocate_when_scheduled_datetime_has_not_changed()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var allocatedUser = new JusticeUser
+            {
+                Username = "user@email.com"
+            };
+            hearing.SetProtected(nameof(hearing.Allocations), new List<Allocation>
+            {
+                new()
+                {
+                    Hearing = hearing,
+                    JusticeUser = allocatedUser
+                }
+            });
+            hearing.AllocatedTo.Should().NotBeNull();
+            hearing.AllocatedTo.Username.Should().Be(allocatedUser.Username);
+            var updatedBy = "testuser";
+            
+            hearing.UpdateHearingDetails(hearing.HearingVenue, 
+                hearing.ScheduledDateTime, 
+                hearing.ScheduledDuration, 
+                hearing.HearingRoomName,
+                hearing.OtherInformation, 
+                updatedBy, 
+                new List<Case>(), 
+                hearing.QuestionnaireNotRequired, 
+                hearing.AudioRecordingRequired);
+
+            hearing.AllocatedTo.Should().NotBeNull();
+            hearing.AllocatedTo.Username.Should().Be(allocatedUser.Username);
+        }
     }
 }

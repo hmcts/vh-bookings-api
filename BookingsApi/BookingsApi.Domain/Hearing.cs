@@ -92,6 +92,8 @@ namespace BookingsApi.Domain
         }
 
         public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
+        public virtual IList<Allocation> Allocations { get; protected set; }
+        public JusticeUser AllocatedTo => Allocations?.FirstOrDefault()?.JusticeUser;
 
         public void CancelHearing()
         {
@@ -349,6 +351,11 @@ namespace BookingsApi.Domain
                 UpdateCase(cases.First());
             }
 
+            if (ScheduledDateTime != scheduledDateTime)
+            {
+                Deallocate();
+            }
+            
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
 
@@ -367,31 +374,17 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("AllocationNotSupported",
                     $"Unable to allocate to hearing {Id}, hearings which span multiple days are not currently supported");
             }
-            
-            var workHours = user.VhoWorkHours
-                .FirstOrDefault(wh => wh.SystemDayOfWeek == ScheduledDateTime.DayOfWeek);
-            
-            var nonAvailabilities = user.VhoNonAvailability
-                .Where(na => na.StartTime <= ScheduledEndTime)
-                .Where(na => ScheduledDateTime <= na.EndTime)
-                .Where(na => !na.Deleted)
-                .ToList();
+
+            if (!user.IsAvailable(ScheduledDateTime, ScheduledEndTime, configuration))
+            {
+                return false;
+            }
 
             var allocations = user.Allocations
                 // Only those that end on or after this hearing's start time, plus our minimum allowed gap
                 .Where(a => a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration + configuration.MinimumGapBetweenHearingsInMinutes) >= ScheduledDateTime)
                 .ToList();
-            
-            if (workHours == null)
-            {
-                return false;
-            }
-            
-            if (nonAvailabilities.Any())
-            {
-                return false;
-            }
-            
+
             var gapBetweenHearingsIsInsufficient = allocations.Any(a => (ScheduledDateTime - a.Hearing.ScheduledDateTime).TotalMinutes < configuration.MinimumGapBetweenHearingsInMinutes);
             if (gapBetweenHearingsIsInsufficient)
             {
@@ -400,15 +393,6 @@ namespace BookingsApi.Domain
             
             var concurrentAllocatedHearings = CountConcurrentAllocatedHearings(allocations);
             if (concurrentAllocatedHearings > configuration.MaximumConcurrentHearings)
-            {
-                return false;
-            }
-            
-            var workHourStartTime = workHours.StartTime;
-            var workHourEndTime = workHours.EndTime;
-
-            if (!((workHourStartTime <= ScheduledDateTime.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
-                (workHourEndTime >= ScheduledEndTime.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime)))
             {
                 return false;
             }
@@ -521,6 +505,16 @@ namespace BookingsApi.Domain
                 ConfirmedBy = updatedBy;
                 ConfirmedDate = DateTime.UtcNow;
             }
+
+            if (newStatus == BookingStatus.Cancelled)
+            {
+                Deallocate();
+            }
+        }
+
+        public void Deallocate()
+        {
+            Allocations?.Clear();
         }
     }
 }

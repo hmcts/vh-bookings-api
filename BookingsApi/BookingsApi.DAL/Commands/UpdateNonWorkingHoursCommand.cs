@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 
 namespace BookingsApi.DAL.Commands
@@ -24,10 +25,12 @@ namespace BookingsApi.DAL.Commands
     public class UpdateNonWorkingHoursCommandHandler : ICommandHandler<UpdateNonWorkingHoursCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingAllocationService _hearingAllocationService;
 
-        public UpdateNonWorkingHoursCommandHandler(BookingsDbContext context)
+        public UpdateNonWorkingHoursCommandHandler(BookingsDbContext context, IHearingAllocationService hearingAllocationService)
         {
             _context = context;
+            _hearingAllocationService = hearingAllocationService;
         }
         
         public async Task Handle(UpdateNonWorkingHoursCommand command)
@@ -52,6 +55,8 @@ namespace BookingsApi.DAL.Commands
                 else
                     _context.Update(nonWorkingHour);
             }
+            
+            await _hearingAllocationService.DeallocateFromUnavailableHearings(command.JusticeUserId);
 
             await _context.SaveChangesAsync();
         }
