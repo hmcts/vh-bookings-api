@@ -7,17 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class UploadNonWorkingHoursCommandTests : DatabaseTestsBase
+    public class UploadNonWorkingHoursCommandDatabaseTests : AllocationDatabaseTestsBase
     {
         private UploadNonWorkingHoursCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
@@ -26,14 +21,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [SetUp]
         public void Setup()
         {
-            _context = new BookingsDbContext(BookingsDbContextOptions);
-            var randomNumberGenerator = new RandomNumberGenerator();
-            var allocationConfiguration = GetDefaultAllocationSettings();
-            var hearingAllocationService = new HearingAllocationService(_context, 
-                randomNumberGenerator, 
-                new OptionsWrapper<AllocateHearingConfiguration>(allocationConfiguration),
-                new NullLogger<HearingAllocationService>());
-            _commandHandler = new UploadNonWorkingHoursCommandHandler(_context, hearingAllocationService);
+            _context = Context;
+            _commandHandler = new UploadNonWorkingHoursCommandHandler(_context, HearingAllocationService);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
         }
 
@@ -206,17 +195,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing1.AllocatedTo.Should().BeNull();
             hearing2 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing2.Id));
             hearing2.AllocatedTo.Should().BeNull();
-        }
-        
-        private static AllocateHearingConfiguration GetDefaultAllocationSettings()
-        {
-            return new AllocateHearingConfiguration
-            {
-                AllowHearingToStartBeforeWorkStartTime = false,
-                AllowHearingToEndAfterWorkEndTime = false,
-                MinimumGapBetweenHearingsInMinutes = 30,
-                MaximumConcurrentHearings = 3
-            };
         }
     }
 }

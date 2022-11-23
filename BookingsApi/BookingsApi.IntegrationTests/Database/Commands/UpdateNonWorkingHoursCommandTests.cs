@@ -2,23 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Configuration;
 using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class UpdateNonWorkingHoursCommandTests : DatabaseTestsBase
+    public class UpdateNonWorkingHoursCommandDatabaseTests : AllocationDatabaseTestsBase
     {
         private UpdateNonWorkingHoursCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
@@ -30,14 +24,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [SetUp]
         public void Setup()
         {
-            _context = new BookingsDbContext(BookingsDbContextOptions);
-            var randomNumberGenerator = new RandomNumberGenerator();
-            var allocationConfiguration = GetDefaultAllocationSettings();
-            var hearingAllocationService = new HearingAllocationService(_context, 
-                randomNumberGenerator, 
-                new OptionsWrapper<AllocateHearingConfiguration>(allocationConfiguration),
-                new NullLogger<HearingAllocationService>());
-            _commandHandler = new UpdateNonWorkingHoursCommandHandler(_context, hearingAllocationService);
+            _context = Context;
+            _commandHandler = new UpdateNonWorkingHoursCommandHandler(_context, HearingAllocationService);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
         }
 
@@ -213,17 +201,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
                 _hourIdMappings[hour.Id] = vhoNonWorkingHour.Entity.Id;
             }
-        }
-        
-        private static AllocateHearingConfiguration GetDefaultAllocationSettings()
-        {
-            return new AllocateHearingConfiguration
-            {
-                AllowHearingToStartBeforeWorkStartTime = false,
-                AllowHearingToEndAfterWorkEndTime = false,
-                MinimumGapBetweenHearingsInMinutes = 30,
-                MaximumConcurrentHearings = 3
-            };
         }
     }
 }
