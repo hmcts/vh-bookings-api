@@ -8,6 +8,7 @@ using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BookingsApi.DAL.Services
@@ -23,15 +24,18 @@ namespace BookingsApi.DAL.Services
         private readonly BookingsDbContext _context;
         private readonly IRandomNumberGenerator _randomNumberGenerator;
         private readonly AllocateHearingConfiguration _configuration;
+        private readonly ILogger<HearingAllocationService> _logger;
 
         public HearingAllocationService(
             BookingsDbContext context, 
             IRandomNumberGenerator randomNumberGenerator,
-            IOptions<AllocateHearingConfiguration> configuration)
+            IOptions<AllocateHearingConfiguration> configuration,
+            ILogger<HearingAllocationService> logger)
         {
             _context = context;
             _randomNumberGenerator = randomNumberGenerator;
             _configuration = configuration.Value;
+            _logger = logger;
         }
         
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
@@ -94,6 +98,7 @@ namespace BookingsApi.DAL.Services
                 if (!user.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
                 {
                     hearing.Deallocate();
+                    _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
                 }
             }
         }

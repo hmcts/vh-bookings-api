@@ -13,6 +13,7 @@ using BookingsApi.Domain.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
@@ -30,6 +31,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         private Mock<IRandomNumberGenerator> _randomNumberGenerator;
         private UserRole _userRoleCso;
         private UserRole _userRoleVhTeamLead;
+        private Mock<ILogger<HearingAllocationService>> _logger;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -39,9 +41,12 @@ namespace BookingsApi.UnitTests.DAL.Services
             _context = new BookingsDbContext(contextOptions);
             _randomNumberGenerator = new Mock<IRandomNumberGenerator>();
             var configuration = GetDefaultSettings();
+            _logger = new Mock<ILogger<HearingAllocationService>>();
+            
             _service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             SeedRefData();
         }
 
@@ -120,7 +125,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.MaximumConcurrentHearings = 3;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0), duration: 120);
             var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(40), duration: 120);
             var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 120);
@@ -158,7 +164,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.MinimumGapBetweenHearingsInMinutes = 30;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
             var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime);
             var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(hearingStartTimeTimespan.Hours).AddMinutes(hearingStartTimeTimespan.Minutes));
@@ -314,7 +321,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.AllowHearingToStartBeforeWorkStartTime = false;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
 
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -346,7 +354,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             var service = new HearingAllocationService(
                 _context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
 
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -378,7 +387,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             var service = new HearingAllocationService(
                 _context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
 
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -409,7 +419,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.AllowHearingToEndAfterWorkEndTime = true;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
             var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
 
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -803,6 +814,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Assert
             foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().BeNull();
+            AssertMessageLogged($"Deallocated hearing {hearing.Id}", LogLevel.Information);
         }
         
         [Test]
@@ -839,6 +851,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Assert
             foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().BeNull();
+            AssertMessageLogged($"Deallocated hearing {hearing.Id}", LogLevel.Information);
         }
 
         [Test]
@@ -872,7 +885,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.AllowHearingToStartBeforeWorkStartTime = false;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
 
             // Act
             await service.DeallocateFromUnavailableHearings(cso.Id);
@@ -913,7 +927,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.AllowHearingToEndAfterWorkEndTime = false;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
 
             // Act
             await service.DeallocateFromUnavailableHearings(cso.Id);
@@ -954,7 +969,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.AllowHearingToStartBeforeWorkStartTime = true;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
 
             // Act
             await service.DeallocateFromUnavailableHearings(cso.Id);
@@ -996,7 +1012,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             configuration.AllowHearingToEndAfterWorkEndTime = true;
             var service = new HearingAllocationService(_context, 
                 _randomNumberGenerator.Object, 
-                new OptionsWrapper<AllocateHearingConfiguration>(configuration));
+                new OptionsWrapper<AllocateHearingConfiguration>(configuration),
+                _logger.Object);
 
             // Act
             await service.DeallocateFromUnavailableHearings(cso.Id);
@@ -1190,6 +1207,16 @@ private static AllocateHearingConfiguration GetDefaultSettings()
             actualCso.Id.Should().Be(expectedCso.Id);
             var allocation = _context.Allocations.SingleOrDefault(a => a.HearingId == hearing.Id && a.JusticeUserId == expectedCso.Id);
             allocation.Should().NotBeNull();
+        }
+        
+        private void AssertMessageLogged(string expectedMessage, LogLevel expectedLogLevel)
+        {
+            _logger.Verify(x => x.Log(
+                It.Is<LogLevel>(log => log == expectedLogLevel),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == expectedMessage && @type.Name == "FormattedLogValues"),
+                It.Is<Exception>(x => x == null),
+                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Once);
         }
     }
 }

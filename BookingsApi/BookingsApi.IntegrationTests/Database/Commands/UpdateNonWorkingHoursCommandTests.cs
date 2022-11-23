@@ -12,6 +12,7 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
@@ -34,7 +35,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var allocationConfiguration = GetDefaultAllocationSettings();
             var hearingAllocationService = new HearingAllocationService(_context, 
                 randomNumberGenerator, 
-                new OptionsWrapper<AllocateHearingConfiguration>(allocationConfiguration));
+                new OptionsWrapper<AllocateHearingConfiguration>(allocationConfiguration),
+                new NullLogger<HearingAllocationService>());
             _commandHandler = new UpdateNonWorkingHoursCommandHandler(_context, hearingAllocationService);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
         }
