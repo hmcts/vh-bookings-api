@@ -96,7 +96,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing.AllocatedTo.Should().BeNull();
         }
 
-        private async Task<VideoHearing> GetHearing(Guid hearingId, BookingsDbContext context)
+        private static async Task<VideoHearing> GetHearing(Guid hearingId, BookingsDbContext context)
         {
             var hearing = await context.VideoHearings
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)

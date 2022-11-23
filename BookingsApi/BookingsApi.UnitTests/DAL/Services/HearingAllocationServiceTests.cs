@@ -1071,7 +1071,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task DeallocateFromUnavailableHearings_Should_Throw_Exception_When_User_Not_Found()
+        public void DeallocateFromUnavailableHearings_Should_Throw_Exception_When_User_Not_Found()
         {
             // Arrange
             var justiceUserId = Guid.NewGuid();
@@ -1184,7 +1184,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             });
             _context.SaveChanges();
         }
-private static AllocateHearingConfiguration GetDefaultSettings()
+        
+        private static AllocateHearingConfiguration GetDefaultSettings()
         {
             return new AllocateHearingConfiguration
             {
@@ -1194,7 +1195,6 @@ private static AllocateHearingConfiguration GetDefaultSettings()
                 MaximumConcurrentHearings = 3
             };
         }
-        
 
         private static void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
         {
