@@ -1,0 +1,188 @@
+name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+
+trigger:
+  - master
+
+pr: none
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: master
+      endpoint: hmcts
+
+parameters:
+- name: environment
+  type: object
+  default:
+  - Dev
+  - Test
+  - Staging
+
+#####################################################
+# Pre Run Tasks. ####################################
+stages:
+- stage: pre_run_tasks
+  displayName: Pre-Release Tasks
+  variables:
+  - template: variables/shared.yaml
+  - template: variables/staging.yaml
+  jobs:
+  - job: Generate_Entity_Framework_Script
+    displayName: "Generate Entity Framework Script"
+    steps:
+    - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+      parameters:
+        outputPath: $(Build.StagingDirectory)
+        contextName: ${{ variables.efContextName }}
+        workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+        projectName: ${{ variables.efProjectName }}
+        migrationsPath: BookingsApi/BookingsApi.DAL/Migrations
+
+  - job: package_nuget
+    displayName: "Package Nuget Packages"
+    steps:
+      - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+        parameters:
+          nugetProjectPath: 'BookingsApi/${{ variables.nuget_package_name }}'
+          vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+          gitVersionConfigPath: ${{ variables.git_version_config_path }}
+
+#####################################################
+# Run Entity Framework. #############################
+- ${{ each env in parameters.environment }}:
+  - stage: Run_Entity_Framework_${{ env }}
+    displayName: ${{ env }} EF Release
+    condition: eq(lower(dependencies.pre_run_tasks.outputs['Generate_Entity_Framework_Script.git.hasChanged']), 'true')
+    dependsOn:
+    - pre_run_tasks
+    variables:
+    - template: variables/${{ lower(env) }}.yaml
+    - template: variables/shared.yaml
+      parameters:
+        env: ${{ variables.env }}
+    jobs:
+    - job: Run_Entity_Framework_${{ env }}
+      displayName: Run Entity Framework ${{ env }}
+      pool:
+        vmImage: 'windows-latest' # MUST BE RUN ON WINDOWS
+      steps:
+      - download: current
+        displayName: Download Sql Artifact
+
+      - ${{ if eq(env, 'Staging') }}: 
+        - template: templates/Azure/Common/unlock-lock.yaml@azTemplates
+          parameters:
+            addOrDelete: delete
+            lockName: "${{ variables.env }}-lock"
+            resourceGroup: ${{ variables.vhResourceGroup }}
+            azureSubscription: ${{ variables.subscriptionName }}
+
+      - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+        parameters:
+          sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+          sqlServerName: ${{ variables.vhSQLServerName }}
+          databaseName: ${{ variables.BookingsApiDbName }}
+          azureSubscription: ${{ variables.subscriptionName }}
+          sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
+          kvfirewallRequired: false
+          kvName: ${{ variables.vhKeyVault }}
+          kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+          kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+
+      - ${{ if eq(env, 'Staging') }}: 
+        - template: templates/Azure/Common/unlock-lock.yaml@azTemplates
+          parameters:
+            addOrDelete: add
+            lockName: "${{ variables.env }}-lock"
+            resourceGroup: ${{ variables.vhResourceGroup }}
+            azureSubscription: ${{ variables.subscriptionName }}
+            lockType: CanNotDelete
+
+#####################################################
+# Build Docker Image & Push. ########################
+- stage: Docker_Build_Push
+  displayName: Docker Build & Push Image
+  dependsOn:
+    - Run_Entity_Framework_Dev
+    - Run_Entity_Framework_Staging
+    - Run_Entity_Framework_Test
+  variables:
+    - template: variables/staging.yaml
+    - template: variables/shared.yaml
+  jobs:
+  - job: Docker_Build
+    displayName: "Docker Build and Push"
+    steps:
+    - checkout: self
+
+    - bash: |
+        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+      displayName: Add NuGet Feed Authentication
+      workingDirectory: BookingsApi
+  
+    - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+      parameters:
+        azureSubscription: ${{ variables.acrSubscription }}
+        acrName: ${{ variables.acrName }}
+        repositoryName:  ${{ variables.repositoryName }}
+      
+    - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+      parameters:
+        azureSubscription: ${{ variables.acrSubscription }}
+        acrName: ${{ variables.acrName }}
+        repositoryName:  ${{ variables.repositoryName }}
+        imageName: "${{ variables.imageName }}"
+        imageTags:
+          - '${{ variables.stagingTagName }}'
+
+#####################################################
+# Deploy Nuget Packages. ############################
+- stage: Push_Nuget
+  displayName: Deploy Nuget Packages
+  dependsOn:
+    - Run_Entity_Framework_Dev
+    - Run_Entity_Framework_Staging
+    - Run_Entity_Framework_Test
+  variables:
+  - template: variables/shared.yaml
+    parameters:
+      env: ${{ variables.env }}
+  jobs: 
+  - job: Publish_Nuget
+    displayName: Publish NuGet Packages
+    steps:
+    - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+      parameters:
+        vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+
+#########################################
+# Push Helm Charts to Repo. #############
+- stage: Helm
+  displayName: Push Helm Charts
+  dependsOn: Docker_Build_Push
+  variables:
+  - template: variables/staging.yaml
+  - template: variables/shared.yaml
+  - group: vh-github-app-credentials
+  jobs:
+  - job: Helm
+    displayName: "Helm Push"
+    steps:
+    - checkout: self
+
+    - template: templates\Github\get-app-token.yaml@azTemplates
+      parameters:
+        privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+        appId: $(gh_app_app_id)
+
+    - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+      parameters:
+        chartName: ${{ variables.chartName }}
+        chartPath: ${{ variables.chartPath }}
+        githubToken: $(githubappinstall.token)
+        githubUsername: $(gh_app_name)
+        githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+        subDirectory: ${{ variables.subDirectory }}
