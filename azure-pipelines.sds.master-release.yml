@@ -50,6 +50,20 @@ stages:
           vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
           gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
+  - job: PublishAcceptanceTests
+    dependsOn: package_nuget
+    displayName: Publish Acceptance Tests
+    variables:
+      projectPath: "BookingsApi/BookingsApi"
+    steps:
+    - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+      parameters:
+        netVersion: 6.x
+        coreProjectPath: $(projectPath)
+        nugetProjectPath: $(projectPath)
+        nugetConfigPath: BookingsApi
+        useNugetConfig: true
+
 #####################################################
 # Run Entity Framework. #############################
 - ${{ each env in parameters.environment }}:
@@ -187,3 +201,62 @@ stages:
         githubUsername: $(gh_app_name)
         githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
         subDirectory: ${{ variables.subDirectory }}
+
+#########################################
+# Run acceptance tests on staging. ######
+- stage: Run_Acceptance_Tests
+  displayName: "Run Acceptance Tests"
+  dependsOn: Helm
+  variables:
+    - template: variables/staging.yaml
+    - template: variables/shared.yaml
+      parameters:
+        env: stg
+  jobs:
+    - job: CheckDeployment
+      displayName: Check deployment is completed
+      steps:
+        - template: templates\Containerisation\check-deployment.yaml@azTemplates
+          parameters: 
+            namespace: "vh"
+            deploymentName: "${{ variables.chartName }}-${{ variables.stagingTagName }}"
+            requiredImage: "${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.stagingTagName }}"
+            subscriptionName: "${{ variables.subscriptionName }}"
+            env: ${{ variables.env }}
+
+    - job: AcceptanceTestsDev
+      pool: VH Self Hosted
+      dependsOn: CheckDeployment
+      displayName: Acceptance Tests Dev
+      steps:
+      - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+        parameters:
+          environment: ${{ variables.env }}
+          azureSubscription: ${{ variables.subscriptionName }}
+          acceptanceTestSettings:
+            - name: Services:BookingsApiUrl
+              value: https://vh-bookings-api.staging.platform.hmcts.net
+            - name: ApplicationInsights:InstrumentationKey
+              value: applicationinsights--instrumentationkey
+              keyVaultName: vh-infra-core-${{ variables.env }}
+              secret: true
+            - name: AzureAd:ClientId
+              value: azuread--clientid
+              keyVaultName: vh-bookings-api-${{ variables.env }}
+              secret: true
+            - name: AzureAd:ClientSecret
+              value: azuread--clientsecret
+              keyVaultName: vh-bookings-api-${{ variables.env }}
+              secret: true
+            - name: Testing:UsernameStem
+              value: $(BookingsApiUsernameStem)
+            - name: UseServiceBusFake
+              value: true
+            - name: AzureAd:TenantId
+              value: azuread--tenantid
+              keyVaultName: vh-infra-core-${{ variables.env }}
+              secret: true
+            - name: Services:BookingsApiResourceId
+              value: azuread--identifieruri
+              keyVaultName: vh-bookings-api-${{ variables.env }}
+              secret: true
