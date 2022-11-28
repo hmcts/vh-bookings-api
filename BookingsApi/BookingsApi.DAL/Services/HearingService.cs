@@ -223,27 +223,12 @@ namespace BookingsApi.DAL.Services
                 hearings.Where(x => 
                     _context.Allocations.FirstOrDefault(a => a.HearingId == x.Id) == null).OrderBy(x=>x.ScheduledDateTime);
             
-            unAllocatedHearings = (IOrderedQueryable<VideoHearing>) unAllocatedHearings.Where(x=> !ScottishHearingVenuesList.Any(venueName => venueName == x.HearingVenueName));
+            unAllocatedHearings = (IOrderedQueryable<VideoHearing>) unAllocatedHearings.Where(x=> !HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName => venueName == x.HearingVenueName));
 
             
             return await unAllocatedHearings.ToListAsync();
         }
 
-        private readonly List<string> ScottishHearingVenuesList = new List<string> { 
-            HearingScottishVenueNames.Aberdeen,
-            HearingScottishVenueNames.Ayr,
-            HearingScottishVenueNames.Dundee,
-            HearingScottishVenueNames.Edinburgh,
-            HearingScottishVenueNames.Glasgow,
-            HearingScottishVenueNames.HamiltonBrandonGate,
-            HearingScottishVenueNames.Inverness,
-            HearingScottishVenueNames.StirlingWallaceHouse,
-            HearingScottishVenueNames.EdinburghEmploymentAppealTribunal,
-            HearingScottishVenueNames.InvernessJusticeCentre,
-            HearingScottishVenueNames.EdinburghSocialSecurityAndChildSupportTribunal,
-            HearingScottishVenueNames.EdinburghUpperTribunal,
-        };
-        
         private static void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)
         {
             participant1.AddLink(participant2.Id, linkType);

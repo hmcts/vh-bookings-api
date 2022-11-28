@@ -16,5 +16,20 @@ public static class HearingScottishVenueNames
     public const string InvernessJusticeCentre = "Inverness Justice Centre";
     public const string EdinburghSocialSecurityAndChildSupportTribunal = "Edinburgh Social Security and Child Support Tribunal";
     public const string EdinburghUpperTribunal = "Edinburgh Upper Tribunal (Administrative Appeals Chamber)";
+    
+    public static readonly List<string> ScottishHearingVenuesList = new List<string> { 
+        Aberdeen,
+        Ayr,
+        Dundee,
+        Edinburgh,
+        Glasgow,
+        HamiltonBrandonGate,
+        Inverness,
+        StirlingWallaceHouse,
+        EdinburghEmploymentAppealTribunal,
+        InvernessJusticeCentre,
+        EdinburghSocialSecurityAndChildSupportTribunal,
+        EdinburghUpperTribunal,
+    };
 }
 
