@@ -228,7 +228,7 @@ stages:
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
 
-  - job: AcceptanceTestsDev
+  - job: AcceptanceTestsStaging
     pool: VH Self Hosted
     dependsOn: CheckDeployment
     displayName: Acceptance Tests Staging
