@@ -38,19 +38,16 @@ namespace BookingsApi.Mappings
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
             var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : string.Empty;
             var allocatedVho = "Not Allocated";
-            if (videoHearing.AllocatedTo != null)
-            {
-                var isScottishVenue =
-                    HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName =>
-                        venueName == videoHearing.HearingVenueName);
+            var isScottishVenue =
+                HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName =>
+                    venueName == videoHearing.HearingVenueName);
+            if (videoHearing.AllocatedTo == null) {
                 if (isScottishVenue || videoHearing.CaseTypeId == 3) // not required if scottish venue or generic type
                 {
                     allocatedVho = "Not Required";
                 }
-                else
-                {
-                    allocatedVho = videoHearing.AllocatedTo.ContactEmail;
-                }
+            } else {
+                allocatedVho = videoHearing.AllocatedTo.ContactEmail;
             }
 
             var response = new BookingsHearingResponse
