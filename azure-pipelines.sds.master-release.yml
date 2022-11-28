@@ -59,8 +59,8 @@ stages:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
         netVersion: 6.x
-        coreProjectPath: $(projectPath)/Test
-        nugetProjectPath: $(projectPath)/Test
+        coreProjectPath: $(projectPath)
+        nugetProjectPath: $(projectPath)
         nugetConfigPath: BookingsApi
         useNugetConfig: true
 
