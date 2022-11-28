@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -22,10 +23,12 @@ namespace BookingsApi.DAL.Commands
     public class UploadNonWorkingHoursCommandHandler : ICommandHandler<UploadNonWorkingHoursCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingAllocationService _hearingAllocationService;
 
-        public UploadNonWorkingHoursCommandHandler(BookingsDbContext context)
+        public UploadNonWorkingHoursCommandHandler(BookingsDbContext context, IHearingAllocationService hearingAllocationService)
         {
             _context = context;
+            _hearingAllocationService = hearingAllocationService;
         }
 
         public async Task Handle(UploadNonWorkingHoursCommand command)
@@ -42,7 +45,7 @@ namespace BookingsApi.DAL.Commands
                 }
 
                 var vhoNonAvailabilities = _context.VhoNonAvailabilities
-                    .Where(x => x.JusticeUser.Username == uploadNonWorkingHoursRequest.Username);
+                    .Where(x => x.JusticeUser.Username == uploadNonWorkingHoursRequest.Username && !x.Deleted);
 
                 var vhoNonWorkingHours = vhoNonAvailabilities
                     .SingleOrDefault(x => x.StartTime == uploadNonWorkingHoursRequest.StartTime
@@ -64,8 +67,11 @@ namespace BookingsApi.DAL.Commands
                     _context.Update(vhoNonWorkingHours);
                 else
                     _context.Add(vhoNonWorkingHours);
+
+                await _hearingAllocationService.DeallocateFromUnavailableHearings(user.Id);
+                
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
         }
     }
 }

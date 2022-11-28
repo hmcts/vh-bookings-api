@@ -56,6 +56,8 @@ namespace BookingsApi
             services.AddScoped<IHearingService, HearingService>();
             services.AddScoped<IRandomGenerator, RandomGenerator>();
             services.AddScoped<ILogger, Logger>();
+            services.AddScoped<IHearingAllocationService, HearingAllocationService>();
+            services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

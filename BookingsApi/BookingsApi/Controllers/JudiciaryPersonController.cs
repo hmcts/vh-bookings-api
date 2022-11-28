@@ -48,7 +48,7 @@ namespace BookingsApi.Controllers
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
             var judiciaryPersonRequests = request.ToList();
-            _logger.LogInformation(
+                _logger.LogInformation(
                 "Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items",
                 judiciaryPersonRequests.Count);
 

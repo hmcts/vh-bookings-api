@@ -7,19 +7,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.DAL.Queries;
+using BookingsApi.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class UploadNonWorkingHoursCommandTests : DatabaseTestsBase
+    public class UploadNonWorkingHoursCommandDatabaseTests : AllocationDatabaseTestsBase
     {
         private UploadNonWorkingHoursCommandHandler _commandHandler;
+        private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private BookingsDbContext _context;
 
         [SetUp]
         public void Setup()
         {
-            _context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new UploadNonWorkingHoursCommandHandler(_context);
+            _context = Context;
+            _commandHandler = new UploadNonWorkingHoursCommandHandler(_context, HearingAllocationService);
+            _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
         }
 
         [Test]
@@ -95,6 +99,102 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             justiceUserOneNonWorkHours.EndTime.Should().Be(justiceUserOneNonWorkingHoursEndTime);
             justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHoursStartTime);
             justiceUserTwoNonWorkHours.EndTime.Should().Be(new DateTime(2022, 2, 11, 17, 30, 0));
+        }
+
+        [Test]
+        public async Task Should_not_duplicate_overlapping_non_working_hours_to_database()
+        {
+            // Arrange
+            var oldNonAvailabilitiesCount = _context.VhoNonAvailabilities.Count();
+
+            var justiceUser = await Hooks
+                .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
+
+            var justiceUserNonWorkingHoursStartTime1 = new DateTime(2022, 2, 1);
+            var justiceUserNonWorkingHoursEndTime1 = new DateTime(2022, 1, 1);
+            var justiceUserNonWorkingHoursStartTime2 = new DateTime(2022, 2, 1);
+            var justiceUserNonWorkingHoursEndTime2 = new DateTime(2022, 2, 11, 16, 30, 0);
+
+            var requests = new List<UploadNonWorkingHoursRequest> {
+                new UploadNonWorkingHoursRequest(
+                    justiceUser.Username,
+                    justiceUserNonWorkingHoursStartTime1,
+                    justiceUserNonWorkingHoursEndTime1
+                ),
+                new UploadNonWorkingHoursRequest(
+                    justiceUser.Username,
+                    justiceUserNonWorkingHoursStartTime2,
+                    justiceUserNonWorkingHoursEndTime2
+                )
+            };
+
+            var command = new UploadNonWorkingHoursCommand(requests);
+            await _commandHandler.Handle(command);
+
+            command = new UploadNonWorkingHoursCommand(requests);
+
+            // Act
+            await _commandHandler.Handle(command);
+
+            var nonAvailabilities = _context.VhoNonAvailabilities;
+            var justiceUserNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUser.Id);
+
+            // Assert
+            nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 1);
+            justiceUserNonWorkHours.StartTime.Should().Be(justiceUserNonWorkingHoursStartTime2);
+            justiceUserNonWorkHours.EndTime.Should().Be(justiceUserNonWorkingHoursEndTime2);
+        }
+        
+        [Test]
+        public async Task Should_deallocate_hearings_when_users_no_longer_available()
+        {
+            // Arrange
+            var seededHearing1 = await Hooks.SeedVideoHearing();
+            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var allocatedUser1 = await Hooks.SeedJusticeUser("cso1@email.com", "Cso1", "Test");
+            var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing1.Id,
+                JusticeUserId = allocatedUser1.Id
+            });
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = seededHearing2.Id,
+                JusticeUserId = allocatedUser2.Id
+            });
+            await db.SaveChangesAsync();
+            var hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
+            hearing1.AllocatedTo.Should().NotBeNull();
+            hearing1.AllocatedTo.Id.Should().Be(allocatedUser1.Id);
+            var hearing2 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing2.Id));
+            hearing2.AllocatedTo.Should().NotBeNull();
+            hearing2.AllocatedTo.Id.Should().Be(allocatedUser2.Id);
+
+            var requests = new List<UploadNonWorkingHoursRequest> {
+                new UploadNonWorkingHoursRequest(
+                    allocatedUser1.Username,
+                    DateTime.Today.AddDays(1).AddHours(0).AddMinutes(0),
+                    DateTime.Today.AddDays(1).AddHours(23).AddMinutes(0)
+                ),
+                new UploadNonWorkingHoursRequest(
+                    allocatedUser2.Username,
+                    DateTime.Today.AddDays(1).AddHours(0).AddMinutes(0),
+                    DateTime.Today.AddDays(1).AddHours(23).AddMinutes(0)
+                )
+            };
+            
+            var command = new UploadNonWorkingHoursCommand(requests);
+            
+            // Act
+            await _commandHandler.Handle(command);
+            
+            // Assert
+            hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
+            hearing1.AllocatedTo.Should().BeNull();
+            hearing2 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing2.Id));
+            hearing2.AllocatedTo.Should().BeNull();
         }
     }
 }

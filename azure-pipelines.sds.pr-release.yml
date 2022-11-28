@@ -19,10 +19,10 @@ variables:
     value: 'BookingsApi'
   - group: vh-bookings-api
   - name: run_acceptance_tests
-    value: false
+    value: true
 
 stages:
-#####################################################
+####################################################
 # CI Build Checks. ##################################
   - stage: CI_Build
     displayName: CI Build
@@ -127,7 +127,7 @@ stages:
               outputPath: $(Build.StagingDirectory)
               contextName: ${{ variables.efContextName }}
               workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-              migrationsPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi.DAL/Migrations
+              migrationsPath: BookingsApi/BookingsApi.DAL/Migrations
               projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
@@ -142,14 +142,18 @@ stages:
 
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: PublishAcceptanceTests
-          displayName: Publish Acceptance Tests 
+          dependsOn: package_nuget
+          displayName: Publish Acceptance Tests
           variables:
-            projectPath: BookingsApi/BookingsApi
+            projectPath: "$(app_path)/$(app_path)"
           steps:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
+              netVersion: 6.x
               coreProjectPath: $(projectPath)
               nugetProjectPath: $(projectPath)
+              nugetConfigPath: $(app_path)
+              useNugetConfig: true
           
 #####################################################
 # Run Entity Framework Dev. #########################
@@ -245,6 +249,8 @@ stages:
 
       - ${{ if eq(variables.run_acceptance_tests, true) }}:
         - job: AcceptanceTestsDev
+          pool: VH Self Hosted
+          dependsOn: aks_push
           displayName: Acceptance Tests Dev
           steps:
           - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
@@ -253,7 +259,7 @@ stages:
               azureSubscription: ${{ variables.subscriptionName }}
               acceptanceTestSettings:
                 - name: Services:BookingsApiUrl
-                  value: "https://vh-bookings-api.dev.platform.hmcts.net"
+                  value: https://vh-bookings-api-pr-$(System.PullRequest.PullRequestNumber).dev.platform.hmcts.net
                 - name: ApplicationInsights:InstrumentationKey
                   value: applicationinsights--instrumentationkey
                   keyVaultName: vh-infra-core-${{ variables.env }}
@@ -279,7 +285,7 @@ stages:
                   keyVaultName: vh-bookings-api-${{ variables.env }}
                   secret: true
                 
-#####################################################
+##################################################
 # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
     dependsOn: Install

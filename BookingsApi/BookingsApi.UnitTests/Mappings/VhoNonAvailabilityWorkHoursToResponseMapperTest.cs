@@ -15,23 +15,25 @@ namespace BookingsApi.UnitTests.Mappings
         public void Map_NonAvailability_VhoNonAvailabilityWorkHoursToResponseMapper()
         {
             // Arrange
+            var id = 1;
             var start = DateTime.Now;
             var end = DateTime.Now;
             var vhoNonAvailability = new List<VhoNonAvailability>
             {
-                new()
+                new VhoNonAvailability(id)
                 {
                     StartTime = start, 
                     EndTime = end,
                     CreatedBy = "created.by@email.com",
-                    JusticeUserId = new Guid()
+                    JusticeUserId = Guid.NewGuid()
                 }
             };
 
             var vhoNonAvailabilityWorkHoursResponse = new List<VhoNonAvailabilityWorkHoursResponse>()
             {
-                new()
+                new VhoNonAvailabilityWorkHoursResponse()
                 {
+                    Id = id,
                     StartTime = start, 
                     EndTime = end
                 }

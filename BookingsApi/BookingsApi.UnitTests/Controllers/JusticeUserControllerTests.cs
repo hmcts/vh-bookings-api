@@ -2,9 +2,9 @@
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings;
-using BookingsApi.UnitTests.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json;
@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Controllers
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
                 ContactEmail = "email.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.vhTeamLead, "Video Hearings Team Lead")
+                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
             };
 
             _queryHandlerMock = new Mock<IQueryHandler>();

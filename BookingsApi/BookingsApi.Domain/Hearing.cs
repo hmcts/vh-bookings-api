@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -89,6 +90,10 @@ namespace BookingsApi.Domain
                 }
             }
         }
+
+        public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
+        public virtual IList<Allocation> Allocations { get; protected set; }
+        public JusticeUser AllocatedTo => Allocations?.FirstOrDefault()?.JusticeUser;
 
         public void CancelHearing()
         {
@@ -309,6 +314,7 @@ namespace BookingsApi.Domain
         {
             //It has been assumed that only one case exists for a given hearing, for now.
             var existingCase = GetCases().FirstOrDefault();
+            if (existingCase == null) return;
             existingCase.Number = @case.Number;
             existingCase.Name = @case.Name;
         }
@@ -345,6 +351,11 @@ namespace BookingsApi.Domain
                 UpdateCase(cases.First());
             }
 
+            if (ScheduledDateTime != scheduledDateTime)
+            {
+                Deallocate();
+            }
+            
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
 
@@ -354,6 +365,62 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
+        }
+
+        public bool CanAllocate(JusticeUser user, AllocateHearingConfiguration configuration)
+        {
+            if (ScheduledDateTime.Date != ScheduledEndTime.Date)
+            {
+                throw new DomainRuleException("AllocationNotSupported",
+                    $"Unable to allocate to hearing {Id}, hearings which span multiple days are not currently supported");
+            }
+
+            if (!user.IsAvailable(ScheduledDateTime, ScheduledEndTime, configuration))
+            {
+                return false;
+            }
+
+            var allocations = user.Allocations
+                // Only those that end on or after this hearing's start time, plus our minimum allowed gap
+                .Where(a => a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration + configuration.MinimumGapBetweenHearingsInMinutes) >= ScheduledDateTime)
+                .ToList();
+
+            var gapBetweenHearingsIsInsufficient = allocations.Any(a => (ScheduledDateTime - a.Hearing.ScheduledDateTime).TotalMinutes < configuration.MinimumGapBetweenHearingsInMinutes);
+            if (gapBetweenHearingsIsInsufficient)
+            {
+                return false;
+            }
+            
+            var concurrentAllocatedHearings = CountConcurrentAllocatedHearings(allocations);
+            if (concurrentAllocatedHearings > configuration.MaximumConcurrentHearings)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
+        private int CountConcurrentAllocatedHearings(IEnumerable<Allocation> allocations)
+        {
+            var hearingsToCheck = allocations
+                .Select(a => new
+                {
+                    StartDate = a.Hearing.ScheduledDateTime,
+                    EndDate = a.Hearing.ScheduledEndTime
+                })
+                .OrderBy(a => a.StartDate)
+                .ToList();
+    
+            hearingsToCheck.Add(new
+            {
+                StartDate = ScheduledDateTime, 
+                EndDate = ScheduledEndTime
+            });
+            
+            var minEndTime = hearingsToCheck.Min(a => a.EndDate);
+            var count = hearingsToCheck.Count(a => a.StartDate < minEndTime);
+
+            return count;
         }
 
         private bool DoesParticipantExistByContactEmail(string contactEmail)
@@ -438,6 +505,16 @@ namespace BookingsApi.Domain
                 ConfirmedBy = updatedBy;
                 ConfirmedDate = DateTime.UtcNow;
             }
+
+            if (newStatus == BookingStatus.Cancelled)
+            {
+                Deallocate();
+            }
+        }
+
+        public void Deallocate()
+        {
+            Allocations?.Clear();
         }
     }
 }
