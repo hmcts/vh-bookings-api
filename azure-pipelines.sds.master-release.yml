@@ -180,6 +180,7 @@ stages:
 - stage: Helm
   displayName: Push Helm Charts
   dependsOn: Docker_Build_Push
+  condition: succeeded('Docker_Build_Push')
   variables:
   - template: variables/staging.yaml
   - template: variables/shared.yaml
@@ -209,6 +210,7 @@ stages:
 - stage: Run_Acceptance_Tests
   displayName: "Run Acceptance Tests"
   dependsOn: Helm
+  condition: succeeded('Helm')
   variables:
   - template: variables/staging.yaml
   - template: variables/shared.yaml
@@ -229,7 +231,7 @@ stages:
   - job: AcceptanceTestsDev
     pool: VH Self Hosted
     dependsOn: CheckDeployment
-    displayName: Acceptance Tests Dev
+    displayName: Acceptance Tests Staging
     steps:
     - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
       parameters:
