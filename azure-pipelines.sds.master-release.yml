@@ -55,9 +55,8 @@ stages:
 - ${{ each env in parameters.environment }}:
   - stage: Run_Entity_Framework_${{ env }}
     displayName: ${{ env }} EF Release
+    dependsOn: pre_run_tasks
     condition: eq(lower(dependencies.pre_run_tasks.outputs['Generate_Entity_Framework_Script.git.hasChanged']), 'true')
-    dependsOn:
-    - pre_run_tasks
     variables:
     - template: variables/${{ lower(env) }}.yaml
     - template: variables/shared.yaml
@@ -109,6 +108,7 @@ stages:
     - Run_Entity_Framework_Dev
     - Run_Entity_Framework_Staging
     - Run_Entity_Framework_Test
+  condition: and(not(failed()), not(canceled()))
   variables:
     - template: variables/staging.yaml
     - template: variables/shared.yaml
@@ -146,6 +146,7 @@ stages:
     - Run_Entity_Framework_Dev
     - Run_Entity_Framework_Staging
     - Run_Entity_Framework_Test
+  condition: and(not(failed()), not(canceled()))
   variables:
   - template: variables/shared.yaml
     parameters:
