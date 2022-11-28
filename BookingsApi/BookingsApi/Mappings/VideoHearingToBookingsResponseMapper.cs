@@ -59,7 +59,8 @@ namespace BookingsApi.Mappings
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
-                CourtRoomAccount = courtRoomAccount
+                CourtRoomAccount = courtRoomAccount,
+                AllocatedVho = videoHearing.AllocatedTo.ContactEmail
             };
 
             return response;
