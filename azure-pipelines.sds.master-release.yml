@@ -37,16 +37,16 @@ stages:
       parameters:
         outputPath: $(Build.StagingDirectory)
         contextName: ${{ variables.efContextName }}
-        workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+        workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
         projectName: ${{ variables.efProjectName }}
-        migrationsPath: BookingsApi/BookingsApi.DAL/Migrations
+        migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
 
   - job: package_nuget
     displayName: "Package Nuget Packages"
     steps:
       - template: templates\dotnet\package-nuget-packages.yml@azTemplates
         parameters:
-          nugetProjectPath: 'BookingsApi/${{ variables.nuget_package_name }}'
+          nugetProjectPath: '${{ variables.appName }}/${{ variables.nuget_package_name }}'
           vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
           gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
@@ -54,14 +54,14 @@ stages:
     dependsOn: package_nuget
     displayName: Publish Acceptance Tests
     variables:
-      projectPath: "BookingsApi/BookingsApi"
+      projectPath: "${{ variables.appName }}/${{ variables.appName }}"
     steps:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
         netVersion: 6.x
         coreProjectPath: $(projectPath)
         nugetProjectPath: $(projectPath)
-        nugetConfigPath: BookingsApi
+        nugetConfigPath: ${{ variables.appName }}
         useNugetConfig: true
 
 #####################################################
@@ -136,7 +136,7 @@ stages:
     - bash: |
         sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
       displayName: Add NuGet Feed Authentication
-      workingDirectory: BookingsApi
+      workingDirectory: ${{ variables.appName }}
   
     - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
       parameters:
