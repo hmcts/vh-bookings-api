@@ -153,6 +153,11 @@ stages:
         imageTags:
           - '${{ variables.stagingTagName }}'
 
+    - bash: |
+        printenv
+        echo "${{ variables.pushImage.fullImageName }}"
+        echo "$(pushImage.fullImageName)"
+
 #####################################################
 # Deploy Nuget Packages. ############################
 - stage: Push_Nuget
