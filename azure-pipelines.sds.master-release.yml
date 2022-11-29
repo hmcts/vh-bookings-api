@@ -214,8 +214,6 @@ stages:
   - Docker_Build_Push
   condition: succeeded('Helm')
   variables:
-  - name: imageName
-    value: $[ stageDependencies.Docker_Build_Push.Docker_Build.outputs['pushImage.imageTag'] ]
   - template: variables/staging.yaml
   - template: variables/shared.yaml
     parameters:
@@ -223,6 +221,9 @@ stages:
   jobs:
   - job: CheckDeployment
     displayName: Check AKS Deployment
+    variables:
+    - name: imageName
+      value: $[ stageDependencies.Docker_Build_Push.Docker_Build.outputs['pushImage.imageTag'] ]
     steps:
     - template: templates\Containerisation\check-deployment.yaml@azTemplates
       parameters: 
