@@ -231,6 +231,7 @@ stages:
         requiredImage: $(fullImageName)
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
+        retries: 20
         
   - job: AcceptanceTestsStaging
     pool: VH Self Hosted
