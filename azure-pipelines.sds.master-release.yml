@@ -209,9 +209,12 @@ stages:
 # Run Acceptance Tests on Staging. ######
 - stage: Run_Acceptance_Tests
   displayName: "Run Acceptance Tests"
-  dependsOn: Helm
+  dependsOn: 
+  - Helm
+  - Docker_Build_Push
   condition: succeeded('Helm')
   variables:
+  - imageName: $[ stageDependencies.Docker_Build_Push.Docker_Build.outputs['pushImage.imageTag'] ]
   - template: variables/staging.yaml
   - template: variables/shared.yaml
     parameters:
@@ -224,7 +227,7 @@ stages:
       parameters: 
         namespace: "vh"
         deploymentName: "${{ variables.chartName }}-${{ variables.stagingTagName }}"
-        requiredImage: "${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.stagingTagName }}"
+        requiredImage: $(imageName)
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
 
