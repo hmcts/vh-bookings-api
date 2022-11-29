@@ -232,7 +232,7 @@ stages:
       parameters: 
         namespace: "vh"
         deploymentName: ${{ variables.chartName }}
-        requiredImage: ${{ variables.fullImageName }}
+        requiredImage: $(fullImageName)
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
         
