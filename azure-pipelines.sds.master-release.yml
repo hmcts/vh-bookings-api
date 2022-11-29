@@ -226,7 +226,7 @@ stages:
     - template: templates\Containerisation\check-deployment.yaml@azTemplates
       parameters: 
         namespace: "vh"
-        deploymentName: "${{ variables.chartName }}-${{ variables.stagingTagName }}"
+        deploymentName: ${{ variables.chartName }}
         requiredImage: $(imageName)
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
