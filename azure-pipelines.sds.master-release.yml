@@ -153,6 +153,10 @@ stages:
         imageTags:
           - '${{ variables.stagingTagName }}'
 
+    - pwsh: |
+        Write-Host "$(pushImage.imageTag)"
+        Write-Host "$(pushImage.imageTag)"
+
 #####################################################
 # Deploy Nuget Packages. ############################
 - stage: Push_Nuget
