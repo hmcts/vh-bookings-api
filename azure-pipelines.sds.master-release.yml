@@ -10,7 +10,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: VIH-9517
+      ref: master
       endpoint: hmcts
 
 parameters:
