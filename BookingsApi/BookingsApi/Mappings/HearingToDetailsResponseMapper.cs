@@ -3,6 +3,7 @@ using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Extensions;
+using BookingsApi.Helpers;
 
 namespace BookingsApi.Mappings
 {
@@ -25,19 +26,8 @@ namespace BookingsApi.Mappings
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
             
-            var allocatedVho = "Not Allocated";
-            var isScottishVenue =
-                HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName =>
-                    venueName == videoHearing.HearingVenueName);
-            if (videoHearing.AllocatedTo == null) {
-                if (isScottishVenue || videoHearing.CaseTypeId == 3) // not required if scottish venue or generic type
-                {
-                    allocatedVho = "Not Required";
-                }
-            } else {
-                allocatedVho = videoHearing.AllocatedTo.ContactEmail;
-            }
-            
+            var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
+
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,

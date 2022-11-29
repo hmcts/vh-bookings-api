@@ -6,6 +6,7 @@ using System.Linq;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Extensions;
+using BookingsApi.Helpers;
 
 namespace BookingsApi.Mappings
 {
@@ -37,18 +38,7 @@ namespace BookingsApi.Mappings
             var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
             var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : string.Empty;
-            var allocatedVho = "Not Allocated";
-            var isScottishVenue =
-                HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName =>
-                    venueName == videoHearing.HearingVenueName);
-            if (videoHearing.AllocatedTo == null) {
-                if (isScottishVenue || videoHearing.CaseTypeId == 3) // not required if scottish venue or generic type
-                {
-                    allocatedVho = "Not Required";
-                }
-            } else {
-                allocatedVho = videoHearing.AllocatedTo.ContactEmail;
-            }
+            var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
 
             var response = new BookingsHearingResponse
             {
