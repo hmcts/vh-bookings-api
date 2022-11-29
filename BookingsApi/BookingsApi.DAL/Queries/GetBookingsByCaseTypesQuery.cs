@@ -65,6 +65,8 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
+                .Include(x=>x.Allocations)
+                .Include("Allocations.JusticeUser")
                 .AsNoTracking();
 
             if (query.CaseTypes.Any())

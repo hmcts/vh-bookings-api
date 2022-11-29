@@ -127,5 +127,10 @@ namespace BookingsApi.Contract.Responses
         ///     The code of the hearing type
         /// </summary>
         public string HearingTypeCode { get; set; }
+        
+        /// <summary>
+        ///     The Allocated User to this hearing
+        /// </summary>
+        public string AllocatedVho { get; set; }
     }
 }

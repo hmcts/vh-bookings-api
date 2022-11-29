@@ -1,5 +1,6 @@
 using System.Linq;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Extensions;
 
@@ -23,6 +24,19 @@ namespace BookingsApi.Mappings
             var endpoints = videoHearing.GetEndpoints()
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
+            
+            var allocatedVho = "Not Allocated";
+            var isScottishVenue =
+                HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName =>
+                    venueName == videoHearing.HearingVenueName);
+            if (videoHearing.AllocatedTo == null) {
+                if (isScottishVenue || videoHearing.CaseTypeId == 3) // not required if scottish venue or generic type
+                {
+                    allocatedVho = "Not Required";
+                }
+            } else {
+                allocatedVho = videoHearing.AllocatedTo.ContactEmail;
+            }
             
             var response = new HearingDetailsResponse
             {
@@ -48,7 +62,8 @@ namespace BookingsApi.Mappings
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                HearingTypeCode = videoHearing.HearingType.Code
+                HearingTypeCode = videoHearing.HearingType.Code,
+                AllocatedVho = allocatedVho
             };
 
             return response;
