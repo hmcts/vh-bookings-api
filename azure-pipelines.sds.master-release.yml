@@ -154,7 +154,7 @@ stages:
           - '${{ variables.stagingTagName }}'
 
     - bash: |
-        echo "$(pushImage.fullImageName"
+        echo "$(pushImage.fullImageName)"
         printenv
 
 #####################################################
