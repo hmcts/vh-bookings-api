@@ -153,9 +153,9 @@ stages:
         imageTags:
           - '${{ variables.stagingTagName }}'
 
-    - pwsh: |
-        Write-Host "$(pushImage.imageTag)"
-        Write-Host "$(pushImage.imageTag)"
+    - powershell: |
+        Write-Host "$(pushImage.stagingTagName)"
+        Write-Host "$(stagingTagNameNo)"
 
 #####################################################
 # Deploy Nuget Packages. ############################
