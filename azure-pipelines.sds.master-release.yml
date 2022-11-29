@@ -219,7 +219,7 @@ stages:
   condition: succeeded('Helm')
   variables:
   - name: fullImageName
-    value: $[ dependencies.Docker_Build_Push.outputs['Docker_Build.pushImage.fullImageName'] ]
+    value: $[ stageDependencies.Docker_Build_Push.Docker_Build.outputs['pushImage.fullImageName'] ]
   - template: variables/staging.yaml
   - template: variables/shared.yaml
     parameters:
