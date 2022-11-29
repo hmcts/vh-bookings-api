@@ -153,6 +153,10 @@ stages:
         imageTags:
           - '${{ variables.stagingTagName }}'
 
+    - bash: |
+        echo "$(pushImage.fullImageName"
+        printenv
+
 #####################################################
 # Deploy Nuget Packages. ############################
 - stage: Push_Nuget
@@ -214,7 +218,7 @@ stages:
   - Docker_Build_Push
   condition: succeeded('Helm')
   variables:
-  - name: imageName
+  - name: fullImageName
     value: $[ dependencies.Docker_Build_Push.outputs['Docker_Build.pushImage.fullImageName'] ]
   - template: variables/staging.yaml
   - template: variables/shared.yaml
@@ -228,7 +232,7 @@ stages:
       parameters: 
         namespace: "vh"
         deploymentName: ${{ variables.chartName }}
-        requiredImage: $(imageName)
+        requiredImage: ${{ variables.fullImageName }}
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
         
