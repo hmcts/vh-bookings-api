@@ -37,16 +37,16 @@ stages:
       parameters:
         outputPath: $(Build.StagingDirectory)
         contextName: ${{ variables.efContextName }}
-        workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
+        workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
         projectName: ${{ variables.efProjectName }}
-        migrationsPath: BookingsApi/BookingsApi.DAL/Migrations
+        migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
 
   - job: package_nuget
     displayName: "Package Nuget Packages"
     steps:
       - template: templates\dotnet\package-nuget-packages.yml@azTemplates
         parameters:
-          nugetProjectPath: 'BookingsApi/${{ variables.nuget_package_name }}'
+          nugetProjectPath: '${{ variables.appName }}/${{ variables.nuget_package_name }}'
           vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
           gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
@@ -54,14 +54,14 @@ stages:
     dependsOn: package_nuget
     displayName: Publish Acceptance Tests
     variables:
-      projectPath: "BookingsApi/BookingsApi"
+      projectPath: "${{ variables.appName }}/${{ variables.appName }}"
     steps:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
         netVersion: 6.x
         coreProjectPath: $(projectPath)
         nugetProjectPath: $(projectPath)
-        nugetConfigPath: BookingsApi
+        nugetConfigPath: ${{ variables.appName }}
         useNugetConfig: true
 
 #####################################################
@@ -136,7 +136,7 @@ stages:
     - bash: |
         sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
       displayName: Add NuGet Feed Authentication
-      workingDirectory: BookingsApi
+      workingDirectory: ${{ variables.appName }}
   
     - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
       parameters:
@@ -180,6 +180,7 @@ stages:
 - stage: Helm
   displayName: Push Helm Charts
   dependsOn: Docker_Build_Push
+  condition: succeeded('Docker_Build_Push')
   variables:
   - template: variables/staging.yaml
   - template: variables/shared.yaml
@@ -208,8 +209,13 @@ stages:
 # Run Acceptance Tests on Staging. ######
 - stage: Run_Acceptance_Tests
   displayName: "Run Acceptance Tests"
-  dependsOn: Helm
+  dependsOn: 
+  - Helm
+  - Docker_Build_Push
+  condition: succeeded('Helm')
   variables:
+  - name: fullImageName
+    value: $[ stageDependencies.Docker_Build_Push.Docker_Build.outputs['pushImage.fullImageName'] ]
   - template: variables/staging.yaml
   - template: variables/shared.yaml
     parameters:
@@ -221,15 +227,16 @@ stages:
     - template: templates\Containerisation\check-deployment.yaml@azTemplates
       parameters: 
         namespace: "vh"
-        deploymentName: "${{ variables.chartName }}-${{ variables.stagingTagName }}"
-        requiredImage: "${{ variables.acrName }}.azurecr.io/${{ variables.repositoryName }}:${{ variables.stagingTagName }}"
+        deploymentName: ${{ variables.chartName }}
+        requiredImage: $(fullImageName)
         subscriptionName: "${{ variables.subscriptionName }}"
         env: ${{ variables.env }}
-
-  - job: AcceptanceTestsDev
+        retries: 20
+        
+  - job: AcceptanceTestsStaging
     pool: VH Self Hosted
     dependsOn: CheckDeployment
-    displayName: Acceptance Tests Dev
+    displayName: Acceptance Tests Staging
     steps:
     - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
       parameters:

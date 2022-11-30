@@ -7,6 +7,8 @@ parameters:
     default: ''
 
 variables:
+  - name: appName
+    value: BookingsApi
 
   - name: nuget_org_name
     value: 'Video Hearings/vh-packages'
