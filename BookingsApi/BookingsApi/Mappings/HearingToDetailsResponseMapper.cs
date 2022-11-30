@@ -53,7 +53,7 @@ namespace BookingsApi.Mappings
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
                 HearingTypeCode = videoHearing.HearingType.Code,
-                AllocatedVho = allocatedVho
+                AllocatedTo = allocatedVho
             };
 
             return response;

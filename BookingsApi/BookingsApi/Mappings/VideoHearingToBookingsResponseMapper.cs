@@ -64,7 +64,7 @@ namespace BookingsApi.Mappings
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 CourtRoomAccount = courtRoomAccount,
-                AllocatedVho = allocatedVho
+                AllocatedTo = allocatedVho
             };
 
             return response;

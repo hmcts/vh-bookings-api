@@ -131,6 +131,6 @@ namespace BookingsApi.Contract.Responses
         /// <summary>
         ///     The Allocated User to this hearing
         /// </summary>
-        public string AllocatedVho { get; set; }
+        public string AllocatedTo { get; set; }
     }
 }

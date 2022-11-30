@@ -125,6 +125,6 @@ namespace BookingsApi.Contract.Responses
         /// <summary>
         /// Gets or sets Allocated VHO.
         /// </summary>
-        public string AllocatedVho { get; set; }
+        public string AllocatedTo { get; set; }
     }
 }
