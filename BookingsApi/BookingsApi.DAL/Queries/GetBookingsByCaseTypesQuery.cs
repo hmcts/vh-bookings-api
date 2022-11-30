@@ -65,6 +65,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
+                .Include(x=>x.Allocations).ThenInclude(x=>x.JusticeUser)
                 .AsNoTracking();
 
             if (query.CaseTypes.Any())
@@ -132,7 +133,7 @@ namespace BookingsApi.DAL.Queries
             return new CursorPagedResult<VideoHearing, string>(result, nextCursor);
         }
 
-        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
+        private static void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
         {
             try
             {

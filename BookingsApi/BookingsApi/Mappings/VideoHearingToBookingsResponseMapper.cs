@@ -3,7 +3,10 @@ using BookingsApi.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Extensions;
+using BookingsApi.Helpers;
 
 namespace BookingsApi.Mappings
 {
@@ -35,6 +38,7 @@ namespace BookingsApi.Mappings
             var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
             var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : string.Empty;
+            var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
 
             var response = new BookingsHearingResponse
             {
@@ -59,7 +63,8 @@ namespace BookingsApi.Mappings
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
-                CourtRoomAccount = courtRoomAccount
+                CourtRoomAccount = courtRoomAccount,
+                AllocatedTo = allocatedVho
             };
 
             return response;
