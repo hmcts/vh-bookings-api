@@ -147,7 +147,7 @@ namespace BookingsApi.DAL.Queries
             }
         }
 
-        private static IQueryable<VideoHearing> GetHearingsWithoutJudge(IEnumerable<VideoHearing> hearings)
+        private IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
         {
             var videoHearings = new List<VideoHearing>();
 
