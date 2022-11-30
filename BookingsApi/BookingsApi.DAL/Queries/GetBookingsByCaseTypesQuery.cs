@@ -133,7 +133,7 @@ namespace BookingsApi.DAL.Queries
             return new CursorPagedResult<VideoHearing, string>(result, nextCursor);
         }
 
-        private void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
+        private static void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace BookingsApi.DAL.Queries
             }
         }
 
-        private IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
+        private static IQueryable<VideoHearing> GetHearingsWithoutJudge(IEnumerable<VideoHearing> hearings)
         {
             var videoHearings = new List<VideoHearing>();
 

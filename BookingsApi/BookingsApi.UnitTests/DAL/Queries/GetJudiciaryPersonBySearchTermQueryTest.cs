@@ -2,7 +2,6 @@
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.DAL.Queries
