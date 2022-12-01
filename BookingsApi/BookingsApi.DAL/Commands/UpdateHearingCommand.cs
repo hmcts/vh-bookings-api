@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
@@ -41,18 +42,20 @@ namespace BookingsApi.DAL.Commands
     public class UpdateHearingCommandHandler : ICommandHandler<UpdateHearingCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingAllocationService _hearingAllocationService;
 
-        public UpdateHearingCommandHandler(BookingsDbContext context)
+        public UpdateHearingCommandHandler(BookingsDbContext context, IHearingAllocationService hearingAllocationService)
         {
             _context = context;
+            _hearingAllocationService = hearingAllocationService;
         }
 
         public async Task Handle(UpdateHearingCommand command)
         {
             var hearing = await _context.VideoHearings
                 .Include(x=>x.HearingCases).ThenInclude(x=> x.Case)
-                // .Include(x=>x.HearingVenue)
-                .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
+                .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).ThenInclude(x => x.VhoWorkHours)
+                .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).ThenInclude(x => x.VhoNonAvailability)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -60,9 +63,16 @@ namespace BookingsApi.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
 
+            var oldScheduledDateTime = hearing.ScheduledDateTime;
+
             hearing.UpdateHearingDetails(command.HearingVenue, command.ScheduledDateTime,
                 command.ScheduledDuration, command.HearingRoomName, command.OtherInformation,
                 command.UpdatedBy, command.Cases, command.QuestionnaireNotRequired, command.AudioRecordingRequired);
+
+            if (command.ScheduledDateTime != oldScheduledDateTime)
+            {
+                _hearingAllocationService.CheckAndDeallocateHearing(hearing);
+            }
 
             await _context.SaveChangesAsync();
         }
