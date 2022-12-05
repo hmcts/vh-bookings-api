@@ -16,8 +16,6 @@ pr:
 variables:
   - group: vh-github-app-credentials
   - group: vh-bookings-api
-  - name: app_path
-    value: 'BookingsApi'
 
 stages:
 ####################################################
@@ -78,8 +76,8 @@ stages:
         parameters:
           outputPath: $(Build.StagingDirectory)
           contextName: ${{ variables.efContextName }}
-          workingPath: $(System.DefaultWorkingDirectory)/BookingsApi/BookingsApi
-          migrationsPath: BookingsApi/BookingsApi.DAL/Migrations
+          workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
+          migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
           projectName: ${{ variables.efProjectName }}
 
   - job: package_nuget
@@ -87,7 +85,7 @@ stages:
     steps:
       - template: templates\dotnet\package-nuget-packages.yml@azTemplates
         parameters:
-          nugetProjectPath: "BookingsApi/${{ variables.nuget_package_name }}"
+          nugetProjectPath: "${{ variables.appName }}/${{ variables.nuget_package_name }}"
           vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
           gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
@@ -140,7 +138,7 @@ stages:
     - bash: |
         sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
       displayName: Add NuGet Feed Authentication
-      workingDirectory: BookingsApi
+      workingDirectory: ${{ variables.appName }}
 
     - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
       parameters:
