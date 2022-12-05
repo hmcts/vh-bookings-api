@@ -13,10 +13,6 @@ trigger: none
 pr:
   - master
 
-variables:
-  - group: vh-github-app-credentials
-  - group: vh-bookings-api
-
 stages:
 ####################################################
 # CI Build Checks. #################################
@@ -65,7 +61,7 @@ stages:
 # Pre Release Tasks. ###############################
 - stage: Pre_Release_Tasks
   displayName: Pre-Release Tasks
-  dependsOn: []
+  dependsOn: CI_Build
   variables: 
   - template: variables/shared.yaml
   jobs:
@@ -98,7 +94,7 @@ stages:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
         netVersion: 6.x
-        coreProjectPath: $(projectPath)/WrongFolder
+        coreProjectPath: $(projectPath)
         nugetProjectPath: $(projectPath)
         nugetConfigPath: ${{ variables.appName }}
         useNugetConfig: true
@@ -194,6 +190,7 @@ stages:
   condition: and(not(failed()), not(canceled()))
   displayName: Deploy Helm Chart Dev AKS
   variables:
+  - group: vh-github-app-credentials
   - template: variables/dev.yaml
   - template: variables/shared.yaml
     parameters:
@@ -272,6 +269,7 @@ stages:
   condition: succeeded('Install')
   displayName: Acceptance Tests Dev
   variables:
+  - group: vh-bookings-api
   - template: variables/dev.yaml
   - template: variables/shared.yaml
     parameters:
