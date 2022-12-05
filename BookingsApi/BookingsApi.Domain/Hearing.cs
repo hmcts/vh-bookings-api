@@ -351,11 +351,6 @@ namespace BookingsApi.Domain
                 UpdateCase(cases.First());
             }
 
-            if (ScheduledDateTime != scheduledDateTime)
-            {
-                Deallocate();
-            }
-            
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
 

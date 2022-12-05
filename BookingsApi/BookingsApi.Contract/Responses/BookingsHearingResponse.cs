@@ -121,5 +121,10 @@ namespace BookingsApi.Contract.Responses
         /// Gets or sets Judge/Court account (username).
         /// </summary>
         public string CourtRoomAccount { get; set; }
+        
+        /// <summary>
+        /// Gets or sets Allocated VHO.
+        /// </summary>
+        public string AllocatedTo { get; set; }
     }
 }

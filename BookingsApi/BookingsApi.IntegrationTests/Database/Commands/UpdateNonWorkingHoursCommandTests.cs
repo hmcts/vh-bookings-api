@@ -97,7 +97,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 new()
                 {
-                    Id = 3,
                     StartTime = newHour1.StartTime,
                     EndTime = newHour1.EndTime
                 }

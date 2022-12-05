@@ -17,6 +17,7 @@ namespace BookingsApi.DAL.Services
     {
         Task<JusticeUser> AllocateAutomatically(Guid hearingId);
         Task DeallocateFromUnavailableHearings(Guid justiceUserId);
+        void CheckAndDeallocateHearing(Hearing hearing);
     }
 
     public class HearingAllocationService : IHearingAllocationService
@@ -100,6 +101,27 @@ namespace BookingsApi.DAL.Services
                     hearing.Deallocate();
                     _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
                 }
+            }
+        }
+        
+        /// <summary>
+        /// Deallocates the user from the hearing if they are not available
+        /// </summary>
+        /// <param name="hearing"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public void CheckAndDeallocateHearing(Hearing hearing)
+        {
+            var allocatedUser = hearing.AllocatedTo;
+            if (allocatedUser == null)
+            {
+                return;
+            }
+            
+            if (!allocatedUser.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
+            {
+                hearing.Deallocate();
+                _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
             }
         }
 
