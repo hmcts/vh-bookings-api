@@ -78,7 +78,7 @@ stages:
           contextName: ${{ variables.efContextName }}
           workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
           migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-          projectName: ${{ variables.efProjectName }}
+          projectName: ${{ variables.efProjectName }}/WrongFolder
 
   - job: package_nuget
     displayName: "Package NuGet Packages"
