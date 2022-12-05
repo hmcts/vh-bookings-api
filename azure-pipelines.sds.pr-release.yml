@@ -102,7 +102,6 @@ stages:
 # Build Docker Image & Generate EF Script. ##########
 - stage: Dock
   displayName: Docker Build & Push Image
-  #condition: and(not(failed()), not(canceled()))
   variables: 
   - group: aks-cluster-info
   - template: variables/dev.yaml
@@ -185,7 +184,9 @@ stages:
 #####################################################
 # Deploy Helm Chart to Dev. ######################### 
 - stage: Install
-  dependsOn: Run_Entity_Framework_Dev
+  dependsOn: 
+  - Run_Entity_Framework_Dev
+  - Dock
   condition: and(not(failed()), not(canceled()))
   displayName: Deploy Helm Chart Dev AKS
   variables:
@@ -245,7 +246,9 @@ stages:
 ##################################################
 # Deploy Nuget Packages. #########################
 - stage: Push_Nuget
-  dependsOn: Run_Entity_Framework_Dev
+  dependsOn:
+  - Run_Entity_Framework_Dev
+  - Dock
   condition: and(not(failed()), not(canceled()))
   displayName: Deploy NuGet Packages
   variables:
