@@ -51,8 +51,8 @@ stages:
       parameters:
         #vstsFeedId: 'Video Hearings/vh-packages'
         dotnetCoreVersion: '6.x'
-        nugetConfigPath: ${{ variables.app_path }} # Temp - Change To SDS Feed When Possible.
-        unitTestProjectPath: "${{ variables.app_path }}/${{ variables.app_path }}.UnitTests"
+        nugetConfigPath: ${{ variables.appName }} # Temp - Change To SDS Feed When Possible.
+        unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
         coverletCoverageExclusions:
           - "[BookingsApi.*Tests?]*"
           - "[BookingsApi]Startup"
@@ -93,14 +93,14 @@ stages:
     dependsOn: package_nuget
     displayName: Publish Acceptance Tests
     variables:
-      projectPath: "$(app_path)/$(app_path)"
+      projectPath: "${{ variables.appName }}/${{ variables.appName }}"
     steps:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
         netVersion: 6.x
         coreProjectPath: $(projectPath)
         nugetProjectPath: $(projectPath)
-        nugetConfigPath: $(app_path)
+        nugetConfigPath: ${{ variables.appName }}
         useNugetConfig: true
 
 #####################################################
