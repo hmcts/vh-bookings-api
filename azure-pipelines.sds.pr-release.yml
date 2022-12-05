@@ -102,7 +102,7 @@ stages:
 # Build Docker Image & Generate EF Script. ##########
 - stage: Dock
   displayName: Docker Build & Push Image
-  condition: and(not(failed()), not(canceled()))
+  #condition: and(not(failed()), not(canceled()))
   variables: 
   - group: aks-cluster-info
   - template: variables/dev.yaml
