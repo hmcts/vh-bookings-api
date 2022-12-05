@@ -65,7 +65,7 @@ stages:
 # Pre Release Tasks. ###############################
 - stage: Pre_Release_Tasks
   displayName: Pre-Release Tasks
-  dependsOn: CI_Build
+  dependsOn: []
   variables: 
   - template: variables/shared.yaml
   jobs:
@@ -78,7 +78,7 @@ stages:
           contextName: ${{ variables.efContextName }}
           workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
           migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-          projectName: ${{ variables.efProjectName }}/WrongFolder
+          projectName: ${{ variables.efProjectName }}
 
   - job: package_nuget
     displayName: "Package NuGet Packages"
@@ -98,7 +98,7 @@ stages:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
         netVersion: 6.x
-        coreProjectPath: $(projectPath)
+        coreProjectPath: $(projectPath)/WrongFolder
         nugetProjectPath: $(projectPath)
         nugetConfigPath: ${{ variables.appName }}
         useNugetConfig: true
