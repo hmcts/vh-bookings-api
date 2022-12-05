@@ -61,7 +61,6 @@ stages:
 # Pre Release Tasks. ###############################
 - stage: Pre_Release_Tasks
   displayName: Pre-Release Tasks
-  dependsOn: CI_Build
   variables: 
   - template: variables/shared.yaml
   jobs:
