@@ -48,9 +48,6 @@ variables:
     - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
       - group: vh-preview
 
-pool: 
-  vmImage: ubuntu-22.04
-
 trigger: none
 pr: none
 
