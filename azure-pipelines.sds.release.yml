@@ -61,7 +61,7 @@ stages:
     - stage: Approve_Entity_Framework
       displayName: 'Approve EF Release'
       pool:
-        vmImage: 'ubuntu-latest'
+        vmImage: 'ubuntu-22.04'
       jobs:
         - job: waitForValidation
           displayName: 'Approve Entity Framework'
