@@ -146,7 +146,7 @@ stages:
       dependsOn: Run_Entity_Framework_Prod
       condition: in(dependencies.Run_Entity_Framework_Prod.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
       pool:
-        vmImage: 'ubuntu-latest'
+        vmImage: 'ubuntu-22.04'
       jobs:
       - job: waitForValidation
         displayName: 'Approve Helm Release'
