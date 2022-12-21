@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+{{ template "hmcts.metadata.v2" . }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ template "hmcts.releasename.v2" . }}

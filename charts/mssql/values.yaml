@@ -1,0 +1,21 @@
+# Default values for mssql.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+releaseNameOverride: vh-video-api-pr-001-sql
+
+replicaCount: 1
+
+image:
+  repository: mcr.microsoft.com/mssql/server
+  tag: 2022-latest
+
+sqlConfig:
+  mssqlPid: Developer
+  mssqlAgentEnabled: true
+  saPassword: s3curePa5s123
+
+service:
+  port: 1433
+
+pvc:
+ dbSize: 2Gi

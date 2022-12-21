@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sql-tools
+spec:
+  containers:
+  - image: mcr.microsoft.com/mssql-tools
+    command:
+      - "sleep"
+      - "604800"
+    imagePullPolicy: IfNotPresent
+    name: sql-tools
+    env:
+      - name: CONNECTIONSTRINGS__VHVIDEO
+        valueFrom:
+          secretKeyRef:
+            name: {{ template "hmcts.releasename.v2" . }}-env
+            key: CONNECTIONSTRINGS__VHVIDEO
+  restartPolicy: Always

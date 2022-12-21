@@ -11,3 +11,6 @@ dependencies:
   - name: java
     version: 3.7.2
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+  - name: mssql
+    version: 0.1.0
+    repository: "file://../mssql"
