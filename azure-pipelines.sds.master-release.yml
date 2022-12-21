@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMddhhmm)-$(Rev:r)
+name: $(Date:yyyyMMddHHmm)-$(Rev:r)
 
 trigger:
   - master
@@ -20,6 +20,9 @@ parameters:
   - Dev
   - Test
   - Staging
+
+pool: 
+  vmImage: ubuntu-22.04
 
 #####################################################
 # Pre Run Tasks. ####################################
