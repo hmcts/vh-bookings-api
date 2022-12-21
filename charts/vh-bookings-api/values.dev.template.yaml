@@ -9,3 +9,25 @@ java:
   ingressHost: ${SERVICE_FQDN}
   releaseNameOverride: ${RELEASE_NAME}
   envFromSecret: ${RELEASE_NAME}-sql-env
+  keyVaults:
+    vh-infra-core:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
+      usePodIdentity: true
+      secrets:
+        - applicationinsights--instrumentationkey
+        - azuread--tenantid
+        - servicebusqueue--connectionstring
+    vh-bookings-api:
+      excludeEnvironmentSuffix: false
+      resourceGroup: vh-infra-core-{{ .Values.global.environment }}
+      usePodIdentity: true
+      secrets:
+        - azuread--clientid
+        - azuread--clientsecret
+        - kinlyconfiguration--sipaddressstem
+        - launchdarkly--sdkkey
+        - name: azuread--identifieruri
+          alias: azuread--bookingsapiresourceid
+        - name: azuread--identifieruri
+          alias: services--bookingsapiresourceid
