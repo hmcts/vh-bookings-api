@@ -1,0 +1,18 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+{{ template "hmcts.metadata.v2" . }}
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: Managed
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+{{ template "hmcts.metadata.v2" . }}
+    volume.beta.kubernetes.io/storage-class: {{ template "hmcts.releasename.v2" . }}
+spec:
+  accessModes:
+  - {{ .Values.pvc.accessMode | default "ReadWriteOnce" | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.dbSize | default "1Gi" | quote }}

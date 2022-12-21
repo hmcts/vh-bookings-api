@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+{{ template "hmcts.metadata.v2" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "hmcts.releasename.v2" . }}
+  template:
+    metadata:
+      {{- include "hmcts.labels.v2" . | indent 6 }}
+      {{- include "hmcts.annotations.v2" . | indent 6 }}
+    spec:
+      securityContext:
+        fsGroup: 10001
+      restartPolicy: {{ .Values.restartPolicy | default "Always" | quote }}
+      hostname: {{ (.Values.hostname | quote) | default (include "hmcts.releasename.v2" .) }}
+      containers:
+        - name: {{ template "hmcts.releasename.v2" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" | quote }}
+          command: ["/bin/bash", "-c", "cp /var/opt/config/mssql.conf /var/opt/mssql/mssql.conf && /opt/mssql/bin/sqlservr"]
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: {{ tpl ($val | quote) $ }}
+            {{- end }}
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_PID
+              value: {{ .Values.sqlConfig.mssqlPid | quote }} 
+            - name: MSSQL_AGENT_ENABLED
+              value: {{ .Values.sqlConfig.mssqlAgentEnabled | quote }}
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "hmcts.releasename.v2" . }}
+                  key: sa-password
+          volumeMounts:
+            - name: mssqldb
+              mountPath: /var/opt/mssql
+            - name: mssqlconfig
+              mountPath: /var/opt/config
+      volumes:
+      - name: mssqldb
+        persistentVolumeClaim:
+          claimName: {{ template "hmcts.releasename.v2" . }}
+      - name: mssqlconfig
+        configMap: 
+          name: {{ template "hmcts.releasename.v2" . }}
