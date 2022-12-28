@@ -148,7 +148,38 @@ namespace BookingsApi.UnitTests.Validation
             result.Errors[0].PropertyName.Should().Be($"{_username}, Day Number 1");
             result.Errors[0].ErrorMessage.Should().Be("End time 09:00:00 is before start time 17:00:00.");
         }
+        [Test]
+        public void Should_fail_validation_when_duplicate_users_in_upload()
+        {
+            // Arrange
+            var requests = new List<UploadWorkHoursRequest>
+            {
+                new UploadWorkHoursRequest
+                {
+                    Username = _username,
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 17, 0, 9, 0)
+                    }
+                },
+                new UploadWorkHoursRequest
+                {
+                    Username = _username,
+                    WorkingHours = new List<WorkingHours> {
+                        new WorkingHours(1, 17, 0, 9, 0)
+                    }
+                } 
+            };
 
+            var validator = new UploadWorkHoursRequestsValidation();
+
+            // Act
+            var result = validator.ValidateRequests(requests);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Errors[0].PropertyName.Should().Be($"{_username}");
+            result.Errors[0].ErrorMessage.Should().Be("Multiple entries for user. Only one row per user required");
+        }
         [Test]
         public void Should_pass_validation_when_all_times_are_valid()
         {
