@@ -1,3 +1,4 @@
+using System;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -146,6 +147,16 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
         {
+            var query = new GetJusticeUserByUsernameQuery(username);
+            var user = await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(query);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            
+            var userId = user.Id;
+            
             var validationResult = await new UpdateNonWorkingHoursRequestValidation().ValidateAsync(request);
             if (!validationResult.IsValid)
             {
@@ -154,10 +165,11 @@ namespace BookingsApi.Controllers
             }
             var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
             var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
-            if (existingHours == null || !existingHours.Any())
+            if (existingHours == null)
             {
                 return NotFound();
             }
+            
             var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
             if (!hourValidationResult.IsValid)
             {
@@ -169,7 +181,7 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
                 return BadRequest(ModelState);
             }
-            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(existingHours[0].JusticeUserId, request.Hours);
+            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(userId, request.Hours);
             await _commandHandler.Handle(updateNonWorkingHoursCommand);
             
             return NoContent();
