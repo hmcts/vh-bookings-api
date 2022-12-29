@@ -41,7 +41,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
 
-            var result = await Controller.CloneHearing(Guid.NewGuid(), new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddYears(1) } });
+            var result = await Controller.CloneHearing(Guid.NewGuid(), new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddYears(-1) } });
 
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
