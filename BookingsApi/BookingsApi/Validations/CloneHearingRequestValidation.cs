@@ -21,7 +21,7 @@ namespace BookingsApi.Validations
         public ValidationResult ValidateDates(CloneHearingRequest request)
         {
             var errors = new List<ValidationFailure>();
-            if (request.Dates.Any(x => x.DayOfYear <= _originalHearing.ScheduledDateTime.DayOfYear))
+            if (request.Dates.Any(x => x <= _originalHearing.ScheduledDateTime))
             {
                 errors.Add(new ValidationFailure(nameof(request.Dates), InvalidDateRangeErrorMessage));
             }

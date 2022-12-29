@@ -14,6 +14,8 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Validations;
 using FluentAssertions;
 using Testing.Common.Assertions;
@@ -26,6 +28,7 @@ namespace BookingsApi.UnitTests.Controllers
         private WorkHoursController _controller;
         private Mock<ICommandHandler> _commandHandlerMock;
         private Mock<IQueryHandler> _queryHandlerMock;
+        private JusticeUser _justiceUser;
 
         private string _username;
 
@@ -36,6 +39,20 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock = new Mock<ICommandHandler>();
             _queryHandlerMock = new Mock<IQueryHandler>();
+            
+            _justiceUser = new JusticeUser
+            {
+                FirstName = "FirstName",
+                Lastname = "Lastname",
+                Username = _username,
+                ContactEmail = _username,
+                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+            };
+
+            _queryHandlerMock = new Mock<IQueryHandler>();
+            _queryHandlerMock.Setup(x => x.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(It.Is<GetJusticeUserByUsernameQuery>(
+                    x => x.Username == _justiceUser.Username)))
+                .ReturnsAsync(_justiceUser);
             
             _controller = new WorkHoursController(_commandHandlerMock.Object, _queryHandlerMock.Object);
         }
@@ -239,7 +256,7 @@ namespace BookingsApi.UnitTests.Controllers
                 });
             
             // Act
-            var response = await _controller.UpdateVhoNonAvailabilityHours(username, request);
+            var response = await _controller.UpdateVhoNonAvailabilityHours(_username, request);
 
             // Assert
             var objectResult = (NoContentResult)response;
@@ -301,7 +318,7 @@ namespace BookingsApi.UnitTests.Controllers
                 });
             
             // Act
-            var response = await _controller.UpdateVhoNonAvailabilityHours(username, request);
+            var response = await _controller.UpdateVhoNonAvailabilityHours(_username, request);
 
             // Assert
             var objectResult = (BadRequestObjectResult)response;
@@ -365,7 +382,7 @@ namespace BookingsApi.UnitTests.Controllers
                 });
             
             // Act
-            var response = await _controller.UpdateVhoNonAvailabilityHours(username, request);
+            var response = await _controller.UpdateVhoNonAvailabilityHours(_username, request);
 
             // Assert
             var objectResult = (BadRequestObjectResult)response;
@@ -488,7 +505,7 @@ namespace BookingsApi.UnitTests.Controllers
                 });
             
             // Act
-            var response = await _controller.UpdateVhoNonAvailabilityHours(username, request);
+            var response = await _controller.UpdateVhoNonAvailabilityHours(_username, request);
             
             // Assert
             var objectResult = (BadRequestObjectResult)response;
@@ -509,7 +526,7 @@ namespace BookingsApi.UnitTests.Controllers
             };
 
             // Act
-            var response = await _controller.UpdateVhoNonAvailabilityHours(username, request);
+            var response = await _controller.UpdateVhoNonAvailabilityHours(_username, request);
             
             // Assert
             var objectResult = (BadRequestObjectResult)response;
@@ -530,7 +547,7 @@ namespace BookingsApi.UnitTests.Controllers
             };
 
             // Act
-            var response = await _controller.UpdateVhoNonAvailabilityHours(username, request);
+            var response = await _controller.UpdateVhoNonAvailabilityHours(_username, request);
             
             // Assert
             var objectResult = (BadRequestObjectResult)response;
