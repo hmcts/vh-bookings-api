@@ -66,7 +66,7 @@ namespace BookingsApi.Controllers
 
             var list = userList.Select(user => JusticeUserToResponseMapper.Map(user));
 
-            return Ok(list);
+            return Ok(list.ToList());
         }
     }
 }
