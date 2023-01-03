@@ -16,6 +16,8 @@ namespace BookingsApi.Validations
         {
             var errors = new List<ValidationFailure>();
 
+            CheckForDuplicateUsers(requests, errors);
+
             foreach (var request in requests)
             {
                 foreach (var workHours in request.WorkingHours)
@@ -56,6 +58,23 @@ namespace BookingsApi.Validations
             }
 
             return new ValidationResult(errors);
+        }
+
+        private static void CheckForDuplicateUsers(List<UploadWorkHoursRequest> requests, List<ValidationFailure> errors)
+        {
+            var duplicateEntries = requests
+                .Select(e => e.Username)
+                .GroupBy(x => x)
+                .SelectMany(g => g.Skip(1))
+                .ToList();
+
+            if (duplicateEntries.Any())
+            {
+                foreach (var user in duplicateEntries)
+                {
+                    errors.Add(new ValidationFailure($"{user}", "Multiple entries for user. Only one row per user required"));
+                }
+            }
         }
     }
 }
