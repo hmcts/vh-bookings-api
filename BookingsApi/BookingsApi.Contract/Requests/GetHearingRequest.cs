@@ -12,6 +12,9 @@ namespace BookingsApi.Contract.Requests
 
         [JsonProperty("types")]
         public List<int> Types { get; set; }
+        
+        [JsonProperty("users")]
+        public List<Guid> Users { get; set; }
 
         [JsonProperty("cursor")]
         public string Cursor { get; set; } = DefaultCursor;
@@ -36,5 +39,8 @@ namespace BookingsApi.Contract.Requests
 
         [JsonProperty("noJudge")]
         public bool NoJudge { get; set; }
+        
+        [JsonProperty("noAllocated")]
+        public bool NoAllocated { get; set; }
     }
 }

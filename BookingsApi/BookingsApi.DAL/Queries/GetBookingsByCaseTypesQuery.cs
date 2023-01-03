@@ -24,6 +24,8 @@ namespace BookingsApi.DAL.Queries
         }
 
         public IList<int> CaseTypes { get; }
+        
+        public IList<Guid> SelectedUsers { get; }
         public string Cursor { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -31,6 +33,8 @@ namespace BookingsApi.DAL.Queries
         public IList<int> VenueIds { get; set; }
         public string LastName { get; set; }
         public bool NoJudge { get; set; }
+        
+        public bool NoAllocated { get; set; }
 
         public int Limit
         {
@@ -102,6 +106,11 @@ namespace BookingsApi.DAL.Queries
                 {
                     hearings = GetHearingsWithoutJudge(hearings);
                 }
+                
+                if (query.NoAllocated)
+                {
+                    hearings = GetHearingsNotAllocated(hearings);
+                }
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
@@ -157,6 +166,23 @@ namespace BookingsApi.DAL.Queries
                     .All(r => !r.Discriminator.ToLower().Equals("judge"));
 
                 if (containsNoJudge)
+                {
+                    videoHearings.Add(item);
+                }
+            }
+
+            return videoHearings.AsQueryable();
+        }
+        
+        private IQueryable<VideoHearing> GetHearingsNotAllocated(IQueryable<VideoHearing> hearings)
+        {
+            var videoHearings = new List<VideoHearing>();
+
+            foreach (var item in hearings)
+            {
+                var containsNoAllocation = item.Allocations.Count > 0;
+
+                if (containsNoAllocation)
                 {
                     videoHearings.Add(item);
                 }
