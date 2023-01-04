@@ -23,9 +23,9 @@ namespace BookingsApi.DAL.Queries
             Limit = 100;
         }
 
-        public IList<int> CaseTypes { get; }
+        public IList<int> CaseTypes { get; set; }
         
-        public IList<Guid> SelectedUsers { get; }
+        public IList<Guid> SelectedUsers { get; set; }
         public string Cursor { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

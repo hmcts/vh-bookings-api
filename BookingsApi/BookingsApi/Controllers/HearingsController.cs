@@ -616,7 +616,9 @@ namespace BookingsApi.Controllers
                 VenueIds = request.VenueIds,
                 LastName = request.LastName,
                 NoJudge = request.NoJudge,
-                NoAllocated = request.NoAllocated
+                NoAllocated = request.NoAllocated,
+                CaseTypes = request.Types,
+                SelectedUsers = request.Users
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
