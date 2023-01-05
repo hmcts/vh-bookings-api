@@ -11,7 +11,7 @@ namespace BookingsApi.UnitTests.Mappings
     public class JusticeUserToResponseMapperTests
     {
         [Test]
-        public void Map_MapsJusticeUser_ToJusticeUserReponse()
+        public void Map_MapsJusticeUser_ToJusticeUserResponse()
         {
             // Arrange
             var justiceUser = new JusticeUser
@@ -36,7 +36,8 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
-                UserRoleId = (int)UserRoleId.VhTeamLead
+                UserRoleId = (int)UserRoleId.VhTeamLead,
+                FullName = "FirstName Lastname"
             };
 
             var expectedJusticeUserResponseJson = JsonConvert.SerializeObject(expectedJusticeUserResponse);
