@@ -183,6 +183,30 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_user_id()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+
+
+            var users = new RefDataBuilder().Users;
+
+            var user1 = users[0];
+            var user2 = users[1];
+            var user3 = users[2];
+
+            var usersIdsToFilterOn = new List<Guid> { user1.Id, user2.Id };
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                SelectedUsers = usersIdsToFilterOn
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByUsersIds(result, usersIdsToFilterOn);
+        }
 
         private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
         {
@@ -211,6 +235,16 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .Select(r => r.HearingVenue)
                 .Distinct()
                 .All(r => venueIds.Contains(r.Id));
+            
+            containsHearingsFilteredByVenues.Should().BeTrue();
+        }
+        
+        private void AssertHearingsAreFilteredByUsersIds(IEnumerable<VideoHearing> hearings, List<Guid> userIds)
+        {
+            var containsHearingsFilteredByVenues = hearings
+                .Select(r => r.AllocatedTo)
+                .Distinct()
+                .All(r => userIds.Contains(r.Id));
             
             containsHearingsFilteredByVenues.Should().BeTrue();
         }

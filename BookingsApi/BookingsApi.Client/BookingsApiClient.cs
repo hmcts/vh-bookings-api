@@ -642,17 +642,17 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Find justice user with matching username.
+        /// Get list of Justice User.
         /// </summary>
-        /// <returns>Person list</returns>
+        /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Find justice user with matching username.
+        /// Get list of Justice User.
         /// </summary>
-        /// <returns>Person list</returns>
+        /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(System.Threading.CancellationToken cancellationToken);
 
@@ -4845,9 +4845,9 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Find justice user with matching username.
+        /// Get list of Justice User.
         /// </summary>
-        /// <returns>Person list</returns>
+        /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync()
         {
@@ -4856,9 +4856,9 @@ namespace BookingsApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Find justice user with matching username.
+        /// Get list of Justice User.
         /// </summary>
-        /// <returns>Person list</returns>
+        /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(System.Threading.CancellationToken cancellationToken)
         {

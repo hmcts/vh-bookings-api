@@ -75,6 +75,31 @@ namespace BookingsApi.IntegrationTests.Helper
 
             return justiceUser.Entity;
         }
+        
+        public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName, bool isTeamLead = false)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var userList = new List<JusticeUser> { };
+            for (int i = 0; i < 10; i++)
+            {
+                var justiceUser = db.JusticeUsers.Add(new JusticeUser
+                            {
+                                ContactEmail = userName + i,
+                                Username = userName + i,
+                                UserRoleId = isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho,
+                                CreatedBy = $"integration{i}.test@test.com",
+                                CreatedDate = DateTime.Now,
+                                FirstName = firstName + i,
+                                Lastname = lastName + i,
+                            });
+                
+                userList.Add(justiceUser.Entity);
+                _seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            }
+            await db.SaveChangesAsync();
+            return userList;
+        }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
             bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0, 
@@ -436,6 +461,32 @@ namespace BookingsApi.IntegrationTests.Helper
                     TestContext.WriteLine(@$"Ignoring cleanup for Justice User: {id}. Does not exist.");
                 }
             }
+        }
+        
+        public async Task ClearAllJusticeUsersAsync()
+        {
+                try
+                {
+                    await using var db = new BookingsDbContext(_dbContextOptions);
+                    var list = new List<JusticeUser>();
+                    foreach (var user in db.JusticeUsers)
+                    {
+                        list.Add(user);
+                    }
+                    
+                    foreach (var user in list)
+                    {
+                        db.JusticeUsers.Remove(user);
+                        await db.SaveChangesAsync();
+                        TestContext.WriteLine(@$"Remove Justice User: {user.Id}.");
+                    }
+                    
+                    
+                }
+                catch (JudiciaryPersonNotFoundException)
+                {
+                    TestContext.WriteLine(@$"Ignoring cleanup for Justice User. Does not exist.");
+                }
         }
 
         public async Task RemoveVideoHearing(Guid hearingId)

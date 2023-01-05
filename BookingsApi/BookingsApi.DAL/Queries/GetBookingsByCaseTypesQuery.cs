@@ -111,6 +111,12 @@ namespace BookingsApi.DAL.Queries
                 {
                     hearings = GetHearingsNotAllocated(hearings);
                 }
+                
+                if (query.SelectedUsers != null && query.SelectedUsers.Any())
+                {
+                    hearings = hearings.Where(x => 
+                        x.Allocations.Any(a=> query.SelectedUsers.Contains(a.JusticeUserId)));
+                }
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
@@ -180,7 +186,7 @@ namespace BookingsApi.DAL.Queries
 
             foreach (var item in hearings)
             {
-                var containsNoAllocation = item.Allocations.Count > 0;
+                var containsNoAllocation = item.AllocatedTo == null;
 
                 if (containsNoAllocation)
                 {

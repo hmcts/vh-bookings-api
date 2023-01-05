@@ -48,9 +48,9 @@ namespace BookingsApi.Controllers
         }
         
         /// <summary>
-        /// Find justice user with matching username.
+        /// Get list of Justice User.
         /// </summary>
-        /// <returns>Person list</returns>
+        /// <returns>Justice User list</returns>
         [HttpGet("GetJusticeUserList")]
         [OpenApiOperation("GetJusticeUserList")]
         [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
