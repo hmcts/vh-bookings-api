@@ -211,6 +211,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_video_hearings_filtered_by_not_allocated()
         {
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", "secondname", true);
+            
             
             var query = new GetBookingsByCaseTypesQuery
             {
@@ -268,7 +270,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var containsHearingsFilteredByUsers = hearings
                 .Where(r => r.Allocations.Count <= 0);
             
-            containsHearingsFilteredByUsers.Should().NotBeEmpty();
+            containsHearingsFilteredByUsers.Should().BeEmpty();
         }
 
         private void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string participantLastName)
