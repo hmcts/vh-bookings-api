@@ -229,6 +229,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
             await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearing();
             await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", 
                 "secondname", true, true);
             
