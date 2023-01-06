@@ -13,6 +13,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace BookingsApi.UnitTests.Controllers
 {
@@ -105,19 +106,22 @@ namespace BookingsApi.UnitTests.Controllers
             Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
         }
         [Test]
-        public async Task GetJusticeUserList_ReturnsListNull()
+        public async Task GetJusticeUserList_ReturnsListEmpty()
         {
             // Arrange
             _queryHandlerMock.Setup(x => 
                     x.Handle<GetJusticeUserListQuery, List<JusticeUser>>(It.IsAny<GetJusticeUserListQuery>()))
-                .ReturnsAsync((Func<List<JusticeUser>>) null);
+                .ReturnsAsync(new List<JusticeUser>());
+            var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(new List<JusticeUser>());
 
             // Act
-            var response = await _controller.GetJusticeUserList() as NotFoundResult;
+            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert
-            Assert.IsInstanceOf<NotFoundResult>(response);
-            
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
+
         }
     }
 }

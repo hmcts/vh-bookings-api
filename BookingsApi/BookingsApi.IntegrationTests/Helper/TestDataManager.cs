@@ -76,7 +76,8 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser.Entity;
         }
         
-        public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName, bool isTeamLead = false)
+        public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName, 
+            bool isTeamLead = false, bool hasAllocated = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -93,6 +94,17 @@ namespace BookingsApi.IntegrationTests.Helper
                                 FirstName = firstName + i,
                                 Lastname = lastName + i,
                             });
+
+                if (i == 9 && hasAllocated)
+                {
+                    var allocation = db.Allocations.Add(new Allocation
+                    {
+                        HearingId = db.VideoHearings.FirstOrDefault()!.Id,
+                        JusticeUserId = justiceUser.Entity.Id
+                    });
+                    
+                }
+                
                 
                 userList.Add(justiceUser.Entity);
                 _seededJusticeUserIds.Add(justiceUser.Entity.Id);

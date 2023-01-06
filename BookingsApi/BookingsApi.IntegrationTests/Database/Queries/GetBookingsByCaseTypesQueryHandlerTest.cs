@@ -208,7 +208,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
         
         [Test(Description = "With AdminSearchToggle On")]
-        public async Task Should_return_video_hearings_filtered_by_not_allocated()
+        public async Task Should_return_video_hearings_filtered_by_not_allocated_empty()
         {
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
             await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", "secondname", true);
@@ -221,7 +221,26 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var result = await _handler.Handle(query);
 
-            AssertHearingsAreFilteredByNoAllocated(result);
+            AssertHearingsAreFilteredByNoAllocatedEmpty(result);
+        }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_not_allocated_not_empty()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", 
+                "secondname", true, true);
+            
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                NoAllocated = true
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByNoAllocatedNotEmpty(result);
         }
 
         private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
@@ -265,12 +284,20 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByUsers.Should().BeTrue();
         }
         
-        private void AssertHearingsAreFilteredByNoAllocated(IEnumerable<VideoHearing> hearings)
+        private void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredByUsers = hearings
                 .Where(r => r.Allocations.Count <= 0);
             
             containsHearingsFilteredByUsers.Should().BeEmpty();
+        }
+        
+        private void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
+        {
+            var containsHearingsFilteredByUsers = hearings
+                .Where(r => r.Allocations.Count <= 0);
+            
+            containsHearingsFilteredByUsers.Should().NotBeEmpty();
         }
 
         private void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string participantLastName)

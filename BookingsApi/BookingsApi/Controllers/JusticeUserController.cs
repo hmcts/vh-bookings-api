@@ -60,10 +60,7 @@ namespace BookingsApi.Controllers
             var query = new GetJusticeUserListQuery();
             var userList =
                 await _queryHandler.Handle<GetJusticeUserListQuery, List<JusticeUser>>(query);
-
-            if (userList == null) 
-                return NotFound();
-
+            
             var list = userList.Select(user => JusticeUserToResponseMapper.Map(user));
 
             return Ok(list.ToList());
