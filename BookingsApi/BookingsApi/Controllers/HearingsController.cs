@@ -30,7 +30,6 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
-using BookingsApi.Services;
 
 namespace BookingsApi.Controllers
 {
@@ -97,8 +96,7 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
+            var response = HearingToDetailsResponseMapper.Map(videoHearing);
             return Ok(response);
         }
 
@@ -115,9 +113,7 @@ namespace BookingsApi.Controllers
         {
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
-
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
 
@@ -149,8 +145,7 @@ namespace BookingsApi.Controllers
             var query = new GetHearingsByGroupIdQuery(groupId);
             var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);
         }
@@ -169,8 +164,7 @@ namespace BookingsApi.Controllers
 
             var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(query);
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);
         }
@@ -278,8 +272,7 @@ namespace BookingsApi.Controllers
                     logTrace.Add("CaseTypeServiceId", queriedVideoHearing.CaseType?.ServiceId);
                 _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
                 
-                var hearingMapper = new HearingToDetailsResponseMapper();
-                var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
+                var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
                 _logger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> { { "response", JsonConvert.SerializeObject(response) } });
 
@@ -458,9 +451,9 @@ namespace BookingsApi.Controllers
 
             await _commandHandler.Handle(command);
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
+        
             var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-            var response = hearingMapper.MapHearingToDetailedResponse(updatedHearing);
+            var response = HearingToDetailsResponseMapper.Map(updatedHearing);
 
             if (videoHearing.Status == BookingStatus.Created)
             {
@@ -755,8 +748,7 @@ namespace BookingsApi.Controllers
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
         }
-
-
+        
         /// <summary>
         /// Search for hearings by case number. Search will apply fuzzy matching
         /// </summary>
@@ -793,8 +785,7 @@ namespace BookingsApi.Controllers
 
             if (results.Count <= 0)
                 _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
 

@@ -15,7 +15,6 @@ namespace BookingsApi.UnitTests.Mappings
 {
     public class HearingToDetailResponseMapperTests : TestBase
     {
-        private readonly HearingToDetailsResponseMapper _mapper = new HearingToDetailsResponseMapper();
         private readonly string _caseTypeName = "Generic";
         private readonly string _hearingTypeName = "Automated Test";
         private readonly string _hearingVenueName = "Birmingham Civil and Family Justice Centre";
@@ -66,7 +65,7 @@ namespace BookingsApi.UnitTests.Mappings
             _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
             _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
 
-            var response = _mapper.MapHearingToDetailedResponse(_videoHearing);
+            var response = HearingToDetailsResponseMapper.Map(_videoHearing);
             response.Should().BeEquivalentTo(response, options => options
                 .Excluding(v => v.Id)
             );
