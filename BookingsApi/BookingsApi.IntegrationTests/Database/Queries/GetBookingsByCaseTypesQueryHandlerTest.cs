@@ -245,7 +245,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByNoAllocatedNotEmpty(result);
         }
 
-        private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
+        private static void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
         {
             var containsHearingsFilteredByCaseNumber = hearings
                 .SelectMany(r => r.HearingCases)
@@ -254,7 +254,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByCaseNumber.Should().BeTrue();
         }
 
-        private void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
+        private static void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredWithNoJudge = hearings
                 .SelectMany(r => r.Participants)
@@ -266,7 +266,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             hearings.Count().Should().Equals(1);
         }
 
-        private void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
+        private static void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
         {
             var containsHearingsFilteredByVenues = hearings
                 .Select(r => r.HearingVenue)
@@ -276,7 +276,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByVenues.Should().BeTrue();
         }
         
-        private void AssertHearingsAreFilteredByUsersIds(IEnumerable<VideoHearing> hearings, List<Guid> userIds)
+        private static void AssertHearingsAreFilteredByUsersIds(IEnumerable<VideoHearing> hearings, List<Guid> userIds)
         {
             var containsHearingsFilteredByUsers = hearings
                 .Select(r => r.AllocatedTo)
@@ -286,7 +286,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByUsers.Should().BeTrue();
         }
         
-        private void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
+        private static void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredByUsers = hearings
                 .Where(r => r.Allocations.Count <= 0);
@@ -294,7 +294,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByUsers.Should().BeEmpty();
         }
         
-        private void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
+        private static void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredByUsers = hearings
                 .Where(r => r.Allocations.Count <= 0);
@@ -302,7 +302,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByUsers.Should().NotBeEmpty();
         }
 
-        private void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string participantLastName)
+        private static void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string participantLastName)
         {
             var containsHearingsFilteredByCaseNumber = hearings
             .SelectMany(r => r.Participants)

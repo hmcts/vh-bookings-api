@@ -400,7 +400,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return caseType;
         }
         
-        private void CreateParticipantLinks(Participant interpretee, Participant interpreter)
+        private static void CreateParticipantLinks(Participant interpretee, Participant interpreter)
         {
             interpretee.LinkedParticipants.Add(new LinkedParticipant(interpretee.Id,interpreter.Id,LinkedParticipantType.Interpreter));
             interpreter.LinkedParticipants.Add(new LinkedParticipant(interpreter.Id, interpretee.Id, LinkedParticipantType.Interpreter));
@@ -532,7 +532,7 @@ namespace BookingsApi.IntegrationTests.Helper
             }
         }
 
-        public string[] GetIndividualHearingRoles => new[] { "Litigant in person" };
+        public static string[] GetIndividualHearingRoles => new[] { "Litigant in person" };
 
         public Task<VideoHearing> SeedPastHearings(DateTime scheduledDate)
         {
@@ -606,7 +606,7 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             var videohearingType = typeof(VideoHearing);
-            videohearingType.GetProperty("ScheduledDateTime").SetValue(videoHearing, pastScheduledDate);
+            videohearingType.GetProperty("ScheduledDateTime")?.SetValue(videoHearing, pastScheduledDate);
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
             {
@@ -620,7 +620,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 x.HearingRole.Name.ToLower().IndexOf("judge", StringComparison.Ordinal) < 0 &&
                 x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) < 0).Id;
             _participantRepresentativeIds = hearing.Participants
-                .Where(x => x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) >= 0).Select(x => x.Id).ToList();
+                .Where(x => x.HearingRole.Name.ToLower().Contains("representative", StringComparison.Ordinal)).Select(x => x.Id).ToList();
 
             if (addSuitabilityAnswer)
             {
