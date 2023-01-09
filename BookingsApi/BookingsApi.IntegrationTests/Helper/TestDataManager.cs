@@ -102,40 +102,31 @@ namespace BookingsApi.IntegrationTests.Helper
             return userList;
         }
         
-        public async Task<List<JusticeUser>> SeedAllocatedJusticeUserList(string userName, string firstName, string lastName)
+        public async Task<JusticeUser> SeedAllocatedJusticeUser(string userName, string firstName, string lastName)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
-
-            var userList = new List<JusticeUser> { };
-            for (int i = 0; i < 10; i++)
+            
+            var justiceUser = db.JusticeUsers.Add(new JusticeUser
             {
-                var justiceUser = db.JusticeUsers.Add(new JusticeUser
-                {
-                    ContactEmail = userName + i,
-                    Username = userName + i,
-                    UserRoleId = (int)UserRoleId.Vho,
-                    CreatedBy = $"integration{i}.test@test.com",
-                    CreatedDate = DateTime.Now,
-                    FirstName = firstName + i,
-                    Lastname = lastName + i,
-                });
-
-                if (i == 9)
-                {
-                    var allocation = db.Allocations.Add(new Allocation
-                    {
-                        HearingId = db.VideoHearings.FirstOrDefault()!.Id,
-                        JusticeUserId = justiceUser.Entity.Id
-                    });
-                    
-                }
-                
-                
-                userList.Add(justiceUser.Entity);
-                _seededJusticeUserIds.Add(justiceUser.Entity.Id);
-            }
+                ContactEmail = userName,
+                Username = userName,
+                UserRoleId = (int)UserRoleId.Vho,
+                CreatedBy = "integration.test@test.com",
+                CreatedDate = DateTime.Now,
+                FirstName = firstName,
+                Lastname = lastName,
+            });
+            
+            db.Allocations.Add(new Allocation
+            {
+                HearingId = db.VideoHearings.FirstOrDefault()!.Id,
+                JusticeUserId = justiceUser.Entity.Id
+            });
+            
+            _seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            
             await db.SaveChangesAsync();
-            return userList;
+            return justiceUser.Entity;
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,

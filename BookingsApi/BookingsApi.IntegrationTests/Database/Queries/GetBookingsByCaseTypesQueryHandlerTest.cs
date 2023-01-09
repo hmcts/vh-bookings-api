@@ -231,7 +231,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
-            await Hooks.SeedAllocatedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", 
+            await Hooks.SeedAllocatedJusticeUser("team.lead@hearings.reform.hmcts.net", "firstName", 
                 "secondname");
             
             
