@@ -162,7 +162,7 @@ namespace BookingsApi.DAL.Queries
             }
         }
 
-        private IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
+        private static IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
         {
             var videoHearings = new List<VideoHearing>();
 
@@ -180,7 +180,7 @@ namespace BookingsApi.DAL.Queries
             return videoHearings.AsQueryable();
         }
         
-        private IQueryable<VideoHearing> GetHearingsNotAllocated(IQueryable<VideoHearing> hearings)
+        private static IQueryable<VideoHearing> GetHearingsNotAllocated(IQueryable<VideoHearing> hearings)
         {
             var videoHearings = new List<VideoHearing>();
 
