@@ -23,7 +23,9 @@ namespace BookingsApi.DAL.Queries
             Limit = 100;
         }
 
-        public IList<int> CaseTypes { get; }
+        public IList<int> CaseTypes { get; set; }
+        
+        public IList<Guid> SelectedUsers { get; set; }
         public string Cursor { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -31,6 +33,8 @@ namespace BookingsApi.DAL.Queries
         public IList<int> VenueIds { get; set; }
         public string LastName { get; set; }
         public bool NoJudge { get; set; }
+        
+        public bool NoAllocated { get; set; }
 
         public int Limit
         {
@@ -102,6 +106,17 @@ namespace BookingsApi.DAL.Queries
                 {
                     hearings = GetHearingsWithoutJudge(hearings);
                 }
+                
+                if (query.NoAllocated)
+                {
+                    hearings = GetHearingsNotAllocated(hearings);
+                }
+                
+                if (query.SelectedUsers != null && query.SelectedUsers.Any())
+                {
+                    hearings = hearings.Where(x => 
+                        x.Allocations.Any(a=> query.SelectedUsers.Contains(a.JusticeUserId)));
+                }
             }
 
             hearings = hearings.Where(x => x.ScheduledDateTime > query.StartDate)
@@ -147,7 +162,7 @@ namespace BookingsApi.DAL.Queries
             }
         }
 
-        private IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
+        private static IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
         {
             var videoHearings = new List<VideoHearing>();
 
@@ -157,6 +172,23 @@ namespace BookingsApi.DAL.Queries
                     .All(r => !r.Discriminator.ToLower().Equals("judge"));
 
                 if (containsNoJudge)
+                {
+                    videoHearings.Add(item);
+                }
+            }
+
+            return videoHearings.AsQueryable();
+        }
+        
+        private static IQueryable<VideoHearing> GetHearingsNotAllocated(IQueryable<VideoHearing> hearings)
+        {
+            var videoHearings = new List<VideoHearing>();
+
+            foreach (var item in hearings)
+            {
+                var containsNoAllocation = item.AllocatedTo == null;
+
+                if (containsNoAllocation)
                 {
                     videoHearings.Add(item);
                 }
