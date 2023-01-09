@@ -77,7 +77,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
         
         public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName, 
-            bool isTeamLead = false, bool hasAllocated = false)
+            bool isTeamLead = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -85,17 +85,42 @@ namespace BookingsApi.IntegrationTests.Helper
             for (int i = 0; i < 10; i++)
             {
                 var justiceUser = db.JusticeUsers.Add(new JusticeUser
-                            {
-                                ContactEmail = userName + i,
-                                Username = userName + i,
-                                UserRoleId = isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho,
-                                CreatedBy = $"integration{i}.test@test.com",
-                                CreatedDate = DateTime.Now,
-                                FirstName = firstName + i,
-                                Lastname = lastName + i,
-                            });
+                {
+                    ContactEmail = userName + i,
+                    Username = userName + i,
+                    UserRoleId = isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho,
+                    CreatedBy = $"integration{i}.test@test.com",
+                    CreatedDate = DateTime.Now,
+                    FirstName = firstName + i,
+                    Lastname = lastName + i,
+                });
+                
+                userList.Add(justiceUser.Entity);
+                _seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            }
+            await db.SaveChangesAsync();
+            return userList;
+        }
+        
+        public async Task<List<JusticeUser>> SeedAllocatedJusticeUserList(string userName, string firstName, string lastName)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
 
-                if (i == 9 && hasAllocated)
+            var userList = new List<JusticeUser> { };
+            for (int i = 0; i < 10; i++)
+            {
+                var justiceUser = db.JusticeUsers.Add(new JusticeUser
+                {
+                    ContactEmail = userName + i,
+                    Username = userName + i,
+                    UserRoleId = (int)UserRoleId.Vho,
+                    CreatedBy = $"integration{i}.test@test.com",
+                    CreatedDate = DateTime.Now,
+                    FirstName = firstName + i,
+                    Lastname = lastName + i,
+                });
+
+                if (i == 9)
                 {
                     var allocation = db.Allocations.Add(new Allocation
                     {

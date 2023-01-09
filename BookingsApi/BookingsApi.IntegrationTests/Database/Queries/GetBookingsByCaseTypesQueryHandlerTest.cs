@@ -231,8 +231,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
-            await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", 
-                "secondname", true, true);
+            await Hooks.SeedAllocatedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", 
+                "secondname");
             
             
             var query = new GetBookingsByCaseTypesQuery
