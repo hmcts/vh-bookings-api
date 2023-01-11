@@ -30,7 +30,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             request = new AddParticipantsToHearingRequest { Participants = participants };
 
         }
-        private List<ParticipantRequest> BuildParticipants(int listSize)
+        private static List<ParticipantRequest> BuildParticipants(int listSize)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(listSize).All()
                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")

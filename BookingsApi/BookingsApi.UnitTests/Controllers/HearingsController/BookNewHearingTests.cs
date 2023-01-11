@@ -32,7 +32,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CreateCaseAndHearingRoles(4, "Judicial Office Holder", new List<string> { "Judicial Office Holder" })
         };
 
-        private CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, List<string> roles)
+        private static CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName, List<string> roles)
         {
             var hearingRoles = new List<HearingRole>();
 

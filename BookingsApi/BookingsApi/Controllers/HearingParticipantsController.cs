@@ -573,13 +573,15 @@ namespace BookingsApi.Controllers
                     {
                         var primaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.ParticipantContactEmail);
                         var secondaryLinkedParticipant = hearing.GetParticipants().SingleOrDefault(x => x.Person.ContactEmail == linkedParticipant.LinkedParticipantContactEmail);
-                
-                        eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
+                        if (primaryLinkedParticipant != null && secondaryLinkedParticipant != null)
                         {
-                            LinkedId = secondaryLinkedParticipant.Id,
-                            ParticipantId = primaryLinkedParticipant.Id,
-                            Type = linkedParticipant.Type
-                        });
+                            eventLinkedParticipants.Add(new Infrastructure.Services.Dtos.LinkedParticipantDto
+                            {
+                                LinkedId = secondaryLinkedParticipant.Id,
+                                ParticipantId = primaryLinkedParticipant.Id,
+                                Type = linkedParticipant.Type
+                            });
+                        }
                     }
                 
                     var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants, removedParticipantIds, eventLinkedParticipants);
@@ -616,7 +618,7 @@ namespace BookingsApi.Controllers
             
         }
 
-        private List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
+        private static List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
         {
             if (participants.Any())
             {
