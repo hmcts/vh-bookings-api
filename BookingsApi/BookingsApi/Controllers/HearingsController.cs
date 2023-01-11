@@ -788,7 +788,34 @@ namespace BookingsApi.Controllers
             var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
+ 
+        /// <summary>
+        /// Search for hearings to be allocate via search parameters
+        /// </summary>
+        /// <param name="searchRequest">Search criteria</param>
+        /// <returns>list of hearings matching search criteria</returns>
+        [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
+        [OpenApiOperation("SearchForAllocationHearings")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
+        {
 
+            var query = new GetAllocationHearingsBySearchQuery(
+                searchRequest.CaseNumber, 
+                searchRequest.CaseType, 
+                searchRequest.FromDate, 
+                searchRequest.ToDate, 
+                searchRequest.CsoUserName);
+            
+            var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+
+            if (hearings == null || !hearings.Any())
+                return NotFound();
+            
+            return Ok(hearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+        
         private static void SanitiseRequest(BookNewHearingRequest request)
         {
             foreach (var participant in request.Participants)

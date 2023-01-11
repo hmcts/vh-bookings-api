@@ -28,6 +28,7 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly List<Guid> _seededHearings = new List<Guid>();
         public List<string> JudiciaryPersons { get; } = new List<string>();
         public readonly List<Guid> _seededJusticeUserIds = new List<Guid>();
+        public readonly List<long> _seededAllocationIds = new List<long>();
         public string CaseNumber { get; } = "2222/3511";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
@@ -49,8 +50,10 @@ namespace BookingsApi.IntegrationTests.Helper
             _defaultCaseName = defaultCaseName;
         }
 
-        public Task<VideoHearing> SeedVideoHearing(bool addSuitabilityAnswer = false,
-            BookingStatus status = BookingStatus.Booked, bool isMultiDayFirstHearing = false)
+        public Task<VideoHearing> SeedVideoHearing(
+            bool addSuitabilityAnswer = false,
+            BookingStatus status = BookingStatus.Booked, 
+            bool isMultiDayFirstHearing = false)
         {
             return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing:isMultiDayFirstHearing);
         }
@@ -674,6 +677,37 @@ namespace BookingsApi.IntegrationTests.Helper
             db.JudiciaryPersons.Remove(judiciaryPerson);
 
             await db.SaveChangesAsync();
+        }        
+        public async Task<Allocation> AddAllocation(Hearing hearing, string user)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var justiceUser = await SeedJusticeUser(userName: user, null, null, isTeamLead:true);
+            var allocation = await db.Allocations.AddAsync(new Allocation
+            {
+                HearingId = hearing.Id,
+                JusticeUserId = justiceUser.Id,
+            });
+            await db.SaveChangesAsync();
+            
+            _seededAllocationIds.Add(allocation.Entity.Id);
+
+            return allocation.Entity;
+        }
+
+        public async Task ClearAllocationsAsync()
+        {
+            foreach (var id in _seededAllocationIds)
+            {
+                await using var db = new BookingsDbContext(_dbContextOptions);
+                var allocations = await db.Allocations.SingleOrDefaultAsync(x => x.Id == id);
+                if (allocations != null)
+                {
+                    db.Allocations.Remove(allocations);
+                    await db.SaveChangesAsync();
+                }
+                TestContext.WriteLine(@$"Remove allocation: {id}.");
+        
+            }
         }
     }
 }
