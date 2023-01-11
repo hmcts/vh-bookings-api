@@ -24,7 +24,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         private readonly BookNewHearingRequest request = RequestBuilder.Build();
         private VideoHearing _videoHearing;
 
-        private List<CaseRole> CaseRoles => new List<CaseRole>
+        private static List<CaseRole> CaseRoles => new List<CaseRole>
         {
             CreateCaseAndHearingRoles(1, "Applicant",new List<string>{ "Litigant in person", "Representative"}),
             CreateCaseAndHearingRoles(2, "Respondent",new List<string>{ "Litigant in person", "Representative"}),
