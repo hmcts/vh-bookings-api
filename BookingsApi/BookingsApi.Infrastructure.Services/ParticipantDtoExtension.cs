@@ -13,9 +13,12 @@ namespace BookingsApi.Infrastructure.Services
                 participant.ContactPhoneForNonEJudJudgeUser = string.Empty;
             }
 
-            var properties = otherInformation.Split("|");
-            participant.ContactEmailForNonEJudJudgeUser = ExtractJudgeEmail(properties);
-            participant.ContactPhoneForNonEJudJudgeUser = ExtractJudgePhone(properties);
+            if (!string.IsNullOrEmpty(otherInformation))
+            {
+                var properties = otherInformation.Split("|");
+                participant.ContactEmailForNonEJudJudgeUser = ExtractJudgeEmail(properties);
+                participant.ContactPhoneForNonEJudJudgeUser = ExtractJudgePhone(properties);
+            }
         }
 
         public static string ExtractJudgePhone(string[] properties)

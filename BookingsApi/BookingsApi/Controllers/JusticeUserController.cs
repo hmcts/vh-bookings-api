@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -43,6 +45,25 @@ namespace BookingsApi.Controllers
             var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
 
             return Ok(justiceUserResponse);
+        }
+        
+        /// <summary>
+        /// Get list of Justice User.
+        /// </summary>
+        /// <returns>Justice User list</returns>
+        [HttpGet("GetJusticeUserList")]
+        [OpenApiOperation("GetJusticeUserList")]
+        [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetJusticeUserList()
+        {
+            var query = new GetJusticeUserListQuery();
+            var userList =
+                await _queryHandler.Handle<GetJusticeUserListQuery, List<JusticeUser>>(query);
+            
+            var list = userList.Select(user => JusticeUserToResponseMapper.Map(user));
+
+            return Ok(list.ToList());
         }
     }
 }
