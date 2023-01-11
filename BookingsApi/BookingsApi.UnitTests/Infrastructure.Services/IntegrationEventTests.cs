@@ -252,5 +252,24 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             var @event = _serviceBusQueueClient.ReadMessageFromQueue();
             @event.IntegrationEvent.Should().BeOfType<EndpointUpdatedIntegrationEvent>();
         }
+
+        [Test]
+        public void Should_publish_message_to_queue_when_HearingIsReadyForVideoIntegrationEvent_is_raised_with_null_OtherInformation()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.OtherInformation = null;
+            hearing.CaseType = new CaseType(1, "test");
+            hearing.AddCase("1234", "test", true);
+
+            var hearingIsReadyForVideoIntegrationEvent = new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.Participants);
+            _eventPublisher.PublishAsync(hearingIsReadyForVideoIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+            var typedEvent = (HearingIsReadyForVideoIntegrationEvent)@event.IntegrationEvent;
+            typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+            typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
+        }
     }
 }
