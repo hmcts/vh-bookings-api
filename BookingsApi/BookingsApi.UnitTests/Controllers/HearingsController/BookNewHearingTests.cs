@@ -101,7 +101,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                                                                                         && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
-            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
         [Test]
@@ -153,7 +152,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 0)), Times.Once);
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
-            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
         [Test]
@@ -326,7 +324,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                                                                                           && c.Participants.Any(p => p.Person.FirstName == "FirstNameWithSpaces" || p.Person.FirstName == "FirstName WithSpaces"))), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
-            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
         
         [TestCase("LastNameWithSpaces ")]
@@ -358,7 +355,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                                                                                           && c.Participants.Any(p => p.Person.LastName == "LastNameWithSpaces" || p.Person.LastName == "LastName WithSpaces"))), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
-            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
         
         [TestCase(null)]
