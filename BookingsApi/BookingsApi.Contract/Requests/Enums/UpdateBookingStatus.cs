@@ -5,8 +5,9 @@
     /// </summary>
     public enum UpdateBookingStatus
     {
-        Created = 1,
-        Cancelled = 2,
-        Failed = 3
+        Booked = 1,
+        Created = 2,
+        Cancelled = 3,
+        Failed = 4
     }
 }

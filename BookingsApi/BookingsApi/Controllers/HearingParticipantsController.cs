@@ -537,7 +537,6 @@ namespace BookingsApi.Controllers
                 }
                 else if (participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
                 {
-                    await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
                     await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, participants));
                 }
                 else

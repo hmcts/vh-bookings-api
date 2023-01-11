@@ -71,8 +71,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Exactly(request.Dates.Count));
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<MultiDayHearingIntegrationEvent>()), Times.Once);
-
-            CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Exactly(request.Dates.Count));
         }
 
         [Test]

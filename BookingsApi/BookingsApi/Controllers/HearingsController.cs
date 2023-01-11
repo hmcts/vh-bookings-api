@@ -319,8 +319,6 @@ namespace BookingsApi.Controllers
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
             {
-                // Confirm the hearing
-                await UpdateHearingStatusAsync(videoHearing.Id, BookingStatus.Created, "System", string.Empty);
                 // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
             }
@@ -800,6 +798,36 @@ namespace BookingsApi.Controllers
             var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
             return Ok(response);
         }
+
+        /// <summary>
+        /// Get hearing shell for a given hearing id
+        /// </summary>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Hearing shell</returns>
+        [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
+        [OpenApiOperation("GetBookingStatusById")]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetHearingShellByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingShellByIdQuery, VideoHearing>(query);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(videoHearing.Status);
+        }
+
 
         private static void SanitiseRequest(BookNewHearingRequest request)
         {
