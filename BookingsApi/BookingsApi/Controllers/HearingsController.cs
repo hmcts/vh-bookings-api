@@ -31,6 +31,7 @@ using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
+using BookingsApi.Contract.Requests.Enums;
 
 namespace BookingsApi.Controllers
 {
@@ -800,13 +801,13 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
-        /// Get hearing shell for a given hearing id
+        /// Get booking status for a given hearing id
         /// </summary>
         /// <param name="hearingId">Id for a hearing</param>
-        /// <returns>Hearing shell</returns>
+        /// <returns>Booking status</returns>
         [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
         [OpenApiOperation("GetBookingStatusById")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Contract.Enums.BookingStatus), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
@@ -825,7 +826,7 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
 
-            return Ok(videoHearing.Status);
+            return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
         }
 
 
