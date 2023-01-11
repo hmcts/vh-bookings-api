@@ -534,7 +534,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing shell</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingDetailsResponse> GetBookingStatusByIdAsync(System.Guid hearingId);
+        System.Threading.Tasks.Task<string> GetBookingStatusByIdAsync(System.Guid hearingId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -543,7 +543,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing shell</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingDetailsResponse> GetBookingStatusByIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<string> GetBookingStatusByIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get all hearing venues available for booking
@@ -4077,7 +4077,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing shell</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<HearingDetailsResponse> GetBookingStatusByIdAsync(System.Guid hearingId)
+        public virtual System.Threading.Tasks.Task<string> GetBookingStatusByIdAsync(System.Guid hearingId)
         {
             return GetBookingStatusByIdAsync(hearingId, System.Threading.CancellationToken.None);
         }
@@ -4089,7 +4089,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing shell</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<HearingDetailsResponse> GetBookingStatusByIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<string> GetBookingStatusByIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -4130,7 +4130,7 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<HearingDetailsResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

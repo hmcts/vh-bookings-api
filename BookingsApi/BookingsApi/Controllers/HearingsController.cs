@@ -806,7 +806,7 @@ namespace BookingsApi.Controllers
         /// <returns>Hearing shell</returns>
         [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
         [OpenApiOperation("GetBookingStatusById")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
