@@ -9,6 +9,7 @@ using BookingsApi.Contract.Queries;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Contract.Configuration;
+using BookingsApi.Contract.Enums;
 
 #pragma warning disable 108 // Disable "CS0108 '{derivedDto}.ToJson()' hides inherited member '{dtoBase}.ToJson()'. Use the new keyword if hiding was intended."
 #pragma warning disable 114 // Disable "CS0114 '{derivedDto}.RaisePropertyChanged(String)' hides inherited member 'dtoBase.RaisePropertyChanged(String)'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword."
@@ -529,19 +530,21 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetUnallocatedHearingsAsync(System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Search for hearings to be allocate via search parameters
+        /// Get booking status for a given hearing id
         /// </summary>
-        /// <returns>list of hearings matching search criteria</returns>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber);
+        System.Threading.Tasks.Task<BookingStatus> GetBookingStatusByIdAsync(System.Guid hearingId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Search for hearings to be allocate via search parameters
+        /// Get booking status for a given hearing id
         /// </summary>
-        /// <returns>list of hearings matching search criteria</returns>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<BookingStatus> GetBookingStatusByIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get all hearing venues available for booking
@@ -4070,46 +4073,31 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Search for hearings to be allocate via search parameters
+        /// Get booking status for a given hearing id
         /// </summary>
-        /// <returns>list of hearings matching search criteria</returns>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber)
+        public virtual System.Threading.Tasks.Task<BookingStatus> GetBookingStatusByIdAsync(System.Guid hearingId)
         {
-            return SearchForAllocationHearingsAsync(fromDate, toDate, csoUserName, caseType, caseNumber, System.Threading.CancellationToken.None);
+            return GetBookingStatusByIdAsync(hearingId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Search for hearings to be allocate via search parameters
+        /// Get booking status for a given hearing id
         /// </summary>
-        /// <returns>list of hearings matching search criteria</returns>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Booking status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<BookingStatus> GetBookingStatusByIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/allocation/search?");
-            if (fromDate != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("FromDate") + "=").Append(System.Uri.EscapeDataString(fromDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (toDate != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("ToDate") + "=").Append(System.Uri.EscapeDataString(toDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (csoUserName != null)
-            {
-                foreach (var item_ in csoUserName) { urlBuilder_.Append(System.Uri.EscapeDataString("CsoUserName") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            if (caseType != null)
-            {
-                foreach (var item_ in caseType) { urlBuilder_.Append(System.Uri.EscapeDataString("CaseType") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            if (caseNumber != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("CaseNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(caseNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/status");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4143,12 +4131,22 @@ namespace BookingsApi.Client
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingDetailsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<BookingStatus>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 404)

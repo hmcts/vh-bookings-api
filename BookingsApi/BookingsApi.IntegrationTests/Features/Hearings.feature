@@ -194,3 +194,9 @@ Feature: Hearings
     When I send the request to the endpoint
     Then the response should have the status NoContent and success status True
     And hearing status should be Failed
+
+  Scenario: Get booking status for a given hearing
+    Given I have a get booking status for a given request with a valid hearing id
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And booking status should be retrieved
