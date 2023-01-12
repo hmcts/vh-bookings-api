@@ -21,8 +21,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var query = new SearchForAllocationHearingsRequest()
             {
                 CaseNumber = "caseNumber",
-                CsoUserName = "userName",
-                CaseType = "caseType",
+                CsoUserName = new[]{"userName"},
+                CaseType =  new[]{"caseType"},
                 FromDate = new DateTime(),
                 ToDate = new DateTime()
             };
@@ -50,8 +50,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var query = new SearchForAllocationHearingsRequest()
             {
                 CaseNumber = cNumber,
-                CsoUserName = "userName",
-                CaseType = "caseType",
+                CsoUserName = new[]{"userName"},
+                CaseType =  new[]{"caseType"},
                 FromDate = new DateTime(),
                 ToDate = new DateTime()
             };

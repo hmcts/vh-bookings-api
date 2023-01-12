@@ -48,10 +48,11 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_get_hearing_details_by_case_type()
     {
         //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(caseType:TestCaseType));
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(caseType: new[]{TestCaseType}));
         //ASSERT
         hearings.Count.Should().Be(2);
-        hearings.Select(e => e.GetCases().First().Name.Should().Be(TestCaseType));
+        foreach (var hearing in hearings)
+            hearing.CaseType.Name.Should().Be(TestCaseType);
     }
     
     [Test]
@@ -73,7 +74,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var justiceUser = "testUser";
         await Hooks.AddAllocation(_seededHearing3, justiceUser);
         //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(csoUserName:justiceUser));
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(csoUserName:new[] {justiceUser}));
         //ASSERT
         hearings.Count.Should().Be(1);
         hearings.First().HearingCases.First().Case.Number.Should().Be(_seededHearing3.HearingCases.First().Case.Number);
@@ -109,7 +110,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     
         
     [Test]
-    public async Task Should_get_hearing_details_by_multiple_paramaeters()
+    public async Task Should_get_hearing_details_by_multiple_parameters()
     {
         //ARRANGE
         // hearing 1,2 & 3
@@ -126,7 +127,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var toDate = DateTime.Today.AddDays(52);  //after _testDate1
 
         //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(fromDate:fromDate, toDate:toDate, caseType:caseType, csoUserName:justiceUser));
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(fromDate:fromDate, toDate:toDate, caseType:new[]{caseType}, csoUserName:new[]{justiceUser}));
 
         //ASSERT
         hearings.Count.Should().Be(1);
