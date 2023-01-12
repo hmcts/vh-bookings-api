@@ -61,10 +61,12 @@ namespace BookingsApi.Controllers
                     : await new JudiciaryNonLeaverPersonRequestValidation().ValidateAsync(item);
                 if (!validation.IsValid)
                 {
+                    var identifier = item.Leaver ? item.Id : item.PersonalCode;
+                    
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
                         Message =
-                            $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
+                            $"{string.Format(bulkItemErrorMessage, identifier)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
                         JudiciaryPersonRequest = item
                     });
 
@@ -73,9 +75,19 @@ namespace BookingsApi.Controllers
 
                 try
                 {
-                    var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
-                    var judiciaryPerson =
-                        await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+                    JudiciaryPerson judiciaryPerson;
+                    if (item.Leaver)
+                    {
+                        var query = new GetJudiciaryPersonByExternalRefIdQuery(item.PersonalCode);
+                        judiciaryPerson =
+                            await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+                    }
+                    else
+                    {
+                        var query = new GetJudiciaryPersonByPersonalCodeQuery(item.PersonalCode);
+                        judiciaryPerson =
+                            await _queryHandler.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(query);
+                    }
 
                     if (judiciaryPerson == null)
                     {
@@ -85,7 +97,15 @@ namespace BookingsApi.Controllers
                     }
                     else
                     {
-                        await _commandHandler.Handle(UpdateJudiciaryPersonByExternalRefIdCommandMapper.Map(item));
+                        if (item.Leaver)
+                        {
+                            await _commandHandler.Handle(UpdateJudiciaryPersonByExternalRefIdCommandMapper.Map(item));
+                        }
+                        else
+                        {
+                            await _commandHandler.Handle(UpdateJudiciaryPersonByPersonalCodeCommandMapper.Map(item));
+                        }
+
                     }
                 }
                 catch (Exception ex)

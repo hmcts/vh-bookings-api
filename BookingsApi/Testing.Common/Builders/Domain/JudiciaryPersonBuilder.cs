@@ -8,13 +8,13 @@ namespace Testing.Common.Builders.Domain
     {
         private readonly JudiciaryPerson _judiciaryPerson;
 
-        public JudiciaryPersonBuilder(string externalRefId = null)
+        public JudiciaryPersonBuilder(string externalRefId = null, string personalCode = null)
         {
             var settings = new BuilderSettings();
             _judiciaryPerson = new Builder(settings).CreateNew<JudiciaryPerson>().WithFactory(() =>
                     new JudiciaryPerson(
                         externalRefId,
-                        $"{RandomNumber.Next(0, 1000)}",
+                        personalCode ?? $"{RandomNumber.Next(0, 1000)}",
                         Name.Prefix(),
                         $"Automation_FirstName",
                         $"Automation_LastName",
