@@ -7,9 +7,9 @@ using BookingsApi.Helpers;
 
 namespace BookingsApi.Mappings
 {
-    public class HearingToDetailsResponseMapper
+    public static class HearingToDetailsResponseMapper
     {
-        public HearingDetailsResponse MapHearingToDetailedResponse(Hearing videoHearing)
+        public static HearingDetailsResponse Map(Hearing videoHearing)
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
