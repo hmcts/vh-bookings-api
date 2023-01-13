@@ -323,7 +323,6 @@ namespace BookingsApi.UnitTests.Controllers
                 Surname = "b",
                 Title = "c",
                 KnownAs = "d",
-                PersonalCode = "123",
                 PostNominals = "nom1",
                 Email = "some@email.com"
             };
