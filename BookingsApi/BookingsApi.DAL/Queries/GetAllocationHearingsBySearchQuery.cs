@@ -17,7 +17,7 @@ namespace BookingsApi.DAL.Queries
         public string[] CaseType { get; }
         public DateTime? FromDate { get;}
         public DateTime? ToDate { get;}
-        public string[] CsoName { get;}
+        public Guid[] Cso { get;}
         public bool IsUnallocated { get; }
 
         public GetAllocationHearingsBySearchQuery(
@@ -25,14 +25,14 @@ namespace BookingsApi.DAL.Queries
             IEnumerable<string> caseType = null,
             DateTime? fromDate = null, 
             DateTime? toDate = null, 
-            IEnumerable<string> csoUserName = null,
+            IEnumerable<Guid> cso = null,
             bool isUnallocated = false)
         {
             CaseNumber = caseNumber?.ToLower().Trim();
-            CaseType = caseType?.Select(s => s.ToLower().Trim()).ToArray();
+            CaseType = caseType?.Select(s => s.ToLower().Trim()).ToArray() ?? Array.Empty<string>();
             FromDate = fromDate;
             ToDate = toDate;
-            CsoName = csoUserName?.Select(s => s.ToLower().Trim()).ToArray();
+            Cso = cso?.ToArray() ?? Array.Empty<Guid>();
             IsUnallocated = isUnallocated;
         }
 
@@ -74,14 +74,14 @@ namespace BookingsApi.DAL.Queries
                     .Where(x => x.HearingCases
                         .Any(c => c.Case.Number.ToLower().Trim().Contains(query.CaseNumber)));
 
-            if (query.CaseType != null && query.CaseType.Any())
+            if (query.CaseType.Any())
                 hearings = hearings
                     .Where(x => query.CaseType.Contains(x.CaseType.Name.ToLower().Trim()));
 
-            if (query.CsoName != null && query.CsoName.Any())
+            if (query.Cso.Any())
                 hearings = hearings
                     .Where(x => x.Allocations
-                        .Any(e => query.CsoName.Contains(e.JusticeUser.Username.ToLower().Trim())));
+                        .Any(a => query.Cso.Contains(a.JusticeUser.Id)));
             
             if (query.FromDate != null)
             {
