@@ -452,22 +452,22 @@ namespace BookingsApi.IntegrationTests.Helper
         
         public async Task ClearJudiciaryPersonsAsync()
         {
-            foreach (var externalRefId in JudiciaryPersons)
+            foreach (var person in JudiciaryPersons)
             {
                 try
                 {
                     await using var db = new BookingsDbContext(_dbContextOptions);
-                    var jp = await db.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == externalRefId);
+                    var jp = await db.JudiciaryPersons.SingleOrDefaultAsync(x => x.PersonalCode == person);
                     if (jp != null)
                     {
                         db.JudiciaryPersons.Remove(jp);
                         await db.SaveChangesAsync();    
                     }
-                    TestContext.WriteLine(@$"Remove Judiciary Person: {externalRefId}.");
+                    TestContext.WriteLine(@$"Remove Judiciary Person: {person}.");
                 }
                 catch (JudiciaryPersonNotFoundException)
                 {
-                    TestContext.WriteLine(@$"Ignoring cleanup for Judiciary Person: {externalRefId}. Does not exist.");
+                    TestContext.WriteLine(@$"Ignoring cleanup for Judiciary Person: {person}. Does not exist.");
                 }
             }
         }
@@ -738,15 +738,15 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
         }
         
-        public async Task AddJudiciaryPerson(string externalRefId = null)
+        public async Task AddJudiciaryPerson(string personalCode = null)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
-            var judiciaryPerson = new JudiciaryPersonBuilder(externalRefId).Build();
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
             await db.JudiciaryPersons.AddAsync(judiciaryPerson);
 
             await db.SaveChangesAsync();
-            AddJudiciaryPersonsForCleanup(judiciaryPerson.ExternalRefId);
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
         }
         
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)

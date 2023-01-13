@@ -64,7 +64,7 @@ namespace BookingsApi.Controllers
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
                         Message =
-                            $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
+                            $"{string.Format(bulkItemErrorMessage, item.PersonalCode)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
                         JudiciaryPersonRequest = item
                     });
 
@@ -73,13 +73,13 @@ namespace BookingsApi.Controllers
 
                 try
                 {
-                    var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
+                    var query = new GetJudiciaryPersonByPersonalCodeQuery(item.Id);
                     var judiciaryPerson =
-                        await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+                        await _queryHandler.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(query);
 
                     if (judiciaryPerson == null)
                     {
-                        await _commandHandler.Handle(new AddJudiciaryPersonByExternalRefIdCommand(item.Id,
+                        await _commandHandler.Handle(new AddJudiciaryPersonByPersonalCodeCommand(item.Id,
                             item.PersonalCode, item.Title, item.KnownAs, item.Surname,
                             item.Fullname, item.PostNominals, item.Email, item.HasLeft, item.Leaver, item.LeftOn));
                     }
@@ -125,7 +125,7 @@ namespace BookingsApi.Controllers
                     bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                     {
                         Message =
-                            $"{string.Format(bulkItemErrorMessage, item.Id)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
+                            $"{string.Format(bulkItemErrorMessage, item.PersonalCode)} - {string.Join(", ", validation.Errors.Select(x => x.ErrorMessage))}",
                         JudiciaryLeaverRequest = item
                     });
 
@@ -134,19 +134,19 @@ namespace BookingsApi.Controllers
 
                 try
                 {
-                    var query = new GetJudiciaryPersonByExternalRefIdQuery(item.Id);
+                    var query = new GetJudiciaryPersonByPersonalCodeQuery(item.PersonalCode);
                     var judiciaryPerson =
-                        await _queryHandler.Handle<GetJudiciaryPersonByExternalRefIdQuery, JudiciaryPerson>(query);
+                        await _queryHandler.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(query);
 
                     if (judiciaryPerson != null)
                     {
                         await _commandHandler.Handle(
-                            new UpdateJudiciaryLeaverByExternalRefIdCommand(item.Id, item.Leaver));
+                            new UpdateJudiciaryLeaverByPersonalCodeCommand(item.PersonalCode, item.Leaver));
                     }
                     else
                     {
                         var message =
-                            $"Unable to update the record in Judiciary Person with ExternalRefId - '{item.Id}'";
+                            $"Unable to update the record in Judiciary Person with External Id - '{item.PersonalCode}'";
                         _logger.LogError(message);
                         bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                         {
@@ -157,7 +157,7 @@ namespace BookingsApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, bulkItemErrorMessage, item.Id);
+                    _logger.LogError(ex, bulkItemErrorMessage, item.PersonalCode);
                     bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                     {
                         Message = bulkItemErrorMessage,
