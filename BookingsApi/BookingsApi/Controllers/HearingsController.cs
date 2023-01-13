@@ -800,10 +800,8 @@ namespace BookingsApi.Controllers
         [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
         [OpenApiOperation("SearchForAllocationHearings")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
         {
-
             var query = new GetAllocationHearingsBySearchQuery(
                 searchRequest.CaseNumber, 
                 searchRequest.CaseType, 
@@ -814,7 +812,7 @@ namespace BookingsApi.Controllers
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
             if (hearings == null || !hearings.Any())
-                return NotFound();
+                return Ok(new List<HearingDetailsResponse>());
             
             return Ok(hearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
