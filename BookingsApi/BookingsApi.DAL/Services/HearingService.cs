@@ -54,12 +54,6 @@ namespace BookingsApi.DAL.Services
         /// <param name="participants">List of participants</param>
         /// <returns></returns>
         void ValidateHostCount(IList<Participant> participants);
-
-        /// <summary>
-        /// Get unallocated hearings
-        /// </summary>
-        /// <returns></returns>
-        Task<List<VideoHearing>> GetUnallocatedHearings();
     }
     public class HearingService : IHearingService
     {
@@ -204,29 +198,6 @@ namespace BookingsApi.DAL.Services
             {
                 throw new DomainRuleException("Host", "A hearing must have at least one host");
             }
-        }
-        
-        public async Task<List<VideoHearing>> GetUnallocatedHearings()
-        {
-            var startDate = DateTime.UtcNow;  
-
-            var hearings =  _context.VideoHearings
-                .Include(h => h.CaseType)
-                .Include(h => h.HearingType)
-                .Where(x =>
-                    (x.Status == Domain.Enumerations.BookingStatus.Created || x.Status == Domain.Enumerations.BookingStatus.Booked)
-                    && x.Status != Domain.Enumerations.BookingStatus.Cancelled
-                    && x.ScheduledDateTime >= startDate
-                    && x.CaseTypeId != 3); // Generic Case Type
-
-            var unAllocatedHearings =   
-                hearings.Where(x => 
-                    _context.Allocations.FirstOrDefault(a => a.HearingId == x.Id) == null).OrderBy(x=>x.ScheduledDateTime);
-            
-            unAllocatedHearings = (IOrderedQueryable<VideoHearing>) unAllocatedHearings.Where(x=> !HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName => venueName == x.HearingVenueName));
-
-            
-            return await unAllocatedHearings.ToListAsync();
         }
 
         private static void UpdateParticipantsWithLinks(Participant participant1, Participant participant2, LinkedParticipantType linkType)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Queries.Core;
@@ -17,37 +18,56 @@ namespace BookingsApi.DAL.Queries
         public DateTime? FromDate { get;}
         public DateTime? ToDate { get;}
         public string[] CsoName { get;}
+        public bool IsUnallocated { get; }
 
         public GetAllocationHearingsBySearchQuery(
             string caseNumber = null, 
             IEnumerable<string> caseType = null,
             DateTime? fromDate = null, 
             DateTime? toDate = null, 
-            IEnumerable<string> csoUserName = null)
+            IEnumerable<string> csoUserName = null,
+            bool isUnallocated = false)
         {
             CaseNumber = caseNumber?.ToLower().Trim();
             CaseType = caseType?.Select(s => s.ToLower().Trim()).ToArray();
             FromDate = fromDate;
             ToDate = toDate;
             CsoName = csoUserName?.Select(s => s.ToLower().Trim()).ToArray();
-            
+            IsUnallocated = isUnallocated;
         }
+
     }
 
     public class GetAllocationHearingsBySearchQueryHandler : IQueryHandler<GetAllocationHearingsBySearchQuery, List<VideoHearing>>
     {
         private readonly BookingsDbContext _context;
-        public GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context) => _context = context;
-        
+        private readonly bool _isTest;
 
+        public GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context, bool isTest = false)
+        {
+            _context = context;
+            _isTest = isTest;
+        }
+        
         public async Task<List<VideoHearing>> Handle(GetAllocationHearingsBySearchQuery query)
         {
             var hearings =  _context.VideoHearings
                 .Include(h => h.CaseType)
+                .Include(h => h.HearingType)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
                 .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
-                .Where(x => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) && x.Status != BookingStatus.Cancelled) 
+                .Where(x 
+                    => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
+                         && x.Status != BookingStatus.Cancelled
+                         && x.ScheduledDateTime >= DateTime.UtcNow  
+                         && HearingScottishVenueNames.ScottishHearingVenuesList.All(venueName => venueName != x.HearingVenueName))
                 .AsQueryable();
+
+            if (!_isTest)
+                hearings = hearings.Where(x => x.CaseTypeId != 3); //exclude generic type test cases from prod
+            
+            if (query.IsUnallocated)
+                hearings = hearings.Where(x => x.Allocations.FirstOrDefault(a => a.HearingId == x.Id) == null);
 
             if (!query.CaseNumber.IsNullOrEmpty())
                 hearings = hearings
@@ -70,7 +90,7 @@ namespace BookingsApi.DAL.Queries
                     : hearings.Where(e => e.ScheduledDateTime.Date == query.FromDate.Value.Date);
             }
             
-            return await hearings.AsNoTracking().ToListAsync();
+            return await hearings.OrderBy(x=>x.ScheduledDateTime).AsNoTracking().ToListAsync();
         }
     }
 }

@@ -534,7 +534,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of hearings matching search criteria</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, bool? isAllocated);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -542,7 +542,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of hearings matching search criteria</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, bool? isAllocated, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get booking status for a given hearing id
@@ -4092,9 +4092,9 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of hearings matching search criteria</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, bool? isAllocated)
         {
-            return SearchForAllocationHearingsAsync(fromDate, toDate, csoUserName, caseType, caseNumber, System.Threading.CancellationToken.None);
+            return SearchForAllocationHearingsAsync(fromDate, toDate, csoUserName, caseType, caseNumber, isAllocated, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -4103,7 +4103,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of hearings matching search criteria</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> SearchForAllocationHearingsAsync(System.DateTimeOffset? fromDate, System.DateTimeOffset? toDate, System.Collections.Generic.IEnumerable<string> csoUserName, System.Collections.Generic.IEnumerable<string> caseType, string caseNumber, bool? isAllocated, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/allocation/search?");
@@ -4126,6 +4126,10 @@ namespace BookingsApi.Client
             if (caseNumber != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("CaseNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(caseNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (isAllocated != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("IsAllocated") + "=").Append(System.Uri.EscapeDataString(ConvertToString(isAllocated, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 

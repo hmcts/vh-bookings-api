@@ -9,5 +9,6 @@ namespace BookingsApi.Contract.Requests
         public string[] CsoUserName { get; set; }
         public string[] CaseType { get; set; }
         public string CaseNumber { get; set; }
+        public bool IsAllocated { get; set; }
     }
 }
