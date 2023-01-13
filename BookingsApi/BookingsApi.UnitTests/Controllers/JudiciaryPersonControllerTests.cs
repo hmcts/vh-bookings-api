@@ -481,7 +481,7 @@ namespace BookingsApi.UnitTests.Controllers
             personResponses.Count.Should().Be(0);
         }
         
-        private void AssertErrorMessageContainsIdentifier(string errorMessage, string identifier)
+        private static void AssertErrorMessageContainsIdentifier(string errorMessage, string identifier)
         {
             var expectedErrorMessage = $"Could not add or update external Judiciary user with External Id: {identifier}";
             errorMessage.Should().StartWith($"{expectedErrorMessage} - ");
