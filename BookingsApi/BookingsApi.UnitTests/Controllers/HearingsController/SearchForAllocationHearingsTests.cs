@@ -16,7 +16,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
     public class SearchForAllocationHearingsTests : HearingsControllerTests
     {
         [Test]
-        public async Task Should_return_an_404_if_no_records_found_for_the_given_parameters()
+        public async Task Should_return_an_empty_list_if_no_records_found_for_the_given_parameters()
         {
             var query = new SearchForAllocationHearingsRequest()
             {
@@ -35,9 +35,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             result.Should().NotBeNull();
 
-            var objectResult = (NotFoundResult)result;
+            var objectResult = (OkObjectResult)result;
 
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+            var hearingDetailsResponse = (List<HearingDetailsResponse>)objectResult.Value;
+
+            hearingDetailsResponse.Should().NotBeNull();
+
+            hearingDetailsResponse.Should().BeEmpty();
             
             QueryHandlerMock
                 .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);

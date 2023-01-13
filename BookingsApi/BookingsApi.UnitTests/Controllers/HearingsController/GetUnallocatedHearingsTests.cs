@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
         
         [Test]
-        public async Task Should_Return_List_Of_Unallocated_Hearings_Returning_Not_Found()
+        public async Task Should_Return_empty_List_Of_Unallocated_Hearings_if_Not_Found()
         {
             
 
