@@ -443,6 +443,30 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
         }
+        
+        [Test]
+        public async Task Should_return_error_items_in_request_exception_for_leavers()
+        {
+            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var request = new List<JudiciaryLeaverRequest> { item1 };
+
+            _queryHandlerMock
+                .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
+                .ThrowsAsync(new Exception("Error"));
+
+            var result = await _controller.BulkJudiciaryLeaversAsync(request);
+
+            result.Should().NotBeNull();
+            var objectResult = result as ObjectResult;
+            objectResult.Should().NotBeNull();
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var data = objectResult.Value as BulkJudiciaryLeaverResponse;
+            data.Should().NotBeNull();
+            data.ErroredRequests.Count.Should().Be(1);
+            data.ErroredRequests[0].JudiciaryLeaverRequest.Should().BeEquivalentTo(item1);
+
+            _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
+        }
 
         [Test]
         public async Task Should_return_list_of_PersonResponse_matching_serch_term_successfully()
