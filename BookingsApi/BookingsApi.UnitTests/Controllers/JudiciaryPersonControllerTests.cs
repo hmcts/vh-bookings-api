@@ -141,7 +141,7 @@ namespace BookingsApi.UnitTests.Controllers
         [Test]
         public async Task Should_return_ok_result_updating_leaver_item_which_does_not_exist()
         {
-            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), PersonalCode = "PersonalCode", Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
 
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
@@ -506,7 +506,7 @@ namespace BookingsApi.UnitTests.Controllers
         
         private static void AssertErrorMessageContainsIdentifier(string errorMessage, string identifier)
         {
-            var expectedErrorMessage = $"Could not add or update external Judiciary user with External Id: {identifier}";
+            var expectedErrorMessage = $"Could not add or update external Judiciary user with Personal Code: {identifier}";
             errorMessage.Should().StartWith($"{expectedErrorMessage} - ");
         }
     }

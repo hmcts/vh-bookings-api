@@ -46,7 +46,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
         {
-            const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
+            const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
             var judiciaryPersonRequests = request.ToList();
                 _logger.LogInformation(
                 "Starting BulkJudiciaryPersons operation, processing {JudiciaryPersonRequestsCount} items",
@@ -109,7 +109,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(BulkJudiciaryLeaverResponse), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> BulkJudiciaryLeaversAsync(IEnumerable<JudiciaryLeaverRequest> request)
         {
-            const string bulkItemErrorMessage = "Could not add or update external Judiciary user with External Id: {0}";
+            const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
             var judiciaryLeaverRequests = request.ToList();
             _logger.LogInformation(
                 "Starting BulkJudiciaryLeavers operation, processing {JudiciaryLeaversRequestsCount} items",
@@ -146,7 +146,7 @@ namespace BookingsApi.Controllers
                     else
                     {
                         var message =
-                            $"Unable to update the record in Judiciary Person with External Id - '{item.PersonalCode}'";
+                            $"Unable to update the record in Judiciary Person with Personal Code - '{item.PersonalCode}'";
                         _logger.LogError(message);
                         bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                         {
