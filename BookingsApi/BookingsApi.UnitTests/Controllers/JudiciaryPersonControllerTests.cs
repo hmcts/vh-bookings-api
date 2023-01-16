@@ -447,7 +447,7 @@ namespace BookingsApi.UnitTests.Controllers
         [Test]
         public async Task Should_return_error_items_in_request_exception_for_leavers()
         {
-            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
+            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), PersonalCode = "PersonalCode", Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
             _queryHandlerMock
