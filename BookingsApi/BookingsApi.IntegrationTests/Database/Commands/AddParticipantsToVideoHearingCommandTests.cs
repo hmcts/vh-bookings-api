@@ -310,6 +310,48 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             afterCount.Should().BeGreaterThan(beforeCount);
         }
 
+        [Test]
+        public async Task Should_add_a_participant_with_same_contactemail_and_username_of_other_participants_to_video_hearing()
+        {
+            var seededHearing1 = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing1.Id}");
+            _newHearingId = seededHearing1.Id;
+
+            var participantsFromHearing1 = seededHearing1.GetParticipants();
+            var beforeCount = seededHearing1.GetParticipants().Count;
+
+            const string caseTypeName = "Generic";
+            var caseType = GetCaseTypeFromDb(caseTypeName);
+
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+
+            var seededHearing2 = await Hooks.SeedVideoHearing();
+            var newPerson = new PersonBuilder(participantsFromHearing1[1].Person.Username, participantsFromHearing1[0].Person.ContactEmail).Build();
+            var newParticipant = new NewParticipant()
+            {
+                Person = newPerson,
+                CaseRole = applicantCaseRole,
+                HearingRole = applicantRepresentativeHearingRole,
+                DisplayName = $"{newPerson.FirstName} {newPerson.LastName}",
+                Representee = string.Empty
+            };
+            var participants = new List<NewParticipant>()
+            {
+                newParticipant
+            };
+
+            await _commandHandler.Handle(new AddParticipantsToVideoHearingCommand(seededHearing2.Id, participants, null));
+
+            var returnedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing2.Id));
+            var afterCount = returnedVideoHearing.GetParticipants().Count;
+
+            afterCount.Should().BeGreaterThan(beforeCount);
+        }
+
+
         private async Task<List<Person>> AddExistingPersonToAHearing(Person existingPerson)
         {
             var seededHearing = await Hooks.SeedVideoHearing();
