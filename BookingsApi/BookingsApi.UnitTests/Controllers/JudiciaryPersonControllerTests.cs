@@ -286,7 +286,7 @@ namespace BookingsApi.UnitTests.Controllers
                 .ReturnsAsync(retrievedPerson1);
 
             _queryHandlerMock
-                .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.Is<GetJudiciaryPersonByPersonalCodeQuery>(x => x.PersonalCode == item1.Id)))
+                .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.Is<GetJudiciaryPersonByPersonalCodeQuery>(x => x.PersonalCode == item1.PersonalCode)))
                 .ReturnsAsync((JudiciaryPerson)null);
 
             var result = await _controller.BulkJudiciaryPersonsAsync(request);

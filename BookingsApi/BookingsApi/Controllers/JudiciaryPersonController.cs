@@ -73,7 +73,7 @@ namespace BookingsApi.Controllers
 
                 try
                 {
-                    var query = new GetJudiciaryPersonByPersonalCodeQuery(item.Id);
+                    var query = new GetJudiciaryPersonByPersonalCodeQuery(item.PersonalCode);
                     var judiciaryPerson =
                         await _queryHandler.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(query);
 
@@ -90,7 +90,7 @@ namespace BookingsApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, bulkItemErrorMessage, item.Id);
+                    _logger.LogError(ex, bulkItemErrorMessage, item.PersonalCode);
                     bulkResponse.ErroredRequests.Add(new JudiciaryPersonErrorResponse
                     {
                         Message = bulkItemErrorMessage,
