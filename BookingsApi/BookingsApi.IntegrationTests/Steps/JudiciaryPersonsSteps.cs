@@ -41,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Steps
             jps.ForEach(Assert.NotNull);
         }
 
-        private List<JudiciaryPersonRequest> GetBulkRequest()
+        private static List<JudiciaryPersonRequest> GetBulkRequest()
         {
             return new List<JudiciaryPersonRequest>
             {
