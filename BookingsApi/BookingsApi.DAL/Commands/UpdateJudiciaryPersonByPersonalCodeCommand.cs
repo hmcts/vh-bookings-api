@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class UpdateJudiciaryPersonByExternalRefIdCommand : ICommand
+    public class UpdateJudiciaryPersonByPersonalCodeCommand : ICommand
     {
         public string ExternalRefId { get; set; }
         public string PersonalCode { get; set; }
@@ -25,23 +25,23 @@ namespace BookingsApi.DAL.Commands
         public string LeftOn { get; set; }
     }
 
-    public class UpdateJudiciaryPersonByExternalRefIdHandler : ICommandHandler<UpdateJudiciaryPersonByExternalRefIdCommand>
+    public class UpdateJudiciaryPersonByPersonalCodeHandler : ICommandHandler<UpdateJudiciaryPersonByPersonalCodeCommand>
     {
         private readonly BookingsDbContext _context;
 
-        public UpdateJudiciaryPersonByExternalRefIdHandler(BookingsDbContext context)
+        public UpdateJudiciaryPersonByPersonalCodeHandler(BookingsDbContext context)
         {
             _context = context;
         }
 
-        public async Task Handle(UpdateJudiciaryPersonByExternalRefIdCommand command)
+        public async Task Handle(UpdateJudiciaryPersonByPersonalCodeCommand command)
         {
             var person =
-                await _context.JudiciaryPersons.SingleOrDefaultAsync(x => x.ExternalRefId == command.ExternalRefId);
+                await _context.JudiciaryPersons.SingleOrDefaultAsync(x => x.PersonalCode == command.PersonalCode);
 
             if (person == null)
             {
-                throw new JudiciaryPersonNotFoundException(command.ExternalRefId);
+                throw new JudiciaryPersonNotFoundException(command.PersonalCode);
             }
 
             person.Update(UpdateJudiciaryPersonDtoMapper.Map(command));

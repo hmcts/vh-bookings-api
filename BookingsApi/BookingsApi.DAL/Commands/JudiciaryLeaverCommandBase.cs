@@ -5,13 +5,13 @@ namespace BookingsApi.DAL.Commands
 {
     public abstract class JudiciaryLeaverCommandBase : ICommand
     {
-        protected JudiciaryLeaverCommandBase(string externalRefId, bool leaver)
+        protected JudiciaryLeaverCommandBase(string personalCode, bool leaver)
         {
-            ExternalRefId = externalRefId;
+            PersonalCode = personalCode;
             HasLeft = leaver;
         }
         
-        public string ExternalRefId { get; }
+        public string PersonalCode { get; }
         public bool HasLeft { get; set; }
     }
 }

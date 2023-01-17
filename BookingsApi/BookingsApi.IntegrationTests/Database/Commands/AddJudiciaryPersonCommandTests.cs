@@ -11,29 +11,30 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     public class AddJudiciaryPersonCommandTests : DatabaseTestsBase
     {
         private AddJudiciaryPersonCommandHandler _commandHandler;
-        private GetJudiciaryPersonByExternalRefIdQueryHandler _getJudiciaryPersonByExternalRefIdQueryHandler;
+        private GetJudiciaryPersonByPersonalCodeQueryHandler _getJudiciaryPersonByPersonalCodeQueryHandler;
 
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new AddJudiciaryPersonCommandHandler(context);
-            _getJudiciaryPersonByExternalRefIdQueryHandler = new GetJudiciaryPersonByExternalRefIdQueryHandler(context);
+            _getJudiciaryPersonByPersonalCodeQueryHandler = new GetJudiciaryPersonByPersonalCodeQueryHandler(context);
         }
         
         [Test]
         public async Task should_add_non_leaver_person()
         {
             var externalRefId = Guid.NewGuid().ToString();
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false, false, string.Empty);
+            var personalCode = Guid.NewGuid().ToString();
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, personalCode, "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false, false, string.Empty);
             
             await _commandHandler.Handle(addCommand);
             Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
             
-            var addedPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
+            var addedPerson = await _getJudiciaryPersonByPersonalCodeQueryHandler.Handle(new GetJudiciaryPersonByPersonalCodeQuery(personalCode));
 
             addedPerson.ExternalRefId.Should().Be(addCommand.ExternalRefId);
-            addedPerson.PersonalCode.Should().Be("PersonalCode");
+            addedPerson.PersonalCode.Should().Be(addCommand.PersonalCode);
             addedPerson.Title.Should().Be("Title");
             addedPerson.KnownAs.Should().Be("KnownAs");
             addedPerson.Surname.Should().Be("Surname");
@@ -49,15 +50,16 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_add_leaver_person()
         {
             var externalRefId = Guid.NewGuid().ToString();
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false, true, "2022-06-08");
+            var personalCode = Guid.NewGuid().ToString();
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, personalCode, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false, true, "2022-06-08");
             
             await _commandHandler.Handle(addCommand);
             Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
             
-            var addedPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
+            var addedPerson = await _getJudiciaryPersonByPersonalCodeQueryHandler.Handle(new GetJudiciaryPersonByPersonalCodeQuery(personalCode));
 
             addedPerson.ExternalRefId.Should().Be(addCommand.ExternalRefId);
-            addedPerson.PersonalCode.Should().Be(string.Empty);
+            addedPerson.PersonalCode.Should().Be(personalCode);
             addedPerson.Title.Should().Be(string.Empty);
             addedPerson.KnownAs.Should().Be(string.Empty);
             addedPerson.Surname.Should().Be(string.Empty);
