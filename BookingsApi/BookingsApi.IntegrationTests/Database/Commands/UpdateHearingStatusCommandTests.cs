@@ -45,9 +45,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var expectedFinalStatus = BookingStatus.Created;
 
-            await _commandHandler.Handle(new UpdateHearingStatusCommand(seededHearing.Id, BookingStatus.Created, "test",
-                null));
-
             await _commandHandler.Handle(new UpdateHearingStatusCommand(seededHearing.Id, BookingStatus.Failed, "test",
                 null));
 

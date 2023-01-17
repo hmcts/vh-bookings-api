@@ -114,9 +114,9 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             person5.SetProtected(nameof(person5.Id), personId);
             participant5.SetProtected(nameof(participant5.PersonId), personId);
             participant5.DisplayName = "dfidshfiudsf@hmcts.net";
-            
+
+            hearing1.UpdateStatus(BookingStatus.Failed, "test", null);
             hearing2.UpdateStatus(BookingStatus.Created, "test", null);
-            hearing3.UpdateStatus(BookingStatus.Created, "test", null);
             hearing3.UpdateStatus(BookingStatus.Failed, "test", null);
             hearing4.UpdateStatus(BookingStatus.Cancelled, "test", "test cancellation");
             hearing5.UpdateStatus(BookingStatus.Created, "test", null);
