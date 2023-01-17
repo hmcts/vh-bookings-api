@@ -757,14 +757,16 @@ namespace BookingsApi.IntegrationTests.Helper
 
             await db.SaveChangesAsync();
         }        
-        public async Task<Allocation> AddAllocation(Hearing hearing, string user)
+        public async Task<Allocation> AddAllocation(Hearing hearing, JusticeUser user = null)
         {
+            user ??= await SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true);
+            
             await using var db = new BookingsDbContext(_dbContextOptions);
-            var justiceUser = await SeedJusticeUser(userName: user, null, null, isTeamLead:true);
+            
             var allocation = await db.Allocations.AddAsync(new Allocation
             {
                 HearingId = hearing.Id,
-                JusticeUserId = justiceUser.Id,
+                JusticeUserId = user.Id,
             });
             await db.SaveChangesAsync();
             
