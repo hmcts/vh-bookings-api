@@ -26,7 +26,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Setup()
     {
         _context = new BookingsDbContext(BookingsDbContextOptions);
-        _handler = new GetAllocationHearingsBySearchQueryHandler(_context);
+        _handler = new GetAllocationHearingsBySearchQueryHandler(_context, isTest: true);
         _seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created, configureOptions: options =>
         {
             options.CaseTypeName = TestCaseType;
@@ -71,14 +71,14 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_get_hearing_details_by_allocated_cso()
     {
         //ARRANGE
-        var justiceUser = "testUser";
+        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
         await Hooks.AddAllocation(_seededHearing3, justiceUser);
         //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(csoUserName:new[] {justiceUser}));
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
         //ASSERT
         hearings.Count.Should().Be(1);
         hearings.First().HearingCases.First().Case.Number.Should().Be(_seededHearing3.HearingCases.First().Case.Number);
-        hearings.First().AllocatedTo.Username.Should().Be(justiceUser);
+        hearings.First().AllocatedTo.Username.Should().Be(justiceUser.Username);
     }   
     
     [Test]
@@ -108,13 +108,27 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         hearings.First().ScheduledDateTime.Should().Be(_seededHearing2.ScheduledDateTime);
     }
     
+    [Test]
+    public async Task Should_get_hearing_details_by_unallocated()
+    {
+        //ARRANGE
+        await Hooks.AddAllocation(_seededHearing2);
         
+        //ACT
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(isUnallocated:true));
+
+        //ASSERT
+        hearings.Count.Should().Be(2);
+        hearings[0].HearingCases.First().Case.Number.Should().Be(_seededHearing1.HearingCases.First().Case.Number);
+        hearings[1].HearingCases.First().Case.Number.Should().Be(_seededHearing3.HearingCases.First().Case.Number);
+    }
+    
     [Test]
     public async Task Should_get_hearing_details_by_multiple_parameters()
     {
         //ARRANGE
         // hearing 1,2 & 3
-        var justiceUser = "testUser";
+        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
         await Hooks.AddAllocation(_seededHearing1, justiceUser);
         await Hooks.AddAllocation(_seededHearing2, justiceUser);
         await Hooks.AddAllocation(_seededHearing3, justiceUser);
@@ -127,13 +141,13 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var toDate = DateTime.Today.AddDays(52);  //after _testDate1
 
         //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(fromDate:fromDate, toDate:toDate, caseType:new[]{caseType}, csoUserName:new[]{justiceUser}));
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(fromDate:fromDate, toDate:toDate, caseType:new[]{caseType}, cso:new[]{justiceUser.Id}));
 
         //ASSERT
         hearings.Count.Should().Be(1);
         hearings.First().HearingCases.First().Case.Number.Should().Be(_seededHearing1.HearingCases.First().Case.Number);
         hearings.First().ScheduledDateTime.Should().Be(_seededHearing1.ScheduledDateTime);
         hearings.First().CaseType.Name.Should().Be(_seededHearing1.CaseType.Name);
-        hearings.First().AllocatedTo.Username.Should().Be(justiceUser);
+        hearings.First().AllocatedTo.Username.Should().Be(justiceUser.Username);
     }
 }

@@ -19,7 +19,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
     public class GetUnallocatedHearingsTests : HearingsControllerTests
     {
-        
+
         [Test]
         public async Task Should_Return_List_Of_Unallocated_Hearings()
         {
@@ -39,7 +39,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             
             var hearingList = new List<VideoHearing> { hearing1, hearing2 };
 
-            HearingServiceMock.Setup(x => x.GetUnallocatedHearings()).ReturnsAsync(hearingList);
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()))
+                .ReturnsAsync(hearingList);
 
              var result = await Controller.GetUnallocatedHearings();
 
@@ -56,17 +58,17 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             response.First(x => x.Id == hearing1.Id).Should().NotBeNull();
             response.First(x => x.Id == hearing2.Id).Should().NotBeNull();
 
-            HearingServiceMock.Verify(
-                x => x.GetUnallocatedHearings(),
-                Times.Once);
+            QueryHandlerMock
+                .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);
         }
         
         [Test]
         public async Task Should_Return_empty_List_Of_Unallocated_Hearings_if_Not_Found()
         {
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()))
+                .ReturnsAsync(new List<VideoHearing>());
             
-
-            HearingServiceMock.Setup(x => x.GetUnallocatedHearings()).ReturnsAsync(new List<VideoHearing>());
             var result = await Controller.GetUnallocatedHearings();
 
             result.Should().NotBeNull();
@@ -79,10 +81,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             response.Should().NotBeNull();
             response.Count.Should().Be(0);
 
-
-            HearingServiceMock.Verify(
-                x => x.GetUnallocatedHearings(),
-                Times.Once);
+            QueryHandlerMock
+                .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);
         }
 
         private static VideoHearing GetHearing(string caseNumber, List<string> caseNames)
