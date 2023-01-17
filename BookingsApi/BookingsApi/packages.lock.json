@@ -96,9 +96,9 @@
       },
       "Newtonsoft.Json": {
         "type": "Direct",
-        "requested": "[13.0.1, )",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "requested": "[13.0.2, )",
+        "resolved": "13.0.2",
+        "contentHash": "R2pZ3B0UjeyHShm9vG+Tu0EBb2lC8b0dFzV9gVn50ofHXh9Smjk6kTn7A/FdAsC8B5cKib1OnGYOXxRBz5XQDg=="
       },
       "NSwag.AspNetCore": {
         "type": "Direct",
@@ -2934,14 +2934,14 @@
           "Microsoft.Extensions.Caching.Abstractions": "[7.0.0, )",
           "Microsoft.Extensions.Configuration.UserSecrets": "[7.0.0, )",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "[5.2.9, )",
-          "Newtonsoft.Json": "[13.0.1, )"
+          "Newtonsoft.Json": "[13.0.2, )"
         }
       },
       "bookingsapi.contract": {
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Configuration.Json": "[7.0.0, )",
-          "Newtonsoft.Json": "[13.0.1, )",
+          "Newtonsoft.Json": "[13.0.2, )",
           "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
@@ -2967,7 +2967,7 @@
           "BookingsApi.Domain": "[1.0.0, )",
           "Microsoft.Azure.ServiceBus": "[5.2.0, )",
           "Microsoft.Extensions.Options": "[7.0.0, )",
-          "Newtonsoft.Json": "[13.0.1, )"
+          "Newtonsoft.Json": "[13.0.2, )"
         }
       }
     }

@@ -783,8 +783,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnallocatedHearings()
         {
-
-            var results = await _hearingService.GetUnallocatedHearings();
+            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true);
+            var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
             if (results.Count <= 0)
                 _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
@@ -807,7 +807,8 @@ namespace BookingsApi.Controllers
                 searchRequest.CaseType, 
                 searchRequest.FromDate, 
                 searchRequest.ToDate, 
-                searchRequest.CsoUserName);
+                searchRequest.Cso,
+                searchRequest.IsAllocated);
             
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
