@@ -29,7 +29,7 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Post;
             var request = GetBulkRequest();
             
-            TestDataManager.AddJudiciaryPersonsForCleanup(request.Select(x => x.Id).ToArray());
+            TestDataManager.AddJudiciaryPersonsForCleanup(request.Select(x => x.PersonalCode).ToArray());
             Context.HttpContent = new StringContent(RequestHelper.Serialise(request), Encoding.UTF8, "application/json");
         }
         
@@ -37,11 +37,11 @@ namespace BookingsApi.IntegrationTests.Steps
         public async Task AndTheJudiciaryPersonsShouldBeSaved()
         {
             await using var db = new BookingsDbContext(Context.BookingsDbContextOptions);
-            var jps = await db.JudiciaryPersons.Where(x => TestDataManager.JudiciaryPersons.Contains(x.ExternalRefId)).ToListAsync();
+            var jps = await db.JudiciaryPersons.Where(x => TestDataManager.JudiciaryPersons.Contains(x.PersonalCode)).ToListAsync();
             jps.ForEach(Assert.NotNull);
         }
 
-        private List<JudiciaryPersonRequest> GetBulkRequest()
+        private static List<JudiciaryPersonRequest> GetBulkRequest()
         {
             return new List<JudiciaryPersonRequest>
             {

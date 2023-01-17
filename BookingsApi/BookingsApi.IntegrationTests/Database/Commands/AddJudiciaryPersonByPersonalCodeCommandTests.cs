@@ -8,31 +8,32 @@ using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class AddJudiciaryPersonByExternalRefIdCommandTests : DatabaseTestsBase
+    public class AddJudiciaryPersonByPersonalCodeCommandTests : DatabaseTestsBase
     {
-        private AddJudiciaryPersonByExternalRefIdHandler _commandHandler;
-        private GetJudiciaryPersonByExternalRefIdQueryHandler _getJudiciaryPersonByExternalRefIdQueryHandler;
+        private AddJudiciaryPersonByPersonalCodeHandler _commandHandler;
+        private GetJudiciaryPersonByPersonalCodeQueryHandler _getJudiciaryPersonByPersonalCodeQueryHandler;
 
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new AddJudiciaryPersonByExternalRefIdHandler(context);
-            _getJudiciaryPersonByExternalRefIdQueryHandler = new GetJudiciaryPersonByExternalRefIdQueryHandler(context);
+            _commandHandler = new AddJudiciaryPersonByPersonalCodeHandler(context);
+            _getJudiciaryPersonByPersonalCodeQueryHandler = new GetJudiciaryPersonByPersonalCodeQueryHandler(context);
         }
 
         [Test]
         public async Task should_add_person()
         {
             var externalRefId = Guid.NewGuid().ToString();
+            var personalCode = Guid.NewGuid().ToString();
 
-            var insertCommand = new AddJudiciaryPersonByExternalRefIdCommand(externalRefId, "PersonalCode", "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true, true, "2022-06-08");
+            var insertCommand = new AddJudiciaryPersonByPersonalCodeCommand(externalRefId, personalCode, "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true, true, "2022-06-08");
             await _commandHandler.Handle(insertCommand);
 
-            var judiciaryPerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
+            var judiciaryPerson = await _getJudiciaryPersonByPersonalCodeQueryHandler.Handle(new GetJudiciaryPersonByPersonalCodeQuery(personalCode));
 
             judiciaryPerson.ExternalRefId.Should().Be(externalRefId);
-            judiciaryPerson.PersonalCode.Should().Be("PersonalCode");
+            judiciaryPerson.PersonalCode.Should().Be(personalCode);
             judiciaryPerson.Title.Should().Be("Title");
             judiciaryPerson.KnownAs.Should().Be("KnownAs");
             judiciaryPerson.Surname.Should().Be("Surname");
