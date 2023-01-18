@@ -9,23 +9,23 @@ using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class UpdateJudiciaryPersonByExternalRefIdCommandTests : DatabaseTestsBase
+    public class UpdateJudiciaryPersonByPersonalCodeCommandTests : DatabaseTestsBase
     {
-        private UpdateJudiciaryPersonByExternalRefIdHandler _commandHandler;
-        private GetJudiciaryPersonByExternalRefIdQueryHandler _getJudiciaryPersonByExternalRefIdQueryHandler;
+        private UpdateJudiciaryPersonByPersonalCodeHandler _commandHandler;
+        private GetJudiciaryPersonByPersonalCodeQueryHandler _getJudiciaryPersonByPersonalCodeQueryHandler;
 
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new UpdateJudiciaryPersonByExternalRefIdHandler(context);
-            _getJudiciaryPersonByExternalRefIdQueryHandler = new GetJudiciaryPersonByExternalRefIdQueryHandler(context);
+            _commandHandler = new UpdateJudiciaryPersonByPersonalCodeHandler(context);
+            _getJudiciaryPersonByPersonalCodeQueryHandler = new GetJudiciaryPersonByPersonalCodeQueryHandler(context);
         }
         
         [Test]
         public void should_throw_exception_when_peron_does_not_exist()
         {
-            var command = new UpdateJudiciaryPersonByExternalRefIdCommand{ExternalRefId = "asdasd"};
+            var command = new UpdateJudiciaryPersonByPersonalCodeCommand{PersonalCode = "asdasd"};
             Assert.ThrowsAsync<JudiciaryPersonNotFoundException>(() => _commandHandler.Handle(command));
         }
         
@@ -33,12 +33,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_update_person()
         {
             var externalRefId = Guid.NewGuid().ToString();
-            await Hooks.AddJudiciaryPerson(externalRefId);
+            var personalCode = Guid.NewGuid().ToString();
+            await Hooks.AddJudiciaryPerson(personalCode);
 
-            var updateCommand = new UpdateJudiciaryPersonByExternalRefIdCommand
+            var updateCommand = new UpdateJudiciaryPersonByPersonalCodeCommand
             {
                 ExternalRefId =externalRefId,
-                PersonalCode ="PersonalCode",
+                PersonalCode =personalCode,
                 Title ="Title",
                 KnownAs ="KnownAs",
                 Fullname ="Fullname",
@@ -51,7 +52,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
             await _commandHandler.Handle(updateCommand);
 
-            var updatePerson = await _getJudiciaryPersonByExternalRefIdQueryHandler.Handle(new GetJudiciaryPersonByExternalRefIdQuery(externalRefId));
+            var updatePerson = await _getJudiciaryPersonByPersonalCodeQueryHandler.Handle(new GetJudiciaryPersonByPersonalCodeQuery(personalCode));
             
             updatePerson.ExternalRefId.Should().Be(updateCommand.ExternalRefId);
             updatePerson.PersonalCode.Should().Be(updateCommand.PersonalCode);

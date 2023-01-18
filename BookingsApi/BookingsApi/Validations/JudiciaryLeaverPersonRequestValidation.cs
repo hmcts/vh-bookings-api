@@ -5,11 +5,11 @@ namespace BookingsApi.Validations
 {
     public class JudiciaryLeaverPersonRequestValidation : AbstractValidator<JudiciaryPersonRequest>
     {
-        public static readonly string NoIdErrorMessage = "Id can not be null or empty";
+        public static readonly string NoPersonalCodeErrorMessage = "Personal code can not be null or empty";
 
         public JudiciaryLeaverPersonRequestValidation()
         {
-            RuleFor(x => x.Id).NotEmpty().WithMessage(NoIdErrorMessage);
+            RuleFor(x => x.PersonalCode).NotEmpty().WithMessage(NoPersonalCodeErrorMessage);
         }
     }
 }

@@ -5,9 +5,9 @@ namespace BookingsApi.Mappings
 {
     public static class UpdateJudiciaryPersonByExternalRefIdCommandMapper
     {
-        public static UpdateJudiciaryPersonByExternalRefIdCommand Map(JudiciaryPersonRequest request)
+        public static UpdateJudiciaryPersonByPersonalCodeCommand Map(JudiciaryPersonRequest request)
         {
-            return new UpdateJudiciaryPersonByExternalRefIdCommand
+            return new UpdateJudiciaryPersonByPersonalCodeCommand
             {
                 ExternalRefId = request.Id,
                 PersonalCode = request.PersonalCode,

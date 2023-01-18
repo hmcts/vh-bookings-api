@@ -5,7 +5,7 @@ namespace BookingsApi.DAL.Mappings
 {
     public static class UpdateJudiciaryPersonDtoMapper
     {
-        public static UpdateJudiciaryPersonDto Map(UpdateJudiciaryPersonByExternalRefIdCommand command)
+        public static UpdateJudiciaryPersonDto Map(UpdateJudiciaryPersonByPersonalCodeCommand command)
         {
             return new UpdateJudiciaryPersonDto
             {
