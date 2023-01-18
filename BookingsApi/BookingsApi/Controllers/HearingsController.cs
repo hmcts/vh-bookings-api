@@ -808,7 +808,7 @@ namespace BookingsApi.Controllers
                 searchRequest.FromDate, 
                 searchRequest.ToDate, 
                 searchRequest.Cso,
-                searchRequest.IsAllocated);
+                searchRequest.IsUnallocated);
             
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 

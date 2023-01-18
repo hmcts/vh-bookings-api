@@ -62,32 +62,32 @@ namespace BookingsApi.DAL.Queries
                          && x.ScheduledDateTime >= DateTime.UtcNow  
                          && HearingScottishVenueNames.ScottishHearingVenuesList.All(venueName => venueName != x.HearingVenueName))
                 .AsQueryable();
-
+            
             if (!_isTest)
-                hearings = hearings.Where(x => x.CaseTypeId != 3); //exclude generic type test cases from prod
+                hearings = hearings.Where(h1 => h1.CaseTypeId != 3); //exclude generic type test cases from prod
             
             if (query.IsUnallocated)
-                hearings = hearings.Where(x => x.Allocations.FirstOrDefault(a => a.HearingId == x.Id) == null);
+                hearings = hearings.Where(h2 => _context.Allocations.FirstOrDefault(a => a.HearingId == h2.Id) == null);
 
             if (!query.CaseNumber.IsNullOrEmpty())
                 hearings = hearings
-                    .Where(x => x.HearingCases
+                    .Where(h3 => h3.HearingCases
                         .Any(c => c.Case.Number.ToLower().Trim().Contains(query.CaseNumber)));
 
             if (query.CaseType.Any())
                 hearings = hearings
-                    .Where(x => query.CaseType.Contains(x.CaseType.Name.ToLower().Trim()));
+                    .Where(h4 => query.CaseType.Contains(h4.CaseType.Name.ToLower().Trim()));
 
             if (query.Cso.Any())
                 hearings = hearings
-                    .Where(x => x.Allocations
+                    .Where(h5 => h5.Allocations
                         .Any(a => query.Cso.Contains(a.JusticeUser.Id)));
             
             if (query.FromDate != null)
             {
                 hearings = query.ToDate != null 
-                    ? hearings.Where(e => e.ScheduledDateTime >= query.FromDate && e.ScheduledDateTime <= query.ToDate)
-                    : hearings.Where(e => e.ScheduledDateTime.Date == query.FromDate.Value.Date);
+                    ? hearings.Where(h6 => h6.ScheduledDateTime >= query.FromDate && h6.ScheduledDateTime <= query.ToDate)
+                    : hearings.Where(h6 => h6.ScheduledDateTime.Date == query.FromDate.Value.Date);
             }
             
             return await hearings.OrderBy(x=>x.ScheduledDateTime).AsNoTracking().ToListAsync();
