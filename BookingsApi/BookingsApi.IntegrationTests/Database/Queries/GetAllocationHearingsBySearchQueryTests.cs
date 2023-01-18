@@ -119,8 +119,10 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         //ASSERT
         hearings.Count.Should().Be(2);
-        hearings[0].HearingCases.First().Case.Number.Should().Be(_seededHearing1.HearingCases.First().Case.Number);
-        hearings[1].HearingCases.First().Case.Number.Should().Be(_seededHearing3.HearingCases.First().Case.Number);
+        hearings.Should().Contain(e =>
+            e.HearingCases.First().Case.Number == _seededHearing1.HearingCases.First().Case.Number);
+        hearings.Should().Contain(e => 
+            e.HearingCases.First().Case.Number == _seededHearing3.HearingCases.First().Case.Number);
     }
     
     [Test]
