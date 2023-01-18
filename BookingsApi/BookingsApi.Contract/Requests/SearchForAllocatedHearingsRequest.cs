@@ -9,6 +9,6 @@ namespace BookingsApi.Contract.Requests
         public Guid[] Cso { get; set; }
         public string[] CaseType { get; set; }
         public string CaseNumber { get; set; }
-        public bool IsAllocated { get; set; }
+        public bool IsUnallocated { get; set; }
     }
 }
