@@ -643,7 +643,7 @@ namespace BookingsApi.Controllers
         {
             try
             {
-                var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);
+                var justiceUser = await _hearingAllocationService.AllocateAutomaticallyOrManually(hearingId);
                 
                 if (justiceUser == null)
                     return NotFound();
@@ -672,6 +672,125 @@ namespace BookingsApi.Controllers
                 await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
             return hearingVenues.SingleOrDefault(x => x.Name == venueName);
         }
+
+        /// <summary>
+        /// Search for hearings by case number. Search will apply fuzzy matching
+        /// </summary>
+        /// <param name="searchQuery">Search criteria</param>
+        /// <returns>list of hearings matching search criteria</returns>
+        [HttpGet("audiorecording/search", Name = "SearchForHearings")]
+        [OpenApiOperation("SearchForHearings")]
+        [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> SearchForHearingsAsync([FromQuery] SearchForHearingsQuery searchQuery)
+        {
+            var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
+
+            var query = new GetHearingsBySearchQuery(caseNumber, searchQuery.Date);
+            var hearings = await _queryHandler.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(query);
+
+            var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
+            var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
+            return Ok(response);
+        }
+        
+        /// <summary>
+        /// Get all the unallocated hearings
+        /// </summary>
+        /// <returns>unallocated hearings</returns>
+        [HttpGet("unallocated")]
+        [OpenApiOperation("GetUnallocatedHearings")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUnallocatedHearings()
+        {
+            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true);
+            var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+
+            if (results.Count <= 0)
+                _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
+            var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
+            return Ok(response);
+        }
+ 
+        /// <summary>
+        /// Search for hearings to be allocate via search parameters
+        /// </summary>
+        /// <param name="searchRequest">Search criteria</param>
+        /// <returns>list of hearings matching search criteria</returns>
+        [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
+        [OpenApiOperation("SearchForAllocationHearings")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
+        {
+            var query = new GetAllocationHearingsBySearchQuery(
+                searchRequest.CaseNumber, 
+                searchRequest.CaseType, 
+                searchRequest.FromDate, 
+                searchRequest.ToDate, 
+                searchRequest.Cso,
+                searchRequest.IsUnallocated);
+            
+            var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+
+            if (hearings == null || !hearings.Any())
+                return Ok(new List<HearingDetailsResponse>());
+            
+            return Ok(hearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+
+        /// <summary>
+        /// Allocate list of hearings to a CSO user 
+        /// </summary>
+        [HttpPost("allocations")]
+        [OpenApiOperation("AllocateHearingsToCso")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
+        {
+            try
+            {
+                await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
+                
+                return NoContent();
+            }
+            catch (DomainRuleException e)
+            {
+                ModelState.AddDomainRuleErrors(e.ValidationFailures);
+                return BadRequest(ModelState);
+            }
+        }
+
+
+        /// <summary>
+        /// Get booking status for a given hearing id
+        /// </summary>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Booking status</returns>
+        [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
+        [OpenApiOperation("GetBookingStatusById")]
+        [ProducesResponseType(typeof(Contract.Enums.BookingStatus), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetHearingShellByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingShellByIdQuery, VideoHearing>(query);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
+        }
+
 
         private string BuildCursorPageUrl(
             string cursor,
@@ -752,102 +871,6 @@ namespace BookingsApi.Controllers
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
         }
         
-        /// <summary>
-        /// Search for hearings by case number. Search will apply fuzzy matching
-        /// </summary>
-        /// <param name="searchQuery">Search criteria</param>
-        /// <returns>list of hearings matching search criteria</returns>
-        [HttpGet("audiorecording/search", Name = "SearchForHearings")]
-        [OpenApiOperation("SearchForHearings")]
-        [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> SearchForHearingsAsync([FromQuery] SearchForHearingsQuery searchQuery)
-        {
-            var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
-
-            var query = new GetHearingsBySearchQuery(caseNumber, searchQuery.Date);
-            var hearings = await _queryHandler.Handle<GetHearingsBySearchQuery, List<VideoHearing>>(query);
-
-            var hearingMapper = new AudioRecordedHearingsBySearchResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(hearings, caseNumber);
-            return Ok(response);
-        }
-        
-        /// <summary>
-        /// Get all the unallocated hearings
-        /// </summary>
-        /// <returns>unallocated hearings</returns>
-        [HttpGet("unallocated")]
-        [OpenApiOperation("GetUnallocatedHearings")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetUnallocatedHearings()
-        {
-            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true);
-            var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
-
-            if (results.Count <= 0)
-                _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
-            var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
-            return Ok(response);
-        }
- 
-        /// <summary>
-        /// Search for hearings to be allocate via search parameters
-        /// </summary>
-        /// <param name="searchRequest">Search criteria</param>
-        /// <returns>list of hearings matching search criteria</returns>
-        [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
-        [OpenApiOperation("SearchForAllocationHearings")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
-        {
-            var query = new GetAllocationHearingsBySearchQuery(
-                searchRequest.CaseNumber, 
-                searchRequest.CaseType, 
-                searchRequest.FromDate, 
-                searchRequest.ToDate, 
-                searchRequest.Cso,
-                searchRequest.IsUnallocated);
-            
-            var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
-
-            if (hearings == null || !hearings.Any())
-                return Ok(new List<HearingDetailsResponse>());
-            
-            return Ok(hearings.Select(HearingToDetailsResponseMapper.Map).ToList());
-        }
-        
-        /// <summary>
-        /// Get booking status for a given hearing id
-        /// </summary>
-        /// <param name="hearingId">Id for a hearing</param>
-        /// <returns>Booking status</returns>
-        [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
-        [OpenApiOperation("GetBookingStatusById")]
-        [ProducesResponseType(typeof(Contract.Enums.BookingStatus), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
-        {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-
-            var query = new GetHearingShellByIdQuery(hearingId);
-            var videoHearing = await _queryHandler.Handle<GetHearingShellByIdQuery, VideoHearing>(query);
-
-            if (videoHearing == null)
-            {
-                return NotFound();
-            }
-
-            return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
-        }
-
-
         private static void SanitiseRequest(BookNewHearingRequest request)
         {
             foreach (var participant in request.Participants)

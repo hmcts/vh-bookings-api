@@ -38,7 +38,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Arrange
             var hearingId = Guid.NewGuid();
             HearingAllocationServiceMock
-                .Setup(x => x.AllocateAutomatically(hearingId))
+                .Setup(x => x.AllocateAutomaticallyOrManually(hearingId, null))
                 .ReturnsAsync(_justiceUser);
             
             var expectedJusticeUserResponse = JusticeUserToResponseMapper.Map(_justiceUser);
@@ -60,7 +60,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Arrange
             var hearingId = Guid.NewGuid();
             HearingAllocationServiceMock
-                .Setup(x => x.AllocateAutomatically(hearingId))
+                .Setup(x => x.AllocateAutomaticallyOrManually(hearingId, null))
                 .ThrowsAsync(new DomainRuleException("Error", "Error Description"));
 
             // Act
@@ -78,7 +78,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             // Arrange
             var hearingId = Guid.NewGuid();
             HearingAllocationServiceMock
-                .Setup(x => x.AllocateAutomatically(hearingId))
+                .Setup(x => x.AllocateAutomaticallyOrManually(hearingId, null))
                 .ReturnsAsync((JusticeUser)null);
 
             // Act

@@ -92,7 +92,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             foreach (var hearing in hearings)
             {
                 // Act
-                var result = await _service.AllocateAutomatically(hearing.Id);
+                var result = await _service.AllocateAutomaticallyOrManually(hearing.Id);
                 
                 // Assert
                 AssertCsoAllocated(result, cso, hearing);
@@ -111,7 +111,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await _service.AllocateAutomatically(hearing.Id);
+            var action = async() => await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -149,7 +149,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await service.AllocateAutomatically(hearing4.Id);
+            var action = async() => await service.AllocateAutomaticallyOrManually(hearing4.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing4.Id);
@@ -185,7 +185,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await service.AllocateAutomatically(hearing2.Id);
+            var action = async() => await service.AllocateAutomaticallyOrManually(hearing2.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing2.Id);
@@ -245,7 +245,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomatically(hearing7.Id);
+            var result = await _service.AllocateAutomaticallyOrManually(hearing7.Id);
             
             // Assert
             AssertCsoAllocated(result, cso3, hearing7);
@@ -305,7 +305,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             _randomNumberGenerator.Setup(x => x.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(generatedRandomNumber);
             
             // Act
-            var result = await _service.AllocateAutomatically(hearing5.Id);
+            var result = await _service.AllocateAutomaticallyOrManually(hearing5.Id);
             
             // Assert
             result.Should().NotBeNull();
@@ -339,7 +339,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await service.AllocateAutomatically(hearing.Id);
+            var action = async() => await service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -372,7 +372,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await service.AllocateAutomatically(hearing.Id);
+            var result = await service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertCsoAllocated(result, cso, hearing);
@@ -405,7 +405,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await service.AllocateAutomatically(hearing.Id);
+            var action = async() => await service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -437,7 +437,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await service.AllocateAutomatically(hearing.Id);
+            var result = await service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertCsoAllocated(result, cso, hearing);
@@ -450,7 +450,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearingId = Guid.NewGuid();
 
             // Act
-            var action = async() => await _service.AllocateAutomatically(hearingId);
+            var action = async() => await _service.AllocateAutomaticallyOrManually(hearingId);
 
             // Assert
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Hearing {hearingId} not found");
@@ -482,7 +482,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await _service.AllocateAutomatically(hearing.Id);
+            var action = async() => await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -520,7 +520,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await _service.AllocateAutomatically(hearing.Id);
+            var action = async() => await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -546,7 +546,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await _service.AllocateAutomatically(hearing.Id);
+            var action = async() => await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -572,7 +572,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async() => await _service.AllocateAutomatically(hearing.Id);
+            var action = async() => await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
@@ -599,7 +599,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomatically(hearing.Id);
+            var result = await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertCsoAllocated(result, availableCso, hearing);
@@ -637,7 +637,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomatically(hearing.Id);
+            var result = await _service.AllocateAutomaticallyOrManually(hearing.Id);
             
             // Assert
             AssertCsoAllocated(result, availableCso, hearing);
@@ -673,7 +673,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomatically(hearing.Id);
+            var result = await _service.AllocateAutomaticallyOrManually(hearing.Id);
 
             // Assert
             AssertCsoAllocated(result, cso, hearing);
@@ -715,7 +715,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var action = async () => await _service.AllocateAutomatically(hearing.Id);
+            var action = async () => await _service.AllocateAutomaticallyOrManually(hearing.Id);
 
             // Assert
             AssertNoCsosAvailableError(action, hearing.Id);
@@ -742,7 +742,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Assert
-            var action = async () => await _service.AllocateAutomatically(hearing.Id);
+            var action = async () => await _service.AllocateAutomaticallyOrManually(hearing.Id);
 
             // Assert
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Hearing {hearing.Id} has already been allocated");
@@ -774,7 +774,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomatically(hearing.Id);
+            var result = await _service.AllocateAutomaticallyOrManually(hearing.Id);
 
             // Assert
             AssertCsoAllocated(result, cso, hearing);
@@ -797,7 +797,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(hearing.Id);
+            await _service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -834,7 +834,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(hearing.Id);
+            await _service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -871,7 +871,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(hearing.Id);
+            await _service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -913,7 +913,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(hearing.Id);
+            await _service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -955,7 +955,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(hearing.Id);
+            await _service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -998,7 +998,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(hearing.Id);
+            await _service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -1058,7 +1058,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            await service.AllocateAutomatically(hearing.Id);
+            await service.AllocateAutomaticallyOrManually(hearing.Id);
             var foundHearing = await _context.VideoHearings.FindAsync(hearing.Id);
             foundHearing.AllocatedTo.Should().NotBeNull();
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
@@ -1097,8 +1097,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             await _context.SaveChangesAsync();
-            await _service.AllocateAutomatically(historicalHearing.Id);
-            await _service.AllocateAutomatically(futureHearing.Id);
+            await _service.AllocateAutomaticallyOrManually(historicalHearing.Id);
+            await _service.AllocateAutomaticallyOrManually(futureHearing.Id);
             var foundHistoricalHearing = await _context.VideoHearings.FindAsync(historicalHearing.Id);
             foundHistoricalHearing.AllocatedTo.Should().NotBeNull();
             foundHistoricalHearing.AllocatedTo.Id.Should().Be(cso.Id);
