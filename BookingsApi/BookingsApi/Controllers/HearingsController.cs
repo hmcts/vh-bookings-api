@@ -744,15 +744,15 @@ namespace BookingsApi.Controllers
         /// </summary>
         [HttpPost("allocations")]
         [OpenApiOperation("AllocateHearingsToCso")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
         {
             try
             {
-                await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
+                var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
-                return NoContent();
+                return Ok(list.Select(HearingToDetailsResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
             {

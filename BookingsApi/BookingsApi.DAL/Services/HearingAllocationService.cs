@@ -18,7 +18,7 @@ namespace BookingsApi.DAL.Services
         Task<JusticeUser> AllocateAutomaticallyOrManually(Guid hearingId, Guid? justiceUserCsoId = null);
         Task DeallocateFromUnavailableHearings(Guid justiceUserId);
         void CheckAndDeallocateHearing(Hearing hearing);
-        Task AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId);
+        Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId);
     }
 
     public class HearingAllocationService : IHearingAllocationService
@@ -46,20 +46,37 @@ namespace BookingsApi.DAL.Services
         /// <param name="postRequestHearings">List of hearings to be allocated</param>
         /// <param name="postRequestCsoId">CSO JusticeUser Id</param>
         /// <exception cref="DomainRuleException"></exception>
-        public async Task AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId)
+        public async Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId)
         {
             try
             {
+                List<VideoHearing> list = new List<VideoHearing>();
                 foreach (Guid guid in postRequestHearings)
                 {
                     await AllocateAutomaticallyOrManually(postRequestCsoId, postRequestCsoId);
+                    list = await GetListOfHearings(postRequestHearings);
                 }
+                
+                return list;
             }
             catch (DomainRuleException e)
             {
                 throw new DomainRuleException("NoCsosAvailable",
                     e.Message);
             }
+        }
+
+        private async Task<List<VideoHearing>> GetListOfHearings(List<Guid> postRequestHearings)
+        {
+            List<VideoHearing> list = new List<VideoHearing>();
+
+            foreach (Guid id in postRequestHearings)
+            {
+                VideoHearing hearing = await GetHearing(id);
+                list. Add(hearing);
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -71,13 +88,8 @@ namespace BookingsApi.DAL.Services
         /// <exception cref="DomainRuleException"></exception>
         public async Task<JusticeUser> AllocateAutomaticallyOrManually(Guid hearingId, Guid? justiceUserCsoId = null)
         {
-            var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
-            if (hearing == null)
-            {
-                throw new DomainRuleException("HearingNotFound",
-                    $"Hearing {hearingId} not found");
-            }
-
+            VideoHearing hearing = await GetHearing(hearingId);
+            
             var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
             if (allocations.Any())
             {
@@ -109,6 +121,18 @@ namespace BookingsApi.DAL.Services
             await AllocateHearingToCso(cso, hearing);
 
             return cso;
+        }
+
+        private async Task<VideoHearing> GetHearing(Guid hearingId)
+        {
+            var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
+            if (hearing == null)
+            {
+                throw new DomainRuleException("HearingNotFound",
+                    $"Hearing {hearingId} not found");
+            }
+
+            return hearing;
         }
 
         private async Task AllocateHearingToCso(JusticeUser cso, VideoHearing hearing)
