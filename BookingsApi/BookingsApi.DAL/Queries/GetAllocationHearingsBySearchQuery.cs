@@ -86,7 +86,7 @@ namespace BookingsApi.DAL.Queries
             if (query.FromDate != null)
             {
                 hearings = query.ToDate != null 
-                    ? hearings.Where(h6 => h6.ScheduledDateTime >= query.FromDate && h6.ScheduledDateTime <= query.ToDate)
+                    ? hearings.Where(h6 => h6.ScheduledDateTime.Date >= query.FromDate.Value.Date && h6.ScheduledDateTime.Date <= query.ToDate.Value.Date)
                     : hearings.Where(h6 => h6.ScheduledDateTime.Date == query.FromDate.Value.Date);
             }
             
