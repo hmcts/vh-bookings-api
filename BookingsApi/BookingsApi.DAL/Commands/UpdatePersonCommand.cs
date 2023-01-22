@@ -39,7 +39,7 @@ namespace BookingsApi.DAL.Commands
                 throw new PersonNotFoundException(command.PersonId);
             }
 
-            person.UpdatePerson(command.FirstName, command.LastName, person.ContactEmail, command.Username);
+            person.UpdatePerson(command.FirstName, command.LastName, command.Username);
 
             await _context.SaveChangesAsync();
         }
