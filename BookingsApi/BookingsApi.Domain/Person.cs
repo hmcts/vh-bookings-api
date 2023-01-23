@@ -39,17 +39,23 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-        public void UpdatePerson(string firstName, string lastName, string contactEmail, string username, string title = null, string telephoneNumber = null)
+        public void UpdatePerson(string firstName, string lastName, string username)
         {
-            ValidateArguments(firstName, lastName, contactEmail);
+            UpdatePerson(firstName, lastName, null, null);
+            Username = username;
+        }
+
+        public void UpdatePerson(string firstName, string lastName, string title = null, string telephoneNumber = null)
+        {
+            ValidateArguments(firstName, lastName, ContactEmail);
             FirstName = firstName;
             LastName = lastName;
-            Username = username;
             Title = title == null ? Title : title;
             TelephoneNumber = telephoneNumber == null ? TelephoneNumber : telephoneNumber;
             UpdatedDate = DateTime.UtcNow;
-            ContactEmail = contactEmail ?? ContactEmail;
+
         }
+
         public void UpdatePerson(string username)
         {
             if (string.IsNullOrEmpty(username))

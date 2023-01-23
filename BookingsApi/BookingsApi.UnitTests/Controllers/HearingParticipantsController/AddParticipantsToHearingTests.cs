@@ -30,7 +30,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             request = new AddParticipantsToHearingRequest { Participants = participants };
 
         }
-        private List<ParticipantRequest> BuildParticipants(int listSize)
+        private static List<ParticipantRequest> BuildParticipants(int listSize)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(listSize).All()
                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
@@ -137,7 +137,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
             QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
-            CommandHandler.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
         }
 

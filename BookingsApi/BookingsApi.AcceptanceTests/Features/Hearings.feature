@@ -71,15 +71,3 @@ Feature: Hearings
     When I send the request to the endpoint
     Then the response should have the status OK and success status True
     And an empty list of hearing details should be retrieved
-
-  @VIH-6168
-  Scenario: Created a hearing and set it to failed
-    Given I have a hearing
-    And I have a created hearing request with a valid hearing id
-    When I send the request to the endpoint
-    Then the response should have the status NoContent and success status True
-    And hearing should be created
-    When I have a failed confirmation hearing request with a valid hearing id
-    And I send the request to the endpoint
-    Then the response should have the status NoContent and success status True
-    And hearing should be failed

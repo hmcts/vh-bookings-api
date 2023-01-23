@@ -7,9 +7,9 @@ using BookingsApi.Helpers;
 
 namespace BookingsApi.Mappings
 {
-    public class HearingToDetailsResponseMapper
+    public static class HearingToDetailsResponseMapper
     {
-        public HearingDetailsResponse MapHearingToDetailedResponse(Hearing videoHearing)
+        public static HearingDetailsResponse Map(Hearing videoHearing)
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
@@ -33,7 +33,7 @@ namespace BookingsApi.Mappings
                 Id = videoHearing.Id,
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType.Name,
+                HearingTypeName = videoHearing.HearingType?.Name,
                 CaseTypeName = videoHearing.CaseType.Name,
                 HearingVenueName = videoHearing.HearingVenueName,
                 Cases = cases,
@@ -52,7 +52,7 @@ namespace BookingsApi.Mappings
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints,
-                HearingTypeCode = videoHearing.HearingType.Code,
+                HearingTypeCode = videoHearing.HearingType?.Code,
                 AllocatedTo = allocatedVho
             };
 

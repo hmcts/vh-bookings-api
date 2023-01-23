@@ -86,37 +86,37 @@ namespace BookingsApi.UnitTests.Controllers.Persons
 
             var person1 = hearing1.GetPersons().First();
             var participant1 = hearing1.GetParticipants().First(x => x.Person == person1);
-            person1.UpdatePerson(firstName, lastName, person1.ContactEmail, username);
+            person1.UpdatePerson(firstName, lastName, username);
             person1.SetProtected(nameof(person1.Id), personId);
             participant1.SetProtected(nameof(participant1.PersonId), personId);
             
             var person2 = hearing2.GetPersons().First();
             var participant2 = hearing2.GetParticipants().First(x => x.Person == person2);
-            person2.UpdatePerson(firstName, lastName, person2.ContactEmail, username);
+            person2.UpdatePerson(firstName, lastName, username);
             person2.SetProtected(nameof(person2.Id), personId);
             participant2.SetProtected(nameof(participant2.PersonId), personId);
             
             var person3 = hearing3.GetPersons().First();
             var participant3 = hearing3.GetParticipants().First(x => x.Person == person3);
-            person3.UpdatePerson(firstName, lastName, person3.ContactEmail, username);
+            person3.UpdatePerson(firstName, lastName,  username);
             person3.SetProtected(nameof(person3.Id), personId);
             participant3.SetProtected(nameof(participant3.PersonId), personId);
             
             var person4 = hearing4.GetPersons().First();
             var participant4 = hearing4.GetParticipants().First(x => x.Person == person4);
-            person4.UpdatePerson(firstName, lastName, person4.ContactEmail, username);
+            person4.UpdatePerson(firstName, lastName, username);
             person4.SetProtected(nameof(person4.Id), personId);
             participant4.SetProtected(nameof(participant4.PersonId), personId);
             
             var person5 = hearing5.GetPersons().First();
             var participant5 = hearing5.GetParticipants().First(x => x.Person == person5);
-            person5.UpdatePerson(firstName, lastName, person5.ContactEmail, username);
+            person5.UpdatePerson(firstName, lastName, username);
             person5.SetProtected(nameof(person5.Id), personId);
             participant5.SetProtected(nameof(participant5.PersonId), personId);
             participant5.DisplayName = "dfidshfiudsf@hmcts.net";
-            
+
+            hearing1.UpdateStatus(BookingStatus.Failed, "test", null);
             hearing2.UpdateStatus(BookingStatus.Created, "test", null);
-            hearing3.UpdateStatus(BookingStatus.Created, "test", null);
             hearing3.UpdateStatus(BookingStatus.Failed, "test", null);
             hearing4.UpdateStatus(BookingStatus.Cancelled, "test", "test cancellation");
             hearing5.UpdateStatus(BookingStatus.Created, "test", null);

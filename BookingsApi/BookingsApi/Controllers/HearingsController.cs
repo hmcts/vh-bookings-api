@@ -31,6 +31,7 @@ using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
+using BookingsApi.Contract.Requests.Enums;
 
 namespace BookingsApi.Controllers
 {
@@ -97,8 +98,7 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearingMapper.MapHearingToDetailedResponse(videoHearing);
+            var response = HearingToDetailsResponseMapper.Map(videoHearing);
             return Ok(response);
         }
 
@@ -115,9 +115,7 @@ namespace BookingsApi.Controllers
         {
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
-
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
 
@@ -149,8 +147,7 @@ namespace BookingsApi.Controllers
             var query = new GetHearingsByGroupIdQuery(groupId);
             var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);
         }
@@ -169,8 +166,7 @@ namespace BookingsApi.Controllers
 
             var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(query);
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = hearings.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);
         }
@@ -278,8 +274,7 @@ namespace BookingsApi.Controllers
                     logTrace.Add("CaseTypeServiceId", queriedVideoHearing.CaseType?.ServiceId);
                 _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
                 
-                var hearingMapper = new HearingToDetailsResponseMapper();
-                var response = hearingMapper.MapHearingToDetailedResponse(queriedVideoHearing);
+                var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
                 _logger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> { { "response", JsonConvert.SerializeObject(response) } });
 
@@ -319,8 +314,6 @@ namespace BookingsApi.Controllers
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
             {
-                // Confirm the hearing
-                await UpdateHearingStatusAsync(videoHearing.Id, BookingStatus.Created, "System", string.Empty);
                 // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
             }
@@ -458,9 +451,9 @@ namespace BookingsApi.Controllers
 
             await _commandHandler.Handle(command);
 
-            var hearingMapper = new HearingToDetailsResponseMapper();
+        
             var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-            var response = hearingMapper.MapHearingToDetailedResponse(updatedHearing);
+            var response = HearingToDetailsResponseMapper.Map(updatedHearing);
 
             if (videoHearing.Status == BookingStatus.Created)
             {
@@ -615,7 +608,10 @@ namespace BookingsApi.Controllers
                 CaseNumber = request.CaseNumber,
                 VenueIds = request.VenueIds,
                 LastName = request.LastName,
-                NoJudge = request.NoJudge
+                NoJudge = request.NoJudge,
+                NoAllocated = request.NoAllocated,
+                CaseTypes = request.Types,
+                SelectedUsers = request.Users
             };
             var result = await _queryHandler.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(query);
 
@@ -755,8 +751,7 @@ namespace BookingsApi.Controllers
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
         }
-
-
+        
         /// <summary>
         /// Search for hearings by case number. Search will apply fuzzy matching
         /// </summary>
@@ -788,15 +783,70 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnallocatedHearings()
         {
-
-            var results = await _hearingService.GetUnallocatedHearings();
+            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true);
+            var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
             if (results.Count <= 0)
                 _logger.TrackEvent("[GetUnallocatedHearings] Could not find any unallocated hearings");
-            var hearingMapper = new HearingToDetailsResponseMapper();
-            var response = results.Select(hearingMapper.MapHearingToDetailedResponse).ToList();
+            var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
+ 
+        /// <summary>
+        /// Search for hearings to be allocate via search parameters
+        /// </summary>
+        /// <param name="searchRequest">Search criteria</param>
+        /// <returns>list of hearings matching search criteria</returns>
+        [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
+        [OpenApiOperation("SearchForAllocationHearings")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
+        {
+            var query = new GetAllocationHearingsBySearchQuery(
+                searchRequest.CaseNumber, 
+                searchRequest.CaseType, 
+                searchRequest.FromDate, 
+                searchRequest.ToDate, 
+                searchRequest.Cso,
+                searchRequest.IsUnallocated);
+            
+            var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+
+            if (hearings == null || !hearings.Any())
+                return Ok(new List<HearingDetailsResponse>());
+            
+            return Ok(hearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+        
+        /// <summary>
+        /// Get booking status for a given hearing id
+        /// </summary>
+        /// <param name="hearingId">Id for a hearing</param>
+        /// <returns>Booking status</returns>
+        [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
+        [OpenApiOperation("GetBookingStatusById")]
+        [ProducesResponseType(typeof(Contract.Enums.BookingStatus), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var query = new GetHearingShellByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingShellByIdQuery, VideoHearing>(query);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
+        }
+
 
         private static void SanitiseRequest(BookNewHearingRequest request)
         {

@@ -62,6 +62,17 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
+        [Given(@"I have a get booking status for a given request with a valid hearing id")]
+        public async Task GivenIHaveAGetBookingStatusForGivenHearingRequest()
+        {
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _hearingId = seededHearing.Id;
+            Context.TestData.NewHearingId = seededHearing.Id;
+            Context.Uri = GetHearingShellById(_hearingId);
+            Context.HttpMethod = HttpMethod.Get;
+        }
+
         [Given(@"I have an hearing older than (.*) months")]
         public async Task GivenIHaveAnHearingOlderThanMonths(int p0)
         {
@@ -411,6 +422,13 @@ namespace BookingsApi.IntegrationTests.Steps
         public void ThenHearingDetailsShouldBeUnchanged()
         {
             ThenHearingBookingStatusIs(BookingStatus.Booked);
+        }
+
+        [Then(@"booking status should be retrieved")]
+        public void ThenBookingStatusShouldBeRetrieved()
+        {
+            var responseValue = Context.Response.Content.ReadAsStringAsync();
+            responseValue.Result.Should().Contain(BookingStatus.Booked.ToString());
         }
 
         [Then(@"the response should be an empty list")]

@@ -1,5 +1,5 @@
 {
-  "runtime": "NetCore31",
+  "runtime": "Net60",
   "defaultVariables": "ProjectPath=BookingsApi.csproj",
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
@@ -93,7 +93,8 @@
         "BookingsApi.Contract.Queries",
         "BookingsApi.Contract.Requests",
         "BookingsApi.Contract.Responses",
-        "BookingsApi.Contract.Configuration"
+        "BookingsApi.Contract.Configuration",
+        "BookingsApi.Contract.Enums"
       ],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,

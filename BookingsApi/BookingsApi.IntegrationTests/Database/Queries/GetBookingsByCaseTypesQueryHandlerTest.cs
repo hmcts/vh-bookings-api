@@ -183,8 +183,69 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_user_id()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
 
-        private void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
+
+            var users = new RefDataBuilder().Users;
+
+            var user1 = users[0];
+            var user2 = users[1];
+
+            var usersIdsToFilterOn = new List<Guid> { user1.Id, user2.Id };
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                SelectedUsers = usersIdsToFilterOn
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByUsersIds(result, usersIdsToFilterOn);
+        }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_not_allocated_empty()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", "secondname", true);
+            
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                NoAllocated = true
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByNoAllocatedEmpty(result);
+        }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_not_allocated_not_empty()
+        {
+            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedVideoHearing();
+            await Hooks.SeedAllocatedJusticeUser("team.lead@hearings.reform.hmcts.net", "firstName", 
+                "secondname");
+            
+            
+            var query = new GetBookingsByCaseTypesQuery
+            {
+                NoAllocated = true
+            };
+
+            var result = await _handler.Handle(query);
+
+            AssertHearingsAreFilteredByNoAllocatedNotEmpty(result);
+        }
+
+        private static void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
         {
             var containsHearingsFilteredByCaseNumber = hearings
                 .SelectMany(r => r.HearingCases)
@@ -193,7 +254,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredByCaseNumber.Should().BeTrue();
         }
 
-        private void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
+        private static void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredWithNoJudge = hearings
                 .SelectMany(r => r.Participants)
@@ -205,7 +266,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             hearings.Count().Should().Equals(1);
         }
 
-        private void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
+        private static void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)
         {
             var containsHearingsFilteredByVenues = hearings
                 .Select(r => r.HearingVenue)
@@ -214,8 +275,34 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             containsHearingsFilteredByVenues.Should().BeTrue();
         }
+        
+        private static void AssertHearingsAreFilteredByUsersIds(IEnumerable<VideoHearing> hearings, List<Guid> userIds)
+        {
+            var containsHearingsFilteredByUsers = hearings
+                .Select(r => r.AllocatedTo)
+                .Distinct()
+                .All(r => userIds.Contains(r.Id));
+            
+            containsHearingsFilteredByUsers.Should().BeTrue();
+        }
+        
+        private static void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
+        {
+            var containsHearingsFilteredByUsers = hearings
+                .Where(r => r.Allocations.Count <= 0);
+            
+            containsHearingsFilteredByUsers.Should().BeEmpty();
+        }
+        
+        private static void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
+        {
+            var containsHearingsFilteredByUsers = hearings
+                .Where(r => r.Allocations.Count <= 0);
+            
+            containsHearingsFilteredByUsers.Should().NotBeEmpty();
+        }
 
-        private void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string participantLastName)
+        private static void AssertHearingsAreFilteredByLastName(IEnumerable<VideoHearing> hearings, string participantLastName)
         {
             var containsHearingsFilteredByCaseNumber = hearings
             .SelectMany(r => r.Participants)

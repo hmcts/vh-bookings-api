@@ -188,9 +188,13 @@ Feature: Hearings
   @VIH-6168
   Scenario: Hearing status changes to failed for a given hearing id
     Given I have a valid hearing request
-    And set the booking status to Created
-    When I send the request to the endpoint
     And set the booking status to Failed
     When I send the request to the endpoint
     Then the response should have the status NoContent and success status True
     And hearing status should be Failed
+
+  Scenario: Get booking status for a given hearing
+    Given I have a get booking status for a given request with a valid hearing id
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And booking status should be retrieved

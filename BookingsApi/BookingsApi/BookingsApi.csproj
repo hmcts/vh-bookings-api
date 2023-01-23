@@ -34,10 +34,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-    <PackageReference Include="NSwag.AspNetCore" Version="13.18.0" />
-    <PackageReference Include="NSwag.MSBuild" Version="13.10.8">
+    <PackageReference Include="NSwag.AspNetCore" Version="13.18.2" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.18.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -72,7 +72,7 @@
   </ItemGroup>
   <Target Name="NSwag" AfterTargets="Build" Condition="'$(TF_BUILD)'!='True' AND '$(Configuration)'=='Debug'">
     <Copy SourceFiles="@(ReferencePath)" DestinationFolder="$(OutDir)References" />
-    <Exec Command="$(NSwagExe_Core31) run /runtime:NetCore31 /variables:ProjectPath=&quot;$(MSBuildProjectFullPath)&quot;" />
+    <Exec Command="$(NSwagExe_Net60) run /runtime:Net60 /variables:ProjectPath=&quot;$(MSBuildProjectFullPath)&quot;" />
     <RemoveDir Directories="$(OutDir)References" />
   </Target>
 </Project>
