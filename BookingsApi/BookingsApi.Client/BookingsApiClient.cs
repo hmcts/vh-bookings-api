@@ -547,6 +547,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Allocate list of hearings to a CSO user
         /// </summary>
+        /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest);
 
@@ -554,6 +555,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Allocate list of hearings to a CSO user
         /// </summary>
+        /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest, System.Threading.CancellationToken cancellationToken);
 
@@ -4208,6 +4210,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Allocate list of hearings to a CSO user
         /// </summary>
+        /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest)
         {
@@ -4218,6 +4221,7 @@ namespace BookingsApi.Client
         /// <summary>
         /// Allocate list of hearings to a CSO user
         /// </summary>
+        /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest, System.Threading.CancellationToken cancellationToken)
         {
@@ -4237,7 +4241,7 @@ namespace BookingsApi.Client
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);

@@ -53,11 +53,10 @@ namespace BookingsApi.DAL.Services
                 List<VideoHearing> list = new List<VideoHearing>();
                 foreach (Guid guid in postRequestHearings)
                 {
-                    await AllocateAutomaticallyOrManually(postRequestCsoId, postRequestCsoId);
-                    list = await GetListOfHearings(postRequestHearings);
+                    await AllocateAutomaticallyOrManually(guid, postRequestCsoId);
                 }
                 
-                return list;
+                return await GetListOfHearings(postRequestHearings);
             }
             catch (DomainRuleException e)
             {

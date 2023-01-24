@@ -742,7 +742,8 @@ namespace BookingsApi.Controllers
         /// <summary>
         /// Allocate list of hearings to a CSO user 
         /// </summary>
-        [HttpPost("allocations")]
+        /// <returns>list of allocated hearings</returns>
+        [HttpPatch("allocations")]
         [OpenApiOperation("AllocateHearingsToCso")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]

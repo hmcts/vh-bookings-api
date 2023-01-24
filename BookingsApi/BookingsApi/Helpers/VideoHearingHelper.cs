@@ -11,7 +11,7 @@ namespace BookingsApi.Helpers
 {
     public static class VideoHearingHelper
     {
-        public static string AllocatedVho(Hearing videoHearing)
+        public static string AllocatedVho(Hearing videoHearing, bool retrieveContactEmail = true)
         {
             var allocatedVho = "Not Allocated";
             var isScottishVenue =
@@ -23,7 +23,14 @@ namespace BookingsApi.Helpers
                     allocatedVho = "Not Required";
                 }
             } else {
-                allocatedVho = videoHearing.AllocatedTo.ContactEmail;
+                if (retrieveContactEmail)
+                {
+                    allocatedVho = videoHearing.AllocatedTo.ContactEmail;
+                }
+                else
+                {
+                    allocatedVho = videoHearing.AllocatedTo.FirstName + " " + videoHearing.AllocatedTo.Lastname;
+                }
             }
             return allocatedVho;
         }
