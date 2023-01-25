@@ -90,15 +90,17 @@ namespace BookingsApi.DAL.Services
             VideoHearing hearing = await GetHearing(hearingId);
             
             var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
-            if (allocations.Any())
-            {
-                throw new DomainRuleException("HearingAlreadyAllocated",
-                    $"Hearing {hearing.Id} has already been allocated");
-            }
-
+            
             JusticeUser cso = null;
             if (justiceUserCsoId == null)
             {
+                // only in automatic allocation we check if hearing has been allocated
+                if (allocations.Any())
+                {
+                    throw new DomainRuleException("HearingAlreadyAllocated",
+                        $"Hearing {hearing.Id} has already been allocated");
+                }
+                
                 cso = SelectCso(hearing);
                 if (cso == null)
                 {
@@ -108,6 +110,12 @@ namespace BookingsApi.DAL.Services
             }
             else
             {
+                if (allocations.Any())
+                {
+                    // we need to unallocate the hearing and allocate to the new user
+                    hearing.Deallocate();
+                    _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
+                }
                 cso = GetCso((Guid) justiceUserCsoId);
                 if (cso == null)
                 {
@@ -124,7 +132,12 @@ namespace BookingsApi.DAL.Services
 
         private async Task<VideoHearing> GetHearing(Guid hearingId)
         {
-            var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
+            var hearing = await _context.VideoHearings
+                .Include(h => h.CaseType)
+                .Include(h => h.HearingType)
+                .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
+                .SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
                 throw new DomainRuleException("HearingNotFound",
@@ -142,6 +155,7 @@ namespace BookingsApi.DAL.Services
                 JusticeUser = cso
             });
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Allocated hearing {hearingId} to cso {cso}", hearing.Id, cso.Username);
         }
 
         /// <summary>
