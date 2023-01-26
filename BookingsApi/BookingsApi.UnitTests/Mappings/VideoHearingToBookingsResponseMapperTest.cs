@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Mappings
             firstGroup.Hearings.First().GroupId.Should().Be(hearings[0].Id);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired,
+        private static VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired,
             bool isMultiDayFirstHearing = false)
         {
             var mockedHearing = MockHearingWithCase();
