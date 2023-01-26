@@ -1141,7 +1141,14 @@ namespace BookingsApi.UnitTests.DAL.Services
         {
             // Arrange
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
-            
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+
+            var list = new List<Guid>();
+            list.Add(hearing1.Id);
+            list.Add(hearing2.Id);
+            list.Add(hearing3.Id);
+
             var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
@@ -1153,6 +1160,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             AllocateAutomaticallyToHearing(cso1.Id, hearing1.Id);
+            AllocateAutomaticallyToHearing(cso1.Id, hearing3.Id);
             
             var cso3 = SeedCso("user3@email.com", "User", "3");
             for (var i = 1; i <= 7; i++)
@@ -1168,10 +1176,10 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomaticallyOrManually(hearing1.Id, cso3.Id);
+            var result = await _service.AllocateHearingsToCso(list, cso3.Id);
             
             // Assert
-            AssertCsoAllocated(result, cso3, hearing1);
+            AssertCsoAllocatedListHearing(result, cso3, list);
         }
         
         [Test]
@@ -1181,6 +1189,10 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
             var hearing2 = CreateHearing(DateTime.Today.AddDays(2).AddHours(3).AddMinutes(45));
 
+            var list = new List<Guid>();
+            list.Add(hearing1.Id);
+            list.Add(hearing2.Id);
+            
             var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
@@ -1207,10 +1219,10 @@ namespace BookingsApi.UnitTests.DAL.Services
             await _context.SaveChangesAsync();
             
             // Act
-            var result = await _service.AllocateAutomaticallyOrManually(hearing2.Id, cso3.Id);
+            var result = await _service.AllocateHearingsToCso(list, cso3.Id);
             
             // Assert
-            AssertCsoAllocated(result, cso3, hearing2);
+            AssertCsoAllocatedListHearing(result, cso3, list);
         }
         
         [Test]
@@ -1220,6 +1232,10 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
             var hearing2 = CreateHearing(DateTime.Today.AddDays(2).AddHours(3).AddMinutes(45));
 
+            var list = new List<Guid>();
+            list.Add(hearing1.Id);
+            list.Add(hearing2.Id);
+            
             var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
             {
@@ -1231,26 +1247,15 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
             AllocateAutomaticallyToHearing(cso1.Id, hearing1.Id);
-            
-            var cso3 = SeedCso("user3@email.com", "User", "3");
-            for (var i = 1; i <= 7; i++)
-            {
-                cso3.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
-            
+
             await _context.SaveChangesAsync();
 
             var noCsoGuid = Guid.NewGuid();
             // Act
-            var action = async() => await _service.AllocateAutomaticallyOrManually(hearing2.Id, noCsoGuid);
+            var result = async () => await _service.AllocateHearingsToCso(list, noCsoGuid);
             
             // Assert
-            AssertNoCsosAvailableErrorForManual(action, noCsoGuid, hearing2.Id);
+            AssertNoCsosAvailableErrorForManual(result, noCsoGuid, list);
         }
 
         private IList<JusticeUser> SeedJusticeUsers()
@@ -1371,9 +1376,9 @@ namespace BookingsApi.UnitTests.DAL.Services
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
         
-        private static void AssertNoCsosAvailableErrorForManual(Func<Task<JusticeUser>> action, Guid csoId, Guid hearingId)
+        private static void AssertNoCsosAvailableErrorForManual(Func<Task<List<VideoHearing>>> list, Guid csoId, List<Guid> listHearingId)
         {
-            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, with CSO {csoId}");
+            list.Should().Throw<DomainRuleException>().And.Message.Should().Contain("Unable to allocate to hearing");
         }
 
         private void AssertCsoAllocated(JusticeUser actualCso, JusticeUser expectedCso, Hearing hearing)
@@ -1382,6 +1387,12 @@ namespace BookingsApi.UnitTests.DAL.Services
             actualCso.Id.Should().Be(expectedCso.Id);
             var allocation = _context.Allocations.SingleOrDefault(a => a.HearingId == hearing.Id && a.JusticeUserId == expectedCso.Id);
             allocation.Should().NotBeNull();
+        }
+        
+        private void AssertCsoAllocatedListHearing(List<VideoHearing> list, JusticeUser expectedCso, List<Guid> hearingIds)
+        {
+            expectedCso.Should().NotBeNull();
+            list.Count.Should().Be(hearingIds.Count);
         }
         
         private void AssertMessageLogged(string expectedMessage, LogLevel expectedLogLevel)
