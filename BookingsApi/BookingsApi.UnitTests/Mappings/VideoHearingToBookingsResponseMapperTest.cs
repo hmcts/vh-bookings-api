@@ -137,6 +137,37 @@ namespace BookingsApi.UnitTests.Mappings
             var mapped = target.MapHearingResponse(mockedHearing);
             mapped.JudgeName.Should().BeEmpty();
         }
+        
+        [Test]
+        public void Should_set_allocatedVHO_to_Not_Allocated()
+        {
+            var mockedHearing = MockHearingWithCase();
+            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            judge.DisplayName = "";
+            mockedHearing.CaseType = new CaseType(1, "Generic");
+            
+
+            var target = new VideoHearingsToBookingsResponseMapper();
+            var mapped = target.MapHearingResponse(mockedHearing);
+            mapped.JudgeName.Should().BeEmpty();
+            mapped.AllocatedTo.Should().Be("Not Allocated");
+        }
+        
+        [Test]
+        public void Should_set_allocatedVHO_to_Not_Required()
+        {
+            var mockedHearing = MockHearingWithCase();
+            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            judge.DisplayName = "";
+            mockedHearing.CaseType = new CaseType(3, "Generic");
+            mockedHearing.CaseTypeId = 3;
+            
+
+            var target = new VideoHearingsToBookingsResponseMapper();
+            var mapped = target.MapHearingResponse(mockedHearing);
+            mapped.JudgeName.Should().BeEmpty();
+            mapped.AllocatedTo.Should().Be("Not Required");
+        }
 
         private VideoHearing MockHearingWithCase()
         {
