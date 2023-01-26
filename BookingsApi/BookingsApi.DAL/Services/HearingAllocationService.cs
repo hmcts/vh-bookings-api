@@ -50,7 +50,6 @@ namespace BookingsApi.DAL.Services
         {
             try
             {
-                List<VideoHearing> list = new List<VideoHearing>();
                 foreach (Guid guid in postRequestHearings)
                 {
                     await AllocateAutomaticallyOrManually(guid, postRequestCsoId);

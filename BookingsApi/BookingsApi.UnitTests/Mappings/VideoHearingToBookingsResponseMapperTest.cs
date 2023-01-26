@@ -169,7 +169,7 @@ namespace BookingsApi.UnitTests.Mappings
             mapped.AllocatedTo.Should().Be("Not Required");
         }
 
-        private VideoHearing MockHearingWithCase()
+        private static VideoHearing MockHearingWithCase()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("234", "X vs Y", true);

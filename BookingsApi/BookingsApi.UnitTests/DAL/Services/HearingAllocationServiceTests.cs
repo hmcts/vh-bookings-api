@@ -1389,7 +1389,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             allocation.Should().NotBeNull();
         }
         
-        private void AssertCsoAllocatedListHearing(List<VideoHearing> list, JusticeUser expectedCso, List<Guid> hearingIds)
+        private static void AssertCsoAllocatedListHearing(List<VideoHearing> list, JusticeUser expectedCso, List<Guid> hearingIds)
         {
             expectedCso.Should().NotBeNull();
             list.Count.Should().Be(hearingIds.Count);
