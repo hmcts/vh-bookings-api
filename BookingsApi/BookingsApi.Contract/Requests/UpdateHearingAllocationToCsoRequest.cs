@@ -6,12 +6,12 @@ namespace BookingsApi.Contract.Requests
     public class UpdateHearingAllocationToCsoRequest
     {
         /// <summary>
-        ///     List of removed participant Ids
+        ///     List of hearing Ids
         /// </summary>
         public List<Guid> Hearings { get; set; }
 
         /// <summary>
-        ///     List of linked participants
+        ///     Cso id
         /// </summary>
         public Guid CsoId { get; set; }
     }

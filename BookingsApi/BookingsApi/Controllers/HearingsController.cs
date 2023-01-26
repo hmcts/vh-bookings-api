@@ -643,7 +643,7 @@ namespace BookingsApi.Controllers
         {
             try
             {
-                var justiceUser = await _hearingAllocationService.AllocateAutomaticallyOrManually(hearingId);
+                var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);
                 
                 if (justiceUser == null)
                     return NotFound();
