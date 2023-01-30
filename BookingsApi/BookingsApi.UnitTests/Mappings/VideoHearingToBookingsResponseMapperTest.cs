@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Mappings
             firstGroup.Hearings.First().GroupId.Should().Be(hearings[0].Id);
         }
 
-        private VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired,
+        private static VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired,
             bool isMultiDayFirstHearing = false)
         {
             var mockedHearing = MockHearingWithCase();
@@ -137,8 +137,39 @@ namespace BookingsApi.UnitTests.Mappings
             var mapped = target.MapHearingResponse(mockedHearing);
             mapped.JudgeName.Should().BeEmpty();
         }
+        
+        [Test]
+        public void Should_set_allocatedVHO_to_Not_Allocated()
+        {
+            var mockedHearing = MockHearingWithCase();
+            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            judge.DisplayName = "";
+            mockedHearing.CaseType = new CaseType(1, "Generic");
+            
 
-        private VideoHearing MockHearingWithCase()
+            var target = new VideoHearingsToBookingsResponseMapper();
+            var mapped = target.MapHearingResponse(mockedHearing);
+            mapped.JudgeName.Should().BeEmpty();
+            mapped.AllocatedTo.Should().Be("Not Allocated");
+        }
+        
+        [Test]
+        public void Should_set_allocatedVHO_to_Not_Required()
+        {
+            var mockedHearing = MockHearingWithCase();
+            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            judge.DisplayName = "";
+            mockedHearing.CaseType = new CaseType(3, "Generic");
+            mockedHearing.CaseTypeId = 3;
+            
+
+            var target = new VideoHearingsToBookingsResponseMapper();
+            var mapped = target.MapHearingResponse(mockedHearing);
+            mapped.JudgeName.Should().BeEmpty();
+            mapped.AllocatedTo.Should().Be("Not Required");
+        }
+
+        private static VideoHearing MockHearingWithCase()
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("234", "X vs Y", true);

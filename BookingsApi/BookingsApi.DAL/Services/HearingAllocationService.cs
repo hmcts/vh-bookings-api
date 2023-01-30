@@ -16,8 +16,10 @@ namespace BookingsApi.DAL.Services
     public interface IHearingAllocationService
     {
         Task<JusticeUser> AllocateAutomatically(Guid hearingId);
+        Task<JusticeUser> AllocateManually(Guid hearingId, Guid justiceUserCsoId);
         Task DeallocateFromUnavailableHearings(Guid justiceUserId);
         void CheckAndDeallocateHearing(Hearing hearing);
+        Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId);
     }
 
     public class HearingAllocationService : IHearingAllocationService
@@ -38,40 +40,136 @@ namespace BookingsApi.DAL.Services
             _configuration = configuration.Value;
             _logger = logger;
         }
-        
+
+        /// <summary>
+        /// Allocate a list of hearings to a passed CSO.
+        /// </summary>
+        /// <param name="postRequestHearings">List of hearings to be allocated</param>
+        /// <param name="postRequestCsoId">CSO JusticeUser Id</param>
+        /// <exception cref="DomainRuleException"></exception>
+        public async Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId)
+        {
+            try
+            {
+                foreach (Guid guid in postRequestHearings)
+                {
+                    await AllocateManually(guid, postRequestCsoId);
+                }
+                
+                return await GetListOfHearings(postRequestHearings);
+            }
+            catch (DomainRuleException e)
+            {
+                throw new DomainRuleException("NoCsosAvailable",
+                    e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Allocate automatically a hearing to a random CSO
+        /// </summary>
+        /// <param name="hearingId">hearing Id to be allocated</param>
+        /// <param name="justiceUserCsoId">CSO JusticeUser Id</param>
+        /// <returns>CSO allocated User</returns>
+        /// <exception cref="DomainRuleException"></exception>
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
         {
-            var hearing = await _context.VideoHearings.SingleOrDefaultAsync(x => x.Id == hearingId);
+            VideoHearing hearing = await GetHearing(hearingId);
+            
+            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
+            
+            // only in automatic allocation we check if hearing has been allocated
+            if (allocations.Any())
+            {
+                throw new DomainRuleException("HearingAlreadyAllocated",
+                    $"Hearing {hearing.Id} has already been allocated");
+            }
+            
+            JusticeUser cso = SelectCso(hearing);
+            if (cso == null)
+            {
+                throw new DomainRuleException("NoCsosAvailable",
+                    $"Unable to allocate to hearing {hearingId}, no CSOs available");
+            }
+            
+            await AllocateHearingToCso(cso, hearing);
+
+            return cso;
+        }
+        
+        /// <summary>
+        /// Allocate manually to a passed CSO
+        /// </summary>
+        /// <param name="hearingId">hearing Id to be allocated</param>
+        /// <param name="justiceUserCsoId">CSO JusticeUser Id</param>
+        /// <returns>CSO allocated User</returns>
+        /// <exception cref="DomainRuleException"></exception>
+        public async Task<JusticeUser> AllocateManually(Guid hearingId, Guid justiceUserCsoId)
+        {
+            VideoHearing hearing = await GetHearing(hearingId);
+            
+            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
+            
+            JusticeUser cso = null;
+            if (allocations.Any())
+            {
+                // we need to unallocate the hearing and allocate to the new user
+                hearing.Deallocate();
+                _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
+            }
+            cso = GetCso((Guid) justiceUserCsoId);
+            if (cso == null)
+            {
+                throw new DomainRuleException("CsoNotFound",
+                    $"Unable to allocate to hearing {hearingId}, with CSO {justiceUserCsoId}");
+            }
+
+            await AllocateHearingToCso(cso, hearing);
+
+            return cso;
+        }
+        
+        private async Task<List<VideoHearing>> GetListOfHearings(List<Guid> postRequestHearings)
+        {
+            List<VideoHearing> list = new List<VideoHearing>();
+
+            foreach (Guid id in postRequestHearings)
+            {
+                VideoHearing hearing = await GetHearing(id);
+                list. Add(hearing);
+            }
+
+            return list;
+        }
+
+        private async Task<VideoHearing> GetHearing(Guid hearingId)
+        {
+            var hearing = await _context.VideoHearings
+                .Include(h => h.CaseType)
+                .Include(h => h.HearingType)
+                .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
+                .SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
                 throw new DomainRuleException("HearingNotFound",
                     $"Hearing {hearingId} not found");
             }
 
-            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
-            if (allocations.Any())
-            {
-                throw new DomainRuleException("HearingAlreadyAllocated",
-                    $"Hearing {hearing.Id} has already been allocated");
-            }
+            return hearing;
+        }
 
-            var cso = SelectCso(hearing);
-            if (cso == null)
-            {
-                throw new DomainRuleException("NoCsosAvailable",
-                    $"Unable to allocate to hearing {hearingId}, no CSOs available");
-            }
-
+        private async Task AllocateHearingToCso(JusticeUser cso, VideoHearing hearing)
+        {
             _context.Allocations.Add(new Allocation
             {
                 Hearing = hearing,
                 JusticeUser = cso
             });
             await _context.SaveChangesAsync();
-            
-            return cso;
+            _logger.LogInformation("Allocated hearing {hearingId} to cso {cso}", hearing.Id, cso.Username);
         }
-        
+
         /// <summary>
         /// Deallocates the user from any hearings they are no longer available for
         /// </summary>
@@ -171,6 +269,19 @@ namespace BookingsApi.DAL.Services
             return csos
                 .Where(cso => hearing.CanAllocate(cso, _configuration))
                 .ToList();
+        }
+        
+        private JusticeUser GetCso(Guid id)
+        {
+            var cso = _context.JusticeUsers
+                .Include(u => u.UserRole)
+                .Where(u => u.Id == id)
+                .Include(u => u.VhoWorkHours)
+                .Include(u => u.VhoNonAvailability)
+                .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
+                .FirstOrDefault();
+
+            return cso;
         }
 
         private JusticeUser SelectRandomly(IList<JusticeUser> csos)

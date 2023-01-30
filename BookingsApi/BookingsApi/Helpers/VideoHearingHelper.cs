@@ -23,7 +23,7 @@ namespace BookingsApi.Helpers
                     allocatedVho = "Not Required";
                 }
             } else {
-                allocatedVho = videoHearing.AllocatedTo.ContactEmail;
+                allocatedVho = videoHearing.AllocatedTo.Username;
             }
             return allocatedVho;
         }
