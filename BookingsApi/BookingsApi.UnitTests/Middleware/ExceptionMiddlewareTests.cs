@@ -51,7 +51,7 @@ namespace BookingsApi.UnitTests.Middleware
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, _HttpContext.Response.StatusCode);
-            _HttpContext.Response.ContentType.Should().Be("application/json");
+            _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace BookingsApi.UnitTests.Middleware
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 
             Assert.AreEqual((int)HttpStatusCode.InternalServerError, _HttpContext.Response.StatusCode);
-            _HttpContext.Response.ContentType.Should().Be("application/json");
+            _HttpContext.Response.ContentType.Should().Be("application/json; charset=utf-8");
         }
 
         public interface IDelegateMock
