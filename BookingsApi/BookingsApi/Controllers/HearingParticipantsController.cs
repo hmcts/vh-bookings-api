@@ -53,7 +53,7 @@ namespace BookingsApi.Controllers
         [HttpGet("{hearingId}/participants", Name = "GetAllParticipantsInHearing")]
         [OpenApiOperation("GetAllParticipantsInHearing")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetAllParticipantsInHearing(Guid hearingId)
         {
@@ -89,7 +89,7 @@ namespace BookingsApi.Controllers
         [HttpGet("{hearingId}/participants/{participantId}", Name = "GetParticipantInHearing")]
         [OpenApiOperation("GetParticipantInHearing")]
         [ProducesResponseType(typeof(ParticipantResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetParticipantInHearing(Guid hearingId, Guid participantId)
         {
@@ -136,7 +136,7 @@ namespace BookingsApi.Controllers
         [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [OpenApiOperation("AddParticipantsToHearing")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
             [FromBody] AddParticipantsToHearingRequest request)
@@ -212,7 +212,7 @@ namespace BookingsApi.Controllers
         [HttpPost("{hearingId}/updateParticipants", Name = "UpdateHearingParticipants")]
         [OpenApiOperation("UpdateHearingParticipants")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId, [FromBody] UpdateHearingParticipantsRequest request)
         {
@@ -317,7 +317,7 @@ namespace BookingsApi.Controllers
         [HttpDelete("{hearingId}/participants/{participantId}", Name = "RemoveParticipantFromHearing")]
         [OpenApiOperation("RemoveParticipantFromHearing")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> RemoveParticipantFromHearing(Guid hearingId, Guid participantId)
         {
@@ -380,7 +380,7 @@ namespace BookingsApi.Controllers
         [HttpPut("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
         [OpenApiOperation("UpdateParticipantDetails")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequest request)
         {
@@ -474,7 +474,7 @@ namespace BookingsApi.Controllers
         /// <returns>Http status</returns>
         [HttpPut("{hearingId}/participants/{participantId}/suitability-answers", Name = "UpdateSuitabilityAnswers")]
         [OpenApiOperation("UpdateSuitabilityAnswers")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)

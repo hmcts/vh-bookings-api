@@ -51,7 +51,7 @@ namespace BookingsApi.Controllers
         [HttpGet("username/{**username}", Name = "GetPersonByUsername")]
         [OpenApiOperation("GetPersonByUsername")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPersonByUsername(string username)
         {
@@ -112,7 +112,7 @@ namespace BookingsApi.Controllers
         [HttpGet("contactEmail/{**contactEmail}", Name = "GetPersonByContactEmail")]
         [OpenApiOperation("GetPersonByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPersonByContactEmail(string contactEmail)
         {
@@ -142,7 +142,7 @@ namespace BookingsApi.Controllers
         [HttpPost]
         [OpenApiOperation("PostPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PostPersonBySearchTerm(SearchTermRequest term)
         {
             var query = new GetPersonBySearchTermQuery(term.Term);
@@ -160,7 +160,7 @@ namespace BookingsApi.Controllers
         [HttpGet("username/{username}/suitability-answers", Name = "GetPersonSuitabilityAnswers")]
         [OpenApiOperation("GetPersonSuitabilityAnswers")]
         [ProducesResponseType(typeof(List<PersonSuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
         {
@@ -254,7 +254,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("SearchForNonJudgePersonsByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string),(int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string),(int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string),(int)HttpStatusCode.Unauthorized)]
         public async Task<ActionResult<PersonResponse>> SearchForNonJudgePersonsByContactEmail([FromQuery]string contactEmail)
         {
@@ -297,7 +297,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("UpdatePersonDetails")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult<IList<PersonResponse>>> UpdatePersonDetails([FromRoute] Guid personId, [FromBody] UpdatePersonDetailsRequest payload)
         {
             var validation = await new UpdatePersonDetailsRequestValidation().ValidateAsync(payload);
@@ -372,7 +372,7 @@ namespace BookingsApi.Controllers
         [HttpPut("user/{**contactEmail}", Name = "UpdatePersonUsername")]
         [OpenApiOperation("UpdatePersonUsername")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdatePersonUsername(string contactEmail, string username)
         {

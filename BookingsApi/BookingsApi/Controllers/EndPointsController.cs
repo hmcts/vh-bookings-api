@@ -57,7 +57,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("AddEndPointToHearing")]
         [ProducesResponseType(typeof(EndpointResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
@@ -114,7 +114,7 @@ namespace BookingsApi.Controllers
         [HttpDelete("{hearingId}/endpoints/{endpointId}")]
         [OpenApiOperation("RemoveEndPointFromHearing")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> RemoveEndPointFromHearingAsync(Guid hearingId, Guid endpointId)
         {
@@ -158,7 +158,7 @@ namespace BookingsApi.Controllers
         [HttpPatch("{hearingId}/endpoints/{endpointId}")]
         [OpenApiOperation("UpdateDisplayNameForEndpoint")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
         {
