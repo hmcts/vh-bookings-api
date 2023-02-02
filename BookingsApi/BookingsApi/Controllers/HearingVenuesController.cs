@@ -49,7 +49,7 @@ namespace BookingsApi.Controllers
         /// Get todays hearing venues for csos
         /// </summary>
         /// <returns>List of hearing venues</returns>
-        [HttpGet]
+        [HttpGet("Allocated")]
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
         [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
