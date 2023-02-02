@@ -56,7 +56,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetJusticeUserList")]
         [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetJusticeUserList(string? term)
+        public async Task<IActionResult> GetJusticeUserList(string term)
         {
             var query = new GetJusticeUserListQuery(term);
             var userList =
