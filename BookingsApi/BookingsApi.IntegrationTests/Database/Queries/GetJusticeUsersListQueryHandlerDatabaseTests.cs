@@ -37,5 +37,15 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             users.Should().NotBeNull();
         }
+        
+        [Test]
+        public async Task Should_return_users_list_when_term_is_passed()
+        {
+            var term = "term";
+            var query = new GetJusticeUserListQuery(term);
+            var users = (await _handler.Handle(query));
+
+            users.Should().NotBeNull();
+        }
     }
 }
