@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -42,6 +43,23 @@ namespace BookingsApi.Controllers
             }).ToList();
 
             return Ok(response);
+        }
+        
+        /// <summary>
+        /// Get todays hearing venues for csos
+        /// </summary>
+        /// <returns>List of hearing venues</returns>
+        [HttpGet]
+        [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
+        [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoId)
+        {
+            var query = new GetAllocationHearingsBySearchQuery(cso: csoId, fromDate: DateTime.Today);
+            var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+            if (hearings == null || !hearings.Any())
+                return NotFound();
+            return Ok(hearings.Select(vh => vh.HearingVenue));
         }
     }
 }
