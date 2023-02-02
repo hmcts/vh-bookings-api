@@ -23,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_null_when_no_users_are_found()
         {
             await Hooks.ClearAllJusticeUsersAsync();
-            var query = new GetJusticeUserListQuery();
+            var query = new GetJusticeUserListQuery(null);
             var users = await _handler.Handle(query);
 
             users.Should().BeEmpty();
@@ -32,7 +32,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_users_list()
         {
-            var query = new GetJusticeUserListQuery();
+            var query = new GetJusticeUserListQuery(null);
             var users = (await _handler.Handle(query));
 
             users.Should().NotBeNull();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries.Core;
@@ -8,8 +9,10 @@ namespace BookingsApi.DAL.Queries
 {
     public class GetJusticeUserListQuery : IQuery
     {
-        public GetJusticeUserListQuery()
+        public string Term { get; set; }
+        public GetJusticeUserListQuery(string term)
         {
+            Term = term;
         }
     }
     
@@ -24,7 +27,23 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<JusticeUser>> Handle(GetJusticeUserListQuery query)
         {
-            return await _context.JusticeUsers.Include(x => x.UserRole).ToListAsync();
+            string term = query.Term;
+            if (string.IsNullOrEmpty(term))
+            {
+                return await _context.JusticeUsers.Include(x => x.UserRole).ToListAsync();
+            }
+            else
+            {
+                return await _context.JusticeUsers
+                    .Where(u=> 
+                        u.Lastname.Contains(term) || 
+                        u.FirstName.Contains(term) ||
+                        u.ContactEmail.Contains(term) ||
+                        u.Username.Contains(term)
+                        )
+                    .Include(x => x.UserRole).ToListAsync();
+            }
+            
         }
     }
 }
