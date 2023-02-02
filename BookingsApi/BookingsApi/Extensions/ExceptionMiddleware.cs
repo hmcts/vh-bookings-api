@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BookingsApi.Common;
 using BookingsApi.Common.Helpers;
 using System.Net;
+using System.Text;
 
 namespace BookingsApi.Extensions
 {
@@ -37,10 +38,15 @@ namespace BookingsApi.Extensions
 
         private static Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, Exception exception)
         {
-            context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int) statusCode;
-                   
-            return context.Response.WriteAsync(exception.Message);
+            var sb = new StringBuilder(exception.Message);
+            var innerException = exception.InnerException;
+            while (innerException != null)
+            {
+                sb.Append($" {innerException.Message}");
+                innerException = innerException.InnerException;
+            }
+            return context.Response.WriteAsJsonAsync(sb.ToString());
         }
 
     }

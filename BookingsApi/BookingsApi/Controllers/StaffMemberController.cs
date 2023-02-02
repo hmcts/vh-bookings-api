@@ -33,7 +33,7 @@ namespace BookingsApi.Controllers
         [HttpGet]
         [OpenApiOperation("GetStaffMemberBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetStaffMemberBySearchTerm(string term)
         {
