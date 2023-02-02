@@ -690,19 +690,21 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get list of Justice User.
+        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
         /// </summary>
+        /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get list of Justice User.
+        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
         /// </summary>
+        /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get a participants by username
@@ -5201,25 +5203,32 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Get list of Justice User.
+        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
         /// </summary>
+        /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync()
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term)
         {
-            return GetJusticeUserListAsync(System.Threading.CancellationToken.None);
+            return GetJusticeUserListAsync(term, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get list of Justice User.
+        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
         /// </summary>
+        /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/justiceuser/GetJusticeUserList");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/justiceuser/GetJusticeUserList?");
+            if (term != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("term") + "=").Append(System.Uri.EscapeDataString(ConvertToString(term, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
 
             var client_ = _httpClient;
             var disposeClient_ = false;

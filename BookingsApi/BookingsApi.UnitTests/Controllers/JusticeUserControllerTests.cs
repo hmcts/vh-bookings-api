@@ -98,7 +98,7 @@ namespace BookingsApi.UnitTests.Controllers
             var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(expectedJusticeUserReponse);
 
             // Act
-            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var response = await _controller.GetJusticeUserList(null) as OkObjectResult;
             var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert
@@ -115,7 +115,7 @@ namespace BookingsApi.UnitTests.Controllers
             var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(new List<JusticeUser>());
 
             // Act
-            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var response = await _controller.GetJusticeUserList(null) as OkObjectResult;
             var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert

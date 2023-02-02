@@ -48,14 +48,15 @@ namespace BookingsApi.Controllers
         }
         
         /// <summary>
-        /// Get list of Justice User.
+        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
         /// </summary>
+        /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
         [HttpGet("GetJusticeUserList")]
         [OpenApiOperation("GetJusticeUserList")]
         [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetJusticeUserList()
+        public async Task<IActionResult> GetJusticeUserList(string term)
         {
             var query = new GetJusticeUserListQuery();
             var userList =
