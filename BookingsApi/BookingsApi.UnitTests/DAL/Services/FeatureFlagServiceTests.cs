@@ -72,6 +72,19 @@ namespace BookingsApi.UnitTests.DAL.Services
         
             featureFlag.Should().BeFalse();
         }
+        
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetFeatureFlag_Should_Return_expected_value_for_WorkAllocation_Feature(bool flagValue)
+        {
+            _mocker.Mock<IFeatureToggles>().Setup(opt => opt.WorkAllocation()).Returns(flagValue);
+            
+            _service = _mocker.Create<FeatureFlagService>();
+            
+            var featureFlag = _service.GetFeatureFlag(nameof(FeatureFlags.WorkAllocation));
+        
+            featureFlag.Should().Be(flagValue);
+        }
 
         [Test]
         public void GetFeatureFlag_Should_Throw_FeatureFlagNotFoundException()
