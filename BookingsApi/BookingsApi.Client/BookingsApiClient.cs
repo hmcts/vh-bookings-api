@@ -690,7 +690,8 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<JusticeUserResponse> GetJusticeUserByUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
+        /// Get a list of justice users. Optionally provide a search term to filter
+        /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
@@ -699,7 +700,8 @@ namespace BookingsApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
+        /// Get a list of justice users. Optionally provide a search term to filter
+        /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
@@ -5585,7 +5587,8 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
+        /// Get a list of justice users. Optionally provide a search term to filter
+        /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>
@@ -5597,7 +5600,8 @@ namespace BookingsApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
+        /// Get a list of justice users. Optionally provide a search term to filter
+        /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>

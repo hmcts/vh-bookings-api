@@ -48,7 +48,8 @@ namespace BookingsApi.Controllers
         }
         
         /// <summary>
-        /// Get list of Justice User filtered by passed term. If term is null then not filter applied.
+        /// Get a list of justice users. Optionally provide a search term to filter
+        /// for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
         /// <returns>Justice User list</returns>

@@ -35,7 +35,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var query = new GetJusticeUserListQuery(null);
             var users = (await _handler.Handle(query));
 
-            users.Should().NotBeNull();
+            users.Should().NotBeEmpty();
         }
         
         [Test]
