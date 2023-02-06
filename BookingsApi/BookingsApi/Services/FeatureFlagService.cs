@@ -21,6 +21,7 @@ namespace BookingsApi.Services
             {
                 nameof(FeatureFlags.StaffMemberFeature) => _featureFlagConfigurationOptions.StaffMemberFeature,
                 nameof(FeatureFlags.EJudFeature) => _featureToggles.EJudFeature(),
+                nameof(FeatureFlags.WorkAllocation) => _featureToggles.WorkAllocation(),
                 _ => throw new FeatureFlagNotFoundException(featureName)
             };
         }

@@ -3,6 +3,7 @@
     public enum FeatureFlags
     {
         StaffMemberFeature,
-        EJudFeature
+        EJudFeature,
+        WorkAllocation
     }
 }
