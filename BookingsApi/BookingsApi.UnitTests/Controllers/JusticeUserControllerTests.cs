@@ -91,6 +91,29 @@ namespace BookingsApi.UnitTests.Controllers
         }
         
         [Test]
+        public async Task GetJusticeUserList_Filter_By_Term_ReturnsList()
+        {
+            var term = "Lastname2";
+            // Arrange
+            var expectedJusticeUserReponse = _justiceUserList
+                .Where(u => 
+                    u.Lastname.Contains(term) || 
+                    u.FirstName.Contains(term) ||
+                    u.ContactEmail.Contains(term) ||
+                    u.Username.Contains(term))
+                .Select(user => JusticeUserToResponseMapper.Map(user));
+            var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(expectedJusticeUserReponse);
+
+            // Act
+            var response = await _controller.GetJusticeUserList(term) as OkObjectResult;
+            var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.Less(expectedJusticeUserReponseJson.Length, actualJusticeUserReponseJson.Length);
+        }
+
+        [Test]
         public async Task GetJusticeUserList_ReturnsList()
         {
             // Arrange
@@ -98,13 +121,14 @@ namespace BookingsApi.UnitTests.Controllers
             var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(expectedJusticeUserReponse);
 
             // Act
-            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var response = await _controller.GetJusticeUserList(null) as OkObjectResult;
             var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
         }
+
         [Test]
         public async Task GetJusticeUserList_ReturnsListEmpty()
         {
@@ -115,7 +139,7 @@ namespace BookingsApi.UnitTests.Controllers
             var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(new List<JusticeUser>());
 
             // Act
-            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var response = await _controller.GetJusticeUserList(null) as OkObjectResult;
             var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert
