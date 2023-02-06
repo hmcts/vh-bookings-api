@@ -46,20 +46,19 @@ namespace BookingsApi.Controllers
         }
         
         /// <summary>
-        /// Get todays hearing venues for csos
+        /// Get today's hearing venues by their allocated csos
         /// </summary>
         /// <returns>List of hearing venues</returns>
         [HttpGet("Allocated")]
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
         [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoId)
+        public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoIds)
         {
-            var query = new GetAllocationHearingsBySearchQuery(cso: csoId, fromDate: DateTime.Today);
+            var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today);
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             if (hearings == null || !hearings.Any())
-                return NotFound();
-            return Ok(hearings.Select(vh => vh.HearingVenue));
+                return Ok(new List<string>());
+            return Ok(hearings.Select(vh => vh.HearingVenueName));
         }
     }
 }
