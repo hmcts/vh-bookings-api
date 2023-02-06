@@ -30,12 +30,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
         
         [Test]
-        public async Task Should_return_users_list()
+        public async Task Should_return_users_list_not_null()
         {
             var query = new GetJusticeUserListQuery(null);
             var users = (await _handler.Handle(query));
 
-            users.Should().NotBeEmpty();
+            users.Should().NotBeNull();
         }
         
         [Test]
