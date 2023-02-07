@@ -18,8 +18,8 @@ namespace BookingsApi.IntegrationTests.Database
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables()
-                .AddUserSecrets<Startup>();
+                .AddUserSecrets<Startup>()
+                .AddEnvironmentVariables();
             
             var configRoot = configRootBuilder.Build();
             _databaseConnectionString = configRoot.GetConnectionString("VhBookings");

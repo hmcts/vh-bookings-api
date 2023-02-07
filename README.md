@@ -73,3 +73,21 @@ To update latest version of stryker please use the following command
 ```bash
 dotnet tool update --global dotnet-stryker
 ```
+
+## Running tests with Docker
+
+The unit and integration tests can be run inside a container. You will need a an access token to build the image locally
+
+Open a terminal at the root of the repo and run the following in a terminal to build the test image:
+
+``` shell
+docker build . --file tests/Dockerfile -t bookings-api-tests --build-arg PAT=<PAT TOKEN>
+```
+
+### Running all tests in Docker
+
+Open a terminal at the root level of the repository and run the following command
+
+```console
+docker-compose -f "docker-compose.tests.yml" up --build --abort-on-container-exit
+```

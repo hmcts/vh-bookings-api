@@ -1,0 +1,60 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+networks:
+  integration-tests:
+    driver: bridge
+
+services:
+
+  vh-bookings-api--unit-tests:
+    image: bookings-api-tests
+    build:
+      context: ./
+      dockerfile: tests/Dockerfile
+      args:
+        - PAT=$PAT_TOKEN
+    entrypoint: /run-unit-tests.sh
+    volumes:
+      - ./TestResults:/app/TestResults:rw
+      - ./Coverage:/Coverage:rw
+
+  vh-bookings-api--integration-tests:
+    image: bookings-api-tests
+    build:
+      context: ./
+      dockerfile: tests/Dockerfile
+      args:
+        - PAT=$PAT_TOKEN
+    entrypoint:
+      [
+        "/wait-for-it.sh",
+        "vh-bookings-api-testing:1433",
+        "-t",
+        "120",
+        "--",
+        "/run-integration-tests.sh"
+      ]
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__VhBookings=Data Source=vh-bookings-api-testing;Database=VhBookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
+    volumes:
+      - ./TestResults:/app/TestResults:rw
+      - ./Coverage:/Coverage:rw
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    depends_on:
+      - vh-bookings-api-testing
+    networks:
+      - integration-tests
+
+  vh-bookings-api-testing:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: vh.bookingsapi.sql.testing
+    expose:
+      - 1433
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=R4ndomP@assword
+    networks:
+      - integration-tests

@@ -134,7 +134,7 @@ _TeamCity*
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
-*/Coverage/*
+/Coverage/*
 
 # NCrunch
 _NCrunch_*
@@ -340,3 +340,4 @@ ASALocalRun/
 
 # ReportGeneratorTool
 coveragereport/
+.env
