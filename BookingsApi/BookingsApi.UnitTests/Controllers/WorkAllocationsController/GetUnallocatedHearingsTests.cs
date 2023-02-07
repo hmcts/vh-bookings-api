@@ -15,9 +15,9 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
-namespace BookingsApi.UnitTests.Controllers.HearingsController
+namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {
-    public class GetUnallocatedHearingsTests : HearingsControllerTests
+    public class GetUnallocatedHearingsTests : WorkAllocationsControllerTest
     {
 
         [Test]

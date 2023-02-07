@@ -9,6 +9,7 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Mappings;
+using BookingsApi.UnitTests.Controllers.HearingsController;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -17,9 +18,9 @@ using NUnit.Framework;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
 
-namespace BookingsApi.UnitTests.Controllers.HearingsController
+namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {
-    public class AllocateHearingManuallyTests : HearingsControllerTests
+    public class AllocateHearingManuallyTests : WorkAllocationsControllerTest
     {
         private JusticeUser _justiceUser;
         private List<VideoHearing> _hearings;

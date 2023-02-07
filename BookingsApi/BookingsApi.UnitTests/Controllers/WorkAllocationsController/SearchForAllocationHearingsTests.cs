@@ -10,10 +10,11 @@ using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Queries;
+using BookingsApi.UnitTests.Controllers.WorkAllocationsController;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
-    public class SearchForAllocationHearingsTests : HearingsControllerTests
+    public class SearchForAllocationHearingsTests : WorkAllocationsControllerTest
     {
         [Test]
         public async Task Should_return_an_empty_list_if_no_records_found_for_the_given_parameters()

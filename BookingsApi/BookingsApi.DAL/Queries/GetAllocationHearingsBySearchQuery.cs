@@ -89,7 +89,7 @@ namespace BookingsApi.DAL.Queries
                     ? hearings.Where(h6 => h6.ScheduledDateTime.Date >= query.FromDate.Value.Date && h6.ScheduledDateTime.Date <= query.ToDate.Value.Date)
                     : hearings.Where(h6 => h6.ScheduledDateTime.Date == query.FromDate.Value.Date);
             }
-            
+
             return await hearings.OrderBy(x=>x.ScheduledDateTime).AsNoTracking().ToListAsync();
         }
     }

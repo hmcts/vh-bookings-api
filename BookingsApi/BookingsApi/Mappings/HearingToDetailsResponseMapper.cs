@@ -1,6 +1,5 @@
 using System.Linq;
 using BookingsApi.Contract.Responses;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Extensions;
 using BookingsApi.Helpers;
