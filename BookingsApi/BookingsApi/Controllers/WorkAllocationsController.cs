@@ -89,7 +89,7 @@ namespace BookingsApi.Controllers
         /// <returns>list of hearings matching search criteria</returns>
         [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
         [OpenApiOperation("SearchForAllocationHearings")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingAllocationsResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
         {
             var query = new GetAllocationHearingsBySearchQuery(
@@ -101,11 +101,12 @@ namespace BookingsApi.Controllers
                 searchRequest.IsUnallocated);
             
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
-
-            if (hearings == null || !hearings.Any())
-                return Ok(new List<HearingDetailsResponse>());
             
-            return Ok(hearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+            if (hearings == null || !hearings.Any())
+                return Ok(new List<HearingAllocationsResponse>());
+
+            var dtos = _hearingAllocationService.CheckForAllocationClashes(hearings);
+            return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
         }
 
         /// <summary>

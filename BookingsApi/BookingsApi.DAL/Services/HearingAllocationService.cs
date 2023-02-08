@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
+using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Enumerations;
@@ -20,7 +22,7 @@ namespace BookingsApi.DAL.Services
         Task DeallocateFromUnavailableHearings(Guid justiceUserId);
         void CheckAndDeallocateHearing(Hearing hearing);
         Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId);
-        Task SearchForHearingsToAllocate(string filter)
+        List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings);
     }
 
     public class HearingAllocationService : IHearingAllocationService
@@ -64,6 +66,33 @@ namespace BookingsApi.DAL.Services
                 throw new DomainRuleException("NoCsosAvailable",
                     e.Message);
             }
+        }
+
+        public List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings)
+        {
+            var allocatedToIgnore = new[] {"Not Allocated", "Not Required"};
+            var dto = hearings.Select(x =>
+            {
+                var allocated = VideoHearingHelper.AllocatedVho(x);
+                bool? hasWorkHoursClash = null;
+                if (!allocatedToIgnore.Contains(allocated, StringComparer.OrdinalIgnoreCase))
+                {
+                    hasWorkHoursClash =
+                        !x.AllocatedTo.IsWorkingDuringHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
+                }
+
+                return new HearingAllocationResultDto
+                {
+                    HearingId = x.Id,
+                    CaseNumber = x.HearingCases.FirstOrDefault()?.Case.Number,
+                    CaseType = x.CaseType.Name,
+                    ScheduledDateTime = x.ScheduledDateTime,
+                    Duration = x.ScheduledDuration,
+                    AllocatedCso = VideoHearingHelper.AllocatedVho(x),
+                    HasWorkHoursClash = hasWorkHoursClash
+                };
+            }).ToList();
+            return dto;
         }
 
         /// <summary>

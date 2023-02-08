@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL.Queries;
-using BookingsApi.UnitTests.Controllers.WorkAllocationsController;
 
-namespace BookingsApi.UnitTests.Controllers.HearingsController
+namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {
     public class SearchForAllocationHearingsTests : WorkAllocationsControllerTest
     {
@@ -40,11 +40,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
 
-            var hearingDetailsResponse = (List<HearingDetailsResponse>)objectResult.Value;
+            var response = (List<HearingAllocationsResponse>)objectResult.Value;
 
-            hearingDetailsResponse.Should().NotBeNull();
+            response.Should().NotBeNull();
 
-            hearingDetailsResponse.Should().BeEmpty();
+            response.Should().BeEmpty();
             
             QueryHandlerMock
                 .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);
@@ -63,11 +63,42 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 ToDate = new DateTime()
             };
             var hearingsByCaseNumber = new List<VideoHearing> { GetHearing(cNumber) };
+            var checkForClashesResponse = new List<HearingAllocationResultDto>()
+            {
+                new()
+                {
+                    HearingId = Guid.NewGuid(),
+                    CaseType = query.CaseType[0],
+                    CaseNumber = query.CaseNumber,
+                    Duration = 10,
+                    ScheduledDateTime = DateTime.Today.AddHours(10).AddMinutes(20),
+                    AllocatedCso = "test@cso.com",
+                    HasWorkHoursClash = false
+                }
+            };
+
+            var expectedResponses = new List<HearingAllocationsResponse>()
+            {
+                new()
+                {
+                    HearingId = checkForClashesResponse[0].HearingId,
+                    CaseType = checkForClashesResponse[0].CaseType,
+                    CaseNumber = checkForClashesResponse[0].CaseNumber,
+                    Duration = checkForClashesResponse[0].Duration,
+                    ScheduledDateTime = checkForClashesResponse[0].ScheduledDateTime,
+                    AllocatedCso = checkForClashesResponse[0].AllocatedCso,
+                    HasWorkHoursClash = false
+                }
+            };
 
             QueryHandlerMock
-                .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()))
+                .Setup(x =>
+                    x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(
+                        It.IsAny<GetAllocationHearingsBySearchQuery>()))
                 .ReturnsAsync(hearingsByCaseNumber);
 
+            HearingAllocationServiceMock.Setup(x => x.CheckForAllocationClashes(hearingsByCaseNumber)).Returns(checkForClashesResponse);
+            
             var result = await Controller.SearchForAllocationHearings(query);
 
             result.Should().NotBeNull();
@@ -76,14 +107,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
 
-            var hearingDetailsResponse = (List<HearingDetailsResponse>)objectResult.Value;
+            var response = (List<HearingAllocationsResponse>)objectResult.Value;
 
-            hearingDetailsResponse.Should().NotBeNull();
+            response.Should().NotBeNull();
 
-            hearingDetailsResponse[0].Cases[0].Number.Should().Be(cNumber);
+            response[0].CaseNumber.Should().Be(cNumber);
 
             QueryHandlerMock
                 .Verify(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()), Times.Once);
+
+            response.Should().BeEquivalentTo(expectedResponses);
         }
     }
 }
