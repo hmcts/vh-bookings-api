@@ -20,6 +20,7 @@ namespace BookingsApi.DAL.Services
         Task DeallocateFromUnavailableHearings(Guid justiceUserId);
         void CheckAndDeallocateHearing(Hearing hearing);
         Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId);
+        Task SearchForHearingsToAllocate(string filter)
     }
 
     public class HearingAllocationService : IHearingAllocationService
