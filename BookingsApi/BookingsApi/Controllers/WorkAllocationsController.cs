@@ -115,7 +115,7 @@ namespace BookingsApi.Controllers
         /// <returns>list of allocated hearings</returns>
         [HttpPatch("allocations")]
         [OpenApiOperation("AllocateHearingsToCso")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingAllocationsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
         {
@@ -123,7 +123,8 @@ namespace BookingsApi.Controllers
             {
                 var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
-                return Ok(list.Select(HearingToDetailsResponseMapper.Map).ToList());
+                var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
+                return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
             {

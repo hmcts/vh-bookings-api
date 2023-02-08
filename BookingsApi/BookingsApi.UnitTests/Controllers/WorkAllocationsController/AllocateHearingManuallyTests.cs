@@ -4,12 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Mappings;
-using BookingsApi.UnitTests.Controllers.HearingsController;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -22,28 +22,19 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {
     public class AllocateHearingManuallyTests : WorkAllocationsControllerTest
     {
-        private JusticeUser _justiceUser;
         private List<VideoHearing> _hearings;
         
         [SetUp]
         public void SetUp()
         {
-            _justiceUser = new JusticeUser
+            _hearings = new List<VideoHearing>
             {
-                FirstName = "FirstName",
-                Lastname = "Lastname",
-                Username = "email.test@email.com",
-                ContactEmail = "email.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings CSO")
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build()
             };
-
-            _hearings = new List<VideoHearing>();
-            _hearings.Add(new VideoHearingBuilder().Build());
-            _hearings.Add(new VideoHearingBuilder().Build());
-            _hearings.Add(new VideoHearingBuilder().Build());
-            _hearings.Add(new VideoHearingBuilder().Build());
-            _hearings.Add(new VideoHearingBuilder().Build());
-            
         }
         
         [Test]
@@ -55,20 +46,37 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
                 .Setup(x => x.AllocateHearingsToCso(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
                 .ReturnsAsync(_hearings);
 
-            var expectedHearingsResponse = _hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
-            var expectedHearingsResponseJson = JsonConvert.SerializeObject(expectedHearingsResponse);
+            var checkForClashesResponse = _hearings.Select(x => new HearingAllocationResultDto
+            {
+                HearingId = x.Id,
+                Duration = x.ScheduledDuration,
+                ScheduledDateTime = x.ScheduledDateTime,
+                CaseNumber = x.HearingCases.FirstOrDefault()?.Case.Number,
+                CaseType = x.CaseType.Name,
+                AllocatedCso = VideoHearingHelper.AllocatedVho(x),
+                HasWorkHoursClash = null
+            }).ToList();
 
-            UpdateHearingAllocationToCsoRequest request = new UpdateHearingAllocationToCsoRequest();
-            request.Hearings = _hearings.Select(h => h.Id).ToList();
-            request.CsoId = userId;
+            HearingAllocationServiceMock.Setup(x => x.CheckForAllocationClashes(_hearings)).Returns(checkForClashesResponse);
+            
+            var request = new UpdateHearingAllocationToCsoRequest
+            {
+                Hearings = _hearings.Select(h => h.Id).ToList(),
+                CsoId = userId
+            };
+            
             // Act
-            var response = await Controller.AllocateHearingManually(request);
-
+            var result = await Controller.AllocateHearingManually(request);
+            
             // Assert
-            var result = (OkObjectResult)response;
-            result.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var actualHearingsResponseJson = JsonConvert.SerializeObject(result.Value);
-            Assert.AreEqual(expectedHearingsResponseJson, actualHearingsResponseJson);
+            result.Should().BeOfType<OkObjectResult>();
+            var objectResult = (OkObjectResult)result;
+            var response = (List<HearingAllocationsResponse>)objectResult.Value;
+            response.Should().NotBeNull();
+            response.Count.Should().Be(_hearings.Count);
+
+            var expected = checkForClashesResponse.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList();
+            response.Should().BeEquivalentTo(expected);
         }
         
         [Test]
@@ -80,9 +88,11 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
                 .Setup(x => x.AllocateHearingsToCso(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new DomainRuleException("Error", "Error Description"));
             
-            UpdateHearingAllocationToCsoRequest request = new UpdateHearingAllocationToCsoRequest();
-            request.Hearings = _hearings.Select(h => h.Id).ToList();
-            request.CsoId = userId;
+            UpdateHearingAllocationToCsoRequest request = new UpdateHearingAllocationToCsoRequest
+            {
+                Hearings = _hearings.Select(h => h.Id).ToList(),
+                CsoId = userId
+            };
             // Act
             var response = await Controller.AllocateHearingManually(request);
 

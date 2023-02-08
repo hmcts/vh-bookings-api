@@ -942,7 +942,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingAllocationsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -950,7 +950,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingAllocationsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Save vho work hours
@@ -7310,7 +7310,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingAllocationsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest)
         {
             return AllocateHearingsToCsoAsync(postRequest, System.Threading.CancellationToken.None);
         }
@@ -7321,7 +7321,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>list of allocated hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingAllocationsResponse>> AllocateHearingsToCsoAsync(UpdateHearingAllocationToCsoRequest postRequest, System.Threading.CancellationToken cancellationToken)
         {
             if (postRequest == null)
                 throw new System.ArgumentNullException("postRequest");
@@ -7375,7 +7375,7 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingDetailsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingAllocationsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
