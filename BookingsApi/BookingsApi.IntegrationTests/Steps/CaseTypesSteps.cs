@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -66,12 +67,11 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
             var models = RequestHelper.Deserialise<List<CaseTypeResponse>>(json);
-
-            models.Select(x => x.Name).Should().Contain(caseHearingTypes.Keys);
-            foreach (var model in models)
+            foreach (var (key, value) in caseHearingTypes)
             {
-                caseHearingTypes[model.Name].Should().Contain(model.HearingTypes.Select(x => x.Name));
-                model.HearingTypes.Select(x => x.Name).Should().Contain(caseHearingTypes[model.Name]);
+                var caseType = models.FirstOrDefault(x => x.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+                caseType.Should().NotBeNull($"{key} should be in the list of case types");
+                caseType.HearingTypes.Select(x => x.Name).Should().Contain(value);
             }
         }
 
