@@ -18,9 +18,11 @@ using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BookingsApi
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)

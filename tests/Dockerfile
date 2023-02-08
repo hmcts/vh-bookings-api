@@ -7,10 +7,8 @@ ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.s
 # Make it executable, in Linux
 RUN chmod +x /wait-for-it.sh
 
-COPY ["scripts/tests/run-unit-tests.sh", "/"]
-COPY ["scripts/tests/run-integration-tests.sh", "/"]
-RUN chmod +x /run-unit-tests.sh
-RUN chmod +x /run-integration-tests.sh
+COPY ["scripts/tests/run-tests.sh", "/"]
+RUN chmod +x /run-tests.sh
 
 # Copy project files to cache layer
 COPY ["BookingsApi/nuget.config", "BookingsApi/"]

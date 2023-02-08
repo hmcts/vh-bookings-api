@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using AcceptanceTests.Common.Api;
-using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
-using BookingsApi.Contract.Configuration;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Contexts;
@@ -32,9 +30,11 @@ namespace BookingsApi.IntegrationTests.Hooks
         public ConfigHooks(TestContext context)
         {
             var userSecretsId = "D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F";
-            _configRoot = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.Development.json", true)
-                .AddJsonFile("appsettings.Production.json", true).AddJsonFile("useraccounts.json", true)
-                .AddUserSecrets(userSecretsId).Build();
+            _configRoot = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddUserSecrets(userSecretsId)
+                .AddEnvironmentVariables()
+                .Build();
             context.Config = new Config();
             context.UserAccounts = new List<UserAccount>();
         }
@@ -87,10 +87,12 @@ namespace BookingsApi.IntegrationTests.Hooks
         {
             context.Config.ConnectionStrings = Options.Create(_configRoot.GetSection("ConnectionStrings").Get<ConnectionStrings>()).Value;
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
-            dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(context.Config.ConnectionStrings.VhBookings);
             context.BookingsDbContextOptions = dbContextOptionsBuilder.Options;
             context.TestDataManager = new TestDataManager(context.BookingsDbContextOptions, context.TestData.CaseName);
+
+            var db = new BookingsDbContext(context.BookingsDbContextOptions);
+            db.Database.Migrate();
         }
 
         private static void RegisterServer(TestContext context)

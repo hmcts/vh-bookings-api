@@ -12,7 +12,7 @@ namespace BookingsApi.IntegrationTests.Database
         private string _databaseConnectionString;
         protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions;
         protected TestDataManager Hooks { get; private set; }
-        
+
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
@@ -20,21 +20,20 @@ namespace BookingsApi.IntegrationTests.Database
                 .AddJsonFile("appsettings.json")
                 .AddUserSecrets<Startup>()
                 .AddEnvironmentVariables();
-            
+
             var configRoot = configRootBuilder.Build();
             _databaseConnectionString = configRoot.GetConnectionString("VhBookings");
 
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
-            dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
             BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            
+
             Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
-            
+
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.Database.Migrate();
         }
-        
+
         [TearDown]
         public async Task TearDown()
         {

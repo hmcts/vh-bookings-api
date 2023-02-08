@@ -8,19 +8,7 @@ networks:
 
 services:
 
-  vh-bookings-api--unit-tests:
-    image: bookings-api-tests
-    build:
-      context: ./
-      dockerfile: tests/Dockerfile
-      args:
-        - PAT=$PAT_TOKEN
-    entrypoint: /run-unit-tests.sh
-    volumes:
-      - ./TestResults:/app/TestResults:rw
-      - ./Coverage:/Coverage:rw
-
-  vh-bookings-api--integration-tests:
+  vh-bookings-api--tests:
     image: bookings-api-tests
     build:
       context: ./
@@ -30,25 +18,25 @@ services:
     entrypoint:
       [
         "/wait-for-it.sh",
-        "vh-bookings-api-testing:1433",
+        "vh-bookingsapi-db-testing:1433",
         "-t",
         "120",
         "--",
-        "/run-integration-tests.sh"
+        "/run-tests.sh"
       ]
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__VhBookings=Data Source=vh-bookings-api-testing;Database=VhBookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
+      - ConnectionStrings__VhBookings=Data Source=vh-bookingsapi-db-testing;Database=VhBookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
     volumes:
       - ./TestResults:/app/TestResults:rw
       - ./Coverage:/Coverage:rw
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
     depends_on:
-      - vh-bookings-api-testing
+      - vh-bookingsapi-db-testing
     networks:
       - integration-tests
 
-  vh-bookings-api-testing:
+  vh-bookingsapi-db-testing:
     image: mcr.microsoft.com/azure-sql-edge
     container_name: vh.bookingsapi.sql.testing
     expose:
