@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using FizzWare.NBuilder;
@@ -14,11 +13,11 @@ using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 using DayOfWeek = BookingsApi.Domain.DayOfWeek;
 
-namespace BookingsApi.UnitTests.Services;
+namespace BookingsApi.IntegrationTests.Services.HearingAllocationService;
 
-public class HearingAllocationServiceTests
+public class CheckForAllocationClashesTests
 {
-    private HearingAllocationService _sut;
+    private DAL.Services.HearingAllocationService _sut;
     
 
     [SetUp]
@@ -29,8 +28,8 @@ public class HearingAllocationServiceTests
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
         dbContextOptionsBuilder.UseInMemoryDatabase("VhBookings");
         var db = new BookingsDbContext(dbContextOptionsBuilder.Options);
-        _sut = new HearingAllocationService(db, new RandomNumberGenerator(), options,
-            new Logger<HearingAllocationService>(new LoggerFactory()));
+        _sut = new DAL.Services.HearingAllocationService(db, new RandomNumberGenerator(), options,
+            new Logger<DAL.Services.HearingAllocationService>(new LoggerFactory()));
     }
 
     [Test]
@@ -92,4 +91,5 @@ public class HearingAllocationServiceTests
         resultDtos.Count.Should().Be(1);
         resultDtos[0].HasWorkHoursClash.Should().BeNull();
     }
+    
 }

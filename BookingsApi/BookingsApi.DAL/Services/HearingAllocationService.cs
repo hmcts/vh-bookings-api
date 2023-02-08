@@ -99,7 +99,6 @@ namespace BookingsApi.DAL.Services
         /// Allocate automatically a hearing to a random CSO
         /// </summary>
         /// <param name="hearingId">hearing Id to be allocated</param>
-        /// <param name="justiceUserCsoId">CSO JusticeUser Id</param>
         /// <returns>CSO allocated User</returns>
         /// <exception cref="DomainRuleException"></exception>
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
@@ -139,15 +138,14 @@ namespace BookingsApi.DAL.Services
             VideoHearing hearing = await GetHearing(hearingId);
             
             var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
-            
-            JusticeUser cso = null;
+
             if (allocations.Any())
             {
                 // we need to unallocate the hearing and allocate to the new user
                 hearing.Deallocate();
                 _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
             }
-            cso = GetCso((Guid) justiceUserCsoId);
+            var cso = GetCso(justiceUserCsoId);
             if (cso == null)
             {
                 throw new DomainRuleException("CsoNotFound",
@@ -197,7 +195,7 @@ namespace BookingsApi.DAL.Services
                 JusticeUser = cso
             });
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Allocated hearing {hearingId} to cso {cso}", hearing.Id, cso.Username);
+            _logger.LogInformation("Allocated hearing {HearingId} to cso {Cso}", hearing.Id, cso.Username);
         }
 
         /// <summary>
@@ -227,7 +225,7 @@ namespace BookingsApi.DAL.Services
                 if (!user.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
                 {
                     hearing.Deallocate();
-                    _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
+                    _logger.LogInformation("Deallocated hearing {HearingId}", hearing.Id);
                 }
             }
         }
@@ -249,7 +247,7 @@ namespace BookingsApi.DAL.Services
             if (!allocatedUser.IsAvailable(hearing.ScheduledDateTime, hearing.ScheduledEndTime, _configuration))
             {
                 hearing.Deallocate();
-                _logger.LogInformation("Deallocated hearing {hearingId}", hearing.Id);
+                _logger.LogInformation("Deallocated hearing {HearingId}", hearing.Id);
             }
         }
 
