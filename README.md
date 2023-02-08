@@ -89,5 +89,5 @@ docker build . --file tests/Dockerfile -t bookings-api-tests --build-arg PAT=<PA
 Open a terminal at the root level of the repository and run the following command
 
 ```console
-docker-compose -f "docker-compose.tests.yml" up --build --abort-on-container-exit
+docker-compose -f "docker-compose.tests.yml" run --build --abort-on-container-exit
 ```
