@@ -8,6 +8,13 @@ namespace BookingsApi.Domain
 {
     public class JusticeUser : TrackableEntity<Guid>
     {
+        public JusticeUser()
+        {
+            VhoNonAvailability = new List<VhoNonAvailability>();
+            VhoWorkHours = new List<VhoWorkHours>();
+            Allocations = new List<Allocation>();
+        }
+        
         public string FirstName { get; set; }
         public string Lastname { get; set; }
         public string ContactEmail { get; set; }
@@ -23,8 +30,9 @@ namespace BookingsApi.Domain
 
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
-            var workHours = VhoWorkHours
-                .FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
+            var workHoursAccommodateHearing = IsWorkingDuringHours(startDate, endDate, configuration);
+
+            if (!workHoursAccommodateHearing) return false;
             
             var nonAvailabilities = VhoNonAvailability
                 .Where(na => na.StartTime <= endDate)
@@ -32,19 +40,22 @@ namespace BookingsApi.Domain
                 .Where(na => !na.Deleted)
                 .ToList();
             
-            if (workHours == null)
-            {
-                return false;
-            }
+            return !nonAvailabilities.Any();
+        }
+
+        public bool IsWorkingDuringHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
+        {
+            var workHours = VhoWorkHours
+                .FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
             
-            if (nonAvailabilities.Any())
+            if (workHours == null)
             {
                 return false;
             }
             
             var workHourStartTime = workHours.StartTime;
             var workHourEndTime = workHours.EndTime;
-
+            
             if (workHourStartTime < startDate.TimeOfDay && workHourEndTime < startDate.TimeOfDay)
             {
                 return false;
@@ -55,13 +66,8 @@ namespace BookingsApi.Domain
                 return false;
             }
             
-            if (!((workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
-                  (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime)))
-            {
-                return false;
-            }
-
-            return true;
+            return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
+                   (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
         }
     }
 }

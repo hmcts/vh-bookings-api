@@ -25,6 +25,7 @@ namespace BookingsApi.Domain
             UpdatedDate = _currentUTC;
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
+            Allocations = new List<Allocation>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
