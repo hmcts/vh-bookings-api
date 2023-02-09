@@ -62,7 +62,7 @@ stages:
       displayName: Runs tests
       inputs:
         action: Run a Docker Compose command
-        dockerComposeFile: tests/docker-compose.tests.yml
+        dockerComposeFile: docker-compose.tests.yml
         projectName: $(Build.Repository.Name)
         dockerComposeCommand: up
         arguments: --build --abort-on-container-exit
