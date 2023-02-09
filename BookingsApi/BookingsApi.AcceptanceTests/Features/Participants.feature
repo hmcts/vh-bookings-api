@@ -53,19 +53,6 @@ Scenario: Add participant to a hearing
 	Then the response should have the status OK and success status True
 	And 'Representative' details should be updated
 
-Scenario: Update suitability answers with user role Individual
-	Given I have a hearing
-	And I have an update participant suitability answers with a valid user 'Individual'
-	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
-	And suitability answers for 'Individual' should be updated
-
-Scenario: Update suitability answers with user role Representative
-	Given I have a hearing
-	And I have an update participant suitability answers with a valid user 'Representative'
-	When I send the request to the endpoint
-	Then the response should have the status NoContent and success status True
-	And suitability answers for 'Representative' should be updated
 	
 Scenario: Create a single linked participant for a participant
 	Given I have a hearing

@@ -1,13 +1,8 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Domain;
-using System;
-using System.Collections.Generic;
+﻿using BookingsApi.Domain;
 using System.Linq;
 using BookingsApi.DAL.Helper;
-using Newtonsoft.Json;
-using FluentValidation.Results;
 
-namespace BookingsApi.Helpers
+namespace BookingsApi.DAL.Helper
 {
     public static class VideoHearingHelper
     {
