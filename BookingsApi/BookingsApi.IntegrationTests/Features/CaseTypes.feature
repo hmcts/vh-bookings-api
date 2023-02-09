@@ -12,7 +12,7 @@ Feature: CaseTypes
     And a list of case types should be contain
       | CaseTypeName                                  | HearingTypeName                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
       | Civil Money Claims                            | Application to Set Judgment Aside,First Application,Directions Hearing,Case Management Hearing,Final Hearing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-  
+      
   Scenario: Get case roles for a case type with nonexistent case type
     Given I have a get case roles for a case type of 'nonexistent' request
     When I send the request to the endpoint
@@ -46,7 +46,4 @@ Feature: CaseTypes
 
     Examples:
       | CaseTypes                                     | CaseRole               |
-      | Civil Money Claims                            | Claimant               |
-      | Civil Money Claims                            | Defendant              |
-      | Civil Money Claims                            | Judge                  |
-      
+      | Children Act                                  | Applicant              |
