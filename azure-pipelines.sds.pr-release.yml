@@ -58,6 +58,29 @@ stages:
           - "[*]BookingsApi.Common.*"
           - "[Testing.Common]*"
 
+    - task: DockerCompose@0
+      displayName: Runs tests
+      inputs:
+        action: Run a Docker Compose command
+        dockerComposeFile: tests/docker-compose.tests.yml
+        projectName: $(Build.Repository.Name)
+        dockerComposeCommand: up
+        arguments: --build --abort-on-container-exit
+
+    - task: PublishTestResults@2
+      displayName: Publish test results
+      inputs:
+        testResultsFormat: "VSTest" # Options: JUnit, NUnit, VSTest, xUnit, cTest
+        testResultsFiles: "**/*TestResults.trx"
+        searchFolder: $(System.DefaultWorkingDirectory)/TestResults
+        failTaskOnFailedTests: false
+
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publish code coverage report"
+      inputs:
+        codeCoverageTool: "Cobertura"
+        summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml"
+
     - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
 ####################################################
