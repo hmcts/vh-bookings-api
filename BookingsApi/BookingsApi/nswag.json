@@ -102,7 +102,7 @@
       "enforceFlagEnums": false,
       "parameterArrayType": "System.Collections.Generic.IEnumerable",
       "parameterDictionaryType": "System.Collections.Generic.IDictionary",
-      "responseArrayType": "System.Collections.Generic.IList",
+      "responseArrayType": "System.Collections.Generic.List",
       "responseDictionaryType": "System.Collections.Generic.IDictionary",
       "wrapResponses": false,
       "wrapResponseMethods": [],
