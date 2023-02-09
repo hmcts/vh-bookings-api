@@ -18,7 +18,6 @@ using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Configuration;
-using LaunchDarkly.EventSource;
 
 namespace BookingsApi
 {
