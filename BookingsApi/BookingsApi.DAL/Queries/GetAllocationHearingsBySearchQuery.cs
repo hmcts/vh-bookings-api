@@ -75,7 +75,7 @@ namespace BookingsApi.DAL.Queries
             {
                 hearings = hearings.Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
                     .ThenInclude(x => x.VhoWorkHours)
-                    .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours);
+                    .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoNonAvailability);
             }
             
             if (query.IsUnallocated)
