@@ -18,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Configuration;
+using LaunchDarkly.EventSource;
 
 namespace BookingsApi
 {
@@ -74,6 +75,7 @@ namespace BookingsApi
         private void RegisterSettings(IServiceCollection services)
         {
             SettingsConfiguration = Configuration.Get<SettingsConfiguration>();
+            services.Configure<SettingsConfiguration>(options => Configuration.Bind("Settings", options));
             services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd", options));
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));

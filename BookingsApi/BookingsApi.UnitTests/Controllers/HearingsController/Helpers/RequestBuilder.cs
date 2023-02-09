@@ -49,7 +49,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
             return new List<LinkedParticipantRequest> {request};
         }
 
-        private static List<ParticipantRequest> ParticipantsBuilder()
+        public static List<ParticipantRequest> ParticipantsBuilder()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(6).All()
                 .With(x => x.Title = "Mrs")
@@ -89,7 +89,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
             return participants;
         }
 
-        private static List<CaseRequest> CasesBuilder()
+        public static List<CaseRequest> CasesBuilder()
         {
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].IsLeadCase = false;

@@ -107,6 +107,8 @@ parameters:
         value: $(AllocateHearing:MinimumGapBetweenHearingsInMinutes)
       - name: AllocateHearing:MaximumConcurrentHearings
         value: $(AllocateHearing:MaximumConcurrentHearings)
+      - name: Settings:IsTest
+        value: true
   
 variables:
   - group: vh-domains-and-urls

@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
@@ -25,8 +27,10 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     [SetUp]
     public async Task Setup()
     {
+        var settings = new SettingsConfiguration {IsTest = true};
+        var options = Options.Create(settings);
         _context = new BookingsDbContext(BookingsDbContextOptions);
-        _handler = new GetAllocationHearingsBySearchQueryHandler(_context, isTest: true);
+        _handler = new GetAllocationHearingsBySearchQueryHandler(_context, options);
         _seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created, configureOptions: options =>
         {
             options.CaseTypeName = TestCaseType;

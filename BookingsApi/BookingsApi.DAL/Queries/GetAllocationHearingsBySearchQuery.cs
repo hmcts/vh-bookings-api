@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Queries.Core;
 using Castle.Core.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -19,6 +21,7 @@ namespace BookingsApi.DAL.Queries
         public DateTime? ToDate { get;}
         public Guid[] Cso { get;}
         public bool IsUnallocated { get; }
+        public bool IncludeWorkHours { get; }
 
         public GetAllocationHearingsBySearchQuery(
             string caseNumber = null, 
@@ -26,7 +29,8 @@ namespace BookingsApi.DAL.Queries
             DateTime? fromDate = null, 
             DateTime? toDate = null, 
             IEnumerable<Guid> cso = null,
-            bool isUnallocated = false)
+            bool isUnallocated = false,
+            bool includeWorkHours = false)
         {
             CaseNumber = caseNumber?.ToLower().Trim();
             CaseType = caseType?.Select(s => s.ToLower().Trim()).ToArray() ?? Array.Empty<string>();
@@ -34,6 +38,7 @@ namespace BookingsApi.DAL.Queries
             ToDate = toDate;
             Cso = cso?.ToArray() ?? Array.Empty<Guid>();
             IsUnallocated = isUnallocated;
+            IncludeWorkHours = includeWorkHours;
         }
 
     }
@@ -42,11 +47,11 @@ namespace BookingsApi.DAL.Queries
     {
         private readonly BookingsDbContext _context;
         private readonly bool _isTest;
-
-        public GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context, bool isTest = false)
+        
+        public GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context, IOptions<SettingsConfiguration> options)
         {
             _context = context;
-            _isTest = isTest;
+            _isTest = options.Value.IsTest;
         }
         
         public async Task<List<VideoHearing>> Handle(GetAllocationHearingsBySearchQuery query)
@@ -65,6 +70,13 @@ namespace BookingsApi.DAL.Queries
             
             if (!_isTest)
                 hearings = hearings.Where(h1 => h1.CaseTypeId != 3); //exclude generic type test cases from prod
+
+            if (query.IncludeWorkHours)
+            {
+                hearings = hearings.Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
+                    .ThenInclude(x => x.VhoWorkHours)
+                    .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours);
+            }
             
             if (query.IsUnallocated)
                 hearings = hearings.Where(h2 => _context.Allocations.FirstOrDefault(a => a.HearingId == h2.Id) == null);
