@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
-namespace BookingsApi.AcceptanceTests.Api.WorkAllocation;
+namespace BookingsApi.AcceptanceTests.Api;
 
 public abstract class ApiTest
 {
@@ -18,7 +18,8 @@ public abstract class ApiTest
     public void OneTimeSetup()
     {
         var userSecretsId = "D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F";
-        _configRoot = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddUserSecrets(userSecretsId).Build();
+        _configRoot = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddUserSecrets(userSecretsId)
+            .AddEnvironmentVariables().Build();
         
         // generate token
         var azureOptions = Options.Create(_configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
