@@ -7,6 +7,7 @@ using BookingsApi.Contract.Responses;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -51,14 +52,20 @@ namespace BookingsApi.Controllers
         /// <returns>List of hearing venues</returns>
         [HttpGet("Allocated")]
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
-        [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<VenueWithAllocatedCsoReponse>), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoIds)
         {
             var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today);
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
+            
             if (hearings == null || !hearings.Any())
-                return Ok(new List<string>());
-            return Ok(hearings.Select(vh => vh.HearingVenueName));
+                return Ok(new List<VenueWithAllocatedCsoReponse>());
+            
+            return Ok(hearings.Select(vh => new VenueWithAllocatedCsoReponse()
+            {
+                HearingVenueName = vh.HearingVenueName,
+                Cso = JusticeUserToResponseMapper.Map(vh.AllocatedTo)
+            } ));
         }
     }
 }

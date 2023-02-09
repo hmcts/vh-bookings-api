@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -27,7 +28,11 @@ public class GetHearingVenuesControllerTest
     public async Task GetHearingVenueNamesByAllocatedCso_should_return_list_of_hearing_venue_names()
     {
         //Arrange
-        var expectedResponse = new[]{"TestHearingVenueName1", "TestHearingVenueName2"};
+        var expectedResponse = new []
+        {
+            "TestHearingVenueName1", 
+            "TestHearingVenueName2"
+        };
         var queryResponse = new List<VideoHearing>
         {
             Mock.Of<VideoHearing>(),
@@ -45,7 +50,7 @@ public class GetHearingVenuesControllerTest
         
         //Assert
         response?.Should().NotBeNull().And.BeOfType<OkObjectResult>();
-        var responseData = response?.Value as IList<string>;
+        var responseData = response?.Value as IList<VenueWithAllocatedCsoReponse>;
         responseData?.Should().NotBeNull().And.Should().BeEquivalentTo(expectedResponse);
     }
     
@@ -68,6 +73,6 @@ public class GetHearingVenuesControllerTest
         
         //Assert
         response?.StatusCode.Should().Be(200);
-        response?.Value.Should().NotBeNull().And.BeEquivalentTo(Array.Empty<string>());
+        response?.Value.Should().NotBeNull().And.BeEquivalentTo(Array.Empty<VenueWithAllocatedCsoReponse>());
     }
 }
