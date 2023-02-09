@@ -46,17 +46,22 @@ stages:
           sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
           sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
 
-    - template: stages\dotnet-tests\unit-tests.yml@azTemplates
-      parameters:
-        #vstsFeedId: 'Video Hearings/vh-packages'
-        dotnetCoreVersion: '6.x'
-        nugetConfigPath: ${{ variables.appName }} # Temp - Change To SDS Feed When Possible.
-        unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
-        coverletCoverageExclusions:
-          - "[BookingsApi.*Tests?]*"
-          - "[BookingsApi]Startup"
-          - "[*]BookingsApi.Common.*"
-          - "[Testing.Common]*"
+    # - template: stages\dotnet-tests\unit-tests.yml@azTemplates
+    #   parameters:
+    #     #vstsFeedId: 'Video Hearings/vh-packages'
+    #     dotnetCoreVersion: '6.x'
+    #     nugetConfigPath: ${{ variables.appName }} # Temp - Change To SDS Feed When Possible.
+    #     unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
+    #     coverletCoverageExclusions:
+    #       - "[BookingsApi.*Tests?]*"
+    #       - "[BookingsApi]Startup"
+    #       - "[*]BookingsApi.Common.*"
+    #       - "[Testing.Common]*"
+
+    - bash: |
+        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+      displayName: Add NuGet Feed Authentication
+      workingDirectory: ${{ variables.appName }}
 
     - task: DockerCompose@0
       displayName: Runs tests

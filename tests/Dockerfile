@@ -24,7 +24,7 @@ COPY ["BookingsApi/BookingsApi.IntegrationTests/BookingsApi.IntegrationTests.csp
 COPY ["BookingsApi/Testing.Common/Testing.Common.csproj", "BookingsApi/Testing.Common/"]
 
 # Restore project files to cache layer
-RUN sed -i "s|</configuration>|<packageSourceCredentials><MicroserviceDemoNugets><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"${PAT}\" /></MicroserviceDemoNugets></packageSourceCredentials></configuration>|" BookingsApi/nuget.config
+# RUN sed -i "s|</configuration>|<packageSourceCredentials><MicroserviceDemoNugets><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"${PAT}\" /></MicroserviceDemoNugets></packageSourceCredentials></configuration>|" BookingsApi/nuget.config
 
 
 RUN dotnet restore "BookingsApi/BookingsApi.Common/BookingsApi.Common.csproj"
