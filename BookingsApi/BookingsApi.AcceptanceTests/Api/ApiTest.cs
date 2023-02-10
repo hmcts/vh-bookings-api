@@ -1,7 +1,6 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using BookingsApi.AcceptanceTests.Hooks;
 using BookingsApi.Client;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
@@ -24,11 +23,12 @@ public abstract class ApiTest
     public async Task OneTimeSetup()
     {
         var userSecretsId = "D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F";
-        _configRoot = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets(userSecretsId)
-            // .AddEnvironmentVariables()
-            .Build();
+        _configRoot = VHConfigurationManager.BuildConfig(userSecretsId);
+        // _configRoot = new ConfigurationBuilder()
+        //     .AddJsonFile("appsettings.json")
+        //     .AddUserSecrets(userSecretsId)
+        //     // .AddEnvironmentVariables()
+        //     .Build();
 
         RegisterSettings();
         var apiToken = GenerateApiToken();
@@ -54,6 +54,6 @@ public abstract class ApiTest
         TestContext.Progress.WriteLine(JsonConvert.SerializeObject(_azureConfiguration));
         // return VHConfigurationManager.GetBearerToken(adConfig, _serviceConfiguration.BookingsApiResourceId);
         return new AzureTokenProvider(Options.Create(_azureConfiguration)).GetClientAccessToken(_azureConfiguration.ClientId,
-            _azureConfiguration.ClientId, _serviceConfiguration.BookingsApiResourceId);
+            _azureConfiguration.ClientSecret, _serviceConfiguration.BookingsApiResourceId);
     }
 }
