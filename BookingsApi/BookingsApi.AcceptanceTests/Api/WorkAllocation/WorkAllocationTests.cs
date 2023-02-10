@@ -21,21 +21,19 @@ public class WorkAllocationTests : ApiTest
     [SetUp]
     public async Task Setup()
     {
-        var users = await Client.GetJusticeUserListAsync(null);
+        var users = await BookingsApiClient.GetJusticeUserListAsync(null);
         users.Should().NotBeNullOrEmpty("We need a CSO to allocate to a hearing");
         _cso = users.First(x =>
             x.FirstName.Contains("test", StringComparison.CurrentCultureIgnoreCase) ||
             x.FirstName.Contains("Auto", StringComparison.CurrentCultureIgnoreCase));
         _cso.Should().NotBeNull("We need a test justice user to modify for testing");
     }
-    
+
     [TearDown]
     public void TearDown()
     {
         if (_hearing == null) return;
-        Client.UpdateBookingStatusAsync(_hearing.Id,
-            new UpdateBookingStatusRequest
-                {UpdatedBy = "AC Test", CancelReason = "Test Over", Status = UpdateBookingStatus.Cancelled});
+        BookingsApiClient.RemoveHearingAsync(_hearing.Id);
         _hearing = null;
     }
 
@@ -68,10 +66,10 @@ public class WorkAllocationTests : ApiTest
         
         await UpdateCsoWorkingHoursTo(workingHourRequests);
         await ClearCsoExistingNonAvailabilities(startTime, endTime);
-        _hearing = await Client.BookNewHearingAsync(bookNewHearingRequest);
+        _hearing = await BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest);
 
         // act
-        var updatedHearings = await Client.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
+        var updatedHearings = await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
         {
             Hearings = new List<Guid> {_hearing.Id},
             CsoId = _cso.Id
@@ -83,7 +81,7 @@ public class WorkAllocationTests : ApiTest
         AssertHearingAllocationResponse(updatedHearing, bookNewHearingRequest);
 
         var searchResult =
-            await Client.SearchForAllocationHearingsAsync(null, null, new List<Guid>(){_cso.Id}, new List<string>(), null,false);
+            await BookingsApiClient.SearchForAllocationHearingsAsync(null, null, new List<Guid>(){_cso.Id}, new List<string>(), null,false);
         searchResult.Should().NotBeNullOrEmpty();
         var searchedHearing = searchResult.First(x => x.HearingId == _hearing.Id);
         AssertHearingAllocationResponse(searchedHearing, bookNewHearingRequest);
@@ -102,19 +100,19 @@ public class WorkAllocationTests : ApiTest
     
     private async Task UpdateCsoWorkingHoursTo(List<UploadWorkHoursRequest> workHoursRequests)
     {
-        var failed = await Client.SaveWorkHoursAsync(workHoursRequests);
+        var failed = await BookingsApiClient.SaveWorkHoursAsync(workHoursRequests);
         failed.Should().BeEmpty("saving VHO Hours should have succeeded");
     }
 
     private async Task ClearCsoExistingNonAvailabilities(DateTime startTime, DateTime endTime)
     {
-        var nonAvailabilitiesResponse = await Client.GetVhoNonAvailabilityHoursAsync(_cso.Username);
+        var nonAvailabilitiesResponse = await BookingsApiClient.GetVhoNonAvailabilityHoursAsync(_cso.Username);
         var nonAvailabilities = nonAvailabilitiesResponse.Where(na => na.StartTime <= endTime.Date)
             .Where(na => startTime.Date <= na.EndTime);
 
         foreach (var na in nonAvailabilities)
         {
-            await Client.DeleteVhoNonAvailabilityHoursAsync(na.Id);
+            await BookingsApiClient.DeleteVhoNonAvailabilityHoursAsync(na.Id);
         }
     }
 
