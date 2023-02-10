@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Domain.JusticeUser;
 
-public class IsWorkingDuringHoursTests
+public class IsDateBetweenWorkingHoursTests
 {
     [Test]
     public void should_return_true_when_start_and_end_time_is_between_working_hours()
@@ -32,7 +32,7 @@ public class IsWorkingDuringHoursTests
             .Build();
         
         // act
-        var result = justiceUser.IsWorkingDuringHours(hearingStartTime, hearingEndTime, new AllocateHearingConfiguration());
+        var result = justiceUser.IsDateBetweenWorkingHours(hearingStartTime, hearingEndTime, new AllocateHearingConfiguration());
         
         // assert
         result.Should().BeTrue();
@@ -59,7 +59,7 @@ public class IsWorkingDuringHoursTests
             .Build();
         
         // act
-        var result = justiceUser.IsWorkingDuringHours(hearingStartTime, hearingEndTime, new AllocateHearingConfiguration());
+        var result = justiceUser.IsDateBetweenWorkingHours(hearingStartTime, hearingEndTime, new AllocateHearingConfiguration());
         
         // assert
         result.Should().BeFalse();
@@ -87,7 +87,7 @@ public class IsWorkingDuringHoursTests
             .Build();
         
         // act
-        var result = justiceUser.IsWorkingDuringHours(hearingStartTime, hearingEndTime, new AllocateHearingConfiguration());
+        var result = justiceUser.IsDateBetweenWorkingHours(hearingStartTime, hearingEndTime, new AllocateHearingConfiguration());
         
         // assert
         result.Should().BeFalse();

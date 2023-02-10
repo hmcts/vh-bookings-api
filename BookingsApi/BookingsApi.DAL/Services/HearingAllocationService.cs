@@ -78,7 +78,7 @@ namespace BookingsApi.DAL.Services
                 if (!allocatedToIgnore.Contains(allocated, StringComparer.OrdinalIgnoreCase))
                 {
                     hasWorkHoursClash =
-                        !x.AllocatedTo.IsWorkingDuringHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
+                        !x.AllocatedTo.IsDateBetweenWorkingHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
                 }
 
                 return new HearingAllocationResultDto

@@ -23,13 +23,13 @@ public abstract class ApiTest
     public async Task OneTimeSetup()
     {
         var userSecretsId = "D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F";
-        _configRoot = VHConfigurationManager.BuildConfig(userSecretsId);
-        // _configRoot = new ConfigurationBuilder()
-        //     .AddJsonFile("appsettings.json")
-        //     .AddJsonFile("appsettings.Production.json") // CI write variables in the pipeline to this file
-        //     .AddUserSecrets(userSecretsId)
-        //     // .AddEnvironmentVariables()
-        //     .Build();
+        // _configRoot = VHConfigurationManager.BuildConfig(userSecretsId);
+        _configRoot = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.Production.json") // CI write variables in the pipeline to this file
+            .AddUserSecrets(userSecretsId)
+            .AddEnvironmentVariables()
+            .Build();
 
         RegisterSettings();
         var apiToken = GenerateApiToken();

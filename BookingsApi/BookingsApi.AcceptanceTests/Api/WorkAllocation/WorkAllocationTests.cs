@@ -12,6 +12,7 @@ using UpdateBookingStatusRequest = BookingsApi.Contract.Requests.UpdateBookingSt
 
 namespace BookingsApi.AcceptanceTests.Api.WorkAllocation;
 
+// [Ignore("Re-enable after Justice User endpoints are on. This test relies on the db to have a test data set")]
 public class WorkAllocationTests : ApiTest
 {
     private HearingDetailsResponse _hearing;
