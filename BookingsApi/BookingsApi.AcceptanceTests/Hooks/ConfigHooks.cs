@@ -9,6 +9,7 @@ using BookingsApi.AcceptanceTests.Contexts;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using ConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
@@ -88,6 +89,7 @@ namespace BookingsApi.AcceptanceTests.Hooks
             context.BearerToken = await ConfigurationManager.GetBearerToken(
                 azureConfig, context.Config.ServicesConfiguration.BookingsApiResourceId);
             context.BearerToken.Should().NotBeNullOrEmpty();
+            NUnit.Framework.TestContext.Progress.WriteLine(JsonConvert.SerializeObject(azureConfig));
 
             Zap.SetAuthToken(context.BearerToken);
         }
