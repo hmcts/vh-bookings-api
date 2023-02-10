@@ -5,7 +5,6 @@ using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace BookingsApi.AcceptanceTests.Api;
@@ -15,7 +14,7 @@ public abstract class ApiTest
     private IConfigurationRoot _configRoot;
     private AzureAdConfiguration _azureConfiguration;
     private ServicesConfiguration _serviceConfiguration;
-    protected BookingsApiClient Client;
+    protected BookingsApiClient BookingsApiClient;
 
     [OneTimeSetUp]
     public void OneTimeSetup()
@@ -33,7 +32,7 @@ public abstract class ApiTest
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("bearer", apiToken);
-        Client = BookingsApiClient.GetClient(_serviceConfiguration.BookingsApiUrl, httpClient);
+        BookingsApiClient = BookingsApiClient.GetClient(_serviceConfiguration.BookingsApiUrl, httpClient);
     }
 
     private void RegisterSettings()
