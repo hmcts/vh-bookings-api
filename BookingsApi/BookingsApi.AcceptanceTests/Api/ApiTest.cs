@@ -26,6 +26,7 @@ public abstract class ApiTest
         _configRoot = VHConfigurationManager.BuildConfig(userSecretsId);
         // _configRoot = new ConfigurationBuilder()
         //     .AddJsonFile("appsettings.json")
+        //     .AddJsonFile("appsettings.Production.json") // CI write variables in the pipeline to this file
         //     .AddUserSecrets(userSecretsId)
         //     // .AddEnvironmentVariables()
         //     .Build();

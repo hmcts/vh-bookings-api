@@ -22,7 +22,9 @@ public class WorkAllocationTests : ApiTest
     {
         var users = await _client.GetJusticeUserListAsync(null);
         users.Should().NotBeNullOrEmpty("We need a CSO to allocate to a hearing");
-        _cso = users.First(x => x.FirstName.Contains("test", StringComparison.CurrentCultureIgnoreCase));
+        _cso = users.First(x =>
+            x.FirstName.Contains("test", StringComparison.CurrentCultureIgnoreCase) ||
+            x.FirstName.Contains("Auto", StringComparison.CurrentCultureIgnoreCase));
         _cso.Should().NotBeNull("We need a test justice user to modify for testing");
     }
     
@@ -50,7 +52,10 @@ public class WorkAllocationTests : ApiTest
         var csoEnd = endTime.AddHours(1);
 
         // create working hours for every day of the week
-        var workingHours = (from object val in Enum.GetValues(typeof(DayOfWeek)) select (int) val + 1 into dayOfWeek select new WorkingHours(dayOfWeek, csoStart.Hour, csoStart.Minute, csoEnd.Hour, csoEnd.Minute)).ToList();
+        var workingHours = (from object val in Enum.GetValues(typeof(DayOfWeek))
+            select (int) val + 1
+            into dayOfWeek
+            select new WorkingHours(dayOfWeek, csoStart.Hour, csoStart.Minute, csoEnd.Hour, csoEnd.Minute)).ToList();
 
         var workingHourRequests = new List<UploadWorkHoursRequest>
         {
