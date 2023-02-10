@@ -89,7 +89,6 @@ namespace BookingsApi.AcceptanceTests.Hooks
             context.BearerToken = await ConfigurationManager.GetBearerToken(
                 azureConfig, context.Config.ServicesConfiguration.BookingsApiResourceId);
             context.BearerToken.Should().NotBeNullOrEmpty();
-            NUnit.Framework.TestContext.Progress.WriteLine(JsonConvert.SerializeObject(azureConfig));
 
             Zap.SetAuthToken(context.BearerToken);
         }

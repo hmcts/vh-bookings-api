@@ -44,7 +44,6 @@ public abstract class ApiTest
 
     private string GenerateApiToken()
     {
-        TestContext.Progress.WriteLine(JsonConvert.SerializeObject(_azureConfiguration));
         return new AzureTokenProvider(Options.Create(_azureConfiguration)).GetClientAccessToken(_azureConfiguration.ClientId,
             _azureConfiguration.ClientSecret, _serviceConfiguration.BookingsApiResourceId);
     }
