@@ -52,20 +52,20 @@ namespace BookingsApi.Controllers
         /// <returns>List of hearing venues</returns>
         [HttpGet("Allocated")]
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
-        [ProducesResponseType(typeof(IList<VenueWithAllocatedCsoReponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<VenueWithAllocatedCsoResponse>), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoIds)
         {
             var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today);
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             
             if (hearings == null || !hearings.Any())
-                return Ok(new List<VenueWithAllocatedCsoReponse>());
+                return Ok(new List<VenueWithAllocatedCsoResponse>());
             
-            return Ok(hearings.Select(vh => new VenueWithAllocatedCsoReponse()
+            return Ok(hearings.Select(vh => new VenueWithAllocatedCsoResponse
             {
                 HearingVenueName = vh.HearingVenueName,
                 Cso = JusticeUserToResponseMapper.Map(vh.AllocatedTo)
-            } ));
+            }));
         }
     }
 }
