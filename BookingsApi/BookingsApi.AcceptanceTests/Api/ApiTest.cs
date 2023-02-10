@@ -25,7 +25,8 @@ public abstract class ApiTest
         _configRoot = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
             .AddUserSecrets(userSecretsId)
-            .AddEnvironmentVariables().Build();
+            // .AddEnvironmentVariables()
+            .Build();
 
         RegisterSettings();
         var apiToken = await GenerateApiToken();
