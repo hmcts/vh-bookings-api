@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Mappings;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -27,26 +31,27 @@ public class GetHearingVenuesControllerTest
     public async Task GetHearingVenueNamesByAllocatedCso_should_return_list_of_hearing_venue_names()
     {
         //Arrange
-        var expectedResponse = new[]{"TestHearingVenueName1", "TestHearingVenueName2"};
-        var queryResponse = new List<VideoHearing>
+        var venueName = "TestVenueName";
+        var justiceUser = new JusticeUser { Username = "TestUser", UserRole = new UserRole(9, "team-lead")};
+        var expectedResponse = new List<VenueWithAllocatedCsoResponse>
         {
-            Mock.Of<VideoHearing>(),
-            Mock.Of<VideoHearing>()
+            new() { Cso = JusticeUserToResponseMapper.Map(justiceUser), HearingVenueName = venueName }
         };
-        queryResponse[0].HearingVenueName = expectedResponse[0];
-        queryResponse[1].HearingVenueName = expectedResponse[1];
-        
+        var mockHearing = new Mock<VideoHearing>();
+        mockHearing.SetupGet(e => e.HearingVenueName).Returns(venueName);
+        mockHearing.Setup(e => e.AllocatedTo).Returns(justiceUser);
         _queryHandler
             .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()))
-            .ReturnsAsync(queryResponse);
+            .ReturnsAsync(new List<VideoHearing>{ mockHearing.Object });
 
         //Act
         var response = await _controller.GetHearingVenueNamesByAllocatedCso(It.IsAny<Guid[]>()) as OkObjectResult;
         
         //Assert
-        response?.Should().NotBeNull().And.BeOfType<OkObjectResult>();
-        var responseData = response?.Value as IList<string>;
-        responseData?.Should().NotBeNull().And.Should().BeEquivalentTo(expectedResponse);
+        response.Should().NotBeNull().And.BeOfType<OkObjectResult>();
+        var responseData = response?.Value as IEnumerable<VenueWithAllocatedCsoResponse>;
+        responseData.Should().NotBeNull().And.HaveCount(1);
+        responseData.Should().BeEquivalentTo(expectedResponse);
     }
     
     [TestCase("query returns empty")]
@@ -67,7 +72,8 @@ public class GetHearingVenuesControllerTest
         var response = await _controller.GetHearingVenueNamesByAllocatedCso(It.IsAny<Guid[]>()) as OkObjectResult;
         
         //Assert
+        response.Should().NotBeNull();
         response?.StatusCode.Should().Be(200);
-        response?.Value.Should().NotBeNull().And.BeEquivalentTo(Array.Empty<string>());
+        response?.Value.Should().BeEquivalentTo(Array.Empty<VenueWithAllocatedCsoResponse>());
     }
 }
