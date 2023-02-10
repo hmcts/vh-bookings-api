@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using BookingsApi.AcceptanceTests.Hooks;
 using BookingsApi.Client;
 using BookingsApi.Common.Configuration;
+using BookingsApi.Common.Security;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using VHConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
@@ -29,7 +31,7 @@ public abstract class ApiTest
             .Build();
 
         RegisterSettings();
-        var apiToken = await GenerateApiToken();
+        var apiToken = GenerateApiToken();
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("bearer", apiToken);
@@ -45,18 +47,13 @@ public abstract class ApiTest
         VHConfigurationManager.VerifyConfigValuesSet(_serviceConfiguration);
     }
 
-    private Task<string> GenerateApiToken()
+    private string GenerateApiToken()
     {
         // We should get rid of this and use azure the AzureTokenProvider we have in the Common Project
-        var adConfig = new AzureAdConfig()
-        {
-            Authority = _azureConfiguration.Authority += _azureConfiguration.TenantId,
-            ClientId = _azureConfiguration.ClientId,
-            ClientSecret = _azureConfiguration.ClientSecret,
-            TenantId = _azureConfiguration.TenantId
-        };
-        TestContext.Progress.WriteLine(JsonConvert.SerializeObject(new {Authority=adConfig.Authority, TenantId=adConfig.TenantId}));
-        TestContext.WriteLine(JsonConvert.SerializeObject(new {Authority=adConfig.Authority, TenantId=adConfig.TenantId}));
-        return VHConfigurationManager.GetBearerToken(adConfig, _serviceConfiguration.BookingsApiResourceId);
+     
+        TestContext.Progress.WriteLine(JsonConvert.SerializeObject(_azureConfiguration));
+        // return VHConfigurationManager.GetBearerToken(adConfig, _serviceConfiguration.BookingsApiResourceId);
+        return new AzureTokenProvider(Options.Create(_azureConfiguration)).GetClientAccessToken(_azureConfiguration.ClientId,
+            _azureConfiguration.ClientId, _serviceConfiguration.BookingsApiResourceId);
     }
 }
