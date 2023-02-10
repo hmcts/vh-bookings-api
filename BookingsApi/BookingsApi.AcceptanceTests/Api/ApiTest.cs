@@ -5,6 +5,7 @@ using BookingsApi.AcceptanceTests.Hooks;
 using BookingsApi.Client;
 using BookingsApi.Common.Configuration;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using VHConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
 
@@ -51,6 +52,8 @@ public abstract class ApiTest
             ClientSecret = _azureConfiguration.ClientSecret,
             TenantId = _azureConfiguration.TenantId
         };
+        
+        TestContext.WriteLine(JsonConvert.SerializeObject(new {Authority=adConfig.Authority, TenantId=adConfig.TenantId}));
         return VHConfigurationManager.GetBearerToken(adConfig, _serviceConfiguration.BookingsApiResourceId);
     }
 }
