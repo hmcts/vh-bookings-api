@@ -73,7 +73,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnallocatedHearings()
         {
-            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true);
+            var today = DateTime.UtcNow; //provide a range for unallocated hearings rather than return all.
+            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true, fromDate: today, toDate: today.AddYears(1));
             var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
             if (results.Count <= 0)
