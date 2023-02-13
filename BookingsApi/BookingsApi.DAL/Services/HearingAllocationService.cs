@@ -78,7 +78,7 @@ namespace BookingsApi.DAL.Services
                 if (!allocatedToIgnore.Contains(allocated, StringComparer.OrdinalIgnoreCase))
                 {
                     hasWorkHoursClash =
-                        !x.AllocatedTo.IsWorkingDuringHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
+                        !x.AllocatedTo.IsDateBetweenWorkingHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
                 }
 
                 return new HearingAllocationResultDto
@@ -176,8 +176,8 @@ namespace BookingsApi.DAL.Services
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
-                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
-                .SingleOrDefaultAsync(x => x.Id == hearingId);
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.VhoWorkHours)
+                .AsSplitQuery().SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
                 throw new DomainRuleException("HearingNotFound",

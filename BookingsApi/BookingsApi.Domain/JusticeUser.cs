@@ -30,20 +30,22 @@ namespace BookingsApi.Domain
 
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
-            var workHoursAccommodateHearing = IsWorkingDuringHours(startDate, endDate, configuration);
+            return IsDateBetweenWorkingHours(startDate, endDate, configuration) &&
+                   !IsDuringNonAvailableHours(startDate, endDate);
+        }
 
-            if (!workHoursAccommodateHearing) return false;
-            
+        public bool IsDuringNonAvailableHours(DateTime startDate, DateTime endDate)
+        {
             var nonAvailabilities = VhoNonAvailability
                 .Where(na => na.StartTime <= endDate)
                 .Where(na => startDate <= na.EndTime)
                 .Where(na => !na.Deleted)
                 .ToList();
             
-            return !nonAvailabilities.Any();
+            return nonAvailabilities.Any();
         }
 
-        public bool IsWorkingDuringHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
+        public bool IsDateBetweenWorkingHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
             var workHours = VhoWorkHours
                 .FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
