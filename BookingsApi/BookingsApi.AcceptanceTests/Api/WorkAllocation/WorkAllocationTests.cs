@@ -4,15 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.AcceptanceTests.Models;
 using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using NUnit.Framework;
-using UpdateBookingStatusRequest = BookingsApi.Contract.Requests.UpdateBookingStatusRequest;
 
 namespace BookingsApi.AcceptanceTests.Api.WorkAllocation;
 
-[Ignore("Re-enable after Justice User endpoints are on. This test relies on the db to have a test data set")]
+[Ignore("Re-enable after Justice User endpoints are completed. This test relies on the db to have a test data set")]
 public class WorkAllocationTests : ApiTest
 {
     private HearingDetailsResponse _hearing;
@@ -40,6 +38,7 @@ public class WorkAllocationTests : ApiTest
     [Test]
     public async Task should_assign_a_cso_to_a_hearing()
     {
+        // TODO: refactor this to use the create/remove justice user
         // arrange
         var hearingSchedule = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(20);
         var caseName = "Bookings Api AC Automated";
