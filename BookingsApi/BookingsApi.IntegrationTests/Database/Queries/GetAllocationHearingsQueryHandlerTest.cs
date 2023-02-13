@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
 
-public class GetCsoAllocationByHearingIdQueryTest : DatabaseTestsBase
+public class GetAllocationHearingsQueryHandlerTest : DatabaseTestsBase
 {
     private GetAllocationHearingsQueryHandler _handler;
     private VideoHearing _seededHearing1;
