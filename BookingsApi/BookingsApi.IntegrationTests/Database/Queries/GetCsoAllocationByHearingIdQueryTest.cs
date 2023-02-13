@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
@@ -9,36 +10,36 @@ namespace BookingsApi.IntegrationTests.Database.Queries;
 
 public class GetCsoAllocationByHearingIdQueryTest : DatabaseTestsBase
 {
-    private GetCsoAllocationByHearingIdQueryHandler _handler;
+    private GetAllocationHearingsQueryHandler _handler;
     private VideoHearing _seededHearing1;
+    private VideoHearing _seededHearing2;
+    private VideoHearing _seededHearing3;
     private BookingsDbContext _context;
 
     [SetUp]
     public async Task Setup()
     {
         _context = new BookingsDbContext(BookingsDbContextOptions);
-        _handler = new GetCsoAllocationByHearingIdQueryHandler(_context);
+        _handler = new GetAllocationHearingsQueryHandler(_context);
         _seededHearing1 = await Hooks.SeedVideoHearing();
+        _seededHearing2 = await Hooks.SeedVideoHearing();
+        _seededHearing3 = await Hooks.SeedVideoHearing();
     }
     
     [Test]
-    public async Task Should_get_allocated_CSO_for_hearing()
+    public async Task Should_get_hearings()
     {
-        //Arrange
-        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", "test", "user", isTeamLead:true);
-        await Hooks.AddAllocation(_seededHearing1, justiceUser);  
+        //ARRANGE
+        var expectedResponse = new List<VideoHearing>()
+        {
+            _seededHearing1,
+            _seededHearing2,
+            _seededHearing3
+        };
         //ACT
-        var response = await _handler.Handle(new GetCsoAllocationByHearingIdQuery(_seededHearing1.Id));
+        var response = await _handler.Handle(new GetAllocationHearingsQuery(new[] {_seededHearing1.Id, _seededHearing2.Id, _seededHearing3.Id}));
         //ASSERT
-        response.Username.Should().BeEquivalentTo(justiceUser.Username);
-    }
-       
-    [Test]
-    public async Task Should_get_return_null_if_hearing_unallocated()
-    { 
-        //ACT
-        var response = await _handler.Handle(new GetCsoAllocationByHearingIdQuery(_seededHearing1.Id));
-        //ASSERT
-        response.Should().BeNull();
+        foreach (var hearing in response)
+            expectedResponse.Should().Contain(hearing);
     }
 }

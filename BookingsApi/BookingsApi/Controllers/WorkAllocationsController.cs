@@ -93,17 +93,14 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllocationsForHearings([FromQuery] Guid[] hearingIds)
         {
-            var allocatedCsoResponse = new List<AllocatedCsoResponse>();
-            foreach (var hearingId in hearingIds)
+            var allocatedHearings = await _queryHandler
+                    .Handle<GetAllocationHearingsQuery, List<VideoHearing>>(new GetAllocationHearingsQuery(hearingIds));
+            
+            return Ok(allocatedHearings.Select(e => new AllocatedCsoResponse
             {
-                var justiceUser = await _queryHandler
-                    .Handle<GetCsoAllocationByHearingIdQuery, JusticeUser>(new GetCsoAllocationByHearingIdQuery(hearingId));
-                var allocatedCso = new AllocatedCsoResponse(hearingId);
-                if (justiceUser != null)
-                    allocatedCso.Cso = JusticeUserToResponseMapper.Map(justiceUser);
-                allocatedCsoResponse.Add(allocatedCso);
-            }
-            return Ok(allocatedCsoResponse);
+                HearingId = e.Id,
+                Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null
+            }));
         }
         
         /// <summary>

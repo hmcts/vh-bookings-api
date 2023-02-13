@@ -20,27 +20,31 @@ public class GetAllocationsForHearingsTests : WorkAllocationsControllerTest
     public async Task Should_return_allocation_found_for_the_provided_hearings_and_null_where_unallocated()
     {
         //ARRANGE
+        //first hearing
         var justiceUser = new JusticeUser { UserRole = new UserRole(1,"test") };
         var hearingId1 = Guid.NewGuid();
+        var hearing1 = new Mock<VideoHearing>();
+        hearing1.SetupGet(e => e.Id).Returns(hearingId1);
+        hearing1.Setup(e => e.AllocatedTo).Returns(justiceUser);
+        //second hearing
         var hearingId2 = Guid.NewGuid();
+        var hearing2 = new Mock<VideoHearing>();
+        hearing2.SetupGet(e => e.Id).Returns(hearingId2);
         var expectedResponse = new List<AllocatedCsoResponse>
         {
-            new (hearingId1) { Cso = JusticeUserToResponseMapper.Map(justiceUser) },
-            new (hearingId2) { Cso = null }
+            new () {HearingId = hearingId1, Cso = JusticeUserToResponseMapper.Map(justiceUser) },
+            new () {HearingId = hearingId2,  Cso = null }
         };
-        
+
         QueryHandlerMock
-            .SetupSequence(x =>
-                x.Handle<GetCsoAllocationByHearingIdQuery, JusticeUser>(It.IsAny<GetCsoAllocationByHearingIdQuery>()))
-            .ReturnsAsync(justiceUser)
-            .ReturnsAsync(null as JusticeUser);
+            .Setup(x =>
+                x.Handle<GetAllocationHearingsQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsQuery>()))
+            .ReturnsAsync(new List<VideoHearing> { hearing1.Object, hearing2.Object });
 
         //ACT
         var result = await Controller.GetAllocationsForHearings(new [] {hearingId1, hearingId2}) as OkObjectResult;
 
         //ASSERT
-        QueryHandlerMock
-            .Verify(x => x.Handle<GetCsoAllocationByHearingIdQuery, JusticeUser>(It.IsAny<GetCsoAllocationByHearingIdQuery>()), Times.Exactly(2));
         result.StatusCode.Should().NotBeNull().And.Be((int)HttpStatusCode.OK);
         var allocatedCsoResponse = result.Value as IEnumerable<AllocatedCsoResponse>;
         allocatedCsoResponse.Should().NotBeNull().And.HaveCount(2);
