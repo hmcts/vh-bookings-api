@@ -2,8 +2,8 @@ using System;
 
 namespace BookingsApi.Contract.Responses;
 
-public class VenueWithAllocatedCsoResponse
+public class AllocatedCsoResponse
 {
-    public string HearingVenueName { get; set; }
+    public Guid HearingId { get; set; }
     public JusticeUserResponse Cso { get; set; }
 }
