@@ -73,7 +73,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUnallocatedHearings()
         {
-            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true);
+            var today = DateTime.UtcNow; //provide a range (from today 1 year) for unallocated hearings rather than return all past and present.
+            var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true, fromDate: today, toDate: today.AddYears(1));
             var results = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
 
             if (results.Count <= 0)
@@ -81,7 +82,27 @@ namespace BookingsApi.Controllers
             var response = results.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
- 
+         
+        /// <summary>
+        /// Get the allocated cso for the provided hearing Ids
+        /// </summary>
+        /// <param name="hearingIds">Hearing Reference ID array</param>
+        /// <returns>list of hearing Ids with the allocated cso</returns>
+        [HttpGet("allocation", Name = "GetAllocationsForHearings")]
+        [OpenApiOperation("GetAllocationsForHearings")]
+        [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAllocationsForHearings([FromQuery] Guid[] hearingIds)
+        {
+            var allocatedHearings = await _queryHandler
+                    .Handle<GetAllocationHearingsQuery, List<VideoHearing>>(new GetAllocationHearingsQuery(hearingIds));
+            
+            return Ok(allocatedHearings.Select(e => new AllocatedCsoResponse
+            {
+                HearingId = e.Id,
+                Cso = e.AllocatedTo != null ? JusticeUserToResponseMapper.Map(e.AllocatedTo) : null
+            }));
+        }
+        
         /// <summary>
         /// Search for hearings to be allocate via search parameters
         /// </summary>

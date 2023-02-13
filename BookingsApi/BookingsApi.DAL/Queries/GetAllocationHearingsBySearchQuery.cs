@@ -62,7 +62,6 @@ namespace BookingsApi.DAL.Queries
                 .Where(x 
                     => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
                          && x.Status != BookingStatus.Cancelled
-                         && x.ScheduledDateTime >= DateTime.UtcNow  
                          && HearingScottishVenueNames.ScottishHearingVenuesList.All(venueName => venueName != x.HearingVenueName))
                 .AsQueryable();
             
