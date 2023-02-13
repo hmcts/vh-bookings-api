@@ -93,12 +93,13 @@ namespace BookingsApi.Controllers
         public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
         {
             var query = new GetAllocationHearingsBySearchQuery(
-                searchRequest.CaseNumber, 
-                searchRequest.CaseType, 
-                searchRequest.FromDate, 
-                searchRequest.ToDate, 
+                searchRequest.CaseNumber,
+                searchRequest.CaseType,
+                searchRequest.FromDate,
+                searchRequest.ToDate,
                 searchRequest.Cso,
-                searchRequest.IsUnallocated);
+                searchRequest.IsUnallocated,
+                includeWorkHours: true);
             
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             
