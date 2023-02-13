@@ -40,7 +40,8 @@ namespace BookingsApi
 
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"]));
 
-            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+            services.AddApplicationInsightsTelemetry(options =>
+                options.ConnectionString = Configuration["ApplicationInsights:InstrumentationKey"]);
 
             services.AddSwagger();
             services.AddCors(options => options.AddPolicy("CorsPolicy",

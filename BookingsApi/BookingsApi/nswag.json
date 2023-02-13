@@ -116,7 +116,7 @@
       "dateTimeType": "System.DateTimeOffset",
       "timeType": "System.TimeSpan",
       "timeSpanType": "System.TimeSpan",
-      "arrayType": "System.Collections.Generic.ICollection",
+      "arrayType": "System.Collections.Generic.List",
       "arrayInstanceType": "System.Collections.ObjectModel.Collection",
       "dictionaryType": "System.Collections.Generic.IDictionary",
       "dictionaryInstanceType": "System.Collections.Generic.Dictionary",
