@@ -30,7 +30,7 @@ public class GetAllocationHearingsQueryHandlerTest : DatabaseTestsBase
     public async Task Should_get_hearings()
     {
         //ARRANGE
-        var expectedResponse = new List<VideoHearing>()
+        var expectedResponses = new List<VideoHearing>()
         {
             _seededHearing1,
             _seededHearing2,
@@ -39,7 +39,7 @@ public class GetAllocationHearingsQueryHandlerTest : DatabaseTestsBase
         //ACT
         var response = await _handler.Handle(new GetAllocationHearingsQuery(new[] {_seededHearing1.Id, _seededHearing2.Id, _seededHearing3.Id}));
         //ASSERT
-        foreach (var hearing in response)
-            expectedResponse.Should().Contain(hearing);
+        foreach (var expectedResponse in expectedResponses)
+            response.Should().Contain(e => e.Id == expectedResponse.Id);
     }
 }
