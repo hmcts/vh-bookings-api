@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Validations;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
@@ -41,6 +40,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         public async Task Should_Return_Ok()
         {
             var userId = Guid.NewGuid();
+            var csoUsername = "auto_return_okay@test-cso.com";
             // Arrange
             HearingAllocationServiceMock
                 .Setup(x => x.AllocateHearingsToCso(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
@@ -53,8 +53,8 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
                 ScheduledDateTime = x.ScheduledDateTime,
                 CaseNumber = x.HearingCases.FirstOrDefault()?.Case.Number,
                 CaseType = x.CaseType.Name,
-                AllocatedCso = VideoHearingHelper.AllocatedVho(x),
-                HasWorkHoursClash = null
+                AllocatedCso = csoUsername,
+                HasWorkHoursClash = false
             }).ToList();
 
             HearingAllocationServiceMock.Setup(x => x.CheckForAllocationClashes(_hearings)).Returns(checkForClashesResponse);
@@ -73,10 +73,17 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var objectResult = (OkObjectResult)result;
             var response = (List<HearingAllocationsResponse>)objectResult.Value;
             response.Should().NotBeNull();
-            response.Count.Should().Be(_hearings.Count);
+            response!.Count.Should().Be(_hearings.Count);
 
             var expected = checkForClashesResponse.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList();
             response.Should().BeEquivalentTo(expected);
+
+            ServiceBus.Count.Should().Be(1);
+            var messageFromQueue = ServiceBus.ReadMessageFromQueue();
+            messageFromQueue.IntegrationEvent.Should().BeOfType<UserAllocatedToHearingIntegrationEvent>();
+            var userAllocationMessage = messageFromQueue.IntegrationEvent as UserAllocatedToHearingIntegrationEvent;
+            userAllocationMessage!.HearingIds.Should().Contain(request.Hearings);
+            userAllocationMessage.CsoUsername.Should().Be(csoUsername);
         }
         
         [Test]

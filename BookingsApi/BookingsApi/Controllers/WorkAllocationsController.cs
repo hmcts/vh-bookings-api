@@ -11,6 +11,8 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Extensions;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,14 +27,18 @@ namespace BookingsApi.Controllers
     {
         private readonly IQueryHandler _queryHandler;
         private readonly IHearingAllocationService _hearingAllocationService;
+        private readonly IEventPublisher _eventPublisher;
         private readonly ILogger<WorkAllocationsController> _logger;
 
-        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, IQueryHandler queryHandler, ILogger<WorkAllocationsController> logger)
+        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, IQueryHandler queryHandler,
+            ILogger<WorkAllocationsController> logger, IEventPublisher eventPublisher)
         {
             _hearingAllocationService = hearingAllocationService;
             _queryHandler = queryHandler;
             _logger = logger;
+            _eventPublisher = eventPublisher;
         }
+
         /// <summary>
         /// Automatically allocates a user to a hearing
         /// </summary>
@@ -146,6 +152,9 @@ namespace BookingsApi.Controllers
                 var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
+                // what do we do when some hearings successfully allocate?
+                _eventPublisher.PublishAsync(
+                    new UserAllocatedToHearingIntegrationEvent(postRequest.Hearings, dtos[0].AllocatedCso));
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
