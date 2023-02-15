@@ -39,12 +39,12 @@ stages:
     steps:
     - checkout: self
 
-    - template: templates/sonarCloud/prepare.yml@azTemplates
-      parameters:
-        ExtraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
-          sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
-          sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
+    # - template: templates/sonarCloud/prepare.yml@azTemplates
+    #   parameters:
+    #     ExtraProperties: |
+    #       sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
+    #       sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
+    #       sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
 
     # - template: stages\dotnet-tests\unit-tests.yml@azTemplates
     #   parameters:
@@ -58,11 +58,11 @@ stages:
     #       - "[*]BookingsApi.Common.*"
     #       - "[Testing.Common]*"
 
-    # - powershell: |
-    #     $ProjectKey = "$(Build.Repository.Name)" -ireplace "hmcts\/"
-    #     Write-Output ("Sonar Cloud project key: {0}" -f $ProjectKey)
-    #     Write-Host "##vso[task.setvariable variable=ProjectKey;]$ProjectKey"
-    #   displayName: Set Sonar Cloud Project Key
+    - powershell: |
+        $ProjectKey = "$(Build.Repository.Name)" -ireplace "hmcts\/"
+        Write-Output ("Sonar Cloud project key: {0}" -f $ProjectKey)
+        Write-Host "##vso[task.setvariable variable=ProjectKey;]$ProjectKey"
+      displayName: Set Sonar Cloud Project Key
 
     - bash: |
         sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
@@ -72,8 +72,12 @@ stages:
     - task: DockerCompose@0
       displayName: Runs tests
       env:
-        SONAR_PROJECTKEY: $(ProjectKey)
+        SONAR_HOST: https://sonarcloud.io
+        SONAR_ORG: hmcts
+        SONAR_PROJECT_KEY: $(ProjectKey)
         PAT_TOKEN: $(System.AccessToken)
+        SONAR_PROJECT_VERSION: $(Build.BuildNumber)
+        SONAR_PROJECT_NAME: $(Build.Repository.Name)
       inputs:
         action: Run a Docker Compose command
         dockerComposeFile: docker-compose.tests.yml
@@ -95,7 +99,7 @@ stages:
         codeCoverageTool: "Cobertura"
         summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml"
 
-    - template: templates/sonarCloud/runAnalysis.yml@azTemplates
+    # - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
 ####################################################
 # Pre Release Tasks. ###############################
