@@ -4,6 +4,8 @@ dotnet tool restore
 
 dotnet sonarscanner begin /k:"${SONAR_PROJECTKEY}" /d:sonar.cs.opencover.reportsPaths="${PWD}/Coverage/coverage.opencover.xml" /o:hmcts
 
+dotnet build BookingsApi/BookingsApi.sln -c Release
+
 # Script is for docker compose tests where the script is at the root level
 dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c Release --no-build --results-directory ./TestResults --logger "trx;LogFileName=BookingsApi-Unit-Tests-TestResults.trx" \
     "/p:CollectCoverage=true" \

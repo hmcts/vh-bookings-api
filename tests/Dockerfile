@@ -38,4 +38,3 @@ RUN dotnet restore "BookingsApi/BookingsApi.IntegrationTests/BookingsApi.Integra
 
 # Add remaining files prone to change
 COPY BookingsApi BookingsApi
-RUN dotnet build BookingsApi/BookingsApi.sln -c Release
