@@ -10,7 +10,6 @@ echo "Sonar SONAR_PROJECT_NAME ${SONAR_PROJECT_NAME}"
 
 echo "Sonar Begining"
 dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" /o:"${SONAR_ORG}" /version:"${SONAR_PROJECT_VERSION}" /name:"${SONAR_PROJECT_NAME}" /d:sonar.host.url="${SONAR_HOST}" /d:sonar.login="${SONAR_TOKEN}" /d:sonar.cs.opencover.reportsPaths="${PWD}/Coverage/coverage.opencover.xml"
-exit
 echo "Building solution"
 dotnet build BookingsApi/BookingsApi.sln -c Release
 
