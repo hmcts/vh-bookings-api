@@ -73,6 +73,7 @@ stages:
       displayName: Runs tests
       env:
         SONAR_PROJECTKEY: $(ProjectKey)
+        PAT_TOKEN: $(System.AccessToken)
       inputs:
         action: Run a Docker Compose command
         dockerComposeFile: docker-compose.tests.yml
