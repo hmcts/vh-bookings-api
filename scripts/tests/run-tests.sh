@@ -1,16 +1,16 @@
 #!/bin/sh
 
 echo "Current DIR ${PWD}"
-# echo "ProjectKey ${SONAR_PROJECT_KEY}"
-# echo "ProjectToken ${SONAR_TOKEN}"
-# echo "Restoring dotnet tools"
-# dotnet tool install --global dotnet-sonarscanner
-# export PATH="$PATH:/root/.dotnet/tools"
+echo "ProjectKey ${SONAR_PROJECT_KEY}"
+echo "ProjectToken ${SONAR_TOKEN}"
+echo "Sonar Host ${SONAR_HOST}"
+echo "Sonar Org ${SONAR_ORG}"
+echo "Sonar Org ${SONAR_PROJECT_VERSION}"
+echo "Sonar Org ${SONAR_PROJECT_NAME}"
 
-# echo "Sonar Begining"
-# dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" /d:sonar.cs.opencover.reportsPaths="${PWD}/Coverage/coverage.opencover.xml" /o:hmcts /d:sonar.login="${SONAR_TOKEN}"
-# dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" /d:sonar.login="${SONAR_TOKEN}" /d:sonar.cs.opencover.reportsPaths="${PWD}/Coverage/coverage.opencover.xml"
-
+echo "Sonar Begining"
+dotnet sonarscanner begin /k:"${SONAR_PROJECT_KEY}" /o:"${SONAR_ORG}" /version:"${SONAR_PROJECT_VERSION}" /name:"${SONAR_PROJECT_NAME}" /d:sonar.host.url="${SONAR_HOST}" /d:sonar.login="${SONAR_TOKEN}" /d:sonar.cs.opencover.reportsPaths="${PWD}/Coverage/coverage.opencover.xml"
+exit
 echo "Building solution"
 dotnet build BookingsApi/BookingsApi.sln -c Release
 
@@ -29,6 +29,5 @@ dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c Re
 #     "/p:CoverletOutput=/Coverage/" \
 #     "/p:MergeWith={PWD}/Coverage/coverage.json" \
 #     "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\""
-
-# echo "Sonar End"
-# dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
+echo "Sonar End"
+dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"

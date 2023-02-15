@@ -25,10 +25,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__VhBookings=Data Source=vh-bookingsapi-db-testing;Database=VhBookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
+      - SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY}
+      - SONAR_TOKEN=${SONAR_TOKEN}
+      - SONAR_HOST=${SONAR_HOST}
+      - SONAR_PROJECT_VERSION=${SONAR_PROJECT_VERSION}
+      - SONAR_PROJECT_NAME=${SONAR_PROJECT_NAME}
     volumes:
       - ./TestResults:/app/TestResults:rw
       - ./Coverage:/Coverage:rw
-      - ./:/app:rw
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
     depends_on:
       - vh-bookingsapi-db-testing
