@@ -2,7 +2,7 @@
 
 echo "Current DIR ${PWD}"
 echo "ProjectKey ${SONAR_PROJECT_KEY}"
-echo "ProjectToken ${SONAR_TOKEN}"
+echo "SONAR TOKEN ${SONAR_TOKEN}"
 echo "Sonar Host ${SONAR_HOST}"
 echo "Sonar Org ${SONAR_ORG}"
 echo "Sonar Org ${SONAR_PROJECT_VERSION}"

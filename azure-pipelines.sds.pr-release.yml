@@ -74,6 +74,7 @@ stages:
       env:
         SONAR_HOST: https://sonarcloud.io
         SONAR_ORG: hmcts
+        SONAR_TOKEN: dummyvalue
         SONAR_PROJECT_KEY: $(ProjectKey)
         PAT_TOKEN: $(System.AccessToken)
         SONAR_PROJECT_VERSION: $(Build.BuildNumber)
