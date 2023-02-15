@@ -7,7 +7,7 @@ ENV SONAR_HOST "https://sonarcloud.io"
 
 ## Install Java, because the sonarscanner needs it.
 # leave commented until sonar variables are setup properly
-# RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-jre
+RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y openjdk-11-jre
 
 ## Install sonarscanner
 RUN dotnet tool install --global dotnet-sonarscanner 
