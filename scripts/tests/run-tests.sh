@@ -1,5 +1,6 @@
 #!/bin/sh
 
+echo "Current DIR ${PWD}"
 echo "Restoring dotnet tools"
 dotnet tool restore
 
