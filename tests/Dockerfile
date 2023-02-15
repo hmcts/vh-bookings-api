@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
-ARG PAT=localhost
 
 # Copy wait-for-it.sh into our image
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
