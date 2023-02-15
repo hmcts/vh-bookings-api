@@ -1,11 +1,15 @@
 #!/bin/sh
 
+echo "Restoring dotnet tools"
 dotnet tool restore
 
+echo "Sonar Begining"
 dotnet sonarscanner begin /k:"${SONAR_PROJECTKEY}" /d:sonar.cs.opencover.reportsPaths="${PWD}/Coverage/coverage.opencover.xml" /o:hmcts
 
+echo "Building solution"
 dotnet build BookingsApi/BookingsApi.sln -c Release
 
+echo "Running tests"
 # Script is for docker compose tests where the script is at the root level
 dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c Release --no-build --results-directory ./TestResults --logger "trx;LogFileName=BookingsApi-Unit-Tests-TestResults.trx" \
     "/p:CollectCoverage=true" \
@@ -21,4 +25,5 @@ dotnet test BookingsApi/BookingsApi.IntegrationTests/BookingsApi.IntegrationTest
     "/p:MergeWith={PWD}/Coverage/coverage.json" \
     "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\""
 
+echo "Sonar End"
 dotnet sonarscanner end
