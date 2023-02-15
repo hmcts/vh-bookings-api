@@ -13,8 +13,6 @@ services:
     build:
       context: ./
       dockerfile: tests/Dockerfile
-      args:
-        - PAT=$PAT_TOKEN
     entrypoint:
       [
         "/wait-for-it.sh",
@@ -30,6 +28,7 @@ services:
     volumes:
       - ./TestResults:/app/TestResults:rw
       - ./Coverage:/Coverage:rw
+      - ./:/app:rw
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
     depends_on:
       - vh-bookingsapi-db-testing
