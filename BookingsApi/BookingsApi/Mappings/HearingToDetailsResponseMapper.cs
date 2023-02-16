@@ -25,8 +25,6 @@ namespace BookingsApi.Mappings
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
             
-            var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
-
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,
