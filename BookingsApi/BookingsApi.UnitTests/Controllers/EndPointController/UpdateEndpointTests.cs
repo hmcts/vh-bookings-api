@@ -122,7 +122,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(
                 x => x.PublishAsync(It.Is<EndpointUpdatedIntegrationEvent>(r =>
                     r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
-                    r.DefenceAdvocateContactEmail == request.DefenceAdvocateContactEmail)), Times.Once);
+                    r.DefenceAdvocate == request.DefenceAdvocateContactEmail)), Times.Once);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace BookingsApi.UnitTests.Controllers.EndPointController
             EventPublisher.Verify(
                 x => x.PublishAsync(It.Is<EndpointUpdatedIntegrationEvent>(r =>
                     r.HearingId == HearingId && r.Sip == endpoint.Sip && r.DisplayName == request.DisplayName &&
-                    r.DefenceAdvocateContactEmail == request.DefenceAdvocateContactEmail)), Times.Once);
+                    r.DefenceAdvocate == request.DefenceAdvocateContactEmail)), Times.Once);
         }
     }
 }
