@@ -154,6 +154,5 @@ namespace BookingsApi.Controllers
                 return BadRequest(ModelState);
             }
         }
-
     }
 }
