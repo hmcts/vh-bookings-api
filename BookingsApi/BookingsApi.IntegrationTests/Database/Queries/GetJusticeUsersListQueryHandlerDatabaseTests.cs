@@ -20,19 +20,29 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_null_when_no_users_are_found()
+        public async Task Should_return_empty_list_when_no_users_are_found()
         {
             await Hooks.ClearAllJusticeUsersAsync();
-            var query = new GetJusticeUserListQuery();
+            var query = new GetJusticeUserListQuery(null);
             var users = await _handler.Handle(query);
 
             users.Should().BeEmpty();
         }
         
         [Test]
-        public async Task Should_return_users_list()
+        public async Task Should_return_users_list_not_null()
         {
-            var query = new GetJusticeUserListQuery();
+            var query = new GetJusticeUserListQuery(null);
+            var users = (await _handler.Handle(query));
+
+            users.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task Should_return_users_list_when_term_is_passed()
+        {
+            var term = "term";
+            var query = new GetJusticeUserListQuery(term);
             var users = (await _handler.Handle(query));
 
             users.Should().NotBeNull();

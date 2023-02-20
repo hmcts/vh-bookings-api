@@ -106,6 +106,19 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.AddCase("AutoTest", "Test", true);
             return this;
         }
+
+        public VideoHearingBuilder WithScheduledDateTime(DateTime startTime)
+        {
+            _videoHearing.SetProtected(nameof(_videoHearing.ScheduledDateTime), startTime);
+            return this;
+        }
+        
+        public VideoHearingBuilder WithDuration(int duration)
+        {
+            _videoHearing.SetProtected(nameof(_videoHearing.ScheduledDuration), duration);
+            return this;
+        }
+        
         public Person Judge => _judgePerson;
 
         public Person JudicialOfficeHolder => _johPerson;
