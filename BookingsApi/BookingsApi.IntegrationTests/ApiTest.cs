@@ -33,6 +33,7 @@ public class ApiTest
     {
         _databaseConnectionString = _configRoot.GetConnectionString("VhBookings");
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
+        TestContext.WriteLine($"Connection string: {_databaseConnectionString}");
         dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
         BookingsDbContextOptions = dbContextOptionsBuilder.Options;
         Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
