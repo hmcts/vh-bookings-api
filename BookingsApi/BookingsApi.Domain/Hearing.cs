@@ -25,6 +25,7 @@ namespace BookingsApi.Domain
             UpdatedDate = _currentUTC;
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
+            Allocations = new List<Allocation>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -52,7 +53,7 @@ namespace BookingsApi.Domain
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
         public virtual HearingVenue HearingVenue { get; protected set; }
-        public string HearingVenueName { get; set; }
+        public virtual string HearingVenueName { get; set; }
         public int CaseTypeId { get; set; }
         public virtual CaseType CaseType { get; set; }
         public int HearingTypeId { get; set; }
@@ -93,7 +94,7 @@ namespace BookingsApi.Domain
 
         public DateTime ScheduledEndTime => ScheduledDateTime.AddMinutes(ScheduledDuration);
         public virtual IList<Allocation> Allocations { get; protected set; }
-        public JusticeUser AllocatedTo => Allocations?.FirstOrDefault()?.JusticeUser;
+        public virtual JusticeUser AllocatedTo => Allocations?.FirstOrDefault()?.JusticeUser;
 
         public void CancelHearing()
         {

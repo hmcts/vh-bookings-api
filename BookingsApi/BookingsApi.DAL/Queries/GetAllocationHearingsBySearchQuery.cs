@@ -19,6 +19,7 @@ namespace BookingsApi.DAL.Queries
         public DateTime? ToDate { get;}
         public Guid[] Cso { get;}
         public bool IsUnallocated { get; }
+        public bool IncludeWorkHours { get; }
 
         public GetAllocationHearingsBySearchQuery(
             string caseNumber = null, 
@@ -26,7 +27,8 @@ namespace BookingsApi.DAL.Queries
             DateTime? fromDate = null, 
             DateTime? toDate = null, 
             IEnumerable<Guid> cso = null,
-            bool isUnallocated = false)
+            bool isUnallocated = false,
+            bool includeWorkHours = false)
         {
             CaseNumber = caseNumber?.ToLower().Trim();
             CaseType = caseType?.Select(s => s.ToLower().Trim()).ToArray() ?? Array.Empty<string>();
@@ -34,6 +36,7 @@ namespace BookingsApi.DAL.Queries
             ToDate = toDate;
             Cso = cso?.ToArray() ?? Array.Empty<Guid>();
             IsUnallocated = isUnallocated;
+            IncludeWorkHours = includeWorkHours;
         }
 
     }
@@ -59,7 +62,6 @@ namespace BookingsApi.DAL.Queries
                 .Where(x 
                     => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
                          && x.Status != BookingStatus.Cancelled
-                         && x.ScheduledDateTime >= DateTime.UtcNow  
                          && HearingScottishVenueNames.ScottishHearingVenuesList.All(venueName => venueName != x.HearingVenueName))
                 .AsQueryable();
             
@@ -68,6 +70,13 @@ namespace BookingsApi.DAL.Queries
             
             if (query.IsUnallocated)
                 hearings = hearings.Where(h2 => _context.Allocations.FirstOrDefault(a => a.HearingId == h2.Id) == null);
+
+            if (query.IncludeWorkHours)
+            {
+                hearings = hearings.Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
+                    .ThenInclude(x => x.VhoWorkHours)
+                    .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoNonAvailability);
+            }
 
             if (!query.CaseNumber.IsNullOrEmpty())
                 hearings = hearings
@@ -89,8 +98,8 @@ namespace BookingsApi.DAL.Queries
                     ? hearings.Where(h6 => h6.ScheduledDateTime.Date >= query.FromDate.Value.Date && h6.ScheduledDateTime.Date <= query.ToDate.Value.Date)
                     : hearings.Where(h6 => h6.ScheduledDateTime.Date == query.FromDate.Value.Date);
             }
-            
-            return await hearings.OrderBy(x=>x.ScheduledDateTime).AsNoTracking().ToListAsync();
+
+            return await hearings.OrderBy(x=>x.ScheduledDateTime).AsNoTracking().AsSplitQuery().ToListAsync();
         }
     }
 }
