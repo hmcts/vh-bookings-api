@@ -71,7 +71,7 @@ namespace BookingsApi.Controllers
             }
             catch (JusticeUserAlreadyExistsException e)
             {
-                _logger.LogError(e, e.Message);
+                _logger.LogError(e, "Detected an existing user for the username {Username}", request.Username);
                 return Conflict(e.Message);
             }
         }
