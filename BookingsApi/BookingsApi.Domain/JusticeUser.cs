@@ -14,7 +14,19 @@ namespace BookingsApi.Domain
             VhoWorkHours = new List<VhoWorkHours>();
             Allocations = new List<Allocation>();
         }
-        
+
+
+        public JusticeUser(string firstName, string lastname, string contactEmail, string username, UserRole userRole) : this()
+        {
+            FirstName = firstName;
+            Lastname = lastname;
+            ContactEmail = contactEmail;
+            Username = username;
+            // UserRole = userRole;
+            UserRoleId = userRole.Id;
+            CreatedDate = DateTime.UtcNow;
+        }
+
         public string FirstName { get; set; }
         public string Lastname { get; set; }
         public string ContactEmail { get; set; }
