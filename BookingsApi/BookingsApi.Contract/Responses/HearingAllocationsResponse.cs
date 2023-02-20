@@ -46,4 +46,9 @@ public class HearingAllocationsResponse
     /// True if the allocated user has a working hours clash
     /// </summary>
     public bool? HasWorkHoursClash { get; set; }
+    
+    /// <summary>
+    /// True if the allocated user has more than 3 concurrent hearings allocated
+    /// </summary>
+    public bool? ExceededConcurrencyLimit { get; set; }
 }

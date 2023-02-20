@@ -70,6 +70,51 @@ namespace BookingsApi.DAL.Services
 
         public List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings)
         {
+            var vhos = hearings.Where(x => x.AllocatedTo != null).Select(x => x.AllocatedTo.Username).Distinct();
+            var vhosWithConcurrentHearings = vhos.Select(username =>
+            {
+                var hearingsForVho = hearings.Where(x => x.AllocatedTo?.Username == username).OrderBy(hearing => hearing.ScheduledDateTime).ToList();
+                
+                var count = 0;
+                if (hearingsForVho.Count() > 1)
+                {
+                    for (int i = 0; i < hearingsForVho.Count(); i++)
+                    {
+                        var currentHearing = hearingsForVho[i];
+                        VideoHearing nextHearing = null;
+
+                        if (i + 1 < hearingsForVho.Count())
+                        {
+                            nextHearing = hearingsForVho[i + 1];
+                        }
+
+                        if (nextHearing != null)
+                        {
+                            if (currentHearing.ScheduledDateTime.AddHours(currentHearing.ScheduledDuration) >
+                                nextHearing.ScheduledDateTime)
+                            {
+                                count++;
+                            }   
+                        }
+                        else
+                        {
+                            var previousHearing = hearingsForVho[i - 1];
+                            if (previousHearing.ScheduledDateTime.AddHours(previousHearing.ScheduledDuration) >
+                                currentHearing.ScheduledDateTime)
+                            {
+                                count++;
+                            }  
+                        }
+                    }
+                }
+
+                return new
+                {
+                    Vho = username,
+                    ExceededConcurrencyLimit = count > 3
+                };
+            }).ToList();
+                
             var allocatedToIgnore = new[] {"Not Allocated", "Not Required"};
             var dto = hearings.Select(x =>
             {
@@ -81,6 +126,13 @@ namespace BookingsApi.DAL.Services
                         !x.AllocatedTo.IsDateBetweenWorkingHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
                 }
 
+                var exceededConcurrencyLimit = false;
+
+                if (vhosWithConcurrentHearings.Any(ecl => x.AllocatedTo?.Username == ecl.Vho))
+                {
+                    exceededConcurrencyLimit = vhosWithConcurrentHearings.Where(ecl => x.AllocatedTo?.Username == ecl.Vho).Select(ecl => ecl.ExceededConcurrencyLimit).FirstOrDefault();
+                }
+
                 return new HearingAllocationResultDto
                 {
                     HearingId = x.Id,
@@ -89,7 +141,8 @@ namespace BookingsApi.DAL.Services
                     ScheduledDateTime = x.ScheduledDateTime,
                     Duration = x.ScheduledDuration,
                     AllocatedCso = VideoHearingHelper.AllocatedVho(x),
-                    HasWorkHoursClash = hasWorkHoursClash
+                    HasWorkHoursClash = hasWorkHoursClash,
+                    ExceededConcurrencyLimit = exceededConcurrencyLimit
                 };
             }).ToList();
             return dto;
