@@ -59,7 +59,7 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
     }
 
     [TearDown]
-    public async Task TearDown()
+    public new async Task TearDown()
     {
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         db.JusticeUsers.RemoveRange(db.JusticeUsers.Where(ju => ju.CreatedBy == "db@test.com"));

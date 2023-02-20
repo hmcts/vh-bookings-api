@@ -9,6 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Requests;
+using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.Core;
+using BookingsApi.DAL.Exceptions;
+using BookingsApi.Extensions;
+using BookingsApi.Validations;
+using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.Controllers
 {
@@ -18,10 +25,55 @@ namespace BookingsApi.Controllers
     public class JusticeUserController : Controller
     {
         private readonly IQueryHandler _queryHandler;
+        private readonly ICommandHandler _commandHandler;
+        private readonly ILogger<JusticeUserController> _logger;
 
-        public JusticeUserController(IQueryHandler queryHandler)
+        public JusticeUserController(IQueryHandler queryHandler, ICommandHandler commandHandler, ILogger<JusticeUserController> logger)
         {
             _queryHandler = queryHandler;
+            _commandHandler = commandHandler;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Add a new justice user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [OpenApiOperation("AddAJusticeUser")]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AddAJusticeUser(AddJusticeUserRequest request)
+        {
+            var validation = await new AddJusticeUserRequestValidation().ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return ValidationProblem(ModelState);
+            }
+            var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
+                request.ContactEmail, request.CreatedBy, (int) request.Role)
+            {
+                Telephone = request.Telephone
+            };
+            try
+            {
+                await _commandHandler.Handle(command);
+                var justiceUser =
+                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                        new GetJusticeUserByUsernameQuery(request.Username));
+
+                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+                return CreatedAtAction(actionName: nameof(GetJusticeUserByUsername),
+                    routeValues: new {username = request.Username},
+                    value: justiceUserResponse);
+            }
+            catch (JusticeUserAlreadyExistsException e)
+            {
+                _logger.LogError(e, e.Message);
+                return Conflict(e.Message);
+            }
         }
 
         /// <summary>
