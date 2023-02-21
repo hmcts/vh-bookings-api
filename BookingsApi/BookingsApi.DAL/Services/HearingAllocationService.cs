@@ -71,7 +71,6 @@ namespace BookingsApi.DAL.Services
         public List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings)
         {
             var vhoUsernamesConcurrencyExceeded = BuildUsernameConcurrencyLimitExceededDictionary(hearings, 3);
-                
             var allocatedToIgnore = new[] {"Not Allocated", "Not Required"};
             var dto = hearings.Select(x =>
             {
@@ -351,6 +350,7 @@ namespace BookingsApi.DAL.Services
                 if (hearingsForVho.Count <= 1)
                 {
                     vhoUsernamesConcurrencyExceeded.Add(username, false);
+                    return vhoUsernamesConcurrencyExceeded;
                 }
                 
                 for (var i = 0; i < hearingsForVho.Count; i++)
