@@ -122,15 +122,5 @@ namespace BookingsApi.Contract.Responses
         /// The group id for a hearing
         /// </summary>
         public Guid? GroupId { get; set; }
-
-        /// <summary>
-        ///     The code of the hearing type
-        /// </summary>
-        public string HearingTypeCode { get; set; }
-        
-        /// <summary>
-        ///     The Allocated User to this hearing
-        /// </summary>
-        public string AllocatedTo { get; set; }
     }
 }
