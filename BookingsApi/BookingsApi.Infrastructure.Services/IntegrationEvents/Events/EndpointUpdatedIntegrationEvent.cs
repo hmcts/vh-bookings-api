@@ -10,12 +10,12 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             HearingId = hearingId;
             Sip = sip;
             DisplayName = displayName;
-            DefenceAdvocate = defenceAdvocateContactEmail;
+            DefenceAdvocateContactEmail = defenceAdvocateContactEmail;
         }
 
         public Guid HearingId { get; }
         public string Sip { get; }
         public string DisplayName { get; }
-        public string DefenceAdvocate { get; }
+        public string DefenceAdvocateContactEmail { get; }
     }
 }
