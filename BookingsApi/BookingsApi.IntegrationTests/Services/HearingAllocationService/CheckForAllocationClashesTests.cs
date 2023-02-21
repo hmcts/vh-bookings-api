@@ -35,6 +35,7 @@ public class CheckForAllocationClashesTests
     [Test]
     public void should_set_work_hour_clashes_to_true_when_hearing_exceeds_cso_working_hours()
     {
+        // arrange
         var workHoursStartTime = DateTime.Today.AddHours(9);
         var workHoursEndTime = DateTime.Today.AddHours(11);
         
@@ -52,9 +53,39 @@ public class CheckForAllocationClashesTests
             .Build();
         hearing.Allocations.Add(new Allocation {Hearing = hearing, JusticeUser = cso});
 
+        // act
         var resultDtos = _sut.CheckForAllocationClashes(new List<VideoHearing> {hearing});
+        
+        // assert
         resultDtos.Count.Should().Be(1);
         resultDtos[0].HasWorkHoursClash.Should().BeTrue();
+    }
+    
+    [Test]
+    public void should_set_exceeded_concurrency_to_true_when_more_than_three_hearings_overlap()
+    {
+        // arrange
+        var hearingStartTime = DateTime.Today.AddHours(10);
+        
+        var hearing1 = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime).WithDuration(600).Build();
+        var hearing2 = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime.AddHours(1)).WithDuration(600).Build();
+        var hearing3 = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime.AddHours(2)).WithDuration(600).Build();
+        var hearing4 = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime.AddHours(3)).WithDuration(600).Build();
+        
+        var cso = Builder<JusticeUser>.CreateNew()
+            // .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
+            .Build();
+        hearing1.Allocations.Add(new Allocation {Hearing = hearing1, JusticeUser = cso});
+        hearing2.Allocations.Add(new Allocation {Hearing = hearing2, JusticeUser = cso});
+        hearing3.Allocations.Add(new Allocation {Hearing = hearing3, JusticeUser = cso});
+        hearing4.Allocations.Add(new Allocation {Hearing = hearing4, JusticeUser = cso});
+
+        // act
+        var resultDtos = _sut.CheckForAllocationClashes(new List<VideoHearing> {hearing1, hearing2, hearing3, hearing4});
+        
+        // assert
+        resultDtos.Count.Should().Be(4);
+        resultDtos[0].ExceededConcurrencyLimit.Should().BeTrue();
     }
 
     [Test]
