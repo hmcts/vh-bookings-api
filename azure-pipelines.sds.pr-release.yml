@@ -86,6 +86,7 @@ stages:
           nugetProjectPath: "${{ variables.appName }}/${{ variables.nuget_package_name }}"
           vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
           gitVersionConfigPath: ${{ variables.git_version_config_path }}
+          packageVersion: $(MajorMinorPatch)$(PreReleaseLabelWithDash)
 
   - job: PublishAcceptanceTests
     dependsOn: package_nuget
