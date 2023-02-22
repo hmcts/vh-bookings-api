@@ -12,7 +12,7 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         public AllocationHearingsIntegrationEvent(List<VideoHearing> hearings, JusticeUser allocatedCso)
         {
             Hearings = hearings.Select(HearingDtoMapper.MapToDto).ToList();
-            AllocatedCso = UserDtoMapper.MapToDto(allocatedCso);
+            AllocatedCso = (allocatedCso != null) ? UserDtoMapper.MapToDto(allocatedCso) : null;
         }
 
         public List<HearingDto> Hearings { get; }

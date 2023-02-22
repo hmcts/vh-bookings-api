@@ -8,7 +8,8 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static HearingDto MapToDto(Hearing hearing)
         {
-            var @case = hearing.GetCases().First(); // Does this need to be a lead case?
+            var cases = hearing.GetCases();
+            var @case = (cases.Count > 0) ? cases.First() : null; // Does this need to be a lead case?
             return new HearingDto
             {
                 HearingId = hearing.Id,
@@ -16,12 +17,12 @@ namespace BookingsApi.Infrastructure.Services
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 CaseType = hearing.CaseType.Name,
-                CaseNumber = @case.Number,
-                CaseName= @case.Name,
+                CaseNumber = @case?.Number,
+                CaseName= @case?.Name,
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType.Name,
-                JudgeName = hearing.Participants.Where(h=> h.Discriminator == "Judge").SingleOrDefault().DisplayName
+                JudgeName = hearing.Participants?.SingleOrDefault(h=> h.Discriminator == "Judge")?.DisplayName
             };
         }
     }
