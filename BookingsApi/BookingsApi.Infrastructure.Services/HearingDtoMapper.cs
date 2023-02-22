@@ -21,6 +21,7 @@ namespace BookingsApi.Infrastructure.Services
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType.Name,
+                JudgeName = hearing.Participants.Where(h=> h.Discriminator == "Judge").SingleOrDefault().DisplayName
             };
         }
     }
