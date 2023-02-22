@@ -629,14 +629,14 @@ namespace BookingsApi.Client
         /// Add a new justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddAJusticeUserAsync(AddJusticeUserRequest request);
+        System.Threading.Tasks.Task<JusticeUserResponse> AddAJusticeUserAsync(AddJusticeUserRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Add a new justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddAJusticeUserAsync(AddJusticeUserRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<JusticeUserResponse> AddAJusticeUserAsync(AddJusticeUserRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Find justice user with matching username.
@@ -5184,7 +5184,7 @@ namespace BookingsApi.Client
         /// Add a new justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task AddAJusticeUserAsync(AddJusticeUserRequest request)
+        public virtual System.Threading.Tasks.Task<JusticeUserResponse> AddAJusticeUserAsync(AddJusticeUserRequest request)
         {
             return AddAJusticeUserAsync(request, System.Threading.CancellationToken.None);
         }
@@ -5194,7 +5194,7 @@ namespace BookingsApi.Client
         /// Add a new justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task AddAJusticeUserAsync(AddJusticeUserRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<JusticeUserResponse> AddAJusticeUserAsync(AddJusticeUserRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -5213,6 +5213,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -5247,7 +5248,12 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<JusticeUserResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)

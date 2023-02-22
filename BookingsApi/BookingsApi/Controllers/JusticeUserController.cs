@@ -42,7 +42,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [OpenApiOperation("AddAJusticeUser")]
-        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> AddAJusticeUser(AddJusticeUserRequest request)
         {

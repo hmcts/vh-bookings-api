@@ -35,8 +35,10 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             var getJusticeUserUri = result.Headers.Location;
             var getResponse = await client.GetAsync(getJusticeUserUri);
+            var createdResponse = await ApiClientResponse.GetResponses<JusticeUserResponse>(result.Content);
             var justiceUserResponse = await ApiClientResponse.GetResponses<JusticeUserResponse>(getResponse.Content);
             
+            createdResponse.Should().BeEquivalentTo(justiceUserResponse);
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == _request.Username);
             justiceUser.Should().NotBeNull();
