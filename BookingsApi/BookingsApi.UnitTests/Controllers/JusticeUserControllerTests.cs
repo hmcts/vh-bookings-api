@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
@@ -13,7 +12,8 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using FluentAssertions;
+using BookingsApi.DAL.Commands.Core;
+using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.UnitTests.Controllers
 {
@@ -22,12 +22,15 @@ namespace BookingsApi.UnitTests.Controllers
 
         private JusticeUserController _controller;
         private Mock<IQueryHandler> _queryHandlerMock;
+        private Mock<ICommandHandler> _commandHandlerMock;
+        private Mock<ILogger<JusticeUserController>> _loggerMock;
         private JusticeUser _justiceUser;
         private List<JusticeUser> _justiceUserList;
 
         [SetUp]
         public void Setup()
         {
+            _loggerMock = new Mock<ILogger<JusticeUserController>>();
             _justiceUserList = new List<JusticeUser>();
             _justiceUser = new JusticeUser
             {
@@ -51,6 +54,7 @@ namespace BookingsApi.UnitTests.Controllers
             _justiceUserList.Add(_justiceUser);
 
             _queryHandlerMock = new Mock<IQueryHandler>();
+            _commandHandlerMock = new Mock<ICommandHandler>();
             _queryHandlerMock.Setup(x => x.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(It.Is<GetJusticeUserByUsernameQuery>(
                     x => x.Username == _justiceUser.Username)))
                 .ReturnsAsync(_justiceUser);
@@ -59,7 +63,7 @@ namespace BookingsApi.UnitTests.Controllers
                     x.Handle<GetJusticeUserListQuery, List<JusticeUser>>(It.IsAny<GetJusticeUserListQuery>()))
                 .ReturnsAsync(_justiceUserList);
 
-            _controller = new JusticeUserController(_queryHandlerMock.Object);
+            _controller = new JusticeUserController(_queryHandlerMock.Object, _commandHandlerMock.Object, _loggerMock.Object);
         }
 
         [Test]
