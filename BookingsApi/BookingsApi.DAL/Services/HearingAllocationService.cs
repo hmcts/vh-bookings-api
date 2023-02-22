@@ -70,20 +70,20 @@ namespace BookingsApi.DAL.Services
 
         public List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings)
         {
-            var vhoUsernamesConcurrencyExceeded = BuildUsernameConcurrencyLimitExceededDictionary(hearings, 3);
+            var vhoUsernamesConcurrencyCount = BuildUsernameConcurrencyCountDictionary(hearings);
             var allocatedToIgnore = new[] {"Not Allocated", "Not Required"};
             var dto = hearings.Select(x =>
             {
                 var allocated = VideoHearingHelper.AllocatedVho(x);
                 bool? hasWorkHoursClash = null;
-                bool? hasExceededConcurrencyLimit = null;
+                int? concurrentHearingsCount = null;
                 if (!allocatedToIgnore.Contains(allocated, StringComparer.OrdinalIgnoreCase))
                 {
                     hasWorkHoursClash =
                         !x.AllocatedTo.IsDateBetweenWorkingHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
-                    if (vhoUsernamesConcurrencyExceeded.TryGetValue(x.AllocatedTo.Username, out var hasExceeded))
+                    if (vhoUsernamesConcurrencyCount.TryGetValue(x.AllocatedTo.Username, out var count))
                     {
-                        hasExceededConcurrencyLimit = hasExceeded;
+                        concurrentHearingsCount = count;
                     }
                 }
 
@@ -96,7 +96,7 @@ namespace BookingsApi.DAL.Services
                     Duration = x.ScheduledDuration,
                     AllocatedCso = VideoHearingHelper.AllocatedVho(x),
                     HasWorkHoursClash = hasWorkHoursClash,
-                    ExceededConcurrencyLimit = hasExceededConcurrencyLimit
+                    ConcurrentHearingsCount = concurrentHearingsCount
                 };
             }).ToList();
             return dto;
@@ -326,7 +326,7 @@ namespace BookingsApi.DAL.Services
             return cso;
         }
         
-        private static Dictionary<string, bool> BuildUsernameConcurrencyLimitExceededDictionary(List<VideoHearing> hearings, int concurrencyLimit)
+        private static Dictionary<string, int> BuildUsernameConcurrencyCountDictionary(List<VideoHearing> hearings)
         {
             // builds a dictionary of usernames and a boolean indicating whether the user has 
             // concurrent hearings exceeding the 'concurrencyLimit'
@@ -334,7 +334,7 @@ namespace BookingsApi.DAL.Services
             // get a distinct list of all users for the current collection of hearings
             var vhoUsernames = hearings.Where(x => x.AllocatedTo != null).Select(x => x.AllocatedTo.Username).Distinct();
             
-            var vhoUsernamesConcurrencyExceeded = new Dictionary<string, bool>();
+            var vhoUsernamesConcurrencyExceeded = new Dictionary<string, int>();
 
             // for each username, determine if, for the current collection of hearings, it has more than 3 overlapping hearings
             foreach (var username in vhoUsernames)
@@ -349,7 +349,7 @@ namespace BookingsApi.DAL.Services
                 // there can't be an overlap if there's only 1 hearing, return false for this username
                 if (hearingsForVho.Count <= 1)
                 {
-                    vhoUsernamesConcurrencyExceeded.Add(username, false);
+                    vhoUsernamesConcurrencyExceeded.Add(username, 0);
                     return vhoUsernamesConcurrencyExceeded;
                 }
                 
@@ -391,7 +391,7 @@ namespace BookingsApi.DAL.Services
                 }
                 
                 // if the number of overlapping hearings is greater than 3, return true
-                vhoUsernamesConcurrencyExceeded.Add(username, numberOfOverlappingHearings > concurrencyLimit);
+                vhoUsernamesConcurrencyExceeded.Add(username, numberOfOverlappingHearings);
             }
 
             return vhoUsernamesConcurrencyExceeded;

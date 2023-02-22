@@ -85,7 +85,7 @@ public class CheckForAllocationClashesTests
         
         // assert
         resultDtos.Count.Should().Be(4);
-        resultDtos[0].ExceededConcurrencyLimit.Should().BeTrue();
+        resultDtos[0].ConcurrentHearingsCount.Should().Equals(4);
     }
 
     [Test]

@@ -11,5 +11,5 @@ public class HearingAllocationResultDto
     public string CaseType { get; set; }
     public string AllocatedCso { get; set; }
     public bool? HasWorkHoursClash { get; set; }
-    public bool? ExceededConcurrencyLimit { get; set; }
+    public int? ConcurrentHearingsCount { get; set; }
 }

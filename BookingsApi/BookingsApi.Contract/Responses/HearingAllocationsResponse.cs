@@ -50,5 +50,5 @@ public class HearingAllocationsResponse
     /// <summary>
     /// True if the allocated user has more than 3 concurrent hearings allocated
     /// </summary>
-    public bool? ExceededConcurrencyLimit { get; set; }
+    public int? ConcurrentHearingsCount { get; set; }
 }
