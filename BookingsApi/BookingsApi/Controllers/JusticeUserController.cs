@@ -44,6 +44,7 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("AddAJusticeUser")]
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
         public async Task<IActionResult> AddAJusticeUser(AddJusticeUserRequest request)
         {
             var validation = await new AddJusticeUserRequestValidation().ValidateAsync(request);
