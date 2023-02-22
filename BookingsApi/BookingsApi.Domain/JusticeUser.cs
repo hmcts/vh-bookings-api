@@ -23,7 +23,6 @@ namespace BookingsApi.Domain
             ContactEmail = contactEmail;
             Username = username;
             UserRoleId = userRole.Id;
-            CreatedDate = DateTime.UtcNow;
         }
 
         public string FirstName { get; set; }
