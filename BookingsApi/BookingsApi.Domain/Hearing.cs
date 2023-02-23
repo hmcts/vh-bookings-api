@@ -206,8 +206,7 @@ namespace BookingsApi.Domain
             Participant participant = new Judge(person, hearingRole, caseRole)
             {
                 DisplayName = displayName,
-                CreatedBy = CreatedBy,
-                Discriminator = "Judge"
+                CreatedBy = CreatedBy
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;

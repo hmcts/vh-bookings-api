@@ -22,7 +22,7 @@ namespace BookingsApi.Infrastructure.Services
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType.Name,
-                JudgeDisplayName = hearing.Participants?.FirstOrDefault(h=> h.Discriminator == "Judge")?.DisplayName
+                JudgeDisplayName = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge)?.DisplayName
             };
         }
     }
