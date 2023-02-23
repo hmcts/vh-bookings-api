@@ -271,5 +271,36 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             typedEvent.Hearing.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             typedEvent.Participants.Count.Should().Be(hearing.GetParticipants().Count);
         }
+        
+        [Test]
+        public void Should_publish_message_to_queue_when_AllocationHearingsIntegrationEvent_is_raised_with_list_of_hearings()
+        {
+            List<VideoHearing> hearings;
+            hearings = new List<VideoHearing>
+            {
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build(),
+                new VideoHearingBuilder().Build()
+            };
+
+            var csoUser = new JusticeUser()
+            {
+                Username = "userName",
+                UserRole = new UserRole(1,"VHO")
+            };
+            
+
+            var allocationHearingsIntegrationEvent = new AllocationHearingsIntegrationEvent(hearings, csoUser);
+            _eventPublisher.PublishAsync(allocationHearingsIntegrationEvent);
+
+            _serviceBusQueueClient.Count.Should().Be(1);
+            var @event = _serviceBusQueueClient.ReadMessageFromQueue();
+            @event.IntegrationEvent.Should().BeOfType<AllocationHearingsIntegrationEvent>();
+            var typedEvent = (AllocationHearingsIntegrationEvent)@event.IntegrationEvent;
+            typedEvent.Hearings.Should().NotContainNulls();
+            typedEvent.AllocatedCso.Should().NotBeNull();
+        }
     }
 }
