@@ -278,11 +278,11 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             List<VideoHearing> hearings;
             hearings = new List<VideoHearing>
             {
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build()
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase()
             };
 
             var csoUser = new JusticeUser()
@@ -301,6 +301,13 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             var typedEvent = (AllocationHearingsIntegrationEvent)@event.IntegrationEvent;
             typedEvent.Hearings.Should().NotContainNulls();
             typedEvent.AllocatedCso.Should().NotBeNull();
+        }
+        
+        private VideoHearing CreateHearingWithCase()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("1", "test case", true);
+            return hearing;
         }
     }
 }

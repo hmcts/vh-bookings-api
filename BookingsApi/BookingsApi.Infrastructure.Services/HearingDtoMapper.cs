@@ -8,8 +8,7 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static HearingDto MapToDto(Hearing hearing)
         {
-            var cases = hearing.GetCases();
-            var @case = (cases.Count > 0) ? cases.First() : null; // Does this need to be a lead case?
+            var @case = hearing.GetCases().First();
             return new HearingDto
             {
                 HearingId = hearing.Id,

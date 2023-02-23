@@ -30,14 +30,21 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         {
             _hearings = new List<VideoHearing>
             {
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build()
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase()
             };
         }
-        
+
+        private VideoHearing CreateHearingWithCase()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("1", "test case", true);
+            return hearing;
+        }
+
         [Test]
         public async Task Should_Return_Ok()
         {
