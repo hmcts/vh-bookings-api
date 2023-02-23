@@ -62,7 +62,7 @@ public class CheckForAllocationClashesTests
     }
     
     [Test]
-    public void should_set_exceeded_concurrency_to_4_when_four_hearings_overlap()
+    public void should_set_concurrency_to_4_when_four_hearings_overlap()
     {
         // arrange
         var hearingStartTime = DateTime.Today.AddHours(10);
@@ -89,7 +89,7 @@ public class CheckForAllocationClashesTests
     }
     
     [Test]
-    public void should_set_exceeded_concurrency_to_0_when_no_hearings_overlap()
+    public void should_set_concurrency_to_0_when_no_hearings_overlap()
     {
         // arrange
         var hearingStartTime = DateTime.Today.AddHours(10);
