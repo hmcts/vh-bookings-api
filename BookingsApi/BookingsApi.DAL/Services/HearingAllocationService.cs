@@ -363,27 +363,17 @@ namespace BookingsApi.DAL.Services
                     if (i + 1 < hearingsForVho.Count)
                     {
                         nextHearing = hearingsForVho[i + 1];
-                    }
-
-                    if (nextHearing != null)
-                    {
-                        // if the current hearing's start time plus its duration is greater than the start time of
-                        // the next hearing, they overlap
-                        if (currentHearing.ScheduledDateTime.AddHours(currentHearing.ScheduledDuration) >
-                            nextHearing.ScheduledDateTime)
+                        if (IsHearingConcurrent(currentHearing, nextHearing))
                         {
                             numberOfOverlappingHearings++;
                         }
                     }
-                    // if the 'nextHearing' is null, there has to be a previous hearing because we have already
+                    // if there is no next hearing, there has to be a previous hearing because we have already
                     // determined that there are 2 or more hearings
                     else
                     {
                         var previousHearing = hearingsForVho[i - 1];
-                        // if the previous hearing's start time plus its duration is greater than the start time of
-                        // the current hearing, they overlap
-                        if (previousHearing.ScheduledDateTime.AddHours(previousHearing.ScheduledDuration) >
-                            currentHearing.ScheduledDateTime)
+                        if (IsHearingConcurrent(previousHearing, currentHearing))
                         {
                             numberOfOverlappingHearings++;
                         }
@@ -395,6 +385,14 @@ namespace BookingsApi.DAL.Services
             }
 
             return vhoUsernamesConcurrencyExceeded;
+        }
+
+        private static bool IsHearingConcurrent(Hearing hearing, Hearing comparisonHearing)
+        {
+            // if the hearing's start time plus its duration is greater than the start time of
+            // the comparison hearing, they are considered to be concurrent
+            return hearing.ScheduledDateTime.AddHours(hearing.ScheduledDuration) >
+                   comparisonHearing.ScheduledDateTime;
         }
     }
 }
