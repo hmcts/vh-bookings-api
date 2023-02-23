@@ -12,7 +12,7 @@ namespace BookingsApi.Infrastructure.Services
             {
                 Username = user.Username,
                 UserId = user.Id.ToString(),
-                UserRole = user.UserRole.Name
+                UserRoleName = user.UserRole.Name
             };
         }
     }
