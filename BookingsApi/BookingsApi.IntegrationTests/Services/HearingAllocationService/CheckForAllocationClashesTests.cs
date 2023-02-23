@@ -73,7 +73,6 @@ public class CheckForAllocationClashesTests
         var hearing4 = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime.AddHours(3)).WithDuration(600).Build();
         
         var cso = Builder<JusticeUser>.CreateNew()
-            // .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
             .Build();
         hearing1.Allocations.Add(new Allocation {Hearing = hearing1, JusticeUser = cso});
         hearing2.Allocations.Add(new Allocation {Hearing = hearing2, JusticeUser = cso});
