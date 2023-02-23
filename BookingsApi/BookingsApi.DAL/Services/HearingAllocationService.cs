@@ -342,10 +342,7 @@ namespace BookingsApi.DAL.Services
                 // get all the hearings allocated to the username
                 var hearingsForVho = hearings.Where(x => x.AllocatedTo?.Username == username)
                     .OrderBy(hearing => hearing.ScheduledDateTime).ToList();
-                
-                // a counter to count overlapping hearings
-                var numberOfOverlappingHearings = 0;
-                
+
                 // there can't be an overlap if there's only 1 hearing, return false for this username
                 if (hearingsForVho.Count <= 1)
                 {
@@ -353,38 +350,45 @@ namespace BookingsApi.DAL.Services
                     return vhoUsernamesConcurrencyExceeded;
                 }
                 
-                for (var i = 0; i < hearingsForVho.Count; i++)
-                {
-                    // get the current hearing
-                    var currentHearing = hearingsForVho[i];
-                    VideoHearing nextHearing = null;
-
-                    // if the current index + 1 is less than the number of hearings, there must be a 'nextHearing'
-                    if (i + 1 < hearingsForVho.Count)
-                    {
-                        nextHearing = hearingsForVho[i + 1];
-                        if (IsHearingConcurrent(currentHearing, nextHearing))
-                        {
-                            numberOfOverlappingHearings++;
-                        }
-                    }
-                    // if there is no next hearing, there has to be a previous hearing because we have already
-                    // determined that there are 2 or more hearings
-                    else
-                    {
-                        var previousHearing = hearingsForVho[i - 1];
-                        if (IsHearingConcurrent(previousHearing, currentHearing))
-                        {
-                            numberOfOverlappingHearings++;
-                        }
-                    }
-                }
-                
-                // if the number of overlapping hearings is greater than 3, return true
-                vhoUsernamesConcurrencyExceeded.Add(username, numberOfOverlappingHearings);
+                // if there is more than 1 hearing, calculate number that are concurrent and add to dictionay
+                vhoUsernamesConcurrencyExceeded.Add(username, CalculateNumberOfConcurrentHearings(hearingsForVho));
             }
 
             return vhoUsernamesConcurrencyExceeded;
+        }
+
+        private static int CalculateNumberOfConcurrentHearings(List<VideoHearing> hearingsForVho)
+        {
+            var concurrentHearingsCount = 0;
+            
+            // for each hearing assigned to this VHO
+            for (var i = 0; i < hearingsForVho.Count; i++)
+            {
+                // get the current hearing
+                var currentHearing = hearingsForVho[i];
+
+                // if the current index + 1 is less than the number of hearings, there must be a 'nextHearing'
+                if (i + 1 < hearingsForVho.Count)
+                {
+                    var nextHearing = hearingsForVho[i + 1];
+                    if (IsHearingConcurrent(currentHearing, nextHearing))
+                    {
+                        concurrentHearingsCount++;
+                    }
+                }
+                // if there is no next hearing, there has to be a previous hearing because we have already
+                // determined that there are 2 or more hearings
+                else
+                {
+                    var previousHearing = hearingsForVho[i - 1];
+                    if (IsHearingConcurrent(previousHearing, currentHearing))
+                    {
+                        concurrentHearingsCount++;
+                    }
+                }
+            }
+
+            return concurrentHearingsCount;
         }
 
         private static bool IsHearingConcurrent(Hearing hearing, Hearing comparisonHearing)
