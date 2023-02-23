@@ -13,11 +13,12 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="5.10.3" />
+        <PackageReference Include="GST.Fake.Authentication.JwtBearer" Version="6.0.0" />
         <PackageReference Include="LaunchDarkly.ServerSdk" Version="6.3.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.47.0.55603">
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.53.0.62665">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
