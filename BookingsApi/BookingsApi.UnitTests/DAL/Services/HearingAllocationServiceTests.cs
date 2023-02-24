@@ -781,6 +781,40 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
+        public async Task AllocateAutomatically_Should_Ignore_Deleted_Csos()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            cso.VhoNonAvailability.Add(new VhoNonAvailability
+            {
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0),
+                Deleted = true
+            });
+            cso = await _context.JusticeUsers.FirstOrDefaultAsync(x => x.Id == cso.Id);
+            cso.Delete();
+
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var action = async () => await _service.AllocateAutomatically(hearing.Id);
+
+            // Assert
+            AssertNoCsosAvailableError(action, hearing.Id);
+        }
+
+        [Test]
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Work_Hours()
         {
             // Arrange

@@ -100,6 +100,11 @@ namespace BookingsApi.Domain
             }
         }
 
+        public void Restore()
+        {
+            Deleted = false;
+        }
+
         private void DeleteWorkHours()
         {
             foreach (var workHour in VhoWorkHours)

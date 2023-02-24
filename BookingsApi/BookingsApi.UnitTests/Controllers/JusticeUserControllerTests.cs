@@ -93,7 +93,7 @@ namespace BookingsApi.UnitTests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
         }
-        
+
         [Test]
         public async Task GetJusticeUserList_Filter_By_Term_ReturnsList()
         {
