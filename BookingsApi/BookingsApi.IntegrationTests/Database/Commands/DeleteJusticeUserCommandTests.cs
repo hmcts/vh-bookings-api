@@ -59,7 +59,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
         
         [Test]
-        public async Task should_throw_an_exception_when_justice_user_does_not_exist()
+        public void should_throw_an_exception_when_justice_user_does_not_exist()
         {
             // Arrange
             var id = Guid.NewGuid();
