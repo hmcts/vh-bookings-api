@@ -37,6 +37,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
 
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var foundJusticeUser = await db.JusticeUsers
+                .IgnoreQueryFilters()
                 .Include(u => u.VhoWorkHours)
                 .Include(u => u.VhoNonAvailability)
                 .Include(u => u.Allocations)
