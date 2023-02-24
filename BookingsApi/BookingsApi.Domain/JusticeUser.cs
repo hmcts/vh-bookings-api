@@ -87,7 +87,10 @@ namespace BookingsApi.Domain
         {
             Deleted = true;
 
-            DeleteWorkHours();            
+            foreach (var workHour in VhoWorkHours)
+            {
+                workHour.Delete();
+            }
 
             foreach (var nonAvailability in VhoNonAvailability)
             {
@@ -103,14 +106,6 @@ namespace BookingsApi.Domain
         public void Restore()
         {
             Deleted = false;
-        }
-
-        private void DeleteWorkHours()
-        {
-            foreach (var workHour in VhoWorkHours)
-            {
-                workHour.Deleted = true;
-            }
         }
     }
 }
