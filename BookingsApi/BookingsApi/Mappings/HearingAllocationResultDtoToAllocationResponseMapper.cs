@@ -15,7 +15,8 @@ public static class HearingAllocationResultDtoToAllocationResponseMapper
             CaseType = dto.CaseType,
             CaseNumber = dto.CaseNumber,
             ScheduledDateTime = dto.ScheduledDateTime,
-            HasWorkHoursClash = dto.HasWorkHoursClash
+            HasWorkHoursClash = dto.HasWorkHoursClash,
+            ConcurrentHearingsCount = dto.ConcurrentHearingsCount
         };
     }
 }
