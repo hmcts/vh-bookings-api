@@ -73,7 +73,8 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
                     Duration = 10,
                     ScheduledDateTime = DateTime.Today.AddHours(10).AddMinutes(20),
                     AllocatedCso = "test@cso.com",
-                    HasWorkHoursClash = false
+                    HasWorkHoursClash = false,
+                    HasNonAvailabilityClash = false
                 }
             };
 
@@ -87,7 +88,8 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
                     Duration = checkForClashesResponse[0].Duration,
                     ScheduledDateTime = checkForClashesResponse[0].ScheduledDateTime,
                     AllocatedCso = checkForClashesResponse[0].AllocatedCso,
-                    HasWorkHoursClash = false
+                    HasWorkHoursClash = false,
+                    HasNonAvailabilityClash = false
                 }
             };
 
