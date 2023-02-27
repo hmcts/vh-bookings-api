@@ -23,6 +23,7 @@ namespace BookingsApi.DAL.Services
         void CheckAndDeallocateHearing(Hearing hearing);
         Task<List<VideoHearing>> AllocateHearingsToCso(List<Guid> postRequestHearings, Guid postRequestCsoId);
         List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings);
+   
     }
 
     public class HearingAllocationService : IHearingAllocationService
@@ -76,17 +77,20 @@ namespace BookingsApi.DAL.Services
             {
                 var allocated = VideoHearingHelper.AllocatedVho(x);
                 bool? hasWorkHoursClash = null;
+                bool? hasNonAvailabilityClash = null;
                 int? concurrentHearingsCount = null;
                 if (!allocatedToIgnore.Contains(allocated, StringComparer.OrdinalIgnoreCase))
                 {
                     hasWorkHoursClash =
                         !x.AllocatedTo.IsDateBetweenWorkingHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);
+                    hasNonAvailabilityClash = 
+                        x.AllocatedTo.IsDuringNonAvailableHours(x.ScheduledDateTime, x.ScheduledEndTime);
                     if (vhoUsernamesConcurrencyCount.TryGetValue(x.AllocatedTo.Username, out var count))
                     {
                         concurrentHearingsCount = count;
                     }
                 }
-
+                
                 return new HearingAllocationResultDto
                 {
                     HearingId = x.Id,
@@ -96,12 +100,14 @@ namespace BookingsApi.DAL.Services
                     Duration = x.ScheduledDuration,
                     AllocatedCso = VideoHearingHelper.AllocatedVho(x),
                     HasWorkHoursClash = hasWorkHoursClash,
-                    ConcurrentHearingsCount = concurrentHearingsCount
+                    ConcurrentHearingsCount = concurrentHearingsCount,
+                    HasNonAvailabilityClash = hasNonAvailabilityClash
+                        
                 };
             }).ToList();
             return dto;
         }
-
+        
         /// <summary>
         /// Allocate automatically a hearing to a random CSO
         /// </summary>
