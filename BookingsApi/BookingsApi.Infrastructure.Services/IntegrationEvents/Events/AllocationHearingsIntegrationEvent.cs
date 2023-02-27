@@ -16,7 +16,6 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         }
 
         public List<HearingAllocationDto> Hearings { get; }
-
         public UserDto AllocatedCso { get; }
     }
 }

@@ -23,5 +23,7 @@ namespace BookingsApi.Infrastructure.Services
                 HearingType = hearing.HearingType.Name
             };
         }
+        
+        
     }
 }
