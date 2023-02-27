@@ -31,35 +31,6 @@ public class CheckForAllocationClashesTests
         _sut = new DAL.Services.HearingAllocationService(db, new RandomNumberGenerator(), options,
             new Logger<DAL.Services.HearingAllocationService>(new LoggerFactory()));
     }
-
-    [Test]
-    public void should_set_work_hour_clashes_to_true_when_hearing_exceeds_cso_working_hours()
-    {
-        // arrange
-        var workHoursStartTime = DateTime.Today.AddHours(9);
-        var workHoursEndTime = DateTime.Today.AddHours(11);
-        
-        var hearingStartTime = DateTime.Today.AddHours(10);
-        var hearing = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime).WithDuration(600).Build();
-        var workHours = new VhoWorkHours
-        {
-            DayOfWeek = new DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
-            DayOfWeekId = (int) hearingStartTime.DayOfWeek,
-            StartTime = workHoursStartTime.TimeOfDay,
-            EndTime = workHoursEndTime.TimeOfDay
-        };
-        var cso = Builder<JusticeUser>.CreateNew()
-            .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
-            .Build();
-        hearing.Allocations.Add(new Allocation {Hearing = hearing, JusticeUser = cso});
-
-        // act
-        var resultDtos = _sut.CheckForAllocationClashes(new List<VideoHearing> {hearing});
-        
-        // assert
-        resultDtos.Count.Should().Be(1);
-        resultDtos[0].HasWorkHoursClash.Should().BeTrue();
-    }
     
     [Test]
     public void should_set_concurrency_to_4_when_four_hearings_overlap()
@@ -114,6 +85,36 @@ public class CheckForAllocationClashesTests
         resultDtos[0].ConcurrentHearingsCount.Should().Equals(0);
     }
 
+    
+    [Test]
+    public void should_set_work_hour_clashes_to_true_when_hearing_exceeds_cso_working_hours()
+    {
+        // arrange
+        var workHoursStartTime = DateTime.Today.AddHours(9);
+        var workHoursEndTime = DateTime.Today.AddHours(11);
+        
+        var hearingStartTime = DateTime.Today.AddHours(10);
+        var hearing = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime).WithDuration(600).Build();
+        var workHours = new VhoWorkHours
+        {
+            DayOfWeek = new DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
+            DayOfWeekId = (int) hearingStartTime.DayOfWeek,
+            StartTime = workHoursStartTime.TimeOfDay,
+            EndTime = workHoursEndTime.TimeOfDay
+        };
+        var cso = Builder<JusticeUser>.CreateNew()
+            .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
+            .Build();
+        hearing.Allocations.Add(new Allocation {Hearing = hearing, JusticeUser = cso});
+
+        // act
+        var resultDtos = _sut.CheckForAllocationClashes(new List<VideoHearing> {hearing});
+        
+        // assert
+        resultDtos.Count.Should().Be(1);
+        resultDtos[0].HasWorkHoursClash.Should().BeTrue();
+    }
+    
     [Test]
     public void should_set_work_hour_clashes_to_false_when_hearing_is_within_cso_working_hours()
     {
@@ -139,7 +140,7 @@ public class CheckForAllocationClashesTests
         resultDtos[0].HasWorkHoursClash.Should().BeFalse();
     }
 
-    [Test] public void should_set_work_hour_clashes_to_null_when_hearing_does_not_have_an_allocated_cso()
+    [Test] public void should_set_clashes_to_null_when_hearing_does_not_have_an_allocated_cso()
     {
         var hearing = new VideoHearingBuilder().Build();
         
@@ -147,6 +148,61 @@ public class CheckForAllocationClashesTests
         
         resultDtos.Count.Should().Be(1);
         resultDtos[0].HasWorkHoursClash.Should().BeNull();
+        resultDtos[0].HasNonAvailabilityClash.Should().BeNull();
+        resultDtos[0].ConcurrentHearingsCount.Should().BeNull();
+    }
+
+    [Test]
+    public void should_set_nonavailability_clash_to_true_when_hearing_is_on_cso_non_available_time()
+    {
+        // arrange
+        var nonAvailableStartTime = DateTime.Today.AddHours(9);
+        var nonAvailableEndTime = DateTime.Today.AddHours(11);
+        
+        var hearingStartTime = DateTime.Today.AddHours(10);
+        var hearing = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime).WithDuration(600).Build();
+        var vhoNonAvailabilities = new List<VhoNonAvailability>()
+        {
+            new(1) {StartTime = nonAvailableStartTime, EndTime = nonAvailableEndTime}
+        };
+        var cso = Builder<JusticeUser>.CreateNew()
+            .With(x=> x.VhoNonAvailability, vhoNonAvailabilities)
+            // .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
+            .Build();
+        hearing.Allocations.Add(new Allocation {Hearing = hearing, JusticeUser = cso});
+
+        // act
+        var resultDtos = _sut.CheckForAllocationClashes(new List<VideoHearing> {hearing});
+        
+        // assert
+        resultDtos.Count.Should().Be(1);
+        resultDtos[0].HasNonAvailabilityClash.Should().BeTrue();
     }
     
+    [Test]
+    public void should_set_nonavailability_clash_to_false_when_hearing_is_not_on_cso_non_available_time()
+    {
+        // arrange
+        var nonAvailableStartTime = DateTime.Today.AddHours(8);
+        var nonAvailableEndTime = DateTime.Today.AddHours(9).AddMinutes(59);
+        
+        var hearingStartTime = DateTime.Today.AddHours(10);
+        var hearing = new VideoHearingBuilder().WithScheduledDateTime(hearingStartTime).WithDuration(600).Build();
+        var vhoNonAvailabilities = new List<VhoNonAvailability>()
+        {
+            new(1) {StartTime = nonAvailableStartTime, EndTime = nonAvailableEndTime}
+        };
+        var cso = Builder<JusticeUser>.CreateNew()
+            .With(x=> x.VhoNonAvailability, vhoNonAvailabilities)
+            // .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
+            .Build();
+        hearing.Allocations.Add(new Allocation {Hearing = hearing, JusticeUser = cso});
+
+        // act
+        var resultDtos = _sut.CheckForAllocationClashes(new List<VideoHearing> {hearing});
+        
+        // assert
+        resultDtos.Count.Should().Be(1);
+        resultDtos[0].HasNonAvailabilityClash.Should().BeFalse();
+    }
 }

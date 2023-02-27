@@ -143,7 +143,7 @@ namespace BookingsApi
                 app.UseHttpsRedirection();
             }
             app.UseRouting();
-            app.UseAuthorization();
+            app.UseAuthorization(); 
 
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
