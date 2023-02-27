@@ -16,8 +16,8 @@ namespace BookingsApi.Infrastructure.Services
                 ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 CaseType = hearing.CaseType.Name,
-                CaseNumber = @case?.Number,
-                CaseName= @case?.Name,
+                CaseNumber = @case.Number,
+                CaseName= @case.Name,
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType.Name
