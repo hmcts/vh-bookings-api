@@ -46,4 +46,9 @@ public class HearingAllocationsResponse
     /// True if the allocated user has a working hours clash
     /// </summary>
     public bool? HasWorkHoursClash { get; set; }
+    
+    /// <summary>
+    /// Number of concurrent hearings for this user
+    /// </summary>
+    public int? ConcurrentHearingsCount { get; set; }
 }
