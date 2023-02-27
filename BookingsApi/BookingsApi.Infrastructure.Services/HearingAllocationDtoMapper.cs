@@ -4,12 +4,12 @@ using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services
 {
-    public static class HearingDtoMapper
+    public static class HearingAllocationDtoMapper
     {
-        public static HearingDto MapToDto(Hearing hearing)
+        public static HearingAllocationDto MapToDto(Hearing hearing)
         {
             var @case = hearing.GetCases().First();
-            return new HearingDto
+            return new HearingAllocationDto
             {
                 HearingId = hearing.Id,
                 GroupId = hearing.SourceId,
@@ -20,7 +20,8 @@ namespace BookingsApi.Infrastructure.Services
                 CaseName= @case?.Name,
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
-                HearingType = hearing.HearingType.Name
+                HearingType = hearing.HearingType.Name,
+                JudgeDisplayName = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge)?.DisplayName
             };
         }
     }
