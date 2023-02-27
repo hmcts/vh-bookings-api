@@ -15,7 +15,7 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             AllocatedCso = (allocatedCso != null) ? UserDtoMapper.MapToDto(allocatedCso) : null;
         }
 
-        public List<HearingDto> Hearings { get; }
+        public List<HearingAllocationDto> Hearings { get; }
 
         public UserDto AllocatedCso { get; }
     }

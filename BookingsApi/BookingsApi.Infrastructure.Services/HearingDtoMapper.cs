@@ -6,10 +6,10 @@ namespace BookingsApi.Infrastructure.Services
 {
     public static class HearingDtoMapper
     {
-        public static HearingDto MapToDto(Hearing hearing)
+        public static HearingAllocationDto MapToDto(Hearing hearing)
         {
             var @case = hearing.GetCases().First();
-            return new HearingDto
+            return new HearingAllocationDto
             {
                 HearingId = hearing.Id,
                 GroupId = hearing.SourceId,
