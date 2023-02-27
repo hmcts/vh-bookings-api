@@ -781,6 +781,40 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
+        public async Task AllocateAutomatically_Should_Ignore_Deleted_Csos()
+        {
+            // Arrange
+            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(8, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            cso.VhoNonAvailability.Add(new VhoNonAvailability
+            {
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0),
+                Deleted = true
+            });
+            cso = await _context.JusticeUsers.FirstOrDefaultAsync(x => x.Id == cso.Id);
+            cso.Delete();
+
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var action = async () => await _service.AllocateAutomatically(hearing.Id);
+
+            // Assert
+            AssertNoCsosAvailableError(action, hearing.Id);
+        }
+
+        [Test]
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Work_Hours()
         {
             // Arrange
@@ -1135,6 +1169,128 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Assert
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Justice user {justiceUserId} not found");
         }
+        
+        [Test]
+        public async Task AllocateManually_Should_Allocate_Successfully_To_Cso_Overriding_Allocated_Cso()
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
+            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+
+            var list = new List<Guid>();
+            list.Add(hearing1.Id);
+            list.Add(hearing2.Id);
+            list.Add(hearing3.Id);
+
+            var cso1 = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso1.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateAutomaticallyToHearing(cso1.Id, hearing1.Id);
+            AllocateAutomaticallyToHearing(cso1.Id, hearing3.Id);
+            
+            var cso3 = SeedCso("user3@email.com", "User", "3");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso3.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var result = await _service.AllocateHearingsToCso(list, cso3.Id);
+            
+            // Assert
+            AssertCsoAllocatedListHearing(result, cso3, list);
+        }
+        
+        [Test]
+        public async Task AllocateManually_Should_Allocate_Successfully_To_Cso_For_Not_Allocated_Hearing()
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(2).AddHours(3).AddMinutes(45));
+
+            var list = new List<Guid>();
+            list.Add(hearing1.Id);
+            list.Add(hearing2.Id);
+            
+            var cso1 = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso1.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateAutomaticallyToHearing(cso1.Id, hearing1.Id);
+            
+            var cso3 = SeedCso("user3@email.com", "User", "3");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso3.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var result = await _service.AllocateHearingsToCso(list, cso3.Id);
+            
+            // Assert
+            AssertCsoAllocatedListHearing(result, cso3, list);
+        }
+        
+        [Test]
+        public async Task AllocateManually_Should_Throw_Domain_Exception_Not_Found_Cso()
+        {
+            // Arrange
+            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing2 = CreateHearing(DateTime.Today.AddDays(2).AddHours(3).AddMinutes(45));
+
+            var list = new List<Guid>();
+            list.Add(hearing1.Id);
+            list.Add(hearing2.Id);
+            
+            var cso1 = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso1.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i, 
+                    StartTime = new TimeSpan(8, 0, 0), 
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            AllocateAutomaticallyToHearing(cso1.Id, hearing1.Id);
+
+            await _context.SaveChangesAsync();
+
+            var noCsoGuid = Guid.NewGuid();
+            // Act
+            var result = async () => await _service.AllocateHearingsToCso(list, noCsoGuid);
+            
+            // Assert
+            AssertNoCsosAvailableErrorForManual(result, noCsoGuid, list);
+        }
 
         private IList<JusticeUser> SeedJusticeUsers()
         {
@@ -1253,6 +1409,11 @@ namespace BookingsApi.UnitTests.DAL.Services
         {
             action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
+        
+        private static void AssertNoCsosAvailableErrorForManual(Func<Task<List<VideoHearing>>> list, Guid csoId, List<Guid> listHearingId)
+        {
+            list.Should().Throw<DomainRuleException>().And.Message.Should().Contain("Unable to allocate to hearing");
+        }
 
         private void AssertCsoAllocated(JusticeUser actualCso, JusticeUser expectedCso, Hearing hearing)
         {
@@ -1260,6 +1421,12 @@ namespace BookingsApi.UnitTests.DAL.Services
             actualCso.Id.Should().Be(expectedCso.Id);
             var allocation = _context.Allocations.SingleOrDefault(a => a.HearingId == hearing.Id && a.JusticeUserId == expectedCso.Id);
             allocation.Should().NotBeNull();
+        }
+        
+        private static void AssertCsoAllocatedListHearing(List<VideoHearing> list, JusticeUser expectedCso, List<Guid> hearingIds)
+        {
+            expectedCso.Should().NotBeNull();
+            list.Count.Should().Be(hearingIds.Count);
         }
         
         private void AssertMessageLogged(string expectedMessage, LogLevel expectedLogLevel)

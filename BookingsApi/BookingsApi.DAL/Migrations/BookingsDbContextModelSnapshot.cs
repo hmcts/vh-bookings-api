@@ -437,6 +437,9 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
@@ -843,6 +846,9 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
@@ -878,6 +884,9 @@ namespace BookingsApi.DAL.Migrations
 
                     b.Property<int>("DayOfWeekId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<TimeSpan?>("EndTime")
                         .HasColumnType("time");
@@ -948,13 +957,13 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.Allocation", b =>
                 {
                     b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
-                        .WithMany()
+                        .WithMany("Allocations")
                         .HasForeignKey("HearingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookingsApi.Domain.JusticeUser", "JusticeUser")
-                        .WithMany()
+                        .WithMany("Allocations")
                         .HasForeignKey("JusticeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1160,7 +1169,7 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.VhoNonAvailability", b =>
                 {
                     b.HasOne("BookingsApi.Domain.JusticeUser", "JusticeUser")
-                        .WithMany()
+                        .WithMany("VhoNonAvailability")
                         .HasForeignKey("JusticeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1177,7 +1186,7 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("BookingsApi.Domain.JusticeUser", "JusticeUser")
-                        .WithMany()
+                        .WithMany("VhoWorkHours")
                         .HasForeignKey("JusticeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1194,6 +1203,8 @@ namespace BookingsApi.DAL.Migrations
 
             modelBuilder.Entity("BookingsApi.Domain.Hearing", b =>
                 {
+                    b.Navigation("Allocations");
+
                     b.Navigation("Endpoints");
 
                     b.Navigation("HearingCases");
@@ -1204,6 +1215,15 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.Jurisdiction", b =>
                 {
                     b.Navigation("CaseTypes");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.JusticeUser", b =>
+                {
+                    b.Navigation("Allocations");
+
+                    b.Navigation("VhoNonAvailability");
+
+                    b.Navigation("VhoWorkHours");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Participants.Participant", b =>

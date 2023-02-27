@@ -88,5 +88,12 @@ namespace Testing.Common.Builders.Api
             private const string ApiRoot = "judiciaryperson";
             public static string BulkJudiciaryPersons() => $"{ApiRoot}/BulkJudiciaryPersons";
         }
+
+        public static class JusticeUserEndpoints
+        {
+            private const string ApiRoot = "justiceuser";
+            public static string AddAJusticeUser => $"{ApiRoot}";
+            public static string DeleteJusticeUser(Guid justiceUserId) => $"{ApiRoot}/{justiceUserId}";
+        }
     }
 }

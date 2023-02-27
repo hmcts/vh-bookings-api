@@ -25,7 +25,7 @@ namespace BookingsApi.Controllers
         [HttpGet]
         [OpenApiOperation("GetFeatureFlag")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public ActionResult<bool> GetFeatureFlag(string featureName)
         {
             return _featureFlagsService.GetFeatureFlag(featureName);

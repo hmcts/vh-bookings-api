@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -6,6 +7,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
+using NuGet.Packaging;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
@@ -126,6 +128,68 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     }
     
     [Test]
+     public async Task Should_include_work_hours_when_requested()
+     {
+         //ARRANGE
+         var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true);
+         var nonavailability = new VhoNonAvailability
+             {StartTime = DateTime.Today.AddHours(10), EndTime = DateTime.Today.AddHours(10)};
+         justiceUser.VhoNonAvailability.Add(nonavailability);
+         var workHours = new List<VhoWorkHours>
+         {
+             new()
+             {
+                 StartTime = DateTime.Today.AddHours(10).TimeOfDay, EndTime = DateTime.Today.AddHours(10).TimeOfDay,
+                 DayOfWeekId = 1
+             },
+             new()
+             {
+                 StartTime = DateTime.Today.AddHours(10).TimeOfDay, EndTime = DateTime.Today.AddHours(10).TimeOfDay,
+                 DayOfWeekId = 2
+             },
+             new()
+             {
+                 StartTime = DateTime.Today.AddHours(10).TimeOfDay, EndTime = DateTime.Today.AddHours(10).TimeOfDay,
+                 DayOfWeekId = 3
+             },
+             new()
+             {
+                 StartTime = DateTime.Today.AddHours(10).TimeOfDay, EndTime = DateTime.Today.AddHours(10).TimeOfDay,
+                 DayOfWeekId = 4
+             },
+             new()
+             {
+                 StartTime = DateTime.Today.AddHours(10).TimeOfDay, EndTime = DateTime.Today.AddHours(10).TimeOfDay,
+                 DayOfWeekId = 5
+             }
+         };
+         justiceUser.VhoWorkHours.AddRange(workHours);
+         _context.Update(justiceUser);
+         await _context.SaveChangesAsync();
+
+         await Hooks.AddAllocation(_seededHearing3, justiceUser);
+         //ACT
+         var hearings =
+             await _handler.Handle(
+                 new GetAllocationHearingsBySearchQuery(cso: new[] {justiceUser.Id}, includeWorkHours: true));
+         //ASSERT
+         hearings.Count.Should().Be(1);
+         var allocatedCso = hearings.First().AllocatedTo;
+
+         allocatedCso.Username.Should().Be(justiceUser.Username);
+         allocatedCso.VhoWorkHours.Should().NotBeNullOrEmpty();
+
+         allocatedCso.VhoNonAvailability.Should().NotBeNullOrEmpty();
+         var nonAvailabilityResult = allocatedCso.VhoNonAvailability[0];
+         nonAvailabilityResult.StartTime.Should().Be(nonavailability.StartTime);
+         nonAvailabilityResult.EndTime.Should().Be(nonavailability.EndTime);
+
+         allocatedCso.VhoWorkHours[0].StartTime.Should().Be(workHours[0].StartTime);
+         allocatedCso.VhoWorkHours[0].EndTime.Should().Be(workHours[0].EndTime);
+         allocatedCso.VhoWorkHours[0].SystemDayOfWeek.Should().Be(workHours[0].DayOfWeekId);
+     }
+    
+    [Test]
     public async Task Should_get_hearing_details_by_multiple_parameters()
     {
         //ARRANGE
@@ -151,5 +215,67 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         hearings.First().ScheduledDateTime.Should().Be(_seededHearing1.ScheduledDateTime);
         hearings.First().CaseType.Name.Should().Be(_seededHearing1.CaseType.Name);
         hearings.First().AllocatedTo.Username.Should().Be(justiceUser.Username);
+    }
+
+    [Test]
+    public async Task Should_exclude_deleted_work_hours()
+    {
+        // Arrange
+        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
+        await Hooks.AddAllocation(_seededHearing1, justiceUser);
+
+        var deletedWorkHours = new List<VhoWorkHours>();
+        
+        for (var i = 1; i <= 7; i++)
+        {
+            deletedWorkHours.Add(new VhoWorkHours
+            {
+                DayOfWeekId = i, 
+                StartTime = new TimeSpan(10, 0, 0), 
+                EndTime = new TimeSpan(18, 0, 0),
+                JusticeUserId = justiceUser.Id
+            });
+        }
+        
+        _context.VhoWorkHours.AddRange(deletedWorkHours);
+
+        await _context.SaveChangesAsync();
+        
+        justiceUser = _context.JusticeUsers.FirstOrDefault(x => x.Id == justiceUser.Id);
+        
+        justiceUser.Delete();
+        
+        await _context.SaveChangesAsync();
+        
+        justiceUser.Restore();
+        
+        var nonDeletedWorkHours = new List<VhoWorkHours>();
+        
+        for (var i = 1; i <= 7; i++)
+        {
+            nonDeletedWorkHours.Add(new VhoWorkHours
+            {
+                DayOfWeekId = i, 
+                StartTime = new TimeSpan(8, 0, 0), 
+                EndTime = new TimeSpan(17, 0, 0),
+                JusticeUserId = justiceUser.Id
+            });
+        }
+        
+        _context.VhoWorkHours.AddRange(nonDeletedWorkHours);
+
+        await _context.SaveChangesAsync();
+
+        var csos = new List<Guid>() { justiceUser.Id };
+        
+        // Act
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(includeWorkHours: true, cso: csos));
+        
+        // Assert
+        hearings.Count.Should().Be(1);
+        hearings.First().AllocatedTo.Id.Should().Be(justiceUser.Id);
+        var resultingWorkHours = hearings.First().Allocations.First().JusticeUser.VhoWorkHours;
+        hearings.First().Allocations.First().JusticeUser.VhoWorkHours.Count.Should().Be(nonDeletedWorkHours.Count);
+        CollectionAssert.AreEquivalent(resultingWorkHours.Select(wh => wh.Id), nonDeletedWorkHours.Select(wh => wh.Id));
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
@@ -13,7 +12,8 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using FluentAssertions;
+using BookingsApi.DAL.Commands.Core;
+using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.UnitTests.Controllers
 {
@@ -22,12 +22,15 @@ namespace BookingsApi.UnitTests.Controllers
 
         private JusticeUserController _controller;
         private Mock<IQueryHandler> _queryHandlerMock;
+        private Mock<ICommandHandler> _commandHandlerMock;
+        private Mock<ILogger<JusticeUserController>> _loggerMock;
         private JusticeUser _justiceUser;
         private List<JusticeUser> _justiceUserList;
 
         [SetUp]
         public void Setup()
         {
+            _loggerMock = new Mock<ILogger<JusticeUserController>>();
             _justiceUserList = new List<JusticeUser>();
             _justiceUser = new JusticeUser
             {
@@ -51,6 +54,7 @@ namespace BookingsApi.UnitTests.Controllers
             _justiceUserList.Add(_justiceUser);
 
             _queryHandlerMock = new Mock<IQueryHandler>();
+            _commandHandlerMock = new Mock<ICommandHandler>();
             _queryHandlerMock.Setup(x => x.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(It.Is<GetJusticeUserByUsernameQuery>(
                     x => x.Username == _justiceUser.Username)))
                 .ReturnsAsync(_justiceUser);
@@ -59,7 +63,7 @@ namespace BookingsApi.UnitTests.Controllers
                     x.Handle<GetJusticeUserListQuery, List<JusticeUser>>(It.IsAny<GetJusticeUserListQuery>()))
                 .ReturnsAsync(_justiceUserList);
 
-            _controller = new JusticeUserController(_queryHandlerMock.Object);
+            _controller = new JusticeUserController(_queryHandlerMock.Object, _commandHandlerMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -89,7 +93,30 @@ namespace BookingsApi.UnitTests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
         }
-        
+
+        [Test]
+        public async Task GetJusticeUserList_Filter_By_Term_ReturnsList()
+        {
+            var term = "Lastname2";
+            // Arrange
+            var expectedJusticeUserReponse = _justiceUserList
+                .Where(u => 
+                    u.Lastname.Contains(term) || 
+                    u.FirstName.Contains(term) ||
+                    u.ContactEmail.Contains(term) ||
+                    u.Username.Contains(term))
+                .Select(user => JusticeUserToResponseMapper.Map(user));
+            var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(expectedJusticeUserReponse);
+
+            // Act
+            var response = await _controller.GetJusticeUserList(term) as OkObjectResult;
+            var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            Assert.Less(expectedJusticeUserReponseJson.Length, actualJusticeUserReponseJson.Length);
+        }
+
         [Test]
         public async Task GetJusticeUserList_ReturnsList()
         {
@@ -98,13 +125,14 @@ namespace BookingsApi.UnitTests.Controllers
             var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(expectedJusticeUserReponse);
 
             // Act
-            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var response = await _controller.GetJusticeUserList(null) as OkObjectResult;
             var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(response);
             Assert.AreEqual(expectedJusticeUserReponseJson, actualJusticeUserReponseJson);
         }
+
         [Test]
         public async Task GetJusticeUserList_ReturnsListEmpty()
         {
@@ -115,7 +143,7 @@ namespace BookingsApi.UnitTests.Controllers
             var expectedJusticeUserReponseJson = JsonConvert.SerializeObject(new List<JusticeUser>());
 
             // Act
-            var response = await _controller.GetJusticeUserList() as OkObjectResult;
+            var response = await _controller.GetJusticeUserList(null) as OkObjectResult;
             var actualJusticeUserReponseJson = JsonConvert.SerializeObject(response.Value);
 
             // Assert

@@ -33,7 +33,7 @@ namespace BookingsApi.Controllers
         [HttpGet("username/{username}", Name = "GetParticipantsByUsername")]
         [OpenApiOperation("GetParticipantsByUsername")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetParticipantsByUsername(string username)
         {

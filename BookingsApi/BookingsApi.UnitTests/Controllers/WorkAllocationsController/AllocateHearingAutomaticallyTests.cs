@@ -8,14 +8,14 @@ using BookingsApi.Domain.Validations;
 using BookingsApi.Mappings;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Testing.Common.Assertions;
+using Moq;
 
-namespace BookingsApi.UnitTests.Controllers.HearingsController
+namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {
-    public class AllocateHearingAutomaticallyTests : HearingsControllerTests
+    public class AllocateHearingAutomaticallyTests : WorkAllocationsControllerTest
     {
         private JusticeUser _justiceUser;
         

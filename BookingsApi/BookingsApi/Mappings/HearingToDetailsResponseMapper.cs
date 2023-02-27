@@ -3,7 +3,6 @@ using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Extensions;
-using BookingsApi.Helpers;
 
 namespace BookingsApi.Mappings
 {
@@ -26,8 +25,6 @@ namespace BookingsApi.Mappings
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
             
-            var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
-
             var response = new HearingDetailsResponse
             {
                 Id = videoHearing.Id,
@@ -51,9 +48,7 @@ namespace BookingsApi.Mappings
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
-                Endpoints = endpoints,
-                HearingTypeCode = videoHearing.HearingType?.Code,
-                AllocatedTo = allocatedVho
+                Endpoints = endpoints
             };
 
             return response;

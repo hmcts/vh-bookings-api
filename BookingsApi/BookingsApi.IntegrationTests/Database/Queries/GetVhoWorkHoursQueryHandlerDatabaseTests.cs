@@ -6,6 +6,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -15,13 +16,19 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         private GetVhoWorkHoursQueryHandler _handler;
         private const string UserWithRecords = "test.Integration.GetVhoWorkHoursQueryHandlerDatabase1@hearings.reform.hmcts.net";
         private const string UserWithoutRecords = "test.Integration.GetVhoWorkHoursQueryHandlerDatabase2@hearings.reform.hmcts.net";
+        private const string DeletedUser = "test.Integration.GetVhoWorkHoursQueryHandlerDatabase3@hearings.reform.hmcts.net";
+        private const string UserWithDeletedRecords = "test.Integration.GetVhoWorkHoursQueryHandlerDatabase4@hearings.reform.hmcts.net";
 
         [TearDown]
         public void DbCleanup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.Where(e => e.JusticeUser.Username == UserWithRecords));
+            context.VhoWorkHours.RemoveRange(context.VhoWorkHours.IgnoreQueryFilters().Where(e => e.JusticeUser.Username == DeletedUser));
+            context.VhoWorkHours.RemoveRange(context.VhoWorkHours.IgnoreQueryFilters().Where(e => e.JusticeUser.Username == UserWithDeletedRecords));
             context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithRecords));
+            context.JusticeUsers.Remove(context.JusticeUsers.IgnoreQueryFilters().First(e => e.Username == DeletedUser));
+            context.JusticeUsers.Remove(context.JusticeUsers.IgnoreQueryFilters().First(e => e.Username == UserWithDeletedRecords));
             context.SaveChanges();
         }
 
@@ -49,6 +56,26 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 FirstName    = "test",
                 Lastname     = "test",
             });
+            context.JusticeUsers.Add(new JusticeUser
+            {
+                ContactEmail = "contact@email.com",
+                Username = DeletedUser,
+                UserRoleId = (int)UserRoleId.Vho,
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedDate = DateTime.Now,
+                FirstName = "test",
+                Lastname = "test",
+            });
+            context.JusticeUsers.Add(new JusticeUser
+            {
+                ContactEmail = "contact@email.com",
+                Username = UserWithDeletedRecords,
+                UserRoleId = (int)UserRoleId.Vho,
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedDate = DateTime.Now,
+                FirstName = "test",
+                Lastname = "test",
+            });
             context.SaveChanges();
             var vhoWorkHours1 = new VhoWorkHours
             {
@@ -68,8 +95,35 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 CreatedBy   = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 DayOfWeek   = context.DaysOfWeek.First(e => e.Id == 2)
             };
-            context.VhoWorkHours.AddRange(vhoWorkHours1, vhoWorkHours2);
+            var deletedVhoWorkHours1 = new VhoWorkHours
+            {
+                StartTime = new TimeSpan(),
+                EndTime = new TimeSpan(),
+                JusticeUser = context.JusticeUsers.First(e => e.Username == DeletedUser),
+                CreatedDate = DateTime.Now,
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                DayOfWeek = context.DaysOfWeek.First(e => e.Id == 1)
+            };
+            var deletedVhoWorkHours2 = new VhoWorkHours
+            {
+                StartTime = new TimeSpan(),
+                EndTime = new TimeSpan(),
+                JusticeUser = context.JusticeUsers.First(e => e.Username == UserWithDeletedRecords),
+                CreatedDate = DateTime.Now,
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                DayOfWeek = context.DaysOfWeek.First(e => e.Id == 1)
+            };
+            context.VhoWorkHours.AddRange(vhoWorkHours1, vhoWorkHours2, deletedVhoWorkHours1, deletedVhoWorkHours2);
+            var deletedUser = context.JusticeUsers.First(x => x.Username == DeletedUser);
+            deletedUser.Delete();
+            var userWithDeletedWorkHours = context.JusticeUsers.First(x => x.Username == UserWithDeletedRecords);
+            userWithDeletedWorkHours.Delete(); // Delete the work hours
+            userWithDeletedWorkHours.Restore(); // Undelete the user without undeleting the work hours
             context.SaveChanges();
+
+            // Necessary for the user's work hours to get refreshed when we do the query
+            context.Entry(userWithDeletedWorkHours).State = EntityState.Detached;
+
             _handler = new GetVhoWorkHoursQueryHandler(context);
         }
 
@@ -96,6 +150,22 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_empty_list_when_user_exists_but_not_work_hours_exist()
         {
             var query        = new GetVhoWorkHoursQuery(UserWithoutRecords);
+            var vhoWorkHours = await _handler.Handle(query);
+            vhoWorkHours.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task Should_return_null_when_user_is_deleted()
+        {
+            var query = new GetVhoWorkHoursQuery(DeletedUser);
+            var vhoWorkHours = await _handler.Handle(query);
+            vhoWorkHours.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Should_not_return_deleted_work_hours()
+        {
+            var query = new GetVhoWorkHoursQuery(UserWithDeletedRecords);
             var vhoWorkHours = await _handler.Handle(query);
             vhoWorkHours.Should().BeEmpty();
         }

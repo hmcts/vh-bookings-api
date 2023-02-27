@@ -8,6 +8,23 @@ namespace BookingsApi.Domain
 {
     public class JusticeUser : TrackableEntity<Guid>
     {
+        public JusticeUser()
+        {
+            VhoNonAvailability = new List<VhoNonAvailability>();
+            VhoWorkHours = new List<VhoWorkHours>();
+            Allocations = new List<Allocation>();
+        }
+
+
+        public JusticeUser(string firstName, string lastname, string contactEmail, string username, UserRole userRole) : this()
+        {
+            FirstName = firstName;
+            Lastname = lastname;
+            ContactEmail = contactEmail;
+            Username = username;
+            UserRoleId = userRole.Id;
+        }
+
         public string FirstName { get; set; }
         public string Lastname { get; set; }
         public string ContactEmail { get; set; }
@@ -16,6 +33,7 @@ namespace BookingsApi.Domain
         public int UserRoleId { get; set; }
         public UserRole UserRole { get; set; }
         public string CreatedBy { get; set; }
+        public bool Deleted { get; private set; }
 
         public virtual IList<VhoNonAvailability> VhoNonAvailability { get; protected set; }
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
@@ -23,28 +41,34 @@ namespace BookingsApi.Domain
 
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
-            var workHours = VhoWorkHours
-                .FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
-            
+            return IsDateBetweenWorkingHours(startDate, endDate, configuration) &&
+                   !IsDuringNonAvailableHours(startDate, endDate);
+        }
+
+        public bool IsDuringNonAvailableHours(DateTime startDate, DateTime endDate)
+        {
             var nonAvailabilities = VhoNonAvailability
                 .Where(na => na.StartTime <= endDate)
                 .Where(na => startDate <= na.EndTime)
                 .Where(na => !na.Deleted)
                 .ToList();
             
-            if (workHours == null)
-            {
-                return false;
-            }
+            return nonAvailabilities.Any();
+        }
+
+        public bool IsDateBetweenWorkingHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
+        {
+            var workHours = VhoWorkHours
+                .FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
             
-            if (nonAvailabilities.Any())
+            if (workHours == null)
             {
                 return false;
             }
             
             var workHourStartTime = workHours.StartTime;
             var workHourEndTime = workHours.EndTime;
-
+            
             if (workHourStartTime < startDate.TimeOfDay && workHourEndTime < startDate.TimeOfDay)
             {
                 return false;
@@ -55,13 +79,33 @@ namespace BookingsApi.Domain
                 return false;
             }
             
-            if (!((workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
-                  (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime)))
+            return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
+                   (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
+        }
+
+        public void Delete()
+        {
+            Deleted = true;
+
+            foreach (var workHour in VhoWorkHours)
             {
-                return false;
+                workHour.Delete();
             }
 
-            return true;
+            foreach (var nonAvailability in VhoNonAvailability)
+            {
+                nonAvailability.Delete();
+            }
+            
+            foreach (var hearing in Allocations.Select(a => a.Hearing))
+            {
+                hearing.Deallocate();
+            }
+        }
+
+        public void Restore()
+        {
+            Deleted = false;
         }
     }
 }
