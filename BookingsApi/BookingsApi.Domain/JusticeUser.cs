@@ -33,6 +33,7 @@ namespace BookingsApi.Domain
         public int UserRoleId { get; set; }
         public UserRole UserRole { get; set; }
         public string CreatedBy { get; set; }
+        public bool Deleted { get; private set; }
 
         public virtual IList<VhoNonAvailability> VhoNonAvailability { get; protected set; }
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
@@ -80,6 +81,31 @@ namespace BookingsApi.Domain
             
             return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
                    (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
+        }
+
+        public void Delete()
+        {
+            Deleted = true;
+
+            foreach (var workHour in VhoWorkHours)
+            {
+                workHour.Delete();
+            }
+
+            foreach (var nonAvailability in VhoNonAvailability)
+            {
+                nonAvailability.Delete();
+            }
+            
+            foreach (var hearing in Allocations.Select(a => a.Hearing))
+            {
+                hearing.Deallocate();
+            }
+        }
+
+        public void Restore()
+        {
+            Deleted = false;
         }
     }
 }
