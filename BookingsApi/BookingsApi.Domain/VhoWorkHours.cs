@@ -23,5 +23,11 @@ namespace BookingsApi.Domain
                 return (System.DayOfWeek)DayOfWeekId;
             }
         }
+        public bool Deleted { get; private set; }
+
+        public void Delete()
+        {
+            Deleted = true;
+        }
     }
 }

@@ -479,7 +479,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 try
                 {
                     await using var db = new BookingsDbContext(_dbContextOptions);
-                    var justiceUser = await db.JusticeUsers.SingleOrDefaultAsync(x => x.Id == id);
+                    var justiceUser = await db.JusticeUsers.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
                     if (justiceUser != null)
                     {
                         db.JusticeUsers.Remove(justiceUser);

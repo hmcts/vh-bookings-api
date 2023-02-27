@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -40,6 +41,22 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             user.Id.Should().Be(justiceUser.Id);
             user.Username.Should().Be(justiceUser.Username);
             user.UserRoleId.Should().Be(justiceUser.UserRoleId);
+        }
+
+        [Test]
+        public async Task Should_return_null_when_user_is_deleted()
+        {
+            await using var db = new BookingsDbContext(BookingsDbContextOptions); 
+            
+            var justiceUser = await Hooks.SeedJusticeUser("deleted.cso@hearings.reform.hmcts.net", "firstName", "secondname", true);
+            justiceUser = await db.JusticeUsers.FirstOrDefaultAsync(x => x.Id == justiceUser.Id);
+            justiceUser.Delete();
+            await db.SaveChangesAsync();
+            
+            var query = new GetJusticeUserByUsernameQuery(justiceUser.Username);
+            var user = (await _handler.Handle(query));
+
+            user.Should().BeNull();
         }
     }
 }
