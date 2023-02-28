@@ -84,7 +84,8 @@ stages:
       vmImage: ubuntu-20.04
     steps:
       - checkout: self
-      
+        fetchTags: true
+
       - template: templates\dotnet\package-nuget-packages.yml@azTemplates
         parameters:
           nugetProjectPath: "${{ variables.appName }}/${{ variables.nuget_package_name }}"
