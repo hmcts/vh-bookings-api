@@ -8,7 +8,7 @@ patch-version-bump-message: '\+semver:\s?(fix|patch)'
 commit-message-incrementing: Enabled
 branches:
   main:
-    regex: ^origin/master$
+    regex: ^origin/master$|master$
     mode: ContinuousDelivery
     tag: staging
     increment: Patch
