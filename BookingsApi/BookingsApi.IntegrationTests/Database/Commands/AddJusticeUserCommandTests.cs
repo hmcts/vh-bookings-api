@@ -6,6 +6,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands;
@@ -58,11 +59,34 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         }).Message.Should().Be($"A justice user with the username {command.Username} already exists");
     }
 
+    [Test]
+    public async Task should_throw_an_exception_when_adding_a_justice_user_with_an_existing_username_who_has_been_deleted()
+    {
+        var username = "should_add_a_justice_user_deleted_user@testdb.com";
+        
+        var command = new AddJusticeUserCommand("test1", "test2", username,
+            "should_throw_an_exception_when_adding_a_justice_user_with_an_existing_username_who_has_been_deleted@testdb.com", "db@test.com", (int) UserRoleId.Vho);
+
+        await _commandHandler.Handle(command);
+
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        
+        var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == username);
+        justiceUser.Delete();
+        
+        await db.SaveChangesAsync();
+
+        Assert.ThrowsAsync<JusticeUserAlreadyExistsException>(async () =>
+        {
+            await _commandHandler.Handle(command);
+        }).Message.Should().Be($"A justice user with the username {command.Username} already exists");
+    }
+
     [TearDown]
     public new async Task TearDown()
     {
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        db.JusticeUsers.RemoveRange(db.JusticeUsers.Where(ju => ju.CreatedBy == "db@test.com"));
+        db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
         await db.SaveChangesAsync();
     }
 }

@@ -57,6 +57,9 @@ namespace BookingsApi.DAL
                     }
                 }
             }
+
+            modelBuilder.Entity<JusticeUser>().HasQueryFilter(u => !u.Deleted);
+            modelBuilder.Entity<VhoWorkHours>().HasQueryFilter(wh => !wh.Deleted);
         }
         
         public override int SaveChanges()

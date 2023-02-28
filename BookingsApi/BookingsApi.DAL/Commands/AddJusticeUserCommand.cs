@@ -6,6 +6,7 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
 {
@@ -45,7 +46,7 @@ namespace BookingsApi.DAL.Commands
             var roleName = command.RoleId == (int)UserRoleId.VhTeamLead ? "Video hearings team lead" : "Video hearings officer";
             var role = new UserRole(command.RoleId, roleName);
 
-            if (_context.JusticeUsers.Any(x => x.Username.ToLower() == command.Username.ToLower()))
+            if (_context.JusticeUsers.IgnoreQueryFilters().Any(x => x.Username.ToLower() == command.Username.ToLower()))
             {
                 throw new JusticeUserAlreadyExistsException(command.Username);
             }
