@@ -7,6 +7,7 @@ namespace BookingsApi.Validations
     /// <summary>Simple validator to check email formats</summary>
     public static class EmailValidator
     {
+        private static TimeSpan RegexTimeOut = TimeSpan.FromSeconds(4);
         private const string RegexPattern = @"^([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*)@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])(?:[a-zA-Z0-9](?:\.[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
         /// <summary>
@@ -22,7 +23,7 @@ namespace BookingsApi.Validations
             if (string.IsNullOrEmpty(email))
                 return false;
                 
-            var r = Regex.Match(email, RegexPattern);
+            var r = Regex.Match(email, RegexPattern, RegexOptions.None, RegexTimeOut);
             return r.Success;
         }
     }
