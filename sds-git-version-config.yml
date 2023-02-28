@@ -10,7 +10,7 @@ branches:
   main:
     regex: ^origin/master$|master$
     mode: ContinuousDelivery
-    tag: staging
+    tag: ''
     increment: Patch
     source-branches: [ 'feature', 'release', 'hotfix' ]
     prevent-increment-of-merged-branch-version: true
