@@ -21,16 +21,9 @@ namespace BookingsApi.Validations
         {
             if (string.IsNullOrEmpty(email))
                 return false;
-
-            try
-            {
-                var r = Regex.Match(email, RegexPattern);
-                return r.Success;
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
+                
+            var r = Regex.Match(email, RegexPattern);
+            return r.Success;
         }
     }
 }
