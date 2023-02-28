@@ -8,10 +8,21 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static HearingAllocationDto MapToDto(Hearing hearing)
         {
-            var hearingDto = HearingDtoMapper.MapToDto(hearing);
-            var hearingAllocationDto = (HearingAllocationDto)hearingDto;
-            hearingAllocationDto.JudgeDisplayName = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge)?.DisplayName;
-            return hearingAllocationDto;
+            var @case = hearing.GetCases().First();
+            return new HearingAllocationDto
+            {
+                HearingId = hearing.Id,
+                GroupId = hearing.SourceId,
+                ScheduledDateTime = hearing.ScheduledDateTime,
+                ScheduledDuration = hearing.ScheduledDuration,
+                CaseType = hearing.CaseType.Name,
+                CaseNumber = @case.Number,
+                CaseName= @case.Name,
+                HearingVenueName = hearing.HearingVenueName,
+                RecordAudio = hearing.AudioRecordingRequired,
+                HearingType = hearing.HearingType.Name,
+                JudgeDisplayName = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge)?.DisplayName
+            };
         }
     }
 }
