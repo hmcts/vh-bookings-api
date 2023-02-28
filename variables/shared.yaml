@@ -15,7 +15,7 @@ variables:
   - name: nuget_feed_name
     value: 'vh-packages'
   - name: git_version_config_path
-    value: $(Build.SourcesDirectory)/sds-git-version-config.yml
+    value: $(Build.SourcesDirectory)/GitVersion.yml
   - name: nuget_package_name
     value: 'BookingsApi.Client'
 
