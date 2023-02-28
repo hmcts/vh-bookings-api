@@ -2,6 +2,7 @@ using BookingsApi.Validations;
 using Faker;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 
 namespace BookingsApi.UnitTests.Validation
 {
@@ -24,7 +25,11 @@ namespace BookingsApi.UnitTests.Validation
         [Test]
         public void Should_fail_validation_when_format_is_invalid()
         {
-            var email = "uhfiudshf";
+            const string firstName = "Automatically";
+            const string lastName = "Created";
+            var unique = DateTime.Now.ToString("yyyyMMddhmmss");
+            var email = $"{firstName}.{lastName}.{unique}.@hearings.reform.hmcts.net";
+
             email.IsValidEmail().Should().BeFalse();
         }
     }
