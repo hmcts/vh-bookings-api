@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: VIH-9698
+      ref: master
       endpoint: hmcts
       
 trigger: none
@@ -80,8 +80,6 @@ stages:
 
   - job: package_nuget
     displayName: "Package NuGet Packages"
-    pool:
-      vmImage: ubuntu-20.04
     steps:
       - template: templates\dotnet\package-nuget-packages.yml@azTemplates
         parameters:
