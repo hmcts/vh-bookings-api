@@ -83,14 +83,11 @@ stages:
     pool:
       vmImage: ubuntu-20.04
     steps:
-      - checkout: self
-        fetchTags: true
-
       - template: templates\dotnet\package-nuget-packages.yml@azTemplates
         parameters:
           nugetProjectPath: "${{ variables.appName }}/${{ variables.nuget_package_name }}"
           vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
-          #gitVersionConfigPath: ${{ variables.git_version_config_path }}
+          gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
   - job: PublishAcceptanceTests
     dependsOn: package_nuget
