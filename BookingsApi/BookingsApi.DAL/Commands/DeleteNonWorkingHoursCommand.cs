@@ -40,7 +40,7 @@ namespace BookingsApi.DAL.Commands
                 throw new NonWorkingHoursNotFoundException(command.Id);
             }
 
-            hours.Deleted = true;
+            hours.Delete();
             
             _context.Update(hours);
 

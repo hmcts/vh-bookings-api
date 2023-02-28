@@ -48,6 +48,11 @@ public class HearingAllocationsResponse
     public bool? HasWorkHoursClash { get; set; }
     
     /// <summary>
+    /// True if the allocated user has a non-availability clash
+    /// </summary>
+    public bool? HasNonAvailabilityClash { get; set; }
+    
+    /// <summary>
     /// Number of concurrent hearings for this user
     /// </summary>
     public int? ConcurrentHearingsCount { get; set; }

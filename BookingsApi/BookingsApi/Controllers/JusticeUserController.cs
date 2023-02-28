@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.Responses;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Common;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -119,6 +121,38 @@ namespace BookingsApi.Controllers
             var list = userList.Select(user => JusticeUserToResponseMapper.Map(user));
 
             return Ok(list.ToList());
+        }
+
+        /// <summary>
+        /// Delete a justice user
+        /// </summary>
+        /// <param name="id">The justice user id</param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [OpenApiOperation("DeleteJusticeUser")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteJusticeUser(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
+                return ValidationProblem();
+            }
+
+            var command = new DeleteJusticeUserCommand(id);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+            }
+            catch (JusticeUserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+
+            return NoContent();
         }
     }
 }

@@ -216,4 +216,66 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         hearings.First().CaseType.Name.Should().Be(_seededHearing1.CaseType.Name);
         hearings.First().AllocatedTo.Username.Should().Be(justiceUser.Username);
     }
+
+    [Test]
+    public async Task Should_exclude_deleted_work_hours()
+    {
+        // Arrange
+        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
+        await Hooks.AddAllocation(_seededHearing1, justiceUser);
+
+        var deletedWorkHours = new List<VhoWorkHours>();
+        
+        for (var i = 1; i <= 7; i++)
+        {
+            deletedWorkHours.Add(new VhoWorkHours
+            {
+                DayOfWeekId = i, 
+                StartTime = new TimeSpan(10, 0, 0), 
+                EndTime = new TimeSpan(18, 0, 0),
+                JusticeUserId = justiceUser.Id
+            });
+        }
+        
+        _context.VhoWorkHours.AddRange(deletedWorkHours);
+
+        await _context.SaveChangesAsync();
+        
+        justiceUser = _context.JusticeUsers.FirstOrDefault(x => x.Id == justiceUser.Id);
+        
+        justiceUser.Delete();
+        
+        await _context.SaveChangesAsync();
+        
+        justiceUser.Restore();
+        
+        var nonDeletedWorkHours = new List<VhoWorkHours>();
+        
+        for (var i = 1; i <= 7; i++)
+        {
+            nonDeletedWorkHours.Add(new VhoWorkHours
+            {
+                DayOfWeekId = i, 
+                StartTime = new TimeSpan(8, 0, 0), 
+                EndTime = new TimeSpan(17, 0, 0),
+                JusticeUserId = justiceUser.Id
+            });
+        }
+        
+        _context.VhoWorkHours.AddRange(nonDeletedWorkHours);
+
+        await _context.SaveChangesAsync();
+
+        var csos = new List<Guid>() { justiceUser.Id };
+        
+        // Act
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(includeWorkHours: true, cso: csos));
+        
+        // Assert
+        hearings.Count.Should().Be(1);
+        hearings.First().AllocatedTo.Id.Should().Be(justiceUser.Id);
+        var resultingWorkHours = hearings.First().Allocations.First().JusticeUser.VhoWorkHours;
+        hearings.First().Allocations.First().JusticeUser.VhoWorkHours.Count.Should().Be(nonDeletedWorkHours.Count);
+        CollectionAssert.AreEquivalent(resultingWorkHours.Select(wh => wh.Id), nonDeletedWorkHours.Select(wh => wh.Id));
+    }
 }
