@@ -152,7 +152,7 @@ namespace BookingsApi.Controllers
                 var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
-                await PublishAllocationsToServiceBus(list, list.FirstOrDefault().AllocatedTo);
+                await PublishAllocationsToServiceBus(list, list.FirstOrDefault()?.AllocatedTo);
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
