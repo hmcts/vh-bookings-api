@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
