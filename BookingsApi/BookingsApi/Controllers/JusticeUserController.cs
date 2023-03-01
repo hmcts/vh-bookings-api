@@ -18,6 +18,7 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.Extensions;
 using BookingsApi.Validations;
 using Microsoft.Extensions.Logging;
+using Namotion.Reflection;
 
 namespace BookingsApi.Controllers
 {
@@ -79,6 +80,45 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Edit a justice user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPatch]
+        [OpenApiOperation("EditAJusticeUser")]
+        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+        public async Task<IActionResult> EditAJusticeUser(EditJusticeUserRequest request)
+        {
+            var validation = await new EditJusticeUserRequestValidation().ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return ValidationProblem(ModelState);
+            }
+            var command = new EditJusticeUserCommand(request.Id, request.Username, (int) request.Role);
+            try
+            {
+                await _commandHandler.Handle(command);
+                var justiceUser =
+                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                        new GetJusticeUserByUsernameQuery(request.Username));
+
+                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+                return CreatedAtAction(actionName: nameof(GetJusticeUserByUsername),
+                    routeValues: new { username = request.Username },
+                    value: justiceUserResponse);
+            }
+            // need to change this - new exception type?
+            catch (JusticeUserAlreadyExistsException e)
+            {
+                _logger.LogError(e, "Detected an existing user for the username {Username}", request.Username);
+                return Conflict(e.Message);
+            }
+        }
+        
         /// <summary>
         /// Find justice user with matching username.
         /// </summary>
