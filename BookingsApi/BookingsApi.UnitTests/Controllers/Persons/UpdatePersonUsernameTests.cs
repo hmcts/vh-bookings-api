@@ -40,8 +40,8 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task should_return_not_found_when_command_throws_person_not_found_exception()
         {
-            var contactEmail = "me@me.com";
-            var username = "me@me.com";
+            var contactEmail = "me@email.com";
+            var username = "me@email.com";
 
             CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdatePersonUsernameCommand>()))
                 .ThrowsAsync(new PersonNotFoundException(contactEmail));
@@ -52,8 +52,8 @@ namespace BookingsApi.UnitTests.Controllers.Persons
         [Test]
         public async Task should_return_nocontent_when_username_updated()
         {
-            var contactEmail = "me@me.com";
-            var username = "me@me1.com";
+            var contactEmail = "email@email.com";
+            var username = "email1@email1.com";
 
             var hearing1 = new VideoHearingBuilder().WithCase().Build();
             hearing1.Participants[0].Person.ContactEmail = contactEmail;
