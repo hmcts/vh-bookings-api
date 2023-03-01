@@ -18,13 +18,13 @@ namespace Testing.Common.Builders.Domain
         private readonly Person _johPerson;
         private readonly Person _staffMemberPerson;
 
-        public VideoHearingBuilder()
+        public VideoHearingBuilder(DateTime? scheduledDateTime = null)
         {
             var refDataBuilder = new RefDataBuilder();
             var venue = refDataBuilder.HearingVenues.First( x=> x.Name == _hearingVenueName);
             var caseType = new CaseType(1, _caseTypeName);
             var hearingType = Builder<HearingType>.CreateNew().WithFactory(() => new HearingType(_hearingTypeName)).Build();
-            var scheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
+            scheduledDateTime ??= DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
             var duration = 80;
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
@@ -34,7 +34,7 @@ namespace Testing.Common.Builders.Domain
             var cancelReason = "Online abandonment (incomplete registration)";
 
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                    new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
+                    new VideoHearing(caseType, hearingType, scheduledDateTime.Value, duration, venue, hearingRoomName,
                         otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
                 .Build();
 
@@ -104,6 +104,23 @@ namespace Testing.Common.Builders.Domain
         public VideoHearingBuilder WithCase()
         {
             _videoHearing.AddCase("AutoTest", "Test", true);
+            return this;
+        }
+
+        public VideoHearingBuilder WithAllocatedJusticeUser()
+        {
+            var justiceUser = new JusticeUser
+            {
+                ContactEmail = "contact@email.com",
+                Username = "contact@email.com",
+                UserRoleId = (int) UserRoleId.Vho,
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedDate = DateTime.Now,
+                FirstName = "test",
+                Lastname = "test",
+                UserRole = new UserRole((int) UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+            };
+            _videoHearing.Allocations.Add(new Allocation(){JusticeUser = justiceUser, Hearing = _videoHearing});
             return this;
         }
 

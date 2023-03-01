@@ -27,18 +27,18 @@ namespace BookingsApi.Controllers
     {
         private readonly IQueryHandler _queryHandler;
         private readonly IHearingAllocationService _hearingAllocationService;
-        private readonly ILogger<WorkAllocationsController> _logger;
         private readonly IEventPublisher _eventPublisher;
+        private readonly ILogger<WorkAllocationsController> _logger;
 
-        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, 
-            IQueryHandler queryHandler, ILogger<WorkAllocationsController> logger,
-            IEventPublisher eventPublisher)
+        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, IQueryHandler queryHandler,
+            ILogger<WorkAllocationsController> logger, IEventPublisher eventPublisher)
         {
             _hearingAllocationService = hearingAllocationService;
             _queryHandler = queryHandler;
             _logger = logger;
             _eventPublisher = eventPublisher;
         }
+
         /// <summary>
         /// Automatically allocates a user to a hearing
         /// </summary>
@@ -152,13 +152,7 @@ namespace BookingsApi.Controllers
                 var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
-                
-                // need to broadcast acknowledgment message for the allocation
-                if (list.Count > 0)
-                {
-                    await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(list, list[0].AllocatedTo));
-                }
-                
+                await PublishAllocationsToServiceBus(list, list.FirstOrDefault().AllocatedTo);
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
@@ -166,6 +160,12 @@ namespace BookingsApi.Controllers
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
                 return BadRequest(ModelState);
             }
+        }
+
+        private async Task PublishAllocationsToServiceBus(List<VideoHearing> hearings, JusticeUser justiceUser)
+        {
+            var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();
+            await _eventPublisher.PublishAsync(new HearingsAllocationIntegrationEvent(todaysHearing, justiceUser));
         }
     }
 }

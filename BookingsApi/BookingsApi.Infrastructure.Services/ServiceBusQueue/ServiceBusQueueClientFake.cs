@@ -10,7 +10,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
     public class ServiceBusQueueClientFake : IServiceBusQueueClient
     {
         public JsonSerializerSettings SerializerSettings { get; set; }
-        private readonly ConcurrentQueue<EventMessage> _eventMessages = new ConcurrentQueue<EventMessage>();
+        private readonly ConcurrentQueue<EventMessage> _eventMessages = new();
 
         public ServiceBusQueueClientFake()
         {
@@ -39,6 +39,12 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         {
             return _eventMessages.ToArray();
         }
+
+        public void Clear()
+        {
+            _eventMessages.Clear();
+        }
+        
         public int Count => _eventMessages.Count;
     }
 }
