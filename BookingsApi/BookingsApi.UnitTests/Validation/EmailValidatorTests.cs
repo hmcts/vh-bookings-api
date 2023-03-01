@@ -31,7 +31,7 @@ namespace BookingsApi.UnitTests.Validation
             email.IsValidEmail().Should().BeFalse();
         }
 
-        public string GetInvalidEmail()
+        public static string GetInvalidEmail()
         {
             const string firstName = "Automatically";
             const string lastName = "Created";
@@ -40,7 +40,7 @@ namespace BookingsApi.UnitTests.Validation
             return email;
         }
 
-        public string GetValidEmail()
+        public static string GetValidEmail()
         {
             const string firstName = "Automatically";
             const string lastName = "Created";
