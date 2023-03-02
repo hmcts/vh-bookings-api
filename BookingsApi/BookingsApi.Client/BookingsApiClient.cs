@@ -5389,7 +5389,7 @@ namespace BookingsApi.Client
                             throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
-                        if (status_ == 201)
+                        if (status_ == 200)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<JusticeUserResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -5409,7 +5409,7 @@ namespace BookingsApi.Client
                             throw new BookingsApiException<ValidationProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
-                        if (status_ == 409)
+                        if (status_ == 404)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)

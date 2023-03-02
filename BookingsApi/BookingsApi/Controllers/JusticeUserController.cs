@@ -87,9 +87,9 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPatch]
         [OpenApiOperation("EditAJusticeUser")]
-        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> EditAJusticeUser(EditJusticeUserRequest request)
         {
             var validation = await new EditJusticeUserRequestValidation().ValidateAsync(request);
@@ -107,15 +107,12 @@ namespace BookingsApi.Controllers
                         new GetJusticeUserByUsernameQuery(request.Username));
 
                 var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
-                return CreatedAtAction(actionName: nameof(GetJusticeUserByUsername),
-                    routeValues: new { username = request.Username },
-                    value: justiceUserResponse);
+                return Ok(justiceUserResponse);
             }
-            // need to change this - new exception type?
-            catch (JusticeUserAlreadyExistsException e)
+            catch (JusticeUserNotFoundException e)
             {
-                _logger.LogError(e, "Detected an existing user for the username {Username}", request.Username);
-                return Conflict(e.Message);
+                _logger.LogError(e, "User not found for the username {Username}", request.Username);
+                return NotFound(e.Message);
             }
         }
         

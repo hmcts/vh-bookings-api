@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
@@ -37,14 +38,14 @@ namespace BookingsApi.DAL.Commands
             var role = new UserRole(command.RoleId, roleName);
 
             var justiceUser = await _context.JusticeUsers
-                .SingleOrDefaultAsync(x => x.Username == command.Username);
+                .FirstOrDefaultAsync(x => x.Id == command.Id);
 
             if (justiceUser == null)
             {
                 throw new JusticeUserNotFoundException(command.Id);
             }
 
-            justiceUser.UserRole = role;
+            justiceUser.UserRoleId = role.Id;
             _context.Update(justiceUser);
             await _context.SaveChangesAsync();
         }
