@@ -241,7 +241,7 @@ namespace BookingsApi.UnitTests.Validation
             }
         }
 
-        private ParticipantRequest BuildRequest()
+        private static ParticipantRequest BuildRequest()
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")
