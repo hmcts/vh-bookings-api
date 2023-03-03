@@ -105,7 +105,7 @@ namespace BookingsApi.UnitTests.Validation
         {
             var request = BuildRequest();
             request.HearingRoleName = "Judge";
-            request.ContactEmail = "test@email.com";
+            request.ContactEmail = "test@T.com";
             request.Username = string.Empty;
 
             var result = await _validator.ValidateAsync(request);
@@ -175,7 +175,7 @@ namespace BookingsApi.UnitTests.Validation
         public async Task Should_return_valid_contact_email_error()
         {
             var request = BuildRequest();
-            request.ContactEmail = "mmm@email.com";
+            request.ContactEmail = "mmm@mm.com";
 
             var result = await _validator.ValidateAsync(request);
 
@@ -246,7 +246,7 @@ namespace BookingsApi.UnitTests.Validation
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")
                  .With(x => x.HearingRoleName = "Representative")
-                 .With(x => x.ContactEmail = "mm@email.com")
+                 .With(x => x.ContactEmail = "mm@mm.com")
                  .Build();
         }
     }

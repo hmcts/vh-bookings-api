@@ -117,16 +117,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             request.Participants[0].LastName = hearing.Participants[0].Person.LastName;
             request.Participants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
             request.Participants[0].TelephoneNumber = hearing.Participants[0].Person.TelephoneNumber;
-            hearing.Participants.First(e => e.HearingRole.Name == "Judge").Person.ContactEmail = "judge@email.com";
+            hearing.Participants.First(e => e.HearingRole.Name == "Judge").Person.ContactEmail = "judge@me.com";
             request.Participants.Add(new ParticipantRequest
             {
                 CaseRoleName = "Test",
-                ContactEmail = "judge@email.com",
+                ContactEmail = "judge@me.com",
                 HearingRoleName = "Judge",
                 FirstName = "Judge",
                 LastName = "One",
                 DisplayName = "One",
-                Username = "judge@email.com",
+                Username = "judge@me.com",
                 TelephoneNumber = "(+44)123 456"
             });
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
