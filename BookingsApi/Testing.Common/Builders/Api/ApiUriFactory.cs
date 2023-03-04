@@ -94,6 +94,7 @@ namespace Testing.Common.Builders.Api
             private const string ApiRoot = "justiceuser";
             public static string AddAJusticeUser => $"{ApiRoot}";
             public static string DeleteJusticeUser(Guid justiceUserId) => $"{ApiRoot}/{justiceUserId}";
+            public static string EditAJusticeUser => $"{ApiRoot}";
         }
     }
 }
