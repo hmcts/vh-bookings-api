@@ -14,7 +14,7 @@ using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.JusticeUsers
 {
-    public class AddAJusticeUserTests : ApiTest
+    public class AddJusticeUserTests : ApiTest
     {
         private AddJusticeUserRequest _request;
 
@@ -27,7 +27,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             // act
             var result = await client.PostAsync(
-                ApiUriFactory.JusticeUserEndpoints.AddAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
             
             // assert
             result.IsSuccessStatusCode.Should().BeTrue();
@@ -55,7 +55,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             // act
             var result = await client.PostAsync(
-                ApiUriFactory.JusticeUserEndpoints.AddAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
             
             // assert
             result.IsSuccessStatusCode.Should().BeFalse();
@@ -75,9 +75,9 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             // act
             var result1 = await client.PostAsync(
-                ApiUriFactory.JusticeUserEndpoints.AddAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
             var result2 = await client.PostAsync(
-                ApiUriFactory.JusticeUserEndpoints.AddAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
             // assert
             result1.IsSuccessStatusCode.Should().BeTrue();
             result2.IsSuccessStatusCode.Should().BeFalse();
