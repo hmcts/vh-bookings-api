@@ -45,7 +45,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     }
 
     [Test]
-    public async Task should_throw_an_exception_when_adding_a_justice_user_with_an_existing_username()
+    public void should_throw_an_exception_when_justice_user_not_found()
     {
         // Arrange
         var id = Guid.NewGuid();

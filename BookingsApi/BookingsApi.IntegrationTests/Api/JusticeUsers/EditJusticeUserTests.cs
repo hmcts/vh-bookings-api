@@ -18,7 +18,7 @@ using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.JusticeUsers
 {
-    public class EditAJusticeUserTests : ApiTest
+    public class EditJusticeUserTests : ApiTest
     {
         private EditJusticeUserRequest _request;
         private Guid? _justiceUserId;
@@ -33,7 +33,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             // act
             var result = await client.PatchAsync(
-                ApiUriFactory.JusticeUserEndpoints.EditAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.EditJusticeUser, RequestBody.Set(_request));
             
             // assert
             result.IsSuccessStatusCode.Should().BeTrue();
@@ -60,7 +60,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             // act
             var result = await client.PatchAsync(
-                ApiUriFactory.JusticeUserEndpoints.EditAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.EditJusticeUser, RequestBody.Set(_request));
             
             // assert
             result.IsSuccessStatusCode.Should().BeFalse();
@@ -81,7 +81,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             
             // act
             var result = await client.PatchAsync(
-                ApiUriFactory.JusticeUserEndpoints.EditAJusticeUser, RequestBody.Set(_request));
+                ApiUriFactory.JusticeUserEndpoints.EditJusticeUser, RequestBody.Set(_request));
             
             // assert
             result.IsSuccessStatusCode.Should().BeFalse();

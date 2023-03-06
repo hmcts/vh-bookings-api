@@ -44,18 +44,18 @@ namespace BookingsApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [OpenApiOperation("AddAJusticeUser")]
+        [OpenApiOperation("AddJusticeUser")]
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> AddAJusticeUser(AddJusticeUserRequest request)
+        public async Task<IActionResult> AddJusticeUser(AddJusticeUserRequest request)
         {
             var validation = await new AddJusticeUserRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
-            }
+            }       
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
                 request.ContactEmail, request.CreatedBy, (int) request.Role)
             {
@@ -86,11 +86,11 @@ namespace BookingsApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPatch]
-        [OpenApiOperation("EditAJusticeUser")]
+        [OpenApiOperation("EditJusticeUser")]
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> EditAJusticeUser(EditJusticeUserRequest request)
+        public async Task<IActionResult> EditJusticeUser(EditJusticeUserRequest request)
         {
             var validation = await new EditJusticeUserRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)

@@ -5,9 +5,9 @@ namespace BookingsApi.Validations;
 
 public class EditJusticeUserRequestValidation : AbstractValidator<EditJusticeUserRequest>
 {
-    public static readonly string NoUsernameErrorMessage = "Username is required";
-    public static readonly string NoIdErrorMessage = "Id is required";
-    public static readonly string NoRoleErrorMessage = "Role is required";
+    public const string NoUsernameErrorMessage = "Username is required";
+    public const string NoIdErrorMessage = "Id is required";
+    public const string NoRoleErrorMessage = "Role is required";
     
     public EditJusticeUserRequestValidation()
     {
