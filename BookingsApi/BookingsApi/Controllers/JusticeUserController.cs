@@ -18,6 +18,7 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.Extensions;
 using BookingsApi.Validations;
 using Microsoft.Extensions.Logging;
+using Namotion.Reflection;
 
 namespace BookingsApi.Controllers
 {
@@ -43,18 +44,18 @@ namespace BookingsApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [OpenApiOperation("AddAJusticeUser")]
+        [OpenApiOperation("AddJusticeUser")]
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> AddAJusticeUser(AddJusticeUserRequest request)
+        public async Task<IActionResult> AddJusticeUser(AddJusticeUserRequest request)
         {
             var validation = await new AddJusticeUserRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
-            }
+            }       
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
                 request.ContactEmail, request.CreatedBy, (int) request.Role)
             {
@@ -79,6 +80,42 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Edit a justice user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPatch]
+        [OpenApiOperation("EditJusticeUser")]
+        [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> EditJusticeUser(EditJusticeUserRequest request)
+        {
+            var validation = await new EditJusticeUserRequestValidation().ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return ValidationProblem(ModelState);
+            }
+            var command = new EditJusticeUserCommand(request.Id, request.Username, (int) request.Role);
+            try
+            {
+                await _commandHandler.Handle(command);
+                var justiceUser =
+                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                        new GetJusticeUserByUsernameQuery(request.Username));
+
+                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+                return Ok(justiceUserResponse);
+            }
+            catch (JusticeUserNotFoundException e)
+            {
+                _logger.LogError(e, "User not found for the username {Username}", request.Username);
+                return NotFound(e.Message);
+            }
+        }
+        
         /// <summary>
         /// Find justice user with matching username.
         /// </summary>
