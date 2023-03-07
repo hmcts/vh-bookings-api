@@ -3,37 +3,37 @@ parameters:
     displayName: Package App
     type: boolean
     default: true
-  
+
   - name: PackageACTests
     displayName: Package Acceptance Tests
     type: boolean
     default: true
-  
+
   - name: PackageNuget
     displayName: Package Nuget Project
     type: boolean
     default: true
-  
+
   - name: RunUnitTests
     displayName: Run Unit Tests
     type: boolean
     default: true
-  
+
   - name: RunIntegTests
     displayName: Run Integration Tests
     type: boolean
     default: true
-  
+
   - name: RunSonarCloudTests
     displayName: Run Sonar Cloud Analysis
     type: boolean
     default: true
-  
+
   - name: RunMutationTests
     displayName: Run Mutation Tests
     type: boolean
     default: false
-  
+
   - name: RunACTests
     displayName: Run Acceptance Tests
     type: boolean
@@ -107,7 +107,7 @@ parameters:
         value: $(AllocateHearing:MinimumGapBetweenHearingsInMinutes)
       - name: AllocateHearing:MaximumConcurrentHearings
         value: $(AllocateHearing:MaximumConcurrentHearings)
-  
+
 variables:
   - group: vh-domains-and-urls
   - group: FeatureFlags_NonProd
@@ -119,14 +119,14 @@ variables:
 trigger:
   branches:
     include:
-    - master
-    - release/*
-    - hotfix/*
-  
+      - master
+      - release/*
+      - hotfix/*
+
 pr:
   branches:
     include:
-    - master
+      - master
 
 resources:
   repositories:
@@ -136,12 +136,12 @@ resources:
       ref: refs/heads/master
       endpoint: hmcts
   containers:
-  - container: dotnetsdk
-    image: sspublicsbox.azurecr.io/vh/dotnet:3.1.102
-    endpoint: sspublicsbox
-  - container: dotnetsdk-cipipeline
-    image: sspublicsbox.azurecr.io/vh/dotnet-cipipeline:3.1.102
-    endpoint: sspublicsbox
+    - container: dotnetsdk
+      image: sspublicsbox.azurecr.io/vh/dotnet:3.1.102
+      endpoint: sspublicsbox
+    - container: dotnetsdk-cipipeline
+      image: sspublicsbox.azurecr.io/vh/dotnet-cipipeline:3.1.102
+      endpoint: sspublicsbox
 
 extends:
   template: stages\dotnet-package.yml@templates
@@ -171,10 +171,10 @@ extends:
       RunStryker: ${{ parameters.RunMutationTests }}
       IntegrationTestSettings:
         - ${{ each setting in parameters.testSettings }}:
-          - name: ${{ setting.name }}
-            value: ${{ setting.value }}
-            secret: ${{ setting.secret }}
-            type: ${{ setting.type }}
+            - name: ${{ setting.name }}
+              value: ${{ setting.value }}
+              secret: ${{ setting.secret }}
+              type: ${{ setting.type }}
       variables:
         - group: vh-bookings-api
       coverletCoverageExclusions:
@@ -184,8 +184,8 @@ extends:
         - "[Testing.Common]*"
       sonarCloud_ExtraProperties: |
         sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-        sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
-        sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
+        sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/BookingsApi.API/Program.cs, **/BookingsApi.API/Startup.cs, **/BookingsApi.API/Extensions/**, **/BookingsApi.API/Swagger/**, **/BookingsApi.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/BookingsApi.Common/**, **/BookingsApi.DAL/Mappings/**, **/BookingsApi.DAL/SeedData/**, **/BookingsApi.DAL/BookingsDbContext.cs, **/BookingsApi.DAL/**/DesignTimeHearingsContextFactory.cs, BookingsApi.DAL/Migrations/**, **/BookingsApi.Domain/Ddd/**, **/BookingsApi.DAL/Commands/Core/**, **/BookingsApi.DAL/Queries/Core/**, **/Testing.Common/**, **/BookingsApi.DAL/Migrations/*, **/BookingsApi.DAL/Migrations/**, **/Migrations/*
+        sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, BookingsApi.DAL/Mappings/**, **/BookingsApi.DAL/Migrations/**, BookingsApi.DAL/Migrations/**, BookingsApi.DAL/Migrations/*, BookingsApi.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, BookingsApi.API/ConfigureServicesExtensions.cs, BookingsApi.API/Extensions/**, BookingsApi.API/Swagger/**, BookingsApi.Common/**
       StrykerBreak: 75
     ACTest: ${{ parameters.RunACTests }}
     releaseParameters:
@@ -203,7 +203,6 @@ extends:
         - name: Services:BookingsApiUrl
           value: $(bookings_api_url_staging)
         - ${{ each setting in parameters.testSettings }}:
-          - name: ${{ setting.name }}
-            value: ${{ setting.value }}
-            secret: ${{ setting.secret }}
-            
+            - name: ${{ setting.name }}
+              value: ${{ setting.value }}
+              secret: ${{ setting.secret }}
