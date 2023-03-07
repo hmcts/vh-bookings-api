@@ -24,11 +24,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.Where(e => e.JusticeUser.Username == UserWithRecords));
+            context.VhoWorkHours.RemoveRange(context.VhoWorkHours.Where(e => e.JusticeUser.Username == UserWithoutRecords));
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.IgnoreQueryFilters().Where(e => e.JusticeUser.Username == DeletedUser));
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.IgnoreQueryFilters().Where(e => e.JusticeUser.Username == UserWithDeletedRecords));
             context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithRecords));
+            context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithoutRecords));
             context.JusticeUsers.Remove(context.JusticeUsers.IgnoreQueryFilters().First(e => e.Username == DeletedUser));
             context.JusticeUsers.Remove(context.JusticeUsers.IgnoreQueryFilters().First(e => e.Username == UserWithDeletedRecords));
+
             context.SaveChanges();
         }
 
