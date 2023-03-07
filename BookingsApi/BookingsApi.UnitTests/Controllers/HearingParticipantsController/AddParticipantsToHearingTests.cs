@@ -33,14 +33,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         private static List<ParticipantRequest> BuildParticipants(int listSize)
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(listSize).All()
-               .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
-               .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
-               .Build().ToList();
+                .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+                .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+                .Build().ToList();
             participants.ForEach(x =>
             {
                 x.CaseRoleName = "Generic";
                 x.HearingRoleName = "Litigant in person";
                 x.FirstName = "Automation_AddedParticipant";
+                x.DisplayName = "DisplayName";
             });
 
             return participants;
@@ -67,6 +68,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             request.Participants[0].LastName = hearing.Participants[0].Person.LastName;
             request.Participants[0].ContactEmail = hearing.Participants[0].Person.ContactEmail;
             request.Participants[0].TelephoneNumber = hearing.Participants[0].Person.TelephoneNumber;
+            request.Participants[0].DisplayName = hearing.Participants[0].Person.FirstName;
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
 
             var response = await Controller.AddParticipantsToHearing(hearingId, request);

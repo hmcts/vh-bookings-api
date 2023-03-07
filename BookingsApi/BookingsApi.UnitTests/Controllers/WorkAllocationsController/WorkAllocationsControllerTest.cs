@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -16,16 +17,18 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         protected Mock<IQueryHandler> QueryHandlerMock;
         protected Mock<IHearingAllocationService> HearingAllocationServiceMock;
         private Mock<ILogger<BookingsApi.Controllers.WorkAllocationsController>> _loggerMock;
-
+        protected Mock<IEventPublisher> _eventPublisherMock;
+        
         [SetUp]
         public void Setup()
         {
             _loggerMock = new Mock<ILogger<BookingsApi.Controllers.WorkAllocationsController>>();
             QueryHandlerMock = new Mock<IQueryHandler>();
             HearingAllocationServiceMock = new Mock<IHearingAllocationService>();
+            _eventPublisherMock = new Mock<IEventPublisher>();
 
             Controller = new BookingsApi.Controllers.WorkAllocationsController(HearingAllocationServiceMock.Object,
-                QueryHandlerMock.Object, _loggerMock.Object);
+                QueryHandlerMock.Object, _loggerMock.Object, _eventPublisherMock.Object);
         }
         
         protected static VideoHearing GetHearing(string caseNumber)
