@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Common.Services;
 using FluentAssertions;
 using NUnit.Framework;
@@ -14,7 +16,7 @@ namespace BookingsApi.UnitTests.Services
         {
             _randomGenerator = new RandomGenerator();
         }
-
+        
         [Test]
         public void Should_throw_exception_on_skip_greater_than_ticks_length()
         {

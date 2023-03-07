@@ -1583,8 +1583,8 @@
       },
       "Microsoft.Identity.Client": {
         "type": "Transitive",
-        "resolved": "4.48.1",
-        "contentHash": "AsTnTKgmJqhL1hjZ7TA13TDQVyWdn0vpYwhDMdb1mTg+w5m9AZsacLvmxsUZt03uamZ81pDY78himvXOM//tpw==",
+        "resolved": "4.50.0",
+        "contentHash": "zCgRgMTYTkcgeNgryKyHKFJa6I7JPiepKBTnPvlvsSjBilXObn+fRwe8hvkzAcTWMBQna2TpGvwkVm1XTxnxBA==",
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.22.0"
         }
@@ -1605,8 +1605,8 @@
       },
       "Microsoft.IdentityModel.Clients.ActiveDirectory": {
         "type": "Transitive",
-        "resolved": "5.2.9",
-        "contentHash": "WhBAG/9hWiMHIXve4ZgwXP3spRwf7kFFfejf76QA5BvumgnPp8iDkDCiJugzAcpW1YaHB526z1UVxHhVT1E5qw==",
+        "resolved": "5.2.8",
+        "contentHash": "VIi6Bzt0UWEeannuEjtRFr/LgUXXw70a9LlIVfoCGorztZhzHgKiof6UJE1ETRYlf/L+kepsUZeekYZwqb6xPg==",
         "dependencies": {
           "Microsoft.CSharp": "4.3.0",
           "NETStandard.Library": "1.6.1",
@@ -3535,7 +3535,7 @@
           "Microsoft.ApplicationInsights.AspNetCore": "[2.21.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[7.0.0, )",
           "Microsoft.Extensions.Configuration.UserSecrets": "[7.0.0, )",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "[5.2.9, )",
+          "Microsoft.Identity.Client": "[4.50.0, )",
           "Newtonsoft.Json": "[13.0.2, )"
         }
       },
@@ -3566,6 +3566,7 @@
       "bookingsapi.infrastructure.services": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
           "Microsoft.Azure.ServiceBus": "[5.2.0, )",
           "Microsoft.Extensions.Options": "[7.0.0, )",

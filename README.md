@@ -49,6 +49,14 @@ docker-compose -f "docker-compose.tests.yml" up --build --abort-on-container-exi
 
 > You may need to create a `.env` file to store the environment variables
 
+
+## Convert test results into coverage report
+
+Run the following in a terminal
+``` bash
+dotnet reportgenerator "-reports:./Coverage/coverage.opencover.xml" "-targetDir:./Artifacts/Coverage/Report" -reporttypes:Html -sourcedirs:./BookingsApi
+```
+
 ## Run Stryker
 
 To run stryker mutation test, go to UnitTest folder under command prompt and run the following command
