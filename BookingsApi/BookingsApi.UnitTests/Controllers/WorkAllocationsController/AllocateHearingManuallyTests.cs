@@ -9,6 +9,7 @@ using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Validations;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Mappings;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -29,14 +30,21 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         {
             _hearings = new List<VideoHearing>
             {
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build(),
-                new VideoHearingBuilder().Build()
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase(),
+                CreateHearingWithCase()
             };
         }
-        
+
+        private VideoHearing CreateHearingWithCase()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.AddCase("1", "test case", true);
+            return hearing;
+        }
+
         [Test]
         public async Task Should_Return_Ok()
         {
@@ -77,6 +85,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 
             var expected = checkForClashesResponse.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList();
             response.Should().BeEquivalentTo(expected);
+            _eventPublisherMock.Verify(x=>x.PublishAsync(It.IsAny<IIntegrationEvent>()), Times.Once);
         }
         
         [Test]
@@ -100,6 +109,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Error", "Error Description");
+            _eventPublisherMock.Verify(x=>x.PublishAsync(It.IsAny<IIntegrationEvent>()), Times.Never);
         }
         
     }
