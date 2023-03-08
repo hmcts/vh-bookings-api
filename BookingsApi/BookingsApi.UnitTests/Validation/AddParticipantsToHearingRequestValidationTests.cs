@@ -43,7 +43,7 @@ namespace BookingsApi.UnitTests.Validation
                 .Should().BeTrue();
         }
         
-        private AddParticipantsToHearingRequest BuildRequest()
+        private static AddParticipantsToHearingRequest BuildRequest()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(4).Build().ToList();
             participants[0].ContactEmail = "me0@me.com";

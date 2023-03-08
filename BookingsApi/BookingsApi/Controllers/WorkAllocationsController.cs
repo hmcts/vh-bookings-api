@@ -11,6 +11,8 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Extensions;
+using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,12 +28,16 @@ namespace BookingsApi.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly IHearingAllocationService _hearingAllocationService;
         private readonly ILogger<WorkAllocationsController> _logger;
+        private readonly IEventPublisher _eventPublisher;
 
-        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, IQueryHandler queryHandler, ILogger<WorkAllocationsController> logger)
+        public WorkAllocationsController(IHearingAllocationService hearingAllocationService, 
+            IQueryHandler queryHandler, ILogger<WorkAllocationsController> logger,
+            IEventPublisher eventPublisher)
         {
             _hearingAllocationService = hearingAllocationService;
             _queryHandler = queryHandler;
             _logger = logger;
+            _eventPublisher = eventPublisher;
         }
         /// <summary>
         /// Automatically allocates a user to a hearing
@@ -146,6 +152,13 @@ namespace BookingsApi.Controllers
                 var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
+                
+                // need to broadcast acknowledgment message for the allocation
+                if (list.Count > 0)
+                {
+                    await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(list, list[0].AllocatedTo));
+                }
+                
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
