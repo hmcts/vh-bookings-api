@@ -13,8 +13,7 @@ trigger: none
 pr:
   - master
 
-pool:
-  vmImage: ubuntu-latest
+pool: VH Self Hosted Dev
 
 stages:
 ####################################################
