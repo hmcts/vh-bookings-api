@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: VIH-9998-dotnet-tool
+      ref: VIH-9999-dotnet-tool
       endpoint: hmcts
       
 trigger: none
