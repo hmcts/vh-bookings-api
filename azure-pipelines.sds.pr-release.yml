@@ -70,6 +70,9 @@ stages:
   - job: Generate_Entity_Framework_Script
     displayName: "Generate Entity Framework Script"
     steps:
+      - pwsh: |
+          printenv
+          
       - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
         parameters:
           outputPath: $(Build.StagingDirectory)
