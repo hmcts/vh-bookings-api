@@ -24,11 +24,37 @@ namespace BookingsApi.UnitTests.Validation
             var request = Builder<AddJusticeUserRequest>.CreateNew()
                 .With(x=> x.Username, Faker.Internet.UserName())
                 .With(x=> x.ContactEmail, Faker.Internet.Email())
+                .With(x => x.ContactTelephone, null)
                 .Build();
             
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeTrue();
+        }
+        
+        [TestCase("+44 789191 387", false)]
+        [TestCase("(44) 789191 387", false)]
+        [TestCase("(44) 789191 3878", true)]
+        [TestCase("+44 789191 3878", true)]
+        [TestCase("+447891913878", true)]
+        [TestCase("+441582661286", true)]
+        [TestCase("01582661286", true)]
+        [TestCase("07891913878", true)]
+        [TestCase("0789 191 3878", true)]
+        [TestCase("0 789 191 3878", true)]
+        [TestCase("0789913878999999", false)]
+        [TestCase("Hel1£ffhf", false)]
+        public async Task should_validate_uk_phone_number(string telephone, bool expected)
+        {
+            var request = Builder<AddJusticeUserRequest>.CreateNew()
+                .With(x=> x.Username, Faker.Internet.UserName())
+                .With(x=> x.ContactEmail, Faker.Internet.Email())
+                .With(x => x.ContactTelephone, telephone)
+                .Build();
+            
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().Be(expected);
         }
         
         [Test]

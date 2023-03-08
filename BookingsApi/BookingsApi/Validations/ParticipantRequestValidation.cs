@@ -5,7 +5,8 @@ namespace BookingsApi.Validations
 {
     public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
     {
-        private static readonly string _nameRegex = $"^(\\w+(?:\\w|[\\s'._-](?![\\s'._-]))*\\w+)$";
+        private static readonly string DefaultRegion = "GB";
+        private static readonly string _nameRegex = "^(\\w+(?:\\w|[\\s'._-](?![\\s'._-]))*\\w+)$";
         public static readonly string FirstNameDoesntMatchRegex = "First name must match regular expression";
         public static readonly string LastNameDoesntMatchRegex = "Last name must match regular expression";
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
@@ -34,7 +35,20 @@ namespace BookingsApi.Validations
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);
-            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleName != "Judge").WithMessage(NoTelephoneNumberErrorMessage);
+            RuleFor(x => x.TelephoneNumber).Must((_, telephoneNumber) => IsPhone(telephoneNumber)).When(x => x.HearingRoleName != "Judge").WithMessage(NoTelephoneNumberErrorMessage);
+        }
+        
+        private bool IsPhone(string telephoneNumber)
+        {
+            var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
+            try
+            {
+                return phoneNumberUtil.IsValidNumberForRegion(phoneNumberUtil.Parse(telephoneNumber, DefaultRegion), DefaultRegion);
+            }
+            catch (PhoneNumbers.NumberParseException)
+            {
+                return false;
+            }
         }
     }
 }
