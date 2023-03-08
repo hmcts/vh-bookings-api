@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: VIH-9999-dotnet-tool
+      ref: master
       endpoint: hmcts
       
 trigger: none
@@ -34,31 +34,31 @@ stages:
         chartPath: ${{ variables.chartPath }}
         chartValuesPath: ${{ variables.chartPath }}
 
-  # - job: UnitTests
-  #   displayName: "Unit Tests"
-  #   steps:
-  #   - checkout: self
+  - job: UnitTests
+    displayName: "Unit Tests"
+    steps:
+    - checkout: self
 
-  #   - template: templates/sonarCloud/prepare.yml@azTemplates
-  #     parameters:
-  #       ExtraProperties: |
-  #         sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
-  #         sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
-  #         sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
+    - template: templates/sonarCloud/prepare.yml@azTemplates
+      parameters:
+        ExtraProperties: |
+          sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
+          sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
+          sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
 
-  #   - template: stages\dotnet-tests\unit-tests.yml@azTemplates
-  #     parameters:
-  #       #vstsFeedId: 'Video Hearings/vh-packages'
-  #       dotnetCoreVersion: '6.x'
-  #       nugetConfigPath: ${{ variables.appName }} # Temp - Change To SDS Feed When Possible.
-  #       unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
-  #       coverletCoverageExclusions:
-  #         - "[BookingsApi.*Tests?]*"
-  #         - "[BookingsApi]Startup"
-  #         - "[*]BookingsApi.Common.*"
-  #         - "[Testing.Common]*"
+    - template: stages\dotnet-tests\unit-tests.yml@azTemplates
+      parameters:
+        #vstsFeedId: 'Video Hearings/vh-packages'
+        dotnetCoreVersion: '6.x'
+        nugetConfigPath: ${{ variables.appName }} # Temp - Change To SDS Feed When Possible.
+        unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
+        coverletCoverageExclusions:
+          - "[BookingsApi.*Tests?]*"
+          - "[BookingsApi]Startup"
+          - "[*]BookingsApi.Common.*"
+          - "[Testing.Common]*"
 
-  #   - template: templates/sonarCloud/runAnalysis.yml@azTemplates
+    - template: templates/sonarCloud/runAnalysis.yml@azTemplates
 
 ####################################################
 # Pre Release Tasks. ###############################
@@ -69,10 +69,7 @@ stages:
   jobs:
   - job: Generate_Entity_Framework_Script
     displayName: "Generate Entity Framework Script"
-    steps:
-      - pwsh: |
-          printenv
-          
+    steps:         
       - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
         parameters:
           outputPath: $(Build.StagingDirectory)
