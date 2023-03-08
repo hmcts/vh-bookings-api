@@ -40,7 +40,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a hearing with endpoints for cloning")]
         public async Task GivenIHaveAHearingWithEndpointsForCloning()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, isMultiDayFirstHearing:true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, isMultiDayFirstHearing: true);
             PersistTestHearingData(seededHearing);
         }
 
@@ -71,7 +71,7 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Delete;
             Context.Uri = RemoveEndPointFromHearing(_hearingId, Guid.NewGuid());
         }
-        
+
         [Given(@"I have remove endpoint from a non-existent hearing request")]
         public void GivenIHaveRemoveEndpointFromANonExistentHearingRequest()
         {
@@ -96,10 +96,10 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 DisplayName = "UpdatedDisplayName",
             });
-            
+
             Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
         }
-        
+
         [Given(@"I have update an endpoint request with a defence advocate")]
         public void GivenIHaveUpdateEndpointWithDefenceAdvocateRequest()
         {
@@ -111,7 +111,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 DisplayName = "UpdatedDisplayName",
                 DefenceAdvocateContactEmail = rep.Person.ContactEmail
             });
-            
+
             Context.TestData.TestContextData.Add(EndPointSteps.UpdatedEndPointId, updatedEndPointId);
         }
 
@@ -168,11 +168,11 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             AssertEndpointUpdated(true);
         }
-        
+
         private void AssertEndpointUpdated(bool checkForDefenceAdvocate = false)
         {
             var hearingFromDb = GetHearingFromDb();
-            var endpointId = (Guid) Context.TestData.TestContextData[UpdatedEndPointId];
+            var endpointId = (Guid)Context.TestData.TestContextData[UpdatedEndPointId];
 
             var updatedEndpoint = hearingFromDb.GetEndpoints().First(ep => ep.Id == endpointId);
             updatedEndpoint.DisplayName.Should().Be("UpdatedDisplayName");
@@ -191,7 +191,7 @@ namespace BookingsApi.IntegrationTests.Steps
             using (var db = new BookingsDbContext(Context.BookingsDbContextOptions))
             {
                 hearingFromDb = db.VideoHearings
-                    .Include(x => x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x => x.UserRole)
+                    .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                     .Include(h => h.Participants).ThenInclude(x => x.Person)
                     .Include(h => h.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                     .AsNoTracking()

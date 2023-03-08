@@ -4,18 +4,18 @@
     "net6.0": {
       "FluentValidation": {
         "type": "Direct",
-        "requested": "[9.3.0, )",
-        "resolved": "9.3.0",
-        "contentHash": "C44l6Ih+YwpED/TsXfl6LIq6Z4wLXahstnr6T70uUg1Hs7/bLBKKAo9Nl0sLhVjDE8TA+fF+O3IM4nDrwabcSQ=="
+        "requested": "[11.5.1, )",
+        "resolved": "11.5.1",
+        "contentHash": "0h1Q5lNOLLyYTWMJmyNoMqhY4CBRvvUWvJP1R4F2CnmmzuWwvB0A8aVmw5+lOuwYnwUwCRrdeMLbc81F38ahNQ=="
       },
       "FluentValidation.AspNetCore": {
         "type": "Direct",
-        "requested": "[9.3.0, )",
-        "resolved": "9.3.0",
-        "contentHash": "0ZKHVvNIVgZEGgCe8z4NyVoPaCmM0kTRM0EySC23Enuc4jzBdhI+LtGhcvkF7lAulNlxR2S9IDnLibOM6RDaHg==",
+        "requested": "[11.2.2, )",
+        "resolved": "11.2.2",
+        "contentHash": "jU/MHXqg9cnOU18dY75vorP2c2WDKMan4zegOPsoc34xZVjzTEtXP0fKvkDEdeaChUVooNWuRr27u9w3sYbEFA==",
         "dependencies": {
-          "FluentValidation": "9.3.0",
-          "FluentValidation.DependencyInjectionExtensions": "9.3.0"
+          "FluentValidation": "11.2.1",
+          "FluentValidation.DependencyInjectionExtensions": "11.2.1"
         }
       },
       "libphonenumber-csharp": {
@@ -161,13 +161,13 @@
       },
       "ZymLabs.NSwag.FluentValidation": {
         "type": "Direct",
-        "requested": "[0.4.0, )",
-        "resolved": "0.4.0",
-        "contentHash": "k57Y6NAlv1rqgHVbCV33gRfJWWX9JuI+zT4CdV/79P9kEecgtRI9tiLjL0DdMAT+PUWJSWG5VDBccSAQ3ZLuZw==",
+        "requested": "[0.6.2, )",
+        "resolved": "0.6.2",
+        "contentHash": "oo6Dx/D5pCMsCtSCuN9zpcykwLajW1qylUtpatpUBMdTuPca+9VLAJFOA9+AEsF7f4qPnyypQcN2e68sqXSYHA==",
         "dependencies": {
-          "FluentValidation": "9.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "3.1.5",
-          "NJsonSchema": "10.1.23"
+          "FluentValidation": "10.2.3",
+          "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
+          "NJsonSchema": "10.4.4"
         }
       },
       "Azure.Core": {
@@ -217,10 +217,10 @@
       },
       "FluentValidation.DependencyInjectionExtensions": {
         "type": "Transitive",
-        "resolved": "9.3.0",
-        "contentHash": "5PnAIlsApzWPp9rjxfu3xVWSj2qMDeFnEE3P4yx/oIQO1aLhPEEn4yW7JiydP9kpQKAtZ53qwNaOoQ1xSxajuA==",
+        "resolved": "11.2.1",
+        "contentHash": "WqR2kt0OidUCg9xS+YOoiDmdCu7EnYLLgQb/bX+5fTTVor+90dWmr1OdJaWlLZvg2nbwV9EfxA9FZp91+JmQtg==",
         "dependencies": {
-          "FluentValidation": "9.3.0",
+          "FluentValidation": "11.2.1",
           "Microsoft.Extensions.Dependencyinjection.Abstractions": "2.1.0"
         }
       },
