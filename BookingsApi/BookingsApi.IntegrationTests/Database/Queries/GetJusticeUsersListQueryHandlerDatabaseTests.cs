@@ -80,5 +80,21 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         
             users.Should().NotContain(x => x.Id == justiceUser.Id);
         }
+        
+        [Test]
+        public async Task Should_return_deleted_users()
+        {
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            
+            var justiceUser = await Hooks.SeedJusticeUser("getjusticeuserlist.deleted.cso2@email.com", "FirstName", "LastName");
+            justiceUser = await db.JusticeUsers.FirstOrDefaultAsync(x => x.Id == justiceUser.Id);
+            justiceUser.Delete();
+            await db.SaveChangesAsync();
+        
+            var query = new GetJusticeUserListQuery("email.com", true);
+            var users = await _handler.Handle(query);
+        
+            users.Should().Contain(x => x.Id == justiceUser.Id);
+        }
     }
 }

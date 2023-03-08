@@ -10,9 +10,11 @@ namespace BookingsApi.DAL.Queries
     public class GetJusticeUserListQuery : IQuery
     {
         public string Term { get; set; }
-        public GetJusticeUserListQuery(string term)
+        public bool IncludeDelete { get; set; }
+        public GetJusticeUserListQuery(string term, bool includeDelete = false)
         {
             Term = term;
+            IncludeDelete = includeDelete;
         }
     }
     
@@ -28,19 +30,21 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<JusticeUser>> Handle(GetJusticeUserListQuery query)
         {
             string term = query.Term;
+
             if (string.IsNullOrEmpty(term))
             {
-                return await _context.JusticeUsers.Include(x => x.UserRole).ToListAsync();
+                return await _context.JusticeUsers.IgnoreQueryFilters().Where(x => query.IncludeDelete.Equals(true) || x.Deleted.Equals(false)).Include(x => x.UserRole).ToListAsync();
             }
             else
             {
-                return await _context.JusticeUsers
-                    .Where(u=> 
+                return await _context.JusticeUsers.IgnoreQueryFilters()
+                    .Where(u=>
+                        (query.IncludeDelete.Equals(true) || u.Deleted.Equals(false)) &&
                         u.Lastname.Contains(term) || 
                         u.FirstName.Contains(term) ||
                         u.ContactEmail.Contains(term) ||
                         u.Username.Contains(term)
-                        )
+                    )
                     .Include(x => x.UserRole).ToListAsync();
             }
             
