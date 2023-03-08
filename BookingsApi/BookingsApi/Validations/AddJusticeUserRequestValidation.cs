@@ -34,7 +34,7 @@ public class AddJusticeUserRequestValidation : AbstractValidator<AddJusticeUserR
         RuleFor(x => x.Role).IsInEnum();
     }
 
-    private bool IsPhone(string telephoneNumber)
+    private static bool IsPhone(string telephoneNumber)
     {
         var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
         try

@@ -38,7 +38,7 @@ namespace BookingsApi.Validations
             RuleFor(x => x.TelephoneNumber).Must((_, telephoneNumber) => IsPhone(telephoneNumber)).When(x => x.HearingRoleName != "Judge").WithMessage(NoTelephoneNumberErrorMessage);
         }
         
-        private bool IsPhone(string telephoneNumber)
+        private static bool IsPhone(string telephoneNumber)
         {
             var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
             try
