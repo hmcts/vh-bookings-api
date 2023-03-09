@@ -703,14 +703,14 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<string> DeleteJusticeUserAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Delete a justice user
+        /// Restore a justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<string> RestoreJusticeUserAsync(RestoreJusticeUserRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Delete a justice user
+        /// Restore a justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<string> RestoreJusticeUserAsync(RestoreJusticeUserRequest request, System.Threading.CancellationToken cancellationToken);
@@ -5786,7 +5786,7 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Delete a justice user
+        /// Restore a justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<string> RestoreJusticeUserAsync(RestoreJusticeUserRequest request)
@@ -5796,7 +5796,7 @@ namespace BookingsApi.Client
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Delete a justice user
+        /// Restore a justice user
         /// </summary>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<string> RestoreJusticeUserAsync(RestoreJusticeUserRequest request, System.Threading.CancellationToken cancellationToken)
