@@ -8,6 +8,7 @@ java:
   livenessPath: /healthcheck/health
   livenessDelay: 360
   livenessPeriod: 120
+  replicas: 2
   aadIdentityName: vh-aad-identity
   keyVaults:
     vh-infra-core:
