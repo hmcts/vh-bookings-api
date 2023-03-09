@@ -32,17 +32,16 @@ namespace BookingsApi.UnitTests.Validation
             result.IsValid.Should().BeTrue();
         }
         
-        [TestCase("+44 789191 387", false)]
-        [TestCase("(44) 789191 387", false)]
-        [TestCase("(44) 789191 3878", true)]
-        [TestCase("+44 789191 3878", true)]
-        [TestCase("+447891913878", true)]
-        [TestCase("+441582661286", true)]
-        [TestCase("01582661286", true)]
-        [TestCase("07891913878", true)]
-        [TestCase("0789 191 3878", true)]
-        [TestCase("0 789 191 3878", true)]
-        [TestCase("0789913878999999", false)]
+        [TestCase("+44 123456 123", false)]
+        [TestCase("(44) 123456 123", false)]
+        [TestCase("(44) 123456 1234", true)]
+        [TestCase("+44 123456 1234", true)]
+        [TestCase("+441234567890", true)]
+        [TestCase("01234567890", true)]
+        [TestCase("01234567890", true)]
+        [TestCase("0123 456 7890", true)]
+        [TestCase("0 123 456 7890", true)]
+        [TestCase("0123456789999999", false)]
         [TestCase("Hel1£ffhf", false)]
         public async Task should_validate_uk_phone_number(string telephone, bool expected)
         {
