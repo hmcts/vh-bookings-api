@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -46,7 +47,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             justiceUser.Should().NotBeNull();
             justiceUser.Deleted.Should().BeFalse();
             
-            // are these needed?
             justiceUser.VhoWorkHours.Count.Should().Be(justiceUserToRestore.VhoWorkHours.Count);
             foreach (var workHour in justiceUser.VhoWorkHours)
             {
@@ -128,25 +128,23 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             db.Allocations.Add(new Allocation
             {
                 HearingId = hearing.Id,
-                JusticeUserId = justiceUser.Entity.Id,
-                // Hearing = hearing
+                JusticeUserId = justiceUser.Entity.Id
             });
             
-            justiceUser.Entity.Delete();
             await db.SaveChangesAsync();
 
-            // var newUser = db.JusticeUsers
-            //     // .IgnoreQueryFilters()
-            //     .Where(x => x.Id == justiceUser.Entity.Id)
-            //     .Include(x => x.Allocations).ThenInclude(x => x.Hearing)
-            //     .Include(x => x.VhoWorkHours)
-            //     .Include(x => x.VhoNonAvailability)
-            //     .FirstOrDefault();
-            //
-            // newUser.Delete();
-            // await db.SaveChangesAsync();
+            var newUser = db.JusticeUsers
+                // .IgnoreQueryFilters()
+                .Where(x => x.Id == justiceUser.Entity.Id)
+                .Include(x => x.Allocations).ThenInclude(x => x.Hearing)
+                .Include(x => x.VhoWorkHours)
+                .Include(x => x.VhoNonAvailability)
+                .FirstOrDefault();
             
-            return justiceUser.Entity;
+            newUser.Delete();
+            await db.SaveChangesAsync();
+            
+            return newUser;
         }
     }
 }
