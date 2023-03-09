@@ -40,6 +40,8 @@ namespace BookingsApi
 
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"]));
 
+            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+
             services.AddSwagger();
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
@@ -63,12 +65,8 @@ namespace BookingsApi
                 // globally add a [ProducesResponseType] to all endpoints for a consistent swagger doc and API client.
                 options.Filters.Add(new ProducesResponseTypeAttribute(typeof(string), 500));
             });
-            
             services.AddCors();
 
-            services.AddApplicationInsightsTelemetry(options =>
-                options.ConnectionString = Configuration["ApplicationInsights:InstrumentationKey"]);
-            
             services.AddDbContextPool<BookingsDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("VhBookings")));
         }
