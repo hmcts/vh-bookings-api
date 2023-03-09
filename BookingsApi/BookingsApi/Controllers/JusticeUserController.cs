@@ -216,12 +216,7 @@ namespace BookingsApi.Controllers
             try
             {
                 await _commandHandler.Handle(command);
-                var justiceUser =
-                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
-                        new GetJusticeUserByUsernameQuery(request.Username));
-
-                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
-                return Ok(justiceUserResponse);
+                return NoContent();
             }
             catch (JusticeUserNotFoundException e)
             {
