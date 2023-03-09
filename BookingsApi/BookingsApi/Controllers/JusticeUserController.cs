@@ -191,5 +191,42 @@ namespace BookingsApi.Controllers
 
             return NoContent();
         }
+        
+        /// <summary>
+        /// Restore a justice user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPatch("restore")]
+        [OpenApiOperation("RestoreJusticeUser")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RestoreJusticeUser(RestoreJusticeUserRequest request)
+        {
+            var validation = await new RestoreJusticeUserRequestValidation().ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            var command = new RestoreJusticeUserCommand(request.Id);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+                var justiceUser =
+                    await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(
+                        new GetJusticeUserByUsernameQuery(request.Username));
+
+                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+                return Ok(justiceUserResponse);
+            }
+            catch (JusticeUserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }
