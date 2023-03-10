@@ -236,6 +236,14 @@
           "Microsoft.Extensions.Logging.Abstractions": "3.1.9"
         }
       },
+      "libphonenumber-csharp": {
+        "type": "Transitive",
+        "resolved": "8.13.1",
+        "contentHash": "VJCRVv6g99seyxIW+dFIW/y7KN6ie1kEeoRgXH7FEJbVKpRoHs7DncUPohyQ9gQpUvc60+DQHLogGfdmxjPifQ==",
+        "dependencies": {
+          "System.Collections.Immutable": "1.7.1"
+        }
+      },
       "MessagePack": {
         "type": "Transitive",
         "resolved": "2.1.152",
@@ -3173,7 +3181,8 @@
           "Newtonsoft.Json": "[13.0.2, )",
           "System.IdentityModel.Tokens.Jwt": "[6.23.1, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "ZymLabs.NSwag.FluentValidation": "[0.4.0, )"
+          "ZymLabs.NSwag.FluentValidation": "[0.4.0, )",
+          "libphonenumber-csharp": "[8.13.1, )"
         }
       },
       "bookingsapi.common": {

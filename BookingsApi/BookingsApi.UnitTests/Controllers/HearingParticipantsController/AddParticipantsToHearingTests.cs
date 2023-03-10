@@ -35,6 +35,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var participants = Builder<ParticipantRequest>.CreateListOfSize(listSize).All()
                 .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
+                .With(x=> x.TelephoneNumber, "01234567890")
                 .Build().ToList();
             participants.ForEach(x =>
             {

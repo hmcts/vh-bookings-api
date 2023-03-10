@@ -9,7 +9,7 @@ namespace BookingsApi.DAL
         public BookingsDbContext CreateDbContext(string[] args)
         {
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", true)
                 .AddUserSecrets("D76B6EB8-F1A2-4A51-9B8F-21E1B6B81E4F")
                 .Build();
             var builder = new DbContextOptionsBuilder<BookingsDbContext>();
