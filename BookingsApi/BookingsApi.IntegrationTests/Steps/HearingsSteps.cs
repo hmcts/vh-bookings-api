@@ -595,6 +595,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 .With(x => x.FirstName = $"Automation_{Faker.Name.First()}")
                 .With(x => x.LastName = $"Automation_{Faker.Name.Last()}")
                 .With(x => x.OrganisationName = "Automation Organisation")
+                .With(x => x.TelephoneNumber = "01234567890")
                 .Build().ToList();
             participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";

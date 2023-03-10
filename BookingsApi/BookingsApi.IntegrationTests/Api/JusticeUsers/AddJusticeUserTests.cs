@@ -101,6 +101,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             return Builder<AddJusticeUserRequest>.CreateNew()
                 .With(x=> x.Username, "api_test_add_justice_user_valid@test.com")
                 .With(x=> x.ContactEmail, Faker.Internet.Email())
+                .With(x=>x.ContactTelephone, "01234567890")
                 .Build();
         }
     }

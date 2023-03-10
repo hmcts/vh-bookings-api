@@ -66,7 +66,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
         
         [Test]
-        public async Task Should_not_return_deleted_users_when_term_is_not_null()
+        public async Task Should_return_deleted_users_when_term_is_not_null()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             
@@ -78,7 +78,23 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var query = new GetJusticeUserListQuery("email.com");
             var users = await _handler.Handle(query);
         
-            users.Should().NotContain(x => x.Id == justiceUser.Id);
+            users.Should().Contain(x => x.Id == justiceUser.Id);
+        }
+        
+        [Test]
+        public async Task Should_return_deleted_users()
+        {
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            
+            var justiceUser = await Hooks.SeedJusticeUser("getjusticeuserlist.deleted.cso2@email.com", "FirstName", "LastName");
+            justiceUser = await db.JusticeUsers.FirstOrDefaultAsync(x => x.Id == justiceUser.Id);
+            justiceUser.Delete();
+            await db.SaveChangesAsync();
+        
+            var query = new GetJusticeUserListQuery("email.com", true);
+            var users = await _handler.Handle(query);
+        
+            users.Should().Contain(x => x.Id == justiceUser.Id);
         }
     }
 }

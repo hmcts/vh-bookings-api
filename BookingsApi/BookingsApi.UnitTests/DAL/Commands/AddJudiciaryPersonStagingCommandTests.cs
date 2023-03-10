@@ -28,7 +28,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
         }
 
         [SetUp]
-        public async Task Setup()
+        public void Setup()
         {
             _handler = new AddJudiciaryPersonStagingCommandHandler(_context);
         }
