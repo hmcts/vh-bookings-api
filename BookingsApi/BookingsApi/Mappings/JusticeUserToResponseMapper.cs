@@ -20,7 +20,8 @@ namespace BookingsApi.Mappings
                 IsVhTeamLeader = judiciaryPersonStagingRequest.UserRole.IsVhTeamLead,
                 CreatedBy = judiciaryPersonStagingRequest.CreatedBy,
                 Id = judiciaryPersonStagingRequest.Id,
-                FullName = judiciaryPersonStagingRequest.FirstName + " " + judiciaryPersonStagingRequest.Lastname
+                FullName = judiciaryPersonStagingRequest.FirstName + " " + judiciaryPersonStagingRequest.Lastname,
+                Deleted = judiciaryPersonStagingRequest.Deleted
             };
         }
     }
