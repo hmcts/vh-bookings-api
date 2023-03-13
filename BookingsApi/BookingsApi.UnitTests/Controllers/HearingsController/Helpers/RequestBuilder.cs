@@ -56,7 +56,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
                 .With(x => x.FirstName = $"Automation_testName")
                 .With(x => x.LastName = $"Automation_LastName")
                 .With(x => x.ContactEmail = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
-                .With(x => x.TelephoneNumber = "020 7946 0101")
+                .With(x => x.TelephoneNumber = Faker.Phone.Number())
                 .With(x => x.Username = $"Automation_{Faker.RandomNumber.Next()}@hmcts.net")
                 .With(x => x.DisplayName = $"Automation_{Faker.Name.FullName()}")
                 .With(x => x.OrganisationName = $"{Faker.Company.Name()}")

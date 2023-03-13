@@ -45,10 +45,7 @@ namespace BookingsApi.UnitTests.Validation
         
         private static AddParticipantsToHearingRequest BuildRequest()
         {
-            var participants = Builder<ParticipantRequest>.CreateListOfSize(4)
-                .All()
-                .With(x=> x.TelephoneNumber, "020 7946 0101")
-                .Build().ToList();
+            var participants = Builder<ParticipantRequest>.CreateListOfSize(4).Build().ToList();
             participants[0].ContactEmail = "me0@me.com";
             participants[1].ContactEmail = "me1@me.com";
             participants[2].ContactEmail = "me2@me.com";

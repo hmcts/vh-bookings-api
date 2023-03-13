@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
@@ -245,7 +246,6 @@ namespace BookingsApi.UnitTests.Validation
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")
                  .With(x => x.HearingRoleName = "Representative")
-                 .With(x => x.TelephoneNumber = "020 7946 0101")
                  .With(x => x.ContactEmail = "mm@mm.com")
                  .Build();
         }

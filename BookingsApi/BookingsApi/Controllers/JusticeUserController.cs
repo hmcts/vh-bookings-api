@@ -59,7 +59,7 @@ namespace BookingsApi.Controllers
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
                 request.ContactEmail, request.CreatedBy, (int) request.Role)
             {
-                Telephone = request.ContactTelephone
+                Telephone = request.Telephone
             };
             try
             {

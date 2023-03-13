@@ -36,7 +36,7 @@ public class AddJusticeUserRequest
     /// <summary>
     /// The user's telephone
     /// </summary>
-    public string ContactTelephone { get; set; }
+    public string Telephone { get; set; }
     
     /// <summary>
     /// The username of the person who requested the creation of this entry

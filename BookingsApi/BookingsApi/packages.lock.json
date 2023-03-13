@@ -18,15 +18,6 @@
           "FluentValidation.DependencyInjectionExtensions": "9.3.0"
         }
       },
-      "libphonenumber-csharp": {
-        "type": "Direct",
-        "requested": "[8.13.1, )",
-        "resolved": "8.13.1",
-        "contentHash": "VJCRVv6g99seyxIW+dFIW/y7KN6ie1kEeoRgXH7FEJbVKpRoHs7DncUPohyQ9gQpUvc60+DQHLogGfdmxjPifQ==",
-        "dependencies": {
-          "System.Collections.Immutable": "1.7.1"
-        }
-      },
       "Microsoft.ApplicationInsights.AspNetCore": {
         "type": "Direct",
         "requested": "[2.21.0, )",
