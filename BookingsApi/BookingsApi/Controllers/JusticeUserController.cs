@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -18,7 +17,6 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.Extensions;
 using BookingsApi.Validations;
 using Microsoft.Extensions.Logging;
-using Namotion.Reflection;
 
 namespace BookingsApi.Controllers
 {
@@ -138,12 +136,13 @@ namespace BookingsApi.Controllers
 
             return Ok(justiceUserResponse);
         }
-        
+
         /// <summary>
         /// Get a list of justice users. Optionally provide a search term to filter
         /// for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
+        /// <param name="includeDeleted">include soft-deleted justice users</param>
         /// <returns>Justice User list</returns>
         [HttpGet("GetJusticeUserList")]
         [OpenApiOperation("GetJusticeUserList")]
@@ -167,7 +166,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpDelete("{id}")]
         [OpenApiOperation("DeleteJusticeUser")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteJusticeUser(Guid id)
@@ -199,7 +198,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPatch("restore")]
         [OpenApiOperation("RestoreJusticeUser")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RestoreJusticeUser(RestoreJusticeUserRequest request)
