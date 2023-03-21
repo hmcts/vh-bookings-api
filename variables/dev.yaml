@@ -2,4 +2,4 @@ variables:
   - name: env
     value: "dev"
   - name: devTagName
-    value: "staging-#{SHORTCOMMITID}#-#{DATETIME}#"
+    value: "dev-#{SHORTCOMMITID}#-#{DATETIME}#"
