@@ -218,6 +218,7 @@ stages:
   jobs:
   - job: Approve_Production_Release
     displayName: Approve Prod Release
+    pool: server
     timeoutInMinutes: 10080 # 7 Days
     steps:
     - task: ManualValidation@0
@@ -227,7 +228,7 @@ stages:
         onTimeout: 'reject'
 
 #####################################################
-# Run Entity Framework Staging. #####################
+# Run Entity Framework Prod. ########################
 - stage: Run_Entity_Framework_Production
   displayName: Prod EF Release
   dependsOn:
