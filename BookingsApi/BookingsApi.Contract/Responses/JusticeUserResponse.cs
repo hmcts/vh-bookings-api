@@ -15,5 +15,6 @@ namespace BookingsApi.Contract.Responses
         public bool IsVhTeamLeader { get; set; }
         public string CreatedBy { get; set; }
         public string FullName { get; set; }
+        public bool Deleted { get; set; }
     }
 }
