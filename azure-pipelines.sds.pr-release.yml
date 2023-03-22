@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: feature/vh-tests-inside-a-container
+      ref: master
       endpoint: hmcts
 
 trigger: none
@@ -35,13 +35,13 @@ stages:
               chartValuesPath: ${{ variables.chartPath }}
 
       - job: UnitAndIntegrationTests
-        displayName: "Unit & Integration Tests"
+        displayName: "Unit and Integration Tests"
         steps:
           - checkout: self
 
           - template: stages\dotnet-tests\unit-and-integration-tests-container.yml@azTemplates
             parameters:
-              nugetConfigPath: nuget.sds.config # can remove this once the sds config file is removed
+              nugetConfigPath: nuget.sds.config # remove this once the sds config file is removed
               appName: ${{ variables.appName }}
               dockerComposeTestFile: docker-compose.tests.yml
 
