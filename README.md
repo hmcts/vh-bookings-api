@@ -1,6 +1,5 @@
 # vh-bookings-api
 
-
 ## Running code coverage
 
 1. Install the report generator dotnet tool
