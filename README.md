@@ -14,9 +14,7 @@
 
 [![BookingsApi.Client package in vh-packages feed in Azure Artifacts](https://feeds.dev.azure.com/hmcts/cf3711aa-2aed-4f62-81a8-2afaee0ce26d/_apis/public/Packaging/Feeds/vh-packages/Packages/900b1d86-dad9-4013-b8ff-cc19a79e7605/Badge)](https://dev.azure.com/hmcts/Video%20Hearings/_artifacts/feed/vh-packages/NuGet/BookingsApi.Client?preferRelease=true)
 
-
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vh-bookings-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=vh-bookings-api)
-
 
 ## Restore Tools
 
