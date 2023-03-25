@@ -5,7 +5,7 @@ resources:
     - repository: azTemplates
       type: github
       name: hmcts/azure-devops-templates
-      ref: master
+      ref: sonar-for-docker
       endpoint: hmcts
 
 trigger: none
@@ -39,11 +39,15 @@ stages:
         steps:
           - checkout: self
 
-          - template: stages\dotnet-tests\unit-and-integration-tests-container.yml@azTemplates
+          - template: templates/dotnet/build-test-analyse.yml@azTemplates
             parameters:
               nugetConfigPath: nuget.sds.config # remove this once the sds config file is removed
               appName: ${{ variables.appName }}
               dockerComposeTestFile: docker-compose.tests.yml
+              sonarExtraProperties: |
+                sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml  
+                sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, BookingsApi/BookingsApi.DAL/Migrations/*
+                sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*
 
   ####################################################
   # Pre Release Tasks. ###############################

@@ -7,6 +7,7 @@ namespace BookingsApi.Validations
     /// <summary>Simple validator to check email formats</summary>
     public static class EmailValidator
     {
+        private const string EmailRegexPattern = 
         private const string RegexPattern = @"^([!#-'*/-9=?A-Z^-~-]+(\.[!#-'*/-9=?A-Z^-~-]+)*)@([!#-'*/-9=?A-Z^-~-]+(\.[!#-'*/-9=?A-Z^-~-]+)+)$";
         
         /// <summary>

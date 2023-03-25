@@ -23,11 +23,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__VhBookings=Data Source=test-db;Database=vhbookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
-      - SONAR_PROJECT_KEY=${SONAR_PROJECT_KEY}
-      - SONAR_TOKEN=${SONAR_TOKEN}
-      - SONAR_HOST=${SONAR_HOST}
-      - SONAR_PROJECT_VERSION=${SONAR_PROJECT_VERSION}
-      - SONAR_PROJECT_NAME=${SONAR_PROJECT_NAME}
     volumes:
       - ./TestResults:/TestResults:rw
       - ./Coverage:/Coverage:rw
