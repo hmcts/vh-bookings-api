@@ -27,6 +27,7 @@ namespace BookingsApi.Domain.Enumerations
         Operator = 22,
         SiteProviders = 23,
         RespondentAuthority = 24,
-        LocalAuthority = 25
+        LocalAuthority = 25,
+        Interprator =26
     }
 }
