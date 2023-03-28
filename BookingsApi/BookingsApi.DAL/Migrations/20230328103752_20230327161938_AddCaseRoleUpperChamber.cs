@@ -19,7 +19,7 @@ namespace BookingsApi.DAL.Migrations
                 new[] { "Id", "Name", "Group", "CaseTypeId", "CreatedDate" },
                 new object[,]
                 {
-                    { 350, "Interprator", (int) CaseRoleGroup.Interprator, 51, DateTime.UtcNow },
+                    { 350, "Interpreter", (int) CaseRoleGroup.Interprator, 51, DateTime.UtcNow },
                     
                 });
         }
