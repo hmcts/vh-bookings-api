@@ -75,7 +75,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             justiceUser.Delete();
             await db.SaveChangesAsync();
         
-            var query = new GetJusticeUserListQuery("email.com");
+            var query = new GetJusticeUserListQuery("email.com", true);
             var users = await _handler.Handle(query);
         
             users.Should().Contain(x => x.Id == justiceUser.Id);
