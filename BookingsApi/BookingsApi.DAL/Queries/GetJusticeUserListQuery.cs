@@ -33,21 +33,22 @@ namespace BookingsApi.DAL.Queries
 
             if (string.IsNullOrEmpty(term))
             {
-                return await _context.JusticeUsers.IgnoreQueryFilters().Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false)).Include(x => x.UserRole).ToListAsync();
-            }
-            else
-            {
                 return await _context.JusticeUsers.IgnoreQueryFilters()
-                    .Where(u=>
-                        (query.IncludeDeleted.Equals(true) || u.Deleted.Equals(false)) &&
-                        u.Lastname.Contains(term) || 
-                        u.FirstName.Contains(term) ||
-                        u.ContactEmail.Contains(term) ||
-                        u.Username.Contains(term)
-                    )
+                    .Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false))
+                    .OrderBy(x => x.Lastname).ThenBy(x => x.FirstName)
                     .Include(x => x.UserRole).ToListAsync();
             }
-            
+
+            return await _context.JusticeUsers.IgnoreQueryFilters()
+                .Where(u=>
+                    (query.IncludeDeleted.Equals(true) || u.Deleted.Equals(false)) &&
+                    u.Lastname.Contains(term) || 
+                    u.FirstName.Contains(term) ||
+                    u.ContactEmail.Contains(term) ||
+                    u.Username.Contains(term)
+                )
+                .OrderBy(x => x.Lastname).ThenBy(x => x.FirstName)
+                .Include(x => x.UserRole).ToListAsync();
         }
     }
 }
