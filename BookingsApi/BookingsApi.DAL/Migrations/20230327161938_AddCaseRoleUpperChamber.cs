@@ -20,7 +20,6 @@ namespace BookingsApi.DAL.Migrations
                 new object[,]
                 {
                     { 350, "Interpreter", (int) CaseRoleGroup.Interpreter, 51, DateTime.UtcNow },
-                    
                 });
         }
 
