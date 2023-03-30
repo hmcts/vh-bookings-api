@@ -534,7 +534,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, bool? includeUnallocated);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -542,7 +542,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, bool? includeUnallocated, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Insert a new record into the job history table
@@ -4460,9 +4460,9 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, bool? includeUnallocated)
         {
-            return GetHearingVenuesByAllocatedCsoAsync(csoIds, System.Threading.CancellationToken.None);
+            return GetHearingVenuesByAllocatedCsoAsync(csoIds, includeUnallocated, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -4471,13 +4471,17 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetHearingVenuesByAllocatedCsoAsync(System.Collections.Generic.IEnumerable<System.Guid> csoIds, bool? includeUnallocated, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearingvenues/Allocated?");
             if (csoIds != null)
             {
                 foreach (var item_ in csoIds) { urlBuilder_.Append(System.Uri.EscapeDataString("csoIds") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (includeUnallocated != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("includeUnallocated") + "=").Append(System.Uri.EscapeDataString(ConvertToString(includeUnallocated, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 

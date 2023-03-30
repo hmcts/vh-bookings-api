@@ -52,9 +52,11 @@ namespace BookingsApi.Controllers
         [HttpGet("Allocated")]
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
         [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoIds)
+        public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso(
+            [FromQuery] IEnumerable<Guid> csoIds, 
+            [FromQuery] bool includeUnallocated = false)
         {
-            var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today);
+            var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today, isUnallocated: includeUnallocated);
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             if (hearings == null || !hearings.Any())
                 return Ok(new List<string>());
