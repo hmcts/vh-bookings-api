@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BookingsApi.DAL.Helper;
+namespace BookingsApi.Contract.Helper;
 
 public static class HearingScottishVenueNames
 {
@@ -17,7 +17,7 @@ public static class HearingScottishVenueNames
     public const string EdinburghSocialSecurityAndChildSupportTribunal = "Edinburgh Social Security and Child Support Tribunal";
     public const string EdinburghUpperTribunal = "Edinburgh Upper Tribunal (Administrative Appeals Chamber)";
 
-    public static readonly IReadOnlyCollection<string> ScottishHearingVenuesList = new List<string> { 
+    public static readonly IReadOnlyCollection<string> ScottishHearingVenuesList = new List<string> {
         Aberdeen,
         Ayr,
         Dundee,
