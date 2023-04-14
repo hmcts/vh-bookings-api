@@ -50,7 +50,7 @@ stages:
       parameters:
         #vstsFeedId: 'Video Hearings/vh-packages'
         dotnetCoreVersion: '6.x'
-        nugetConfigPath: ${{ variables.appName }} # Temp - Change To SDS Feed When Possible.
+        nugetConfigPath: ${{ variables.appName }} # Temp: Change To SDS Feed When Possible.
         unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
         coverletCoverageExclusions:
           - "[BookingsApi.*Tests?]*"
