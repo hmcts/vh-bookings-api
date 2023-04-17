@@ -510,6 +510,7 @@ namespace BookingsApi.IntegrationTests.Helper
                     
                     foreach (var user in list)
                     {
+                        db.JusticeUserRoles.RemoveRange(db.JusticeUserRoles.Where(e => e.JusticeUser == user));
                         db.JusticeUsers.Remove(user);
                         await db.SaveChangesAsync();
                         TestContext.WriteLine(@$"Remove Justice User: {user.Id}.");
@@ -799,8 +800,10 @@ namespace BookingsApi.IntegrationTests.Helper
             foreach (var id in _seededJusticeUserIds)
             {
                 await using var db = new BookingsDbContext(_dbContextOptions);
-                var justiceUserRole = await db.JusticeUserRoles.Where(x => x.JusticeUser.Id == id).ToListAsync();
-                if (!justiceUserRole.Any())
+                var justiceUserRole = await db.JusticeUserRoles
+                    .IgnoreQueryFilters()
+                    .Where(x => x.JusticeUser.Id == id).ToListAsync();
+                if (justiceUserRole.Any())
                 {
                     db.JusticeUserRoles.RemoveRange(justiceUserRole);
                     await db.SaveChangesAsync();

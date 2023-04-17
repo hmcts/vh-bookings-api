@@ -39,7 +39,11 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         await _commandHandler.Handle(command);
 
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var justiceUser = db.JusticeUsers.FirstOrDefault(ju => ju.Username == command.Username);
+        var justiceUser = db.JusticeUsers
+            .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+            .FirstOrDefault(ju => ju.Username == command.Username);
+        Hooks._seededJusticeUserIds.Add(justiceUser.Id);
+
         justiceUser.Should().NotBeNull();
         justiceUser.FirstName.Should().Be(command.FirstName);
         justiceUser.Lastname.Should().Be(command.Lastname);
@@ -84,13 +88,5 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         {
             await _commandHandler.Handle(command);
         }).Message.Should().Be($"A justice user with the username {command.Username} already exists");
-    }
-
-    [TearDown]
-    public new async Task TearDown()
-    {
-        await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
-        await db.SaveChangesAsync();
     }
 }

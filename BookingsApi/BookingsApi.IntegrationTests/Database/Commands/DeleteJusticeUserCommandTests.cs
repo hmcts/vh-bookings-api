@@ -5,7 +5,6 @@ using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -72,14 +71,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 await _commandHandler.Handle(command);
             }).Message.Should().Be($"Justice user with id {id} not found");
         }
-
-        [TearDown]
-        public new async Task TearDown()
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
-            await db.SaveChangesAsync();
-        }
         
         private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
@@ -128,8 +119,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 HearingId = allocatedHearingId,
                 JusticeUserId = justiceUser.Entity.Id
             });
-
+            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
             await db.SaveChangesAsync();
+            
+            var allocationIds = db.Allocations.Where(x => x.JusticeUserId == justiceUser.Entity.Id).Select(e => e.Id);
+            Hooks._seededAllocationIds.AddRange(allocationIds);
 
             return justiceUser.Entity;
         }

@@ -37,11 +37,13 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         // Act
         await _commandHandler.Handle(command);
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var justiceUser = db.JusticeUsers.FirstOrDefault(ju => ju.Username == command.Username);
-        
+        var justiceUser = db.JusticeUsers
+            .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+            .FirstOrDefault(ju => ju.Username == command.Username);
+        Hooks._seededJusticeUserIds.Add(justiceUser.Id);
         // Assert
         justiceUser.Should().NotBeNull();
-        justiceUser.JusticeUserRoles.First().UserRole.Should().Be(command.Roles.First());
+        justiceUser.JusticeUserRoles.Select(e => e.UserRole.Id).Should().Contain((int)roleId);
     }
 
     [Test]
@@ -62,62 +64,57 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
     private async Task<JusticeUser> SeedJusticeUser(Guid allocatedHearingId, string username)
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            
-            // Justice user
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = "testuser@hmcts.net",
-                Username = username,
-                CreatedBy = "db@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "Test",
-                Lastname = "User",
-            });
-            
-            // Work hours
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
-            
-            // Non availabilities
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 1, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 1, 17, 0, 0)
-            });
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 2, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 2, 17, 0, 0)
-            });
-            
-            // Allocations
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = allocatedHearingId,
-                JusticeUserId = justiceUser.Entity.Id
-            });
-
-            await Hooks.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
-
-            await db.SaveChangesAsync();
-
-            return justiceUser.Entity;
-        }
-        
-    [TearDown]
-    public new async Task TearDown()
     {
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
+        
+        // Justice user
+        var justiceUser = db.JusticeUsers.Add(new JusticeUser
+        {
+            ContactEmail = "testuser@hmcts.net",
+            Username = username,
+            CreatedBy = "db@test.com",
+            CreatedDate = DateTime.UtcNow,
+            FirstName = "Test",
+            Lastname = "User",
+        });
+        
+        // Work hours
+        for (var i = 1; i <= 7; i++)
+        {
+            justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
+            {
+                DayOfWeekId = i, 
+                StartTime = new TimeSpan(8, 0, 0), 
+                EndTime = new TimeSpan(17, 0, 0)
+            });
+        }
+        
+        // Non availabilities
+        justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
+        {
+            StartTime = new DateTime(2022, 1, 1, 8, 0, 0),
+            EndTime = new DateTime(2022, 1, 1, 17, 0, 0)
+        });
+        justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
+        {
+            StartTime = new DateTime(2022, 1, 2, 8, 0, 0),
+            EndTime = new DateTime(2022, 1, 2, 17, 0, 0)
+        });
+        
+        // Allocations
+        db.Allocations.Add(new Allocation
+        {
+            HearingId = allocatedHearingId,
+            JusticeUserId = justiceUser.Entity.Id
+        });
+
+        await Hooks.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
+
         await db.SaveChangesAsync();
+        
+        var allocationIds = db.Allocations.Where(x => x.JusticeUserId == justiceUser.Entity.Id).Select(e => e.Id);
+        Hooks._seededAllocationIds.AddRange(allocationIds);
+        
+        return justiceUser.Entity;
     }
 }
