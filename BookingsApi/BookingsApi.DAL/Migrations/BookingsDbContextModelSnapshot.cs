@@ -452,22 +452,46 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserRoleId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Username")
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserRoleId");
-
                     b.HasIndex("Username")
                         .IsUnique()
                         .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("JusticeUser", (string)null);
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.JusticeUserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("JusticeUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserRoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JusticeUserId");
+
+                    b.HasIndex("UserRoleId");
+
+                    b.ToTable("JusticeUserRoles");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.LinkedParticipant", b =>
@@ -1039,13 +1063,17 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Hearing");
                 });
 
-            modelBuilder.Entity("BookingsApi.Domain.JusticeUser", b =>
+            modelBuilder.Entity("BookingsApi.Domain.JusticeUserRole", b =>
                 {
+                    b.HasOne("BookingsApi.Domain.JusticeUser", "JusticeUser")
+                        .WithMany("JusticeUserRoles")
+                        .HasForeignKey("JusticeUserId");
+
                     b.HasOne("BookingsApi.Domain.RefData.UserRole", "UserRole")
-                        .WithMany()
-                        .HasForeignKey("UserRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("JusticeUserRoles")
+                        .HasForeignKey("UserRoleId");
+
+                    b.Navigation("JusticeUser");
 
                     b.Navigation("UserRole");
                 });
@@ -1226,6 +1254,8 @@ namespace BookingsApi.DAL.Migrations
                 {
                     b.Navigation("Allocations");
 
+                    b.Navigation("JusticeUserRoles");
+
                     b.Navigation("VhoNonAvailability");
 
                     b.Navigation("VhoWorkHours");
@@ -1253,6 +1283,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("CaseRoles");
 
                     b.Navigation("HearingTypes");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.RefData.UserRole", b =>
+                {
+                    b.Navigation("JusticeUserRoles");
                 });
 #pragma warning restore 612, 618
         }

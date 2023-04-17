@@ -27,7 +27,9 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<JusticeUser> Handle(GetJusticeUserByUsernameQuery query)
         {
-            return await _context.JusticeUsers.Include(x => x.UserRole).SingleOrDefaultAsync(x => x.Username == query.Username);
+            return await _context.JusticeUsers
+                .Include(x => x.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+                .SingleOrDefaultAsync(x => x.Username == query.Username);
         }
     }
 }

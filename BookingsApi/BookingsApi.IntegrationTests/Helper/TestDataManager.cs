@@ -65,13 +65,13 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho,
                 CreatedBy = "integration.test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
                 Lastname = lastName,
             });
 
+            await SeedJusticeUsersRole(db, justiceUser.Entity, isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho);
             await db.SaveChangesAsync();
 
             _seededJusticeUserIds.Add(justiceUser.Entity.Id);
@@ -79,8 +79,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser.Entity;
         }
         
-        public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName, 
-            bool isTeamLead = false)
+        public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName, bool isTeamLead = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -91,13 +90,12 @@ namespace BookingsApi.IntegrationTests.Helper
                 {
                     ContactEmail = userName + i,
                     Username = userName + i,
-                    UserRoleId = isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho,
                     CreatedBy = $"integration{i}.test@test.com",
                     CreatedDate = DateTime.Now,
                     FirstName = firstName + i,
                     Lastname = lastName + i,
                 });
-                
+                await SeedJusticeUsersRole(db, justiceUser.Entity, isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho);
                 userList.Add(justiceUser.Entity);
                 _seededJusticeUserIds.Add(justiceUser.Entity.Id);
             }
@@ -113,7 +111,6 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "integration.test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
@@ -125,11 +122,17 @@ namespace BookingsApi.IntegrationTests.Helper
                 HearingId = db.VideoHearings.FirstOrDefault()!.Id,
                 JusticeUserId = justiceUser.Entity.Id
             });
-            
             _seededJusticeUserIds.Add(justiceUser.Entity.Id);
-            
+            await SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
             await db.SaveChangesAsync();
             return justiceUser.Entity;
+        }
+
+        public async Task SeedJusticeUsersRole(BookingsDbContext context, JusticeUser user, params int[] roleIds)
+        {
+            var userRoles = await context.UserRoles.Where(x => roleIds.Contains(x.Id)).ToListAsync();
+            var entities = userRoles.Select(ur => new JusticeUserRole(user, ur)).ToArray();
+            await context.AddRangeAsync(entities);
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
@@ -788,6 +791,21 @@ namespace BookingsApi.IntegrationTests.Helper
                 }
                 TestContext.WriteLine(@$"Remove allocation: {id}.");
         
+            }
+        }
+
+        public async Task ClearJusticeUserRolesAsync()
+        {
+            foreach (var id in _seededJusticeUserIds)
+            {
+                await using var db = new BookingsDbContext(_dbContextOptions);
+                var justiceUserRole = await db.JusticeUserRoles.Where(x => x.JusticeUser.Id == id).ToListAsync();
+                if (!justiceUserRole.Any())
+                {
+                    db.JusticeUserRoles.RemoveRange(justiceUserRole);
+                    await db.SaveChangesAsync();
+                }
+                TestContext.WriteLine(@$"Remove justice user roles, for justiceUser: {id}.");
             }
         }
     }

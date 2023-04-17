@@ -41,7 +41,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         
         // Assert
         justiceUser.Should().NotBeNull();
-        justiceUser.UserRoleId.Should().Be(command.RoleId);
+        justiceUser.JusticeUserRoles.First().UserRole.Should().Be(command.Roles.First());
     }
 
     [Test]
@@ -70,7 +70,6 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
             {
                 ContactEmail = "testuser@hmcts.net",
                 Username = username,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "db@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "Test",
@@ -106,6 +105,8 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
                 HearingId = allocatedHearingId,
                 JusticeUserId = justiceUser.Entity.Id
             });
+
+            await Hooks.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
 
             await db.SaveChangesAsync();
 

@@ -7,6 +7,7 @@ using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations;
@@ -15,6 +16,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
+using JusticeUserRole = BookingsApi.Contract.Requests.Enums.JusticeUserRole;
 
 namespace BookingsApi.IntegrationTests.Api.JusticeUsers
 {
@@ -44,7 +46,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == _request.Username);
             justiceUser.Should().NotBeNull();
-            justiceUser.UserRoleId.Should().Be(9);
+            justiceUser.JusticeUserRoles.Should().Contain(jur => jur.UserRole.Id == 9);
             justiceUser.Id.Should().Be(response.Id);
         }
 
@@ -118,7 +120,6 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             {
                 ContactEmail = username,
                 Username = username,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "editjusticeuser.test@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "ApiTest",

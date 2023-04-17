@@ -92,7 +92,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 ContactEmail = username,
                 Username = username,
-                UserRoleId = (int)UserRoleId.Vho,
+                //UserRoleIds = new []{(int)UserRoleId.Vho},
                 CreatedBy = "db@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "Test",

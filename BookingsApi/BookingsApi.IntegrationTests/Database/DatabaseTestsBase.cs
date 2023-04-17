@@ -42,6 +42,7 @@ namespace BookingsApi.IntegrationTests.Database
             await Hooks.ClearJudiciaryPersonsAsync();
             await Hooks.ClearJusticeUsersAsync();
             await Hooks.ClearAllocationsAsync();
+            await Hooks.ClearJusticeUserRolesAsync();
         }
     }
 }

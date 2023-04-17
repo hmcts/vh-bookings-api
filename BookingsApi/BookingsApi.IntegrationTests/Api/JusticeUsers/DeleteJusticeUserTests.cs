@@ -100,7 +100,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             {
                 ContactEmail = username,
                 Username = username,
-                UserRoleId = (int)UserRoleId.Vho,
+                //UserRoles = new []{(int)UserRoleId.Vho},
                 CreatedBy = "deletejusticeuser.test@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "ApiTest",

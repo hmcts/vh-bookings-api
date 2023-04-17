@@ -43,7 +43,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = "contact@email.com",
                 Username     = UserWithRecords,
-                UserRoleId   = (int)UserRoleId.Vho,
                 CreatedBy    = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
@@ -53,7 +52,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = "contact@email.com",
                 Username     = UserWithoutRecords,
-                UserRoleId   = (int)UserRoleId.Vho,
                 CreatedBy    = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
@@ -63,7 +61,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = "contact@email.com",
                 Username = DeletedUser,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate = DateTime.Now,
                 FirstName = "test",
@@ -73,7 +70,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = "contact@email.com",
                 Username = UserWithDeletedRecords,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate = DateTime.Now,
                 FirstName = "test",

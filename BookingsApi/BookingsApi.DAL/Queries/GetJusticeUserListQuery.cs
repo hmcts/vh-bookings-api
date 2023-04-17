@@ -33,7 +33,9 @@ namespace BookingsApi.DAL.Queries
 
             if (string.IsNullOrEmpty(term))
             {
-                return await _context.JusticeUsers.IgnoreQueryFilters().Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false)).Include(x => x.UserRole).ToListAsync();
+                return await _context.JusticeUsers.IgnoreQueryFilters()
+                    .Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false))
+                    .Include(x => x.JusticeUserRoles).ThenInclude(jur => jur.UserRole).ToListAsync();
             }
             else
             {
@@ -45,7 +47,8 @@ namespace BookingsApi.DAL.Queries
                         u.ContactEmail.Contains(term) ||
                         u.Username.Contains(term)
                     )
-                    .Include(x => x.UserRole).ToListAsync();
+                    .Include(x => x.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+                    .ToListAsync();
             }
             
         }

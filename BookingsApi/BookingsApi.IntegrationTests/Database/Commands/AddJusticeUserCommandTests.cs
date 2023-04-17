@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -26,8 +25,13 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
     [TestCase(UserRoleId.VhTeamLead)]
     public async Task should_add_a_justice_user(UserRoleId roleId)
     {
-        var command = new AddJusticeUserCommand("test1", "test2", "should_add_a_justice_user@testdb.com",
-            "should_add_a_justice_user_contact@testdb.com", "db@test.com", (int) roleId)
+        var command = new AddJusticeUserCommand(
+            "test1", 
+            "test2", 
+            "should_add_a_justice_user@testdb.com",
+            "should_add_a_justice_user_contact@testdb.com", 
+            "db@test.com",
+            (int) roleId)
         {
             Telephone = "01234567890"
         };
@@ -41,7 +45,7 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         justiceUser.Lastname.Should().Be(command.Lastname);
         justiceUser.ContactEmail.Should().Be(command.ContactEmail);
         justiceUser.CreatedBy.Should().Be(command.CreatedBy);
-        justiceUser.UserRoleId.Should().Be(command.RoleId);
+        justiceUser.JusticeUserRoles.First().UserRole.Id.Should().Be(command.RoleIds.First());
         justiceUser.Telephone.Should().Be(command.Telephone);
     }
 
