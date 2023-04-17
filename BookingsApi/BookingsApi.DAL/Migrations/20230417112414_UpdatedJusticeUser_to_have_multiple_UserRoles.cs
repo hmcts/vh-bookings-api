@@ -17,30 +17,6 @@ namespace BookingsApi.DAL.Migrations
                 name: "IX_JusticeUser_UserRoleId",
                 table: "JusticeUser");
 
-            migrationBuilder.AddColumn<bool>(
-                name: "Deleted",
-                table: "VhoWorkHours",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "JusticeUser",
-                type: "nvarchar(450)",
-                maxLength: 450,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "Deleted",
-                table: "JusticeUser",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
             migrationBuilder.CreateTable(
                 name: "JusticeUserRoles",
                 columns: table => new
@@ -66,14 +42,7 @@ namespace BookingsApi.DAL.Migrations
                         principalTable: "UserRole",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_JusticeUser_Username",
-                table: "JusticeUser",
-                column: "Username",
-                unique: true,
-                filter: "[Username] IS NOT NULL");
-
+            
             migrationBuilder.CreateIndex(
                 name: "IX_JusticeUserRoles_JusticeUserId",
                 table: "JusticeUserRoles",
@@ -89,18 +58,6 @@ namespace BookingsApi.DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "JusticeUserRoles");
-
-            migrationBuilder.DropIndex(
-                name: "IX_JusticeUser_Username",
-                table: "JusticeUser");
-
-            migrationBuilder.DropColumn(
-                name: "Deleted",
-                table: "VhoWorkHours");
-
-            migrationBuilder.DropColumn(
-                name: "Deleted",
-                table: "JusticeUser");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Username",
