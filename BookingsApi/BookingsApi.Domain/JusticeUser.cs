@@ -31,6 +31,7 @@ namespace BookingsApi.Domain
         public string Telephone { get; set; }
         public string CreatedBy { get; set; }
         public bool Deleted { get; private set; }
+        public int UserRoleId { get; set; }
         public virtual IList<JusticeUserRole> JusticeUserRoles { get; set; }
         public virtual IList<VhoNonAvailability> VhoNonAvailability { get; protected set; }
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
