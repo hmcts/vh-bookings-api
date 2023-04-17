@@ -30,12 +30,4 @@
         <ProjectReference Include="..\BookingsApi\BookingsApi.csproj" />
         <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="Features\*.feature.cs" />
-        <None Remove="appsettings.json" />
-        <Content Include="appsettings.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 </Project>
