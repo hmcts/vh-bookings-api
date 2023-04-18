@@ -3,17 +3,15 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
-using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 using JusticeUserRole = BookingsApi.Contract.Requests.Enums.JusticeUserRole;
@@ -44,9 +42,12 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             var response = await ApiClientResponse.GetResponses<JusticeUserResponse>(result.Content);
             
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == _request.Username);
+            var justiceUser = db.JusticeUsers
+                .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+                .FirstOrDefault(x => x.Username == _request.Username);
+            
             justiceUser.Should().NotBeNull();
-            justiceUser.JusticeUserRoles.Should().Contain(jur => jur.UserRole.Id == 9);
+            justiceUser.JusticeUserRoles.Should().Contain(jur => jur.UserRole.IsVhTeamLead);
             justiceUser.Id.Should().Be(response.Id);
         }
 
@@ -94,7 +95,12 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
         [TearDown]
         public async Task TearDown()
         {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);            
+            
+            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
+            if(justiceUserRoles.Any())
+                db.RemoveRange(justiceUserRoles);
+
             var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Id == _justiceUserId);
             if (justiceUser != null)
             {

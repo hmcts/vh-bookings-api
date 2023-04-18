@@ -84,6 +84,10 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
         public async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            
+            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
+            if(justiceUserRoles.Any())
+                db.RemoveRange(justiceUserRoles);
 
             var justiceUser = db.JusticeUsers.IgnoreQueryFilters().FirstOrDefault(x => x.Id == _justiceUserId);
             if (justiceUser != null)
