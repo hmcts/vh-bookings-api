@@ -10,7 +10,8 @@ namespace BookingsApi.Contract.Responses
         public string ContactEmail { get; set; }
         public string Username { get; set; }
         public string Telephone { get; set; }
-        public UserRoleResponse[] UserRoles { get; set; }
+        public int UserRoleId { get; set; }
+        public string UserRoleName { get; set; }
         public bool IsVhTeamLeader { get; set; }
         public string CreatedBy { get; set; }
         public string FullName { get; set; }

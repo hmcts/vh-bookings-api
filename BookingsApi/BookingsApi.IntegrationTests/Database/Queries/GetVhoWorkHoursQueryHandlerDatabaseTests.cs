@@ -5,6 +5,7 @@ using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -27,11 +28,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.Where(e => e.JusticeUser.Username == UserWithoutRecords));
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.IgnoreQueryFilters().Where(e => e.JusticeUser.Username == DeletedUser));
             context.VhoWorkHours.RemoveRange(context.VhoWorkHours.IgnoreQueryFilters().Where(e => e.JusticeUser.Username == UserWithDeletedRecords));
-            context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithRecords));
-            context.JusticeUsers.Remove(context.JusticeUsers.First(e => e.Username == UserWithoutRecords));
-            context.JusticeUsers.Remove(context.JusticeUsers.IgnoreQueryFilters().First(e => e.Username == DeletedUser));
-            context.JusticeUsers.Remove(context.JusticeUsers.IgnoreQueryFilters().First(e => e.Username == UserWithDeletedRecords));
-
             context.SaveChanges();
         }
 
@@ -39,42 +35,55 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            context.JusticeUsers.Add(new JusticeUser
+            var userRole = context.UserRoles.First(e => e.Id == (int)UserRoleId.Vho);
+            var justiceUser = context.JusticeUsers.Add(new JusticeUser
             {
                 ContactEmail = "contact@email.com",
                 Username     = UserWithRecords,
                 CreatedBy    = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
-                Lastname     = "test",
+                Lastname     = "test"
             });
-            context.JusticeUsers.Add(new JusticeUser
+            context.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
+            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            
+            justiceUser = context.JusticeUsers.Add(new JusticeUser
             {
                 ContactEmail = "contact@email.com",
                 Username     = UserWithoutRecords,
                 CreatedBy    = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
-                Lastname     = "test",
+                Lastname     = "test"
             });
-            context.JusticeUsers.Add(new JusticeUser
+            context.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
+            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
+
+            justiceUser = context.JusticeUsers.Add(new JusticeUser
             {
                 ContactEmail = "contact@email.com",
                 Username = DeletedUser,
                 CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate = DateTime.Now,
                 FirstName = "test",
-                Lastname = "test",
+                Lastname = "test"
             });
-            context.JusticeUsers.Add(new JusticeUser
+            context.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
+            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
+
+            justiceUser = context.JusticeUsers.Add(new JusticeUser
             {
                 ContactEmail = "contact@email.com",
                 Username = UserWithDeletedRecords,
                 CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
                 CreatedDate = DateTime.Now,
                 FirstName = "test",
-                Lastname = "test",
+                Lastname = "test"
             });
+            context.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
+            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
+
             context.SaveChanges();
             var vhoWorkHours1 = new VhoWorkHours
             {

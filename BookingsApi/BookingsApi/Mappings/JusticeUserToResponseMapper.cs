@@ -16,9 +16,8 @@ namespace BookingsApi.Mappings
                 ContactEmail = judiciaryPersonStagingRequest.ContactEmail,
                 Username = judiciaryPersonStagingRequest.Username,
                 Telephone = judiciaryPersonStagingRequest.Telephone,
-                UserRoles = judiciaryPersonStagingRequest.JusticeUserRoles
-                    .Select(jur => new UserRoleResponse(jur.UserRole.Id, jur.UserRole.Name))
-                    .ToArray(),
+                UserRoleId = judiciaryPersonStagingRequest.JusticeUserRoles.First().UserRole.Id, 
+                UserRoleName = judiciaryPersonStagingRequest.JusticeUserRoles.First().UserRole.Name, 
                 IsVhTeamLeader = judiciaryPersonStagingRequest.JusticeUserRoles.Any(jur => jur.UserRole.IsVhTeamLead),
                 CreatedBy = judiciaryPersonStagingRequest.CreatedBy,
                 Id = judiciaryPersonStagingRequest.Id,

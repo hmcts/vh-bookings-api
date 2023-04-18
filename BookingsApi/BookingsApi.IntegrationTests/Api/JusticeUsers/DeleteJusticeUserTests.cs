@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using BookingsApi.IntegrationTests.Helper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +82,12 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
 
+            var justiceUserRoles = db.JusticeUserRoles
+                .IgnoreQueryFilters()
+                .Where(x => x.JusticeUser.Id == _justiceUserId);
+            if(justiceUserRoles.Any())
+                db.RemoveRange(justiceUserRoles);
+                
             var justiceUser = db.JusticeUsers.IgnoreQueryFilters().FirstOrDefault(x => x.Id == _justiceUserId);
             if (justiceUser != null)
             {
@@ -100,12 +106,13 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             {
                 ContactEmail = username,
                 Username = username,
-                //UserRoles = new []{(int)UserRoleId.Vho},
                 CreatedBy = "deletejusticeuser.test@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "ApiTest",
                 Lastname = "User",
             });
+            var userRole = db.UserRoles.First(e => e.Id == (int)UserRoleId.Vho);
+            db.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
             
             for (var i = 1; i <= 7; i++)
             {

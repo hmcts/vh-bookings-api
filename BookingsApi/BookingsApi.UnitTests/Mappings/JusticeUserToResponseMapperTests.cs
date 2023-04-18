@@ -42,7 +42,8 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
-                UserRoles = new []{new UserRoleResponse((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")},
+                UserRoleId = (int)UserRoleId.VhTeamLead,
+                UserRoleName = "Video Hearings Team Lead",
                 FullName = "FirstName Lastname"
             };
 

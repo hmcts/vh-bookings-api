@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -83,12 +86,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 ContactEmail = username,
                 Username = username,
-                //UserRoleIds = new []{(int)UserRoleId.Vho},
                 CreatedBy = "db@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "Test",
                 Lastname = "User",
             });
+            var userRole = db.UserRoles.First(e => e.Id == (int)UserRoleId.Vho);
+            db.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
             
             // Work hours
             for (var i = 1; i <= 7; i++)
