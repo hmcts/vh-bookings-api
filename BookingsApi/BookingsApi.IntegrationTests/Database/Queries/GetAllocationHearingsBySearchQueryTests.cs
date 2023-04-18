@@ -20,7 +20,6 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     private VideoHearing _seededHearing3;
     private VideoHearing _seededHearing4;
     private VideoHearing _seededHearing5;
-    private VideoHearing _seededHearing6;
     private BookingsDbContext _context;
 
     private const string TestCaseType = "Financial Remedy";
@@ -46,18 +45,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         {
             options.ScheduledDate = _testDate1;
         });
-        _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
-        {
-            options.HearingVenue = new HearingVenue(1, "Teesside combined court centre");
-        });
-        _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
-        {
-            options.HearingVenue = new HearingVenue(1, "Middlesborough county court");
-        });
-        _seededHearing6 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
-        {
-            options.HearingVenue = new HearingVenue(1, "Middlesborough county court");
-        });
+       
+       
 
     }
     
@@ -294,39 +283,25 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         CollectionAssert.AreEquivalent(resultingWorkHours.Select(wh => wh.Id), nonDeletedWorkHours.Select(wh => wh.Id));
     }
     [Test]
-    public async Task Should_skip_teesside_court()
+    public async Task should_not_return_excluded_venues()
     {
+        _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        {
+            options.HearingVenue = new HearingVenue(338, "Teesside Combined Court Centre");
+        });
+        _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        {
+            options.HearingVenue = new HearingVenue(15, "Aberdeen Tribunal Hearing Centre");
+        });
         //ARRANGE
         var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
+        await Hooks.AddAllocation(_seededHearing5, justiceUser);
+        await Hooks.AddAllocation(_seededHearing2, justiceUser);
         await Hooks.AddAllocation(_seededHearing4, justiceUser);
         //ACT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
         //ASSERT
-        hearings.Count.Should().Be(0);
-       
-    }   
-    [Test]
-    public async Task Should_skip_middlesborough_court()
-    {
-        //ARRANGE
-        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
-        await Hooks.AddAllocation(_seededHearing5, justiceUser);
-        //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
-        //ASSERT
-        hearings.Count.Should().Be(0);
-       
-    }   
-    [Test]
-    public async Task Should_skip_teesside_magistrates_court()
-    {
-        //ARRANGE
-        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
-        await Hooks.AddAllocation(_seededHearing6, justiceUser);
-        //ACT
-        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
-        //ASSERT
-        hearings.Count.Should().Be(0);
-       
+        hearings.Count.Should().Be(1);
+        
     }   
 }
