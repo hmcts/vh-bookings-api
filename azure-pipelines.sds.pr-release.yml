@@ -7,7 +7,19 @@ resources:
       name: hmcts/azure-devops-templates
       ref: master
       endpoint: hmcts
-      
+
+parameters:
+- name: pr_number
+  type: string
+  default: ' '
+
+variables: 
+- name: pr_number
+  ${{ if eq(parameters.pr_number, ' ') }}:
+    value: $(System.PullRequest.PullRequestNumber)
+  ${{ else }}:
+    value: ${{ parameters.pr_number }}
+
 trigger: none
 
 pr:
@@ -111,6 +123,7 @@ stages:
   - template: variables/shared.yaml
     parameters:
       env: ${{ variables.env }}
+      prNumber: ${{ variables.pr_number }}
   - group: vh-github-app-credentials
   jobs:
   - job: Dock
@@ -162,6 +175,7 @@ stages:
   - template: variables/shared.yaml
     parameters:
       env: ${{ variables.env }}
+      prNumber: ${{ variables.pr_number }}
   jobs:
   - job: Run_Entity_Framework_Dev
     pool:
@@ -194,6 +208,7 @@ stages:
   - template: variables/shared.yaml
     parameters:
       env: ${{ variables.env }}
+      prNumber: ${{ variables.pr_number }}
   - name: dnsRecordName
     value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
   jobs:
@@ -252,6 +267,7 @@ stages:
   - template: variables/shared.yaml
     parameters:
       env: ${{ variables.env }}
+      prNumber: ${{ variables.pr_number }}
   jobs: 
   - job: Publish_Nuget
     displayName: Publish NuGet Packages
@@ -271,6 +287,7 @@ stages:
   - template: variables/shared.yaml
     parameters:
       env: ${{ variables.env }}
+      prNumber: ${{ variables.pr_number }}
   - name: dnsRecordName
     value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
   jobs:
@@ -284,7 +301,7 @@ stages:
         azureSubscription: ${{ variables.subscriptionName }}
         acceptanceTestSettings:
           - name: Services:BookingsApiUrl
-            value: https://vh-bookings-api-pr-$(System.PullRequest.PullRequestNumber).dev.platform.hmcts.net
+            value: https://vh-bookings-api-pr-${{ variables.pr_number }}.dev.platform.hmcts.net
           - name: ApplicationInsights:InstrumentationKey
             value: applicationinsights--instrumentationkey
             keyVaultName: vh-infra-core-${{ variables.env }}
