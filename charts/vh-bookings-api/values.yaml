@@ -41,6 +41,6 @@ java:
     Logging__LogLevel__Default: debug
     Logging__LogLevel__Microsoft: debug
     Logging__LogLevel__System: debug
-    SERVICEBUSQUEUE__QUEUENAME: booking
+    SERVICEBUSQUEUE__QUEUENAME: marco-dev-booking
     TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
     UseServiceBusFake: false
