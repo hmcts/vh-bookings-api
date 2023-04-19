@@ -9,16 +9,16 @@ resources:
       endpoint: hmcts
 
 parameters:
-- name: pr_number
-  type: string
-  default: ' '
+  - name: pr_number
+    type: string
+    default: " "
 
-variables: 
-- name: pr_number
-  ${{ if eq(parameters.pr_number, ' ') }}:
-    value: $(System.PullRequest.PullRequestNumber)
-  ${{ else }}:
-    value: ${{ parameters.pr_number }}
+variables:
+  - name: pr_number
+    ${{ if eq(parameters.pr_number, ' ') }}:
+      value: $(System.PullRequest.PullRequestNumber)
+    ${{ else }}:
+      value: ${{ parameters.pr_number }}
 
 trigger: none
 
