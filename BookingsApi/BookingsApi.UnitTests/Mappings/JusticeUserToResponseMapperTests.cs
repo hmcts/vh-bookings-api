@@ -24,14 +24,7 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 Telephone = "0123456789",
             };
-            justiceUser.JusticeUserRoles = new List<JusticeUserRole>
-            {
-                new JusticeUserRole
-                {
-                    JusticeUser = justiceUser,
-                    UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
-                }
-            };
+            justiceUser.AddRoles(new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead"));
 
             var expectedJusticeUserResponse = new JusticeUserResponse
             {

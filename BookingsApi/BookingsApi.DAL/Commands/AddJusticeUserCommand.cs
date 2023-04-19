@@ -39,7 +39,7 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(AddJusticeUserCommand command)
         {
-            var roles = await _context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToListAsync();
+            var roles = await _context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToArrayAsync();
             
             if (_context.JusticeUsers.IgnoreQueryFilters().Any(x => x.Username.ToLower() == command.Username.ToLower()))
             {
@@ -50,10 +50,8 @@ namespace BookingsApi.DAL.Commands
                 Telephone = command.Telephone,
                 CreatedBy = command.CreatedBy
             };
-            var justiceUserRoles = roles.Select(userRole => new JusticeUserRole(justiceUser, userRole)).ToList();
-            
+            justiceUser.AddRoles(roles);
             await _context.AddAsync(justiceUser);
-            await _context.AddRangeAsync(justiceUserRoles);
             await _context.SaveChangesAsync();
         }
     }

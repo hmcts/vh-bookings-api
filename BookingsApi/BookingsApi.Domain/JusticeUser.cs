@@ -13,6 +13,7 @@ namespace BookingsApi.Domain
             VhoNonAvailability = new List<VhoNonAvailability>();
             VhoWorkHours = new List<VhoWorkHours>();
             Allocations = new List<Allocation>();
+            JusticeUserRoles = new List<JusticeUserRole>();
         }
 
 
@@ -78,6 +79,14 @@ namespace BookingsApi.Domain
             return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
                    (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
         }
+        
+        public void AddRoles(params UserRole[] userRoles)
+        {
+            foreach (var userRole in userRoles)
+            {
+                JusticeUserRoles.Add(new JusticeUserRole(this, userRole));
+            }
+        }
 
         public void Delete()
         {
@@ -103,5 +112,7 @@ namespace BookingsApi.Domain
         {
             Deleted = false;
         }
+        
+        public bool IsTeamLeader() => JusticeUserRoles.Any(jur => jur.UserRole.IsVhTeamLead);
     }
 }
