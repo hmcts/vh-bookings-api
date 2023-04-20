@@ -29,25 +29,25 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<JusticeUser>> Handle(GetJusticeUserListQuery query)
         {
-            string term = query.Term;
+            var term = query.Term;
+            
+            var users = _context.JusticeUsers.IgnoreQueryFilters()
+                .Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false))
+                .OrderBy(x => x.Lastname).ThenBy(x => x.FirstName)
+                .Include(x => x.UserRole)
+                .AsQueryable();
 
-            if (string.IsNullOrEmpty(term))
+            if (!string.IsNullOrEmpty(term))
             {
-                return await _context.JusticeUsers.IgnoreQueryFilters().Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false)).Include(x => x.UserRole).ToListAsync();
-            }
-            else
-            {
-                return await _context.JusticeUsers.IgnoreQueryFilters()
-                    .Where(u=>
-                        (query.IncludeDeleted.Equals(true) || u.Deleted.Equals(false)) &&
-                        u.Lastname.Contains(term) || 
+                users = users
+                    .Where(u =>
+                        u.Lastname.Contains(term) ||
                         u.FirstName.Contains(term) ||
                         u.ContactEmail.Contains(term) ||
-                        u.Username.Contains(term)
-                    )
-                    .Include(x => x.UserRole).ToListAsync();
+                        u.Username.Contains(term));
             }
             
+            return await users.ToListAsync();
         }
     }
 }
