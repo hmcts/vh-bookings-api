@@ -1,11 +1,8 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
@@ -18,17 +15,16 @@ namespace BookingsApi.DAL.Commands
         public string ContactEmail { get; }
         public string Telephone { get; set; }
         public string CreatedBy { get; }
-        public int RoleId { get; }
+        public int[] RoleIds { get; }
 
-        public AddJusticeUserCommand(string firstName, string lastname, string username, string contactEmail,
-            string createdBy, int roleId)
+        public AddJusticeUserCommand(string firstName, string lastname, string username, string contactEmail, string createdBy, params int[] roleIds)
         {
             FirstName = firstName;
             Lastname = lastname;
             Username = username;
             ContactEmail = contactEmail;
             CreatedBy = createdBy;
-            RoleId = roleId;
+            RoleIds = roleIds;
         }
     }
 
@@ -43,21 +39,18 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(AddJusticeUserCommand command)
         {
-            var roleName = command.RoleId == (int)UserRoleId.VhTeamLead ? "Video hearings team lead" : "Video hearings officer";
-            var role = new UserRole(command.RoleId, roleName);
-
+            var roles = await _context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToArrayAsync();
+            
             if (_context.JusticeUsers.IgnoreQueryFilters().Any(x => x.Username.ToLower() == command.Username.ToLower()))
             {
                 throw new JusticeUserAlreadyExistsException(command.Username);
             }
             
-            var justiceUser = new JusticeUser(command.FirstName, command.Lastname, command.ContactEmail,
-                command.Username, role)
-            {
+            var justiceUser = new JusticeUser(command.FirstName, command.Lastname, command.ContactEmail, command.Username) {
                 Telephone = command.Telephone,
                 CreatedBy = command.CreatedBy
             };
-
+            justiceUser.AddRoles(roles);
             await _context.AddAsync(justiceUser);
             await _context.SaveChangesAsync();
         }

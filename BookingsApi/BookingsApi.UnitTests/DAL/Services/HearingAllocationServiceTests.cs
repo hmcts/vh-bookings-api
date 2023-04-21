@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
+using JusticeUser = BookingsApi.Domain.JusticeUser;
 
 namespace BookingsApi.UnitTests.DAL.Services
 {
@@ -1304,27 +1305,30 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         private JusticeUser SeedCso(string userName, string firstName, string lastName)
         {
-            return SeedJusticeUser(userName, firstName, lastName, _userRoleCso);
+            return SeedJusticeUser(userName, firstName, lastName, new []{_userRoleCso});
         }
 
         private JusticeUser SeedNonCso(string userName, string firstName, string lastName)
         {
-            return SeedJusticeUser(userName, firstName, lastName, _userRoleVhTeamLead);
+            return SeedJusticeUser(userName, firstName, lastName, new []{_userRoleVhTeamLead});
         }
 
-        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, UserRole userRole)
+        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, IEnumerable<UserRole> userRoles)
         {
-            var justiceUser = new JusticeUser
+            var justiceUser = new JusticeUser()
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = userRole.Id,
                 CreatedBy = "test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
                 Lastname = lastName,
-                UserRole = userRole
+                JusticeUserRoles = new List<JusticeUserRole>()
             };
+            
+            foreach (var role in userRoles)
+                justiceUser.JusticeUserRoles.Add(new JusticeUserRole(justiceUser, role));
+            
 
             var workHours = new List<VhoWorkHours>();
             justiceUser.SetProtected(nameof(justiceUser.VhoWorkHours), workHours);
