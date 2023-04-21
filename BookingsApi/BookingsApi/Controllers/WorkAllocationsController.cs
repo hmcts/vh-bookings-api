@@ -94,10 +94,10 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingIds">Hearing Reference ID array</param>
         /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpGet("allocation", Name = "GetAllocationsForHearings")]
+        [HttpPost("allocation", Name = "GetAllocationsForHearings")]
         [OpenApiOperation("GetAllocationsForHearings")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllocationsForHearings([FromQuery] Guid[] hearingIds)
+        public async Task<IActionResult> GetAllocationsForHearings([FromBody]Guid[] hearingIds)
         {
             var allocatedHearings = await _queryHandler
                     .Handle<GetAllocationHearingsQuery, List<VideoHearing>>(new GetAllocationHearingsQuery(hearingIds));
