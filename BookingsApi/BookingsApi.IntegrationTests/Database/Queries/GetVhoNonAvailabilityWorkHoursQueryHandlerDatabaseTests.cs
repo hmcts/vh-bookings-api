@@ -34,7 +34,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = UserWithRecords,
                 Username     = UserWithRecords,
-                UserRoleId   = (int)UserRoleId.Vho,
                 CreatedBy    = "integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",
@@ -44,7 +43,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             {
                 ContactEmail = UserWithoutRecords,
                 Username     = UserWithoutRecords,
-                UserRoleId   = (int)UserRoleId.Vho,
                 CreatedBy    = "integration.GetVhoNonAvailabilityWorkHoursQueryHandlerDatabaseTests.UnitTest",
                 CreatedDate  = DateTime.Now,
                 FirstName    = "test",

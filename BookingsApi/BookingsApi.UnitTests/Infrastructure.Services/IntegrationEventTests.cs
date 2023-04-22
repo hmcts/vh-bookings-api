@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
@@ -287,10 +288,13 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
 
             var csoUser = new JusticeUser()
             {
-                Username = "userName",
-                UserRole = new UserRole(1,"VHO")
+                Username = "userName"
             };
             
+            csoUser.JusticeUserRoles = new List<JusticeUserRole>
+            {
+                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings Team Lead") }
+            };
 
             var allocationHearingsIntegrationEvent = new AllocationHearingsIntegrationEvent(hearings, csoUser);
             _eventPublisher.PublishAsync(allocationHearingsIntegrationEvent);

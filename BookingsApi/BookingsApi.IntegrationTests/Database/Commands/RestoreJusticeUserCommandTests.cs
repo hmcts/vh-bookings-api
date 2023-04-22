@@ -94,7 +94,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 ContactEmail = username,
                 Username = username,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "db@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "Test",
@@ -139,6 +138,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 .Include(x => x.Allocations).ThenInclude(x => x.Hearing)
                 .Include(x => x.VhoWorkHours)
                 .Include(x => x.VhoNonAvailability)
+                .Include(x => x.JusticeUserRoles).ThenInclude(x => x.UserRole)
                 .FirstOrDefault();
             
             newUser.Delete();
