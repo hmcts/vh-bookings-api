@@ -7740,7 +7740,7 @@ namespace BookingsApi.Client
                 throw new System.ArgumentNullException("hearingIds");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/allocation");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/get-allocation");
 
             var client_ = _httpClient;
             var disposeClient_ = false;

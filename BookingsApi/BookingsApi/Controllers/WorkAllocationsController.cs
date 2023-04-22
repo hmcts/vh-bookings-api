@@ -14,6 +14,7 @@ using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
@@ -94,7 +95,7 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingIds">Hearing Reference ID array</param>
         /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpPost("allocation", Name = "GetAllocationsForHearings")]
+        [HttpPost("get-allocation", Name = "GetAllocationsForHearings")]
         [OpenApiOperation("GetAllocationsForHearings")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllocationsForHearings([FromBody]Guid[] hearingIds)
