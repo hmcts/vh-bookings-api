@@ -1,6 +1,6 @@
 ﻿using BookingsApi.Domain;
 using System.Linq;
-using BookingsApi.DAL.Helper;
+using BookingsApi.Contract.Helper;
 
 namespace BookingsApi.DAL.Helper
 {
@@ -9,11 +9,11 @@ namespace BookingsApi.DAL.Helper
         public static string AllocatedVho(Hearing videoHearing)
         {
             var allocatedVho = "Not Allocated";
-            var isScottishVenue =
-                HearingScottishVenueNames.ScottishHearingVenuesList.Any(venueName =>
+            var isExcludedVenue =
+                HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.Any(venueName =>
                     venueName == videoHearing.HearingVenueName);
             if (videoHearing.AllocatedTo == null) {
-                if (isScottishVenue || videoHearing.CaseTypeId == 3) // not required if scottish venue or generic type
+                if (isExcludedVenue || videoHearing.CaseTypeId == 3) // not required if excluded venue or generic type
                 {
                     allocatedVho = "Not Required";
                 }

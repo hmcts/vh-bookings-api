@@ -1,4 +1,5 @@
-﻿using BookingsApi.Contract.Responses;
+﻿using System.Collections.Generic;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
@@ -19,12 +20,11 @@ namespace BookingsApi.UnitTests.Mappings
                 FirstName = "FirstName",
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
-                ContactEmail = "email.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead"),
+                ContactEmail = "email.test@email.com", 
                 CreatedBy = "created.by@email.com",
                 Telephone = "0123456789",
-                UserRoleId = (int)UserRoleId.VhTeamLead
             };
+            justiceUser.AddRoles(new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead"));
 
             var expectedJusticeUserResponse = new JusticeUserResponse
             {
@@ -32,11 +32,11 @@ namespace BookingsApi.UnitTests.Mappings
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
                 ContactEmail = "email.test@email.com",
-                UserRoleName = "Video Hearings Team Lead",
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
                 UserRoleId = (int)UserRoleId.VhTeamLead,
+                UserRoleName = "Video Hearings Team Lead",
                 FullName = "FirstName Lastname"
             };
 

@@ -16,7 +16,6 @@ namespace BookingsApi.DAL
 
         public DbSet<Allocation> Allocations { get; set; }
         public DbSet<Case> Cases { get; set; }
-
         public DbSet<VideoHearing> VideoHearings { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<CaseType> CaseTypes { get; set; }
@@ -31,6 +30,8 @@ namespace BookingsApi.DAL
         public DbSet<Jurisdiction> Jurisdiction { get; set; }
         public DbSet<VhoNonAvailability> VhoNonAvailabilities { get; set; }
         public DbSet<VhoWorkHours> VhoWorkHours { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<JusticeUserRole> JusticeUserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,8 +80,7 @@ namespace BookingsApi.DAL
             foreach (var entry in ChangeTracker.Entries()
                 .Where(e => e.State == EntityState.Modified))
             {
-                var updatedDateProperty =
-                    entry.Properties.AsQueryable().FirstOrDefault(x => x.Metadata.Name == "UpdatedDate");
+                var updatedDateProperty = entry.Properties.AsQueryable().FirstOrDefault(x => x.Metadata.Name == "UpdatedDate");
                 if (updatedDateProperty != null)
                 {
                     updatedDateProperty.CurrentValue = DateTime.UtcNow;
