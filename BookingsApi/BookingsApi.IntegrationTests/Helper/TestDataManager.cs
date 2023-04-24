@@ -27,8 +27,8 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new();
         public List<string> JudiciaryPersons { get; } = new();
-        private readonly List<Guid> _seededJusticeUserIds = new();
-        private readonly List<long> _seededAllocationIds = new();
+        public readonly List<Guid> _seededJusticeUserIds = new();
+        public readonly List<long> _seededAllocationIds = new();
         public string CaseNumber { get; } = "2222/3511";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
