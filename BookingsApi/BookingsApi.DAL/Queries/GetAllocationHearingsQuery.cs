@@ -28,7 +28,8 @@ namespace BookingsApi.DAL.Queries
             => await _context.VideoHearings
                 .Include(h => h.Allocations)
                     .ThenInclude(a => a.JusticeUser)
-                    .ThenInclude(ju => ju.UserRole)
+                    .ThenInclude(ju => ju.JusticeUserRoles)
+                    .ThenInclude(jur => jur.UserRole)
                 .Where(x => query.HearingIds.Contains(x.Id))
                 .ToListAsync();
     }

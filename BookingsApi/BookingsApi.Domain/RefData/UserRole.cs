@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 
 namespace BookingsApi.Domain.RefData
 {
@@ -8,7 +9,7 @@ namespace BookingsApi.Domain.RefData
             Id = id;
             Name = name;
         }
-        
+        public virtual ICollection<JusticeUserRole> JusticeUserRoles { get; set; }
         public string Name { get; set; }
         public bool IsIndividual => Name.ToLower().Equals("individual");
         public bool IsRepresentative => Name.ToLower().Equals("representative");

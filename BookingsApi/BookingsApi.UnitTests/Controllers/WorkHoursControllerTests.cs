@@ -46,9 +46,11 @@ namespace BookingsApi.UnitTests.Controllers
                 Lastname = "Lastname",
                 Username = _username,
                 ContactEmail = _username,
-                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
             };
-
+            _justiceUser.JusticeUserRoles = new List<JusticeUserRole>
+            {
+                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead") }
+            };
             _queryHandlerMock = new Mock<IQueryHandler>();
             _queryHandlerMock.Setup(x => x.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(It.Is<GetJusticeUserByUsernameQuery>(
                     x => x.Username == _justiceUser.Username)))

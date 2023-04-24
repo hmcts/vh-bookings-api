@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -6,6 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -72,14 +74,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 await _commandHandler.Handle(command);
             }).Message.Should().Be($"Justice user with id {id} not found");
         }
-
-        [TearDown]
-        public new async Task TearDown()
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
-            await db.SaveChangesAsync();
-        }
         
         private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
@@ -92,12 +86,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 ContactEmail = username,
                 Username = username,
-                UserRoleId = (int)UserRoleId.Vho,
                 CreatedBy = "db@test.com",
                 CreatedDate = DateTime.UtcNow,
                 FirstName = "Test",
                 Lastname = "User",
             });
+            var userRole = db.UserRoles.First(e => e.Id == (int)UserRoleId.Vho);
+            db.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
             
             // Work hours
             for (var i = 1; i <= 7; i++)
@@ -128,8 +123,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 HearingId = allocatedHearingId,
                 JusticeUserId = justiceUser.Entity.Id
             });
-
+            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
             await db.SaveChangesAsync();
+            
+            var allocationIds = db.Allocations.Where(x => x.JusticeUserId == justiceUser.Entity.Id).Select(e => e.Id);
+            Hooks._seededAllocationIds.AddRange(allocationIds);
 
             return justiceUser.Entity;
         }
