@@ -7,6 +7,7 @@ using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.IntegrationTests.Contexts;
+using GST.Fake.Authentication.JwtBearer;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
@@ -48,8 +49,7 @@ namespace BookingsApi.IntegrationTests.Hooks
             var request = new GetHearingRequest { Limit = HearingsLimit };
             
             using var client = context.Server.CreateClient();
-
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {context.BearerToken}");
+            client.SetFakeBearerToken("admin", new[] { "ROLE_ADMIN", "ROLE_GENTLEMAN" });
 
             context.Uri = client.BaseAddress + HearingTypesRelativePath;
             context.HttpMethod = HttpMethod.Get;
@@ -70,7 +70,7 @@ namespace BookingsApi.IntegrationTests.Hooks
         }
 
         [AfterScenario(Order = (int)HooksSequence.RemoveServer)]
-        public static void RemoveServer(Contexts.TestContext context)
+        public static void RemoveServer(TestContext context)
         {
             context.Server.Dispose();
         }

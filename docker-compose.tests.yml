@@ -1,0 +1,48 @@
+version: '3.4'
+
+networks:
+  integration-tests:
+    driver: bridge
+
+services:
+
+  vh-bookings-api-tests:
+    image: bookings-api-tests
+    build:
+      context: ./
+      dockerfile: tests/Dockerfile
+    entrypoint:
+      [
+        "/wait-for-it.sh",
+        "test-db:1433",
+        "-t",
+        "120",
+        "--",
+        "/run-tests.sh"
+      ]
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__VhBookings=Data Source=test-db;Database=vhbookings;User Id=SA;Password=R4ndomP@assword;Trust Server Certificate=True;Encrypt=False
+    volumes:
+      - ./TestResults:/TestResults:rw
+      - ./Coverage:/Coverage:rw
+      - ./:/app:rw
+    depends_on:
+      - test-db
+    networks:
+      - integration-tests
+
+  test-db:
+    hostname: test-db
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: vh.bookingsapi.sql.testing
+    expose:
+      - 14330
+      - 1433
+    ports:
+      - 14330:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=R4ndomP@assword
+    networks:
+      - integration-tests

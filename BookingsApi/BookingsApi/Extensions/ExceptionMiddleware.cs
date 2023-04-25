@@ -5,17 +5,20 @@ using BookingsApi.Common;
 using BookingsApi.Common.Helpers;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.Extensions
 {
     public class ExceptionMiddleware
     {
+        private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly RequestDelegate _next;
         
 
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -31,6 +34,7 @@ namespace BookingsApi.Extensions
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Unexpected error");
                 ApplicationLogger.TraceException(TraceCategory.APIException.ToString(), "API Exception", ex,null, null);
                 await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, ex);
             }

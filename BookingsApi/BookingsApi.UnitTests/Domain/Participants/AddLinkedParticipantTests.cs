@@ -1,7 +1,6 @@
 using System.Linq;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
@@ -24,9 +23,9 @@ namespace BookingsApi.UnitTests.Domain.Participants
         public void Should_Add_Link()
         {
             _individual.AddLink(_linkedIndividual.Id, LinkedParticipantType.Interpreter);
-            var linkedId = _individual.LinkedParticipants.Select(x => x.LinkedId);
+            var linkedId = _individual.LinkedParticipants.Select(x => x.LinkedId).ToList();
 
-            linkedId.Should().BeEquivalentTo(_linkedIndividual.Id);
+            linkedId.First().Should().Be(_linkedIndividual.Id);
         }
     }
 }

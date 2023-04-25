@@ -403,7 +403,7 @@ namespace BookingsApi.DAL.Services
         {
             // if the hearing's start time plus its duration is greater than the start time of
             // the comparison hearing, they are considered to be concurrent
-            return hearing.ScheduledDateTime.AddHours(hearing.ScheduledDuration) >
+            return hearing.ScheduledDateTime.AddMinutes(hearing.ScheduledDuration) >
                    comparisonHearing.ScheduledDateTime;
         }
     }

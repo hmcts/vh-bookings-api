@@ -55,7 +55,7 @@ public class CheckForAllocationClashesTests
         
         // assert
         resultDtos.Count.Should().Be(4);
-        resultDtos[0].ConcurrentHearingsCount.Should().Equals(4);
+        resultDtos[0].ConcurrentHearingsCount.Should().Be(4);
     }
     
     [Test]
@@ -82,7 +82,7 @@ public class CheckForAllocationClashesTests
         
         // assert
         resultDtos.Count.Should().Be(4);
-        resultDtos[0].ConcurrentHearingsCount.Should().Equals(0);
+        resultDtos[0].ConcurrentHearingsCount.Should().Be(0);
     }
 
     
