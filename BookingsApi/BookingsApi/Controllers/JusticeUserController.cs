@@ -153,10 +153,8 @@ namespace BookingsApi.Controllers
             var query = new GetJusticeUserListQuery(term, includeDeleted);
             var userList =
                 await _queryHandler.Handle<GetJusticeUserListQuery, List<JusticeUser>>(query);
-            
-            var list = userList.Select(user => JusticeUserToResponseMapper.Map(user));
 
-            return Ok(list.ToList());
+            return Ok(userList.Select(JusticeUserToResponseMapper.Map).ToList());
         }
 
         /// <summary>

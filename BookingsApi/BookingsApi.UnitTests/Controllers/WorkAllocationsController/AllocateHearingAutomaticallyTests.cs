@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Domain;
@@ -28,7 +29,11 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
                 ContactEmail = "email.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings CSO")
+            };
+            
+            _justiceUser.JusticeUserRoles = new List<JusticeUserRole>
+            {
+                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.Vho, "Video Hearings Office") }
             };
         }
         

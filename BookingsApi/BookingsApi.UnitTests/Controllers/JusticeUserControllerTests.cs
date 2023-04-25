@@ -37,10 +37,12 @@ namespace BookingsApi.UnitTests.Controllers
                 FirstName = "FirstName",
                 Lastname = "Lastname",
                 Username = "email.test@email.com",
-                ContactEmail = "email.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+                ContactEmail = "email.test@email.com"
             };
-            
+            _justiceUser.JusticeUserRoles = new List<JusticeUserRole>
+            {
+                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead") }
+            };
             _justiceUserList.Add(_justiceUser);
             
             _justiceUser = new JusticeUser
@@ -48,8 +50,11 @@ namespace BookingsApi.UnitTests.Controllers
                 FirstName = "FirstName2",
                 Lastname = "Lastname2",
                 Username = "email2.test@email.com",
-                ContactEmail = "email2.test@email.com",
-                UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+                ContactEmail = "email2.test@email.com"
+            };
+            _justiceUser.JusticeUserRoles = new List<JusticeUserRole>
+            {
+                new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead") }
             };
             _justiceUserList.Add(_justiceUser);
 

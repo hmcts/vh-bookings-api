@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings;
 using FluentAssertions;
@@ -21,7 +22,12 @@ public class GetAllocationsForHearingsTests : WorkAllocationsControllerTest
     {
         //ARRANGE
         //first hearing
-        var justiceUser = new JusticeUser { UserRole = new UserRole(1,"test") };
+        var justiceUser = new JusticeUser();
+                 
+        justiceUser.JusticeUserRoles = new List<JusticeUserRole>
+        {
+            new JusticeUserRole { UserRole = new UserRole((int)UserRoleId.Vho, "Judicial Office Holder") }
+        };
         var hearingId1 = Guid.NewGuid();
         var hearing1 = new Mock<VideoHearing>();
         hearing1.SetupGet(e => e.Id).Returns(hearingId1);

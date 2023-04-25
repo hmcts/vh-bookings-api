@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
@@ -40,7 +39,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             user.Should().NotBeNull();
             user.Id.Should().Be(justiceUser.Id);
             user.Username.Should().Be(justiceUser.Username);
-            user.UserRoleId.Should().Be(justiceUser.UserRoleId);
+            
+            user.JusticeUserRoles.Should().Contain(jur => jur.UserRole.IsVhTeamLead);
         }
 
         [Test]

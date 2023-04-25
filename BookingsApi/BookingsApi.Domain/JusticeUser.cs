@@ -13,16 +13,16 @@ namespace BookingsApi.Domain
             VhoNonAvailability = new List<VhoNonAvailability>();
             VhoWorkHours = new List<VhoWorkHours>();
             Allocations = new List<Allocation>();
+            JusticeUserRoles = new List<JusticeUserRole>();
         }
 
 
-        public JusticeUser(string firstName, string lastname, string contactEmail, string username, UserRole userRole) : this()
+        public JusticeUser(string firstName, string lastname, string contactEmail, string username) : this()
         {
             FirstName = firstName;
             Lastname = lastname;
             ContactEmail = contactEmail;
             Username = username;
-            UserRoleId = userRole.Id;
         }
 
         public string FirstName { get; set; }
@@ -30,11 +30,9 @@ namespace BookingsApi.Domain
         public string ContactEmail { get; set; }
         public string Username { get; set; }
         public string Telephone { get; set; }
-        public int UserRoleId { get; set; }
-        public UserRole UserRole { get; set; }
         public string CreatedBy { get; set; }
         public bool Deleted { get; private set; }
-
+        public virtual IList<JusticeUserRole> JusticeUserRoles { get; set; }
         public virtual IList<VhoNonAvailability> VhoNonAvailability { get; protected set; }
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
         public virtual IList<Allocation> Allocations { get; protected set; }
@@ -58,8 +56,7 @@ namespace BookingsApi.Domain
 
         public bool IsDateBetweenWorkingHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
-            var workHours = VhoWorkHours
-                .FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
+            var workHours = VhoWorkHours.FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
             
             if (workHours == null)
             {
@@ -81,6 +78,14 @@ namespace BookingsApi.Domain
             
             return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
                    (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
+        }
+        
+        public void AddRoles(params UserRole[] userRoles)
+        {
+            foreach (var userRole in userRoles)
+            {
+                JusticeUserRoles.Add(new JusticeUserRole(this, userRole));
+            }
         }
 
         public void Delete()
@@ -107,5 +112,7 @@ namespace BookingsApi.Domain
         {
             Deleted = false;
         }
+        
+        public bool IsTeamLeader() => JusticeUserRoles.Any(jur => jur.UserRole.IsVhTeamLead);
     }
 }
