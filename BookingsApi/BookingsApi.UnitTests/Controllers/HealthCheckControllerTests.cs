@@ -54,7 +54,7 @@ namespace BookingsApi.UnitTests.Controllers
             var response = (BookingsApiHealthResponse) typedResult.Value;
             response.DatabaseHealth.Successful.Should().BeTrue();
             response.DatabaseHealth.ErrorMessage.Should().BeNullOrWhiteSpace();
-            response.DatabaseHealth.Data.Should().BeNullOrEmpty();
+            response.DatabaseHealth.Data.Should().BeNull();
         }
 
         [Test]

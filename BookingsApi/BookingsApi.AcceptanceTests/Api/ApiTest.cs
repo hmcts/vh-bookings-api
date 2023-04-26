@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using BookingsApi.Client;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Security;
@@ -19,12 +20,12 @@ public abstract class ApiTest
     protected BookingsApiClient BookingsApiClient;
 
     [OneTimeSetUp]
-    public void OneTimeSetup()
+    public async Task OneTimeSetup()
     {
         _configRoot = ConfigRootBuilder.Build();
 
         RegisterSettings();
-        var apiToken = GenerateApiToken();
+        var apiToken = await GenerateApiToken();
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("bearer", apiToken);
@@ -38,9 +39,9 @@ public abstract class ApiTest
         TestSettings = _configRoot.GetSection("Testing").Get<TestSettings>();
     }
 
-    private string GenerateApiToken()
+    private async Task<string> GenerateApiToken()
     {
-        return new AzureTokenProvider(Options.Create(_azureConfiguration)).GetClientAccessToken(_azureConfiguration.ClientId,
+        return await new AzureTokenProvider(Options.Create(_azureConfiguration)).GetClientAccessToken(_azureConfiguration.ClientId,
             _azureConfiguration.ClientSecret, _serviceConfiguration.BookingsApiResourceId);
     }
 }

@@ -811,6 +811,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -820,6 +821,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -6566,6 +6568,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username)
         {
             return GetPersonSuitabilityAnswersAsync(username, System.Threading.CancellationToken.None);
@@ -6578,6 +6581,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();

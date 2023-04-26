@@ -160,7 +160,7 @@ namespace BookingsApi.UnitTests.Mappings
             AssertParticipantCommonDetails(response, individual, caseRole, hearingRole);
             AssertRepresentativeResponse(response, null);
             response.LinkedParticipants.Should().NotContainNulls();
-            response.LinkedParticipants.Select(x => x.LinkedId).Should().BeEquivalentTo(linkedId);
+            response.LinkedParticipants.Select(x => x.LinkedId).First().Should().Be(linkedId);
         }
 
         private static void AssertParticipantCommonDetails(ParticipantResponse response, Participant participant,

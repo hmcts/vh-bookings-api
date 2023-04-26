@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
 namespace BookingsApi.DAL
 {
+    [ExcludeFromCodeCoverage]
     public class DesignTimeHearingsContextFactory : IDesignTimeDbContextFactory<BookingsDbContext>
     {
         public BookingsDbContext CreateDbContext(string[] args)

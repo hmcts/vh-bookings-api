@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Options;
@@ -22,15 +23,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         public ServiceBusQueueClient(IOptions<ServiceBusSettings> serviceBusSettings)
         {
             _serviceBusSettings = serviceBusSettings.Value;
-
-            SerializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.Objects
-            };
-            SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+            SerializerSettings = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();
         }
 
         public async Task PublishMessageAsync(EventMessage eventMessage)

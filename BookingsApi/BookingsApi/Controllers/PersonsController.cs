@@ -162,6 +162,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(List<PersonSuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Obsolete("This method is deprecated.")]
         public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
         {
             if (!username.IsValidEmail())

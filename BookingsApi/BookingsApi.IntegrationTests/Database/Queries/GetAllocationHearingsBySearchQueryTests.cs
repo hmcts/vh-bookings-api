@@ -9,6 +9,7 @@ using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NuGet.Packaging;
 using NUnit.Framework;
+using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
 
@@ -190,7 +191,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
          allocatedCso.VhoWorkHours[0].StartTime.Should().Be(workHours[0].StartTime);
          allocatedCso.VhoWorkHours[0].EndTime.Should().Be(workHours[0].EndTime);
-         allocatedCso.VhoWorkHours[0].SystemDayOfWeek.Should().Be(workHours[0].DayOfWeekId);
+         allocatedCso.VhoWorkHours[0].SystemDayOfWeek.Should().Be((DayOfWeek) workHours[0].DayOfWeekId);
      }
     
     [Test]
