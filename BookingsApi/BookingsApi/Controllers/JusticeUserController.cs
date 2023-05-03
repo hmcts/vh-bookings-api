@@ -55,7 +55,7 @@ namespace BookingsApi.Controllers
                 return ValidationProblem(ModelState);
             }       
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
-                request.ContactEmail, request.CreatedBy, (int) request.Role)
+                request.ContactEmail, request.CreatedBy, request.Role)
             {
                 Telephone = request.ContactTelephone
             };
