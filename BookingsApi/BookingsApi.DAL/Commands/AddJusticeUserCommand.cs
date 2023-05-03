@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Commands
@@ -40,7 +42,7 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(AddJusticeUserCommand command)
         {
             var roles = await _context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToArrayAsync();
-            
+
             if (_context.JusticeUsers.IgnoreQueryFilters().Any(x => x.Username.ToLower() == command.Username.ToLower()))
             {
                 throw new JusticeUserAlreadyExistsException(command.Username);

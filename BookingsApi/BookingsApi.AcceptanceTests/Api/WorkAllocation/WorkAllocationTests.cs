@@ -172,7 +172,7 @@ public class WorkAllocationTests : ApiTest
             ContactEmail = username,
             FirstName = "automation",
             LastName = "allocation",
-            Role = new int[] {(int) JusticeUserRole.Vho},
+            Role = new [] { JusticeUserRole.Vho },
             CreatedBy = "automationtest"
         };
         var cso = await BookingsApiClient.AddJusticeUserAsync(request);
