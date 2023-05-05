@@ -97,7 +97,7 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }
-            int[] userRoleIds = request.Role.Select(x => (int) x).ToArray();
+            int[] userRoleIds = request.Role?.Select(x => (int) x).ToArray();
             var command = new EditJusticeUserCommand(request.Id, request.Username, userRoleIds);
             try
             {

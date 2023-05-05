@@ -13,6 +13,6 @@ public class EditJusticeUserRequestValidation : AbstractValidator<EditJusticeUse
     {
         RuleFor(x => x.Id).NotNull().WithMessage(NoIdErrorMessage);
         RuleFor(x => x.Username).NotEmpty().WithMessage(NoUsernameErrorMessage);
-        RuleFor(x => x.Role).IsInEnum().WithMessage(NoRoleErrorMessage);
+        RuleForEach(x => x.Role).IsInEnum().WithMessage(NoRoleErrorMessage);
     }
 }
