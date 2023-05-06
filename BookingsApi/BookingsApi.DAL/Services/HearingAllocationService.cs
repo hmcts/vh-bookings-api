@@ -301,12 +301,13 @@ namespace BookingsApi.DAL.Services
         private List<JusticeUser> GetAvailableCsos(Hearing hearing)
         {
             var csos = _context.JusticeUsers
-                .Include(u => u.UserRole)
-                .Where(u => u.UserRoleId == (int)UserRoleId.Vho)
+                .Include(u => u.JusticeUserRoles).ThenInclude(ur => ur.UserRole)
                 .Include(u => u.VhoWorkHours)
                 .Include(u => u.VhoNonAvailability)
                 .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
+                .Where(ju => ju.JusticeUserRoles.Any(jur => jur.UserRole.Id == (int)UserRoleId.Vho))
                 .ToList();
+
 
             return csos
                 .Where(cso => hearing.CanAllocate(cso, _configuration))
@@ -316,7 +317,7 @@ namespace BookingsApi.DAL.Services
         private JusticeUser GetCso(Guid id)
         {
             var cso = _context.JusticeUsers
-                .Include(u => u.UserRole)
+                .Include(u => u.JusticeUserRoles).ThenInclude(ur => ur.UserRole)
                 .Where(u => u.Id == id)
                 .Include(u => u.VhoWorkHours)
                 .Include(u => u.VhoNonAvailability)
@@ -402,7 +403,7 @@ namespace BookingsApi.DAL.Services
         {
             // if the hearing's start time plus its duration is greater than the start time of
             // the comparison hearing, they are considered to be concurrent
-            return hearing.ScheduledDateTime.AddHours(hearing.ScheduledDuration) >
+            return hearing.ScheduledDateTime.AddMinutes(hearing.ScheduledDuration) >
                    comparisonHearing.ScheduledDateTime;
         }
     }

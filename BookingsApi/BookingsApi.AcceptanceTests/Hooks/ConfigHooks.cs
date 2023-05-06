@@ -38,7 +38,7 @@ namespace BookingsApi.AcceptanceTests.Hooks
 
         private void RegisterAzureSecrets(TestContext context)
         {
-            context.Config.AzureAdConfiguration = Options.Create(_configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>()).Value;
+            context.Config.AzureAdConfiguration = _configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>();
             context.Config.AzureAdConfiguration.Authority += context.Config.AzureAdConfiguration.TenantId;
             ConfigurationManager.VerifyConfigValuesSet(context.Config.AzureAdConfiguration);
         }
@@ -46,15 +46,15 @@ namespace BookingsApi.AcceptanceTests.Hooks
         private void RegisterHearingServices(TestContext context)
         {
             context.Config.ServicesConfiguration = GetTargetTestEnvironment() == string.Empty
-                ? Options.Create(_configRoot.GetSection("Services").Get<ServicesConfiguration>()).Value
-                : Options.Create(_configRoot.GetSection($"Testing.{GetTargetTestEnvironment()}.Services").Get<ServicesConfiguration>()).Value;
+                ? _configRoot.GetSection("Services").Get<ServicesConfiguration>()
+                : _configRoot.GetSection($"Testing.{GetTargetTestEnvironment()}.Services").Get<ServicesConfiguration>();
             if (context.Config.ServicesConfiguration == null && GetTargetTestEnvironment() != string.Empty) throw new TestSecretsFileMissingException(GetTargetTestEnvironment());
             ConfigurationManager.VerifyConfigValuesSet(context.Config.ServicesConfiguration);
         }
 
         private void RegisterTestSettings(TestContext context)
         {
-            context.Config.TestSettings = Options.Create(_configRoot.GetSection("Testing").Get<TestSettings>()).Value;
+            context.Config.TestSettings = _configRoot.GetSection("Testing").Get<TestSettings>();
             ConfigurationManager.VerifyConfigValuesSet(context.Config.TestSettings);
         }
 

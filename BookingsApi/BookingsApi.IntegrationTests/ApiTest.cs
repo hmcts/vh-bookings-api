@@ -1,6 +1,5 @@
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Helper;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
@@ -10,7 +9,7 @@ namespace BookingsApi.IntegrationTests;
 
 public class ApiTest
 {
-    protected WebApplicationFactory<Program> Application = null!;
+    protected VhApiWebApplicationFactory Application = null!;
     protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
     protected TestDataManager Hooks { get; private set; }
     private IConfigurationRoot _configRoot;

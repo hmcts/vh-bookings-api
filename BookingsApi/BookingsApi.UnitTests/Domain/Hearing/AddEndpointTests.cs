@@ -27,7 +27,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var beforeAddCount = hearing.GetEndpoints().Count;
             Action action = () => hearing.AddEndpoint(ep);
 
-            action.Should().Throw<DomainRuleException>().WithMessage("Endpoint already exists in the hearing");
+            action.Should().Throw<DomainRuleException>().WithMessage($"Endpoint {ep.Sip} already exists in the hearing");
 
             var afterAddCount = hearing.GetEndpoints().Count;
             afterAddCount.Should().Be(beforeAddCount);

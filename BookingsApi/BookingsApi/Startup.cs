@@ -148,7 +148,6 @@ namespace BookingsApi
             app.UseCors("CorsPolicy");
 
             app.UseMiddleware<ExceptionMiddleware>();
-            app.UseMiddleware<LogResponseBodyMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
         }

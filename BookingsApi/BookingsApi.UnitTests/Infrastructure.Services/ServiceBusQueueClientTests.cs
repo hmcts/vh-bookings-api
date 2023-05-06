@@ -18,7 +18,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
                 ConnectionString = "DevelopmentMode=true",
                 QueueName = "booking"
             };
-            _client = new ServiceBusQueueClient(Options.Create<ServiceBusSettings>(settings));
+            _client = new ServiceBusQueueClient(Options.Create(settings));
         }
 
         [Test]

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.DAL.Helper;
+using BookingsApi.Contract.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Queries.Core;
@@ -62,7 +62,7 @@ namespace BookingsApi.DAL.Queries
                 .Where(x 
                     => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
                          && x.Status != BookingStatus.Cancelled
-                         && HearingScottishVenueNames.ScottishHearingVenuesList.All(venueName => venueName != x.HearingVenueName))
+                         && HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != x.HearingVenueName))
                 .AsQueryable();
             
             if (!_isTest)

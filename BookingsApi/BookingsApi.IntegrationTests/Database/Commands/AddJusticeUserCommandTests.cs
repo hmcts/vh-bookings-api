@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
@@ -26,8 +25,13 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
     [TestCase(UserRoleId.VhTeamLead)]
     public async Task should_add_a_justice_user(UserRoleId roleId)
     {
-        var command = new AddJusticeUserCommand("test1", "test2", "should_add_a_justice_user@testdb.com",
-            "should_add_a_justice_user_contact@testdb.com", "db@test.com", (int) roleId)
+        var command = new AddJusticeUserCommand(
+            "test1", 
+            "test2", 
+            "should_add_a_justice_user@testdb.com",
+            "should_add_a_justice_user_contact@testdb.com", 
+            "db@test.com",
+            (int) roleId)
         {
             Telephone = "01234567890"
         };
@@ -35,13 +39,17 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         await _commandHandler.Handle(command);
 
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        var justiceUser = db.JusticeUsers.FirstOrDefault(ju => ju.Username == command.Username);
+        var justiceUser = db.JusticeUsers
+            .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+            .FirstOrDefault(ju => ju.Username == command.Username);
+        Hooks._seededJusticeUserIds.Add(justiceUser.Id);
+
         justiceUser.Should().NotBeNull();
         justiceUser.FirstName.Should().Be(command.FirstName);
         justiceUser.Lastname.Should().Be(command.Lastname);
         justiceUser.ContactEmail.Should().Be(command.ContactEmail);
         justiceUser.CreatedBy.Should().Be(command.CreatedBy);
-        justiceUser.UserRoleId.Should().Be(command.RoleId);
+        justiceUser.JusticeUserRoles.First().UserRole.Id.Should().Be(command.RoleIds.First());
         justiceUser.Telephone.Should().Be(command.Telephone);
     }
 
@@ -80,13 +88,5 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         {
             await _commandHandler.Handle(command);
         }).Message.Should().Be($"A justice user with the username {command.Username} already exists");
-    }
-
-    [TearDown]
-    public new async Task TearDown()
-    {
-        await using var db = new BookingsDbContext(BookingsDbContextOptions);
-        db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
-        await db.SaveChangesAsync();
     }
 }

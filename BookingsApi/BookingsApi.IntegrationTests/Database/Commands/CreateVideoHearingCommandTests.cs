@@ -135,7 +135,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             linkedParticipantsFromDb.Should().NotBeEmpty();
             foreach (var linkedParticipant in linkedParticipantsFromDb)
             {
-                linkedParticipant.Type.Should().BeAssignableTo<LinkedParticipantType>();
+                linkedParticipant.Type.Should().BeDefined();
                 linkedParticipant.Type.Should().Be(LinkedParticipantType.Interpreter);
                 participantsFromDb.Any(x => x.Id == linkedParticipant.LinkedId).Should().BeTrue();
                 participantsFromDb.Any(x => x.Id == linkedParticipant.ParticipantId).Should().BeTrue();

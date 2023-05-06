@@ -26,8 +26,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             using var client = Application.CreateClient();
             
             // act
-            var result = await client.PostAsync(
-                ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
+            var result = await client.PostAsync(ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
             
             // assert
             result.IsSuccessStatusCode.Should().BeTrue();
@@ -88,6 +87,11 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
         public async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            
+            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
+            if(justiceUserRoles.Any())
+                db.RemoveRange(justiceUserRoles);
+                
             var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == _request.Username);
             if (justiceUser != null)
             {

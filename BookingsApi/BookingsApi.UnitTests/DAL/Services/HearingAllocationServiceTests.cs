@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;
+using JusticeUser = BookingsApi.Domain.JusticeUser;
 
 namespace BookingsApi.UnitTests.DAL.Services
 {
@@ -114,7 +115,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -152,7 +153,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateAutomatically(hearing4.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing4.Id);
+            await AssertNoCsosAvailableError(action, hearing4.Id);
         }
 
         [TestCase("14:31")]
@@ -188,7 +189,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateAutomatically(hearing2.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing2.Id);
+            await AssertNoCsosAvailableError(action, hearing2.Id);
         }
 
         [Test]
@@ -342,7 +343,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
         
         [Test]
@@ -408,7 +409,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
         
         [Test]
@@ -444,7 +445,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public void AllocateAutomatically_Should_Fail_When_Hearing_Does_Not_Exist()
+        public async Task AllocateAutomatically_Should_Fail_When_Hearing_Does_Not_Exist()
         {
             // Arrange
             var hearingId = Guid.NewGuid();
@@ -453,7 +454,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateAutomatically(hearingId);
 
             // Assert
-            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Hearing {hearingId} not found");
+            await action.Should().ThrowAsync<DomainRuleException>().WithMessage($"Hearing {hearingId} not found");
         }
         
         [TestCase("08:00", "10:00")]
@@ -485,7 +486,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+           await AssertNoCsosAvailableError(action, hearing.Id);
         }
         
         [TestCase("12:00", "15:30")]
@@ -523,7 +524,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -549,7 +550,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -575,7 +576,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async() => await _service.AllocateAutomatically(hearing.Id);
             
             // Assert
-            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
+            await action.Should().ThrowAsync<DomainRuleException>().WithMessage($"Unable to allocate to hearing {hearing.Id}, hearings which span multiple days are not currently supported");
         }
 
         [Test]
@@ -718,7 +719,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async () => await _service.AllocateAutomatically(hearing.Id);
 
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -745,7 +746,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async () => await _service.AllocateAutomatically(hearing.Id);
 
             // Assert
-            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Hearing {hearing.Id} has already been allocated");
+            await action.Should().ThrowAsync<DomainRuleException>().WithMessage($"Hearing {hearing.Id} has already been allocated");
         }
 
         [Test]
@@ -811,7 +812,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async () => await _service.AllocateAutomatically(hearing.Id);
 
             // Assert
-            AssertNoCsosAvailableError(action, hearing.Id);
+            await AssertNoCsosAvailableError(action, hearing.Id);
         }
 
         [Test]
@@ -1158,7 +1159,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public void DeallocateFromUnavailableHearings_Should_Throw_Exception_When_User_Not_Found()
+        public async Task DeallocateFromUnavailableHearings_Should_Throw_Exception_When_User_Not_Found()
         {
             // Arrange
             var justiceUserId = Guid.NewGuid();
@@ -1167,7 +1168,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             var action = async () => await _service.DeallocateFromUnavailableHearings(justiceUserId);
 
             // Assert
-            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Justice user {justiceUserId} not found");
+            await action.Should().ThrowAsync<DomainRuleException>()
+                .WithMessage($"Justice user {justiceUserId} not found");
         }
         
         [Test]
@@ -1304,27 +1306,30 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         private JusticeUser SeedCso(string userName, string firstName, string lastName)
         {
-            return SeedJusticeUser(userName, firstName, lastName, _userRoleCso);
+            return SeedJusticeUser(userName, firstName, lastName, new []{_userRoleCso});
         }
 
         private JusticeUser SeedNonCso(string userName, string firstName, string lastName)
         {
-            return SeedJusticeUser(userName, firstName, lastName, _userRoleVhTeamLead);
+            return SeedJusticeUser(userName, firstName, lastName, new []{_userRoleVhTeamLead});
         }
 
-        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, UserRole userRole)
+        private JusticeUser SeedJusticeUser(string userName, string firstName, string lastName, IEnumerable<UserRole> userRoles)
         {
-            var justiceUser = new JusticeUser
+            var justiceUser = new JusticeUser()
             {
                 ContactEmail = userName,
                 Username = userName,
-                UserRoleId = userRole.Id,
                 CreatedBy = "test@test.com",
                 CreatedDate = DateTime.Now,
                 FirstName = firstName,
                 Lastname = lastName,
-                UserRole = userRole
+                JusticeUserRoles = new List<JusticeUserRole>()
             };
+            
+            foreach (var role in userRoles)
+                justiceUser.JusticeUserRoles.Add(new JusticeUserRole(justiceUser, role));
+            
 
             var workHours = new List<VhoWorkHours>();
             justiceUser.SetProtected(nameof(justiceUser.VhoWorkHours), workHours);
@@ -1405,14 +1410,15 @@ namespace BookingsApi.UnitTests.DAL.Services
             };
         }
 
-        private static void AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
+        private static async Task AssertNoCsosAvailableError(Func<Task<JusticeUser>> action, Guid hearingId)
         {
-            action.Should().Throw<DomainRuleException>().And.Message.Should().Be($"Unable to allocate to hearing {hearingId}, no CSOs available");
+            await action.Should().ThrowAsync<DomainRuleException>()
+                .WithMessage($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
         
         private static void AssertNoCsosAvailableErrorForManual(Func<Task<List<VideoHearing>>> list, Guid csoId, List<Guid> listHearingId)
         {
-            list.Should().Throw<DomainRuleException>().And.Message.Should().Contain("Unable to allocate to hearing");
+            list.Should().ThrowAsync<DomainRuleException>().WithMessage("Unable to allocate to hearing, no CSOs available");
         }
 
         private void AssertCsoAllocated(JusticeUser actualCso, JusticeUser expectedCso, Hearing hearing)

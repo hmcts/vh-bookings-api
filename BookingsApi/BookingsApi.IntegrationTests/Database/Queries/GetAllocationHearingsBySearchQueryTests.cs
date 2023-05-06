@@ -9,6 +9,7 @@ using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NuGet.Packaging;
 using NUnit.Framework;
+using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
 
@@ -18,6 +19,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     private VideoHearing _seededHearing1;
     private VideoHearing _seededHearing2;
     private VideoHearing _seededHearing3;
+    private VideoHearing _seededHearing4;
+    private VideoHearing _seededHearing5;
     private BookingsDbContext _context;
 
     private const string TestCaseType = "Financial Remedy";
@@ -43,6 +46,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         {
             options.ScheduledDate = _testDate1;
         });
+       
+       
 
     }
     
@@ -186,7 +191,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
          allocatedCso.VhoWorkHours[0].StartTime.Should().Be(workHours[0].StartTime);
          allocatedCso.VhoWorkHours[0].EndTime.Should().Be(workHours[0].EndTime);
-         allocatedCso.VhoWorkHours[0].SystemDayOfWeek.Should().Be(workHours[0].DayOfWeekId);
+         allocatedCso.VhoWorkHours[0].SystemDayOfWeek.Should().Be((DayOfWeek) workHours[0].DayOfWeekId);
      }
     
     [Test]
@@ -278,4 +283,26 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         hearings.First().Allocations.First().JusticeUser.VhoWorkHours.Count.Should().Be(nonDeletedWorkHours.Count);
         CollectionAssert.AreEquivalent(resultingWorkHours.Select(wh => wh.Id), nonDeletedWorkHours.Select(wh => wh.Id));
     }
+    [Test]
+    public async Task should_not_return_excluded_venues()
+    {
+        _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        {
+            options.HearingVenue = new HearingVenue(338, "Teesside Combined Court Centre");
+        });
+        _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        {
+            options.HearingVenue = new HearingVenue(15, "Aberdeen Tribunal Hearing Centre");
+        });
+        //ARRANGE
+        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
+        await Hooks.AddAllocation(_seededHearing5, justiceUser);
+        await Hooks.AddAllocation(_seededHearing2, justiceUser);
+        await Hooks.AddAllocation(_seededHearing4, justiceUser);
+        //ACT
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
+        //ASSERT
+        hearings.Count.Should().Be(1);
+        
+    }   
 }

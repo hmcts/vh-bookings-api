@@ -4,9 +4,9 @@
     "net6.0": {
       "FluentAssertions": {
         "type": "Direct",
-        "requested": "[5.10.3, )",
-        "resolved": "5.10.3",
-        "contentHash": "gVPEVp1hLVqcv+7Q2wiDf7kqCNn7+bQcQ0jbJ2mcRT6CeRoZl1tNkqvzSIhvekyldDptk77j1b03MXTTRIqqpg==",
+        "requested": "[6.10.0, )",
+        "resolved": "6.10.0",
+        "contentHash": "Da3YsiRDnOHKBfxutjnupL1rOX0K/jnG6crn5AgwukeqZ/yi+HNCOFshic01ke0ztZFWzpfQMXH8fO9aAbG0Gw==",
         "dependencies": {
           "System.Configuration.ConfigurationManager": "4.4.0"
         }
@@ -230,24 +230,24 @@
       },
       "FluentValidation": {
         "type": "Transitive",
-        "resolved": "9.3.0",
-        "contentHash": "C44l6Ih+YwpED/TsXfl6LIq6Z4wLXahstnr6T70uUg1Hs7/bLBKKAo9Nl0sLhVjDE8TA+fF+O3IM4nDrwabcSQ=="
+        "resolved": "11.5.1",
+        "contentHash": "0h1Q5lNOLLyYTWMJmyNoMqhY4CBRvvUWvJP1R4F2CnmmzuWwvB0A8aVmw5+lOuwYnwUwCRrdeMLbc81F38ahNQ=="
       },
       "FluentValidation.AspNetCore": {
         "type": "Transitive",
-        "resolved": "9.3.0",
-        "contentHash": "0ZKHVvNIVgZEGgCe8z4NyVoPaCmM0kTRM0EySC23Enuc4jzBdhI+LtGhcvkF7lAulNlxR2S9IDnLibOM6RDaHg==",
+        "resolved": "11.2.2",
+        "contentHash": "jU/MHXqg9cnOU18dY75vorP2c2WDKMan4zegOPsoc34xZVjzTEtXP0fKvkDEdeaChUVooNWuRr27u9w3sYbEFA==",
         "dependencies": {
-          "FluentValidation": "9.3.0",
-          "FluentValidation.DependencyInjectionExtensions": "9.3.0"
+          "FluentValidation": "11.2.1",
+          "FluentValidation.DependencyInjectionExtensions": "11.2.1"
         }
       },
       "FluentValidation.DependencyInjectionExtensions": {
         "type": "Transitive",
-        "resolved": "9.3.0",
-        "contentHash": "5PnAIlsApzWPp9rjxfu3xVWSj2qMDeFnEE3P4yx/oIQO1aLhPEEn4yW7JiydP9kpQKAtZ53qwNaOoQ1xSxajuA==",
+        "resolved": "11.2.1",
+        "contentHash": "WqR2kt0OidUCg9xS+YOoiDmdCu7EnYLLgQb/bX+5fTTVor+90dWmr1OdJaWlLZvg2nbwV9EfxA9FZp91+JmQtg==",
         "dependencies": {
-          "FluentValidation": "9.3.0",
+          "FluentValidation": "11.2.1",
           "Microsoft.Extensions.Dependencyinjection.Abstractions": "2.1.0"
         }
       },
@@ -1583,8 +1583,8 @@
       },
       "Microsoft.Identity.Client": {
         "type": "Transitive",
-        "resolved": "4.48.1",
-        "contentHash": "AsTnTKgmJqhL1hjZ7TA13TDQVyWdn0vpYwhDMdb1mTg+w5m9AZsacLvmxsUZt03uamZ81pDY78himvXOM//tpw==",
+        "resolved": "4.50.0",
+        "contentHash": "zCgRgMTYTkcgeNgryKyHKFJa6I7JPiepKBTnPvlvsSjBilXObn+fRwe8hvkzAcTWMBQna2TpGvwkVm1XTxnxBA==",
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.22.0"
         }
@@ -1605,8 +1605,8 @@
       },
       "Microsoft.IdentityModel.Clients.ActiveDirectory": {
         "type": "Transitive",
-        "resolved": "5.2.9",
-        "contentHash": "WhBAG/9hWiMHIXve4ZgwXP3spRwf7kFFfejf76QA5BvumgnPp8iDkDCiJugzAcpW1YaHB526z1UVxHhVT1E5qw==",
+        "resolved": "5.2.8",
+        "contentHash": "VIi6Bzt0UWEeannuEjtRFr/LgUXXw70a9LlIVfoCGorztZhzHgKiof6UJE1ETRYlf/L+kepsUZeekYZwqb6xPg==",
         "dependencies": {
           "Microsoft.CSharp": "4.3.0",
           "NETStandard.Library": "1.6.1",
@@ -3489,12 +3489,12 @@
       },
       "ZymLabs.NSwag.FluentValidation": {
         "type": "Transitive",
-        "resolved": "0.4.0",
-        "contentHash": "k57Y6NAlv1rqgHVbCV33gRfJWWX9JuI+zT4CdV/79P9kEecgtRI9tiLjL0DdMAT+PUWJSWG5VDBccSAQ3ZLuZw==",
+        "resolved": "0.6.2",
+        "contentHash": "oo6Dx/D5pCMsCtSCuN9zpcykwLajW1qylUtpatpUBMdTuPca+9VLAJFOA9+AEsF7f4qPnyypQcN2e68sqXSYHA==",
         "dependencies": {
-          "FluentValidation": "9.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "3.1.5",
-          "NJsonSchema": "10.1.23"
+          "FluentValidation": "10.2.3",
+          "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
+          "NJsonSchema": "10.4.4"
         }
       },
       "bookingsapi": {
@@ -3505,8 +3505,8 @@
           "BookingsApi.DAL": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
           "BookingsApi.Infrastructure.Services": "[1.0.0, )",
-          "FluentValidation": "[9.3.0, )",
-          "FluentValidation.AspNetCore": "[9.3.0, )",
+          "FluentValidation": "[11.5.1, )",
+          "FluentValidation.AspNetCore": "[11.2.2, )",
           "Microsoft.ApplicationInsights.AspNetCore": "[2.21.0, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[6.0.9, )",
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "[6.0.11, )",
@@ -3516,7 +3516,7 @@
           "Newtonsoft.Json": "[13.0.2, )",
           "System.IdentityModel.Tokens.Jwt": "[6.23.1, )",
           "VH.Core.Configuration": "[0.1.13, )",
-          "ZymLabs.NSwag.FluentValidation": "[0.4.0, )",
+          "ZymLabs.NSwag.FluentValidation": "[0.6.2, )",
           "libphonenumber-csharp": "[8.13.1, )"
         }
       },
@@ -3535,7 +3535,7 @@
           "Microsoft.ApplicationInsights.AspNetCore": "[2.21.0, )",
           "Microsoft.Extensions.Caching.Abstractions": "[7.0.0, )",
           "Microsoft.Extensions.Configuration.UserSecrets": "[7.0.0, )",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "[5.2.9, )",
+          "Microsoft.Identity.Client": "[4.50.0, )",
           "Newtonsoft.Json": "[13.0.2, )"
         }
       },
@@ -3566,6 +3566,7 @@
       "bookingsapi.infrastructure.services": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
           "Microsoft.Azure.ServiceBus": "[5.2.0, )",
           "Microsoft.Extensions.Options": "[7.0.0, )",
@@ -3579,7 +3580,7 @@
           "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
           "Faker.NETCore": "[1.0.2, )",
-          "FluentAssertions": "[5.10.3, )",
+          "FluentAssertions": "[6.10.0, )",
           "Microsoft.AspNetCore.Mvc": "[2.2.0, )",
           "Microsoft.EntityFrameworkCore": "[6.0.9, )",
           "Microsoft.EntityFrameworkCore.InMemory": "[6.0.9, )",
