@@ -14,7 +14,6 @@ using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
@@ -155,10 +154,7 @@ namespace BookingsApi.Controllers
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
                 
                 // need to broadcast acknowledgment message for the allocation
-                if (list.Count > 0)
-                {
-                    await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(list, list[0].AllocatedTo));
-                }
+                await PublishAllocationsToServiceBus(list, list.FirstOrDefault()?.AllocatedTo);
                 
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
@@ -167,6 +163,12 @@ namespace BookingsApi.Controllers
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
                 return BadRequest(ModelState);
             }
+        }
+        
+        private async Task PublishAllocationsToServiceBus(List<VideoHearing> hearings, JusticeUser justiceUser)
+        {
+            var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();
+            await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(todaysHearing, justiceUser));
         }
     }
 }
