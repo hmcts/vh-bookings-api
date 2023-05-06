@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
@@ -73,6 +74,31 @@ namespace BookingsApi.UnitTests.Mappings
             result.CaseGroupType.Should().Be(participant.CaseRole.Group);
 
             result.Representee.Should().Be(participant.Representee);
+        }
+
+        [Test]
+        public void should_map_justice_user_to_dto()
+        {
+            // arrange
+            var justiceUser = new JusticeUser
+            {
+                ContactEmail = "contact@email.com",
+                Username = "contact@email.com",
+                UserRoleId = (int) UserRoleId.Vho,
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedDate = DateTime.Now,
+                FirstName = "test",
+                Lastname = "test",
+                UserRole = new UserRole((int) UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+            };
+
+            // act
+            var result = JusticeUserDtoMapper.MapToDto(justiceUser);
+            
+            // assert
+            result.Username.Should().Be(justiceUser.Username);
+            result.UserId.Should().Be(justiceUser.Id);
+            result.UserRoleName.Should().Be(justiceUser.UserRole.Name);
         }
 
         private static VideoHearing GetHearing()

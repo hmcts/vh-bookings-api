@@ -9,12 +9,11 @@ using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Validations;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using Testing.Common.Assertions;
 using Testing.Common.Builders.Domain;
@@ -28,23 +27,23 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         [SetUp]
         public void SetUp()
         {
+            var todaysDate = DateTime.Today.AddHours(11).AddMinutes(45);
+            var yesterdayHearing = new VideoHearingBuilder().WithCase().WithAllocatedJusticeUser().Build();
+            yesterdayHearing.SetProtected(nameof(yesterdayHearing.ScheduledDateTime), todaysDate.AddDays(-1));
+            
             _hearings = new List<VideoHearing>
             {
-                CreateHearingWithCase(),
-                CreateHearingWithCase(),
-                CreateHearingWithCase(),
-                CreateHearingWithCase(),
-                CreateHearingWithCase()
+                new VideoHearingBuilder(scheduledDateTime:todaysDate).WithCase().WithAllocatedJusticeUser().Build(),
+                new VideoHearingBuilder(scheduledDateTime:todaysDate).WithCase().WithAllocatedJusticeUser().Build(),
+                new VideoHearingBuilder(scheduledDateTime:todaysDate).WithCase().WithAllocatedJusticeUser().Build(),
+                new VideoHearingBuilder(scheduledDateTime:todaysDate).WithCase().WithAllocatedJusticeUser().Build(),
+                new VideoHearingBuilder(scheduledDateTime:todaysDate).WithCase().WithAllocatedJusticeUser().Build(),
+                yesterdayHearing
             };
+            
+            ServiceBus.Clear();
         }
-
-        private VideoHearing CreateHearingWithCase()
-        {
-            var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase("1", "test case", true);
-            return hearing;
-        }
-
+        
         [Test]
         public async Task Should_Return_Ok()
         {
@@ -81,11 +80,17 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var objectResult = (OkObjectResult)result;
             var response = (List<HearingAllocationsResponse>)objectResult.Value;
             response.Should().NotBeNull();
-            response.Count.Should().Be(_hearings.Count);
+            response!.Count.Should().Be(_hearings.Count);
 
             var expected = checkForClashesResponse.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList();
             response.Should().BeEquivalentTo(expected);
-            _eventPublisherMock.Verify(x=>x.PublishAsync(It.IsAny<IIntegrationEvent>()), Times.Once);
+
+            // ensure hearing allocation event is published for all hearings today
+            var message = ServiceBus.ReadMessageFromQueue();
+            message.IntegrationEvent.Should().BeOfType<HearingsAllocationIntegrationEvent>();
+            var allocationEvent = message.IntegrationEvent.As<HearingsAllocationIntegrationEvent>();
+            allocationEvent.Hearings.Select(x=> x.HearingId).Should().BeEquivalentTo(_hearings.SkipLast(1).Select(x=> x.Id).ToList());
+            allocationEvent.AllocatedCso.Username.Should().Be(_hearings[0].AllocatedTo.Username);
         }
         
         [Test]
@@ -109,7 +114,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var objectResult = (BadRequestObjectResult)response;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Error", "Error Description");
-            _eventPublisherMock.Verify(x=>x.PublishAsync(It.IsAny<IIntegrationEvent>()), Times.Never);
+            ServiceBus.Count.Should().Be(0);
         }
         
     }
