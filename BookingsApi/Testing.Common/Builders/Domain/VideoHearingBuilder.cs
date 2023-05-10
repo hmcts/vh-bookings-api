@@ -18,13 +18,13 @@ namespace Testing.Common.Builders.Domain
         private readonly Person _johPerson;
         private readonly Person _staffMemberPerson;
 
-        public VideoHearingBuilder()
+        public VideoHearingBuilder(DateTime? scheduledDateTime = null)
         {
+            var defaultDate = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
             var refDataBuilder = new RefDataBuilder();
             var venue = refDataBuilder.HearingVenues.First( x=> x.Name == _hearingVenueName);
             var caseType = new CaseType(1, _caseTypeName);
             var hearingType = Builder<HearingType>.CreateNew().WithFactory(() => new HearingType(_hearingTypeName)).Build();
-            var scheduledDateTime = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
             var duration = 80;
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
@@ -34,7 +34,7 @@ namespace Testing.Common.Builders.Domain
             var cancelReason = "Online abandonment (incomplete registration)";
 
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                    new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
+                    new VideoHearing(caseType, hearingType, scheduledDateTime.GetValueOrDefault(defaultDate), duration, venue, hearingRoomName,
                         otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
                 .Build();
 
@@ -65,31 +65,31 @@ namespace Testing.Common.Builders.Domain
             indApplicant.SetProtected(nameof(indApplicant.CaseRole), applicantCaseRole);
             indApplicant.SetProtected(nameof(indApplicant.HearingRole), applicantLipHearingRole);
 
-            _videoHearing.AddIndividual(person3, respondentLipHearingRole, respondentCaseRole,
+            _videoHearing!.AddIndividual(person3, respondentLipHearingRole, respondentCaseRole,
                 $"{person3.FirstName} {person3.LastName}");
             var indRespondent =_videoHearing?.Participants.Last();
             indRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
             indRespondent.SetProtected(nameof(indRespondent.HearingRole), respondentLipHearingRole);
             
-            _videoHearing.AddRepresentative(person2, respondentRepresentativeHearingRole, respondentCaseRole,
+            _videoHearing!.AddRepresentative(person2, respondentRepresentativeHearingRole, respondentCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty);
             var repRespondent =_videoHearing?.Participants.Last();
             repRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
             repRespondent.SetProtected(nameof(repRespondent.HearingRole), respondentRepresentativeHearingRole);
             
-            _videoHearing.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
+            _videoHearing!.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                 $"{_judgePerson.FirstName} {_judgePerson.LastName}");
             var judge =_videoHearing?.Participants.Last();
             judge.SetProtected(nameof(indApplicant.CaseRole), judgeCaseRole);
             judge.SetProtected(nameof(judge.HearingRole), judgeHearingRole);
 
-            _videoHearing.AddJudicialOfficeHolder(_johPerson, johHearingRole, johCaseRole,
+            _videoHearing!.AddJudicialOfficeHolder(_johPerson, johHearingRole, johCaseRole,
                 $"{_johPerson.FirstName} {_johPerson.LastName}");
             var joh = _videoHearing?.Participants.Last();
             joh.SetProtected(nameof(indApplicant.CaseRole), johCaseRole);
             joh.SetProtected(nameof(joh.HearingRole), johHearingRole);
 
-            _videoHearing.AddStaffMember(_staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
+            _videoHearing!.AddStaffMember(_staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
                 $"{_staffMemberPerson.FirstName} {_staffMemberPerson.LastName}");
             var staffMember = _videoHearing?.Participants.Last();
             staffMember.SetProtected(nameof(indApplicant.CaseRole), staffMemberCaseRole);
@@ -104,6 +104,22 @@ namespace Testing.Common.Builders.Domain
         public VideoHearingBuilder WithCase()
         {
             _videoHearing.AddCase("AutoTest", "Test", true);
+            return this;
+        }
+        
+        public VideoHearingBuilder WithAllocatedJusticeUser()
+        {
+            var justiceUser = new JusticeUser
+            {
+                ContactEmail = "contact@email.com",
+                Username = "contact@email.com",
+                CreatedBy = "integration.GetVhoWorkHoursQueryHandler.UnitTest",
+                CreatedDate = DateTime.Now,
+                FirstName = "test",
+                Lastname = "test"
+            };
+            justiceUser.AddRoles(new[] {new UserRole((int) UserRoleId.VhTeamLead, "Video Hearings Team Lead")});
+            _videoHearing.Allocations.Add(new Allocation(){JusticeUser = justiceUser, Hearing = _videoHearing});
             return this;
         }
 
