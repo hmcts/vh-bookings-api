@@ -30,6 +30,8 @@ namespace BookingsApi.UnitTests.Mappings
             };
             justiceUser.AddRoles(userRoles);
 
+            List<Contract.Requests.Enums.JusticeUserRole> roles = new List<Contract.Requests.Enums.JusticeUserRole>();
+            roles.Add(Contract.Requests.Enums.JusticeUserRole.VhTeamLead);
             var expectedJusticeUserResponse = new JusticeUserResponse
             {
                 FirstName = "FirstName",
@@ -39,8 +41,7 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
-                UserRoleId = new [] {(int)UserRoleId.VhTeamLead},
-                UserRoleName = new []{"Video Hearings Team Lead"},
+                UserRoles = roles,
                 FullName = "FirstName Lastname"
             };
 
