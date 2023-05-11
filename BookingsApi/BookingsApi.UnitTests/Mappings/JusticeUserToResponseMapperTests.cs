@@ -24,7 +24,11 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 Telephone = "0123456789",
             };
-            justiceUser.AddRoles(new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead"));
+            UserRole[] userRoles = new UserRole[]
+            {
+                new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+            };
+            justiceUser.AddRoles(userRoles);
 
             var expectedJusticeUserResponse = new JusticeUserResponse
             {
@@ -35,8 +39,8 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
-                UserRoleId = (int)UserRoleId.VhTeamLead,
-                UserRoleName = "Video Hearings Team Lead",
+                UserRoleId = new [] {(int)UserRoleId.VhTeamLead},
+                UserRoleName = new []{"Video Hearings Team Lead"},
                 FullName = "FirstName Lastname"
             };
 
