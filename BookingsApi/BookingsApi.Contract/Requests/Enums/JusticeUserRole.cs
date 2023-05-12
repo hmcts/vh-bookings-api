@@ -2,7 +2,13 @@ namespace BookingsApi.Contract.Requests.Enums;
 
 public enum JusticeUserRole
 {
+    CaseAdmin = 1,
     Vho = 2,
-    VhTeamLead = 9,
-    StaffMember = 8
+    Clerk = 3,
+    Judge = 4,
+    Individual = 5,
+    Representative = 6,
+    JudicialOfficeHolder = 7,
+    StaffMember = 8,
+    VhTeamLead = 9
 }
