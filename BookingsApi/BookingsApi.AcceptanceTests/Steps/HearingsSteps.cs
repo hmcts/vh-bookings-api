@@ -236,7 +236,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
-            model.Status.Should().Be(status);
+            model.Status.Should().Be((Contract.Enums.BookingStatus) status);
             if (status == BookingStatus.Created)
             {
                 model.ConfirmedBy.Should().NotBeNullOrEmpty();

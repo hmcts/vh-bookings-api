@@ -673,9 +673,10 @@ namespace BookingsApi.Client
         /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
+        /// <param name="includeDeleted">include soft-deleted justice users</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, bool? includeDeleted);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -683,16 +684,17 @@ namespace BookingsApi.Client
         /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
+        /// <param name="includeDeleted">include soft-deleted justice users</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, bool? includeDeleted, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a justice user
         /// </summary>
         /// <param name="id">The justice user id</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<string> DeleteJusticeUserAsync(System.Guid id);
+        System.Threading.Tasks.Task DeleteJusticeUserAsync(System.Guid id);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -700,7 +702,20 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="id">The justice user id</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<string> DeleteJusticeUserAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task DeleteJusticeUserAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Restore a justice user
+        /// </summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task RestoreJusticeUserAsync(RestoreJusticeUserRequest request);
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Restore a justice user
+        /// </summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task RestoreJusticeUserAsync(RestoreJusticeUserRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get a participants by username
@@ -796,6 +811,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -805,6 +821,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
@@ -5550,11 +5567,12 @@ namespace BookingsApi.Client
         /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
+        /// <param name="includeDeleted">include soft-deleted justice users</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, bool? includeDeleted)
         {
-            return GetJusticeUserListAsync(term, System.Threading.CancellationToken.None);
+            return GetJusticeUserListAsync(term, includeDeleted, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -5563,15 +5581,20 @@ namespace BookingsApi.Client
         /// <br/>for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
+        /// <param name="includeDeleted">include soft-deleted justice users</param>
         /// <returns>Justice User list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JusticeUserResponse>> GetJusticeUserListAsync(string term, bool? includeDeleted, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/justiceuser/GetJusticeUserList?");
             if (term != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("term") + "=").Append(System.Uri.EscapeDataString(ConvertToString(term, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (includeDeleted != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("includeDeleted") + "=").Append(System.Uri.EscapeDataString(ConvertToString(includeDeleted, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
@@ -5659,7 +5682,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="id">The justice user id</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<string> DeleteJusticeUserAsync(System.Guid id)
+        public virtual System.Threading.Tasks.Task DeleteJusticeUserAsync(System.Guid id)
         {
             return DeleteJusticeUserAsync(id, System.Threading.CancellationToken.None);
         }
@@ -5670,7 +5693,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="id">The justice user id</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<string> DeleteJusticeUserAsync(System.Guid id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task DeleteJusticeUserAsync(System.Guid id, System.Threading.CancellationToken cancellationToken)
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -5686,7 +5709,6 @@ namespace BookingsApi.Client
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -5721,12 +5743,116 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 204)
                         {
+                            return;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
                             var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            return objectResponse_.Object;
+                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ValidationProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<ValidationProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Restore a justice user
+        /// </summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task RestoreJusticeUserAsync(RestoreJusticeUserRequest request)
+        {
+            return RestoreJusticeUserAsync(request, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Restore a justice user
+        /// </summary>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task RestoreJusticeUserAsync(RestoreJusticeUserRequest request, System.Threading.CancellationToken cancellationToken)
+        {
+            if (request == null)
+                throw new System.ArgumentNullException("request");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/justiceuser/restore");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 204)
+                        {
+                            return;
                         }
                         else
                         if (status_ == 404)
@@ -6442,6 +6568,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username)
         {
             return GetPersonSuitabilityAnswersAsync(username, System.Threading.CancellationToken.None);
@@ -6454,6 +6581,7 @@ namespace BookingsApi.Client
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        [System.Obsolete]
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
@@ -7612,13 +7740,11 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AllocatedCsoResponse>> GetAllocationsForHearingsAsync(System.Collections.Generic.IEnumerable<System.Guid> hearingIds, System.Threading.CancellationToken cancellationToken)
         {
+            if (hearingIds == null)
+                throw new System.ArgumentNullException("hearingIds");
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/allocation?");
-            if (hearingIds != null)
-            {
-                foreach (var item_ in hearingIds) { urlBuilder_.Append(System.Uri.EscapeDataString("hearingIds") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/get-allocation");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7626,7 +7752,11 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(hearingIds, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);

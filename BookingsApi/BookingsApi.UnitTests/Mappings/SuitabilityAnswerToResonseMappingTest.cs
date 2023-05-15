@@ -29,20 +29,20 @@ namespace BookingsApi.UnitTests.Mappings
         {
             var result = mapper.MapToResponses(suitabilityAnswers);
             result.Should().NotBeNull();
-            result.Count.Should().Equals(3);
+            result.Count.Should().Be(3);
         }
 
         [Test]
         public void Should_map_suitability_answear_to_response_model()
         {
             var result = mapper.MapToResponses(suitabilityAnswers);
-            result[0].Key.Should().Equals("AboutYou");
-            result[0].Answer.Should().Equals("Yes");
+            result[0].Key.Should().BeSameAs("AboutYou");
+            result[0].Answer.Should().BeSameAs("Yes");
             result[0].ExtendedAnswer.Should().BeNull();
 
-            result[1].Key.Should().Equals("AboutClient");
-            result[1].Answer.Should().Equals("No");
-            result[1].ExtendedAnswer.Should().Equals("note");
+            result[1].Key.Should().BeSameAs("AboutClient");
+            result[1].Answer.Should().BeSameAs("No");
+            result[1].ExtendedAnswer.Should().BeSameAs("note");
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace BookingsApi.UnitTests.Mappings
             suitabilityAnswers = new List<SuitabilityAnswer>();
             var result = mapper.MapToResponses(suitabilityAnswers);
             result.Should().NotBeNull();
-            result.Count.Should().Equals(0);
+            result.Count.Should().Be(0);
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace BookingsApi.UnitTests.Mappings
             suitabilityAnswers = null;
             var result = mapper.MapToResponses(suitabilityAnswers);
             result.Should().NotBeNull();
-            result.Count.Should().Equals(0);
+            result.Count.Should().Be(0);
         }
     }
 }

@@ -4,6 +4,7 @@ using BookingsApi.IntegrationTests.Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
+using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database
 {
@@ -16,23 +17,17 @@ namespace BookingsApi.IntegrationTests.Database
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            var configRootBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables()
-                .AddUserSecrets<Startup>();
+            var configRoot = ConfigRootBuilder.Build();
             
-            var configRoot = configRootBuilder.Build();
             _databaseConnectionString = configRoot.GetConnectionString("VhBookings");
-
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
-            dbContextOptionsBuilder.EnableSensitiveDataLogging();
             dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
+            
             BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-            
-            Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
-            
             var context = new BookingsDbContext(BookingsDbContextOptions);
             context.Database.Migrate();
+            
+            Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
         }
         
         [TearDown]
@@ -40,6 +35,7 @@ namespace BookingsApi.IntegrationTests.Database
         {
             await Hooks.ClearSeededHearings();
             await Hooks.ClearJudiciaryPersonsAsync();
+            await Hooks.ClearJusticeUserRolesAsync();
             await Hooks.ClearJusticeUsersAsync();
             await Hooks.ClearAllocationsAsync();
         }

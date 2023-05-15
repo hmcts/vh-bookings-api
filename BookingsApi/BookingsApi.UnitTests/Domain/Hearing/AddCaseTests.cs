@@ -23,14 +23,16 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         [Test]
         public void Should_not_add_existing_case()
         {
+            var caseNumber = "0875";
+            var caseName = "Test Case Add";
             var hearing = new VideoHearingBuilder().Build();
-            hearing.AddCase("0875", "Test Case Add",false);
+            hearing.AddCase(caseNumber, caseName,false);
             
             var beforeAddCount = hearing.GetCases().Count;
             
             Action action = () => hearing.AddCase("0875", "Test Case Add",false);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == "Case already exists for the hearing").Should().BeTrue();
+                .Any(x => x.Message == $"Case {caseNumber} - {caseName} already exists for the hearing").Should().BeTrue();
             
             var afterAddCount = hearing.GetCases().Count;
             afterAddCount.Should().Be(beforeAddCount);

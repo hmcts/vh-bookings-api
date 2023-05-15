@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries;

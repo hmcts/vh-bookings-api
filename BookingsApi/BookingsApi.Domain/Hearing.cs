@@ -106,7 +106,7 @@ namespace BookingsApi.Domain
             var caseExists = Cases.SingleOrDefault(x => x.Number == number && x.Name == name);
             if (caseExists != null)
             {
-                throw new DomainRuleException("Case", "Case already exists for the hearing");
+                throw new DomainRuleException("Case", $"Case {number} - {name} already exists for the hearing");
             }
             var newCase = new Case(number, name)
             {
@@ -130,7 +130,8 @@ namespace BookingsApi.Domain
         {
             if (DoesEndpointExist(endpoint.Sip))
             {
-                throw new DomainRuleException(nameof(endpoint), "Endpoint already exists in the hearing");
+                
+                throw new DomainRuleException(nameof(endpoint), $"Endpoint {endpoint.Sip} already exists in the hearing");
             }
 
             Participant defenceAdvocate = null;
@@ -153,7 +154,7 @@ namespace BookingsApi.Domain
         {
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
-                throw new DomainRuleException(nameof(person), "Participant already exists in the hearing");
+                throw new DomainRuleException(nameof(person), $"Participant {person.ContactEmail} already exists in the hearing");
             }
 
             Participant participant = new Individual(person, hearingRole, caseRole)

@@ -1,4 +1,5 @@
 using System.Net.Http;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using GST.Fake.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -19,8 +20,15 @@ namespace BookingsApi.IntegrationTests
                     options.DefaultAuthenticateScheme = FakeJwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = FakeJwtBearerDefaults.AuthenticationScheme;
                 }).AddFakeJwtBearer();
+                
+                RegisterStubs(services);
             });
             builder.UseEnvironment("Development");
+        }
+        
+        private static void RegisterStubs(IServiceCollection services)
+        {
+            services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
         }
         
         protected override void ConfigureClient(HttpClient client)

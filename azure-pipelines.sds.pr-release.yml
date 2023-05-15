@@ -7,303 +7,309 @@ resources:
       name: hmcts/azure-devops-templates
       ref: master
       endpoint: hmcts
-      
+
+parameters:
+  - name: pr_number
+    type: string
+    default: " "
+
+variables:
+  - name: pr_number
+    ${{ if eq(parameters.pr_number, ' ') }}:
+      value: $(System.PullRequest.PullRequestNumber)
+    ${{ else }}:
+      value: ${{ parameters.pr_number }}
+
 trigger: none
 
 pr:
   - master
 
-pool: 
+pool:
   vmImage: ubuntu-22.04
 
 stages:
-####################################################
-# CI Build Checks. #################################
-- stage: CI_Build
-  displayName: CI Build
-  variables: 
-  - template: variables/shared.yaml
-  jobs:
-  - job: CI_Helm
-    displayName: "Helm CI"
-    steps:
-    - checkout: self
-
-    - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-      parameters:
-        chartPath: ${{ variables.chartPath }}
-        chartValuesPath: ${{ variables.chartPath }}
-
-  - job: UnitTests
-    displayName: "Unit Tests"
-    steps:
-    - checkout: self
-
-    - template: templates/sonarCloud/prepare.yml@azTemplates
-      parameters:
-        ExtraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
-          sonar.coverage.exclusions=**/BookingsApi.Contract/**,**/Bookings.API/Program.cs, **/Bookings.API/Startup.cs, **/Bookings.API/Extensions/**, **/Bookings.API/Swagger/**, **/Bookings.API/ConfigureServicesExtensions.cs, **/Testing.Common/**, **/Bookings.Common/**, **/Bookings.DAL/Mappings/**, **/Bookings.DAL/SeedData/**, **/Bookings.DAL/BookingsDbContext.cs, **/Bookings.DAL/**/DesignTimeHearingsContextFactory.cs, Bookings.DAL/Migrations/**, **/Bookings.Domain/Ddd/**, **/Bookings.DAL/Commands/Core/**, **/Bookings.DAL/Queries/Core/**, **/Testing.Common/**, **/Bookings.DAL/Migrations/*, **/Bookings.DAL/Migrations/**, **/Migrations/*
-          sonar.cpd.exclusions=**/Program.cs, **/Startup.cs, Bookings.DAL/Mappings/**, **/Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/**, Bookings.DAL/Migrations/*, Bookings.DAL/Migrations/*.cs, Migrations/**, **/Migrations/*, **Migrations**, SeedData/**, DesignTimeHearingsContextFactory.cs, Ddd/**, Testing.Common/**, Bookings.API/ConfigureServicesExtensions.cs, Bookings.API/Extensions/**, Bookings.API/Swagger/**, Bookings.Common/**
-
-    - template: stages\dotnet-tests\unit-tests.yml@azTemplates
-      parameters:
-        vstsFeedId: ${{ variables.nugetFeedId }}
-        dotnetCoreVersion: '6.x'
-        unitTestProjectPath: "${{ variables.appName }}/${{ variables.appName }}.UnitTests"
-        coverletCoverageExclusions:
-          - "[BookingsApi.*Tests?]*"
-          - "[BookingsApi]Startup"
-          - "[*]BookingsApi.Common.*"
-          - "[Testing.Common]*"
-
-    - template: templates/sonarCloud/runAnalysis.yml@azTemplates
-
-####################################################
-# Pre Release Tasks. ###############################
-- stage: Pre_Release_Tasks
-  displayName: Pre-Release Tasks
-  variables: 
-  - template: variables/shared.yaml
-  jobs:
-  - job: Generate_Entity_Framework_Script
-    displayName: "Generate Entity Framework Script"
-    steps:
-      - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-        parameters:
-          outputPath: $(Build.StagingDirectory)
-          contextName: ${{ variables.efContextName }}
-          workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
-          migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-          projectName: ${{ variables.efProjectName }}
-
-  - job: package_nuget
-    displayName: "Package NuGet Packages"
-    steps:
-      - template: templates\dotnet\package-nuget-packages.yml@azTemplates
-        parameters:
-          nugetProjectPath: "${{ variables.appName }}/${{ variables.nuget_package_name }}"
-          vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
-          gitVersionConfigPath: ${{ variables.git_version_config_path }}
-
-  - job: PublishAcceptanceTests
-    dependsOn: package_nuget
-    displayName: Publish Acceptance Tests
+  ####################################################
+  # CI Build Checks. #################################
+  - stage: CI_Build
+    displayName: CI Build
     variables:
-      projectPath: "${{ variables.appName }}/${{ variables.appName }}"
-    steps:
-    - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
-      parameters:
-        netVersion: 6.x
-        coreProjectPath: $(projectPath)
-        nugetProjectPath: $(projectPath)
-        vstsFeedId: ${{ variables.nugetFeedId }}
+      - template: variables/shared.yaml
+    jobs:
+      - job: CI_Helm
+        displayName: "Helm CI"
+        steps:
+          - checkout: self
+            
+          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+            parameters:
+              chartPath: ${{ variables.chartPath }}
+              chartValuesPath: ${{ variables.chartPath }}
 
-#####################################################
-# Build Docker Image & Generate EF Script. ##########
-- stage: Dock
-  displayName: Docker Build & Push Image
-  variables: 
-  - group: aks-cluster-info
-  - template: variables/dev.yaml
-  - template: variables/shared.yaml
-    parameters:
-      env: ${{ variables.env }}
-  - group: vh-github-app-credentials
-  jobs:
-  - job: Dock
-    displayName: "Build and Push Image ${{ variables.git_repo_name }}"
-    steps:
-    - checkout: self
+      - job: UnitAndIntegrationTests
+        displayName: "Unit and Integration Tests"
+        steps:
+          - checkout: self
+            
+          - template: templates/dotnet/build-test-analyse.yml@azTemplates
+            parameters:
+              nugetConfigPath: nuget.config # remove this once the sds config file is removed
+              appName: ${{ variables.appName }}
+              dockerComposeTestFile: docker-compose.tests.yml
+              sonarExtraProperties: |
+                sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
+                sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, BookingsApi/BookingsApi.DAL/Migrations/*
+                sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*
 
-    - template: templates\Github\get-app-token.yaml@azTemplates
-      parameters:
-        privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-        appId: $(gh_app_app_id)
+  ####################################################
+  # Pre Release Tasks. ###############################
+  - stage: Pre_Release_Tasks
+    displayName: Pre-Release Tasks
+    variables:
+      - template: variables/shared.yaml
+    jobs:
+      - job: Generate_Entity_Framework_Script
+        displayName: "Generate Entity Framework Script"
+        steps:
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: ${{ variables.efContextName }}
+              workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
+              migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+              projectName: ${{ variables.efProjectName }}
 
-    - template: templates\Github\bump-chart-versions.yaml@azTemplates
-      parameters:
-        chartName: ${{ variables.chartName }}
-        chartPath: $(Build.SourcesDirectory)
-        chartBranch: $(System.PullRequest.SourceBranch)
-        githubToken: $(githubappinstall.token)
-        githubUsername: $(gh_app_name)
-        githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
-    
-    - bash: |
-        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
-      displayName: Add NuGet Feed Authentication
-      workingDirectory: ${{ variables.appName }}
+      - job: package_nuget
+        displayName: "Package NuGet Packages"
+        steps:
+          - template: templates\dotnet\package-nuget-packages.yml@azTemplates
+            parameters:
+              nugetProjectPath: "${{ variables.appName }}/${{ variables.nuget_package_name }}"
+              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+              gitVersionConfigPath: ${{ variables.git_version_config_path }}
 
-    - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
-      parameters:
-        azureSubscription: ${{ variables.acrSubscription }}
-        acrName: ${{ variables.acrName }}
-        repositoryName:  ${{ variables.repositoryName }}
+      - job: PublishAcceptanceTests
+        dependsOn: package_nuget
+        displayName: Publish Acceptance Tests
+        variables:
+          projectPath: "${{ variables.appName }}/${{ variables.appName }}"
+        steps:
+          - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
+            parameters:
+              netVersion: 6.x
+              coreProjectPath: $(projectPath)
+              nugetProjectPath: $(projectPath)
 
-    - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
-      parameters:
-        azureSubscription: ${{ variables.acrSubscription }}
-        acrName: ${{ variables.acrName }}
-        repositoryName:  ${{ variables.repositoryName }}
-        imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
-        imageTags:
-          - '${{ variables.prTagName }}'
-          
-#####################################################
-# Run Entity Framework Dev. #########################
-- stage: Run_Entity_Framework_Dev
-  displayName: Run Entity Framework Dev
-  dependsOn: Dock
-  variables:
-  - template: variables/dev.yaml
-  - template: variables/shared.yaml
-    parameters:
-      env: ${{ variables.env }}
-  jobs:
-  - job: Run_Entity_Framework_Dev
-    pool:
-      vmImage: 'windows-latest' # This Job Must be Run on Windows
-    displayName: Run Entity Framework Dev
-    steps:
-      - download: current
-        displayName: Download Sql Artifact
-
-      - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+  #####################################################
+  # Build Docker Image & Generate EF Script. ##########
+  - stage: Dock
+    displayName: Docker Build & Push Image
+    variables:
+      - group: aks-cluster-info
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
         parameters:
-          sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-          sqlServerName: ${{ variables.vhSQLServerName }}
-          databaseName: ${{ variables.BookingsApiDbName }}
-          azureSubscription: ${{ variables.subscriptionName }}
-          sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
-          kvfirewallRequired: false
-          kvName: ${{ variables.vhKeyVault }}
-          kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
-          kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+          env: ${{ variables.env }}
+          prNumber: ${{ variables.pr_number }}
+      - group: vh-github-app-credentials
+    jobs:
+      - job: Dock
+        displayName: "Build and Push Image ${{ variables.git_repo_name }}"
+        steps:
+          - checkout: self
 
-#####################################################
-# Deploy Helm Chart to Dev. ######################### 
-- stage: Install
-  dependsOn: Run_Entity_Framework_Dev
-  displayName: Deploy Helm Chart Dev AKS
-  variables:
-  - group: vh-github-app-credentials
-  - template: variables/dev.yaml
-  - template: variables/shared.yaml
-    parameters:
-      env: ${{ variables.env }}
-  - name: dnsRecordName
-    value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
-  jobs:
-  - job: helm_uninstall
-    displayName: Uninstall Helm from Dev
-    steps:
-    - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
-      parameters:
-        subscriptionName: "${{ variables.subscriptionName }}"
-        environment: ${{ variables.env }}
-      
-    - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
-      parameters:
-        namespace: 'vh'
-        releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
-        azureSubscription: "${{ variables.subscriptionName }}"
-        aksResourceGroupName: "$(aksCluster.resourceGroup)"
-        aksClusterName: "$(aksCluster.name)"
+          - template: templates\Github\get-app-token.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
 
-  - job: aks_push
-    displayName: Deploy To Dev AKS
-    dependsOn: helm_uninstall
-    steps:
-    - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
-      parameters:
-        subscriptionName: "${{ variables.subscriptionName }}"
-        environment: ${{ variables.env }}
-    - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
-      parameters:
-        privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
-        appId: $(gh_app_app_id)
-        envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
-        envValuesPath: ${{ variables.envValuesPath }}
-        acrName: ${{ variables.acrName }}
-        repositoryName: ${{ variables.repositoryName }}
-        prTagName: ${{ variables.prTagName }}
-        releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
-        dnsRecordName: ${{ variables.dnsRecordName }}
-        dnsZone: ${{ variables.dnsZone }}
-        env: ${{ variables.env }}
-        chartName: ${{ variables.chartName }}
-        chartPath: ${{ variables.chartPath }}
-        subscriptionName: "${{ variables.subscriptionName }}"
-        aksResourceGroupName: "$(aksCluster.resourceGroup)"
-        aksClusterName: "$(aksCluster.name)"
-        dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
-        dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
-                
-##################################################
-# Deploy Nuget Packages. #########################
-- stage: Push_Nuget
-  dependsOn: Run_Entity_Framework_Dev
-  displayName: Deploy NuGet Packages
-  variables:
-  - template: variables/dev.yaml
-  - template: variables/shared.yaml
-    parameters:
-      env: ${{ variables.env }}
-  jobs: 
-  - job: Publish_Nuget
-    displayName: Publish NuGet Packages
-    steps:
-    - template: templates\dotnet\push-nuget-packages.yml@azTemplates
-      parameters:
-        vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+          - template: templates\Github\bump-chart-versions.yaml@azTemplates
+            parameters:
+              chartName: ${{ variables.chartName }}
+              chartPath: $(Build.SourcesDirectory)
+              chartBranch: $(System.PullRequest.SourceBranch)
+              githubToken: $(githubappinstall.token)
+              githubUsername: $(gh_app_name)
+              githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
 
-##################################################
-# Run Acceptance Tests. ##########################
-- stage: Acceptance_Tests_Dev
-  dependsOn: Install
-  displayName: Acceptance Tests Dev
-  variables:
-  - group: vh-bookings-api
-  - template: variables/dev.yaml
-  - template: variables/shared.yaml
-    parameters:
-      env: ${{ variables.env }}
-  - name: dnsRecordName
-    value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
-  jobs:
-  - job: AcceptanceTestsDev
-    pool: VH Self Hosted
+          - bash: |
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
+            displayName: Add NuGet Feed Authentication
+            workingDirectory: ${{ variables.appName }}
+
+          - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+
+          - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+            parameters:
+              azureSubscription: ${{ variables.acrSubscription }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              imageName: "${{ replace(variables.git_repo_name, '-', '') }}"
+              imageTags:
+                - "${{ variables.prTagName }}"
+
+  #####################################################
+  # Run Entity Framework Dev. #########################
+  - stage: Run_Entity_Framework_Dev
+    displayName: Run Entity Framework Dev
+    dependsOn: Dock
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          prNumber: ${{ variables.pr_number }}
+    jobs:
+      - job: Run_Entity_Framework_Dev
+        pool:
+          vmImage: "windows-latest" # This Job Must be Run on Windows
+        displayName: Run Entity Framework Dev
+        steps:
+          - download: current
+            displayName: Download Sql Artifact
+
+          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+            parameters:
+              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+              sqlServerName: ${{ variables.vhSQLServerName }}
+              databaseName: ${{ variables.BookingsApiDbName }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
+              kvfirewallRequired: false
+              kvName: ${{ variables.vhKeyVault }}
+              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+
+  #####################################################
+  # Deploy Helm Chart to Dev. #########################
+  - stage: Install
+    dependsOn: Run_Entity_Framework_Dev
+    displayName: Deploy Helm Chart Dev AKS
+    variables:
+      - group: vh-github-app-credentials
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          prNumber: ${{ variables.pr_number }}
+      - name: dnsRecordName
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: helm_uninstall
+        displayName: Uninstall Helm from Dev
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+
+          - template: templates/Containerisation/helm/helm-uninstall.yaml@azTemplates
+            parameters:
+              namespace: "vh"
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              azureSubscription: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
+
+      - job: aks_push
+        displayName: Deploy To Dev AKS
+        dependsOn: helm_uninstall
+        steps:
+          - template: templates\Azure\Aks\get-active-cluster.yaml@azTemplates
+            parameters:
+              subscriptionName: "${{ variables.subscriptionName }}"
+              environment: ${{ variables.env }}
+          - template: templates/Containerisation/helm/helm-install.yaml@azTemplates
+            parameters:
+              privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+              appId: $(gh_app_app_id)
+              envValuesTemplatePath: ${{ variables.envValuesTemplatePath }}
+              envValuesPath: ${{ variables.envValuesPath }}
+              acrName: ${{ variables.acrName }}
+              repositoryName: ${{ variables.repositoryName }}
+              prTagName: ${{ variables.prTagName }}
+              releaseName: "${{ variables.chartName }}-${{ variables.prTagPrefix }}"
+              dnsRecordName: ${{ variables.dnsRecordName }}
+              dnsZone: ${{ variables.dnsZone }}
+              env: ${{ variables.env }}
+              chartName: ${{ variables.chartName }}
+              chartPath: ${{ variables.chartPath }}
+              subscriptionName: "${{ variables.subscriptionName }}"
+              aksResourceGroupName: "$(aksCluster.resourceGroup)"
+              aksClusterName: "$(aksCluster.name)"
+              dnsSubscriptionName: "${{ variables.dnsZoneSubscription }}"
+              dnsResourceGroupName: "${{ variables.dnsZoneResourceGroup }}"
+
+  ##################################################
+  # Deploy Nuget Packages. #########################
+  - stage: Push_Nuget
+    dependsOn: Run_Entity_Framework_Dev
+    displayName: Deploy NuGet Packages
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          prNumber: ${{ variables.pr_number }}
+    jobs:
+      - job: Publish_Nuget
+        displayName: Publish NuGet Packages
+        steps:
+          - template: templates\dotnet\push-nuget-packages.yml@azTemplates
+            parameters:
+              vstsFeed: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+
+  ##################################################
+  # Run Acceptance Tests. ##########################
+  - stage: Acceptance_Tests_Dev
+    dependsOn: Install
     displayName: Acceptance Tests Dev
-    steps:
-    - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
-      parameters:
-        environment: ${{ variables.env }}
-        azureSubscription: ${{ variables.subscriptionName }}
-        acceptanceTestSettings:
-          - name: Services:BookingsApiUrl
-            value: https://vh-bookings-api-pr-$(System.PullRequest.PullRequestNumber).dev.platform.hmcts.net
-          - name: ApplicationInsights:InstrumentationKey
-            value: applicationinsights--instrumentationkey
-            keyVaultName: vh-infra-core-${{ variables.env }}
-            secret: true
-          - name: AzureAd:ClientId
-            value: azuread--clientid
-            keyVaultName: vh-bookings-api-${{ variables.env }}
-            secret: true
-          - name: AzureAd:ClientSecret
-            value: azuread--clientsecret
-            keyVaultName: vh-bookings-api-${{ variables.env }}
-            secret: true
-          - name: Testing:UsernameStem
-            value: $(BookingsApiUsernameStem)
-          - name: UseServiceBusFake
-            value: true
-          - name: AzureAd:TenantId
-            value: azuread--tenantid
-            keyVaultName: vh-infra-core-${{ variables.env }}
-            secret: true
-          - name: Services:BookingsApiResourceId
-            value: azuread--identifieruri
-            keyVaultName: vh-bookings-api-${{ variables.env }}
-            secret: true
+    variables:
+      - group: vh-bookings-api
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+          prNumber: ${{ variables.pr_number }}
+      - name: dnsRecordName
+        value: vh-${{ variables.git_repo_name }}-${{ variables.prTagPrefix }}
+    jobs:
+      - job: AcceptanceTestsDev
+        pool: VH Self Hosted
+        displayName: Acceptance Tests Dev
+        steps:
+          - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+            parameters:
+              environment: ${{ variables.env }}
+              azureSubscription: ${{ variables.subscriptionName }}
+              acceptanceTestSettings:
+                - name: Services:BookingsApiUrl
+                  value: https://vh-bookings-api-pr-${{ variables.pr_number }}.dev.platform.hmcts.net
+                - name: ApplicationInsights:InstrumentationKey
+                  value: applicationinsights--instrumentationkey
+                  keyVaultName: vh-infra-core-${{ variables.env }}
+                  secret: true
+                - name: AzureAd:ClientId
+                  value: azuread--clientid
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                - name: AzureAd:ClientSecret
+                  value: azuread--clientsecret
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true
+                - name: Testing:UsernameStem
+                  value: $(BookingsApiUsernameStem)
+                - name: UseServiceBusFake
+                  value: true
+                - name: AzureAd:TenantId
+                  value: azuread--tenantid
+                  keyVaultName: vh-infra-core-${{ variables.env }}
+                  secret: true
+                - name: Services:BookingsApiResourceId
+                  value: azuread--identifieruri
+                  keyVaultName: vh-bookings-api-${{ variables.env }}
+                  secret: true

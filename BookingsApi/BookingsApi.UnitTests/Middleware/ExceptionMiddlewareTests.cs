@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Net;
 using BookingsApi.Common;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.UnitTests.Middleware
 {
@@ -15,6 +16,7 @@ namespace BookingsApi.UnitTests.Middleware
     public class ExceptionMiddlewareTests
     {
         public Mock<IDelegateMock> RequestDelegateMock { get; set; }
+        public Mock<ILogger<ExceptionMiddleware>> LoggerMock { get; set; }
         public ExceptionMiddleware ExceptionMiddleware { get; set; }
         public HttpContext _HttpContext { get; set; }
        
@@ -23,9 +25,12 @@ namespace BookingsApi.UnitTests.Middleware
         public void ExceptionMiddleWareSetup()
         {
             RequestDelegateMock = new Mock<IDelegateMock>();
+            LoggerMock = new Mock<ILogger<ExceptionMiddleware>>();
            _HttpContext = new DefaultHttpContext();
            _HttpContext.Response.Body = new MemoryStream();
         }
+
+        
 
         [Test]
         public  async Task Should_Invoke_Delegate()
@@ -33,7 +38,7 @@ namespace BookingsApi.UnitTests.Middleware
             RequestDelegateMock
                 .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
                 .Returns(Task.FromResult(0));
-            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate);
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
             await ExceptionMiddleware.InvokeAsync(new DefaultHttpContext());
             RequestDelegateMock.Verify(x => x.RequestDelegate(It.IsAny<HttpContext>()), Times.Once);
         }
@@ -45,7 +50,7 @@ namespace BookingsApi.UnitTests.Middleware
             RequestDelegateMock
                 .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
                 .Returns(Task.FromException(new BadRequestException("Error")));
-            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate);
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
 
 
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
@@ -61,7 +66,7 @@ namespace BookingsApi.UnitTests.Middleware
             RequestDelegateMock
                .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
                .Returns(Task.FromException(new Exception()));
-            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate);
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
 
             
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
@@ -78,7 +83,7 @@ namespace BookingsApi.UnitTests.Middleware
             RequestDelegateMock
                 .Setup(x => x.RequestDelegate(It.IsAny<HttpContext>()))
                 .Returns(Task.FromException(exception));
-            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate);
+            ExceptionMiddleware = new ExceptionMiddleware(RequestDelegateMock.Object.RequestDelegate, LoggerMock.Object);
             
             await ExceptionMiddleware.InvokeAsync(_HttpContext);
 

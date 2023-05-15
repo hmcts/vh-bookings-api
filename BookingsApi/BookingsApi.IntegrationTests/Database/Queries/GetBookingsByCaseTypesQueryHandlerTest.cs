@@ -263,7 +263,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             containsHearingsFilteredWithNoJudge.Should().BeTrue();
 
-            hearings.Count().Should().Equals(1);
+            hearings.Count().Should().Be(1);
         }
 
         private static void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)

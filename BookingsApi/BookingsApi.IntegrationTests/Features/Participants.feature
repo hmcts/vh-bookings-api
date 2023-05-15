@@ -32,7 +32,7 @@ Scenario: Existing participant not added to the same hearing
 	Then the response should have the status Ok and success status True
 	When I send the same request twice
 	Then the response should have the status BadRequest and success status False
-	And the error response message should contain 'Participant already exists'
+	And the error response message should contain 'already exists'
 
 Scenario: Existing participant added to a new hearing
 	Given I have an add participant to a hearing request with a valid hearing id

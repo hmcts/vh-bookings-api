@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -18,7 +17,6 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.Extensions;
 using BookingsApi.Validations;
 using Microsoft.Extensions.Logging;
-using Namotion.Reflection;
 
 namespace BookingsApi.Controllers
 {
@@ -138,26 +136,25 @@ namespace BookingsApi.Controllers
 
             return Ok(justiceUserResponse);
         }
-        
+
         /// <summary>
         /// Get a list of justice users. Optionally provide a search term to filter
         /// for users that contain the given term in their first name, contact email or username.
         /// </summary>
         /// <param name="term">term to filter result</param>
+        /// <param name="includeDeleted">include soft-deleted justice users</param>
         /// <returns>Justice User list</returns>
         [HttpGet("GetJusticeUserList")]
         [OpenApiOperation("GetJusticeUserList")]
         [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetJusticeUserList(string term)
+        public async Task<IActionResult> GetJusticeUserList(string term, bool includeDeleted = false)
         {
-            var query = new GetJusticeUserListQuery(term);
+            var query = new GetJusticeUserListQuery(term, includeDeleted);
             var userList =
                 await _queryHandler.Handle<GetJusticeUserListQuery, List<JusticeUser>>(query);
-            
-            var list = userList.Select(user => JusticeUserToResponseMapper.Map(user));
 
-            return Ok(list.ToList());
+            return Ok(userList.Select(JusticeUserToResponseMapper.Map).ToList());
         }
 
         /// <summary>
@@ -167,7 +164,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpDelete("{id}")]
         [OpenApiOperation("DeleteJusticeUser")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteJusticeUser(Guid id)
@@ -190,6 +187,38 @@ namespace BookingsApi.Controllers
             }
 
             return NoContent();
+        }
+        
+        /// <summary>
+        /// Restore a justice user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPatch("restore")]
+        [OpenApiOperation("RestoreJusticeUser")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RestoreJusticeUser(RestoreJusticeUserRequest request)
+        {
+            var validation = await new RestoreJusticeUserRequestValidation().ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            var command = new RestoreJusticeUserCommand(request.Id);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+                return NoContent();
+            }
+            catch (JusticeUserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }

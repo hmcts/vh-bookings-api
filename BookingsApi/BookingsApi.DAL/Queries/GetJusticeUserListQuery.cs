@@ -10,9 +10,11 @@ namespace BookingsApi.DAL.Queries
     public class GetJusticeUserListQuery : IQuery
     {
         public string Term { get; set; }
-        public GetJusticeUserListQuery(string term)
+        public bool IncludeDeleted { get; set; }
+        public GetJusticeUserListQuery(string term, bool includeDeleted = false)
         {
             Term = term;
+            IncludeDeleted = includeDeleted;
         }
     }
     
@@ -27,23 +29,25 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<JusticeUser>> Handle(GetJusticeUserListQuery query)
         {
-            string term = query.Term;
-            if (string.IsNullOrEmpty(term))
+            var term = query.Term;
+            
+            var users = _context.JusticeUsers.IgnoreQueryFilters()
+                .Where(x => query.IncludeDeleted.Equals(true) || x.Deleted.Equals(false))
+                .OrderBy(x => x.Lastname).ThenBy(x => x.FirstName)
+                .Include(x => x.JusticeUserRoles).ThenInclude(x => x.UserRole)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(term))
             {
-                return await _context.JusticeUsers.Include(x => x.UserRole).ToListAsync();
-            }
-            else
-            {
-                return await _context.JusticeUsers
-                    .Where(u=> 
-                        u.Lastname.Contains(term) || 
+                users = users
+                    .Where(u =>
+                        u.Lastname.Contains(term) ||
                         u.FirstName.Contains(term) ||
                         u.ContactEmail.Contains(term) ||
-                        u.Username.Contains(term)
-                        )
-                    .Include(x => x.UserRole).ToListAsync();
+                        u.Username.Contains(term));
             }
-            
+
+            return await users.ToListAsync();
         }
     }
 }

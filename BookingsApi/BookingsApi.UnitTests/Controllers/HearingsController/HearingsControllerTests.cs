@@ -440,7 +440,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock
                 .Verify(c =>
                         c.Handle(It.Is<AnonymiseCaseAndParticipantCommand>(prop =>
-                            prop.HearingIds.IsSameOrEqualTo(hearingIds))),
+                            prop.HearingIds.Equals(hearingIds))),
                     Times.Once);
         }
 

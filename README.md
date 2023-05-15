@@ -1,50 +1,59 @@
 # vh-bookings-api
 
+## HMCTS
 
-## Running code coverage
+[![Build Status](https://hmctsreform.visualstudio.com/VirtualHearings/_apis/build/status/Apps-CI/hmcts.vh-bookings-api?repoName=hmcts%2Fvh-bookings-api&branchName=master)](https://hmctsreform.visualstudio.com/VirtualHearings/_build/latest?definitionId=96&repoName=hmcts%2Fvh-bookings-api&branchName=master)
 
-1. Install the report generator dotnet tool
-https://www.nuget.org/packages/dotnet-reportgenerator-globaltool/
+[![BookingsApi.Client package in vh-packages feed in Azure Artifacts](https://hmctsreform.feeds.visualstudio.com/3f69a23d-fbc7-4541-afc7-4cccefcad773/_apis/public/Packaging/Feeds/vh-packages/Packages/fce37bec-b7b1-4472-b67f-efcd7bace29b/Badge)](https://hmctsreform.visualstudio.com/VirtualHearings/_artifacts/feed/vh-packages/NuGet/BookingsApi.Client?preferRelease=true)
 
-You may need to restart your prompt to get the updated path.
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vh-bookings-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=vh-bookings-api)
 
-2. CD into the BookingsAPI folder
+## SDS
 
-3. Run the command for windows or osx `./run_coverage.sh` or `run_coverage.bat`
+[![Build Status](https://dev.azure.com/hmcts/Video%20Hearings/_apis/build/status/vh-bookings-api/hmcts.vh-bookings-api.sds.master-release?repoName=hmcts%2Fvh-bookings-api&branchName=master)](https://dev.azure.com/hmcts/Video%20Hearings/_build/latest?definitionId=664&repoName=hmcts%2Fvh-bookings-api&branchName=master)
 
-The coverage report will open automatically after run, joining the results for both integration and unit tests.
+[![BookingsApi.Client package in vh-packages feed in Azure Artifacts](https://feeds.dev.azure.com/hmcts/cf3711aa-2aed-4f62-81a8-2afaee0ce26d/_apis/public/Packaging/Feeds/vh-packages/Packages/900b1d86-dad9-4013-b8ff-cc19a79e7605/Badge)](https://dev.azure.com/hmcts/Video%20Hearings/_artifacts/feed/vh-packages/NuGet/BookingsApi.Client?preferRelease=true)
 
-## Running Sonar Analysis
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vh-bookings-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=vh-bookings-api)
 
-``` bash
-dotnet sonarscanner begin /k:"vh-bookings-api" /d:sonar.cs.opencover.reportsPaths="BookingsAPI/Artifacts/Coverage/coverage.opencover.xml" /d:sonar.coverage.exclusions="Bookings.API/Program.cs,Bookings.API/Startup.cs,Bookings.API/Extensions/**,Bookings.API/Swagger/**,Bookings.API/ConfigureServicesExtensions.cs,Testing.Common/**,Bookings.Common/**,Bookings.DAL/Mappings/**,Bookings.DAL/SeedData/**,Bookings.DAL/BookingsDbContext.cs,Bookings.DAL/**/DesignTimeHearingsContextFactory.cs,Bookings.DAL/Migrations/**,Bookings.Domain/Ddd/**,Bookings.Domain/Validations/**,Bookings.DAL/Commands/Core/**,Bookings.DAL/Queries/Core/**" /d:sonar.cpd.exclusions="Bookings.DAL/Migrations/**" /d:sonar.verbose=true
-dotnet build BookingsAPI/BookingsApi.sln
-dotnet sonarscanner end
+## Restore Tools
 
-##Branch name git hook will run on pre commit and control the standard for new branch name.
+Run the following in a terminal at the root of the repository
+
+``` shell
+dotnet tool restore
+```
+
+## Branch name git hook will run on pre commit and control the standard for new branch name.
 
 The branch name should start with: feature/VIH-XXXX-branchName  (X - is digit).
 If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
 To change git hooks directory to directory under source control run (works only for git version 2.9 or greater) :
-$ git config core.hooksPath .githooks
 
-##Commit message 
+`$ git config core.hooksPath .githooks`
+
+## Commit message 
+
 The commit message will be validated by prepare-commit-msg hook.
 The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters description of commit, otherwise the warning message will be presented.
 
+## Running all tests in Docker
+
+Open a terminal at the root level of the repository and run the following command
+
+```console
+docker-compose -f "docker-compose.tests.yml" up --build --abort-on-container-exit
 ```
 
-## Run Zap scan locally
+> You may need to create a `.env` file to store the environment variables
 
-To run Zap scan locally update the following settings and run acceptance\integration tests
+## Convert test results into coverage report
 
-Update following configuration under appsettings.json under VideoApi.AcceptanceTests or  VideoApi.IntegrationTests
+Run the following in a terminal
 
-- "Services:BookingsApiUrl": "https://BookingsApi_AC/"
-- "ZapConfiguration:ZapScan": true
-- "ConnectionStrings:VhBookings": "Server=localhost,1433;Database=VhBookings;User=sa;Password=VeryStrongPassword!;" (IntegrationTest alone)
-
-Note: Ensure you have Docker desktop engine installed and setup
+``` bash
+dotnet reportgenerator "-reports:./Coverage/coverage.opencover.xml" "-targetDir:./Artifacts/Coverage/Report" -reporttypes:Html -sourcedirs:./BookingsApi
+```
 
 ## Run Stryker
 
@@ -55,21 +64,3 @@ dotnet stryker
 ```
 
 From the results look for line(s) of code highlighted with Survived\No Coverage and fix them.
-
-
-If in case you have not installed stryker previously, please use one of the following commands
-
-### Global
-```bash
-dotnet tool install -g dotnet-stryker
-```
-### Local
-```bash
-dotnet tool install dotnet-stryker
-```
-
-To update latest version of stryker please use the following command
-
-```bash
-dotnet tool update --global dotnet-stryker
-```
