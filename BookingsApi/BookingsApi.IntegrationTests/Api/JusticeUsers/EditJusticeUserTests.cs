@@ -115,7 +115,7 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
             return Builder<EditJusticeUserRequest>.CreateNew()
                 .With(x=> x.Username, justiceUser.Username)
                 .With(x=> x.Id, justiceUser.Id)
-                .With(x => x.Role = new List<JusticeUserRole>() { JusticeUserRole.VhTeamLead })
+                .With(x => x.Roles = new List<JusticeUserRole>() { JusticeUserRole.VhTeamLead })
                 .Build();
         }
 

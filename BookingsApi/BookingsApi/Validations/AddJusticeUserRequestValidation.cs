@@ -31,7 +31,7 @@ public class AddJusticeUserRequestValidation : AbstractValidator<AddJusticeUserR
 
         RuleFor(x => x.ContactTelephone).Must((_, telephoneNumber) => IsPhone(telephoneNumber))
             .When(x => !string.IsNullOrWhiteSpace(x.ContactTelephone));
-        RuleForEach(x => x.Role).IsInEnum();
+        RuleForEach(x => x.Roles).IsInEnum();
     }
 
     private static bool IsPhone(string telephoneNumber)

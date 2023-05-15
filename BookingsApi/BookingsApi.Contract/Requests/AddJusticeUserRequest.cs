@@ -11,7 +11,7 @@ public class AddJusticeUserRequest
     public AddJusticeUserRequest()
     {
         // default to VHO to avoid accidentally assigned the role TeamLead
-        Role = new List<JusticeUserRole>() { JusticeUserRole.Vho };
+        Roles = new List<JusticeUserRole>() { JusticeUserRole.Vho };
     }
     
     /// <summary>
@@ -47,5 +47,5 @@ public class AddJusticeUserRequest
     /// <summary>
     /// The user's roles. This can be a VHO or a Team Lead, and/or Staff Member.
     /// </summary>
-    public List<JusticeUserRole> Role { get; set;}
+    public List<JusticeUserRole> Roles { get; set;}
 }
