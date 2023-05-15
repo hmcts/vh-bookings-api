@@ -54,7 +54,7 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }       
-            int[] userRoleIds = request.Roles.Select(x => (int) x).ToArray();
+            var userRoleIds = request.Roles.Select(x => (int) x).ToArray();
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
                 request.ContactEmail, request.CreatedBy, userRoleIds)
             {
