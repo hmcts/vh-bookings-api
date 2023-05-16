@@ -53,7 +53,7 @@ stages:
 
           - template: templates/dotnet/build-test-analyse.yml@azTemplates
             parameters:
-              nugetConfigPath: nuget.sds.config # remove this once the sds config file is removed
+              nugetConfigPath: nuget.config
               appName: ${{ variables.appName }}
               dockerComposeTestFile: docker-compose.tests.yml
               sonarExtraProperties: |
@@ -96,11 +96,8 @@ stages:
         steps:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
-              netVersion: 6.x
+              vstsFeedId: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
               coreProjectPath: $(projectPath)
-              nugetProjectPath: $(projectPath)
-              nugetConfigPath: ${{ variables.appName }}
-              useNugetConfig: true
 
   #####################################################
   # Build Docker Image & Generate EF Script. ##########
@@ -135,7 +132,7 @@ stages:
               githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
 
           - bash: |
-              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+              sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
             displayName: Add NuGet Feed Authentication
             workingDirectory: ${{ variables.appName }}
 
