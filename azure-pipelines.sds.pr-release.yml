@@ -40,7 +40,7 @@ stages:
         displayName: "Helm CI"
         steps:
           - checkout: self
-            
+
           - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
             parameters:
               chartPath: ${{ variables.chartPath }}
@@ -50,7 +50,7 @@ stages:
         displayName: "Unit and Integration Tests"
         steps:
           - checkout: self
-            
+
           - template: templates/dotnet/build-test-analyse.yml@azTemplates
             parameters:
               nugetConfigPath: nuget.config
@@ -96,9 +96,9 @@ stages:
         steps:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
-              netVersion: 6.x
+              vstsFeedId: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
+              gitVersionConfigPath: ${{ variables.git_version_config_path }}
               coreProjectPath: $(projectPath)
-              nugetProjectPath: $(projectPath)
 
   #####################################################
   # Build Docker Image & Generate EF Script. ##########
