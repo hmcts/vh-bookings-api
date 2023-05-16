@@ -8,9 +8,6 @@ parameters:
 
 variables:
 
-  - name: nugetFeedId
-    value: 'Video Hearings/vh-packages'
-    
   - name: appName
     value: BookingsApi
 
