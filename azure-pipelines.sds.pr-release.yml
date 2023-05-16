@@ -97,7 +97,6 @@ stages:
           - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
             parameters:
               vstsFeedId: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
-              gitVersionConfigPath: ${{ variables.git_version_config_path }}
               coreProjectPath: $(projectPath)
 
   #####################################################
