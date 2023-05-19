@@ -54,8 +54,9 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }       
+            var userRoleIds = request.Roles.Select(x => (int) x).ToArray();
             var command = new AddJusticeUserCommand(request.FirstName, request.LastName, request.Username,
-                request.ContactEmail, request.CreatedBy, (int) request.Role)
+                request.ContactEmail, request.CreatedBy, userRoleIds)
             {
                 Telephone = request.ContactTelephone
             };
@@ -96,7 +97,8 @@ namespace BookingsApi.Controllers
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }
-            var command = new EditJusticeUserCommand(request.Id, request.Username, (int) request.Role);
+            int[] userRoleIds = request.Roles?.Select(x => (int) x).ToArray();
+            var command = new EditJusticeUserCommand(request.Id, request.Username, userRoleIds);
             try
             {
                 await _commandHandler.Handle(command);

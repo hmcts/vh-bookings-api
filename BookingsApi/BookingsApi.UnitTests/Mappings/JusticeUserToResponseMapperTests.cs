@@ -24,8 +24,15 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 Telephone = "0123456789",
             };
-            justiceUser.AddRoles(new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead"));
+            
+            var userRoles = new UserRole[]
+            {
+                new UserRole((int)UserRoleId.VhTeamLead, "Video Hearings Team Lead")
+            };
+            justiceUser.AddRoles(userRoles);
 
+            List<Contract.Requests.Enums.JusticeUserRole> roles = new List<Contract.Requests.Enums.JusticeUserRole>();
+            roles.Add(Contract.Requests.Enums.JusticeUserRole.VhTeamLead);
             var expectedJusticeUserResponse = new JusticeUserResponse
             {
                 FirstName = "FirstName",
@@ -35,8 +42,7 @@ namespace BookingsApi.UnitTests.Mappings
                 CreatedBy = "created.by@email.com",
                 IsVhTeamLeader = true,
                 Telephone = "0123456789",
-                UserRoleId = (int)UserRoleId.VhTeamLead,
-                UserRoleName = "Video Hearings Team Lead",
+                UserRoles = roles,
                 FullName = "FirstName Lastname"
             };
 

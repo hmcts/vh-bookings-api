@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BookingsApi.Contract.Requests.Enums;
 
 namespace BookingsApi.Contract.Requests;
@@ -21,5 +22,5 @@ public class EditJusticeUserRequest
     /// <summary>
     /// The user's role. This can be a VHO or a Team Lead.
     /// </summary>
-    public JusticeUserRole Role { get; set;}
+    public List<JusticeUserRole> Roles { get; set;}
 }
