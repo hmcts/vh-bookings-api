@@ -27,6 +27,7 @@ namespace BookingsApi.UnitTests.Validation
                 .With(x=> x.Username, Faker.Internet.UserName())
                 .With(x=> x.ContactEmail, Faker.Internet.Email())
                 .With(x => x.ContactTelephone, null)
+                .With(x=>x.Roles, new List<JusticeUserRole>() { JusticeUserRole.Vho })
                 .Build();
             
             var result = await _validator.ValidateAsync(request);
@@ -51,6 +52,7 @@ namespace BookingsApi.UnitTests.Validation
                 .With(x=> x.Username, Faker.Internet.UserName())
                 .With(x=> x.ContactEmail, Faker.Internet.Email())
                 .With(x => x.ContactTelephone, telephone)
+                .With(x=>x.Roles, new List<JusticeUserRole>() { JusticeUserRole.Vho })
                 .Build();
             
             var result = await _validator.ValidateAsync(request);
@@ -89,6 +91,7 @@ namespace BookingsApi.UnitTests.Validation
             var request = Builder<AddJusticeUserRequest>.CreateNew()
                 .With(x=> x.FirstName, "John Doe  DoubleSpace")
                 .With(x=> x.LastName, "    Another   Space")
+                .With(x=>x.Roles, new List<JusticeUserRole>() { JusticeUserRole.Vho })
                 .Build();
             
             var result = await _validator.ValidateAsync(request);
