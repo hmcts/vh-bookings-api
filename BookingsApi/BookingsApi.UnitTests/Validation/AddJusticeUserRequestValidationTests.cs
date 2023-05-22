@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Validations;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -95,6 +97,23 @@ namespace BookingsApi.UnitTests.Validation
             result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.FirstNameDoesntMatchRegex)
                 .Should().BeTrue();
             result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.LastNameDoesntMatchRegex)
+                .Should().BeTrue();
+        }
+        
+        [Test]
+        public async Task should_fail_validation_when_roles_does_not_have_any_values()
+        {
+            var request = Builder<AddJusticeUserRequest>.CreateNew()
+                .With(x=> x.Username, Faker.Internet.UserName())
+                .With(x=> x.ContactEmail, Faker.Internet.Email())
+                .With(x => x.ContactTelephone, null)
+                .With(x=>x.Roles, new List<JusticeUserRole>())
+                .Build();
+            
+            var result = await _validator.ValidateAsync(request);
+            
+            result.IsValid.Should().BeFalse();
+            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoRoleErrorMessage)
                 .Should().BeTrue();
         }
     }
