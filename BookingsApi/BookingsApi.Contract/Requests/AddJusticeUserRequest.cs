@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BookingsApi.Contract.Requests.Enums;
 
 namespace BookingsApi.Contract.Requests;
@@ -10,7 +11,7 @@ public class AddJusticeUserRequest
     public AddJusticeUserRequest()
     {
         // default to VHO to avoid accidentally assigned the role TeamLead
-        Role = JusticeUserRole.Vho;
+        Roles = new List<JusticeUserRole>() { JusticeUserRole.Vho };
     }
     
     /// <summary>
@@ -44,7 +45,7 @@ public class AddJusticeUserRequest
     public string CreatedBy { get; set;}
     
     /// <summary>
-    /// The user's role. This can be a VHO or a Team Lead.
+    /// The user's roles. This can be a VHO or a Team Lead, and/or Staff Member.
     /// </summary>
-    public JusticeUserRole Role { get; set;}
+    public List<JusticeUserRole> Roles { get; set;}
 }

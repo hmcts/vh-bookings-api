@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -14,14 +15,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 
         public ServiceBusQueueClientFake()
         {
-            SerializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.None,
-                TypeNameHandling = TypeNameHandling.Objects
-            };
-            SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+            SerializerSettings = DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings();
         }
         
         public Task PublishMessageAsync(EventMessage eventMessage)

@@ -40,7 +40,7 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(AddJusticeUserCommand command)
         {
             var roles = await _context.UserRoles.Where(x => command.RoleIds.Contains(x.Id)).ToArrayAsync();
-            
+
             if (_context.JusticeUsers.IgnoreQueryFilters().Any(x => x.Username.ToLower() == command.Username.ToLower()))
             {
                 throw new JusticeUserAlreadyExistsException(command.Username);

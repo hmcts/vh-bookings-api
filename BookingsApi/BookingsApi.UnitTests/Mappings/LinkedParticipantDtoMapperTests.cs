@@ -25,7 +25,7 @@ namespace BookingsApi.UnitTests.Mappings
 
             dto.ParticipantId.Should().Be(_linkedParticipant.ParticipantId);
             dto.LinkedId.Should().Be(_linkedParticipant.LinkedId);
-            dto.Type.Should().BeEquivalentTo(_linkedParticipant.Type);
+            dto.Type.Should().Be(_linkedParticipant.Type);
         }
 
         private LinkedParticipant BuildLinkedParticipant()

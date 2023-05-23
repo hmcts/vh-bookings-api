@@ -94,10 +94,10 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingIds">Hearing Reference ID array</param>
         /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpGet("allocation", Name = "GetAllocationsForHearings")]
+        [HttpPost("get-allocation", Name = "GetAllocationsForHearings")]
         [OpenApiOperation("GetAllocationsForHearings")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllocationsForHearings([FromQuery] Guid[] hearingIds)
+        public async Task<IActionResult> GetAllocationsForHearings([FromBody]Guid[] hearingIds)
         {
             var allocatedHearings = await _queryHandler
                     .Handle<GetAllocationHearingsQuery, List<VideoHearing>>(new GetAllocationHearingsQuery(hearingIds));
@@ -154,10 +154,7 @@ namespace BookingsApi.Controllers
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
                 
                 // need to broadcast acknowledgment message for the allocation
-                if (list.Count > 0)
-                {
-                    await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(list, list[0].AllocatedTo));
-                }
+                await PublishAllocationsToServiceBus(list, list.First().AllocatedTo);
                 
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
@@ -165,6 +162,15 @@ namespace BookingsApi.Controllers
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
                 return BadRequest(ModelState);
+            }
+        }
+        
+        private async Task PublishAllocationsToServiceBus(List<VideoHearing> hearings, JusticeUser justiceUser)
+        {
+            var todaysHearing = hearings.Where(x => x.ScheduledDateTime.Date == DateTime.UtcNow.Date).ToList();
+            if(todaysHearing.Any())
+            {
+                await _eventPublisher.PublishAsync(new AllocationHearingsIntegrationEvent(todaysHearing, justiceUser));
             }
         }
     }

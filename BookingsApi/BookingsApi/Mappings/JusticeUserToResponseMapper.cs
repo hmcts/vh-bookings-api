@@ -2,6 +2,7 @@
 using System.Linq;
 using BookingsApi.Contract.Responses;
 using BookingsApi.Domain;
+using JusticeUserRole = BookingsApi.Contract.Requests.Enums.JusticeUserRole;
 
 namespace BookingsApi.Mappings
 {
@@ -17,8 +18,7 @@ namespace BookingsApi.Mappings
                     ContactEmail = judiciaryPersonStagingRequest.ContactEmail,
                     Username = judiciaryPersonStagingRequest.Username,
                     Telephone = judiciaryPersonStagingRequest.Telephone,
-                    UserRoleId = judiciaryPersonStagingRequest.JusticeUserRoles.FirstOrDefault()?.UserRole.Id ?? 0, 
-                    UserRoleName = judiciaryPersonStagingRequest.JusticeUserRoles.FirstOrDefault()?.UserRole.Name, 
+                    UserRoles = judiciaryPersonStagingRequest.JusticeUserRoles.Select(x=> (JusticeUserRole) x.UserRole.Id).ToList(),
                     IsVhTeamLeader = judiciaryPersonStagingRequest.IsTeamLeader(),
                     CreatedBy = judiciaryPersonStagingRequest.CreatedBy,
                     Id = judiciaryPersonStagingRequest.Id,

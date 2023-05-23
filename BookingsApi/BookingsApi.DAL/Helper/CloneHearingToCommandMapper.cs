@@ -48,19 +48,9 @@ namespace BookingsApi.DAL.Helper
             {
                 IsLeadCase = c.IsLeadCase
             }).ToList();
-            
-            var newEndpoints = hearing.GetEndpoints().Select(x =>
-            {
-                var sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-                var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
-                return new NewEndpoint
-                {
-                    Pin = pin,
-                    Sip = $"{sip}{sipAddressStem}",
-                    DisplayName = x.DisplayName,
-                    ContactEmail = x.DefenceAdvocate?.Person?.ContactEmail
-                };
-            }).ToList();
+
+
+            var newEndpoints = GetNewEndpointsDtos(hearing, randomGenerator, sipAddressStem);
 
             var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
 
@@ -76,6 +66,31 @@ namespace BookingsApi.DAL.Helper
             };
 
             return command;
+        }
+
+        private static List<NewEndpoint> GetNewEndpointsDtos(Hearing hearing, IRandomGenerator randomGenerator, string sipAddressStem)
+        {
+            var newEndpoints = new List<NewEndpoint>();
+            foreach (var endpoint in hearing.GetEndpoints())
+            {
+                string sip;
+                do
+                {
+                    sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
+                } while (newEndpoints.Any(x => x.Sip.StartsWith(sip)));
+                var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
+                var newEndpoint =  new NewEndpoint
+                {
+                    Pin = pin,
+                    Sip = $"{sip}{sipAddressStem}",
+                    DisplayName = endpoint.DisplayName,
+                    ContactEmail = endpoint.DefenceAdvocate?.Person?.ContactEmail
+                };
+            
+                newEndpoints.Add(newEndpoint);
+            }
+
+            return newEndpoints;
         }
 
         private static List<LinkedParticipantDto> GetLinkedParticipantDtos(Hearing hearing)

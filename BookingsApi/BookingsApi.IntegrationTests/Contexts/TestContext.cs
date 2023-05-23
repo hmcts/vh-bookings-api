@@ -4,6 +4,7 @@ using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Helper;
+using GST.Fake.Authentication.JwtBearer;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Testing.Common.Configuration;
@@ -12,7 +13,6 @@ namespace BookingsApi.IntegrationTests.Contexts
 {
     public class TestContext
     {
-        public string BearerToken { get; set; }
         public DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
         public Config Config { get; set; }
         public HttpContent HttpContent { get; set; }
@@ -45,7 +45,7 @@ namespace BookingsApi.IntegrationTests.Contexts
                 client = Server.CreateClient();
             }
 
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {BearerToken}");
+            client.SetFakeBearerToken("admin", new[] { "ROLE_ADMIN", "ROLE_GENTLEMAN" });
             return client;
         }
     }

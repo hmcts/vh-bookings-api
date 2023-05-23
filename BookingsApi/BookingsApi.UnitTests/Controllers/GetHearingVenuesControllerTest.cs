@@ -46,7 +46,7 @@ public class GetHearingVenuesControllerTest
         //Assert
         response?.Should().NotBeNull().And.BeOfType<OkObjectResult>();
         var responseData = response?.Value as IList<string>;
-        responseData?.Should().NotBeNull().And.Should().BeEquivalentTo(expectedResponse);
+        responseData?.Should().NotBeNull().And.BeEquivalentTo(expectedResponse);
     }
     
     [TestCase("query returns empty")]

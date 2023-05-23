@@ -85,6 +85,31 @@ public class WorkAllocationTests : ApiTest
         AssertHearingAllocationResponse(searchedHearing, bookNewHearingRequest);
     }
 
+    [Test]
+    public async Task should_call_getAllocation_with_1000_ids_and_not_fail_and_return_the_valid_hearing()
+    {
+        // arrange
+        var hearingSchedule = DateTime.Today.AddHours(3);
+        var caseName = "Bookings Api AC Automated";
+        var bookNewHearingRequest = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
+        var validHearing = BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest).Result.Id;
+        await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
+        {
+            Hearings = new List<Guid> {validHearing},
+            CsoId = _cso.Id
+        });
+        var testParameters = new List<Guid>(){validHearing};
+        for (int i = 0; i < 1000; i++)
+            testParameters.Add(Guid.NewGuid());
+
+        // act
+        var results = await BookingsApiClient.GetAllocationsForHearingsAsync(testParameters);
+        
+        // assert
+        results.Count.Should().BeGreaterThan(0);
+        results.Should().Contain(e => e.HearingId == validHearing);
+    }
+
     private void AssertHearingAllocationResponse(HearingAllocationsResponse hearing, BookNewHearingRequest bookNewHearingRequest)
     {
         hearing.HearingId.Should().Be(_hearing.Id);
@@ -147,7 +172,7 @@ public class WorkAllocationTests : ApiTest
             ContactEmail = username,
             FirstName = "automation",
             LastName = "allocation",
-            Role = JusticeUserRole.Vho,
+            Roles = new List<JusticeUserRole>() { JusticeUserRole.Vho },
             CreatedBy = "automationtest"
         };
         var cso = await BookingsApiClient.AddJusticeUserAsync(request);
