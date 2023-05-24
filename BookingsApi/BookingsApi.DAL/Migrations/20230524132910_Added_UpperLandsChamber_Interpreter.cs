@@ -16,15 +16,15 @@ namespace BookingsApi.DAL.Migrations
                 new[] { "Id", "Name", "UserRoleId", "CaseRoleId", "Live", "CreatedDate" },
                 new object[,]
                 {
-                    { 1129, "Interpreter", 5, 320, true, DateTime.UtcNow },
-                    { 1130, "Interpreter", 5, 321, true, DateTime.UtcNow },
-                    { 1131, "Interpreter", 5, 322, true, DateTime.UtcNow },
-                    { 1132, "Interpreter", 5, 323, true, DateTime.UtcNow },
-                    { 1133, "Interpreter", 5, 324, true, DateTime.UtcNow },
-                    { 1135, "Interpreter", 5, 326, true, DateTime.UtcNow },
-                    { 1136, "Interpreter", 5, 327, true, DateTime.UtcNow },
-                    { 1137, "Interpreter", 5, 328, true, DateTime.UtcNow },
-                    { 1138, "Interpreter", 5, 329, true, DateTime.UtcNow }
+                    { 1129, "Interpreter", (int)UserRoleId.Individual, 320, true, DateTime.UtcNow },
+                    { 1130, "Interpreter", (int)UserRoleId.Individual, 321, true, DateTime.UtcNow },
+                    { 1131, "Interpreter", (int)UserRoleId.Individual, 322, true, DateTime.UtcNow },
+                    { 1132, "Interpreter", (int)UserRoleId.Individual, 323, true, DateTime.UtcNow },
+                    { 1133, "Interpreter", (int)UserRoleId.Individual, 324, true, DateTime.UtcNow },
+                    { 1135, "Interpreter", (int)UserRoleId.Individual, 326, true, DateTime.UtcNow },
+                    { 1136, "Interpreter", (int)UserRoleId.Individual, 327, true, DateTime.UtcNow },
+                    { 1137, "Interpreter", (int)UserRoleId.Individual, 328, true, DateTime.UtcNow },
+                    { 1138, "Interpreter", (int)UserRoleId.Individual, 329, true, DateTime.UtcNow }
                 });
         }
 
