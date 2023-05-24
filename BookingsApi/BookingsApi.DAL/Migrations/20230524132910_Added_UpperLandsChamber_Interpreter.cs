@@ -21,6 +21,7 @@ namespace BookingsApi.DAL.Migrations
                     { 1131, "Interpreter", (int)UserRoleId.Individual, 322, true, DateTime.UtcNow },
                     { 1132, "Interpreter", (int)UserRoleId.Individual, 323, true, DateTime.UtcNow },
                     { 1133, "Interpreter", (int)UserRoleId.Individual, 324, true, DateTime.UtcNow },
+                    { 1133, "Interpreter", (int)UserRoleId.Individual, 325, true, DateTime.UtcNow },
                     { 1135, "Interpreter", (int)UserRoleId.Individual, 326, true, DateTime.UtcNow },
                     { 1136, "Interpreter", (int)UserRoleId.Individual, 327, true, DateTime.UtcNow },
                     { 1137, "Interpreter", (int)UserRoleId.Individual, 328, true, DateTime.UtcNow },
