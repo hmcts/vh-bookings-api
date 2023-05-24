@@ -101,7 +101,6 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
                 await db.SaveChangesAsync();
             }
         }
-        
         private static AddJusticeUserRequest BuildValidAddJusticeUserRequest()
         {
             return Builder<AddJusticeUserRequest>.CreateNew()
