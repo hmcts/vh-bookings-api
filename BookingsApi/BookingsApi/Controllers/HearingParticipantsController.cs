@@ -135,7 +135,7 @@ namespace BookingsApi.Controllers
         /// <returns>The participant</returns>
         [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
         [OpenApiOperation("AddParticipantsToHearing")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
@@ -379,7 +379,7 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPut("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
         [OpenApiOperation("UpdateParticipantDetails")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ParticipantResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequest request)

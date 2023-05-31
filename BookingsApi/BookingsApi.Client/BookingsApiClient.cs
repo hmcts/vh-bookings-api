@@ -198,7 +198,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponse>> AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -208,7 +208,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponse>> AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get a single participant in a hearing
@@ -253,7 +253,7 @@ namespace BookingsApi.Client
         /// <param name="participantId">Id of participant to remove</param>
         /// <param name="request">The participant information to add</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request);
+        System.Threading.Tasks.Task<ParticipantResponse> UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -263,7 +263,7 @@ namespace BookingsApi.Client
         /// <param name="participantId">Id of participant to remove</param>
         /// <param name="request">The participant information to add</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<ParticipantResponse> UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Updates a hearings participants
@@ -2224,7 +2224,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponse>> AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request)
         {
             return AddParticipantsToHearingAsync(hearingId, request, System.Threading.CancellationToken.None);
         }
@@ -2237,7 +2237,7 @@ namespace BookingsApi.Client
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ParticipantResponse>> AddParticipantsToHearingAsync(System.Guid hearingId, AddParticipantsToHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -2260,6 +2260,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2294,7 +2295,12 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<ParticipantResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
@@ -2579,7 +2585,7 @@ namespace BookingsApi.Client
         /// <param name="participantId">Id of participant to remove</param>
         /// <param name="request">The participant information to add</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request)
+        public virtual System.Threading.Tasks.Task<ParticipantResponse> UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request)
         {
             return UpdateParticipantDetailsAsync(hearingId, participantId, request, System.Threading.CancellationToken.None);
         }
@@ -2592,7 +2598,7 @@ namespace BookingsApi.Client
         /// <param name="participantId">Id of participant to remove</param>
         /// <param name="request">The participant information to add</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<ParticipantResponse> UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -2619,6 +2625,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2653,7 +2660,12 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ParticipantResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
