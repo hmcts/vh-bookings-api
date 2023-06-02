@@ -34,14 +34,6 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Request =
                 _context.Get(GetPersonByContactEmail(_context.TestData.ParticipantsResponses[0].ContactEmail));
         }
-        
-        [Given(@"I have a search for hearings by username for removal request")]
-        public void GivenIHaveASearchForHearingsByUsernameForRemovalRequest()
-        {
-            var participant = _context.TestData.ParticipantsResponses.First(x => x.UserRoleName.ToLower() != "judge");
-            _context.Request =
-                _context.Get(GetHearingsByUsernameForDeletion(participant.Username));
-        }
 
         [Then(@"a person should be retrieved")]
         public void ThenAPersonShouldBeRetrieved()
