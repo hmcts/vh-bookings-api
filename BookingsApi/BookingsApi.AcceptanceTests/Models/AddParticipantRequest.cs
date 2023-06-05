@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using BookingsApi.Contract.Requests;
 using FizzWare.NBuilder;
+using Testing.Common.Configuration;
 
 namespace BookingsApi.AcceptanceTests.Models
 {
     internal static class AddParticipantRequest
     {
-        public const string ParticipantRequestFirstName = "Automation_Applicant";
-        private const string ParticipantRequestLastName = "LitigantInPerson_2";
+        public const string ParticipantRequestFirstName = TestUsers.ApplicantLitigant2.FirstName;
+        private const string ParticipantRequestLastName = TestUsers.ApplicantLitigant2.LastName;
         public static AddParticipantsToHearingRequest BuildRequest()
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(1).All()
