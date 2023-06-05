@@ -101,7 +101,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Request = _context.Get(GetAllParticipantsInHearing(_context.TestData.Hearing.Id));
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<List<ParticipantResponse>>(_context.Response.Content);
-            model.Exists(x => x.FirstName == AddParticipantRequest.ParticipantRequestFirstName).Should().BeTrue();
+            model.Exists(x => x.FirstName == AddParticipantRequest.User.FirstName).Should().BeTrue();
         }
 
         [Then(@"the participant should be removed")]
