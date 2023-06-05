@@ -6,11 +6,13 @@ namespace Testing.Common.Data
     {
         public TestUser(string firstName, string lastName)
         {
-            FirstName = TestUsers.FirstNamePrefix + firstName;
+            var fullFirstName = TestUsers.FirstNamePrefix + firstName;
+            
+            FirstName = fullFirstName;
             LastName = lastName;
-            ContactEmail = $"{firstName}_{lastName}@hmcts.net";
-            Username = $"{firstName}_{lastName}@hearings.reform.hmcts.net";
-            DisplayName = $"{firstName} {lastName}";
+            ContactEmail = $"{fullFirstName}_{lastName}@hmcts.net";
+            Username = $"{fullFirstName}_{lastName}@hearings.reform.hmcts.net";
+            DisplayName = $"{fullFirstName} {lastName}";
         }
     }
 }
