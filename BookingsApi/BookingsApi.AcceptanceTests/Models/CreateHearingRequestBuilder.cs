@@ -5,6 +5,7 @@ using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.Contract.Requests;
 using FizzWare.NBuilder;
 using Testing.Common.Configuration;
+using Testing.Common.Data;
 
 namespace BookingsApi.AcceptanceTests.Models
 {
@@ -21,50 +22,55 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.OrganisationName = TestUsers.Organisation1)
                 .Build().ToList();
 
+            var participant0 = new TestUser(TestUsers.ApplicantLitigant1.FirstName, TestUsers.ApplicantLitigant1.LastName);
             participants[0].CaseRoleName = "Applicant";
             participants[0].HearingRoleName = "Litigant in person";
             participants[0].Representee = null;
-            participants[0].FirstName = TestUsers.ApplicantLitigant1.FirstName;
-            participants[0].LastName = TestUsers.ApplicantLitigant1.LastName;
-            participants[0].ContactEmail = $"{participants[0].FirstName}_{participants[0].LastName}@hmcts.net";
-            participants[0].Username = $"{participants[0].FirstName}_{participants[0].LastName}@hearings.reform.hmcts.net";
-            participants[0].DisplayName = $"{participants[0].FirstName} {participants[0].LastName}";
+            participants[0].FirstName = participant0.FirstName;
+            participants[0].LastName = participant0.LastName;
+            participants[0].ContactEmail = participant0.ContactEmail;
+            participants[0].Username = participant0.Username;
+            participants[0].DisplayName = participant0.DisplayName;
 
+            var participant1 = new TestUser(TestUsers.ApplicantRepresentative1.FirstName, TestUsers.ApplicantRepresentative1.LastName);
             participants[1].CaseRoleName = "Applicant";
             participants[1].HearingRoleName = "Representative";
-            participants[1].Representee = participants[0].DisplayName;
-            participants[1].FirstName = TestUsers.ApplicantRepresentative1.FirstName;
-            participants[1].LastName = TestUsers.ApplicantRepresentative1.LastName;
-            participants[1].ContactEmail = $"{participants[1].FirstName}_{participants[1].LastName}@hmcts.net";
-            participants[1].Username = $"{participants[1].FirstName}_{participants[1].LastName}@hearings.reform.hmcts.net";
-            participants[1].DisplayName = $"{participants[1].FirstName} {participants[1].LastName}";
+            participants[1].Representee = participant0.DisplayName;
+            participants[1].FirstName = participant1.FirstName;
+            participants[1].LastName = participant1.LastName;
+            participants[1].ContactEmail = participant1.ContactEmail;
+            participants[1].Username = participant1.Username;
+            participants[1].DisplayName = participant1.DisplayName;
 
+            var participant2 = new TestUser(TestUsers.RespondentLitigant1.FirstName, TestUsers.RespondentLitigant1.LastName);
             participants[2].CaseRoleName = "Respondent";
             participants[2].HearingRoleName = "Litigant in person";
             participants[2].Representee = null;
-            participants[2].FirstName = TestUsers.RespondentLitigant1.FirstName;
-            participants[2].LastName = TestUsers.RespondentLitigant1.LastName;
-            participants[2].ContactEmail = $"{participants[2].FirstName}_{participants[2].LastName}@hmcts.net";
-            participants[2].Username = $"{participants[2].FirstName}_{participants[2].LastName}@hearings.reform.hmcts.net";
-            participants[2].DisplayName = $"{participants[2].FirstName} {participants[2].LastName}";
+            participants[2].FirstName = participant2.FirstName;
+            participants[2].LastName = participant2.LastName;
+            participants[2].ContactEmail = participant2.ContactEmail;
+            participants[2].Username = participant2.Username;
+            participants[2].DisplayName = participant2.DisplayName;
 
+            var participant3 = new TestUser(TestUsers.RespondentRepresentative1.FirstName, TestUsers.RespondentRepresentative1.LastName);
             participants[3].CaseRoleName = "Respondent";
             participants[3].HearingRoleName = "Representative";
-            participants[3].Representee = participants[2].DisplayName;
-            participants[3].FirstName = TestUsers.RespondentRepresentative1.FirstName;
-            participants[3].LastName = TestUsers.RespondentRepresentative1.LastName;
-            participants[3].ContactEmail = $"{participants[3].FirstName}_{participants[3].LastName}@hmcts.net";
-            participants[3].Username = $"{participants[3].FirstName}_{participants[3].LastName}@hearings.reform.hmcts.net";
-            participants[3].DisplayName = $"{participants[3].FirstName} {participants[3].LastName}";
+            participants[3].Representee = participant2.DisplayName;
+            participants[3].FirstName = participant3.FirstName;
+            participants[3].LastName = participant3.LastName;
+            participants[3].ContactEmail = participant3.ContactEmail;
+            participants[3].Username = participant3.Username;
+            participants[3].DisplayName = participant3.DisplayName;
 
+            var participant4 = new TestUser(TestUsers.Judge1.FirstName, TestUsers.Judge1.LastName);
             participants[4].CaseRoleName = "Judge";
             participants[4].HearingRoleName = "Judge";
             participants[4].Representee = null;
-            participants[4].FirstName = TestUsers.Judge1.FirstName;
-            participants[4].LastName = TestUsers.Judge1.LastName;
-            participants[4].ContactEmail = $"{participants[4].FirstName}_{participants[4].LastName}@hmcts.net";
-            participants[4].Username = $"{participants[4].FirstName}_{participants[4].LastName}@hearings.reform.hmcts.net";
-            participants[4].DisplayName = $"{participants[4].FirstName} {participants[4].LastName}";
+            participants[4].FirstName = participant4.FirstName;
+            participants[4].LastName = participant4.LastName;
+            participants[4].ContactEmail = participant4.ContactEmail;
+            participants[4].Username = participant4.Username;
+            participants[4].DisplayName = participant4.DisplayName;
 
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].IsLeadCase = false;
@@ -102,18 +108,17 @@ namespace BookingsApi.AcceptanceTests.Models
 
         public CreateHearingRequestBuilder WithParticipant(string caseRoleName, string hearingRoleName)
         {
-            var firstName = $"Automation_{caseRoleName}";
-            var lastName = $"{hearingRoleName}_1";
+            var user = new TestUser(caseRoleName, $"{hearingRoleName}_1");
             const string organisationName = TestUsers.Organisation1;
             
             var participant = Builder<ParticipantRequest>.CreateNew()
                 .With(x => x.Title = "Mrs")
-                .With(x => x.FirstName = firstName)
-                .With(x => x.LastName = lastName)
-                .With(x => x.ContactEmail = $"{firstName}_{lastName}@hmcts.net")
+                .With(x => x.FirstName = user.FirstName)
+                .With(x => x.LastName = user.LastName)
+                .With(x => x.ContactEmail = user.ContactEmail)
                 .With(x => x.TelephoneNumber = "01234567890")
-                .With(x => x.Username = $"{firstName}_{lastName}@hearings.reform.hmcts.net")
-                .With(x => x.DisplayName = $"{firstName}_{lastName}")
+                .With(x => x.Username = user.Username)
+                .With(x => x.DisplayName = user.DisplayName)
                 .With(x => x.CaseRoleName = caseRoleName)
                 .With(x => x.HearingRoleName = hearingRoleName)
                 .With(x => x.Representee = null)
