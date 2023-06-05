@@ -1,4 +1,5 @@
 using BookingsApi.Contract.Requests;
+
 namespace Testing.Common.Data
 {
     public class TestUser : ParticipantRequest
