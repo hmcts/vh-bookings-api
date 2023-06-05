@@ -252,7 +252,8 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.TestData.Hearing.Id = model.OrderByDescending(h => h.ScheduledDateTime).First().Id;
 
             var hearing = model.FirstOrDefault(h => h.Id == _context.TestData.Hearing.Id);
-            Debug.Assert(hearing != null, nameof(hearing) + " != null");
+            hearing.Should().NotBeNull();
+            if (hearing == null) return;
             
             hearing.CaseTypeName.Should().NotBeNullOrEmpty();
             foreach (var theCase in hearing.Cases)
