@@ -13,6 +13,7 @@ namespace BookingsApi.DAL.Mappings
             builder.HasMany<VhoNonAvailability>("VhoNonAvailability").WithOne("JusticeUser").HasForeignKey(x => x.JusticeUserId);
             builder.HasIndex(u => u.Username).IsUnique();
             builder.Property(u => u.Username).HasMaxLength(450);
+            builder.Property(u => u.UserRoleId).IsRequired(false).HasDefaultValue(null);
         }
     }
 }
