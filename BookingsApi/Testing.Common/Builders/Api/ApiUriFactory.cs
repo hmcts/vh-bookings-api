@@ -97,5 +97,12 @@ namespace Testing.Common.Builders.Api
             public static string RestoreJusticeUser => $"{ApiRoot}/restore";
             public static string EditJusticeUser => $"{ApiRoot}";
         }
+
+        public static class WorkAllocationEndpoints
+        {
+            private const string ApiRoot = "hearings";
+            
+            public static string GetUnallocatedHearings => $"{ApiRoot}/unallocated";
+        }
     }
 }

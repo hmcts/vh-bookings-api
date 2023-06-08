@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
 using BookingsApi.Contract.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Queries.Core;
 using Castle.Core.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -44,12 +46,12 @@ namespace BookingsApi.DAL.Queries
     public class GetAllocationHearingsBySearchQueryHandler : IQueryHandler<GetAllocationHearingsBySearchQuery, List<VideoHearing>>
     {
         private readonly BookingsDbContext _context;
-        private readonly bool _isTest;
+        private readonly bool _includeGenericHearingTypes;
 
-        public GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context, bool isTest = false)
+        public GetAllocationHearingsBySearchQueryHandler(BookingsDbContext context, IOptions<SettingsConfiguration> configuration)
         {
             _context = context;
-            _isTest = isTest;
+            _includeGenericHearingTypes = configuration.Value.AllowGenericHearingTypes;
         }
         
         public async Task<List<VideoHearing>> Handle(GetAllocationHearingsBySearchQuery query)
@@ -65,7 +67,7 @@ namespace BookingsApi.DAL.Queries
                          && HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != x.HearingVenueName))
                 .AsQueryable();
             
-            if (!_isTest)
+            if (!_includeGenericHearingTypes)
                 hearings = hearings.Where(h1 => h1.CaseTypeId != 3); //exclude generic type test cases from prod
             
             if (query.IsUnallocated)
