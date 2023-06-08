@@ -11,7 +11,7 @@ public class ApiTest
 {
     protected VhApiWebApplicationFactory Application = null!;
     protected DbContextOptions<BookingsDbContext> BookingsDbContextOptions { get; set; }
-    protected TestDataManager Hooks { get; private set; }
+    protected TestDataManager TestDataManager { get; private set; }
     private IConfigurationRoot _configRoot;
     private string _databaseConnectionString;
 
@@ -35,7 +35,7 @@ public class ApiTest
         TestContext.WriteLine($"Connection string: {_databaseConnectionString}");
         dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
         BookingsDbContextOptions = dbContextOptionsBuilder.Options;
-        Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
+        TestDataManager = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");
 
         var context = new BookingsDbContext(BookingsDbContextOptions);
         context.Database.Migrate();

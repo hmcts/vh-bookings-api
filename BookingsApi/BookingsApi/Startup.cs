@@ -74,6 +74,7 @@ namespace BookingsApi
         private void RegisterSettings(IServiceCollection services)
         {
             SettingsConfiguration = Configuration.Get<SettingsConfiguration>();
+            services.Configure<SettingsConfiguration>(Configuration);
             services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd", options));
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));

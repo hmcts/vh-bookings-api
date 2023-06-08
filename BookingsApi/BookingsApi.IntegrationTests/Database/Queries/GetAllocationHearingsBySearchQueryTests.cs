@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using NuGet.Packaging;
 using NUnit.Framework;
 using DayOfWeek = System.DayOfWeek;
@@ -31,7 +33,9 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Setup()
     {
         _context = new BookingsDbContext(BookingsDbContextOptions);
-        _handler = new GetAllocationHearingsBySearchQueryHandler(_context, isTest: true);
+
+        _handler = new GetAllocationHearingsBySearchQueryHandler(_context,
+            Options.Create(new SettingsConfiguration {AllowGenericHearingTypes = true}));
         _seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created, configureOptions: options =>
         {
             options.CaseTypeName = TestCaseType;
@@ -246,7 +250,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         await _context.SaveChangesAsync();
         
-        justiceUser = _context.JusticeUsers.FirstOrDefault(x => x.Id == justiceUser.Id);
+        justiceUser = _context.JusticeUsers.First(x => x.Id == justiceUser.Id);
         
         justiceUser.Delete();
         
