@@ -50,9 +50,20 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         {
             options.ScheduledDate = _testDate1;
         });
-       
-       
+    }
 
+    [Test]
+    public async Task Should_ignore_generic_case_type_app_setting_set_to_ignore_generic_hearings()
+    {
+        _handler = new GetAllocationHearingsBySearchQueryHandler(_context,
+            Options.Create(new SettingsConfiguration {AllowGenericHearingTypes = false}));
+        
+        //ACT
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery());
+        //ASSERT
+        hearings.Count.Should().Be(2);
+        foreach (var hearing in hearings)
+            hearing.CaseType.Name.Should().Be(TestCaseType);
     }
     
     [Test]
@@ -129,11 +140,13 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(isUnallocated:true));
 
         //ASSERT
-        hearings.Count.Should().Be(2);
         hearings.Should().Contain(e =>
-            e.HearingCases.First().Case.Number == _seededHearing1.HearingCases.First().Case.Number);
+            e.GetCases().First().Number == _seededHearing1.GetCases().First().Number);
         hearings.Should().Contain(e => 
-            e.HearingCases.First().Case.Number == _seededHearing3.HearingCases.First().Case.Number);
+            e.GetCases().First().Number == _seededHearing3.GetCases().First().Number);
+        
+        hearings.Should().NotContain(e =>
+            e.GetCases().First().Number == _seededHearing2.GetCases().First().Number);
     }
     
     [Test]
