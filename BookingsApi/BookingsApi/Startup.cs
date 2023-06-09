@@ -68,7 +68,8 @@ namespace BookingsApi
             services.AddCors();
 
             services.AddDbContextPool<BookingsDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("VhBookings")));
+                options.UseSqlServer(Configuration.GetConnectionString("VhBookings"),
+                    builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(5), null)));
         }
 
         private void RegisterSettings(IServiceCollection services)
