@@ -4,4 +4,4 @@ java:
   ingressHost: ${SERVICE_FQDN}
   releaseNameOverride: ${RELEASE_NAME}
 environment:
-  SERVICEBUSQUEUE__QUEUENAME: booking-will-with-retries
+  SERVICEBUSQUEUE__QUEUENAME: booking-will
