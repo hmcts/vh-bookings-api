@@ -16,6 +16,19 @@ public static class HearingScottishVenueNames
     public const string InvernessJusticeCentre = "Inverness Justice Centre";
     public const string EdinburghSocialSecurityAndChildSupportTribunal = "Edinburgh Social Security and Child Support Tribunal";
     public const string EdinburghUpperTribunal = "Edinburgh Upper Tribunal (Administrative Appeals Chamber)";
+    
+    public const string Campbeltown = "Campbeltown";
+    public const string Galashiels = "Galashiels";
+    public const string AtlanticQuayGlasgow = "Atlantic Quay Glasgow";
+    public const string Greenock = "Greenock";
+    public const string HamiltonSocialSecurityAndChildSupportTribunal = "Hamilton Social Security and Child Support Tribunal";
+    public const string InvernessSocialSecurityAndChildSupportTribunal = "Inverness Social Security and Child Support Tribunal";
+    public const string Kilmarnock = "Kilmarnock";
+    public const string Kirkcaldy = "Kirkcaldy";
+    public const string Kirkwall = "Kirkwall";
+    public const string Lerwick = "Lerwick";
+    public const string Oban = "Oban";
+    public const string Stranraer = "Stranraer";
 
     public static readonly IReadOnlyCollection<string> ScottishHearingVenuesList = new List<string> {
         Aberdeen,
@@ -30,6 +43,18 @@ public static class HearingScottishVenueNames
         InvernessJusticeCentre,
         EdinburghSocialSecurityAndChildSupportTribunal,
         EdinburghUpperTribunal,
+        Campbeltown,
+        Galashiels, 
+        AtlanticQuayGlasgow,
+        Greenock,
+        HamiltonSocialSecurityAndChildSupportTribunal,
+        InvernessSocialSecurityAndChildSupportTribunal,
+        Kilmarnock, 
+        Kirkcaldy,
+        Kirkwall, 
+        Lerwick,
+        Oban,
+        Stranraer,
     };
 }
 
