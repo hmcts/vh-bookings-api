@@ -25,7 +25,7 @@ namespace BookingsApi.DAL.Migrations
                 { 393, "999974", "Berwick" },
                 { 394, "430480", "Birmingham Cown Court Annexe (4 Newton Street)" },
                 { 395, "589324", "Birmingham Masshouse Lane" },
-                { 396, "815833", "54 HAGLEY ROAD (BIRMINGHAM OFFICES)" },
+                { 396, "815833", "54 Hagley Road (Birmingham Offices)" },
                 { 397, "107017", "Blackburn Social Security and Child Support Tribunal" },
                 { 398, "196222", "Blackpool Social Security and Child Support Tribunal" },
                 { 399, "632407", "Southampton Western Range/Barrack Block" },
