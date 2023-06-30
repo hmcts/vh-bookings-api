@@ -34,28 +34,20 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Request =
                 _context.Get(GetPersonByContactEmail(_context.TestData.ParticipantsResponses[0].ContactEmail));
         }
-        
-        [Given(@"I have a search for hearings by username for removal request")]
-        public void GivenIHaveASearchForHearingsByUsernameForRemovalRequest()
-        {
-            var participant = _context.TestData.ParticipantsResponses.First(x => x.UserRoleName.ToLower() != "judge");
-            _context.Request =
-                _context.Get(GetHearingsByUsernameForDeletion(participant.Username));
-        }
 
         [Then(@"a person should be retrieved")]
         public void ThenAPersonShouldBeRetrieved()
         {
             var model = RequestHelper.Deserialise<PersonResponse>(_context.Response.Content);
             model.Should().NotBeNull();
-            model.ContactEmail.Should().Be(_context.TestData.ParticipantsResponses[0].ContactEmail);
+            model.ContactEmail.Should().BeEquivalentTo(_context.TestData.ParticipantsResponses[0].ContactEmail);
             model.FirstName.Should().Be(_context.TestData.ParticipantsResponses[0].FirstName);
             model.Id.Should().NotBeEmpty();
             model.LastName.Should().Be(_context.TestData.ParticipantsResponses[0].LastName);
             model.MiddleNames.Should().Be(_context.TestData.ParticipantsResponses[0].MiddleNames);
             model.TelephoneNumber.Should().Be(_context.TestData.ParticipantsResponses[0].TelephoneNumber);
             model.Title.Should().Be(_context.TestData.ParticipantsResponses[0].Title);
-            model.Username.Should().Be(_context.TestData.ParticipantsResponses[0].Username);
+            model.Username.Should().BeEquivalentTo(_context.TestData.ParticipantsResponses[0].Username);
         }
 
         [Given(@"I have a get a person by search term request with a valid search term")]

@@ -4,6 +4,7 @@ using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230524132910_Added_UpperLandsChamber_Interpreter")]
+    partial class Added_UpperLandsChamber_Interpreter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,9 +265,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EpimsCode")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
@@ -273,8 +272,6 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Name");
-
-                    b.HasIndex("EpimsCode");
 
                     b.ToTable("HearingVenue", (string)null);
                 });
@@ -456,9 +453,6 @@ namespace BookingsApi.DAL.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("UserRoleId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .HasMaxLength(450)

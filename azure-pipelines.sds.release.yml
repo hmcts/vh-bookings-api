@@ -42,11 +42,8 @@ stages:
     steps:
     - template: templates\dotnet\publish-acceptance-tests.yml@azTemplates
       parameters:
-        netVersion: 6.x
+        vstsFeedId: "${{ variables.nuget_org_name }}/${{ variables.nuget_feed_name }}"
         coreProjectPath: $(projectPath)
-        nugetProjectPath: $(projectPath)
-        nugetConfigPath: ${{ variables.appName }}
-        useNugetConfig: true
 
 #####################################################
 # Run Entity Framework Staging. #####################
@@ -111,7 +108,7 @@ stages:
     - checkout: self
 
     - bash: |
-        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
       displayName: Add NuGet Feed Authentication
       workingDirectory: ${{ variables.appName }}
   
@@ -290,7 +287,7 @@ stages:
     - checkout: self
 
     - bash: |
-        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.sds.config
+        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
       displayName: Add NuGet Feed Authentication
       workingDirectory: ${{ variables.appName }}
   

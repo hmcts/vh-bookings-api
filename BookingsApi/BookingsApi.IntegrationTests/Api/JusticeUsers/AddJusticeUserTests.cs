@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Helper;
@@ -99,13 +101,13 @@ namespace BookingsApi.IntegrationTests.Api.JusticeUsers
                 await db.SaveChangesAsync();
             }
         }
-        
         private static AddJusticeUserRequest BuildValidAddJusticeUserRequest()
         {
             return Builder<AddJusticeUserRequest>.CreateNew()
                 .With(x=> x.Username, "api_test_add_justice_user_valid@test.com")
                 .With(x=> x.ContactEmail, Faker.Internet.Email())
                 .With(x=>x.ContactTelephone, "01234567890")
+                .With(x=>x.Roles, new List<JusticeUserRole>() { JusticeUserRole.Vho })
                 .Build();
         }
     }

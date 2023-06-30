@@ -16,6 +16,7 @@ public class AddJusticeUserRequestValidation : AbstractValidator<AddJusticeUserR
     public static readonly string NoCreatedByErrorMessage = "CreatedBy is required";
     public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
     public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
+    public static readonly string NoRoleErrorMessage = "Please select a role";
 
     public AddJusticeUserRequestValidation()
     {
@@ -31,6 +32,7 @@ public class AddJusticeUserRequestValidation : AbstractValidator<AddJusticeUserR
 
         RuleFor(x => x.ContactTelephone).Must((_, telephoneNumber) => IsPhone(telephoneNumber))
             .When(x => !string.IsNullOrWhiteSpace(x.ContactTelephone));
+        RuleFor(x => x.Roles).NotEmpty().WithMessage(NoRoleErrorMessage);
         RuleForEach(x => x.Roles).IsInEnum();
     }
 
