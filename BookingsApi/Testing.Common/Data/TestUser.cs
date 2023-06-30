@@ -10,8 +10,8 @@ namespace Testing.Common.Data
             
             FirstName = fullFirstName;
             LastName = lastName;
-            ContactEmail = $"{fullFirstName}_{lastName}@hmcts.net";
-            Username = $"{fullFirstName}_{lastName}@hearings.reform.hmcts.net";
+            ContactEmail = $"{fullFirstName}_{lastName}@hmcts.net".ToLower();
+            Username = $"{fullFirstName}_{lastName}@hearings.reform.hmcts.net".ToLower();
             DisplayName = $"{fullFirstName} {lastName}";
         }
     }

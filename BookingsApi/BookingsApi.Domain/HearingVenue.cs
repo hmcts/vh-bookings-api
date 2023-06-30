@@ -16,6 +16,7 @@ namespace BookingsApi.Domain
         }
 
         public string Name { get; }
+        public string EpimsCode { get; }
 
         private void ValidateArguments(int id, string name)
         {

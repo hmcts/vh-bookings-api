@@ -11,6 +11,7 @@ namespace BookingsApi.DAL.Mappings
             builder.ToTable(nameof(HearingVenue));
             builder.Property(x => x.Id);
             builder.HasKey(x => x.Name);
+            builder.HasIndex(x => x.EpimsCode);
         }
     }
 }
