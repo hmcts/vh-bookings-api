@@ -101,6 +101,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             expected.Should().BeEquivalentTo(actual, o =>
             {
+                o.Using<string>(ctx => ctx.Subject.Should().BeEquivalentTo(ctx.Expectation)).WhenTypeIs<string>();
                 o.ExcludingMissingMembers().Excluding(x => x.Username);
                 return o;
             });
