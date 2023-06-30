@@ -17,6 +17,7 @@ public static class HearingScottishVenueNames
     public const string EdinburghSocialSecurityAndChildSupportTribunal = "Edinburgh Social Security and Child Support Tribunal";
     public const string EdinburghUpperTribunal = "Edinburgh Upper Tribunal (Administrative Appeals Chamber)";
     
+    public const string Benbecula = "Benbecula";
     public const string Campbeltown = "Campbeltown";
     public const string Galashiels = "Galashiels";
     public const string AtlanticQuayGlasgow = "Atlantic Quay Glasgow";
@@ -43,6 +44,7 @@ public static class HearingScottishVenueNames
         InvernessJusticeCentre,
         EdinburghSocialSecurityAndChildSupportTribunal,
         EdinburghUpperTribunal,
+        Benbecula,
         Campbeltown,
         Galashiels, 
         AtlanticQuayGlasgow,
