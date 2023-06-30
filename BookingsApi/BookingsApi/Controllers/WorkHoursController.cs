@@ -144,6 +144,8 @@ namespace BookingsApi.Controllers
         [HttpPatch("/NonAvailability/VHO/{username}")]
         [OpenApiOperation("UpdateVhoNonAvailabilityHours")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
@@ -169,7 +171,8 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
             
-            var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, existingHours);
+            var nonDeletedHours = existingHours.Where(x => !x.Deleted).ToList();
+            var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, nonDeletedHours);
             if (!hourValidationResult.IsValid)
             {
                 if (hourValidationResult.Errors.Any(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))
