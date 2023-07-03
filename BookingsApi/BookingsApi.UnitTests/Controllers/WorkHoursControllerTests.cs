@@ -254,6 +254,12 @@ namespace BookingsApi.UnitTests.Controllers
                     {
                         StartTime = new DateTime(2022, 1, 1, 8, 0, 0, DateTimeKind.Utc), 
                         EndTime = new DateTime(2022, 1, 2, 11, 0, 0, DateTimeKind.Utc)
+                    },
+                    new(2)
+                    { 
+                        StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), 
+                        EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc),
+                        Deleted = true
                     }
                 });
             
