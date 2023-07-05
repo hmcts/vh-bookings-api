@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BookingsApi.Contract.Helper;
 
-[Obsolete("Do not use as it will be replaced by an extra column IsWorkAllocationEnabled in the HearingVenue", false)]
+[Obsolete("Do not use as it will be replaced by an extra column IsWorkAllocationEnabled in the HearingVenue and feature flag Reference Data is ON", false)]
 public static class HearingAllocationExcludedVenueList
 {
     public static readonly IReadOnlyList<string> ExcludedHearingVenueNames = new List<string> (HearingScottishVenueNames.ScottishHearingVenuesList)
