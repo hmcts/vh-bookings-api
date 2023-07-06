@@ -18,7 +18,7 @@ namespace BookingsApi.Domain
         }
 
         public string Name { get; }
-        public string EpimsCode { get; }
+        public string VenueCode { get; }
         public bool IsScottish { get; }
         public bool IsWorkAllocationEnabled { get; }
 
