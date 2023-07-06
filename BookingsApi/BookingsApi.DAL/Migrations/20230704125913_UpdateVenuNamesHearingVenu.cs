@@ -60,6 +60,8 @@ namespace BookingsApi.DAL.Migrations
             { "Worcester Justice Centre",new Tuple<string, string>("Worcester Magistrates Court", "703200") },
             { "Worthing County Court and Family Court",new Tuple<string, string>("Worthing Magistrates and County Court", "493880") },
             { "Wrexham County and Family Court",new Tuple<string, string>("Wrexham Law Courts", "637145") },
+            { "Hereford Magistrates Court",new Tuple<string, string>("Hereford Justice Centre", "228883") },
+            { "King's Lynn Crown Court",new Tuple<string, string>("KINGS LYNN CROWN COURT (& Magistrates)", "671879") },
             
         };
         protected override void Up(MigrationBuilder migrationBuilder)
