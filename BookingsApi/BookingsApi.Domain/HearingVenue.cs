@@ -17,6 +17,10 @@ namespace BookingsApi.Domain
 
         public string Name { get; }
         public string EpimsCode { get; }
+        
+        public bool IsScottish { get; }
+        
+        public bool IsWorkAllocationEnabled { get; }
 
         private void ValidateArguments(int id, string name)
         {

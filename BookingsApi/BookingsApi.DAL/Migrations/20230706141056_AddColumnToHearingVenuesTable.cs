@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -9,14 +10,14 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<bool>(
                 name: "IsScottish",
                 table: nameof(HearingVenue),
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
             
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<bool>(
                 name: "IsWorkAllocationEnabled",
                 table: nameof(HearingVenue),
                 type: "bit",
