@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace BookingsApi.Contract.Helper;
@@ -17,6 +18,7 @@ public static class HearingScottishVenueNames
     public const string EdinburghSocialSecurityAndChildSupportTribunal = "Edinburgh Social Security and Child Support Tribunal";
     public const string EdinburghUpperTribunal = "Edinburgh Upper Tribunal (Administrative Appeals Chamber)";
 
+    [Obsolete("Use the IsScottish property on the HearingVenue object instead of this list")]
     public static readonly IReadOnlyCollection<string> ScottishHearingVenuesList = new List<string> {
         Aberdeen,
         Ayr,

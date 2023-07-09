@@ -62,7 +62,7 @@ namespace BookingsApi.DAL.Queries
                 .Where(x 
                     => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
                          && x.Status != BookingStatus.Cancelled
-                         && HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != x.HearingVenueName))
+                         && x.HearingVenue.IsWorkAllocationEnabled)
                 .AsQueryable();
             
             if (!_isTest)
