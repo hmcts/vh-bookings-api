@@ -217,8 +217,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
-        [Given(@"I have a (.*) get hearings by username request")]
-        [Given(@"I have an (.*) get hearings by username request")]
         [Given(@"I have a (.*) get confirmed hearings by username for today request")]
         public async Task GivenIHaveAGetConfirmedHearingByUsernameForTodayRequest(Scenario scenario)
         {
