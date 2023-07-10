@@ -306,13 +306,13 @@ namespace BookingsApi.Controllers
             }
         }
 
-        [HttpPatch]
-        [OpenApiOperation("RetryHearing")]
-        public async Task<IActionResult> RetryHearing(Guid hearingId)
+        [HttpPost("{hearingId}/conferences")]
+        [OpenApiOperation("RebookHearing")]
+        public async Task<IActionResult> RebookHearing([FromRoute] Guid hearingId, 
+            [FromBody] RebookHearingRequest request)
         {
             var queriedVideoHearing = await GetHearingAsync(hearingId); // TODO 404 if not found
-            var isMultiDayHearing = false; // TODO how to pass this in?
-            await PublishEventForNewBooking(queriedVideoHearing, isMultiDayHearing);
+            await PublishEventForNewBooking(queriedVideoHearing, request.IsMultiDayHearing);
 
             return Ok();
         }
