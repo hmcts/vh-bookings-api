@@ -355,7 +355,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return videoHearing;
         }
 
-        public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing)
+        public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing, BookingStatus status = BookingStatus.Booked)
         {
             var dbContext = new BookingsDbContext(_dbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(dbContext)
@@ -376,6 +376,12 @@ namespace BookingsApi.IntegrationTests.Helper
             foreach (var command in commands)
             {
                 await new CreateVideoHearingCommandHandler(dbContext, new HearingService(dbContext)).Handle(command);
+                var h = dbContext.VideoHearings.FirstOrDefault(x => x.Id == command.NewHearingId);
+                if (status != BookingStatus.Booked)
+                {
+                    h.UpdateStatus(status, "test", "test");
+                    dbContext.SaveChanges();
+                }
             }
         }
 

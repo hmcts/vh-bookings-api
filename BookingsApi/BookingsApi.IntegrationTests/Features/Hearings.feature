@@ -95,6 +95,12 @@ Feature: Hearings
     Then the response should have the status OK and success status True
     And a list of hearing details should be retrieved
 
+  Scenario: Get confirmed hearings by a username for today
+    Given I have a valid get confirmed hearings by username for today request
+    When I send the request to the endpoint
+    Then the response should have the status OK and success status True
+    And a list of hearing details should be retrieved
+
   Scenario: Hearing not retrieved with a nonexistent username
     Given I have a nonexistent get hearings by username request
     When I send the request to the endpoint

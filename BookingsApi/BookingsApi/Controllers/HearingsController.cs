@@ -116,6 +116,23 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
+        /// Get list of all confirmed hearings for a given username for today
+        /// </summary>
+        /// <param name="username">username of person to search against</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet("today", Name = "GetConfirmedHearingsByUsernameForToday")]
+        [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
+        {
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Anonymise participant and case from expired hearing
         /// </summary>
         /// <param name="hearingIds">hearing ids to anonymise data with</param>
