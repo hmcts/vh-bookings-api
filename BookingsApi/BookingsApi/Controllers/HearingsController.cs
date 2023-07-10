@@ -306,6 +306,17 @@ namespace BookingsApi.Controllers
             }
         }
 
+        [HttpPatch]
+        [OpenApiOperation("RetryHearing")]
+        public async Task<IActionResult> RetryHearing(Guid hearingId)
+        {
+            var queriedVideoHearing = await GetHearingAsync(hearingId); // TODO 404 if not found
+            var isMultiDayHearing = false; // TODO how to pass this in?
+            await PublishEventForNewBooking(queriedVideoHearing, isMultiDayHearing);
+
+            return Ok();
+        }
+
         private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
