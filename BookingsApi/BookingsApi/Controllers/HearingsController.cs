@@ -553,6 +553,54 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Cancels the booking
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <param name="request">Cancel reason</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}/cancel")]
+        [OpenApiOperation("CancelBooking")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Conflict)]
+        public async Task<IActionResult> CancelBooking(Guid hearingId, CancelBookingRequest request)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return BadRequest(ModelState);
+            }
+
+            var result = new CancelBookingRequestValidation().Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return BadRequest(ModelState);
+            }
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            if (videoHearing == null)
+            {
+                return NotFound($"{hearingId} does not exist");
+            }
+
+            try
+            {
+                await UpdateStatus(hearingId, request.UpdatedBy, request.CancelReason, BookingStatus.Cancelled);
+                return NoContent();
+            }
+            catch (HearingNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (DomainRuleException exception)
+            {
+                exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
+                return Conflict(ModelState);
+            }
+        }
+
         private async Task UpdateStatus(Guid hearingId, string updatedBy, string cancelReason, BookingStatus bookingStatus)
         {
             await UpdateHearingStatusAsync(hearingId, bookingStatus, updatedBy, cancelReason);
@@ -560,7 +608,7 @@ namespace BookingsApi.Controllers
             switch (bookingStatus)
             {
                 case BookingStatus.Cancelled:
-                    await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                        await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
                     break;
             }
         }

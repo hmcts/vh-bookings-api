@@ -325,8 +325,8 @@ namespace BookingsApi.IntegrationTests.Steps
         public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
         {
             await SeedHearingForScenarioAsync(scenario);
-
-            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
+            CancelBooking();
+            //UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
         }
 
         [Given(@"I have a (.*) hearing failed confirmation request")]
@@ -687,6 +687,18 @@ namespace BookingsApi.IntegrationTests.Steps
             });
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);
+            Context.HttpMethod = HttpMethod.Patch;
+        }
+
+        private void CancelBooking(string updatedBy = "testuser")
+        {
+            var jsonBody = RequestHelper.Serialise(new CancelBookingRequest
+            {
+                UpdatedBy = updatedBy,
+                CancelReason = "cancelled due to covid-19"
+            });
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.Uri = CancelBookingUri(_hearingId);
             Context.HttpMethod = HttpMethod.Patch;
         }
 
