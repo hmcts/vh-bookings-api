@@ -47,36 +47,6 @@ namespace BookingsApi.DAL.Migrations
                 column: nameof(HearingVenue.IsScottish),
                 values: new object[]
                     {true, true, true, true, true, true, true, true, true, true, true, true});
-
-
-            // migrationBuilder.UpdateData(
-            //         table: nameof(HearingVenue), 
-            //         keyColumn:nameof(HearingVenue.Id), 
-            //         keyValues:[23, 337, 338],
-            //         column: nameof(HearingVenue.IsWorkAllocationEnabled),
-            //             values: new object[] { false, false, false });
-
-
-
-            // non work allocation
-            //{ 338, "Teesside Combined Court Centre" },
-            // { 337, "Teesside Magistrates Court" },
-            // {23, "Middlesbrough County Court"}
-
-            // non work allocation and is scottish
-            // new  {15, "Aberdeen Tribunal Hearing Centre"},
-            //      {16, "Dundee Tribunal Hearing Centre"},
-            //      {17, "Edinburgh Employment Tribunal"},
-            //      {18, "Glasgow Tribunals Centre"},
-            //      {19, "Inverness Employment Tribunal"},
-            //      {21, "Ayr"},
-            //      {49, "Edinburgh Employment Appeal Tribunal" },
-            //      {50, "Inverness Justice Centre" },
-            //      {51, "Edinburgh Social Security and Child Support Tribunal" },
-            //      {52, "Edinburgh Upper Tribunal (Administrative Appeals Chamber)" },
-            //      {30, "Hamilton Brandon Gate"},
-            //      {31, "Stirling Wallace House"}
-
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
