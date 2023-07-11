@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BookingsApi.Contract.Helper;
 
+[SuppressMessage("Info Code Smell", "S1133:Deprecated code should be removed")]
 public static class HearingScottishVenueNames
 {
     public const string Aberdeen = "Aberdeen Tribunal Hearing Centre";
