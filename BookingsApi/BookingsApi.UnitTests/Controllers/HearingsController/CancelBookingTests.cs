@@ -58,10 +58,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.CancelBooking(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
-                $"Please provide a valid {nameof(hearingId)}");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).Errors.ContainsKey(nameof(hearingId)).Should().BeTrue();
         }
 
         [Test]
