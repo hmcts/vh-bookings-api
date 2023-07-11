@@ -30,6 +30,7 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BookingsApi.Controllers
 {
@@ -128,6 +129,10 @@ namespace BookingsApi.Controllers
         {
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
             var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            if (!hearings.Any())
+            {
+                return NotFound();
+            }
             var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
@@ -587,29 +592,25 @@ namespace BookingsApi.Controllers
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = new CancelBookingRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             if (videoHearing == null)
             {
-                return NotFound($"{hearingId} does not exist");
+                return NotFound();
             }
 
             try
             {
                 await UpdateStatus(hearingId, request.UpdatedBy, request.CancelReason, BookingStatus.Cancelled);
                 return NoContent();
-            }
-            catch (HearingNotFoundException)
-            {
-                return NotFound();
             }
             catch (DomainRuleException exception)
             {

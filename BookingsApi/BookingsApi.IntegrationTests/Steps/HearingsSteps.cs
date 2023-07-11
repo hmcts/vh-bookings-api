@@ -217,26 +217,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Get;
         }
 
-        [Given(@"I have a (.*) get confirmed hearings by username for today request")]
-        public async Task GivenIHaveAGetConfirmedHearingByUsernameForTodayRequest(Scenario scenario)
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(status: BookingStatus.Created,configureOptions: options =>
-            {
-                options.ScheduledDate = DateTime.UtcNow;
-            });
-            Context.TestData.NewHearingId = seededHearing.Id;
-            _hearingId = seededHearing.Id;
-            var username = scenario switch
-            {
-                Scenario.Valid => seededHearing.GetParticipants().First().Person.Username,
-                Scenario.Nonexistent => "madeupusername@hmcts.net",
-                _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null)
-            };
-
-            Context.Uri = GetConfirmedHearingsByUsernameForToday(username);
-            Context.HttpMethod = HttpMethod.Get;
-        }
-
         [Given(@"I have a request to the get booked hearings endpoint")]
         public async Task GivenIHaveARequestToTheGetBookedHearingsEndpoint()
         {

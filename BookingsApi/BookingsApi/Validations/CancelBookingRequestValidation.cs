@@ -9,9 +9,8 @@ namespace BookingsApi.Validations
     {
         public CancelBookingRequestValidation()
         {
-            var updatedByIsRequired = "UpdatedBy is required";
-            RuleFor(x => x.UpdatedBy).NotEmpty().WithMessage(updatedByIsRequired);
-            RuleFor(x => x.CancelReason).NotEmpty().WithMessage("Cancel reason is required when a hearing is cancelled");
+            RuleFor(x => x.UpdatedBy).NotEmpty().WithMessage("UpdatedBy is required");
+            RuleFor(x => x.CancelReason).NotEmpty().WithMessage("Cancel reason is required");
         }
     }
 }

@@ -252,9 +252,9 @@ namespace BookingsApi.IntegrationTests.Helper
                     new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", dA),
                 });
 
-            if (status == BookingStatus.Created)
+            if (status != BookingStatus.Booked)
             {
-                videoHearing.UpdateStatus(BookingStatus.Created, createdBy, null);
+                videoHearing.UpdateStatus(status, createdBy, "test");
             }
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
