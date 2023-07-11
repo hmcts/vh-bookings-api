@@ -110,6 +110,29 @@ public class WorkAllocationTests : ApiTest
         results.Should().Contain(e => e.HearingId == validHearing);
     }
 
+    
+    [Test]
+    public async Task should_call_getAllocationByHearingVenue_and_return_valid_hearing()
+    {
+        // arrange
+        var hearingSchedule = DateTime.Today.AddHours(3);
+        var caseName = "Bookings Api AC Automated";
+        var bookNewHearingRequest = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
+        var validHearing = BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest).Result.Id;
+        await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
+        {
+            Hearings = new List<Guid> {validHearing},
+            CsoId = _cso.Id
+        });
+        var apiParameters = new List<string> { bookNewHearingRequest.HearingVenueName };
+        // act
+        var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(apiParameters);
+        
+        // assert
+        results.Should().Contain(e => e.Cso.Id == _cso.Id);
+    }
+
+    
     private void AssertHearingAllocationResponse(HearingAllocationsResponse hearing, BookNewHearingRequest bookNewHearingRequest)
     {
         hearing.HearingId.Should().Be(_hearing.Id);

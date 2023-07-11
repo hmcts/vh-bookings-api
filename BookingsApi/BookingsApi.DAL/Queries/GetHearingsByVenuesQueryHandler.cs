@@ -30,6 +30,10 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<VideoHearing>> Handle(GetHearingsForTodayByVenuesQuery query)
         {
             var hearings = _context.VideoHearings
+                .Include(h => h.Allocations)
+                    .ThenInclude(a => a.JusticeUser)
+                    .ThenInclude(ju => ju.JusticeUserRoles)
+                    .ThenInclude(jur => jur.UserRole)
                 .Where(x => x.ScheduledDateTime.Date == DateTime.Today);
 
             if (!query.HearingVenueNames.IsNullOrEmpty())
