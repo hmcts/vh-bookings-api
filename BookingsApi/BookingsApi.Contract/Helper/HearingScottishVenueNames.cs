@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BookingsApi.Contract.Helper;
 
-[Obsolete("Do not use as it will be replaced by an extra column IsScottish in the HearingVenue and feature flag Reference Data is ON", false)]
+[SuppressMessage("Info Code Smell", "S1133:Deprecated code should be removed")]
 public static class HearingScottishVenueNames
 {
     public const string Aberdeen = "Aberdeen Tribunal Hearing Centre";
@@ -33,6 +34,7 @@ public static class HearingScottishVenueNames
     public const string Oban = "Oban";
     public const string Stranraer = "Stranraer";
 
+    [Obsolete("Use the IsScottish property on the HearingVenue object instead of this list")]
     public static readonly IReadOnlyCollection<string> ScottishHearingVenuesList = new List<string> {
         Aberdeen,
         Ayr,
