@@ -376,10 +376,12 @@ namespace BookingsApi.IntegrationTests.Helper
             foreach (var command in commands)
             {
                 await new CreateVideoHearingCommandHandler(dbContext, new HearingService(dbContext)).Handle(command);
-                var h = dbContext.VideoHearings.FirstOrDefault(x => x.Id == command.NewHearingId);
-                if (status != BookingStatus.Booked)
+                var retuendHearing = dbContext.VideoHearings.FirstOrDefault(x => x.Id == command.NewHearingId);
+                if (status != BookingStatus.Booked) 
+                // By default, hearings is set with booked status, it is transitioned into created status when queue subscriber updates it
+                // Need to update the status to set a required status to test different scenarios.
                 {
-                    h.UpdateStatus(status, "test", "test");
+                    retuendHearing.UpdateStatus(status, "test", "test");
                     dbContext.SaveChanges();
                 }
             }

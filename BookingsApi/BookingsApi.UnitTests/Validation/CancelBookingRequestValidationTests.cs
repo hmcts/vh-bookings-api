@@ -40,7 +40,7 @@ namespace BookingsApi.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == "Cancel reason is required")
+            result.Errors.Any(x => x.ErrorMessage == CancelBookingRequestValidation.CancelReasonMessage)
                 .Should().BeTrue();
         }
         
@@ -53,7 +53,7 @@ namespace BookingsApi.UnitTests.Validation
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == "UpdatedBy is required")
+            result.Errors.Any(x => x.ErrorMessage == CancelBookingRequestValidation.UpdatedByMessage)
                 .Should().BeTrue();
         }
     }

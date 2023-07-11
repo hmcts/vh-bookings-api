@@ -326,7 +326,6 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             await SeedHearingForScenarioAsync(scenario);
             CancelBooking();
-            //UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
         }
 
         [Given(@"I have a (.*) hearing failed confirmation request")]
