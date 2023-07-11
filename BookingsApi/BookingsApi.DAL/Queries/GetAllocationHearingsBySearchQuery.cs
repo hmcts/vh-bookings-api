@@ -55,6 +55,7 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<VideoHearing>> Handle(GetAllocationHearingsBySearchQuery query)
         {
             var hearings =  _context.VideoHearings
+                .Include(h => h.HearingVenue)
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
@@ -63,6 +64,7 @@ namespace BookingsApi.DAL.Queries
                     => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
                          && x.Status != BookingStatus.Cancelled
                          && x.HearingVenue.IsWorkAllocationEnabled)
+                .AsSplitQuery()
                 .AsQueryable();
             
             if (!_isTest)
