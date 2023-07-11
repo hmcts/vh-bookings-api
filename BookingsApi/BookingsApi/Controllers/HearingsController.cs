@@ -308,6 +308,9 @@ namespace BookingsApi.Controllers
 
         [HttpPost("{hearingId}/conferences")]
         [OpenApiOperation("RebookHearing")]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RebookHearing([FromRoute] Guid hearingId, 
             [FromBody] RebookHearingRequest request)
         {
