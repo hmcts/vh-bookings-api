@@ -7,16 +7,20 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
-        public HearingVenue(int id, string name)
+        public HearingVenue(int id, string name, bool isScottish = false, bool isWorkAllocationEnabled = true)
         {
             ValidateArguments(id, name);
 
             Id = id;
             Name = name;
+            IsScottish = isScottish;
+            IsWorkAllocationEnabled = isWorkAllocationEnabled;
         }
 
         public string Name { get; }
         public string EpimsCode { get; }
+        public bool IsScottish { get; }
+        public bool IsWorkAllocationEnabled { get; }
 
         private void ValidateArguments(int id, string name)
         {
