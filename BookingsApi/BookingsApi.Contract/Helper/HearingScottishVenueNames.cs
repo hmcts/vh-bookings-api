@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace BookingsApi.Contract.Helper;
 
-[Obsolete("Do not use as it will be replaced by an extra column IsScottish in the HearingVenue and feature flag Reference Data is ON", false)]
 public static class HearingScottishVenueNames
 {
     public const string Aberdeen = "Aberdeen Tribunal Hearing Centre";
