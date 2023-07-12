@@ -15,7 +15,7 @@ namespace BookingsApi.DAL.Queries
         {
             HearingVenueNames = hearingVenueNames.ToList();
         }
-        public List<string> HearingVenueNames { get; set; }
+        public List<string> HearingVenueNames { get; }
     }
     
     public class GetHearingsForTodayByVenuesQueryHandler : IQueryHandler<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>

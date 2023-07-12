@@ -118,15 +118,15 @@ public class WorkAllocationTests : ApiTest
         var hearingSchedule = DateTime.Today.AddHours(3);
         var caseName = "Bookings Api AC Automated";
         var bookNewHearingRequest = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
-        var validHearing = BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest).Result.Id;
+        var validHearing = BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest).Result;
         await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
         {
-            Hearings = new List<Guid> {validHearing},
+            Hearings = new List<Guid> {validHearing.Id},
             CsoId = _cso.Id
         });
-        var apiParameters = new List<string> { bookNewHearingRequest.HearingVenueName };
+        
         // act
-        var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(apiParameters);
+        var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(new[]{validHearing.HearingVenueName});
         
         // assert
         results.Should().Contain(e => e.Cso.Id == _cso.Id);

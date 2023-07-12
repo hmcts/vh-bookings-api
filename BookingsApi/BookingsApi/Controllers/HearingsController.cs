@@ -691,6 +691,24 @@ namespace BookingsApi.Controllers
             return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
         }
 
+        /// <summary>
+        /// Return hearing details for todays hearings by venue
+        /// </summary>
+        /// <param name="venueNames">List of hearing venue names provided in payload</param>
+        /// <returns>Booking status</returns>
+        [HttpPost("today/venue", Name = "GetHearingsForTodayByVenue")]
+        [OpenApiOperation("GetHearingsForTodayByVenue")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody]IEnumerable<string> venueNames)
+        {
+            var videoHearing = await _queryHandler.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(new GetHearingsForTodayByVenuesQuery(venueNames));
+            if (videoHearing == null || !videoHearing.Any())
+                return NotFound();
+
+            return Ok(videoHearing.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+
         private string BuildCursorPageUrl(
             string cursor,
             int limit,
