@@ -26,21 +26,30 @@ namespace BookingsApi.AcceptanceTests.Hooks
         [AfterScenario(Order = (int)HooksSequence.RemoveAllDataHooks)]
         public static void RemoveAllData(TestContext context)
         {
-
-            var request = new GetHearingRequest { Limit = HearingsLimit };
-
-            var client = new TestHttpClient();
-
-            var response = client.ExecuteAsync(
-                context, HearingTypesRelativePath,
-                request, HttpMethod.Get)
-                .Result;
-
-            var hearings = RequestHelper.Deserialise<BookingsResponse>(response.Content.ReadAsStringAsync().Result);
-
-            foreach (var hearing in hearings.Hearings.SelectMany(hearingsListResponse => hearingsListResponse.Hearings.Where(hearing => hearing.HearingName.Contains(context.TestData.CaseName))))
+            // If we have a hearing id, then we have created a hearing in this test run, so delete it
+            if (context.TestData.Hearing != null)
             {
-                DeleteTheHearing(context, hearing.HearingId);
+                DeleteTheHearing(context, context.TestData.Hearing.Id);
+            }
+            else
+            {
+                var request = new GetHearingRequest {Limit = HearingsLimit};
+
+                var client = new TestHttpClient();
+
+                var response = client.ExecuteAsync(
+                        context, HearingTypesRelativePath,
+                        request, HttpMethod.Get)
+                    .Result;
+
+                var hearings = RequestHelper.Deserialise<BookingsResponse>(response.Content.ReadAsStringAsync().Result);
+
+                foreach (var hearing in hearings.Hearings.SelectMany(hearingsListResponse =>
+                             hearingsListResponse.Hearings.Where(hearing =>
+                                 hearing.HearingName.Contains(context.TestData.CaseName))))
+                {
+                    DeleteTheHearing(context, hearing.HearingId);
+                }
             }
         }
 
@@ -49,6 +58,7 @@ namespace BookingsApi.AcceptanceTests.Hooks
             var endpoint = RemoveHearing(hearingId);
             context.Request = context.Delete(endpoint);
             context.Response = context.Client().Execute(context.Request);
+            NUnit.Framework.TestContext.WriteLine($"Deleted hearing {hearingId}");
         }
     }
 }
