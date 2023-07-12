@@ -458,12 +458,20 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetHearingsForNotificationAsync(System.Threading.CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId, RebookHearingRequest request);
+        System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId, RebookHearingRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Create a new hearing with the details of a given hearing on given dates
@@ -3935,21 +3943,26 @@ namespace BookingsApi.Client
             }
         }
 
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId, RebookHearingRequest request)
+        public virtual System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId)
         {
-            return RebookHearingAsync(hearingId, request, System.Threading.CancellationToken.None);
+            return RebookHearingAsync(hearingId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId, RebookHearingRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<HearingDetailsResponse> RebookHearingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
-
-            if (request == null)
-                throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/conferences");
@@ -3961,10 +3974,7 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 

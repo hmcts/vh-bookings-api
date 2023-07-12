@@ -638,6 +638,56 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 x => x.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>(
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
+
+        [Test]
+        public async Task Should_rebook_valid_hearing()
+        {
+            var hearing = GetHearing("123");
+            hearing.UpdateStatus(BookingStatus.Failed, "administrator", string.Empty);
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(hearing);
+
+            var result = await Controller.RebookHearing(hearing.Id);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+        }
+
+        [Test]
+        public async Task Should_return_not_found_when_rebooking_a_hearing_which_does_not_exist()
+        {
+            var hearingId = Guid.NewGuid();
+
+            var result = await Controller.RebookHearing(hearingId);
+            
+            result.Should().NotBeNull();
+            var objectResult = (NotFoundResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        }
+
+        [TestCase(BookingStatus.Created)]
+        [TestCase(BookingStatus.Booked)]
+        [TestCase(BookingStatus.Cancelled)]
+        public async Task Should_return_bad_request_when_rebooking_a_hearing_with_invalid_status(BookingStatus status)
+        {
+            var hearing = GetHearing("123");
+            if (hearing.Status != status)
+            {
+                hearing.UpdateStatus(status, "administrator", "reason");   
+            }
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(hearing);
+            
+            var result = await Controller.RebookHearing(hearing.Id);
+            
+            result.Should().NotBeNull();
+            var objectResult = (BadRequestObjectResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+            ((SerializableError)objectResult.Value).ContainsValue("Hearing must have a status of Failed");
+        }
   
         protected static VideoHearing GetHearing(string caseNumber)
         {

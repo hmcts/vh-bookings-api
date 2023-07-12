@@ -306,18 +306,34 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
+        /// <returns></returns>
         [HttpPost("{hearingId}/conferences")]
         [OpenApiOperation("RebookHearing")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RebookHearing([FromRoute] Guid hearingId, 
-            [FromBody] RebookHearingRequest request)
+        public async Task<IActionResult> RebookHearing(Guid hearingId)
         {
-            var queriedVideoHearing = await GetHearingAsync(hearingId); // TODO 404 if not found
-            await PublishEventForNewBooking(queriedVideoHearing, request.IsMultiDayHearing);
+            var hearing = await GetHearingAsync(hearingId);
 
-            return Ok();
+            if (hearing == null)
+            {
+                return NotFound();
+            }
+
+            if (hearing.Status != BookingStatus.Failed)
+            {
+                ModelState.AddModelError(nameof(hearingId), "Hearing must have a status of Failed");
+                return BadRequest(ModelState);
+            }
+            
+            await PublishEventForNewBooking(hearing, false);
+
+            return NoContent();
         }
 
         private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
