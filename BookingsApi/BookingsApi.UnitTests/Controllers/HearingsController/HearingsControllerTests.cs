@@ -659,6 +659,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         public async Task Should_return_not_found_when_rebooking_a_hearing_which_does_not_exist()
         {
             var hearingId = Guid.NewGuid();
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync((VideoHearing)null);
 
             var result = await Controller.RebookHearing(hearingId);
             
