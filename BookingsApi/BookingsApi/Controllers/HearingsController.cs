@@ -313,9 +313,9 @@ namespace BookingsApi.Controllers
         /// <returns></returns>
         [HttpPost("{hearingId}/conferences")]
         [OpenApiOperation("RebookHearing")]
-        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RebookHearing(Guid hearingId)
         {
             var hearing = await GetHearingAsync(hearingId);
