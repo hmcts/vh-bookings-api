@@ -689,7 +689,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsValue("Hearing must have a status of Failed");
+            ((SerializableError)objectResult.Value).ContainsValue($"Hearing must have a status of {nameof(BookingStatus.Failed)}");
         }
   
         protected static VideoHearing GetHearing(string caseNumber)

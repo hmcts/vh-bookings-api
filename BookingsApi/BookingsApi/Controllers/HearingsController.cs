@@ -327,7 +327,7 @@ namespace BookingsApi.Controllers
 
             if (hearing.Status != BookingStatus.Failed)
             {
-                ModelState.AddModelError(nameof(hearingId), "Hearing must have a status of Failed");
+                ModelState.AddModelError(nameof(hearingId), $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
                 return BadRequest(ModelState);
             }
             
