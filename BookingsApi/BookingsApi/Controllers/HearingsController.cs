@@ -586,7 +586,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.Conflict)]
+        [ProducesResponseType(typeof(SerializableError),(int)HttpStatusCode.Conflict)]
         public async Task<IActionResult> CancelBooking(Guid hearingId, CancelBookingRequest request)
         {
             if (hearingId == Guid.Empty)

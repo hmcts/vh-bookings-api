@@ -8,6 +8,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BookingsApi.IntegrationTests.Api.CancelBooking;
 
@@ -104,5 +105,8 @@ public class CancelBookingTests : ApiTest
             }));
 
         result.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        var serializableError = await ApiClientResponse.GetResponses<SerializableError>(result.Content);
+        serializableError.ContainsKey("BookingStatus").Should().BeTrue();
+        JsonConvert.DeserializeObject<string[]>(serializableError["BookingStatus"].ToString()!).Should().Contain("Cannot change the booking status from Failed to Cancelled");
     }
 }
