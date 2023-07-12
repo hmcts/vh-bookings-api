@@ -129,7 +129,7 @@ public class WorkAllocationTests : ApiTest
         var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(new[]{validHearing.HearingVenueName});
         
         // assert
-        results.Should().Contain(e => e.Cso.Id == _cso.Id);
+        results.Should().Contain(e => e.Cso.Id == _cso.Id && e.HearingId == validHearing.Id);
     }
 
     
