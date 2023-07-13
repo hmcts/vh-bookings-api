@@ -71,7 +71,7 @@ namespace BookingsApi.DAL.Migrations
                     table: nameof(HearingVenue),
                     keyColumn: "Name",
                     keyValue: venues.ElementAt(i).Key,
-                    columns: new[] { "Name", "EpimsCode" },
+                    columns: new[] { "Name", "VenueCode" },
                     values: new object[]
                         {venues.ElementAt(i).Value.Item1, venues.ElementAt(i).Value.Item2}
                 );
@@ -87,7 +87,7 @@ namespace BookingsApi.DAL.Migrations
                     table: nameof(HearingVenue),
                     keyColumn: "Name",
                     keyValue: venues.ElementAt(i).Value.Item1,
-                    columns: new[] { "Name", "EpimsCode" },
+                    columns: new[] { "Name", "VenueCode" },
                     values: new object[]
                         {venues.ElementAt(i).Key, null}
                 );

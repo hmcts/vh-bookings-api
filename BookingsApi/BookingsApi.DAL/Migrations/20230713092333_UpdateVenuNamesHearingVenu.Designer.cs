@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    [Migration("20230704125913_UpdateVenuNamesHearingVenu")]
+    [Migration("20230713092333_UpdateVenuNamesHearingVenu")]
     partial class UpdateVenuNamesHearingVenu
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -265,18 +265,28 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EpimsCode")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsScottish")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsWorkAllocationEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("VenueCode")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Name");
 
-                    b.HasIndex("EpimsCode");
+                    b.HasIndex("VenueCode");
 
                     b.ToTable("HearingVenue", (string)null);
                 });
