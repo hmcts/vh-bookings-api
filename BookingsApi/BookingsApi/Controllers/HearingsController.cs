@@ -30,6 +30,7 @@ using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using NSwag.Annotations;
 using BookingsApi.DAL.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BookingsApi.Controllers
 {
@@ -111,6 +112,27 @@ namespace BookingsApi.Controllers
         {
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Get list of all confirmed hearings for a given username for today
+        /// </summary>
+        /// <param name="username">username of person to search against</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet("today", Name = "GetConfirmedHearingsByUsernameForToday")]
+        [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
+        {
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            if (!hearings.Any())
+            {
+                return NotFound();
+            }
             var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
@@ -306,6 +328,36 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
+        /// <returns></returns>
+        [HttpPost("{hearingId}/conferences")]
+        [OpenApiOperation("RebookHearing")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RebookHearing(Guid hearingId)
+        {
+            var hearing = await GetHearingAsync(hearingId);
+
+            if (hearing == null)
+            {
+                return NotFound();
+            }
+
+            if (hearing.Status != BookingStatus.Failed)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
+                return BadRequest(ModelState);
+            }
+            
+            await PublishEventForNewBooking(hearing, false);
+
+            return NoContent();
+        }
+
         private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
@@ -375,7 +427,7 @@ namespace BookingsApi.Controllers
                     _kinlyConfiguration.SipAddressStem, totalDays, hearingDay);
             }).ToList();
 
-            var existingCase = videoHearing.GetCases().First();
+            var existingCase = videoHearing.GetCases()[0];
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
 
             foreach (var command in commands)
@@ -553,6 +605,50 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Cancels the booking
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <param name="request">Cancel reason</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}/cancel")]
+        [OpenApiOperation("CancelBooking")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(SerializableError),(int)HttpStatusCode.Conflict)]
+        public async Task<IActionResult> CancelBooking(Guid hearingId, CancelBookingRequest request)
+        {
+            if (hearingId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+                return ValidationProblem(ModelState);
+            }
+
+            var result = new CancelBookingRequestValidation().Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return ValidationProblem(ModelState);
+            }
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await UpdateStatus(hearingId, request.UpdatedBy, request.CancelReason, BookingStatus.Cancelled);
+                return NoContent();
+            }
+            catch (DomainRuleException exception)
+            {
+                exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
+                return Conflict(ModelState);
+            }
+        }
+
         private async Task UpdateStatus(Guid hearingId, string updatedBy, string cancelReason, BookingStatus bookingStatus)
         {
             await UpdateHearingStatusAsync(hearingId, bookingStatus, updatedBy, cancelReason);
@@ -560,7 +656,7 @@ namespace BookingsApi.Controllers
             switch (bookingStatus)
             {
                 case BookingStatus.Cancelled:
-                    await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                        await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
                     break;
             }
         }
@@ -746,7 +842,7 @@ namespace BookingsApi.Controllers
             var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
                 .Select(caseType => caseType.Id);
 
-            return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
+            return filterCaseTypes.TrueForAll(caseType => validCaseTypes.Contains(caseType));
 
         }
 
@@ -761,7 +857,7 @@ namespace BookingsApi.Controllers
             var validVenueIds = (await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query))
                 .Select(venue => venue.Id);
 
-            return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
+            return filterVenueIds.TrueForAll(venueId => validVenueIds.Contains(venueId));
         }
 
         private static List<Case> MapCase(List<CaseRequest> caseRequestList)
