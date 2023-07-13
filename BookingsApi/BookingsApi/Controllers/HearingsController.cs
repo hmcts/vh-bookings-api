@@ -427,7 +427,7 @@ namespace BookingsApi.Controllers
                     _kinlyConfiguration.SipAddressStem, totalDays, hearingDay);
             }).ToList();
 
-            var existingCase = videoHearing.GetCases().First();
+            var existingCase = videoHearing.GetCases()[0];
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
 
             foreach (var command in commands)
@@ -842,7 +842,7 @@ namespace BookingsApi.Controllers
             var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
                 .Select(caseType => caseType.Id);
 
-            return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
+            return filterCaseTypes.TrueForAll(caseType => validCaseTypes.Contains(caseType));
 
         }
 
@@ -857,7 +857,7 @@ namespace BookingsApi.Controllers
             var validVenueIds = (await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query))
                 .Select(venue => venue.Id);
 
-            return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
+            return filterVenueIds.TrueForAll(venueId => validVenueIds.Contains(venueId));
         }
 
         private static List<Case> MapCase(List<CaseRequest> caseRequestList)
