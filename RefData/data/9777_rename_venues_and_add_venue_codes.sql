@@ -33,7 +33,6 @@ BEGIN
 END
 GO;
 
-Exec #HearingVenue_UpdateVenueCodeAndName @oldVenueName = 'Birmingham Civil and Family Justice Centre', @venueCode = '1234567890', @newVenueName = 'Birmingham Civil and Family Justice Centre Testing Local Do not commit'
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Ayr', @venueCode = '206150', @newVenueName='Ayr Social Security and Child Support Tribunal';
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Bath Law Courts (Civil and Family)', @venueCode = '411234', @newVenueName='Bath Magistrates Court and Family Court';
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Birkenhead County Court', @venueCode = '444097', @newVenueName='Birkenhead County Court and Family Court';
