@@ -238,11 +238,19 @@ namespace BookingsApi.IntegrationTests.Helper
                 CreateParticipantLinks(interpretee, interpreter);
             }
 
-            videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
-            videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
-            videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
+            if (options.Case == null)
+            {
+                videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
+                    $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
+                videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
+                    $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
+                videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
+            }
+            else
+            {
+                videoHearing.AddCase(options.Case.Number, options.Case.Name, true);
+            }
+            
 
             var dA = videoHearing.Participants[1];
             videoHearing.AddEndpoints(
@@ -508,7 +516,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 try
                 {
                     await using var db = new BookingsDbContext(_dbContextOptions);
-                    var justiceUser = await db.JusticeUsers.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
+                    var justiceUser = await db.JusticeUsers.Include(x => x.JusticeUserRoles).IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
                     if (justiceUser != null)
                     {
                         db.JusticeUsers.Remove(justiceUser);
