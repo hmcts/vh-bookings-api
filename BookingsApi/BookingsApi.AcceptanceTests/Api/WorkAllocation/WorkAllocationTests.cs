@@ -161,23 +161,4 @@ public class WorkAllocationTests : ApiTest
             
         return cso;
     }
-
-    private async Task<JusticeUserResponse> CreateJusticeUser()
-    {
-        var username = $"automation.allocation{TestSettings.UsernameStem}";
-        TestContext.WriteLine("Removed hearing");
-        var request = new AddJusticeUserRequest()
-        {
-            Username = username,
-            ContactEmail = username,
-            FirstName = "automation",
-            LastName = "allocation",
-            Roles = new List<JusticeUserRole>() { JusticeUserRole.Vho },
-            CreatedBy = "automationtest"
-        };
-        var cso = await BookingsApiClient.AddJusticeUserAsync(request);
-        TestContext.WriteLine($"Created justice user {cso.Id} - {cso.Username}");
-        return cso;
-    }
-
 }
