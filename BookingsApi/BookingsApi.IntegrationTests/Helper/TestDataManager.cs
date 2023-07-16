@@ -38,6 +38,11 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             _seededHearings.Add(id);
         }
+        
+        public void AddJusticeUserForCleanup(Guid id)
+        {
+            _seededJusticeUserIds.Add(id);
+        }
 
         public void AddJudiciaryPersonsForCleanup(params string[] ids)
         {

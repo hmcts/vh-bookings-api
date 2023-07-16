@@ -1,11 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Helper;
 using BookingsApi.IntegrationTests.Helper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +13,24 @@ using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.WorkAllocation;
 
-public class SearchForAllocationHearingsTests: ApiTest
+public class GetAllocationsForHearingsTests : ApiTest
 {
+    [SetUp]
+    public async Task Setup()
+    {
+        // ensure justice user from test is removed from any potential failed previous runs
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var user = await db.JusticeUsers.FirstOrDefaultAsync(x => x.Username == "user@test.com");
+        if (user != null)
+        {
+            TestContext.WriteLine("Removing user from previous run due to failed cleanup");
+            Hooks.AddJusticeUserForCleanup(user.Id);
+            await Hooks.ClearJusticeUsersAsync();
+        }
+    }
     
     [Test]
-    public async Task should_return_hearings_that_match_query()
+    public async Task should_return_allocations_for_given_hearings()
     {
         // arrange
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
@@ -57,24 +69,35 @@ public class SearchForAllocationHearingsTests: ApiTest
         using var client = Application.CreateClient();
         
         // act
-        var result = await client.GetAsync(ApiUriFactory.WorkAllocationEndpoints.SearchForAllocationHearings(
-            new SearchForAllocationHearingsRequest()
+        var result = await client.PostAsync(ApiUriFactory.WorkAllocationEndpoints.GetAllocationsForHearings,
+            RequestBody.Set(new []
             {
-                CaseNumber = caseNumber
+                hearingWithWorkAllocationVenue.Id,
+                hearingWithWorkAllocationVenueAndAllocation.Id,
+                hearingWithoutWorkAllocationVenue.Id
             }));
 
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK);
-        var hearingAllocationSearchResponse = await ApiClientResponse.GetResponses<List<HearingAllocationsResponse>>(result.Content);
+        var hearingAllocationSearchResponse = await ApiClientResponse.GetResponses<List<AllocatedCsoResponse>>(result.Content);
         hearingAllocationSearchResponse.Should().NotBeEmpty();
-        hearingAllocationSearchResponse.Should().Contain(response => response.HearingId == hearingWithWorkAllocationVenue.Id)
-            .Subject.AllocatedCso.Should().Be(VideoHearingHelper.NotAllocated);
-        
-        hearingAllocationSearchResponse.Should().Contain(response => response.HearingId == hearingWithWorkAllocationVenueAndAllocation.Id)
-            .Subject.AllocatedCso.Should().Be(justiceUser.Username);
 
-        hearingAllocationSearchResponse.Should()
-            .NotContain(response => response.HearingId == hearingWithoutWorkAllocationVenue.Id);
+
+        hearingAllocationSearchResponse.Should().Contain(response =>
+            response.HearingId == hearingWithWorkAllocationVenue.Id && 
+            response.Cso == null &&
+            response.SupportsWorkAllocation);
+        
+        hearingAllocationSearchResponse.Should().Contain(response =>
+            response.HearingId == hearingWithWorkAllocationVenueAndAllocation.Id && 
+            response.Cso.Username == justiceUser.Username &&
+            response.SupportsWorkAllocation);
+        
+        
+        hearingAllocationSearchResponse.Should().Contain(response =>
+            response.HearingId == hearingWithoutWorkAllocationVenue.Id && 
+            response.Cso == null &&
+            !response.SupportsWorkAllocation);
     }
     
     [TearDown]
