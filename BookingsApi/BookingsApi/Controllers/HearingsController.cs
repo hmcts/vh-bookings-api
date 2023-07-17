@@ -328,6 +328,36 @@ namespace BookingsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Rebook an existing hearing with a booking status of Failed
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing with a status of Failed</param>
+        /// <returns></returns>
+        [HttpPost("{hearingId}/conferences")]
+        [OpenApiOperation("RebookHearing")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RebookHearing(Guid hearingId)
+        {
+            var hearing = await GetHearingAsync(hearingId);
+
+            if (hearing == null)
+            {
+                return NotFound();
+            }
+
+            if (hearing.Status != BookingStatus.Failed)
+            {
+                ModelState.AddModelError(nameof(hearingId), $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
+                return BadRequest(ModelState);
+            }
+            
+            await PublishEventForNewBooking(hearing, false);
+
+            return NoContent();
+        }
+
         private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
@@ -397,7 +427,7 @@ namespace BookingsApi.Controllers
                     _kinlyConfiguration.SipAddressStem, totalDays, hearingDay);
             }).ToList();
 
-            var existingCase = videoHearing.GetCases().First();
+            var existingCase = videoHearing.GetCases()[0];
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
 
             foreach (var command in commands)
@@ -812,7 +842,7 @@ namespace BookingsApi.Controllers
             var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
                 .Select(caseType => caseType.Id);
 
-            return filterCaseTypes.All(caseType => validCaseTypes.Contains(caseType));
+            return filterCaseTypes.TrueForAll(caseType => validCaseTypes.Contains(caseType));
 
         }
 
@@ -827,7 +857,7 @@ namespace BookingsApi.Controllers
             var validVenueIds = (await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query))
                 .Select(venue => venue.Id);
 
-            return filterVenueIds.All(venueId => validVenueIds.Contains(venueId));
+            return filterVenueIds.TrueForAll(venueId => validVenueIds.Contains(venueId));
         }
 
         private static List<Case> MapCase(List<CaseRequest> caseRequestList)
