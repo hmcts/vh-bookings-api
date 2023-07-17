@@ -1,6 +1,17 @@
 -- uncomment below if you are using a connection string without a default db
---USE VhBookings;
---GO;
+USE VhBookings;
+GO;
+SET XACT_ABORT ON
+GO;
+CREATE OR ALTER PROC #HearingVenue_CreateIfNotExist @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
+As
+BEGIN
+    IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = @venueName)
+        BEGIN
+            Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, 9999, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
+        END
+END
+GO;
 
 CREATE OR ALTER PROC #HearingVenue_UpdateVenueCode @venueName nvarchar(max), @venueCode varchar(450)
 As
@@ -21,8 +32,20 @@ GO;
 
 BEGIN TRANSACTION;
 
+-- New venues to be added
+-- change to an insert
+
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Collection Enforcement Centre', @venueCode = '534560', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Council Chamber-Tunbridge Wells Town Hall', @venueCode = '213971', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'National Business Centre, Salford', @venueCode = '192280', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Crown House (Loughborough Offices)', @venueCode = '420587', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Cwmbran Offices (Gwent House)', @venueCode = '339076', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dumfries (1)', @venueCode = '999997', @isScottish = 1, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dunfermline', @venueCode = '999995', @isScottish = 1, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Wick', @venueCode = '999983', @isScottish = 1, @isWorkAllocationEnabled = 0;
+
 -- Fix typoes
-UPDATE HearingVenue SET Name = 'Sefton Magistrates'' Court'  WHERE Name LIKE 'Sefton Magistrates Court%'
+UPDATE HearingVenue SET Name = 'Sefton Magistrates Court', VenueCode = '395973', UpdatedDate = CURRENT_TIMESTAMP WHERE Name LIKE 'Sefton Magistrates Court%'
 
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Aberdeen Tribunal Hearing Centre', @venueCode = '219164';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Aberystwyth Justice Centre', @venueCode = '827534';
@@ -88,17 +111,12 @@ EXEC #HearingVenue_UpdateVenueCode @venueName = 'Chester Crown Court', @venueCod
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Chester Magistrates Court', @venueCode = '443014';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Clerkenwell and Shoreditch County Court and Family Court', @venueCode = '739514';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Colchester Magistrates Court and Family Court', @venueCode = '407566';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Collection Enforcement Centre', @venueCode = '534560';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Council Chamber-Tunbridge Wells Town Hall', @venueCode = '213971';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'National Business Centre, Salford', @venueCode = '192280';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Coventry Combined Court Centre', @venueCode = '497679';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Coventry Magistrates Court', @venueCode = '787030';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crawley Magistrates Court', @venueCode = '248100';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crown House (Loughborough Offices)', @venueCode = '420587';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Croydon County Court and Family Court', @venueCode = '407494';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Croydon Magistrates Court', @venueCode = '747662';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Cwmbran Magistrates Court', @venueCode = '296111';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Cwmbran Offices (Gwent House)', @venueCode = '339076';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Darlington County Court and Family Court', @venueCode = '288691';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Darlington Magistrates Court and Family Court', @venueCode = '476820';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dartford County Court and Family Court', @venueCode = '194172';
@@ -106,8 +124,6 @@ EXEC #HearingVenue_UpdateVenueCode @venueName = 'Derby Combined Court Centre', @
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Doncaster Justice Centre North', @venueCode = '640119';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Doncaster Justice Centre South', @venueCode = '45900';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dudley Magistrates Court', @venueCode = '758998';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dumfries (1)', @venueCode = '999997';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dunfermline', @venueCode = '999995';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Durham Crown Court', @venueCode = '386393';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Ealing Magistrates Court', @venueCode = '597501';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Slough County Court And Family Court', @venueCode = '224403';
@@ -231,7 +247,7 @@ EXEC #HearingVenue_UpdateVenueCode @venueName = 'Romford Magistrates Court (form
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Royal Courts of Justice', @venueCode = '20262';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Salisbury Law Courts', @venueCode = '817113';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Scarborough Justice Centre', @venueCode = '744412';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Sefton Magistrates'' Court', @venueCode = '395973';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Sefton Magistrates Court', @venueCode = '395973';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Sevenoaks Magistrates Court and Family Court', @venueCode = '362529';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Sheffield Combined Court Centre', @venueCode = '232607';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Sheffield Magistrates Court', @venueCode = '720624';
@@ -276,7 +292,6 @@ EXEC #HearingVenue_UpdateVenueCode @venueName = 'West Cumbria Courthouse', @venu
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'West London Family Court', @venueCode = '373584';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Westminster Magistrates Court', @venueCode = '839746';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Weymouth Combined Court', @venueCode = '624161';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wick', @venueCode = '999983';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wigan and Leigh Magistrates Court', @venueCode = '245068';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Willesden County Court and Family Court', @venueCode = '228015';
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Willesden Magistrates Court', @venueCode = '541183';
@@ -302,129 +317,78 @@ GO;
 
 -- Update Unknowns as of 13 July 2023
 EXEC #HearingVenue_UpdateVenueCode @venueName = 'Ardenleigh - Birmingham', @venueCode = 'unknown_6e7d818c8d6843ebb9e4acdfb3076cc3';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Ayr', @venueCode = 'unknown_3f0b0ed33151455bb4e8ef9f30cdc3b9';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Barrow-in-Furness Magistrates Court', @venueCode = 'unknown_a98b2ba37b8a46a59b06040c7528eb69';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Basingstoke Magistrates'' Court', @venueCode = 'unknown_415684cea1744477ba764fcdd6b9a422';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bath Law Courts (Civil and Family)', @venueCode = 'unknown_0e6bd02245f44136976d757c6d9177ae';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birkenhead County Court', @venueCode = 'unknown_fb18f777389a41f5b86dc6287b1119f2';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Employment Tribunal', @venueCode = 'unknown_d5ac8389526c44a9a803fbb2f0acf537';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Immigration and Asylum Chamber', @venueCode = 'unknown_d28f614eb0ff4f559511d4b07265be72';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Social Security and Child Support Tribunal', @venueCode = 'unknown_99745ecac1a74b6c99150413718c8293';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Youth Court', @venueCode = 'unknown_60a57f34e53e41d3b16b347301684bde';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Blackburn Family Court', @venueCode = 'unknown_e5a8c65431b34a688a47fe469489e452';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Blackpool Family Court', @venueCode = 'unknown_d827a1598e444cbfabe3b44055385d17';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bodmin Law Courts', @venueCode = 'unknown_72c84a0e93204a548c2bdcd14ac3efbf';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bolton Crown Court', @venueCode = 'unknown_b27812025e9c4fb6a1f16c7421cdd598';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bolton Magistrates Court', @venueCode = 'unknown_d96e46464ea64f37ab3c23045ded1218';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Boston Magistrates Court', @venueCode = 'unknown_5595c860c16b46a8be6397aa78219e60';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bournemouth Crown Court', @venueCode = 'unknown_684b2ee2211a4d32be8800f98e5db280';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bridlington Magistrates Court and Hearing Centre', @venueCode = 'unknown_f78dfdff9b9445aba783e5084ee1ccdf';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Brighton County Court', @venueCode = 'unknown_2505a5d2a87e4b628d7dca0b0d622118';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Brighton Social Security and Child Support Tribunal', @venueCode = 'unknown_2a8979289e994598b3e67492a7dcd42b';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bristol Magistrates Court and Tribunals Hearing Centre', @venueCode = 'unknown_bbce016306d040f48278c6770bc4ee41';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Carmarthen County Court and Family Court', @venueCode = 'unknown_a8f8324fd3f94db9a44ae1f278a7e548';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Central Family Court', @venueCode = 'unknown_1cb37c8ca5c644ee9a74177ede332bcc';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Central London County Court', @venueCode = 'unknown_61fb1de2675f4cf69ead43d4562ded1b';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Chelmsford Justice Centre', @venueCode = 'unknown_48ed70f734b7456db22fd393d20256cd';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Chesterfield Justice Centre', @venueCode = 'unknown_f8c75ab852724a5397124890f38583a5';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Court of Protection', @venueCode = 'unknown_98661d0df5264ddea842dc73e16a06d2';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crewe County Court and Family Court', @venueCode = 'unknown_9e967400081d479191cb87836362078b';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crewe Magistrates Court', @venueCode = 'unknown_d21579d32b994374ac64173dfa7241e1';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crown Court', @venueCode = 'unknown_202cc714c01d4a20a6e3d5b180ed786d';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Croydon Crown Court', @venueCode = 'unknown_64df438d6a3644bba8e0d35786dc0028';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Derby Magistrates Court', @venueCode = 'unknown_10936e473a11450bb5a1e95d810ba978';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Derby Social Security and Child Support Tribunal', @venueCode = 'unknown_7c65ec6ec6ba43e6b18a5cf3969948f2';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dudley County Court and Family Court', @venueCode = 'unknown_663c15516d834d7293d1e329d8d577af';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dundee Tribunal Hearing Centre', @venueCode = 'unknown_77361457e43548c0a40f28919884e400';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Durham County Court and Family Court', @venueCode = 'unknown_b87ac4dbb8bf47be80955c0ed670af1e';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'East Berkshire Magistrates Court', @venueCode = 'unknown_dfb9ef0f25e34fae8430e3df5c4c0d49';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Eastern Property Tribunal', @venueCode = 'unknown_af98cb202d684987a5e6baf250b5e4f3';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Edinburgh Employment Appeal Tribunal', @venueCode = 'unknown_ecec3eceecb642bb8a55e16ec1dbc93f';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Edinburgh Upper Tribunal (Administrative Appeals Chamber)', @venueCode = 'unknown_2f9ef29daf564156827e8db100194816';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Exeter Law Courts', @venueCode = 'unknown_a8a5c11e2f6c47809d6ae1bdbf2b7c0c';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Gateshead County Court and Family Court', @venueCode = 'unknown_9fa73c3d0a8347fa8c1a1aaf094cc7f6';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Glasgow Tribunals Centre', @venueCode = 'unknown_7173c72bad374e70b9986aaf966e15a5';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Goodmayes Hospital - Essex', @venueCode = 'unknown_1c7a61f11ad84362bbc8bbc0eafc3d9c';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Guildford County Court and Family Court', @venueCode = 'unknown_29bcea37839246edb74e4482ee5843fd';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hamilton Brandon Gate', @venueCode = 'unknown_6db90c408aa0485b970b68485ba606d6';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hastings County Court and Family Court', @venueCode = 'unknown_4a6a2abf476f4c0ab88ee0cf82907a70';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Haverfordwest Magistrates Court', @venueCode = 'unknown_5e1f3e0668e444e69cc0a96572ded743';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hereford Justice Centre', @venueCode = 'unknown_84137f5818b24eaeb1808d5d87e605cf';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'High Wycombe County Court and Family Court', @venueCode = 'unknown_4ca2b18fffe84b008f08d23797a6ab36';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Horsham Magistrates Court', @venueCode = 'unknown_c3be6c2ae6c64672ad4ee7cb02cdcaec';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hull and Holderness Magistrates Court and Hearing Centre', @venueCode = 'unknown_614b12cc6f4e44d9846f3bdfc4db9ac4';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Huntercombe Roehampton Hospital', @venueCode = 'unknown_a8d3c3f314614e5396330cc5295d1eb9';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Inverness Employment Tribunal', @venueCode = 'unknown_0f81466af35045bb88d958d8408abf93';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'King''s Lynn Crown Court', @venueCode = 'unknown_074398cd20244df99297010bf4c1f703';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'King''s Lynn Magistrates Court and Family Court', @venueCode = 'unknown_411ee81b0d314e7da0d4304712f6c9a7';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Laganside Courts', @venueCode = 'unknown_779c44b95ef34bb9be9726eb44cf855d';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Lancaster Court House', @venueCode = 'unknown_f65705d222454cd98ef8497f6a8778b9';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Land Registration', @venueCode = 'unknown_00ea055d51864cc0a300c4309d3769a0';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Lavender Hill Magistrates Court', @venueCode = 'unknown_b8845c5f36de4523a6867dcc586d0df6';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Leeds District Probate Registry', @venueCode = 'unknown_ddf7e190c265475bbbd2b6432e3d0d1c';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Leicester County Court and Family Court', @venueCode = 'unknown_79f4961e2c904df090571451dce910b3';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Leyland Family Hearing Centre', @venueCode = 'unknown_948adaa8da274ae4bc4db6c673218269';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Liverpool and Knowsley Magistrates Court', @venueCode = 'unknown_3756c85c548843d1868a5f88a7e69470';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Liverpool District Probate Registry', @venueCode = 'unknown_91f324a4562f4e6b8fa04dfc89579d01';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'London (South) Employment Tribunal', @venueCode = 'unknown_9210960840284e7292360e765fdbe478';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'London Circuit Commercial Court', @venueCode = 'unknown_2302ce09a5d240ed8fe7b0c4435533f9';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Luton and South Bedfordshire Magistrates Court', @venueCode = 'unknown_31eb81b4945f42e1a52c5399705ff45a';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Maidstone Magistrates Court', @venueCode = 'unknown_ca8270fe65884afc9991d1bc44cc742c';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Manchester Civil and Family Justice Centre', @venueCode = 'unknown_909166a28dfa432082eea27d53038fe9';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Manchester Employment Tribunal', @venueCode = 'unknown_3e629993533a43a6b2a6124e9e772893';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Manchester Tribunal Hearing Centre', @venueCode = 'unknown_b6343640dd884759aff8f04720b49d17';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Mary Seacole House - Birmingham', @venueCode = 'unknown_518fedc44b534de78c7a73c4c36f2820';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Medway Magistrates Court and Family Court', @venueCode = 'unknown_6b6f633bdb414f65b932efb74d26c048';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Mental Health Tribunal', @venueCode = 'unknown_6ba9369758924e738dd5dd750a7fd6c1';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Middlesbrough County Court', @venueCode = 'unknown_5065db3a79c546ad85e9495feb56fec5';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Midlands Property Tribunal', @venueCode = 'unknown_c8c405bbea9144a0b3b20df8f44f451e';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Mold Justice Centre (Mold Law Courts)', @venueCode = 'unknown_e10dbe6a7e1b4ce785732702832bcb09';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Newcastle upon Tyne Crown Court and Magistrates Court', @venueCode = 'unknown_395c7017a5624f55add4fca7e9990e37';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Newport', @venueCode = 'unknown_4626209e2e7e469fbb030b5714731e22';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Newton Aycliffe Magistrates Court', @venueCode = 'unknown_36b5f07efe224862a687633a2603e0f0';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Northampton Crown, County and Family Court', @venueCode = 'unknown_38c579d84afb4afdaf6150ae38249906';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Northampton Social Security and Child Support Tribunal', @venueCode = 'unknown_db9340d216bd4523827284d6259a3717';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Northern Property Tribunal', @venueCode = 'unknown_80309bfa781848c78499abecaf594890';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Nottingham Crown Court', @venueCode = 'unknown_d85b02dd9ab4452cbd58b24c90561dca';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Nottingham Justice Centre', @venueCode = 'unknown_c42c83ba719e4bdfa66048697281330a';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Nottingham Social Security and Child Support Tribunal', @venueCode = 'unknown_b32c9779a4334e6da9f6c93f04452397';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Oxford Magistrates Court', @venueCode = 'unknown_499bf5e05d754ddf8f9a45e4693c85f1';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Plymouth (St Catherine''s House)', @venueCode = 'unknown_c08536fbda5b4412a29dd2903eb628ad';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Preston Crown Court and Family Court (Sessions House)', @venueCode = 'unknown_851ca86bd7fb442998edb5b74e8c102c';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Reedley Family Hearing Centre', @venueCode = 'unknown_61b39a5bf5b0438b855ecd32a9e13cd1';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Residential Property Tribunal', @venueCode = 'unknown_1e94f8b10a424f4fa333eceda0ac7806';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Sheffield Designated Family Court', @venueCode = 'unknown_404a498cc7284638a0b1b24300f45613';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Shrewsbury Crown Court', @venueCode = 'unknown_b82f260ae2884e0d910c00b9bebb050f';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Skipton County Court and Family Court', @venueCode = 'unknown_6bfbefbdae2b4771989d03032964d39e';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Skipton Magistrates Court', @venueCode = 'unknown_7fdbeb22b90d4ce691b8cb263dce34e0';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'South Tyneside County Court and Family Court', @venueCode = 'unknown_78fcd61c43f740dcbb5c0cf1a9b1fbbd';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'South Tyneside Magistrates Court', @venueCode = 'unknown_3e7cc9fb07744012874076561a70644e';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Southampton Hearing Centre', @venueCode = 'unknown_2135d9ca48f140389ea8071c692660bf';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Southend Crown Court', @venueCode = 'unknown_fa17db5d127d4357b640f197f87b594f';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Southend Magistrates Court', @venueCode = 'unknown_f09302566ec74d8c9184dd4cecc9d46f';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Southern Property Tribunal', @venueCode = 'unknown_ae593cefdced454f9f97b5828fa7005b';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Staines County Court and Family Court', @venueCode = 'unknown_841d1dd7317f4da48b54080f08bb48be';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Stirling Wallace House', @venueCode = 'unknown_27eec72557134befa9d96ce952ecf009';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Stockport County Court and Family Court', @venueCode = 'unknown_66bc4f9543f24833ba0d9dfca136b8f1';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Stockport Magistrates Court', @venueCode = 'unknown_223a60b41ca74302ba15ce5a11e24788';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Swansea Civil Justice Centre', @venueCode = 'unknown_97e51ac72f01467d8bb6a63b7a071c08';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Taunton Combined Court', @venueCode = 'unknown_71d42c48e2e944c1aceb87eb06b15f66';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'War and Pension Tribunal', @venueCode = 'unknown_9120634e09774e20ad0dc446a6457bc1';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Warrington Crown Court', @venueCode = 'unknown_d9851617cc22472ea6bed056ed8d133f';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Warrington Magistrates Court', @venueCode = 'unknown_e4b981039aa24b31a29495aa254f80e0';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Warwick Combined Court', @venueCode = 'unknown_158853422345454db09db6805c7d8a05';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'West Hampshire (Southampton) Magistrates Court', @venueCode = 'unknown_68f69a43a53148c8bd70b232b333f6ed';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wigan County Court and Family Court', @venueCode = 'unknown_1f260856c2b24553b013e201c0809928';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wolverhampton Social Security and Child Support Tribunal', @venueCode = 'unknown_925ef2e99dda4428b5bce8b7506451a5';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Worcester Justice Centre', @venueCode = 'unknown_255fe9e5f78a4920ad48d2e05e9cec2c';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Worthing County Court and Family Court', @venueCode = 'unknown_04c78bfe16384dc0b342517d249f70c5';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Worthing Magistrates Court', @venueCode = 'unknown_a85fa5825aef41e3b773c25d0dcfc8d6';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wrexham County and Family Court', @venueCode = 'unknown_e9fcef99a24a4a0aa645020542b753e6';
-EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wrexham Magistrates Court', @venueCode = 'unknown_6b44191696494b6bbb66e10801230a26';
-
-SELECT * FROM HearingVenue
--- Change the next line to commit
-ROLLBACK;
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Barrow-in-Furness Magistrates Court', @venueCode = 'unknown_3f0b0ed33151455bb4e8ef9f30cdc3b9';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Basingstoke Magistrates'' Court', @venueCode = 'unknown_a98b2ba37b8a46a59b06040c7528eb69';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Immigration and Asylum Chamber', @venueCode = 'unknown_415684cea1744477ba764fcdd6b9a422';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Social Security and Child Support Tribunal', @venueCode = 'unknown_0e6bd02245f44136976d757c6d9177ae';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Birmingham Youth Court', @venueCode = 'unknown_fb18f777389a41f5b86dc6287b1119f2';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bolton Magistrates Court', @venueCode = 'unknown_d5ac8389526c44a9a803fbb2f0acf537';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Boston Magistrates Court', @venueCode = 'unknown_d28f614eb0ff4f559511d4b07265be72';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Bournemouth Crown Court', @venueCode = 'unknown_99745ecac1a74b6c99150413718c8293';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Central London County Court', @venueCode = 'unknown_60a57f34e53e41d3b16b347301684bde';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Court of Protection', @venueCode = 'unknown_e5a8c65431b34a688a47fe469489e452';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crewe County Court and Family Court', @venueCode = 'unknown_d827a1598e444cbfabe3b44055385d17';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Crown Court', @venueCode = 'unknown_72c84a0e93204a548c2bdcd14ac3efbf';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Croydon Crown Court', @venueCode = 'unknown_b27812025e9c4fb6a1f16c7421cdd598';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Derby Social Security and Child Support Tribunal', @venueCode = 'unknown_d96e46464ea64f37ab3c23045ded1218';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Dudley County Court and Family Court', @venueCode = 'unknown_5595c860c16b46a8be6397aa78219e60';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Eastern Property Tribunal', @venueCode = 'unknown_684b2ee2211a4d32be8800f98e5db280';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Edinburgh Employment Appeal Tribunal', @venueCode = 'unknown_f78dfdff9b9445aba783e5084ee1ccdf';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Edinburgh Upper Tribunal (Administrative Appeals Chamber)', @venueCode = 'unknown_2505a5d2a87e4b628d7dca0b0d622118';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Gateshead County Court and Family Court', @venueCode = 'unknown_2a8979289e994598b3e67492a7dcd42b';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Glasgow Tribunals Centre', @venueCode = 'unknown_bbce016306d040f48278c6770bc4ee41';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Goodmayes Hospital - Essex', @venueCode = 'unknown_a8f8324fd3f94db9a44ae1f278a7e548';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Guildford County Court and Family Court', @venueCode = 'unknown_1cb37c8ca5c644ee9a74177ede332bcc';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hamilton Brandon Gate', @venueCode = 'unknown_61fb1de2675f4cf69ead43d4562ded1b';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hastings County Court and Family Court', @venueCode = 'unknown_48ed70f734b7456db22fd393d20256cd';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Haverfordwest Magistrates Court', @venueCode = 'unknown_f8c75ab852724a5397124890f38583a5';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Hereford Justice Centre', @venueCode = 'unknown_98661d0df5264ddea842dc73e16a06d2';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'High Wycombe County Court and Family Court', @venueCode = 'unknown_9e967400081d479191cb87836362078b';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Horsham Magistrates Court', @venueCode = 'unknown_d21579d32b994374ac64173dfa7241e1';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Huntercombe Roehampton Hospital', @venueCode = 'unknown_202cc714c01d4a20a6e3d5b180ed786d';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Inverness Employment Tribunal', @venueCode = 'unknown_64df438d6a3644bba8e0d35786dc0028';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'King''s Lynn Magistrates Court and Family Court', @venueCode = 'unknown_10936e473a11450bb5a1e95d810ba978';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Laganside Courts', @venueCode = 'unknown_7c65ec6ec6ba43e6b18a5cf3969948f2';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Lancaster Court House', @venueCode = 'unknown_663c15516d834d7293d1e329d8d577af';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Land Registration', @venueCode = 'unknown_77361457e43548c0a40f28919884e400';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Leeds District Probate Registry', @venueCode = 'unknown_b87ac4dbb8bf47be80955c0ed670af1e';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Liverpool District Probate Registry', @venueCode = 'unknown_dfb9ef0f25e34fae8430e3df5c4c0d49';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Liverpool and Knowsley Magistrates Court', @venueCode = 'unknown_af98cb202d684987a5e6baf250b5e4f3';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'London (South) Employment Tribunal', @venueCode = 'unknown_ecec3eceecb642bb8a55e16ec1dbc93f';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'London Circuit Commercial Court', @venueCode = 'unknown_2f9ef29daf564156827e8db100194816';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Mary Seacole House - Birmingham', @venueCode = 'unknown_a8a5c11e2f6c47809d6ae1bdbf2b7c0c';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Mental Health Tribunal', @venueCode = 'unknown_9fa73c3d0a8347fa8c1a1aaf094cc7f6';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Middlesbrough County Court', @venueCode = 'unknown_7173c72bad374e70b9986aaf966e15a5';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Midlands Property Tribunal', @venueCode = 'unknown_1c7a61f11ad84362bbc8bbc0eafc3d9c';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Newcastle upon Tyne Crown Court and Magistrates Court', @venueCode = 'unknown_29bcea37839246edb74e4482ee5843fd';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Newport', @venueCode = 'unknown_6db90c408aa0485b970b68485ba606d6';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Northampton Social Security and Child Support Tribunal', @venueCode = 'unknown_4a6a2abf476f4c0ab88ee0cf82907a70';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Northern Property Tribunal', @venueCode = 'unknown_5e1f3e0668e444e69cc0a96572ded743';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Nottingham Crown Court', @venueCode = 'unknown_84137f5818b24eaeb1808d5d87e605cf';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Nottingham Justice Centre', @venueCode = 'unknown_4ca2b18fffe84b008f08d23797a6ab36';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Nottingham Social Security and Child Support Tribunal', @venueCode = 'unknown_c3be6c2ae6c64672ad4ee7cb02cdcaec';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Residential Property Tribunal', @venueCode = 'unknown_614b12cc6f4e44d9846f3bdfc4db9ac4';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Skipton Magistrates Court', @venueCode = 'unknown_a8d3c3f314614e5396330cc5295d1eb9';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'South Tyneside Magistrates Court', @venueCode = 'unknown_0f81466af35045bb88d958d8408abf93';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Southend Magistrates Court', @venueCode = 'unknown_074398cd20244df99297010bf4c1f703';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Staines County Court and Family Court', @venueCode = 'unknown_411ee81b0d314e7da0d4304712f6c9a7';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Stockport County Court and Family Court', @venueCode = 'unknown_779c44b95ef34bb9be9726eb44cf855d';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'War and Pension Tribunal', @venueCode = 'unknown_f65705d222454cd98ef8497f6a8778b9';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Warrington Crown Court', @venueCode = 'unknown_00ea055d51864cc0a300c4309d3769a0';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Warrington Magistrates Court', @venueCode = 'unknown_b8845c5f36de4523a6867dcc586d0df6';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Warwick Combined Court', @venueCode = 'unknown_ddf7e190c265475bbbd2b6432e3d0d1c';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wigan County Court and Family Court', @venueCode = 'unknown_79f4961e2c904df090571451dce910b3';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Worthing Magistrates Court', @venueCode = 'unknown_948adaa8da274ae4bc4db6c673218269';
+EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wrexham Magistrates Court', @venueCode = 'unknown_3756c85c548843d1868a5f88a7e69470';
 
 DROP PROC #HearingVenue_UpdateVenueCode;
 GO;
+
+SELECT * FROM HearingVenue
+SELECT * FROM VhBookings.dbo.HearingVenue WHERE VenueCode IS NULL
+-- Change the next line to commit
+ROLLBACK;
+
+
+
+-- SET XACT_ABORT OFF

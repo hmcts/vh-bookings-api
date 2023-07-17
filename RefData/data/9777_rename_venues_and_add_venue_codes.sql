@@ -1,6 +1,7 @@
 -- You may need to uncomment the next line if the connection is not specific to a default database
--- USE VhBookings;
--- GO;
+USE VhBookings;
+GO;
+SET XACT_ABORT ON;
 BEGIN TRANSACTION;
 
 BEGIN
@@ -31,6 +32,9 @@ BEGIN
             Print ('WARNING! Could not find venue with the name: ' + @oldVenueName);
         END
 END
+GO;
+
+SELECT * FROM HearingVenue;
 GO;
 
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Ayr', @venueCode = '206150', @newVenueName='Ayr Social Security and Child Support Tribunal';
@@ -89,12 +93,17 @@ EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Worcester Justice Centr
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Worthing County Court and Family Court', @venueCode = '493880', @newVenueName='Worthing Magistrates and County Court';
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Wrexham County and Family Court', @venueCode = '637145', @newVenueName='Wrexham Law Courts';
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='King''s Lynn Crown Court', @venueCode = '671879', @newVenueName='King''s Lynn Crown Court (& Magistrates)';
-
--- The venues table contains both old and new name already, renaming new to old will cause a primary key violation due to the same venue name existing after the rename
--- EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Hereford Magistrates Court', @venueCode = '228883', @newVenueName='Hereford Justice Centre';
+EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Hereford Crown Court', @venueCode = '236611', @newVenueName='Hereford Crown Court';
 GO
 
 Delete from HearingVenue Where Name = 'TempMigrationVenue' AND Id = 9999 and VenueCode = 'xxxxxx';
 GO
 
-Rollback;
+SELECT * FROM HearingVenue;
+GO;
+
+DROP PROC #HearingVenue_UpdateVenueCodeAndName;
+GO;
+
+COMMIT;
+SET XACT_ABORT OFF
