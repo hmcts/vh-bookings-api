@@ -1,287 +1,80 @@
 -- You may need to uncomment the next line if the connection is not specific to a default database
--- USE VhBookings
+USE VhBookings
 BEGIN TRANSACTION;
 
 -- INSERT Family Jurisdiction if it does not exist and then grab the new ID
-BEGIN IF NOT EXISTS(
-    SELECT
-        *
-    FROM
-        dbo.Jurisdiction
-    WHERE
-        Name LIKE 'Family'
-) BEGIN
-INSERT INTO
-    dbo.Jurisdiction (Code, Name, IsLive, CreatedDate, UpdatedDate)
-VALUES
-    (
-        'Family',
-        'Family',
-        1,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP
-    );
-
+BEGIN IF NOT EXISTS(SELECT * FROM dbo.Jurisdiction WHERE Name LIKE 'Family')
+    BEGIN
+        INSERT INTO dbo.Jurisdiction (Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES ('Family', 'Family', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    END
 END
-END -- Store the family jurisdiction id to reference later
+GO;
+
+-- Store the family jurisdiction id to reference later
 declare @familyJurisdictionId VARCHAR(max);
+SELECT @familyJurisdictionId = id FROM dbo.Jurisdiction WHERE Name LIKE 'Family';
+UPDATE dbo.CaseType SET ServiceId = 'ABA5', JurisdictionId = @familyJurisdictionId, UpdatedDate = CURRENT_TIMESTAMP WHERE Name LIKE 'Private Law';
+GO;
 
-SELECT
-    @familyJurisdictionId = id
-FROM
-    dbo.Jurisdiction
-WHERE
-    Name LIKE 'Family';
 
-SELECT
-    @familyJurisdictionId
-UPDATE
-    dbo.CaseType
-SET
-    ServiceId = 'ABA5',
-    JurisdictionId = @familyJurisdictionId,
-    UpdatedDate = CURRENT_TIMESTAMP
-WHERE
-    Name LIKE 'Private Law';
-
-declare @privateLawCaseTypeId VARCHAR(max);
-
-SELECT
-    @privateLawCaseTypeId = id
-FROM
-    dbo.CaseType
-WHERE
-    Name LIKE 'Private Law';
-
--- CANNOT FIND THIS! IS THIS CONFUSED WITH ANOTHER ROW?
-UPDATE
-    dbo.HearingType
-SET
-    Code = 'ABA5-APP',
-    WelshName = 'Cais',
-    UpdatedDate = CURRENT_TIMESTAMP
-WHERE
-    CaseTypeId = @privateLawCaseTypeId
-    AND Name LIKE 'Appeals'
-UPDATE
-    dbo.HearingType
-SET
-    Code = 'ABA5-CMC',
-    WelshName = 'Cynhadledd Rheoli Achos',
-    UpdatedDate = CURRENT_TIMESTAMP
-WHERE
-    CaseTypeId = @privateLawCaseTypeId
-    AND Name LIKE 'Case Management Conference'
-UPDATE
-    dbo.HearingType
-SET
-    Code = 'ABA5-FHR',
-    WelshName = 'Gwrandawiad Cyntaf',
-    UpdatedDate = CURRENT_TIMESTAMP
-WHERE
-    CaseTypeId = @privateLawCaseTypeId
-    AND Name LIKE 'First Hearing'
-UPDATE
-    dbo.HearingType
-SET
-    Code = 'ABA5-PHR',
-    WelshName = 'Adolygiad Cyn Gwrandawiad',
-    UpdatedDate = CURRENT_TIMESTAMP
-WHERE
-    CaseTypeId = @privateLawCaseTypeId
-    AND Name LIKE 'Pre hearing review'
-UPDATE
-    dbo.HearingType
-SET
-    Code = 'ABA5-REV',
-    WelshName = 'Adolygiad Cyn Gwrandawiad',
-    UpdatedDate = CURRENT_TIMESTAMP
-WHERE
-    CaseTypeId = @privateLawCaseTypeId
-    AND Name LIKE 'Review' IF OBJECT_ID('tempdb..#tmp_NewPrivateLawCaseTypes') IS NOT NULL BEGIN DROP TABLE #tmp_NewPrivateLawCaseTypes
-END -- Create a temp table of all the private law case types to loop through
-CREATE TABLE #tmp_NewPrivateLawCaseTypes
-(
-    Name varchar(max),
-    Code varchar(max),
-    WelshName varchar(max),
-)
-INSERT INTO
-    #tmp_NewPrivateLawCaseTypes
-    (Name, Code, WelshName)
-VALUES
-    (
-        'Safeguarding Gatekeeping Appointment',
-        'ABA5-SGA',
-        'Apwyntiad Neilltuo Diogelwch'
-    ),
-    ('Judgment', 'ABA5-JMT', 'Dyfarniad'),
-    (
-        'Human Rights Act Application',
-        'ABA5-HRA',
-        'Cais dan y Ddeddf Hawliau Dynol'
-    ),
-    (
-        'Further Case Management Hearing',
-        'ABA5-FCM',
-        'Gwrandawiad Rheoli Achos Pellach'
-    ),
-    (
-        'Full/Final hearing',
-        'ABA5-FFH',
-        'Gwrandawiad Llawn/Terfynol'
-    ),
-    (
-        'Finding of Fact',
-        'ABA5-FOF',
-        'Canfod y Ffeithiau'
-    ),
-    (
-        'Dispute Resolution Appointment',
-        'ABA5-DRA',
-        'Apwyntiad Datrys Anghydfod'
-    ),
-    (
-        'Directions (First/Further)',
-        'ABA5-DIR',
-        'Cyfarwyddiadau (Cyntaf/Pellach)'
-    ),
-    ('Costs	ABA5-COS', 'Costau', NULL),
-    ('Conciliation', 'ABA5-CON', 'Cymodi'),
-    ('Committal', 'ABA5-COM', 'Traddodi'),
-    (
-        'Case Management Hearing',
-        'ABA5-CMH',
-        'Gwrandawiad Rheoli Achos'
-    ),
-    ('Breach', 'ABA5-BRE', 'Torri Amodau'),
-    ('Appeal', 'ABA5-APL', 'Apêl'),
-    ('Allocation', 'ABA5-ALL', 'Dyrannu'),
-    ('2nd Gatekeeping Appointment', 'ABA5-2GA', NULL),
-    ('Ground Rules Hearing', 'ABA5-GRH', NULL),
-    ('Neutral Evaluation Hearing', 'ABA5-NEH', NULL),
-    ('Permission Hearing', 'ABA5-PER', NULL),
-    ('Settlement Conference', 'ABA5-SCF', NULL),
-    (
-        'Celebration hearing',
-        'ABA5-CHR',
-        'Gwrandawiad Dathlu'
-    ),
-    (
-        'Interim Care Order',
-        'ABA5-ICO',
-        'Gorchymyn Gofal Interim'
-    ),
-    (
-        'Interim Supervision Order',
-        'ABA5-ISO',
-        'Gorchymyn Goruchwylio Interim'
-    ),
-    (
-        'Issues Resolution Hearing',
-        'ABA5-IRH',
-        'Gwrandawiad Datrys Materion'
-    ),
-    (
-        'Preliminary (REMO)',
-        'ABA5-PRE',
-        'Rhagarweiniol (REMO)'
-    ),
-    (
-        'Financial remedy first appointment',
-        'ABA5-FRF',
-        'Apwyntiad cyntaf rhwymedi ariannol'
-    ),
-    (
-        'Financial remedy directions',
-        'ABA5-FRD',
-        'Cyfarwyddiadau rhwymedi ariannol'
-    ),
-    (
-        'Financial remedy financial dispute resolution',
-        'ABA5-FRR',
-        'Rhwymedi ariannol datrys anghydfod ariannol'
-    ),
-    (
-        'Financial remedy interim order',
-        'ABA5-FRI',
-        'Gorchymyn interim rhwymedi ariannol'
-    ) DECLARE @tmpName VARCHAR(max),
-    @tmpCode VARCHAR(max),
-    @tmpWelshName VARCHAR(max);
-
-DECLARE @cur CURSOR
-SET
-    @cur = CURSOR FOR
-SELECT
-    TRIM(Name),
-    TRIM(Code),
-    TRIM(WelshName)
-FROM
-    #tmp_NewPrivateLawCaseTypes;
-    OPEN @cur;
-
-FETCH NEXT
-FROM
-    @cur INTO @tmpName,
-    @tmpCode,
-    @tmpWelshName;
-
-WHILE @ @FETCH_STATUS = 0 BEGIN IF EXISTS (
-    SELECT
-        *
-    FROM
-        dbo.HearingType
-    WHERE
-        Name = @tmpName
-        AND CaseTypeId = @privateLawCaseTypeId
-) BEGIN PRINT ('Updating: ' + @tmpName)
-UPDATE
-    dbo.HearingType
-SET
-    Code = TRIM(@tmpCode),
-    WelshName = TRIM(@tmpWelshName)
-WHERE
-    Name = @tmpName
+CREATE OR ALTER PROC #Upsert_PrivateLawHearingTypes @hearingTypeName nvarchar(max), @hearingTypeCode varchar(450), @welshName nvarchar(max), @privateLawCaseTypeId int
+As
+BEGIN
+    IF EXISTS (SELECT * FROM dbo.HearingType WHERE Name = @hearingTypeName AND CaseTypeId = @privateLawCaseTypeId)
+        BEGIN PRINT ('Updating: ' + @hearingTypeName)
+        UPDATE dbo.HearingType SET Code = TRIM(@hearingTypeCode), WelshName = TRIM(@welshName), UpdatedDate = CURRENT_TIMESTAMP WHERE Name = @hearingTypeName
+        END
+    ELSE
+        BEGIN PRINT ('Adding: ' + @hearingTypeName)
+        INSERT INTO dbo.HearingType (Name, CaseTypeId, Live, CreatedDate, UpdatedDate, Code, WelshName)
+        VALUES
+            (TRIM(@hearingTypeName), @privateLawCaseTypeId, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, TRIM(@hearingTypeCode), @welshName)
+        END
 END
-ELSE BEGIN PRINT ('Adding: ' + @tmpName)
-INSERT INTO
-    dbo.HearingType (
-        Name,
-        CaseTypeId,
-        Live,
-        CreatedDate,
-        UpdatedDate,
-        Code,
-        WelshName
-    )
-VALUES
-    (
-        TRIM(@tmpName),
-        @privateLawCaseTypeId,
-        1,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        @tmpCode,
-        @tmpWelshName
-    )
-END FETCH NEXT
-FROM
-    @cur INTO @tmpName,
-    @tmpCode,
-    @tmpWelshName;
+GO;
 
-END CLOSE @cur;
+declare @privateLawCaseTypeId int;
+SELECT @privateLawCaseTypeId = id FROM dbo.CaseType WHERE Name LIKE 'Private Law';
 
-DEALLOCATE @cur;
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Application', @hearingTypeCode = 'ABA5-APP', @welshName = N'Cais', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Case Management Conference', @hearingTypeCode = 'ABA5-CMC', @welshName = N'Cynhadledd Rheoli Achos', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Directions', @hearingTypeCode = NULL, @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'First hearing', @hearingTypeCode = 'ABA5-FHR', @welshName = N'Gwrandawiad Cyntaf', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Full hearing', @hearingTypeCode = NULL, @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Pre hearing review', @hearingTypeCode = 'ABA5-PHR', @welshName = N'Adolygiad Cyn Gwrandawiad', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Review', @hearingTypeCode = 'ABA5-REV', @welshName = N'Adolygiad', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Safeguarding Gatekeeping Appointment', @hearingTypeCode = 'ABA5-SGA', @welshName = N'Apwyntiad Neilltuo Diogelwch', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Judgment', @hearingTypeCode = 'ABA5-JMT', @welshName = N'Dyfarniad', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Human Rights Act Application', @hearingTypeCode = 'ABA5-HRA', @welshName = N'Cais dan y Ddeddf Hawliau Dynol', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Further Case Management Hearing', @hearingTypeCode = 'ABA5-FCM', @welshName = N'Gwrandawiad Rheoli Achos Pellach', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Full/Final hearing', @hearingTypeCode = 'ABA5-FFH', @welshName = N'Gwrandawiad Llawn/Terfynol', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Finding of Fact', @hearingTypeCode = 'ABA5-FOF', @welshName = N'Canfod y Ffeithiau', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Dispute Resolution Appointment', @hearingTypeCode = 'ABA5-DRA', @welshName = N'Apwyntiad Datrys Anghydfod', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Directions (First/Further)', @hearingTypeCode = 'ABA5-DIR', @welshName = N'Cyfarwyddiadau (Cyntaf/Pellach)', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Costs', @hearingTypeCode = 'ABA5-COS', @welshName = N'Costau', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Conciliation', @hearingTypeCode = 'ABA5-CON', @welshName = N'Cymodi', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Committal', @hearingTypeCode = 'ABA5-COM', @welshName = N'Traddodi', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Case Management Hearing', @hearingTypeCode = 'ABA5-CMH', @welshName = N'Gwrandawiad Rheoli Achos', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Breach', @hearingTypeCode = 'ABA5-BRE', @welshName = N'Torri Amodau', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Appeal', @hearingTypeCode = 'ABA5-APL', @welshName = N'Apêl', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Allocation', @hearingTypeCode = 'ABA5-ALL', @welshName = N'Dyrannu', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = '2nd Gatekeeping Appointment', @hearingTypeCode = 'ABA5-2GA', @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Ground Rules Hearing', @hearingTypeCode = 'ABA5-GRH', @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Neutral Evaluation Hearing', @hearingTypeCode = 'ABA5-NEH', @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Permission Hearing', @hearingTypeCode = 'ABA5-PER', @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Settlement Conference', @hearingTypeCode = 'ABA5-SCF', @welshName = NULL, @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Celebration hearing', @hearingTypeCode = 'ABA5-CHR', @welshName = N'Gwrandawiad Dathlu', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Interim Care Order', @hearingTypeCode = 'ABA5-ICO', @welshName = N'Gorchymyn Gofal Interim', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Interim Supervision Order', @hearingTypeCode = 'ABA5-ISO', @welshName = N'Gorchymyn Goruchwylio Interim', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Issues Resolution Hearing', @hearingTypeCode = 'ABA5-IRH', @welshName = N'Gwrandawiad Datrys Materion', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Preliminary (REMO)', @hearingTypeCode = 'ABA5-PRE', @welshName = N'Rhagarweiniol (REMO)', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Financial remedy first appointment', @hearingTypeCode = 'ABA5-FRF', @welshName = N'Apwyntiad cyntaf rhwymedi ariannol', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Financial remedy directions', @hearingTypeCode = 'ABA5-FRD', @welshName = N'Cyfarwyddiadau rhwymedi ariannol', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Financial remedy financial dispute resolution', @hearingTypeCode = 'ABA5-FRR', @welshName = N'Rhwymedi ariannol datrys anghydfod ariannol', @privateLawCaseTypeId = @privateLawCaseTypeId
+EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Financial remedy interim order', @hearingTypeCode = 'ABA5-FRI', @welshName = N'Gorchymyn interim rhwymedi ariannol', @privateLawCaseTypeId = @privateLawCaseTypeId
 
-DROP TABLE #tmp_NewPrivateLawCaseTypes
-SELECT
-    *
-FROM
-    dbo.HearingType
-WHERE
-    CaseTypeId = @privateLawCaseTypeId;
+SELECT * FROM dbo.HearingType
+WHERE CaseTypeId = @privateLawCaseTypeId;
 
 -- Change the next line to commit
 ROLLBACK;
