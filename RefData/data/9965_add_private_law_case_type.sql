@@ -1,5 +1,7 @@
 -- You may need to uncomment the next line if the connection is not specific to a default database
-USE VhBookings
+-- USE VhBookings
+
+SET XACT_ABORT ON
 BEGIN TRANSACTION;
 
 -- INSERT Family Jurisdiction if it does not exist and then grab the new ID
@@ -76,5 +78,5 @@ EXEC #Upsert_PrivateLawHearingTypes @hearingTypeName = 'Financial remedy interim
 SELECT * FROM dbo.HearingType
 WHERE CaseTypeId = @privateLawCaseTypeId;
 
--- Change the next line to commit
-ROLLBACK;
+COMMIT
+SET XACT_ABORT OFF
