@@ -1,6 +1,3 @@
--- You may need to uncomment the next line if the connection is not specific to a default database
-USE VhBookings
-
 SET XACT_ABORT ON
 BEGIN TRANSACTION;
 
@@ -81,5 +78,5 @@ WHERE CaseTypeId = @privateLawCaseTypeId;
 DROP PROC #Upsert_PrivateLawHearingTypes;
 GO;
 
-COMMIT
-SET XACT_ABORT OFF
+COMMIT;
+SET XACT_ABORT OFF;
