@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries.Core;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -29,19 +28,18 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<VideoHearing>> Handle(GetHearingsForTodayByVenuesQuery query)
         {
-            var hearings = _context.VideoHearings
-                .Include(h => h.Allocations)
-                    .ThenInclude(a => a.JusticeUser)
-                    .ThenInclude(ju => ju.JusticeUserRoles)
-                    .ThenInclude(jur => jur.UserRole)
-                .Where(x => x.ScheduledDateTime.Date == DateTime.Today);
-
-            if (!query.HearingVenueNames.IsNullOrEmpty())
-                hearings = hearings.Where(p => query.HearingVenueNames.Contains(p.HearingVenueName)).Distinct();
-            
-            return await hearings
-                .OrderBy(x => x.HearingVenueName).ThenBy(x => x.ScheduledDateTime)
-                .ToListAsync();
+            var hearingQuery = _context.VideoHearings
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+                .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
+                .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
+                .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
+                .Include(x => x.HearingCases).ThenInclude(x => x.Case)
+                .Include(x => x.CaseType)
+                .AsQueryable();
+                
+            return await hearingQuery
+                .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date && query.HearingVenueNames.Contains(x.HearingVenueName))
+                .OrderBy(x => x.HearingVenueName).ThenBy(x => x.ScheduledDateTime).ToListAsync();
         }
     }
 }

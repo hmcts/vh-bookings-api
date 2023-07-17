@@ -92,13 +92,13 @@ public class WorkAllocationTests : ApiTest
         var hearingSchedule = DateTime.Today.AddHours(3);
         var caseName = "Bookings Api AC Automated";
         var bookNewHearingRequest = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
-        var validHearing = BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest).Result.Id;
+        _hearing = await BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest);
         await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
         {
-            Hearings = new List<Guid> {validHearing},
+            Hearings = new List<Guid> {_hearing.Id},
             CsoId = _cso.Id
         });
-        var testParameters = new List<Guid>(){validHearing};
+        var testParameters = new List<Guid>(){_hearing.Id};
         for (int i = 0; i < 1000; i++)
             testParameters.Add(Guid.NewGuid());
 
@@ -107,7 +107,7 @@ public class WorkAllocationTests : ApiTest
         
         // assert
         results.Count.Should().BeGreaterThan(0);
-        results.Should().Contain(e => e.HearingId == validHearing);
+        results.Should().Contain(e => e.HearingId == _hearing.Id);
     }
 
     
@@ -118,18 +118,22 @@ public class WorkAllocationTests : ApiTest
         var hearingSchedule = DateTime.Today.AddHours(3);
         var caseName = "Bookings Api AC Automated";
         var bookNewHearingRequest = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
-        var validHearing = BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest).Result;
-        await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
+        _hearing = await BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest);
+        var allocations = await BookingsApiClient.AllocateHearingsToCsoAsync(new UpdateHearingAllocationToCsoRequest
         {
-            Hearings = new List<Guid> {validHearing.Id},
+            Hearings = new List<Guid> {_hearing.Id},
             CsoId = _cso.Id
         });
         
         // act
-        var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(new[]{validHearing.HearingVenueName});
+        var allocation = allocations.First();
+        var results = await BookingsApiClient.GetAllocationsForHearingsByVenueAsync(new[]{_hearing.HearingVenueName});
         
         // assert
-        results.Should().Contain(e => e.Cso.Id == _cso.Id && e.HearingId == validHearing.Id);
+        var result = results.FirstOrDefault(e => e.HearingId == allocation.HearingId);
+        result.Should().NotBeNull();
+        result?.Cso?.Username.Should().Be(allocation.AllocatedCso);
+        
     }
 
     
