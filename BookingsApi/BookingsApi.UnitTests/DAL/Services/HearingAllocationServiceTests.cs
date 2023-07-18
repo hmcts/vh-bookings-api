@@ -1374,6 +1374,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
+            scheduledDateTime = scheduledDateTime.ToUniversalTime();
 
             var videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                     new VideoHearing(_caseType, _hearingType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
