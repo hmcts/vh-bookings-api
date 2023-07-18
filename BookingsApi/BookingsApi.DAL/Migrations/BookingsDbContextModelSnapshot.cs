@@ -266,10 +266,25 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsScottish")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsWorkAllocationEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("VenueCode")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Name");
+
+                    b.HasIndex("VenueCode");
 
                     b.ToTable("HearingVenue", (string)null);
                 });
@@ -451,6 +466,9 @@ namespace BookingsApi.DAL.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserRoleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .HasMaxLength(450)

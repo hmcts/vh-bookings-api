@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using BookingsApi.Domain;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,17 +9,17 @@ namespace BookingsApi.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            migrationBuilder.AlterColumn<int>(
                 name: "UserRoleId",
-                table: "JusticeUser");
+                table: "JusticeUser",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AlterColumn<int>(
                 name: "UserRoleId",
                 table: "JusticeUser",
-                type: "int",
                 nullable: false,
                 defaultValue: 0);
         }

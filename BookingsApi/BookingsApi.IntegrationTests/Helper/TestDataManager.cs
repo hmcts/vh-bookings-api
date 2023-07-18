@@ -252,9 +252,9 @@ namespace BookingsApi.IntegrationTests.Helper
                     new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", dA),
                 });
 
-            if (status == BookingStatus.Created)
+            if (status != BookingStatus.Booked)
             {
-                videoHearing.UpdateStatus(BookingStatus.Created, createdBy, null);
+                videoHearing.UpdateStatus(status, createdBy, "test");
             }
 
             await using (var db = new BookingsDbContext(_dbContextOptions))
@@ -355,7 +355,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return videoHearing;
         }
 
-        public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing)
+        public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing, BookingStatus status = BookingStatus.Booked)
         {
             var dbContext = new BookingsDbContext(_dbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(dbContext)
@@ -376,6 +376,14 @@ namespace BookingsApi.IntegrationTests.Helper
             foreach (var command in commands)
             {
                 await new CreateVideoHearingCommandHandler(dbContext, new HearingService(dbContext)).Handle(command);
+                var retuendHearing = dbContext.VideoHearings.FirstOrDefault(x => x.Id == command.NewHearingId);
+                if (status != BookingStatus.Booked) 
+                // By default, hearings is set with booked status, it is transitioned into created status when queue subscriber updates it
+                // Need to update the status to set a required status to test different scenarios.
+                {
+                    retuendHearing.UpdateStatus(status, "test", "test");
+                    dbContext.SaveChanges();
+                }
             }
         }
 

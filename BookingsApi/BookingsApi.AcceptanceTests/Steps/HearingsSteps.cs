@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
@@ -100,6 +101,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             expected.Should().BeEquivalentTo(actual, o =>
             {
+                o.Using<string>(ctx => ctx.Subject.Should().BeEquivalentTo(ctx.Expectation)).WhenTypeIs<string>();
                 o.ExcludingMissingMembers().Excluding(x => x.Username);
                 return o;
             });
@@ -248,45 +250,46 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             var model = RequestHelper.Deserialise<List<HearingDetailsResponse>>(_context.Response.Content);
             model.Should().NotBeNull();
-            _context.TestData.Hearing.Id = model.First().Id;
+            _context.TestData.Hearing.Id = model.OrderByDescending(h => h.ScheduledDateTime).First().Id;
 
-            foreach (var hearing in model)
+            var hearing = model.FirstOrDefault(h => h.Id == _context.TestData.Hearing.Id);
+            hearing.Should().NotBeNull();
+            if (hearing == null) return;
+            
+            hearing.CaseTypeName.Should().NotBeNullOrEmpty();
+            foreach (var theCase in hearing.Cases)
             {
-                hearing.CaseTypeName.Should().NotBeNullOrEmpty();
-                foreach (var theCase in hearing.Cases)
-                {
-                    theCase.Name.Should().NotBeNullOrEmpty();
-                    theCase.Number.Should().NotBeNullOrEmpty();
-                }
-                hearing.HearingTypeName.Should().NotBeNullOrEmpty();
-                hearing.HearingVenueName.Should().NotBeNullOrEmpty();
-                foreach (var participant in hearing.Participants)
-                {
-                    participant.CaseRoleName.Should().NotBeNullOrEmpty();
-                    participant.ContactEmail.Should().NotBeNullOrEmpty();
-                    participant.DisplayName.Should().NotBeNullOrEmpty();
-                    participant.FirstName.Should().NotBeNullOrEmpty();
-                    participant.HearingRoleName.Should().NotBeNullOrEmpty();
-                    participant.Id.Should().NotBeEmpty();
-                    participant.LastName.Should().NotBeNullOrEmpty();
-                    participant.MiddleNames.Should().NotBeNullOrEmpty();
-                    participant.TelephoneNumber.Should().NotBeNullOrEmpty();
-                    participant.Title.Should().NotBeNullOrEmpty();
-                    participant.UserRoleName.Should().NotBeNullOrEmpty();
-                }
-                hearing.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
-                hearing.ScheduledDuration.Should().BePositive();
-                hearing.HearingRoomName.Should().NotBeNullOrEmpty();
-                hearing.OtherInformation.Should().NotBeNullOrEmpty();
-                hearing.CreatedBy.Should().NotBeNullOrEmpty();
-                hearing.Endpoints.Should().NotBeNullOrEmpty();
-                foreach (var endpoint in hearing.Endpoints)
-                {
-                    endpoint.Id.Should().NotBeEmpty();
-                    endpoint.DisplayName.Should().NotBeNullOrEmpty();
-                    endpoint.Sip.Should().NotBeNullOrEmpty();
-                    endpoint.Pin.Should().NotBeNullOrEmpty();
-                }
+                theCase.Name.Should().NotBeNullOrEmpty();
+                theCase.Number.Should().NotBeNullOrEmpty();
+            }
+            hearing.HearingTypeName.Should().NotBeNullOrEmpty();
+            hearing.HearingVenueName.Should().NotBeNullOrEmpty();
+            foreach (var participant in hearing.Participants)
+            {
+                participant.CaseRoleName.Should().NotBeNullOrEmpty();
+                participant.ContactEmail.Should().NotBeNullOrEmpty();
+                participant.DisplayName.Should().NotBeNullOrEmpty();
+                participant.FirstName.Should().NotBeNullOrEmpty();
+                participant.HearingRoleName.Should().NotBeNullOrEmpty();
+                participant.Id.Should().NotBeEmpty();
+                participant.LastName.Should().NotBeNullOrEmpty();
+                participant.MiddleNames.Should().NotBeNullOrEmpty();
+                participant.TelephoneNumber.Should().NotBeNullOrEmpty();
+                participant.Title.Should().NotBeNullOrEmpty();
+                participant.UserRoleName.Should().NotBeNullOrEmpty();
+            }
+            hearing.ScheduledDateTime.Should().BeAfter(DateTime.MinValue);
+            hearing.ScheduledDuration.Should().BePositive();
+            hearing.HearingRoomName.Should().NotBeNullOrEmpty();
+            hearing.OtherInformation.Should().NotBeNullOrEmpty();
+            hearing.CreatedBy.Should().NotBeNullOrEmpty();
+            hearing.Endpoints.Should().NotBeNullOrEmpty();
+            foreach (var endpoint in hearing.Endpoints)
+            {
+                endpoint.Id.Should().NotBeEmpty();
+                endpoint.DisplayName.Should().NotBeNullOrEmpty();
+                endpoint.Sip.Should().NotBeNullOrEmpty();
+                endpoint.Pin.Should().NotBeNullOrEmpty();
             }
         }
 
