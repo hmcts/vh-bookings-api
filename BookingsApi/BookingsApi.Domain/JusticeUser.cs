@@ -1,9 +1,9 @@
 ﻿using BookingsApi.Domain.Configuration;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.RefData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Common;
 
 namespace BookingsApi.Domain
 {
