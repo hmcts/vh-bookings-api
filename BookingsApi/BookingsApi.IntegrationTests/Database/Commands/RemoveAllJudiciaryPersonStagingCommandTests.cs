@@ -21,12 +21,15 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [OneTimeTearDown]
-        public void FinalCleanUp()
+        public async Task FinalCleanUp()
         {
             if (_addedPerson == null) return;
-            _context.Remove(_addedPerson);
-            _context.SaveChanges();
-            _context.SaveChanges();
+            var dbResult = await _context.JudiciaryPersonsStaging.FirstOrDefaultAsync(x=> x.Email == _addedPerson.Email);
+            if (dbResult != null)
+            {
+                _context.Remove(dbResult);
+                await _context.SaveChangesAsync();
+            }
         }
         
         [SetUp]
