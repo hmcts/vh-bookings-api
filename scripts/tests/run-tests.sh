@@ -17,7 +17,7 @@ dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c $c
         exit 1
     }
 
-dotnet tool restore
+dotnet tool update dotnet-ef --global
 dotnet ef database update -p BookingsApi/BookingsApi.DAL/BookingsApi.DAL.csproj -s BookingsApi/BookingsApi.DAL/BookingsApi.DAL.csproj
 dotnet ef database update -p RefData/RefData.csproj -s RefData/RefData.csproj
 
