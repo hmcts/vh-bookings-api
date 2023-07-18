@@ -5,17 +5,17 @@ exclusions="[Testing.Common]*,[BookingsApi.Common]BookingsApi.Common.*,[Bookings
 configuration=Release
 
 # Script is for docker compose tests where the script is at the root level
-# dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c $configuration --results-directory ./TestResults --logger "trx;LogFileName=BookingsApi-Unit-Tests-TestResults.trx" \
-#     "/p:CollectCoverage=true" \
-#     "/p:Exclude=\"${exclusions}\"" \
-#     "/p:CoverletOutput=${PWD}/Coverage/" \
-#     "/p:MergeWith=${PWD}/Coverage/coverage.json" \
-#     "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\"" ||
-#     {
-#         echo "##vso[task.logissue type=error]DotNet Unit Tests Failed."
-#         echo "##vso[task.complete result=Failed]"
-#         exit 1
-#     }
+dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c $configuration --results-directory ./TestResults --logger "trx;LogFileName=BookingsApi-Unit-Tests-TestResults.trx" \
+    "/p:CollectCoverage=true" \
+    "/p:Exclude=\"${exclusions}\"" \
+    "/p:CoverletOutput=${PWD}/Coverage/" \
+    "/p:MergeWith=${PWD}/Coverage/coverage.json" \
+    "/p:CoverletOutputFormat=\"opencover,json,cobertura,lcov\"" ||
+    {
+        echo "##vso[task.logissue type=error]DotNet Unit Tests Failed."
+        echo "##vso[task.complete result=Failed]"
+        exit 1
+    }
 
 dotnet tool restore
 dotnet ef database update -p BookingsApi/BookingsApi.DAL/BookingsApi.DAL.csproj -s BookingsApi/BookingsApi.DAL/BookingsApi.DAL.csproj
