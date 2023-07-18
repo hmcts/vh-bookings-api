@@ -17,6 +17,10 @@ dotnet test BookingsApi/BookingsApi.UnitTests/BookingsApi.UnitTests.csproj -c $c
         exit 1
     }
 
+dotnet tool restore
+dotnet ef database update -p BookingsApi/BookingsApi.DAL/BookingsApi.DAL.csproj -s BookingsApi/BookingsApi.DAL/BookingsApi.DAL.csproj
+dotnet ef database update -p RefData/RefData.csproj -s RefData/RefData.csproj
+
 dotnet test BookingsApi/BookingsApi.IntegrationTests/BookingsApi.IntegrationTests.csproj -c $configuration --results-directory ./TestResults --logger "trx;LogFileName=BookingsApi-Integration-Tests-TestResults.trx" \
     "/p:CollectCoverage=true" \
     "/p:Exclude=\"${exclusions}\"" \

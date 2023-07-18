@@ -33,10 +33,10 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
-            model.Should().NotBeNull();                 
+            model.Should().NotBeNull();
             model.ScheduledDuration.Should().NotBe(100);
             model.ScheduledDateTime.Should().NotBe(DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45));
-            model.HearingVenueName.Should().NotBe("Manchester Civil and Family Justice Centre");
+            model.HearingVenueName.Should().NotBe("Manchester County and Family Court");
 
             _context.TestData.Hearing = model;
             _context.TestData.Hearing.Id = model.Id;

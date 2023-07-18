@@ -314,7 +314,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 _ => throw new InvalidOperationException("Unexpected type of case type: " + scenario)
             };
 
-            var request  = new GetHearingRequest { Types = new List<int> { caseType } };
+            var request = new GetHearingRequest { Types = new List<int> { caseType } };
 
             Context.HttpContent = GetHttpContent(request);
             Context.Uri = HearingTypesRelativePath;
@@ -479,7 +479,7 @@ namespace BookingsApi.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName);
         }
 
-        private static StringContent GetHttpContent<T>(T data) where T: class
+        private static StringContent GetHttpContent<T>(T data) where T : class
             => new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
 
         private async Task SeedHearingForScenarioAsync(Scenario scenario)
@@ -650,7 +650,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,
-                HearingVenueName = "Manchester Civil and Family Justice Centre",
+                HearingVenueName = "Manchester County and Family Court",
                 OtherInformation = "OtherInfo",
                 QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,

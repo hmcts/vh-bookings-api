@@ -9,6 +9,10 @@
     "dotnet-stryker": {
       "version": "3.6.1",
       "commands": ["dotnet-stryker"]
+    },
+    "dotnet-ef": {
+      "version": "6.0.5",
+      "commands": ["dotnet-ef"]
     }
   }
 }
