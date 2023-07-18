@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.9" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />

@@ -81,6 +81,16 @@
           "Microsoft.Extensions.Primitives": "6.0.0"
         }
       },
+      "Microsoft.Extensions.Configuration.EnvironmentVariables": {
+        "type": "Direct",
+        "requested": "[6.0.1, )",
+        "resolved": "6.0.1",
+        "contentHash": "pnyXV1LFOsYjGveuC07xp0YHIyGq7jRq5Ncb5zrrIieMLWVwgMyYxcOH0jTnBedDT4Gh1QinSqsjqzcieHk1og==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration": "6.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "6.0.0"
+        }
+      },
       "Microsoft.Extensions.Configuration.Json": {
         "type": "Direct",
         "requested": "[6.0.0, )",
