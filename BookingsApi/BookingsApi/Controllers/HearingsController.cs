@@ -247,13 +247,14 @@ namespace BookingsApi.Controllers
                     return ModelStateErrorLogger(rDataFlag ? nameof(request.HearingTypeCode) : nameof(request.HearingTypeName), "Hearing type does not exist", logHearingTypeDoesNotExist, hearingTypeQueryValue, SeverityLevel.Error);
                 }
 
-                var venue = await GetVenue(request.HearingVenueName);
+                var venueId = rDataFlag ? request.HearingVenueCode : request.HearingVenueName;
+                var venue = await GetVenue(venueId, rDataFlag);
                 if (venue == null)
                 {
                     const string logHearingVenueDoesNotExist = "BookNewHearing Error: Hearing venue does not exist";
 
-                    return ModelStateErrorLogger(nameof(request.HearingVenueName),
-                        "Hearing venue does not exist", logHearingVenueDoesNotExist, request.HearingVenueName, SeverityLevel.Error);
+                    return ModelStateErrorLogger(nameof(venueId),
+                        "Hearing venue does not exist", logHearingVenueDoesNotExist, venueId, SeverityLevel.Error);
                 }
 
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
@@ -456,6 +457,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
+            var rDataFlag = _featureToggles.ReferenceDataToggle();
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
@@ -477,11 +479,11 @@ namespace BookingsApi.Controllers
                 return NotFound();
             }
 
-            var venue = await GetVenue(request.HearingVenueName);
-
+            var venueId = rDataFlag ? request.HearingVenueCode : request.HearingVenueName;
+            var venue = await GetVenue(venueId, rDataFlag);
             if (venue == null)
             {
-                ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
+                ModelState.AddModelError(nameof(venueId), "Hearing venue does not exist");
                 return BadRequest(ModelState);
             }
 
@@ -729,12 +731,12 @@ namespace BookingsApi.Controllers
             return await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
         }
 
-        private async Task<HearingVenue> GetVenue(string venueName)
+        private async Task<HearingVenue> GetVenue(string venueId, bool rDataFlag)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
             var hearingVenues =
                 await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
-            return hearingVenues.SingleOrDefault(x => x.Name == venueName);
+            return rDataFlag ? hearingVenues.SingleOrDefault(x => x.VenueCode == venueId) : hearingVenues.SingleOrDefault(x => x.Name == venueId);
         }
 
         /// <summary>

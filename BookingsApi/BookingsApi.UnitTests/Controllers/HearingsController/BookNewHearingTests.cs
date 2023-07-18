@@ -237,8 +237,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             }
         }
 
-        [Test]
-        public async Task Should_return_badrequest_without_matching_hearingvenue()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task Should_return_badrequest_without_matching_hearingvenue(bool referenceDataToggle)
         {
             QueryHandlerMock
            .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
@@ -249,7 +250,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
+            if (referenceDataToggle)
+            {
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueCode), "Hearing venue code does not exist");
+            }
+            else
+            {
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
+            }
         }
 
         [Test]

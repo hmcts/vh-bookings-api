@@ -17,11 +17,20 @@ namespace BookingsApi.Validations
         public const string CasesErrorMessage = "Please provide at least one case";
         public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
         public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
+        public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
         public BookNewHearingRequestValidation(bool referenceDataFeatureEnabled = false)
         {
-            RuleFor(x => x.HearingVenueName)
-                .NotEmpty().WithMessage(HearingVenueErrorMessage);
+            if (referenceDataFeatureEnabled)
+            {
+                RuleFor(x => x.HearingVenueCode)
+                    .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);
+            }
+            else
+            {
+                RuleFor(x => x.HearingVenueName)
+                    .NotEmpty().WithMessage(HearingVenueErrorMessage);
+            }
 
             RuleFor(x => x.ScheduledDateTime.Date)
                 .GreaterThanOrEqualTo(DateTime.Now.Date).WithMessage(ScheduleDateTimeInPastErrorMessage);

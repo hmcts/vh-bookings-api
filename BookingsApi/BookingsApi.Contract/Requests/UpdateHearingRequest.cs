@@ -19,6 +19,11 @@ namespace BookingsApi.Contract.Requests
         /// The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
+        
+        /// <summary>
+        ///     The code of the hearing venue
+        /// </summary>
+        public string HearingVenueCode { get; set; }
 
         /// <summary>
         ///     The hearing room name at the hearing venue

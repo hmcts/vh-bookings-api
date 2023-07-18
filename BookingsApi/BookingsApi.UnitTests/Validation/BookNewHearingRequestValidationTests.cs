@@ -115,6 +115,37 @@ namespace BookingsApi.UnitTests.Validation
                     .Should().BeTrue();
             }
         }
+        
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task Should_return_missing_hearing_venue_error(bool referenceDataToggle)
+        {
+            var request = BuildRequest();
+            if (referenceDataToggle)
+            {
+                request.HearingVenueCode = string.Empty;   
+            }
+            else
+            {
+                request.HearingVenueName = string.Empty;
+            }
+
+            var validator = new BookNewHearingRequestValidation(referenceDataToggle);
+            var result = await validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            if (referenceDataToggle)
+            {
+                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueCodeErrorMessage)
+                    .Should().BeTrue();
+            }
+            else
+            {
+                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
+                    .Should().BeTrue();
+            }
+        }
 
         [Test]
         public async Task Should_return_missing_participants_error()
