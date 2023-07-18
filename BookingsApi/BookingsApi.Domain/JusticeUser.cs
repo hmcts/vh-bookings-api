@@ -61,11 +61,6 @@ namespace BookingsApi.Domain
             var localStartDate = startDate.ToGmt();
             var localEndDate = endDate.ToGmt();
 
-            Console.WriteLine($"startDate: {startDate.ToString("o")}");
-            Console.WriteLine($"endDate: {endDate.ToString("o")}");
-            Console.WriteLine($"localStartDate: {localStartDate.ToString("o")}");
-            Console.WriteLine($"localEndDate: {localEndDate.ToString("o")}");
-            
             var workHours = VhoWorkHours.FirstOrDefault(wh => wh.SystemDayOfWeek == localStartDate.DayOfWeek);
             
             if (workHours == null)
