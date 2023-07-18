@@ -12,6 +12,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private BookingsDbContext _context;
         private RemoveAllJudiciaryPersonStagingCommandHandler _command;
+        private JudiciaryPersonStaging _addedPerson;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -22,13 +23,16 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [OneTimeTearDown]
         public void FinalCleanUp()
         {
-            _context.Database.EnsureDeleted();
+            if (_addedPerson == null) return;
+            _context.Remove(_addedPerson);
+            _context.SaveChanges();
+            _context.SaveChanges();
         }
         
         [SetUp]
         public async Task SetUp()
         {
-            await Hooks.AddJudiciaryPersonStaging();
+            _addedPerson = await Hooks.AddJudiciaryPersonStaging();
             
             _command = new RemoveAllJudiciaryPersonStagingCommandHandler(_context);
         }
