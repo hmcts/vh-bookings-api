@@ -481,7 +481,7 @@ namespace BookingsApi.Controllers
 
             if (venue == null)
             {
-                ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
+                ModelState.AddModelError(nameof(request.HearingVenueName), $"Hearing venue {request.HearingVenueName} does not exist");
                 return BadRequest(ModelState);
             }
 
