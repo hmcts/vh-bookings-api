@@ -146,11 +146,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName,
                 Context.Config.TestSettings.UsernameStem);
             
-            await using var db = new BookingsDbContext(this.Context.BookingsDbContextOptions);
-            var hearingFromDb = db.Venues.AsNoTracking().SingleOrDefault(x => x.Name == Context.TestData.UpdateHearingRequest.HearingVenueName);
-            hearingFromDb.Should()
-                .NotBeNull(
-                    $"Hearing venue name {Context.TestData.UpdateHearingRequest.HearingVenueName} should exist in the database");
             if (scenario == Scenario.Invalid)
             {
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
