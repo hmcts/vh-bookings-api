@@ -34,7 +34,6 @@ namespace RefData.Migrations
             string[] batches = sql.Split(new [] {"GO;"}, StringSplitOptions.None);
             foreach (string batch in batches)
             {
-                Console.WriteLine(batch);
                 migrationBuilder.Sql(batch);
             }
         }
