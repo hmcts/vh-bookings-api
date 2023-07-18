@@ -71,12 +71,12 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearings = new List<VideoHearing>
             {
-                CreateHearing(new DateTime(2023, 7, 18, 8, 0, 0, DateTimeKind.Utc), duration: 120),
-                CreateHearing(new DateTime(2024, 3, 4, 9, 0, 0, DateTimeKind.Utc), duration: 120),
-                CreateHearing(new DateTime(2024, 3, 4, 9, 30, 0, DateTimeKind.Utc), duration: 150),
-                CreateHearing(new DateTime(2024, 3, 4, 10, 0, 0, DateTimeKind.Utc), duration: 420),
-                CreateHearing(new DateTime(2024, 3, 4, 11, 0, 0, DateTimeKind.Utc), duration: 90),
-                CreateHearing(new DateTime(2024, 3, 4, 15, 0, 0, DateTimeKind.Utc), duration: 120)
+                CreateHearing(new DateTime(DateTime.Today.Year + 1, 7, 18, 8, 0, 0, DateTimeKind.Utc), duration: 120),
+                CreateHearing(new DateTime(DateTime.Today.Year + 2, 3, 4, 9, 0, 0, DateTimeKind.Utc), duration: 120),
+                CreateHearing(new DateTime(DateTime.Today.Year + 2, 3, 4, 9, 30, 0, DateTimeKind.Utc), duration: 150),
+                CreateHearing(new DateTime(DateTime.Today.Year + 2, 3, 4, 10, 0, 0, DateTimeKind.Utc), duration: 420),
+                CreateHearing(new DateTime(DateTime.Today.Year + 2, 3, 4, 11, 0, 0, DateTimeKind.Utc), duration: 90),
+                CreateHearing(new DateTime(DateTime.Today.Year + 2, 3, 4, 15, 0, 0, DateTimeKind.Utc), duration: 120)
             };
             
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -106,7 +106,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Fail_When_Cso_Has_No_Work_Hours()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc), duration: 60);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             cso.VhoWorkHours.Clear();
@@ -130,10 +130,10 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0), duration: 120);
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(40), duration: 120);
-            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 120);
-            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(40), duration: 120);
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 0, 0, DateTimeKind.Utc), duration: 120);
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 40, 0, DateTimeKind.Utc), duration: 120);
+            var hearing3 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 0, 0, DateTimeKind.Utc), duration: 120);
+            var hearing4 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 40, 0, DateTimeKind.Utc), duration: 120);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -169,9 +169,9 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc), duration: 60);
             var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime);
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(hearingStartTimeTimespan.Hours).AddMinutes(hearingStartTimeTimespan.Minutes));
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, hearingStartTimeTimespan.Hours, hearingStartTimeTimespan.Minutes, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -198,13 +198,13 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Allocate_Successfully_To_Cso_With_Fewest_Hearings_Allocated()
         {
             // Arrange
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
-            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
-            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
-            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
-            var hearing6 = CreateHearing(DateTime.Today.AddDays(1).AddHours(14).AddMinutes(45));
-            var hearing7 = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(45));
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 45, 0, DateTimeKind.Utc));
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 45, 0, DateTimeKind.Utc));
+            var hearing3 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 11, 45, 0, DateTimeKind.Utc));
+            var hearing4 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 12, 45, 0, DateTimeKind.Utc));
+            var hearing5 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 13, 45, 0, DateTimeKind.Utc));
+            var hearing6 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 14, 45, 0, DateTimeKind.Utc));
+            var hearing7 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 45, 0, DateTimeKind.Utc));
             
             var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -259,11 +259,11 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Allocate_Randomly_When_Multiple_Csos_Have_Same_Number_Of_Fewest_Hearings(int generatedRandomNumber)
         {
             // Arrange
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(45));
-            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
-            var hearing4 = CreateHearing(DateTime.Today.AddDays(1).AddHours(12).AddMinutes(45));
-            var hearing5 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 45, 0, DateTimeKind.Utc));
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 0, 0, DateTimeKind.Utc));
+            var hearing3 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 11, 45, 0, DateTimeKind.Utc));
+            var hearing4 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 12, 45, 0, DateTimeKind.Utc));
+            var hearing5 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 13, 45, 0, DateTimeKind.Utc));
 
             var cso1 = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -326,7 +326,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 7, 0, 0, DateTimeKind.Utc), duration: 120);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -359,7 +359,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(7).AddMinutes(0), duration: 120);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 7, 0, 0, DateTimeKind.Utc), duration: 120);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -392,7 +392,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 16, 30, 0, DateTimeKind.Utc), duration: 60);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -424,7 +424,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 _randomNumberGenerator.Object, 
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(16).AddMinutes(30), duration: 60);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 16, 30, 0, DateTimeKind.Utc), duration: 60);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -466,7 +466,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Fail_When_No_Csos_Available_Due_To_Work_Hours_Not_Coinciding(string workHourStartTime, string workHourEndTime)
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc), duration: 60);
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -496,7 +496,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Fail_When_No_Csos_Available_Due_To_Non_Availability_Hours_Coinciding(string nonAvailabilityStartTime, string nonAvailabilityEndTime)
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), duration: 60);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc), duration: 60);
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -513,9 +513,9 @@ namespace BookingsApi.UnitTests.DAL.Services
                 
                 justiceUser.VhoNonAvailability.Add(new VhoNonAvailability
                 {
-                    StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day)
+                    StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 0, 0, 0, DateTimeKind.Utc)
                         .Add(TimeSpan.Parse(nonAvailabilityStartTime)),
-                    EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day)
+                    EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 0, 0, 0, DateTimeKind.Utc)
                         .Add(TimeSpan.Parse(nonAvailabilityEndTime))
                 });
             }
@@ -533,7 +533,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Fail_When_Work_Hour_Start_And_End_Times_Are_Null()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0), 240);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc), 240);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -559,7 +559,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Fail_When_Hearing_Spans_Multiple_Days()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(22).AddMinutes(0), 240);
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 22, 0, 0, DateTimeKind.Utc), 240);
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -585,7 +585,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Allocate_Successfully_When_One_Cso_Available_Due_To_Work_Hours()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var justiceUsers = SeedJusticeUsers();
             var availableCso = justiceUsers.First();
@@ -612,7 +612,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Allocate_Successfully_When_One_Cso_Available_Due_To_Non_Availabilities()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var justiceUsers = SeedJusticeUsers();
             foreach (var justiceUser in justiceUsers)
@@ -629,8 +629,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                 
                 justiceUser.VhoNonAvailability.Add(new VhoNonAvailability
                 {
-                    StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 13, 0 ,0),
-                    EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 17, 0 ,0)
+                    StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 13, 0 ,0, DateTimeKind.Utc),
+                    EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 17, 0 ,0, DateTimeKind.Utc)
                 });
             }
 
@@ -650,7 +650,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Ignore_Non_Availabilities_Oustide_Hearing_Datetime()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -664,13 +664,13 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             cso.VhoNonAvailability.Add(new VhoNonAvailability
             {
-                StartTime = new DateTime(hearing.ScheduledDateTime.Year + 1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
-                EndTime = new DateTime(hearing.ScheduledDateTime.Year + 1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year + 1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year + 1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0, DateTimeKind.Utc)
             });
             cso.VhoNonAvailability.Add(new VhoNonAvailability
             {
-                StartTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
-                EndTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year-1, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0, DateTimeKind.Utc)
             });
 
             await _context.SaveChangesAsync();
@@ -686,7 +686,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Target_Cso_Justice_Users_Only()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var cso = SeedCso("cso@email.com", "Cso", "1");
             for (var i = 1; i <= 7; i++)
@@ -700,8 +700,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             cso.VhoNonAvailability.Add(new VhoNonAvailability
             {
-                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
-                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0, DateTimeKind.Utc)
             });
 
             var nonCso = SeedNonCso($"nonCso@email.com", "NonCso", "1");
@@ -728,7 +728,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Fail_When_Hearing_Already_Allocated()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 45, 0, DateTimeKind.Utc));
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -755,7 +755,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Ignore_Deleted_Non_Availabilities()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -769,8 +769,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             cso.VhoNonAvailability.Add(new VhoNonAvailability
             {
-                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
-                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0),
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0, DateTimeKind.Utc),
                 Deleted = true
             });
 
@@ -787,7 +787,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateAutomatically_Should_Ignore_Deleted_Csos()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -801,8 +801,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             }
             cso.VhoNonAvailability.Add(new VhoNonAvailability
             {
-                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
-                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0),
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0, DateTimeKind.Utc),
                 Deleted = true
             });
             cso = await _context.JusticeUsers.FirstOrDefaultAsync(x => x.Id == cso.Id);
@@ -821,7 +821,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Work_Hours()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -858,7 +858,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Non_Availabilties()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -877,8 +877,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
             cso.VhoNonAvailability.Add(new VhoNonAvailability
             {
-                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0),
-                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0)
+                StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 12, 0, 0, DateTimeKind.Utc),
+                EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 18, 0, 0, DateTimeKind.Utc)
             });
             await _context.SaveChangesAsync();
 
@@ -895,7 +895,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_Hearing_Starts_Before_Work_Hours_Start_Time_And_Setting_Is_Disabled()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -937,7 +937,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_Hearing_Ends_After_Work_Hours_Start_Time_And_Setting_Is_Disabled()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -979,7 +979,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Not_Deallocate_When_Hearing_Starts_Before_Work_Hours_Start_Time_And_Setting_Is_Enabled()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -1022,7 +1022,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Not_Deallocate_When_Hearing_Ends_After_Work_Hours_Start_Time_And_Setting_Is_Enabled()
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -1075,7 +1075,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             bool allowHearingToEndAfterWorkEndTime)
         {
             // Arrange
-            var hearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -1118,10 +1118,10 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task DeallocateFromUnavailableHearings_Should_Ignore_Historical_Allocations()
         {
             // Arrange
-            var historicalHearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
-            var historicalStartDate = DateTime.Today.AddDays(-1).AddHours(15).AddMinutes(0);
+            var historicalHearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
+            var historicalStartDate = new DateTime(2019, 3, 1, 15, 0, 0, DateTimeKind.Utc);
             historicalHearing.SetProtected(nameof(historicalHearing.ScheduledDateTime), historicalStartDate); // Necessary to bypass the validation for start date being in the past
-            var futureHearing = CreateHearing(DateTime.Today.AddDays(1).AddHours(15).AddMinutes(0));
+            var futureHearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
             for (var i = 1; i <= 7; i++)
@@ -1178,9 +1178,9 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateManually_Should_Allocate_Successfully_To_Cso_Overriding_Allocated_Cso()
         {
             // Arrange
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45));
-            var hearing3 = CreateHearing(DateTime.Today.AddDays(1).AddHours(13).AddMinutes(45));
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 45, 0, DateTimeKind.Utc));
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 11, 45, 0, DateTimeKind.Utc));
+            var hearing3 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 13, 45, 0, DateTimeKind.Utc));
 
             var list = new List<Guid>();
             list.Add(hearing1.Id);
@@ -1224,8 +1224,8 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateManually_Should_Allocate_Successfully_To_Cso_For_Not_Allocated_Hearing()
         {
             // Arrange
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(2).AddHours(3).AddMinutes(45));
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 45, 0, DateTimeKind.Utc));
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 2, 3, 45, 0, DateTimeKind.Utc));
 
             var list = new List<Guid>();
             list.Add(hearing1.Id);
@@ -1267,8 +1267,8 @@ namespace BookingsApi.UnitTests.DAL.Services
         public async Task AllocateManually_Should_Throw_Domain_Exception_Not_Found_Cso()
         {
             // Arrange
-            var hearing1 = CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(45));
-            var hearing2 = CreateHearing(DateTime.Today.AddDays(2).AddHours(3).AddMinutes(45));
+            var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 9, 45, 0, DateTimeKind.Utc));
+            var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 2, 3, 45, 0, DateTimeKind.Utc));
 
             var list = new List<Guid>();
             list.Add(hearing1.Id);
@@ -1374,7 +1374,6 @@ namespace BookingsApi.UnitTests.DAL.Services
             const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
-            scheduledDateTime = scheduledDateTime.ToUniversalTime();
 
             var videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                     new VideoHearing(_caseType, _hearingType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
