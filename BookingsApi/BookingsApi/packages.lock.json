@@ -2930,7 +2930,10 @@
         }
       },
       "bookingsapi.domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "BookingsApi.Common": "[1.0.0, )"
+        }
       },
       "bookingsapi.infrastructure.services": {
         "type": "Project",

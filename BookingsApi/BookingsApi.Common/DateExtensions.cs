@@ -26,5 +26,14 @@ namespace BookingsApi.Common
             } while (!IsWeekend(date));
             return date;
         }
+        
+        public static DateTime ToGmt(this DateTime date)
+        {
+            var dateUtc = date.ToUniversalTime();
+            
+            var britishTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+
+            return TimeZoneInfo.ConvertTimeFromUtc(dateUtc, britishTimeZone);
+        }
     }
 }

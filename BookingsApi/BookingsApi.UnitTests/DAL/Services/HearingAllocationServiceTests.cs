@@ -71,10 +71,12 @@ namespace BookingsApi.UnitTests.DAL.Services
             // Arrange
             var hearings = new List<VideoHearing>
             {
-                CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(0), duration: 120),
-                CreateHearing(DateTime.Today.AddDays(1).AddHours(9).AddMinutes(30), duration: 150),
-                CreateHearing(DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0), duration: 420),
-                CreateHearing(DateTime.Today.AddDays(1).AddHours(11).AddMinutes(0), duration: 90)
+                CreateHearing(new DateTime(2023, 7, 18, 8, 0, 0, DateTimeKind.Utc), duration: 120),
+                CreateHearing(new DateTime(2024, 3, 4, 9, 0, 0, DateTimeKind.Utc), duration: 120),
+                CreateHearing(new DateTime(2024, 3, 4, 9, 30, 0, DateTimeKind.Utc), duration: 150),
+                CreateHearing(new DateTime(2024, 3, 4, 10, 0, 0, DateTimeKind.Utc), duration: 420),
+                CreateHearing(new DateTime(2024, 3, 4, 11, 0, 0, DateTimeKind.Utc), duration: 90),
+                CreateHearing(new DateTime(2024, 3, 4, 15, 0, 0, DateTimeKind.Utc), duration: 120)
             };
             
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -83,7 +85,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 cso.VhoWorkHours.Add(new VhoWorkHours
                 {
                     DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
+                    StartTime = new TimeSpan(9, 0, 0), 
                     EndTime = new TimeSpan(17, 0, 0)
                 });   
             }

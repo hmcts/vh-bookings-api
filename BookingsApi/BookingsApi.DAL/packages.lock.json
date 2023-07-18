@@ -1848,7 +1848,10 @@
         }
       },
       "bookingsapi.domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "BookingsApi.Common": "[1.0.0, )"
+        }
       }
     }
   }
