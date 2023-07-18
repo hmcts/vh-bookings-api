@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ public class GetHearingVenuesTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         var hearingVenueResponses = await ApiClientResponse.GetResponses<List<HearingVenueResponse>>(result.Content);
         hearingVenueResponses.Should().NotBeEmpty();
+        TestContext.WriteLine(result.Content.ReadAsStringAsync().Result);
         hearingVenueResponses.Exists(x => x.Name == "Birmingham Civil and Family Justice Centre").Should().BeTrue();
     }
 }
