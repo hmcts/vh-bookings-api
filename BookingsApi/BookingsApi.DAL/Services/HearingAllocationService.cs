@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -72,14 +72,12 @@ namespace BookingsApi.DAL.Services
         public List<HearingAllocationResultDto> CheckForAllocationClashes(List<VideoHearing> hearings)
         {
             var vhoUsernamesConcurrencyCount = BuildUsernameConcurrencyCountDictionary(hearings);
-            var allocatedToIgnore = new[] {"Not Allocated", "Not Required"};
             var dto = hearings.Select(x =>
             {
-                var allocated = VideoHearingHelper.AllocatedVho(x);
                 bool? hasWorkHoursClash = null;
                 bool? hasNonAvailabilityClash = null;
                 int? concurrentHearingsCount = null;
-                if (!allocatedToIgnore.Contains(allocated, StringComparer.OrdinalIgnoreCase))
+                if (x.HearingVenue.IsWorkAllocationEnabled && x.AllocatedTo != null)
                 {
                     hasWorkHoursClash =
                         !x.AllocatedTo.IsDateBetweenWorkingHours(x.ScheduledDateTime, x.ScheduledEndTime, _configuration);

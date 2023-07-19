@@ -65,12 +65,12 @@ public class AddNonAvailableHoursTests : ApiTest
     private async Task<JusticeUserResponse> GetJusticeUserForTest()
     {
         // get all justice users, including deleted ones
-        var users = await BookingsApiClient.GetJusticeUserListAsync("auto.vhoteamlead1", true);
+        var users = await BookingsApiClient.GetJusticeUserListAsync("automation", true);
             
         // get the first user that contains the word test or Auto else create one
-        var cso = users.First(x =>
-            x.FirstName.Contains("automation", StringComparison.CurrentCultureIgnoreCase) ||
-            x.FirstName.Contains("Auto", StringComparison.CurrentCultureIgnoreCase));
+        var cso = users.FirstOrDefault(x =>
+                      x.FirstName.Contains("automation", StringComparison.CurrentCultureIgnoreCase) ||x.FirstName.Contains("Auto", StringComparison.CurrentCultureIgnoreCase)) ??
+                  await CreateJusticeUser();
 
         // if a user was returned and it was deleted, restore it before you use it for a test
         if (!cso.Deleted) return cso;

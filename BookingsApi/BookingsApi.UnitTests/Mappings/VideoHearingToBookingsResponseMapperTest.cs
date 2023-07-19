@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain.Helper;
 using BookingsApi.UnitTests.Utilities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -150,7 +151,7 @@ namespace BookingsApi.UnitTests.Mappings
             var target = new VideoHearingsToBookingsResponseMapper();
             var mapped = target.MapHearingResponse(mockedHearing);
             mapped.JudgeName.Should().BeEmpty();
-            mapped.AllocatedTo.Should().Be("Not Allocated");
+            mapped.AllocatedTo.Should().Be(VideoHearingHelper.NotAllocated);
         }
         
         [Test]
@@ -166,7 +167,7 @@ namespace BookingsApi.UnitTests.Mappings
             var target = new VideoHearingsToBookingsResponseMapper();
             var mapped = target.MapHearingResponse(mockedHearing);
             mapped.JudgeName.Should().BeEmpty();
-            mapped.AllocatedTo.Should().Be("Not Required");
+            mapped.AllocatedTo.Should().Be(VideoHearingHelper.NotRequired);
         }
 
         private static VideoHearing MockHearingWithCase()

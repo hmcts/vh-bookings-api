@@ -26,11 +26,12 @@ namespace BookingsApi.DAL.Queries
         
         public async Task<List<VideoHearing>> Handle(GetAllocationHearingsQuery query)
             => await _context.VideoHearings
+                .Include(h => h.HearingVenue)
                 .Include(h => h.Allocations)
                     .ThenInclude(a => a.JusticeUser)
                     .ThenInclude(ju => ju.JusticeUserRoles)
                     .ThenInclude(jur => jur.UserRole)
                 .Where(x => query.HearingIds.Contains(x.Id))
-                .ToListAsync();
+                .AsNoTracking().ToListAsync();
     }
 }

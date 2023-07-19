@@ -8,6 +8,7 @@ using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
