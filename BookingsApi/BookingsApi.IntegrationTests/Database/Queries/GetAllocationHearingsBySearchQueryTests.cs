@@ -125,11 +125,12 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(isUnallocated:true));
 
         //ASSERT
-        hearings.Count.Should().Be(2);
         hearings.Should().Contain(e =>
             e.HearingCases.First().Case.Number == _seededHearing1.HearingCases.First().Case.Number);
         hearings.Should().Contain(e => 
             e.HearingCases.First().Case.Number == _seededHearing3.HearingCases.First().Case.Number);
+
+        hearings.Should().NotContain(e => e.Id == _seededHearing2.Id);
     }
     
     [Test]

@@ -79,7 +79,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public new async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Where(ju => ju.CreatedBy == "db@test.com"));
+            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Include(x => x.JusticeUserRoles).Where(ju => ju.CreatedBy == "db@test.com"));
             await db.SaveChangesAsync();
         }
         

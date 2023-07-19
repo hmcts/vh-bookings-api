@@ -44,7 +44,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Then(@"the response should have the status (.*) and success status (.*)")]
         public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
-            Context.Response.StatusCode.Should().Be(statusCode);
+            Context.Response.StatusCode.Should().Be(statusCode, Context.Response.Content.ReadAsStringAsync().Result);
             Context.Response.IsSuccessStatusCode.Should().Be(isSuccess);
             NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
         }
