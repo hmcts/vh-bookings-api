@@ -1,6 +1,3 @@
--- You may need to uncomment the next line if the connection is not specific to a default database
-USE VhBookings;
-GO;
 SET XACT_ABORT ON;
 BEGIN TRANSACTION;
 
@@ -10,7 +7,7 @@ BEGIN
             Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES ('TempMigrationVenue', 9999, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'xxxxxx', 0, 0)
         END
 END
-GO
+GO;
 
 
 -- update all hearings where venueName = <old name> to 'TempMigrationVenue'

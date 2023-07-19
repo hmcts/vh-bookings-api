@@ -129,7 +129,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
 
-            var venues = new RefDataBuilder().HearingVenues;
+            var venues = await _context.Venues.AsNoTracking().ToListAsync();
 
             var venue1 = venues[0];
             var venue2 = venues[1];
@@ -155,8 +155,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_video_hearings_filtered_by_multiple_criteria()
         {
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-            
-            var venues = new RefDataBuilder().HearingVenues;
+            var venues = await _context.Venues.AsNoTracking().ToListAsync();
         
             var venue1 = venues[0];
             var venue2 = venues[1];
