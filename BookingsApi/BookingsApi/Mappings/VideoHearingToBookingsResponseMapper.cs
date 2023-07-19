@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Extensions;
 using BookingsApi.Helpers;

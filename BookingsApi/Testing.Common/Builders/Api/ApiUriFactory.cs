@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using BookingsApi.Contract.Queries;
+using BookingsApi.Contract.Requests;
 
 namespace Testing.Common.Builders.Api
 {
@@ -91,6 +93,16 @@ namespace Testing.Common.Builders.Api
             public static string BulkJudiciaryPersons() => $"{ApiRoot}/BulkJudiciaryPersons";
         }
 
+        public static class WorkAllocationEndpoints
+        {
+            private const string ApiRoot = "hearings";
+            
+            public static string SearchForAllocationHearings(SearchForAllocationHearingsRequest query) =>
+                $"{ApiRoot}/allocation/search?{QueryStringBuilder.ConvertToQueryString(query)}";
+            
+            public static string GetAllocationsForHearings => $"{ApiRoot}/get-allocation";
+        }
+        
         public static class JusticeUserEndpoints
         {
             private const string ApiRoot = "justiceuser";
