@@ -21,7 +21,7 @@ As
 BEGIN
     IF EXISTS (SELECT * FROM dbo.HearingType WHERE Name = @hearingTypeName AND CaseTypeId = @privateLawCaseTypeId)
         BEGIN PRINT ('Updating: ' + @hearingTypeName)
-        UPDATE dbo.HearingType SET Code = TRIM(@hearingTypeCode), WelshName = TRIM(@welshName), UpdatedDate = CURRENT_TIMESTAMP WHERE Name = @hearingTypeName
+        UPDATE dbo.HearingType SET Code = TRIM(@hearingTypeCode), WelshName = TRIM(@welshName), UpdatedDate = CURRENT_TIMESTAMP WHERE Name = @hearingTypeName AND CaseTypeId = @privateLawCaseTypeId
         END
     ELSE
         BEGIN PRINT ('Adding: ' + @hearingTypeName)

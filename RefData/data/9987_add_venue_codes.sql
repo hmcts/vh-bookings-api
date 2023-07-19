@@ -1,3 +1,5 @@
+USE VhBookings;
+
 SET XACT_ABORT ON
 GO;
 CREATE OR ALTER PROC #HearingVenue_CreateIfNotExist @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
@@ -40,6 +42,8 @@ EXEC #HearingVenue_CreateIfNotExist @venueName = 'Cwmbran Offices (Gwent House)'
 EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dumfries (1)', @venueCode = '999997', @isScottish = 1, @isWorkAllocationEnabled = 0;
 EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dunfermline', @venueCode = '999995', @isScottish = 1, @isWorkAllocationEnabled = 0;
 EXEC #HearingVenue_CreateIfNotExist @venueName = 'Wick', @venueCode = '999983', @isScottish = 1, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Conwy', @venueCode = '999976', @isScottish = 0, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dolgellau', @venueCode = '999978', @isScottish = 0, @isWorkAllocationEnabled = 0;
 
 -- Fix typoes
 UPDATE HearingVenue SET Name = 'Sefton Magistrates Court', VenueCode = '395973', UpdatedDate = CURRENT_TIMESTAMP WHERE Name LIKE 'Sefton Magistrates Court%'
