@@ -109,4 +109,10 @@ public class CancelBookingTests : ApiTest
         serializableError.ContainsKey("BookingStatus").Should().BeTrue();
         JsonConvert.DeserializeObject<string[]>(serializableError["BookingStatus"].ToString()!).Should().Contain("Cannot change the booking status from Failed to Cancelled");
     }
+    
+    [TearDown]
+    public async Task TearDown()
+    {
+        await Hooks.ClearSeededHearings();
+    }
 }

@@ -45,4 +45,10 @@ public class GetConfirmedHearingsByUsernameForTodayTests : ApiTest
 
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+    
+    [TearDown]
+    public async Task TearDown()
+    {
+        await Hooks.ClearSeededHearings();
+    }
 }

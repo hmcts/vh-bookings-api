@@ -1,6 +1,3 @@
--- You may need to uncomment the next line if the connection is not specific to a default database
-USE VhBookings
-
 SET XACT_ABORT ON
 BEGIN TRANSACTION;
 

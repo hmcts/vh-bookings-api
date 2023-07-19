@@ -18,7 +18,7 @@ namespace BookingsApi.AcceptanceTests.Models
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,
-                HearingVenueName = "Manchester Civil and Family Justice Centre",
+                HearingVenueName = "Manchester County and Family Court",
                 HearingRoomName = "HearingRoomName12345",
                 OtherInformation = "OtherInformation12345",
                 UpdatedBy = "admin@hmcts.net",
