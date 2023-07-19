@@ -768,7 +768,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return hearing;
         }
 
-        public async Task AddJudiciaryPersonStaging()
+        public async Task<JudiciaryPersonStaging> AddJudiciaryPersonStaging()
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -787,6 +787,7 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);
 
             await db.SaveChangesAsync();
+            return judiciaryPersonStaging;
         }
 
         public async Task AddJudiciaryPerson(string personalCode = null)

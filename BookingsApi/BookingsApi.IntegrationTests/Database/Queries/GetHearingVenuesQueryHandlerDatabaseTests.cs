@@ -23,6 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var venues = await _handler.Handle(new GetHearingVenuesQuery());
             venues.Should().NotBeEmpty();
+            venues.Should().Contain(x => x.Name == "Manchester County and Family Court");
         }
     }
 }
