@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock
             .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
-            .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham Civil and Family Justice Centre") });
+            .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham Civil and Family Justice Centre", venueCode: "TestVenueCode") });
 
             _videoHearing = GetHearing("123");
 
@@ -241,9 +241,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [TestCase(false)]
         public async Task Should_return_badrequest_without_matching_hearingvenue(bool referenceDataToggle)
         {
+            if (referenceDataToggle)
+                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
+            
             QueryHandlerMock
            .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
-           .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Not matching") });
+           .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Not matching", venueCode: "notvalid") });
 
             var result = await Controller.BookNewHearing(request);
 
@@ -252,7 +255,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
             if (referenceDataToggle)
             {
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueCode), "Hearing venue code does not exist");
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueCode), "Hearing venue does not exist");
             }
             else
             {

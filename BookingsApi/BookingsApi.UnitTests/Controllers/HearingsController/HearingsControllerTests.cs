@@ -294,9 +294,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             typedMessage.Hearing.CaseName.Should().Be("name");
         }
 
-        [Test]
-        public async Task Should_return_notfound_when_no_matching_venue_found()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task Should_return_notfound_when_no_matching_venue_found(bool referenceDataToggle)
         {
+            if (referenceDataToggle)
+                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
+            
             var request = new UpdateHearingRequest
             {
                 ScheduledDateTime = DateTime.Now.AddDays(2),
@@ -304,6 +308,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 ScheduledDuration = 15,
                 OtherInformation = "note",
                 HearingVenueName = "venue2",
+                HearingVenueCode = "venue2Code",
                 Cases = new List<CaseRequest>
                     { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
                 UpdatedBy = "test@hmcts.net"
@@ -318,7 +323,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
 
-            var venues = new List<HearingVenue> { new HearingVenue(1, "venue1"), };
+            var venues = new List<HearingVenue> { new HearingVenue(1, "venue1", venueCode: "notvalid"), };
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(venues);
@@ -328,8 +333,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (BadRequestObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName),
-                "Hearing venue does not exist");
+            if (referenceDataToggle)
+            {
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueCode), "Hearing venue does not exist");
+            }
+            else
+            {
+                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
+            }
         }
 
         [Test]

@@ -253,7 +253,7 @@ namespace BookingsApi.Controllers
                 {
                     const string logHearingVenueDoesNotExist = "BookNewHearing Error: Hearing venue does not exist";
 
-                    return ModelStateErrorLogger(nameof(venueId),
+                    return ModelStateErrorLogger(rDataFlag ? nameof(request.HearingVenueCode) : nameof(request.HearingVenueName),
                         "Hearing venue does not exist", logHearingVenueDoesNotExist, venueId, SeverityLevel.Error);
                 }
 
@@ -483,7 +483,7 @@ namespace BookingsApi.Controllers
             var venue = await GetVenue(venueId, rDataFlag);
             if (venue == null)
             {
-                ModelState.AddModelError(nameof(venueId), "Hearing venue does not exist");
+                ModelState.AddModelError(rDataFlag ? nameof(request.HearingVenueCode) : nameof(request.HearingVenueName), "Hearing venue does not exist");
                 return BadRequest(ModelState);
             }
 
