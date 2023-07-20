@@ -6,14 +6,14 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
-using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [AllowAnonymous]
@@ -36,7 +36,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("CheckServiceHealth")]
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> CheckServiceHealth()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  CheckServiceHealth()
         {
             var response = new BookingsApiHealthResponse
             {

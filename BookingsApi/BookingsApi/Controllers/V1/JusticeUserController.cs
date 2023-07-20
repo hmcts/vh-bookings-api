@@ -1,24 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Contract.Responses;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
-using BookingsApi.Domain;
-using BookingsApi.Mappings;
-using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
 using BookingsApi.Extensions;
+using BookingsApi.Mappings;
 using BookingsApi.Validations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("justiceuser")]
@@ -46,7 +46,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> AddJusticeUser(AddJusticeUserRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AddJusticeUser(AddJusticeUserRequest request)
         {
             var validation = await new AddJusticeUserRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)
@@ -89,7 +90,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> EditJusticeUser(EditJusticeUserRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  EditJusticeUser(EditJusticeUserRequest request)
         {
             var validation = await new EditJusticeUserRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)
@@ -125,7 +127,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetJusticeUserByUsername")]
         [ProducesResponseType(typeof(JusticeUserResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetJusticeUserByUsername(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetJusticeUserByUsername(string username)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
             var justiceUser =
@@ -150,7 +153,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetJusticeUserList")]
         [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetJusticeUserList(string term, bool includeDeleted = false)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetJusticeUserList(string term, bool includeDeleted = false)
         {
             var query = new GetJusticeUserListQuery(term, includeDeleted);
             var userList =
@@ -169,7 +173,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeleteJusticeUser(Guid id)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  DeleteJusticeUser(Guid id)
         {
             if (id == Guid.Empty)
             {
@@ -201,7 +206,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RestoreJusticeUser(RestoreJusticeUserRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  RestoreJusticeUser(RestoreJusticeUserRequest request)
         {
             var validation = await new RestoreJusticeUserRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)

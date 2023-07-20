@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
@@ -12,13 +17,8 @@ using BookingsApi.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("judiciaryperson")]
@@ -44,7 +44,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
             var judiciaryPersonRequests = request.ToList();
@@ -107,7 +108,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(BulkJudiciaryLeaverResponse), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> BulkJudiciaryLeaversAsync(IEnumerable<JudiciaryLeaverRequest> request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  BulkJudiciaryLeaversAsync(IEnumerable<JudiciaryLeaverRequest> request)
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
             var judiciaryLeaverRequests = request.ToList();
@@ -178,7 +180,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
             if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
             {

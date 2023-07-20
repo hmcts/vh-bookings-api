@@ -1,22 +1,22 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.Extensions;
-using BookingsApi.Validations;
-using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
+using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Extensions;
 using BookingsApi.Mappings;
+using BookingsApi.Validations;
+using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("work-hours")]
@@ -40,7 +40,8 @@ namespace BookingsApi.Controllers
         [HttpPost("SaveWorkHours")]
         [OpenApiOperation("SaveWorkHours")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
         {
 
             var validationResult = new UploadWorkHoursRequestsValidation().ValidateRequests(uploadWorkHoursRequests);
@@ -67,7 +68,8 @@ namespace BookingsApi.Controllers
         [HttpPost("SaveNonWorkingHours")]
         [OpenApiOperation("SaveNonWorkingHours")]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
         {
 
             var validationResult = new UploadNonWorkingHoursRequestsValidation().ValidateRequests(uploadNonWorkingHoursRequests);
@@ -94,7 +96,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetVhoWorkAvailabilityHours")]
         [ProducesResponseType(typeof(List<VhoWorkHoursResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetVhoWorkAvailabilityHours(string username)
         {
             if (!username.IsValidEmail())
             {
@@ -119,7 +122,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetVhoNonAvailabilityHours")]
         [ProducesResponseType(typeof(List<VhoNonAvailabilityWorkHoursResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetVhoNonAvailabilityHours(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetVhoNonAvailabilityHours(string username)
         {
             if (!username.IsValidEmail())
             {
@@ -146,7 +150,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
             var user = await _queryHandler.Handle<GetJusticeUserByUsernameQuery, JusticeUser>(query);
@@ -197,7 +202,8 @@ namespace BookingsApi.Controllers
         [HttpDelete("/NonAvailability")]
         [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  DeleteVhoNonAvailabilityHours(long id)
         {
             try
             {

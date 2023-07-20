@@ -1,28 +1,28 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
-using BookingsApi.Domain;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Extensions;
-using BookingsApi.Domain.Enumerations;
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("persons")]
@@ -48,12 +48,13 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">The username of the person</param>
         /// <returns>Person</returns>
-        [HttpGet("username/{**username}", Name = "GetPersonByUsername")]
+        [HttpGet("username/{**username}")]
         [OpenApiOperation("GetPersonByUsername")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPersonByUsername(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetPersonByUsername(string username)
         {
             if (!username.IsValidEmail())
             {
@@ -78,11 +79,12 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [HttpGet("username/hearings", Name = "GetHearingsByUsernameForDeletion")]
+        [HttpGet("username/hearings")]
         [OpenApiOperation("GetHearingsByUsernameForDeletion")]
         [ProducesResponseType(typeof(List<HearingsByUsernameForDeletionResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingsByUsernameForDeletion([FromQuery] string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingsByUsernameForDeletion([FromQuery] string username)
         {
             var query = new GetHearingsByUsernameForDeletionQuery(username);
             try
@@ -109,12 +111,13 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="contactEmail">The contact email of the person</param>
         /// <returns>Person</returns>
-        [HttpGet("contactEmail/{**contactEmail}", Name = "GetPersonByContactEmail")]
+        [HttpGet("contactEmail/{**contactEmail}")]
         [OpenApiOperation("GetPersonByContactEmail")]
         [ProducesResponseType(typeof(PersonResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPersonByContactEmail(string contactEmail)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetPersonByContactEmail(string contactEmail)
         {
             if (!contactEmail.IsValidEmail())
             {
@@ -143,7 +146,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("PostPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> PostPersonBySearchTerm(SearchTermRequest term)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  PostPersonBySearchTerm(SearchTermRequest term)
         {
             var query = new GetPersonBySearchTermQuery(term.Term);
             var personList = await _queryHandler.Handle<GetPersonBySearchTermQuery, List<Person>>(query);
@@ -157,13 +161,14 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">The username of the person</param>
         /// <returns>A list of suitability answers</returns>
-        [HttpGet("username/{username}/suitability-answers", Name = "GetPersonSuitabilityAnswers")]
+        [HttpGet("username/{username}/suitability-answers")]
         [OpenApiOperation("GetPersonSuitabilityAnswers")]
         [ProducesResponseType(typeof(List<PersonSuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Obsolete("This method is deprecated.")]
-        public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetPersonSuitabilityAnswers(string username)
         {
             if (!username.IsValidEmail())
             {
@@ -183,20 +188,22 @@ namespace BookingsApi.Controllers
         /// Get list of person from the old hearings
         /// </summary>
         /// <returns>list of usernames</returns>
-        [HttpGet("userswithclosedhearings", Name = "GetPersonByClosedHearings")]
+        [HttpGet("userswithclosedhearings")]
         [OpenApiOperation("GetPersonByClosedHearings")]
         [ProducesResponseType(typeof(UserWithClosedConferencesResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetPersonByClosedHearings()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetPersonByClosedHearings()
         {
             var query = new GetPersonsByClosedHearingsQuery();
             var person = await _queryHandler.Handle<GetPersonsByClosedHearingsQuery, List<string>>(query);
             return Ok(new UserWithClosedConferencesResponse { Usernames = person });
         }
 
-        [HttpGet("getanonymisationdata", Name = "GetAnonymisationData")]
+        [HttpGet("getanonymisationdata")]
         [OpenApiOperation("GetAnonymisationData")]
         [ProducesResponseType(typeof(AnonymisationDataResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAnonymisationData()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetAnonymisationData()
         {
             var anonymisationData =
                 await _queryHandler.Handle<GetAnonymisationDataQuery, AnonymisationDataDto>(
@@ -210,11 +217,12 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">username of person</param>
         /// <returns></returns>
-        [HttpPatch("username/{username}/anonymise", Name = "AnonymisePersonWithUsername")]
+        [HttpPatch("username/{username}/anonymise")]
         [OpenApiOperation("AnonymisePersonWithUsername")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> AnonymisePerson(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AnonymisePerson(string username)
         {
             var command = new AnonymisePersonCommand(username);
             try
@@ -233,11 +241,12 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">username of person</param>
         /// <returns></returns>
-        [HttpPatch("username/{username}/anonymise-for-expired-hearings", Name = "AnonymisePersonWithUsernameForExpiredHearings")]
+        [HttpPatch("username/{username}/anonymise-for-expired-hearings")]
         [OpenApiOperation("AnonymisePersonWithUsernameForExpiredHearings")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> AnonymisePersonWithUsernameForExpiredHearings(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AnonymisePersonWithUsernameForExpiredHearings(string username)
         {
             try
             {
@@ -370,12 +379,13 @@ namespace BookingsApi.Controllers
         /// <param name="contactEmail">The contact email of the person</param>
         /// <param name="username">username of the person</param>
         /// <returns>No content</returns>
-        [HttpPut("user/{**contactEmail}", Name = "UpdatePersonUsername")]
+        [HttpPut("user/{**contactEmail}")]
         [OpenApiOperation("UpdatePersonUsername")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpdatePersonUsername(string contactEmail, string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  UpdatePersonUsername(string contactEmail, string username)
         {
             if (!contactEmail.IsValidEmail())
             {

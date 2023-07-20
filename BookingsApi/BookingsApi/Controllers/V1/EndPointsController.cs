@@ -1,29 +1,29 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Extensions;
-using BookingsApi.Common.Configuration;
-using BookingsApi.Common.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Common.Configuration;
+using BookingsApi.Common.Services;
+using BookingsApi.Contract.Requests;
 using BookingsApi.Contract.Responses;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -59,7 +59,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId, AddEndpointRequest addEndpointRequest)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AddEndPointToHearingAsync(Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
             if (hearingId == Guid.Empty)
             {
@@ -116,7 +117,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> RemoveEndPointFromHearingAsync(Guid hearingId, Guid endpointId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  RemoveEndPointFromHearingAsync(Guid hearingId, Guid endpointId)
         {
             if (hearingId == Guid.Empty)
             {
@@ -160,7 +162,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpdateEndpointAsync(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  UpdateEndpointAsync(Guid hearingId, Guid endpointId, UpdateEndpointRequest updateEndpointRequest)
         {
             if (hearingId == Guid.Empty)
             {

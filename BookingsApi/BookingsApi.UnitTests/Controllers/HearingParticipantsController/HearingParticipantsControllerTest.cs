@@ -44,7 +44,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             }
         }
 
-        protected BookingsApi.Controllers.HearingParticipantsController Controller;
+        protected BookingsApi.Controllers.V1.HearingParticipantsController Controller;
 
         protected Guid hearingId;
         protected Guid participantId;
@@ -84,7 +84,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
             videoHearing = GetVideoHearing();
-            Controller = new BookingsApi.Controllers.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
+            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);

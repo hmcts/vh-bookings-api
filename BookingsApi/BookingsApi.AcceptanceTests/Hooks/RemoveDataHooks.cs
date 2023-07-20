@@ -38,7 +38,7 @@ namespace BookingsApi.AcceptanceTests.Hooks
                 var client = new TestHttpClient();
 
                 var response = client.ExecuteAsync(
-                        context, HearingTypesRelativePath,
+                        context, GetHearingsByTypes,
                         request, HttpMethod.Get)
                     .Result;
 

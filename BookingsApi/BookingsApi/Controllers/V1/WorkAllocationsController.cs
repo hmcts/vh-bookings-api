@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("hearings")]
@@ -49,7 +49,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AllocateHearingAutomatically(Guid hearingId)
         {
             try
             {
@@ -77,7 +78,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetUnallocatedHearings")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetUnallocatedHearings()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetUnallocatedHearings()
         {
             var today = DateTime.UtcNow; //provide a range (from today 1 year) for unallocated hearings rather than return all past and present.
             var query = new GetAllocationHearingsBySearchQuery(isUnallocated: true, fromDate: today, toDate: today.AddYears(1));
@@ -94,10 +96,11 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingIds">Hearing Reference ID array</param>
         /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpPost("get-allocation", Name = "GetAllocationsForHearings")]
+        [HttpPost("get-allocation")]
         [OpenApiOperation("GetAllocationsForHearings")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllocationsForHearings([FromBody]Guid[] hearingIds)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetAllocationsForHearings([FromBody]Guid[] hearingIds)
         {
             var allocatedHearings = await _queryHandler
                     .Handle<GetAllocationHearingsQuery, List<VideoHearing>>(new GetAllocationHearingsQuery(hearingIds));
@@ -134,10 +137,11 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="searchRequest">Search criteria</param>
         /// <returns>list of hearings matching search criteria</returns>
-        [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
+        [HttpGet("allocation/search")]
         [OpenApiOperation("SearchForAllocationHearings")]
         [ProducesResponseType(typeof(List<HearingAllocationsResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  SearchForAllocationHearings([FromQuery] SearchForAllocationHearingsRequest searchRequest)
         {
             var query = new GetAllocationHearingsBySearchQuery(
                 searchRequest.CaseNumber,
@@ -165,7 +169,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("AllocateHearingsToCso")]
         [ProducesResponseType(typeof(List<HearingAllocationsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
         {
             try
             {

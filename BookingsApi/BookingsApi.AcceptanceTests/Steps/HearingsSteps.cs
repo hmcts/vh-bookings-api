@@ -170,7 +170,7 @@ namespace BookingsApi.AcceptanceTests.Steps
 
             var result = client.ExecuteAsync(
                 _context,
-                HearingTypesRelativePath,
+                GetHearingsByTypes,
                 request, HttpMethod.Get)
                 .Result;
 

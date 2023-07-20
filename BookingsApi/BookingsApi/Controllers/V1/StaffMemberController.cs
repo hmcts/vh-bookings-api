@@ -1,4 +1,7 @@
-using BookingsApi.Contract.Requests;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -6,12 +9,8 @@ using BookingsApi.Domain;
 using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("staffmember")]
@@ -35,7 +34,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetStaffMemberBySearchTerm(string term)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetStaffMemberBySearchTerm(string term)
         {
             if(term.Length < 3)
             {

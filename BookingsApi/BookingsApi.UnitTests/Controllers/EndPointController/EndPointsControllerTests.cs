@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using BookingsApi.Controllers.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;

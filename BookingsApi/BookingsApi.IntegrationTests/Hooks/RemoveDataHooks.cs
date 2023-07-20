@@ -51,7 +51,7 @@ namespace BookingsApi.IntegrationTests.Hooks
             using var client = context.Server.CreateClient();
             client.SetFakeBearerToken("admin", new[] { "ROLE_ADMIN", "ROLE_GENTLEMAN" });
 
-            context.Uri = client.BaseAddress + HearingTypesRelativePath;
+            context.Uri = client.BaseAddress + GetHearingsByTypes;
             context.HttpMethod = HttpMethod.Get;
             context.HttpContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
+using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;

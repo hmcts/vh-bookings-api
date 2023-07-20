@@ -1,42 +1,45 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
-using BookingsApi.Extensions;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.Validations;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Queries;
 using BookingsApi.Common;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
+using BookingsApi.Contract.Queries;
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.DAL.Services;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using NSwag.Annotations;
-using BookingsApi.DAL.Services;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("hearings")]
+    [Route(template:"v{version:apiVersion}/hearings")]
+    [ApiVersion("1.0")]
     [ApiController]
+    [AllowAnonymous]
     public class HearingsController : Controller
     {
 
@@ -74,12 +77,13 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("{hearingId}", Name = "GetHearingDetailsById")]
+        [HttpGet("{hearingId}")]
         [OpenApiOperation("GetHearingDetailsById")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingDetailsById(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
             {
@@ -104,11 +108,12 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
-        [HttpGet(Name = "GetHearingsByUsername")]
+        [HttpGet]
         [OpenApiOperation("GetHearingsByUsername")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingsByUsername([FromQuery] string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingsByUsername([FromQuery] string username)
         {
             var query = new GetHearingsByUsernameQuery(username);
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
@@ -121,11 +126,12 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("today", Name = "GetConfirmedHearingsByUsernameForToday")]
+        [HttpGet("today")]
         [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingsByUsernameForToday([FromQuery] string username)
         {
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
             var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
@@ -142,11 +148,11 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingIds">hearing ids to anonymise data with</param>
         /// <returns></returns>
-        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case",
-            Name = "AnonymiseParticipantAndCaseByHearingId")]
+        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case")]
         [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
         {
             await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIds });
             return Ok();
@@ -157,10 +163,11 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("{groupId}/hearings", Name = "GetHearingsByGroupId")]
+        [HttpGet("{groupId}/hearings")]
         [OpenApiOperation("GetHearingsByGroupId")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetHearingsByGroupId(Guid groupId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingsByGroupId(Guid groupId)
         {
             var query = new GetHearingsByGroupIdQuery(groupId);
             var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(query);
@@ -174,10 +181,11 @@ namespace BookingsApi.Controllers
         /// Get list of all hearings for notification between next 48 to 72 hrs. 
         /// </summary>
         /// <returns>Hearing details</returns>
-        [HttpGet("notifications/gethearings", Name = "GetHearingsForNotification")]
+        [HttpGet("notifications/gethearings")]
         [OpenApiOperation("GetHearingsForNotification")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetHearingsForNotificationAsync()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingsForNotificationAsync()
         {
 
             var query = new GetHearingsForNotificationsQuery();
@@ -199,7 +207,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("BookNewHearing")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> BookNewHearing(BookNewHearingRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  BookNewHearing(BookNewHearingRequest request)
         {
             try
             {
@@ -338,7 +347,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RebookHearing(Guid hearingId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  RebookHearing(Guid hearingId)
         {
             var hearing = await GetHearingAsync(hearingId);
 
@@ -400,7 +410,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("CloneHearing")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  CloneHearing([FromRoute] Guid hearingId,
             [FromBody] CloneHearingRequest request)
         {
             var videoHearing = await GetHearingAsync(hearingId);
@@ -454,7 +465,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
             if (hearingId == Guid.Empty)
             {
@@ -525,7 +537,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> RemoveHearing(Guid hearingId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  RemoveHearing(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
             {
@@ -565,7 +578,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest request)
         {
             if (hearingId == Guid.Empty)
             {
@@ -617,7 +631,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(SerializableError),(int)HttpStatusCode.Conflict)]
-        public async Task<IActionResult> CancelBooking(Guid hearingId, CancelBookingRequest request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  CancelBooking(Guid hearingId, CancelBookingRequest request)
         {
             if (hearingId == Guid.Empty)
             {
@@ -668,7 +683,12 @@ namespace BookingsApi.Controllers
             await _commandHandler.Handle(command);
         }
 
-        [HttpGet("types", Name = "GetHearingsByTypes")]
+        /// <summary>
+        /// Get all hearings by a given case type
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>A cursor-based result of a list of matching hearings</returns>
+        [HttpGet("all/types")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -680,15 +700,15 @@ namespace BookingsApi.Controllers
 
             if (!await ValidateCaseTypes(request.Types))
             {
-                ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
-                return BadRequest(ModelState);
+                ModelState.AddModelError(nameof(request.Types), "Invalid value for hearing types");
+                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest, modelStateDictionary:ModelState);
             }
 
             request.VenueIds ??= new List<int>();
             if (!await ValidateVenueIds(request.VenueIds))
             {
-                ModelState.AddModelError("Venue ids", "Invalid value for venue ids");
-                return BadRequest(ModelState);
+                ModelState.AddModelError(nameof(request.VenueIds), "Invalid value for venue ids");
+                return ValidationProblem(statusCode: (int)HttpStatusCode.BadRequest, modelStateDictionary:ModelState);
             }
 
             var query = new GetBookingsByCaseTypesQuery(request.Types)
@@ -742,11 +762,12 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="searchQuery">Search criteria</param>
         /// <returns>list of hearings matching search criteria</returns>
-        [HttpGet("audiorecording/search", Name = "SearchForHearings")]
+        [HttpGet("audiorecording/search")]
         [OpenApiOperation("SearchForHearings")]
         [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> SearchForHearingsAsync([FromQuery] SearchForHearingsQuery searchQuery)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  SearchForHearingsAsync([FromQuery] SearchForHearingsQuery searchQuery)
         {
             var caseNumber = WebUtility.UrlDecode(searchQuery.CaseNumber);
 
@@ -763,12 +784,13 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Booking status</returns>
-        [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
+        [HttpGet("{hearingId}/status")]
         [OpenApiOperation("GetBookingStatusById")]
         [ProducesResponseType(typeof(Contract.Enums.BookingStatus), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetBookingStatusById(Guid hearingId)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetBookingStatusById(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
             {

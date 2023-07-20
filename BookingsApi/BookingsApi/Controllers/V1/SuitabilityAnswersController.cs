@@ -1,18 +1,20 @@
-﻿using BookingsApi.Contract.Responses;
-using BookingsApi.Domain.Participants;
-using Microsoft.AspNetCore.Mvc;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Mappings;
+using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("suitability-answers")]
     [ApiController]
+    [Obsolete("No longer supported")]
     public class SuitabilityAnswersController : Controller
     {
         private const string DefaultCursor = "0";

@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
     public class HearingsControllerTests
     {
-        protected BookingsApi.Controllers.HearingsController Controller;
+        protected BookingsApi.Controllers.V1.HearingsController Controller;
         protected Mock<IQueryHandler> QueryHandlerMock;
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
@@ -67,9 +67,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             Controller = GetControllerObject(false);
         }
 
-        protected BookingsApi.Controllers.HearingsController GetControllerObject(bool withQueueClient)
+        protected BookingsApi.Controllers.V1.HearingsController GetControllerObject(bool withQueueClient)
         {
-            return  new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
+            return  new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object,
                 CommandHandlerMock.Object,
                 withQueueClient ? _eventPublisher: EventPublisherMock.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
                 HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);
@@ -144,7 +144,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types",
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(GetHearingRequest.Types),
                 "Invalid value for hearing types");
         }
 
@@ -551,7 +551,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Venue ids",
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(GetHearingRequest.VenueIds),
                 "Invalid value for venue ids");
         }
 

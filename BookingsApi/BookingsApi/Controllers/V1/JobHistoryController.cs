@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,11 +8,10 @@ using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("JobHistory")]
@@ -38,7 +36,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("UpdateJobHistory")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateJobHistory(string jobName, bool isSuccessful)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  UpdateJobHistory(string jobName, bool isSuccessful)
         {
             await _commandHandler.Handle(new AddJobHistoryCommand {JobName = jobName, IsSuccessful = true});
             return NoContent();
@@ -53,7 +52,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetJobHistory")]
         [ProducesResponseType(typeof(List<JobHistoryResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> GetJobHistory(string jobName)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetJobHistory(string jobName)
         {
             var jobHistories = await _queryHandler.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(new GetJobHistoryByJobNameQuery(jobName));   
             var obj = jobHistories.Select(e => new JobHistoryResponse(e.JobName, e.LastRunDate, e.IsSuccessful)).ToList();

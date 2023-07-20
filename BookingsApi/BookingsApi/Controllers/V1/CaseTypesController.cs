@@ -3,13 +3,13 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Contract.Responses;
-using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain.RefData;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("casetypes")]
@@ -29,7 +29,8 @@ namespace BookingsApi.Controllers
         [HttpGet]
         [OpenApiOperation("GetCaseTypes")]
         [ProducesResponseType(typeof(List<CaseTypeResponse>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> GetCaseTypes()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetCaseTypes()
         {
             var query = new GetAllCaseTypesQuery();
             var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
@@ -58,7 +59,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetCaseRolesForCaseType")]
         [ProducesResponseType(typeof(List<CaseRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCaseRolesForCaseType(string caseTypeParam)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetCaseRolesForCaseType(string caseTypeParam)
         {
             var query = new GetCaseTypeQuery(caseTypeParam);
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
@@ -86,7 +88,8 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetHearingRolesForCaseRole")]
         [ProducesResponseType(typeof(List<HearingRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
         {            
             var query = new GetCaseTypeQuery(caseTypeName);
             var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);

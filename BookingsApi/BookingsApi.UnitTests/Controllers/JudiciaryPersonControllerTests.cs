@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Controllers.V1;
 
 namespace BookingsApi.UnitTests.Controllers
 {

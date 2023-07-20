@@ -1,17 +1,17 @@
-﻿using BookingsApi.Contract.Responses;
-using BookingsApi.Validations;
-using BookingsApi.Domain.Participants;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Mappings;
+using BookingsApi.Validations;
+using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("Participants")]
@@ -30,12 +30,13 @@ namespace BookingsApi.Controllers
         /// </summary>
         /// <param name="username">The username of the participant</param>
         /// <returns>Participant</returns>
-        [HttpGet("username/{username}", Name = "GetParticipantsByUsername")]
+        [HttpGet("username/{username}")]
         [OpenApiOperation("GetParticipantsByUsername")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetParticipantsByUsername(string username)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  GetParticipantsByUsername(string username)
         {
             if (!username.IsValidEmail())
             {

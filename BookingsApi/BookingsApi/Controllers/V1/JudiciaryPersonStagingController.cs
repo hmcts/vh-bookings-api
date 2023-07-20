@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("judiciarypersonstaging")]
@@ -30,7 +30,8 @@ namespace BookingsApi.Controllers
         [HttpDelete("RemoveAllJudiciaryPersonsStaging")]
         [OpenApiOperation("RemoveAllJudiciaryPersonsStaging")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> RemoveAllJudiciaryPersonsStagingAsync()
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  RemoveAllJudiciaryPersonsStagingAsync()
         {
             await _commandHandler.Handle(new RemoveAllJudiciaryPersonStagingCommand());
 
@@ -40,7 +41,8 @@ namespace BookingsApi.Controllers
         [HttpPost("BulkJudiciaryPersonsStaging")]
         [OpenApiOperation("BulkJudiciaryPersonsStaging")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> BulkJudiciaryPersonsStagingAsync(IEnumerable<JudiciaryPersonStagingRequest> request)
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult>  BulkJudiciaryPersonsStagingAsync(IEnumerable<JudiciaryPersonStagingRequest> request)
         {
             var judiciaryPersonStagingRequests = request.ToList();
             

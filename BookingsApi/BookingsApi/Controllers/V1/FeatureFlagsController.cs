@@ -1,9 +1,9 @@
+using System.Net;
 using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using System.Net;
 
-namespace BookingsApi.Controllers
+namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("feature-flags")]

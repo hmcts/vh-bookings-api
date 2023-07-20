@@ -1,4 +1,5 @@
-﻿using BookingsApi.Common;
+﻿using System;
+using BookingsApi.Common;
 using BookingsApi.Common.Security;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands.Core;
@@ -12,8 +13,10 @@ using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using NSwag.Generation.AspNetCore;
 
 namespace BookingsApi
 {
@@ -21,22 +24,35 @@ namespace BookingsApi
     {
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
-            services.AddOpenApiDocument((document, serviceProvider) =>
+            var apiVersionDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
+            foreach (var versionDescription in apiVersionDescription.ApiVersionDescriptions)
             {
-                document.AddSecurity("JWT", Enumerable.Empty<string>(),
-                    new OpenApiSecurityScheme
-                    {
-                        Type = OpenApiSecuritySchemeType.ApiKey,
-                        Name = "Authorization",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                        Description = "Type into the textbox: Bearer {your JWT token}.",
-                        Scheme = "bearer"
-                    });
-                document.Title = "Bookings API";
-                document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
-                document.OperationProcessors.Add(new AuthResponseOperationProcessor());
-            });
+                services.AddOpenApiDocument((configure) =>
+                {
+                    ConfigureSwaggerForVersion(configure, versionDescription.GroupName);
+                });
+            }
             return services;
+        }
+
+        private static void ConfigureSwaggerForVersion(AspNetCoreOpenApiDocumentGeneratorSettings configure,
+             string version)
+        {
+            configure.DocumentName = version;
+            configure.ApiGroupNames = new[] {version};
+            configure.AddSecurity("JWT", Enumerable.Empty<string>(),
+                new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}.",
+                    Scheme = "bearer"
+                });
+            configure.Title = "Bookings API";
+            configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            configure.OperationProcessors.Add(new AuthResponseOperationProcessor());
+
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
