@@ -570,7 +570,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync(bool? excludeExpiredVenue);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -578,7 +578,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync(bool? excludeExpiredVenue, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get today's hearing venues by their allocated csos
@@ -4770,9 +4770,9 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync()
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync(bool? excludeExpiredVenue)
         {
-            return GetHearingVenuesAsync(System.Threading.CancellationToken.None);
+            return GetHearingVenuesAsync(excludeExpiredVenue, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -4781,10 +4781,15 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>List of hearing venues</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingVenueResponse>> GetHearingVenuesAsync(bool? excludeExpiredVenue, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearingvenues");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearingvenues?");
+            if (excludeExpiredVenue != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("excludeExpiredVenue") + "=").Append(System.Uri.EscapeDataString(ConvertToString(excludeExpiredVenue, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
 
             var client_ = _httpClient;
             var disposeClient_ = false;

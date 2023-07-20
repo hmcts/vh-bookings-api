@@ -7,6 +7,7 @@ using BookingsApi.Contract.Responses;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -32,12 +33,12 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetHearingVenues")]
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingVenues()
+        public async Task<IActionResult> GetHearingVenues([FromQuery] bool excludeExpiredVenue = false)
         {
-            var query = new GetHearingVenuesQuery();
+            var query = new GetHearingVenuesQuery(excludeExpiredVenue);
             var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query);
 
-            var response = hearingVenues.Select(x => new HearingVenueResponse()
+            var response = hearingVenues.Select(x => new HearingVenueResponse
             {
                 Id = x.Id, Name = x.Name
             }).ToList();
