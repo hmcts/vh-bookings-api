@@ -798,11 +798,11 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody]IEnumerable<string> venueNames)
         {
-            var videoHearing = await _queryHandler.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(new GetHearingsForTodayByVenuesQuery(venueNames));
-            if (videoHearing == null || !videoHearing.Any())
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(new GetHearingsForTodayByVenuesQuery(venueNames));
+            if (!videoHearings.Any())
                 return NotFound();
 
-            return Ok(videoHearing.Select(HearingToDetailsResponseMapper.Map).ToList());
+            return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
 
         private string BuildCursorPageUrl(
