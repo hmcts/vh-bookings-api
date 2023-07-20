@@ -39,7 +39,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             QueryHandlerMock
              .Setup(x => x.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(It.IsAny<GetHearingsForTodayByVenuesQuery>()))
-             .ReturnsAsync((List<VideoHearing>)null);
+             .ReturnsAsync(new List<VideoHearing>());
 
             var result = await Controller.GetHearingsForTodayByVenue(new[]{"random venue name"});
 
