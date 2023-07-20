@@ -818,7 +818,7 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
-        public async Task AllocateAutomatically_Should_Ignore_Future_Allocations()
+        public async Task AllocateAutomatically_Should_Allocate_Successfully_With_Future_Allocations_Present()
         {
             // If a user has been allocated to a hearing for a future date, they should still be a candidate for allocation before this date
             
