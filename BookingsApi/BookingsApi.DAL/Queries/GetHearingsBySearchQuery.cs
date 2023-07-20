@@ -55,7 +55,11 @@ namespace BookingsApi.DAL.Queries
                     x.ScheduledDateTime.DayOfYear == date.DayOfYear);
             }
             
-            return await efQuery.AsNoTracking().Take(100).ToListAsync();
+            return await efQuery
+                .AsNoTracking()
+                .Take(100)
+                .AsSplitQuery()
+                .ToListAsync();
         }
     }
 }

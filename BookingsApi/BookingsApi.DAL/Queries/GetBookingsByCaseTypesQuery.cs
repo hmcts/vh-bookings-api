@@ -135,7 +135,11 @@ namespace BookingsApi.DAL.Queries
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result =  hearings.Take(query.Limit + 1).ToList();
+            var result =  await hearings
+                .Take(query.Limit + 1)
+                .AsSplitQuery()
+                .ToListAsync();
+            
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
