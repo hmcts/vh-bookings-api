@@ -382,7 +382,13 @@ namespace BookingsApi.Domain
                 .Where(a => a.Hearing.ScheduledDateTime.AddMinutes(a.Hearing.ScheduledDuration + configuration.MinimumGapBetweenHearingsInMinutes) >= ScheduledDateTime)
                 .ToList();
 
-            var gapBetweenHearingsIsInsufficient = allocations.Any(a => (ScheduledDateTime - a.Hearing.ScheduledDateTime).TotalMinutes < configuration.MinimumGapBetweenHearingsInMinutes);
+            var gapBetweenHearingsIsInsufficient = allocations.Exists(a =>
+            {
+                var timeDifferenceInMinutes = Math.Abs((ScheduledDateTime - a.Hearing.ScheduledDateTime).TotalMinutes);
+
+                return timeDifferenceInMinutes < configuration.MinimumGapBetweenHearingsInMinutes;
+            });
+            
             if (gapBetweenHearingsIsInsufficient)
             {
                 return false;

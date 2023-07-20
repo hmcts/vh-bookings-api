@@ -818,6 +818,37 @@ namespace BookingsApi.UnitTests.DAL.Services
         }
 
         [Test]
+        public async Task AllocateAutomatically_Should_Ignore_Future_Allocations()
+        {
+            // If a user has been allocated to a hearing for a future date, they should still be a candidate for allocation before this date
+            
+            // Arrange
+            var cso = SeedCso("user1@email.com", "User", "1");
+            for (var i = 1; i <= 7; i++)
+            {
+                cso.VhoWorkHours.Add(new VhoWorkHours
+                {
+                    DayOfWeekId = i,
+                    StartTime = new TimeSpan(9, 0, 0),
+                    EndTime = new TimeSpan(17, 0, 0)
+                });
+            }
+            
+            var futureHearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 7, 24, 9, 0, 0, DateTimeKind.Utc));
+            AllocateAutomaticallyToHearing(cso.Id, futureHearing.Id);
+            
+            var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 7, 21, 9, 0, 0, DateTimeKind.Utc));
+            
+            await _context.SaveChangesAsync();
+            
+            // Act
+            var result = await _service.AllocateAutomatically(hearing.Id);
+
+            // Assert
+            AssertCsoAllocated(result, cso, hearing);
+        }
+
+        [Test]
         public async Task DeallocateFromUnavailableHearings_Should_Deallocate_When_User_Not_Available_Due_To_Work_Hours()
         {
             // Arrange
