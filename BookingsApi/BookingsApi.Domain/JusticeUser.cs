@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Domain.Configuration;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.RefData;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,10 @@ namespace BookingsApi.Domain
 
         public bool IsDateBetweenWorkingHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
-            var workHours = VhoWorkHours.FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
+            var localStartDate = startDate.ToGmt();
+            var localEndDate = endDate.ToGmt();
+
+            var workHours = VhoWorkHours.FirstOrDefault(wh => wh.SystemDayOfWeek == localStartDate.DayOfWeek);
             
             if (workHours == null)
             {
@@ -67,18 +71,18 @@ namespace BookingsApi.Domain
             var workHourStartTime = workHours.StartTime;
             var workHourEndTime = workHours.EndTime;
             
-            if (workHourStartTime < startDate.TimeOfDay && workHourEndTime < startDate.TimeOfDay)
+            if (workHourStartTime < localStartDate.TimeOfDay && workHourEndTime < localStartDate.TimeOfDay)
             {
                 return false;
             }
             
-            if (workHourStartTime > endDate.TimeOfDay && workHourEndTime > endDate.TimeOfDay)
+            if (workHourStartTime > localEndDate.TimeOfDay && workHourEndTime > localEndDate.TimeOfDay)
             {
                 return false;
             }
             
-            return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
-                   (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
+            return (workHourStartTime <= localStartDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
+                   (workHourEndTime >= localEndDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
         }
         
         public void AddRoles(params UserRole[] userRoles)
