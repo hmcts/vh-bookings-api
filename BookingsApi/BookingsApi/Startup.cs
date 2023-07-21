@@ -18,7 +18,6 @@ using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Configuration;
-using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace BookingsApi
 {
@@ -35,19 +34,7 @@ namespace BookingsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApiVersioning(opt =>
-            {
-                opt.DefaultApiVersion = new ApiVersion(1, 0);
-                opt.AssumeDefaultVersionWhenUnspecified = true;
-                opt.ReportApiVersions = true;
-                opt.ApiVersionReader = ApiVersionReader.Combine(
-                    new UrlSegmentApiVersionReader()
-                );
-            }).AddVersionedApiExplorer(setup =>
-            {
-                setup.GroupNameFormat = "'v'VVV"; // version format: 'v'[major][.minor][-status]
-                setup.SubstituteApiVersionInUrl = true;
-            });
+            services.AddApiVersioning();
             
             services.AddControllers().AddNewtonsoftJson();
 

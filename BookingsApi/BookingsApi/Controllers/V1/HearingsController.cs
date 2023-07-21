@@ -26,7 +26,6 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Validations;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -36,7 +35,6 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("hearings")]
-    [Route(template:"v{version:apiVersion}/hearings")]
     [ApiVersion("1.0")]
     [ApiController]
     public class HearingsController : Controller

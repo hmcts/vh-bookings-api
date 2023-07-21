@@ -1,11 +1,9 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
-using BookingsApi.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 

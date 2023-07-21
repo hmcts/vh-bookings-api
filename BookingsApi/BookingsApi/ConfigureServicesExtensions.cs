@@ -13,7 +13,9 @@ using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
@@ -22,6 +24,23 @@ namespace BookingsApi
 {
     public static class ConfigureServicesExtensions
     {
+        public static IServiceCollection AddApiVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(opt =>
+            {
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.ReportApiVersions = true; // keep this true for backwards-compatibility with the old routes (i.e. the non versioned)
+                opt.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader()
+                );
+            }).AddVersionedApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV"; // version format: 'v'[major][.minor][-status]
+                setup.SubstituteApiVersionInUrl = true;
+            });
+            return services;
+        }
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
             var apiVersionDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
@@ -29,17 +48,24 @@ namespace BookingsApi
             {
                 services.AddOpenApiDocument((configure) =>
                 {
-                    ConfigureSwaggerForVersion(configure, versionDescription.GroupName);
+                    ConfigureSwaggerForVersion(configure, versionDescription.GroupName, new[] { versionDescription.GroupName });
                 });
             }
+            
+            // to build a single a client for all versions of the api, create one document with all the groups
+            var groupNames = apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName).ToArray();
+            services.AddOpenApiDocument((configure) =>
+            {
+                ConfigureSwaggerForVersion(configure, "all", groupNames);
+            });
             return services;
         }
 
         private static void ConfigureSwaggerForVersion(AspNetCoreOpenApiDocumentGeneratorSettings configure,
-             string version)
+             string documentName, string[] apiGroupNames)
         {
-            configure.DocumentName = version;
-            configure.ApiGroupNames = new[] {version};
+            configure.DocumentName = documentName;
+            configure.ApiGroupNames = apiGroupNames;
             configure.AddSecurity("JWT", Enumerable.Empty<string>(),
                 new OpenApiSecurityScheme
                 {
@@ -52,7 +78,6 @@ namespace BookingsApi
             configure.Title = "Bookings API";
             configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             configure.OperationProcessors.Add(new AuthResponseOperationProcessor());
-
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
