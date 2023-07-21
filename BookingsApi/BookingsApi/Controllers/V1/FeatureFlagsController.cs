@@ -8,6 +8,7 @@ namespace BookingsApi.Controllers.V1
     [Produces("application/json")]
     [Route("feature-flags")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class FeatureFlagsController : Controller
     {
         private readonly IFeatureFlagService _featureFlagsService;

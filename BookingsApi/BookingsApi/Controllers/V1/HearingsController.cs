@@ -39,7 +39,6 @@ namespace BookingsApi.Controllers.V1
     [Route(template:"v{version:apiVersion}/hearings")]
     [ApiVersion("1.0")]
     [ApiController]
-    [AllowAnonymous]
     public class HearingsController : Controller
     {
 

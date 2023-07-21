@@ -18,6 +18,7 @@ namespace BookingsApi.Controllers.V1
     [Produces("application/json")]
     [AllowAnonymous]
     [ApiController]
+    [ApiVersion("1.0")]
     public class HealthCheckController : Controller
     {
         private readonly IQueryHandler _queryHandler;

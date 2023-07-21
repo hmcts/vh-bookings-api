@@ -15,6 +15,7 @@ namespace BookingsApi.Controllers.V1
     [Produces("application/json")]
     [Route("staffmember")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class StaffMemberController : Controller
     {
         private readonly IQueryHandler _queryHandler;

@@ -21,6 +21,7 @@ namespace BookingsApi.Controllers.V1
     [Produces("application/json")]
     [Route("work-hours")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class WorkHoursController : Controller
     {
         private readonly ICommandHandler _commandHandler;

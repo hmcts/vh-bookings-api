@@ -16,6 +16,7 @@ namespace BookingsApi.Controllers.V1
     [Produces("application/json")]
     [Route("Participants")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class ParticipantsController : Controller
     {
         private readonly IQueryHandler _queryHandler;

@@ -16,6 +16,7 @@ namespace BookingsApi.Controllers.V1
     [Produces("application/json")]
     [Route("JobHistory")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class JobHistoryController : Controller
     {
         private readonly ICommandHandler _commandHandler;

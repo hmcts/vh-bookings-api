@@ -13,6 +13,8 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("casetypes")]
+    [Route(template:"v{version:apiVersion}/casetypes")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class CaseTypesController : Controller
     {

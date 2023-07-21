@@ -45,7 +45,7 @@ namespace BookingsApi
                 );
             }).AddVersionedApiExplorer(setup =>
             {
-                setup.GroupNameFormat = "'v'VVV"; // version format: 'v'major[.minor][-status]
+                setup.GroupNameFormat = "'v'VVV"; // version format: 'v'[major][.minor][-status]
                 setup.SubstituteApiVersionInUrl = true;
             });
             
