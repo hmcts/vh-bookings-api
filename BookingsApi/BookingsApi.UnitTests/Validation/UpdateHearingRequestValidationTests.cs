@@ -28,18 +28,34 @@ namespace BookingsApi.UnitTests.Validation
             result.IsValid.Should().BeTrue();
         }
         
-        [Test]
-        public async Task Should_return_missing_hearing_venue_name_error()
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task Should_return_missing_hearing_venue_name_error(bool referenceDataToggle)
         {
             var request = BuildRequest();
-            request.HearingVenueName = string.Empty;
+            if (referenceDataToggle)
+            {
+                request.HearingVenueCode = string.Empty;
+            }
+            else
+            {
+                request.HearingVenueName = string.Empty;
+            }
 
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingNameErrorMessage)
-                .Should().BeTrue();
+            if (referenceDataToggle)
+            {
+                result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueCodeErrorMessage)
+                    .Should().BeTrue();
+            }
+            else
+            {
+                result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
+                                    .Should().BeTrue();
+            }
         }
         
         [Test]
