@@ -3,7 +3,7 @@ using BookingsApi.Contract.Requests;
 using BookingsApi.Common;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
-using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.V1;
 
 namespace BookingsApi.Mappings
 {

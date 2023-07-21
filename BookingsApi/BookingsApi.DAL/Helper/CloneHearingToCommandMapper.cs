@@ -4,7 +4,7 @@ using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.V1;
 using BookingsApi.DAL.Dtos;
 
 namespace BookingsApi.DAL.Helper
