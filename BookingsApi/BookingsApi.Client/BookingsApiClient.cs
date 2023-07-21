@@ -44,21 +44,6 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get available case types
-        /// </summary>
-        /// <returns>A list of available case types</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypes2Async();
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Get available case types
-        /// </summary>
-        /// <returns>A list of available case types</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypes2Async(System.Threading.CancellationToken cancellationToken);
-
-        /// <summary>
         /// Get case roles for a case type
         /// </summary>
         /// <returns>Available case roles for given case type</returns>
@@ -72,21 +57,6 @@ namespace BookingsApi.Client
         /// <returns>Available case roles for given case type</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseTypeAsync(string caseTypeParam, System.Threading.CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Get case roles for a case type
-        /// </summary>
-        /// <returns>Available case roles for given case type</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseType2Async(string caseTypeParam);
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Get case roles for a case type
-        /// </summary>
-        /// <returns>Available case roles for given case type</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseType2Async(string caseTypeParam, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get hearing roles for a case role of a case type
@@ -106,25 +76,6 @@ namespace BookingsApi.Client
         /// <returns>Available hearing roles for given case role</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingRoleResponse>> GetHearingRolesForCaseRoleAsync(string caseTypeName, string caseRoleName, System.Threading.CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Get hearing roles for a case role of a case type
-        /// </summary>
-        /// <param name="caseTypeName">Hearing case type</param>
-        /// <param name="caseRoleName">Hearing case role</param>
-        /// <returns>Available hearing roles for given case role</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingRoleResponse>> GetHearingRolesForCaseRole2Async(string caseTypeName, string caseRoleName);
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Get hearing roles for a case role of a case type
-        /// </summary>
-        /// <param name="caseTypeName">Hearing case type</param>
-        /// <param name="caseRoleName">Hearing case role</param>
-        /// <returns>Available hearing roles for given case role</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingRoleResponse>> GetHearingRolesForCaseRole2Async(string caseTypeName, string caseRoleName, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Add an endpoint to a given hearing
@@ -1404,96 +1355,6 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Get available case types
-        /// </summary>
-        /// <returns>A list of available case types</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypes2Async()
-        {
-            return GetCaseTypes2Async(System.Threading.CancellationToken.None);
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Get available case types
-        /// </summary>
-        /// <returns>A list of available case types</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypes2Async(System.Threading.CancellationToken cancellationToken)
-        {
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/casetypes");
-
-            var client_ = _httpClient;
-            var disposeClient_ = false;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                    PrepareRequest(client_, request_, urlBuilder_);
-
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                    PrepareRequest(client_, request_, url_);
-
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    var disposeResponse_ = true;
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-
-                        ProcessResponse(client_, response_);
-
-                        var status_ = (int)response_.StatusCode;
-                        if (status_ == 500)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<CaseTypeResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (disposeResponse_)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                if (disposeClient_)
-                    client_.Dispose();
-            }
-        }
-
-        /// <summary>
         /// Get case roles for a case type
         /// </summary>
         /// <returns>Available case roles for given case type</returns>
@@ -1516,110 +1377,6 @@ namespace BookingsApi.Client
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes/{caseTypeParam}/caseroles");
-            urlBuilder_.Replace("{caseTypeParam}", System.Uri.EscapeDataString(ConvertToString(caseTypeParam, System.Globalization.CultureInfo.InvariantCulture)));
-
-            var client_ = _httpClient;
-            var disposeClient_ = false;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                    PrepareRequest(client_, request_, urlBuilder_);
-
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                    PrepareRequest(client_, request_, url_);
-
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    var disposeResponse_ = true;
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-
-                        ProcessResponse(client_, response_);
-
-                        var status_ = (int)response_.StatusCode;
-                        if (status_ == 500)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<CaseRoleResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (disposeResponse_)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                if (disposeClient_)
-                    client_.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Get case roles for a case type
-        /// </summary>
-        /// <returns>Available case roles for given case type</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseType2Async(string caseTypeParam)
-        {
-            return GetCaseRolesForCaseType2Async(caseTypeParam, System.Threading.CancellationToken.None);
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Get case roles for a case type
-        /// </summary>
-        /// <returns>Available case roles for given case type</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseRoleResponse>> GetCaseRolesForCaseType2Async(string caseTypeParam, System.Threading.CancellationToken cancellationToken)
-        {
-            if (caseTypeParam == null)
-                throw new System.ArgumentNullException("caseTypeParam");
-
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/casetypes/{caseTypeParam}/caseroles");
             urlBuilder_.Replace("{caseTypeParam}", System.Uri.EscapeDataString(ConvertToString(caseTypeParam, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -1731,118 +1488,6 @@ namespace BookingsApi.Client
 
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes/{caseTypeName}/caseroles/{caseRoleName}/hearingroles");
-            urlBuilder_.Replace("{caseTypeName}", System.Uri.EscapeDataString(ConvertToString(caseTypeName, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{caseRoleName}", System.Uri.EscapeDataString(ConvertToString(caseRoleName, System.Globalization.CultureInfo.InvariantCulture)));
-
-            var client_ = _httpClient;
-            var disposeClient_ = false;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-                    PrepareRequest(client_, request_, urlBuilder_);
-
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-
-                    PrepareRequest(client_, request_, url_);
-
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    var disposeResponse_ = true;
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-
-                        ProcessResponse(client_, response_);
-
-                        var status_ = (int)response_.StatusCode;
-                        if (status_ == 500)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingRoleResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 404)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (disposeResponse_)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-                if (disposeClient_)
-                    client_.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Get hearing roles for a case role of a case type
-        /// </summary>
-        /// <param name="caseTypeName">Hearing case type</param>
-        /// <param name="caseRoleName">Hearing case role</param>
-        /// <returns>Available hearing roles for given case role</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingRoleResponse>> GetHearingRolesForCaseRole2Async(string caseTypeName, string caseRoleName)
-        {
-            return GetHearingRolesForCaseRole2Async(caseTypeName, caseRoleName, System.Threading.CancellationToken.None);
-        }
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Get hearing roles for a case role of a case type
-        /// </summary>
-        /// <param name="caseTypeName">Hearing case type</param>
-        /// <param name="caseRoleName">Hearing case role</param>
-        /// <returns>Available hearing roles for given case role</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingRoleResponse>> GetHearingRolesForCaseRole2Async(string caseTypeName, string caseRoleName, System.Threading.CancellationToken cancellationToken)
-        {
-            if (caseTypeName == null)
-                throw new System.ArgumentNullException("caseTypeName");
-
-            if (caseRoleName == null)
-                throw new System.ArgumentNullException("caseRoleName");
-
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/v1/casetypes/{caseTypeName}/caseroles/{caseRoleName}/hearingroles");
             urlBuilder_.Replace("{caseTypeName}", System.Uri.EscapeDataString(ConvertToString(caseTypeName, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{caseRoleName}", System.Uri.EscapeDataString(ConvertToString(caseRoleName, System.Globalization.CultureInfo.InvariantCulture)));
 
