@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.IntegrationTests.Helper;
 using FluentAssertions;

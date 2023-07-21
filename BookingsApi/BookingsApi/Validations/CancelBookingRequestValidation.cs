@@ -1,7 +1,6 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
-using FluentValidation;
+﻿using FluentValidation;
 using System;
+using BookingsApi.Contract.V1.Requests;
 
 namespace BookingsApi.Validations
 {

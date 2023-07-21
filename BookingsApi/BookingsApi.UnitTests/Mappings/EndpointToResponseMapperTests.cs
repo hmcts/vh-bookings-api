@@ -1,4 +1,4 @@
-﻿using BookingsApi.Contract.Requests;
+﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Mappings;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;

@@ -2,7 +2,7 @@
 using System.Net.Http;
 using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.Common.Configuration;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.IntegrationTests.Contexts;

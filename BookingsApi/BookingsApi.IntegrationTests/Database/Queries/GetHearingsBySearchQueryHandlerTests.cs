@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain.Enumerations;
 using FluentAssertions;
 using NUnit.Framework;

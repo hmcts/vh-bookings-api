@@ -1,6 +1,6 @@
 using System.Linq;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Common;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.V1;

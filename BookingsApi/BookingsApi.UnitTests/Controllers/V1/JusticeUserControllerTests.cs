@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;

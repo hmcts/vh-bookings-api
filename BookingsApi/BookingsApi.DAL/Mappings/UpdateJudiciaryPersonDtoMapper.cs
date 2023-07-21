@@ -1,4 +1,4 @@
-﻿using BookingsApi.DAL.Commands;
+﻿using BookingsApi.DAL.Commands.V1;
 using BookingsApi.DAL.Commands.V1;
 using BookingsApi.Domain.Dtos;
 

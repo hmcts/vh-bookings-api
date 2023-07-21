@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using BookingsApi.Common.Configuration;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;

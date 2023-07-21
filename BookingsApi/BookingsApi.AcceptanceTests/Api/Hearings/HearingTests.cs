@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using BookingsApi.AcceptanceTests.Models;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using NUnit.Framework;
 

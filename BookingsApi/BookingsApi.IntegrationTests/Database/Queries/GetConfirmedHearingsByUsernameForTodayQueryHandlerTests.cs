@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.IntegrationTests.Helper;

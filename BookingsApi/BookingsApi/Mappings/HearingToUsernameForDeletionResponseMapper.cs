@@ -1,5 +1,5 @@
 using System.Linq;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 
 namespace BookingsApi.Mappings

@@ -1,9 +1,9 @@
-﻿using BookingsApi.Contract.Requests;
+﻿using BookingsApi.Contract.V1.Requests;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JVEndPointEndpoints;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using System;
 using FluentAssertions;
 using System.Linq;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Exceptions;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Common.Configuration;
 using BookingsApi.AcceptanceTests.Contexts;
 using FluentAssertions;

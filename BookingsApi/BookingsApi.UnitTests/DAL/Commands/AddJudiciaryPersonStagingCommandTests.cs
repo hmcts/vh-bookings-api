@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Commands.V1;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;

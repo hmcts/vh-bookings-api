@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain.Participants;

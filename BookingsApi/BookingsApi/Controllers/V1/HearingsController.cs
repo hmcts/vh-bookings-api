@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using BookingsApi.Common;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
-using BookingsApi.Contract.Queries;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Queries;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Commands.V1;
 using BookingsApi.DAL.Exceptions;
@@ -783,7 +783,7 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Booking status</returns>
         [HttpGet("{hearingId}/status")]
         [OpenApiOperation("GetBookingStatusById")]
-        [ProducesResponseType(typeof(Contract.Enums.BookingStatus), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Contract.V1.Enums.BookingStatus), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
@@ -803,7 +803,7 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
+            return Ok((Contract.V1.Enums.BookingStatus)videoHearing.Status);
         }
 
         /// <summary>

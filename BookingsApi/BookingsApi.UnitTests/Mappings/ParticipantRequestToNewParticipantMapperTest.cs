@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using FluentAssertions;
 using BookingsApi.Common;
 using BookingsApi.Mappings;

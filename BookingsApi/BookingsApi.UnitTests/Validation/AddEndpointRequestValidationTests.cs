@@ -1,5 +1,5 @@
 ﻿
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations;
 using FluentAssertions;
 using NUnit.Framework;

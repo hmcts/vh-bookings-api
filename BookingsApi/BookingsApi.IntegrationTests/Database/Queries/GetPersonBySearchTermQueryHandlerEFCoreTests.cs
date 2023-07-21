@@ -1,6 +1,6 @@
-using BookingsApi.Contract.Configuration;
+using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;

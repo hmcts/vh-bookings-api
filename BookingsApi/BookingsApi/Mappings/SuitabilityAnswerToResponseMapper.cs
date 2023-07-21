@@ -1,7 +1,7 @@
-﻿using BookingsApi.Contract.Responses;
-using BookingsApi.Domain;
+﻿using BookingsApi.Domain;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.Mappings
 {

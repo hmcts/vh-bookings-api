@@ -1,6 +1,6 @@
-using BookingsApi.Contract.Configuration;
+using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;

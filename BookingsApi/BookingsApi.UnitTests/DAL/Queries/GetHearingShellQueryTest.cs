@@ -1,5 +1,5 @@
 ﻿using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;

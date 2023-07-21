@@ -1,7 +1,7 @@
 using System;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
 using BookingsApi.Common.Services;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Commands.V1;
 

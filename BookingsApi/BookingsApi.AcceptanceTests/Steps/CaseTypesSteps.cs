@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.AcceptanceTests.Contexts;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.CaseTypesEndpoints;

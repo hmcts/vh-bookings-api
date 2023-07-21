@@ -1,5 +1,5 @@
 using System;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.UnitTests.Utilities;
 using FluentAssertions;
 using NUnit.Framework;

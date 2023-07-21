@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Mappings;
 using BookingsApi.UnitTests.Utilities;

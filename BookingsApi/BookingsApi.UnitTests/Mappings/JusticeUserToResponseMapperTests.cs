@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
@@ -31,8 +31,8 @@ namespace BookingsApi.UnitTests.Mappings
             };
             justiceUser.AddRoles(userRoles);
 
-            List<Contract.Requests.Enums.JusticeUserRole> roles = new List<Contract.Requests.Enums.JusticeUserRole>();
-            roles.Add(Contract.Requests.Enums.JusticeUserRole.VhTeamLead);
+            List<Contract.V1.Requests.Enums.JusticeUserRole> roles = new List<Contract.V1.Requests.Enums.JusticeUserRole>();
+            roles.Add(Contract.V1.Requests.Enums.JusticeUserRole.VhTeamLead);
             var expectedJusticeUserResponse = new JusticeUserResponse
             {
                 FirstName = "FirstName",

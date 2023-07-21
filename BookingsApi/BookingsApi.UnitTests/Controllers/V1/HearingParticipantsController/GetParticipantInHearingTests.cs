@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
-using BookingsApi.DAL.Queries;
+using BookingsApi.Contract.V1.Responses;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain.Participants;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+using BookingsApi.DAL.Queries.V1;
 using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

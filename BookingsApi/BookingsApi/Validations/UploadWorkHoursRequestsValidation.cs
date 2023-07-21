@@ -1,8 +1,8 @@
-using BookingsApi.Contract.Requests;
 using FluentValidation;
 using FluentValidation.Results;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.V1.Requests;
 
 namespace BookingsApi.Validations
 {
