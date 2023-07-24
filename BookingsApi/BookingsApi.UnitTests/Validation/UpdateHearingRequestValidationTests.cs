@@ -27,35 +27,49 @@ namespace BookingsApi.UnitTests.Validation
 
             result.IsValid.Should().BeTrue();
         }
-        
-        [TestCase(false)]
-        [TestCase(true)]
-        public async Task Should_return_missing_hearing_venue_name_error(bool referenceDataToggle)
-        {
-            var request = BuildRequest();
-            if (referenceDataToggle)
-            {
-                request.HearingVenueCode = string.Empty;
-            }
-            else
-            {
-                request.HearingVenueName = string.Empty;
-            }
 
+        [Test]
+        public async Task Should_return_missing_hearing_venue_name_error_when_reference_data_is_false()
+        {
+            // arrange
+            // venue name and code are both empty
+            const bool refDataToggle = false;
+            _validator = new UpdateHearingRequestValidation(refDataToggle);
+            var request = BuildRequest();
+            request.HearingVenueCode = string.Empty;
+            request.HearingVenueName = string.Empty;
+
+            // act
             var result = await _validator.ValidateAsync(request);
 
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            if (referenceDataToggle)
-            {
-                result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueCodeErrorMessage)
-                    .Should().BeTrue();
-            }
-            else
-            {
-                result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
-                                    .Should().BeTrue();
-            }
+            // assert
+            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
+                .Should().BeTrue();
+            
+            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueCodeErrorMessage)
+                .Should().BeFalse();
+        }
+        
+        [Test]
+        public async Task Should_return_missing_hearing_venue_code_error_when_reference_data_is_true()
+        {
+            // arrange
+            // venue name and code are both empty
+            const bool refDataToggle = true;
+            _validator = new UpdateHearingRequestValidation(refDataToggle);
+            var request = BuildRequest();
+            request.HearingVenueCode = string.Empty;
+            request.HearingVenueName = string.Empty;
+
+            // act
+            var result = await _validator.ValidateAsync(request);
+
+            // assert
+            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
+                .Should().BeFalse();
+            
+            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueCodeErrorMessage)
+                .Should().BeTrue();
         }
         
         [Test]

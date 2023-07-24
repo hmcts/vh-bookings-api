@@ -33,7 +33,7 @@ namespace BookingsApi.Common.Services
         }
 
         public bool AdminSearchToggle() => _ldClient.BoolVariation(AdminSearchToggleKey, _user);
-        public bool ReferenceDataToggle() => _ldClient.BoolVariation(ReferenceDataToggleKey, _user);
+        public bool ReferenceDataToggle() => true;//_ldClient.BoolVariation(ReferenceDataToggleKey, _user);
         public bool EJudFeature() => _ldClient.BoolVariation(EJudFeatureKey, _user);
     }
 }
