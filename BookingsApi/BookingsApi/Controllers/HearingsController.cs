@@ -117,27 +117,6 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
-        /// Get list of all confirmed hearings for a given username for today
-        /// </summary>
-        /// <param name="username">username of person to search against</param>
-        /// <returns>Hearing details</returns>
-        [HttpGet("today", Name = "GetConfirmedHearingsByUsernameForToday")]
-        [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
-        {
-            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
-            var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
-            if (!hearings.Any())
-            {
-                return NotFound();
-            }
-            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
-            return Ok(response);
-        }
-
-        /// <summary>
         /// Anonymise participant and case from expired hearing
         /// </summary>
         /// <param name="hearingIds">hearing ids to anonymise data with</param>
@@ -787,6 +766,25 @@ namespace BookingsApi.Controllers
             return Ok((Contract.Enums.BookingStatus)videoHearing.Status);
         }
 
+        #region Hearings For Today Requests
+        /// <summary>
+        /// Return hearing details for todays hearings
+        /// </summary>
+        /// <returns>Booking status</returns>
+        [HttpGet("today", Name = "GetHearingsForToday")]
+        [OpenApiOperation("GetHearingsForToday")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsForToday()
+        {
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            if (!videoHearings.Any())
+                return NotFound();
+
+            return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+        
+        
         /// <summary>
         /// Return hearing details for todays hearings by venue
         /// </summary>
@@ -798,12 +796,33 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody]IEnumerable<string> venueNames)
         {
-            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(new GetHearingsForTodayByVenuesQuery(venueNames));
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
             if (!videoHearings.Any())
                 return NotFound();
 
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
+        
+        /// <summary>
+        /// Get list of all confirmed hearings for a given username for today
+        /// </summary>
+        /// <param name="username">username of person to search against</param>
+        /// <returns>Hearing details</returns>
+        [HttpGet("today/Username", Name = "GetConfirmedHearingsByUsernameForToday")]
+        [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
+        {
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            if (!hearings.Any())
+                return NotFound();
+            
+            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
+            return Ok(response);
+        }
+        #endregion
 
         private string BuildCursorPageUrl(
             string cursor,
