@@ -79,7 +79,7 @@ public class GetHearingVenuesControllerTest
     {
         //Arrange
         var mockVenue0 = new HearingVenue(100000,"MockVenue0") { ExpirationDate = DateTime.Today};
-        var mockVenue1 = new HearingVenue(100001,"MockVenue1") { ExpirationDate = DateTime.Today};
+        var mockVenue1 = new HearingVenue(100001,"MockVenue1") { ExpirationDate = DateTime.Today.AddDays(-1)};
         var mockVenue2 = new HearingVenue(100002,"MockVenue2") { ExpirationDate = DateTime.Today.AddDays(-1)};
         var mockVenue3 = new HearingVenue(100003,"MockVenue3") { ExpirationDate = DateTime.Today.AddDays(1)};
         var mockVenue4 = new HearingVenue(100004,"MockVenue4") { ExpirationDate = null};
