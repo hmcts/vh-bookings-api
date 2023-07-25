@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.AcceptanceTests.Models;
 using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
 using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using NUnit.Framework;
+using Testing.Common.Builders.Api.Request;
 
 namespace BookingsApi.AcceptanceTests.Api.WorkAllocation;
 

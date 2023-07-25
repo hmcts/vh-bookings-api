@@ -227,7 +227,7 @@ namespace BookingsApi.Controllers
                     var payload = JsonConvert.SerializeObject(request);
                     dictionary.Add(keyPayload, !string.IsNullOrWhiteSpace(payload) ? payload : emptyPayLoadErrorMessage);
                     _logger.TrackTrace(logBookNewHearingValidationError, SeverityLevel.Error, dictionary);
-                    return BadRequest(ModelState);
+                    return ValidationProblem(ModelState);
                 }
 
                 var queryValue = rDataFlag ? request.CaseTypeServiceId : request.CaseTypeName;
@@ -388,7 +388,7 @@ namespace BookingsApi.Controllers
             {
                 _logger.TrackTrace(logErrorMessage, severity, new Dictionary<string, string> { { key, errorValue } });
             }
-            return BadRequest(ModelState);
+            return ValidationProblem(ModelState);
         }
 
         /// <summary>

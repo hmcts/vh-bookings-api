@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using BookingsApi.AcceptanceTests.Models;
 using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using NUnit.Framework;
+using Testing.Common.Builders.Api.Request;
 
 namespace BookingsApi.AcceptanceTests.Api.Hearings;
 
