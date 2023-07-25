@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {
@@ -20,7 +18,6 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         
         public Task PublishMessageAsync(EventMessage eventMessage)
         {
-            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
             _eventMessages.Enqueue(eventMessage);
             return Task.CompletedTask;
         }

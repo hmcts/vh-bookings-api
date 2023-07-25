@@ -219,8 +219,10 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             };
 
             var result = await _handler.Handle(query);
-
-            AssertHearingsAreFilteredByNoAllocatedEmpty(result);
+            
+            var containsHearingsFilteredByUsers = result.Where(r => r.Allocations.Any());
+            
+            containsHearingsFilteredByUsers.Should().BeEmpty();
         }
         
         [Test(Description = "With AdminSearchToggle On")]
@@ -284,15 +286,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             containsHearingsFilteredByUsers.Should().BeTrue();
         }
-        
-        private static void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
-        {
-            var containsHearingsFilteredByUsers = hearings
-                .Where(r => r.Allocations.Count <= 0);
-            
-            containsHearingsFilteredByUsers.Should().BeEmpty();
-        }
-        
+
         private static void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredByUsers = hearings

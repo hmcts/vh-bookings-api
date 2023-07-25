@@ -4,7 +4,7 @@ BEGIN TRANSACTION;
 declare @genericCaseTypeId int;
 SELECT @genericCaseTypeId = id FROM dbo.CaseType WHERE Name LIKE 'Generic';
 
-UPDATE dbo.CaseType SET UpdatedDate = CURRENT_TIMESTAMP, ServiceId = N'VHGE1' WHERE Id = @genericCaseTypeId
+UPDATE dbo.CaseType SET UpdatedDate = CURRENT_TIMESTAMP, ServiceId = N'VHG1' WHERE Id = @genericCaseTypeId
 
 UPDATE dbo.HearingType SET UpdatedDate = CURRENT_TIMESTAMP, Code = N'Hearing' WHERE CaseTypeId = @genericCaseTypeId and Name LIKE 'Hearing'
 UPDATE dbo.HearingType SET UpdatedDate = CURRENT_TIMESTAMP, Code = N'DailyTest' WHERE CaseTypeId = @genericCaseTypeId and Name LIKE 'Daily Test'

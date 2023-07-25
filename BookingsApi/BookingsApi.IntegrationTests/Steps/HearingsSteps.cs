@@ -626,7 +626,7 @@ namespace BookingsApi.IntegrationTests.Steps
             };
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Generic")
-                .With(x => x.CaseTypeServiceId = "VHGE1")
+                .With(x => x.CaseTypeServiceId = "VHG1")
                 .With(x => x.HearingTypeName = "Automated Test")
                 .With(x => x.HearingTypeCode = "AutomatedTest")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
