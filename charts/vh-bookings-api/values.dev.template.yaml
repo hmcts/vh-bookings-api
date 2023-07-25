@@ -3,8 +3,3 @@ java:
   image: '${IMAGE_NAME}'
   ingressHost: ${SERVICE_FQDN}
   releaseNameOverride: ${RELEASE_NAME}
-  environment:
-      VHSERVICES__USERAPIURL: https://vh-user-api-pr-230.dev.platform.hmcts.net/
-      VHSERVICES__VIDEOAPIURL: https://vh-video-api-pr-593.dev.platform.hmcts.net/
-      VHSERVICES__NOTIFICATIONAPIURL: https://vh-notification-api-pr-137.dev.platform.hmcts.net/
-      SERVICEBUSQUEUE__QUEUENAME : oliver-booking
