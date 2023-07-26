@@ -34,7 +34,7 @@ namespace BookingsApi.DAL.Queries
         public string LastName { get; set; }
         public bool NoJudge { get; set; }
         
-        public bool NoAllocated { get; set; }
+        public bool Unallocated { get; set; }
 
         public int Limit
         {
@@ -105,7 +105,7 @@ namespace BookingsApi.DAL.Queries
                     hearings = hearings.Where(x => !x.Participants.Any(y => y.Discriminator.ToLower().Equals("judge")));
                 }
                 
-                if (query.NoAllocated)
+                if (query.Unallocated)
                 {
                     hearings = hearings.Where(h => !h.Allocations.Any());
                 }

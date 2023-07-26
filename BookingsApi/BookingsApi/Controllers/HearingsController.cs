@@ -701,7 +701,7 @@ namespace BookingsApi.Controllers
                 VenueIds = request.VenueIds,
                 LastName = request.LastName,
                 NoJudge = request.NoJudge,
-                NoAllocated = request.NoAllocated,
+                Unallocated = request.NoAllocated,
                 CaseTypes = request.Types,
                 SelectedUsers = request.Users
             };

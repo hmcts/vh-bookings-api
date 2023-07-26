@@ -218,7 +218,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var query = new GetBookingsByCaseTypesQuery
             {
-                NoAllocated = true
+                Unallocated = true
             };
 
             var result = await _handler.Handle(query);
@@ -239,7 +239,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             var query = new GetBookingsByCaseTypesQuery
             {
-                NoAllocated = true
+                Unallocated = true
             };
 
             var result = await _handler.Handle(query);
