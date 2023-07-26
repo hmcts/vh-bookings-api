@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
@@ -18,12 +19,23 @@ namespace BookingsApi.IntegrationTests.Api.Hearings;
 public class BookNewHearingWithRefDataToggleOnTests : ApiTest
 {
     private FeatureTogglesStub _featureToggleStub;
+    private readonly List<Guid> _hearingIds = new();
 
     [SetUp]
     public void Setup()
     {
+        _hearingIds.Clear();
         _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
         _featureToggleStub!.RefData = true;
+    }
+
+    [TearDown]
+    public async Task TearDown()
+    {
+        foreach (var hearingId in _hearingIds)
+        {
+            await Hooks.RemoveVideoHearing(hearingId);
+        }
     }
 
     [Test]
@@ -45,6 +57,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
         createdResponse.Should().BeEquivalentTo(hearingResponse);
+        _hearingIds.Add(hearingResponse.Id);
     }
 
     [Test]
