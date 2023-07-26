@@ -6,6 +6,13 @@ namespace BookingsApi.Contract.Requests
 {
     public class GetHearingRequest
     {
+        public GetHearingRequest()
+        {
+            Types = new List<int>();
+            Users = new List<Guid>();
+            VenueIds = new List<int>();
+        }
+        
         private const int DefaultLimit = 100;
 
         public const string DefaultCursor = "0";

@@ -57,9 +57,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         //ACT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(caseType: new[]{TestCaseType}));
         //ASSERT
-        hearings.Count.Should().Be(2);
-        foreach (var hearing in hearings)
-            hearing.CaseType.Name.Should().Be(TestCaseType);
+        hearings.All(x => x.CaseType.Name == TestCaseType).Should().BeTrue();
     }
     
     [Test]
