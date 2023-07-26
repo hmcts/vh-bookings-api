@@ -32,19 +32,38 @@ namespace BookingsApi.Controllers
         [OpenApiOperation("GetHearingVenues")]
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetHearingVenues()
+        public async Task<IActionResult> GetHearingVenues([FromQuery] bool excludeExpiredVenue = false)
         {
-            var query = new GetHearingVenuesQuery();
+            var query = new GetHearingVenuesQuery(excludeExpiredVenue);
             var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(query);
 
-            var response = hearingVenues.Select(x => new HearingVenueResponse()
+            var response = hearingVenues.Select(x => new HearingVenueResponse
             {
                 Id = x.Id, Name = x.Name
             }).ToList();
 
             return Ok(response);
         }
-        
+
+        /// <summary>
+        /// Get all hearing venues, include expired venues for hearings taking place today
+        /// </summary>
+        /// <returns>List of hearing venues</returns>
+        [HttpGet("today")]
+        [OpenApiOperation("GetHearingVenuesForHearingsToday")]  
+        [ProducesResponseType(typeof(List<HearingVenueResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingVenuesIncludingExpiredVenuesForHearingsToday()
+        {
+            var hearingsToday = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
+
+            var response = hearingVenues.Where(e =>
+                e.ExpirationDate == null || e.ExpirationDate > DateTime.Today || hearingsToday.Any(h => h.HearingVenueName == e.Name));
+
+            return Ok(response.Select(x => new HearingVenueResponse { Id = x.Id, Name = x.Name }).ToList());
+        }
+
         /// <summary>
         /// Get today's hearing venues by their allocated csos
         /// </summary>

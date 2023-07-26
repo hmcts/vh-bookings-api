@@ -10,7 +10,7 @@ public class GetHearingVenuesTests : ApiTest
     public async Task should_get_all_hearing_venues()
     {
         // arrange / act
-        var allVenues = await BookingsApiClient.GetHearingVenuesAsync();
+        var allVenues = await BookingsApiClient.GetHearingVenuesAsync(true);
 
         // assert
         allVenues.Should().NotBeNullOrEmpty();
