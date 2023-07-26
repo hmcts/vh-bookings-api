@@ -16,25 +16,32 @@ namespace BookingsApi.Common.Services
     public class FeatureToggles : IFeatureToggles
     {
         private readonly ILdClient _ldClient;
-        private readonly User _user;
+        private readonly Context _context;
         private const string LdUser = "vh-booking-api";
         private const string AdminSearchToggleKey = "admin_search";
         private const string ReferenceDataToggleKey = "reference-data";
         private const string EJudFeatureKey = "ejud-feature";
-        public FeatureToggles(string sdkKey)
+
+        public FeatureToggles(string sdkKey, string environmentName)
         {
             var config = LaunchDarkly.Sdk.Server.Configuration.Builder(sdkKey)
-                .Logging(
-                    Components.Logging(Logs.ToWriter(Console.Out)).Level(LogLevel.Warn)
-                )
-                .Build();
+                .Logging(Components.Logging(Logs.ToWriter(Console.Out)).Level(LogLevel.Warn)).Build();
+            _context = Context.Builder(LdUser).Name(environmentName).Build();
             _ldClient = new LdClient(config);
-            _user = User.WithKey(LdUser);
         }
 
-        public bool AdminSearchToggle() => _ldClient.BoolVariation(AdminSearchToggleKey, _user);
-        public bool ReferenceDataToggle() => _ldClient.BoolVariation(ReferenceDataToggleKey, _user);
-        public bool EJudFeature() => _ldClient.BoolVariation(EJudFeatureKey, _user);
+        public bool AdminSearchToggle() => GetBoolToggle(AdminSearchToggleKey);
+        public bool ReferenceDataToggle() => GetBoolToggle(ReferenceDataToggleKey);
+        public bool EJudFeature() => GetBoolToggle(EJudFeatureKey);
+        
+        private bool GetBoolToggle(string key)
+        {
+            if (!_ldClient.Initialized)
+            {
+                throw new InvalidOperationException("LaunchDarkly client not initialized");
+            }
+            return _ldClient.BoolVariation(key, _context);
+        }
     }
 }
  
