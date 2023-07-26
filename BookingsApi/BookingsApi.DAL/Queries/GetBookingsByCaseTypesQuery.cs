@@ -99,7 +99,7 @@ namespace BookingsApi.DAL.Queries
             {
                 // The next cursor should be built based on the last item in the list
                 result = result.Take(query.Limit).ToList();
-                var lastResult = result.Last();
+                var lastResult = result[result.Count-1];
                 nextCursor = $"{lastResult.ScheduledDateTime.Ticks}_{lastResult.Id}";
             }
 
