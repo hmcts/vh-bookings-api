@@ -21,6 +21,8 @@ namespace BookingsApi.DAL.Queries
         {
             CaseTypes = types;
             Limit = 100;
+            VenueIds = new List<int>();
+            SelectedUsers = new List<Guid>();
         }
 
         public IList<int> CaseTypes { get; set; }
@@ -62,6 +64,8 @@ namespace BookingsApi.DAL.Queries
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
         {
             IQueryable<VideoHearing> hearings = _context.VideoHearings
+                .Include("Participants.Person")
+                .Include("Participants.HearingRole.UserRole")
                 .Include("HearingCases.Case")
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
@@ -83,7 +87,7 @@ namespace BookingsApi.DAL.Queries
                     hearings = await FilterByCaseNumber(hearings, query);
                 }
 
-                if (query.VenueIds != null && query.VenueIds.Any())
+                if (query.VenueIds.Any())
                 {
                     hearings = hearings.Where(x => query.VenueIds.Contains(x.HearingVenue.Id));
                 }
@@ -110,7 +114,7 @@ namespace BookingsApi.DAL.Queries
                     hearings = hearings.Where(h => !h.Allocations.Any());
                 }
                 
-                if (query.SelectedUsers != null && query.SelectedUsers.Any())
+                if (query.SelectedUsers.Any())
                 {
                     hearings = hearings.Where(x => 
                         x.Allocations.Any(a=> query.SelectedUsers.Contains(a.JusticeUserId)));
