@@ -8,25 +8,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {
-    public class GetHearingsForTodayByVenuesQuery : IQuery
+    public class GetHearingsForTodayQuery : IQuery
     {
-        public GetHearingsForTodayByVenuesQuery(IEnumerable<string> hearingVenueNames)
+        public GetHearingsForTodayQuery(IEnumerable<string> hearingVenueNames = null)
         {
-            HearingVenueNames = hearingVenueNames.ToList();
+            HearingVenueNames = hearingVenueNames?.ToList();
         }
+        
         public List<string> HearingVenueNames { get; }
     }
     
-    public class GetHearingsForTodayByVenuesQueryHandler : IQueryHandler<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>
+    public class GetHearingsForTodayQueryHandler : IQueryHandler<GetHearingsForTodayQuery, List<VideoHearing>>
     {
         private readonly BookingsDbContext _context;
 
-        public GetHearingsForTodayByVenuesQueryHandler(BookingsDbContext context)
+        public GetHearingsForTodayQueryHandler(BookingsDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<VideoHearing>> Handle(GetHearingsForTodayByVenuesQuery query)
+        public async Task<List<VideoHearing>> Handle(GetHearingsForTodayQuery query)
         {
             var hearingQuery = _context.VideoHearings
                 .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
@@ -35,12 +36,15 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.CaseType)
+                .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date)
                 .AsQueryable();
+
+            if (query.HearingVenueNames != null && query.HearingVenueNames.Any())
+                hearingQuery = hearingQuery
+                    .Where(x => query.HearingVenueNames.Contains(x.HearingVenueName))
+                    .OrderBy(x => x.HearingVenueName).ThenBy(x => x.ScheduledDateTime);
                 
-            return await hearingQuery
-                .Where(x => x.ScheduledDateTime.Date == DateTime.Today.Date && query.HearingVenueNames.Contains(x.HearingVenueName))
-                .OrderBy(x => x.HearingVenueName).ThenBy(x => x.ScheduledDateTime)
-                .ToListAsync();
+            return await hearingQuery.ToListAsync();
         }
     }
 }

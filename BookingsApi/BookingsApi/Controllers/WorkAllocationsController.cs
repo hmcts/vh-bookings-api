@@ -120,8 +120,8 @@ namespace BookingsApi.Controllers
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllocationsForHearingsByVenue([FromBody]string[] hearingVenueNames)
         {
-            var query = new GetHearingsForTodayByVenuesQuery(hearingVenueNames);
-            var hearings = await _queryHandler.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(query);
+            var query = new GetHearingsForTodayQuery(hearingVenueNames);
+            var hearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(query);
             return Ok(hearings.Select(e => new AllocatedCsoResponse
             {
                 HearingId = e.Id,
