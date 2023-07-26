@@ -70,6 +70,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
                 .Include(x=>x.Allocations).ThenInclude(x=>x.JusticeUser)
+                .AsSplitQuery()
                 .AsNoTracking();
 
             if (query.CaseTypes.Any())
@@ -109,7 +110,7 @@ namespace BookingsApi.DAL.Queries
                 
                 if (query.NoAllocated)
                 {
-                    hearings = GetHearingsNotAllocated(hearings);
+                    hearings = hearings.Where(h => h!.Allocations.Any());
                 }
                 
                 if (query.SelectedUsers != null && query.SelectedUsers.Any())
@@ -172,23 +173,6 @@ namespace BookingsApi.DAL.Queries
                     .All(r => !r.Discriminator.ToLower().Equals("judge"));
 
                 if (containsNoJudge)
-                {
-                    videoHearings.Add(item);
-                }
-            }
-
-            return videoHearings.AsQueryable();
-        }
-        
-        private static IQueryable<VideoHearing> GetHearingsNotAllocated(IQueryable<VideoHearing> hearings)
-        {
-            var videoHearings = new List<VideoHearing>();
-
-            foreach (var item in hearings)
-            {
-                var containsNoAllocation = item.AllocatedTo == null;
-
-                if (containsNoAllocation)
                 {
                     videoHearings.Add(item);
                 }
