@@ -288,8 +288,8 @@ stages:
               acceptanceTestSettings:
                 - name: Services:BookingsApiUrl
                   value: https://vh-bookings-api-pr-${{ variables.pr_number }}.dev.platform.hmcts.net
-                - name: ApplicationInsights:InstrumentationKey
-                  value: applicationinsights--instrumentationkey
+                - name: ApplicationInsights:ConnectionString
+                  value: connectionstrings--applicationinsights
                   keyVaultName: vh-infra-core-${{ variables.env }}
                   secret: true
                 - name: AzureAd:ClientId
