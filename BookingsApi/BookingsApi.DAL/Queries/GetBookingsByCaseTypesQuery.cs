@@ -62,9 +62,6 @@ namespace BookingsApi.DAL.Queries
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
         {
             IQueryable<VideoHearing> hearings = _context.VideoHearings
-                .Include("Participants.Person")
-                .Include("Participants.HearingRole.UserRole")
-                .Include("Participants.CaseRole")
                 .Include("HearingCases.Case")
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
@@ -105,12 +102,12 @@ namespace BookingsApi.DAL.Queries
 
                 if (query.NoJudge)
                 {
-                    hearings = GetHearingsWithoutJudge(hearings);
+                    hearings = hearings.Where(x => !x.Participants.Any(y => y.Discriminator.ToLower().Equals("judge")));
                 }
                 
                 if (query.NoAllocated)
                 {
-                    hearings = hearings.Where(h => h!.Allocations.Any());
+                    hearings = hearings.Where(h => !h.Allocations.Any());
                 }
                 
                 if (query.SelectedUsers != null && query.SelectedUsers.Any())
@@ -161,24 +158,6 @@ namespace BookingsApi.DAL.Queries
             {
                 throw new FormatException($"Unexpected cursor format [{cursor}]", e);
             }
-        }
-
-        private static IQueryable<VideoHearing> GetHearingsWithoutJudge(IQueryable<VideoHearing> hearings)
-        {
-            var videoHearings = new List<VideoHearing>();
-
-            foreach (var item in hearings)
-            {
-                var containsNoJudge = item.Participants
-                    .All(r => !r.Discriminator.ToLower().Equals("judge"));
-
-                if (containsNoJudge)
-                {
-                    videoHearings.Add(item);
-                }
-            }
-
-            return videoHearings.AsQueryable();
         }
 
         private async Task<IQueryable<VideoHearing>> FilterByCaseNumber(

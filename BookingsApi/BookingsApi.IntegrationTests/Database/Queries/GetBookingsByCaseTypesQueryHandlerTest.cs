@@ -30,7 +30,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
 
             _context = new BookingsDbContext(BookingsDbContextOptions);
+            
 
+            _context.RemoveRange(_context.JusticeUsers.Include(x => x.JusticeUserRoles)
+                .Where(x => x.ContactEmail.StartsWith("team.lead@hearings.reform.hmcts.net")).ToList());
+            _context.SaveChanges();
+            
             _handler = new GetBookingsByCaseTypesQueryHandler(_context, FeatureTogglesMock.Object);
         }
 
@@ -210,9 +215,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_video_hearings_filtered_by_not_allocated_empty()
         {
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-            await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", "secondname", true);
-            
-            
+
             var query = new GetBookingsByCaseTypesQuery
             {
                 NoAllocated = true
@@ -220,7 +223,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var result = await _handler.Handle(query);
 
-            AssertHearingsAreFilteredByNoAllocatedEmpty(result);
+            result.All(x=>x.AllocatedTo == null).Should().BeTrue();
         }
         
         [Test(Description = "With AdminSearchToggle On")]
@@ -283,14 +286,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .All(r => userIds.Contains(r.Id));
             
             containsHearingsFilteredByUsers.Should().BeTrue();
-        }
-        
-        private static void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
-        {
-            var containsHearingsFilteredByUsers = hearings
-                .Where(r => r.Allocations.Count <= 0);
-            
-            containsHearingsFilteredByUsers.Should().BeEmpty();
         }
         
         private static void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
