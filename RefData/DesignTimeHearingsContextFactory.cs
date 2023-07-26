@@ -1,9 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-
-namespace RefData
+﻿namespace RefData
 {
     [ExcludeFromCodeCoverage]
     public class DesignTimeHearingsContextFactory : IDesignTimeDbContextFactory<RefDataContext>

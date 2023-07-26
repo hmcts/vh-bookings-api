@@ -21,6 +21,19 @@ public class HearingTests : ApiTest
     }
 
     [Test]
+    public async Task should_get_hearings_for_today()
+    {
+        var hearingSchedule = DateTime.UtcNow;
+        var caseName = "Bookings Api AC Automated";
+        var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
+        _hearing = await BookingsApiClient.BookNewHearingAsync(request);
+        var results = await BookingsApiClient.GetHearingsForTodayAsync();
+        results.Should().NotBeNullOrEmpty();
+        results.Should().Contain(e => e.Id == _hearing.Id);
+        
+    }
+    
+    [Test]
     public async Task should_get_hearings_for_today_by_venue()
     {
         var hearingSchedule = DateTime.UtcNow;

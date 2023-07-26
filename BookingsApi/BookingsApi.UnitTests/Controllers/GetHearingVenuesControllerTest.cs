@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -37,7 +38,8 @@ public class GetHearingVenuesControllerTest
         queryResponse[1].HearingVenueName = expectedResponse[1];
         
         _queryHandler
-            .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(It.IsAny<GetAllocationHearingsBySearchQuery>()))
+            .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(
+                It.IsAny<GetAllocationHearingsBySearchQuery>()))
             .ReturnsAsync(queryResponse);
 
         //Act
@@ -69,5 +71,42 @@ public class GetHearingVenuesControllerTest
         //Assert
         response?.StatusCode.Should().Be(200);
         response?.Value.Should().NotBeNull().And.BeEquivalentTo(Array.Empty<string>());
+    }
+    
+        
+    [Test]
+    public async Task Get_HearingVenues_with_expired_venues_for_Hearings_Today()
+    {
+        //Arrange
+        var mockVenue0 = new HearingVenue(100000,"MockVenue0") { ExpirationDate = DateTime.Today};
+        var mockVenue1 = new HearingVenue(100001,"MockVenue1") { ExpirationDate = DateTime.Today.AddDays(-1)};
+        var mockVenue2 = new HearingVenue(100002,"MockVenue2") { ExpirationDate = DateTime.Today.AddDays(-1)};
+        var mockVenue3 = new HearingVenue(100003,"MockVenue3") { ExpirationDate = DateTime.Today.AddDays(1)};
+        var mockVenue4 = new HearingVenue(100004,"MockVenue4") { ExpirationDate = null};
+        var mockHearing = Mock.Of<VideoHearing>();
+        mockHearing.HearingVenueName = "MockVenue1";
+
+        //Mock of hearings today
+        _queryHandler
+                .Setup(x => x.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(It.IsAny<GetHearingsForTodayQuery>()))
+                .ReturnsAsync(new List<VideoHearing>{ mockHearing });
+
+        //Mock of hearing venues
+            _queryHandler
+                .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
+                .ReturnsAsync(() => new List<HearingVenue>{mockVenue0, mockVenue1, mockVenue2, mockVenue3, mockVenue4});
+
+        //Act
+        var response = await _controller.GetHearingVenuesIncludingExpiredVenuesForHearingsToday() as OkObjectResult;
+        
+        //Assert
+        response?.StatusCode.Should().Be(200);
+        var hearingVenues = response?.Value as List<HearingVenueResponse>;
+        hearingVenues.Should().NotBeNull();
+        hearingVenues.Should().NotContain(e => e.Id == mockVenue0.Id);
+        hearingVenues.Should().Contain(e => e.Id == mockVenue1.Id);
+        hearingVenues.Should().NotContain(e => e.Id == mockVenue2.Id);
+        hearingVenues.Should().Contain(e => e.Id == mockVenue3.Id);
+        hearingVenues.Should().Contain(e => e.Id == mockVenue4.Id);
     }
 }

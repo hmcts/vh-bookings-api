@@ -21,8 +21,8 @@ public class GetAllocationsForHearingsByVenueTests : WorkAllocationsControllerTe
         var hearing = GetHearing(null);
         QueryHandlerMock
             .Setup(x =>
-                x.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(
-                    It.IsAny<GetHearingsForTodayByVenuesQuery>()))
+                x.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(
+                    It.IsAny<GetHearingsForTodayQuery>()))
             .ReturnsAsync(new List<VideoHearing> { hearing });
 
         //ACT
