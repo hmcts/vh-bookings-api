@@ -115,13 +115,13 @@ namespace BookingsApi.Controllers
             var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
-
+        
         /// <summary>
         /// Get list of all confirmed hearings for a given username for today
         /// </summary>
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("today", Name = "GetConfirmedHearingsByUsernameForToday")]
+        [HttpGet("today/username", Name = "GetConfirmedHearingsByUsernameForToday")]
         [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -703,7 +703,7 @@ namespace BookingsApi.Controllers
                 VenueIds = request.VenueIds,
                 LastName = request.LastName,
                 NoJudge = request.NoJudge,
-                NoAllocated = request.NoAllocated,
+                Unallocated = request.NoAllocated,
                 CaseTypes = request.Types,
                 SelectedUsers = request.Users
             };
@@ -790,6 +790,24 @@ namespace BookingsApi.Controllers
         }
 
         /// <summary>
+        /// Return hearing details for todays hearings
+        /// </summary>
+        /// <returns>Booking status</returns>
+        [HttpGet("today", Name = "GetHearingsForToday")]
+        [OpenApiOperation("GetHearingsForToday")]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHearingsForToday()
+        {
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
+            if (!videoHearings.Any())
+                return NotFound();
+
+            return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
+        }
+        
+        
+        /// <summary>
         /// Return hearing details for todays hearings by venue
         /// </summary>
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
@@ -800,7 +818,7 @@ namespace BookingsApi.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHearingsForTodayByVenue([FromBody]IEnumerable<string> venueNames)
         {
-            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayByVenuesQuery, List<VideoHearing>>(new GetHearingsForTodayByVenuesQuery(venueNames));
+            var videoHearings = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery(venueNames));
             if (!videoHearings.Any())
                 return NotFound();
 
