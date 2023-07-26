@@ -3,7 +3,7 @@ GO;
 
 BEGIN TRANSACTION;
 
-UPDATE VhBookings.dbo.HearingVenue SET ExpirationDate = '2023-09-01' WHERE Name IN
+UPDATE VhBookings.dbo.HearingVenue SET ExpirationDate = '2023-09-01', UpdatedDate = CURRENT_TIMESTAMP WHERE Name IN
 (
 'Barrow-in-Furness Magistrates Court',
 'Basingstoke Magistrates'' Court',
