@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
@@ -22,6 +23,8 @@ namespace BookingsApi.Domain
         public string VenueCode { get; }
         public bool IsScottish { get; }
         public bool IsWorkAllocationEnabled { get; }
+        
+        public DateTime? ExpirationDate { get; set; }
 
         private void ValidateArguments(int id, string name)
         {

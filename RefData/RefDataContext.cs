@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace RefData
+﻿namespace RefData
 {
     public partial class RefDataContext : DbContext
     {
