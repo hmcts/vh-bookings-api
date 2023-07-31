@@ -2,6 +2,7 @@
 using System.Net.Http;
 using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.Common.Configuration;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.Requests;
 using BookingsApi.DAL;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
+using Testing.Common.Stubs;
 using ConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
 using TestData = Testing.Common.Configuration.TestData;
 
@@ -100,6 +102,7 @@ namespace BookingsApi.IntegrationTests.Hooks
         private static void RegisterStubs(IServiceCollection services)
         {
             services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
+            services.AddSingleton<IFeatureToggles, FeatureTogglesStub>();
         }
 
         private static void RegisterApiSettings(TestContext context)
