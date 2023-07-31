@@ -14,7 +14,7 @@
   <PropertyGroup><ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles></PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.10.0" />
-    <PackageReference Include="LaunchDarkly.ServerSdk" Version="6.3.2" />
+    <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
     <PackageReference Include="nunit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" />
