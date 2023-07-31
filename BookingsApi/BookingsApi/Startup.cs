@@ -38,7 +38,8 @@ namespace BookingsApi
 
             services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer());
 
-            services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"]));
+            var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
+            services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
 
             services.AddApplicationInsightsTelemetry();
 
