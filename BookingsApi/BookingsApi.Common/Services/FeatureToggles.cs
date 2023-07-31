@@ -31,7 +31,7 @@ namespace BookingsApi.Common.Services
         }
 
         public bool AdminSearchToggle() => GetBoolToggle(AdminSearchToggleKey);
-        public bool ReferenceDataToggle() => GetBoolToggle(ReferenceDataToggleKey);
+        public bool ReferenceDataToggle() => true;
         public bool EJudFeature() => GetBoolToggle(EJudFeatureKey);
         
         private bool GetBoolToggle(string key)
