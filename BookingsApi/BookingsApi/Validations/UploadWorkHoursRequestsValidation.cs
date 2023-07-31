@@ -95,7 +95,7 @@ namespace BookingsApi.Validations
 
             if (!daysAreValid)
             {
-                errors.Add(new ValidationFailure($"{username}, Day Numbers", "Must specify one entry for each day in days 1-7"));
+                errors.Add(new ValidationFailure($"{username}, Day Numbers", "Must specify one entry for each day of the week for days 1-7"));
             }
 
             return daysAreValid;

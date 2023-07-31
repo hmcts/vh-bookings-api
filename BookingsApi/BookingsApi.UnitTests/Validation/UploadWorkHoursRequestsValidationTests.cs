@@ -280,7 +280,7 @@ namespace BookingsApi.UnitTests.Validation
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors[0].PropertyName.Should().Be($"{_username}, Day Numbers");
-            result.Errors[0].ErrorMessage.Should().Be("Must specify one entry for each day in days 1-7");
+            result.Errors[0].ErrorMessage.Should().Be("Must specify one entry for each day of the week for days 1-7");
         }
         
         [Test]
@@ -313,7 +313,7 @@ namespace BookingsApi.UnitTests.Validation
             // Assert
             result.IsValid.Should().BeFalse();
             result.Errors[0].PropertyName.Should().Be($"{_username}, Day Numbers");
-            result.Errors[0].ErrorMessage.Should().Be("Must specify one entry for each day in days 1-7");
+            result.Errors[0].ErrorMessage.Should().Be("Must specify one entry for each day of the week for days 1-7");
         }
         
         [Test]
