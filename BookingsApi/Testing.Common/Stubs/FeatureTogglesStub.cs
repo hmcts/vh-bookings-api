@@ -6,8 +6,8 @@ public class FeatureTogglesStub : IFeatureToggles
 {
     public bool AdminSearch { get; set; } = true;
     public bool RefData { get; set; } = false;
-    public bool EJud { get; set; } = true;
-    
+    public bool EJud { get; set; } = false;
+
     public bool AdminSearchToggle()
     {
         return AdminSearch;

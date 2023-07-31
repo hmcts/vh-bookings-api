@@ -31,7 +31,7 @@ namespace BookingsApi.IntegrationTests
         private static void RegisterStubs(IServiceCollection services)
         {
             services.AddSingleton<IServiceBusQueueClient, ServiceBusQueueClientFake>();
-            services.AddSingleton<IFeatureToggles>(new FeatureTogglesStub());
+            services.AddSingleton<IFeatureToggles, FeatureTogglesStub>();
         }
         
         protected override void ConfigureClient(HttpClient client)
