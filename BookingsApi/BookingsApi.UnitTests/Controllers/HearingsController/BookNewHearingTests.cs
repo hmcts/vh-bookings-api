@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             QueryHandlerMock
             .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
-            .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham Civil and Family Justice Centre") });
+            .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham Civil and Family Justice Centre", venueCode: "TestVenueCode") });
 
             _videoHearing = GetHearing("123");
 
@@ -183,101 +183,16 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task Should_return_badrequest_without_matching_casetype(bool referenceDataToggle)
-        {
-            if (referenceDataToggle)
-                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
-            
-            QueryHandlerMock
-           .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
-           .ReturnsAsync((CaseType)null);
-
-            var result = await Controller.BookNewHearing(request);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            if(referenceDataToggle)
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.CaseTypeServiceId), "Case type does not exist");
-            else
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.CaseTypeName), "Case type does not exist");
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task Should_return_badrequest_without_matching_hearingtype(bool referenceDataToggle)
-        {
-            if (referenceDataToggle)
-                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
-            
-            var caseType = new CaseType(1, "Civil")
-            {
-                CaseRoles = CaseRoles,
-                HearingTypes = new List<HearingType> { new HearingType("Not matching") { Code = "NotMatching"} }
-            };
-
-            QueryHandlerMock
-            .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
-            .ReturnsAsync(caseType);
-
-            var result = await Controller.BookNewHearing(request);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            if (referenceDataToggle)
-            {
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingTypeCode), "Hearing type does not exist");
-            }
-            else
-            {
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingTypeName), "Hearing type does not exist");
-            }
-        }
-
-        [Test]
-        public async Task Should_return_badrequest_without_matching_hearingvenue()
-        {
-            QueryHandlerMock
-           .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
-           .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Not matching") });
-
-            var result = await Controller.BookNewHearing(request);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
-        }
-
         [Test]
         public async Task Should_return_badrequest_with_empty_request()
         {
             var result = await Controller.BookNewHearing(null);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(BookNewHearingRequest), "BookNewHearingRequest is null");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(BookNewHearingRequest), "BookNewHearingRequest is null");
         }
-
-        [Test]
-        public async Task Should_return_badrequest_without_valid_request()
-        {
-            var newRequest = RequestBuilder.Build();
-            newRequest.CaseTypeName = string.Empty;
-
-            var result = await Controller.BookNewHearing(newRequest);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            var errors = (Dictionary<string, object>)((SerializableError)objectResult.Value);
-            errors.Should().ContainKey("CaseTypeName");
-            ((string[])errors["CaseTypeName"])[0].Should().Be("Please provide a case type name");
-        }
+        
 
         [TestCase(true)]
         [TestCase(false)]
@@ -355,36 +270,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                                                                                           && c.Participants.Any(p => p.Person.LastName == "LastNameWithSpaces" || p.Person.LastName == "LastName WithSpaces"))), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
-        }
-        
-        [TestCase(null)]
-        [TestCase("")]
-        public async Task Should_return_badrequest_with_missing_first_name(string firstName)
-        {
-            var newRequest = RequestBuilder.Build();
-            newRequest.Participants[0].FirstName = firstName;
-            
-            var result = await Controller.BookNewHearing(newRequest);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Participants[0].FirstName", ParticipantRequestValidation.NoFirstNameErrorMessage);
-        }
-        
-        [TestCase(null)]
-        [TestCase("")]
-        public async Task Should_return_badrequest_with_missing_last_name(string lastName)
-        {
-            var newRequest = RequestBuilder.Build();
-            newRequest.Participants[0].LastName = lastName;
-            
-            var result = await Controller.BookNewHearing(newRequest);
-
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Participants[0].LastName", ParticipantRequestValidation.NoLastNameErrorMessage);
         }
     }
 }

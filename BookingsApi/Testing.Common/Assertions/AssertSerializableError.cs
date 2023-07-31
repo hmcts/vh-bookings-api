@@ -11,5 +11,12 @@ namespace Testing.Common.Assertions
             error.ContainsKey(key).Should().BeTrue();
             ((string[])error[key])[0].Should().Be(errorMessage);
         }
+        
+        public static void ContainsKeyAndErrorMessage(this ValidationProblemDetails error, string key, string errorMessage)
+        {
+            error.Should().NotBeNull();
+            error.Errors.ContainsKey(key).Should().BeTrue();
+            error.Errors[key][0].Should().Be(errorMessage);
+        }
     }
 }

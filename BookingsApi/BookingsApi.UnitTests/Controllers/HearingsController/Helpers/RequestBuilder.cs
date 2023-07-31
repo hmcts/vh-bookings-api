@@ -31,6 +31,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
                 .With(x => x.Endpoints = new List<EndpointRequest> { new EndpointRequest { DisplayName = "Cool endpoint 1" } })
                 .With(x => x.CaseTypeServiceId = "TestServiceId")
                 .With(x => x.HearingTypeCode = "AutomatedTest")
+                .With(x => x.HearingVenueCode = "TestVenueCode")
                 .Build();
 
             return request;

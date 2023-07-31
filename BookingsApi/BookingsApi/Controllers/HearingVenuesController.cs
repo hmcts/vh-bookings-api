@@ -39,7 +39,7 @@ namespace BookingsApi.Controllers
 
             var response = hearingVenues.Select(x => new HearingVenueResponse
             {
-                Id = x.Id, Name = x.Name
+                Id = x.Id, Name = x.Name, Code = x.VenueCode
             }).ToList();
 
             return Ok(response);

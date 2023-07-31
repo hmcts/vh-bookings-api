@@ -168,11 +168,21 @@ namespace BookingsApi.DAL.Services
             return cso;
         }
         
-        private async Task<List<VideoHearing>> GetListOfHearings(List<Guid> postRequestHearings)
+        private async Task<List<VideoHearing>> GetListOfHearings(List<Guid> hearingIds)
         {
+            return await _context.VideoHearings
+                .Include(h => h.CaseType)
+                .Include(h => h.HearingType)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.VhoWorkHours)
+                .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
+                .Include(h=> h.HearingVenue)
+                .Where(x=> hearingIds.Contains(x.Id))
+                .AsSplitQuery()
+                .AsNoTracking()
+                .ToListAsync();
             List<VideoHearing> list = new List<VideoHearing>();
 
-            foreach (Guid id in postRequestHearings)
+            foreach (Guid id in hearingIds)
             {
                 VideoHearing hearing = await GetHearing(id);
                 list. Add(hearing);
