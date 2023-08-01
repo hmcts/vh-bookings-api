@@ -87,11 +87,17 @@ namespace BookingsApi.UnitTests.Controllers
             // Arrange
             var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
             {
-                new UploadWorkHoursRequest
+                new()
                 {
                     Username = _username,
                     WorkingHours = new List<WorkingHours> {
-                        new WorkingHours(1, 9, 0, 17, 0)
+                        new(1, 9, 0, 17, 0),
+                        new(2, 9, 0, 17, 0),
+                        new(3, 9, 0, 17, 0),
+                        new(4, 9, 0, 17, 0),
+                        new(5, 9, 0, 17, 0),
+                        new(6, null, null, null, null),
+                        new(7, null, null, null, null)
                     }
                 }
             };

@@ -20,6 +20,10 @@ namespace BookingsApi.Validations
 
             foreach (var request in requests)
             {
+                var daysAreValid = CheckDaysAreValid(request.WorkingHours, request.Username, errors);
+
+                if (!daysAreValid) continue;
+                
                 foreach (var workHours in request.WorkingHours)
                 {
                     var containsNullTime = workHours.GetType().GetProperties()
@@ -75,6 +79,26 @@ namespace BookingsApi.Validations
                     errors.Add(new ValidationFailure($"{user}", "Multiple entries for user. Only one row per user required"));
                 }
             }
+        }
+
+        private static bool CheckDaysAreValid(IEnumerable<WorkingHours> workHours, 
+            string username, 
+            ICollection<ValidationFailure> errors)
+        {
+            var requiredDayOfWeekIds = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+            
+            // Use hash sets to compare the lists regardless of sequential order
+            var dayOfWeekIdsHashSet = new HashSet<int>(workHours.Select(wh => wh.DayOfWeekId));
+            var requiredDayOfWeekIdsHashSet = new HashSet<int>(requiredDayOfWeekIds);
+
+            var daysAreValid = dayOfWeekIdsHashSet.SetEquals(requiredDayOfWeekIdsHashSet);
+
+            if (!daysAreValid)
+            {
+                errors.Add(new ValidationFailure($"{username}, Day Numbers", "Must specify one entry for each day of the week for days 1-7"));
+            }
+
+            return daysAreValid;
         }
     }
 }
