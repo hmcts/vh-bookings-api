@@ -239,7 +239,7 @@ namespace BookingsApi.Controllers
                 }
 
                 var hearingTypeQueryValue = rDataFlag ? request.HearingTypeCode : request.HearingTypeName;
-                var hearingType = rDataFlag ? caseType.HearingTypes.SingleOrDefault(x => x.Code == hearingTypeQueryValue)
+                var hearingType = rDataFlag ? caseType.HearingTypes.SingleOrDefault(x => x.Code.ToLower() == hearingTypeQueryValue.ToLower())
                         : caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
                 if (hearingType == null)
                 {
@@ -736,7 +736,9 @@ namespace BookingsApi.Controllers
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
             var hearingVenues =
                 await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
-            return rDataFlag ? hearingVenues.SingleOrDefault(x => x.VenueCode == venueId) : hearingVenues.SingleOrDefault(x => x.Name == venueId);
+            return rDataFlag ? 
+                hearingVenues.SingleOrDefault(x => x.VenueCode.Equals(venueId, StringComparison.InvariantCultureIgnoreCase)) 
+                : hearingVenues.SingleOrDefault(x => x.Name.Equals(venueId, StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>

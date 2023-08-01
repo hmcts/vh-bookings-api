@@ -150,9 +150,9 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
         request.CaseTypeName = "Generic";
-        request.CaseTypeServiceId = "VHG1";
+        request.CaseTypeServiceId = "vhG1"; // intentionally incorrect case
         request.HearingTypeName = "Automated Test";
-        request.HearingTypeCode = "AutomatedTest";
+        request.HearingTypeCode = "automatedtest"; // intentionally incorrect case
         request.HearingVenueName = "Birmingham Civil and Family Justice Centre";
         request.HearingVenueCode = "231596";
         return request;
