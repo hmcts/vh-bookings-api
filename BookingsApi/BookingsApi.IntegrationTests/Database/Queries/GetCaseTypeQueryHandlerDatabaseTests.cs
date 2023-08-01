@@ -13,14 +13,15 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetCaseTypeQueryHandlerDatabaseTests : DatabaseTestsBase
     {
         private GetCaseTypeQueryHandler _handler;
-        
+        private Mock<IFeatureToggles> _featureTogglesMock;
+
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            var featureTogglesMock = new Mock<IFeatureToggles>();
-            featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(false);
-            _handler = new GetCaseTypeQueryHandler(context, featureTogglesMock.Object);
+            _featureTogglesMock = new Mock<IFeatureToggles>();
+            _featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(false);
+            _handler = new GetCaseTypeQueryHandler(context, _featureTogglesMock.Object);
         }
 
         [Test]
@@ -72,6 +73,17 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertCaseRolesAndHearingRolesAreSortedAscendingByName(caseType);
         }
 
+        [Test] public async Task should_get_case_type_by_service_id()
+        {
+            _featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(true);
+            var caseTypeName = "Generic";
+            var serviceId = "vhG1"; // intentionally not the same case to verify case sensitivity is ignored
+            var caseType = await _handler.Handle(new GetCaseTypeQuery(serviceId));
+            caseType.Should().NotBeNull();
+            caseType.Name.Should().Be(caseTypeName);
+            caseType.HearingTypes.Should().NotBeEmpty();
+        }
+        
         private void AssertCaseRolesAndHearingRolesAreSortedAscendingByName(CaseType caseType)
         {
             caseType.CaseRoles.Should().BeInAscendingOrder();

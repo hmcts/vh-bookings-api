@@ -42,7 +42,7 @@ namespace BookingsApi.DAL.Queries
             
             CaseType caseTypes;
             if (_featureToggles.ReferenceDataToggle())
-                caseTypes = await caseTypesQuery.SingleOrDefaultAsync(x => x.ServiceId == query.CaseTypeQueryParameter);
+                caseTypes = await caseTypesQuery.SingleOrDefaultAsync(x => EF.Functions.Like(x.ServiceId, $"{query.CaseTypeQueryParameter}"));
             else
                 caseTypes = await caseTypesQuery.SingleOrDefaultAsync(x => x.Name == query.CaseTypeQueryParameter);
             
