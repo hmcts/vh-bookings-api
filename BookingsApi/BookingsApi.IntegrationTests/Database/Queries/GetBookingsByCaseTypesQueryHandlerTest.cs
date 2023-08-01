@@ -30,12 +30,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
 
             _context = new BookingsDbContext(BookingsDbContextOptions);
-            
 
-            _context.RemoveRange(_context.JusticeUsers.Include(x => x.JusticeUserRoles)
-                .Where(x => x.ContactEmail.StartsWith("team.lead@hearings.reform.hmcts.net")).ToList());
-            _context.SaveChanges();
-            
             _handler = new GetBookingsByCaseTypesQueryHandler(_context, FeatureTogglesMock.Object);
         }
 
@@ -269,7 +264,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             containsHearingsFilteredByUsers.Should().BeTrue();
         }
-        
         private static void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredByUsers = hearings

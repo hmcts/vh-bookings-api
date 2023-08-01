@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.Requests;
 using FizzWare.NBuilder;
-using Testing.Common.Configuration;
 using Testing.Common.Data;
 
-namespace BookingsApi.AcceptanceTests.Models;
+namespace Testing.Common.Builders.Api.Request;
 
-internal class SimpleBookNewHearingRequest
+public class SimpleBookNewHearingRequest
 {
     private readonly BookNewHearingRequest _request;
 
@@ -90,6 +88,7 @@ internal class SimpleBookNewHearingRequest
             .With(x => x.QuestionnaireNotRequired = false)
             .With(x => x.AudioRecordingRequired = true)
             .With(x => x.HearingTypeCode = "AutomatedTest")
+            .With(x => x.HearingVenueCode = "231596")
             .Build();
     }
 

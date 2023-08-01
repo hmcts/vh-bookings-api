@@ -21,11 +21,11 @@ namespace BookingsApi.Common.Services
         private const string AdminSearchToggleKey = "admin_search";
         private const string ReferenceDataToggleKey = "reference-data";
         private const string EJudFeatureKey = "ejud-feature";
+
         public FeatureToggles(string sdkKey, string environmentName)
         {
             var config = LaunchDarkly.Sdk.Server.Configuration.Builder(sdkKey)
                 .Logging(Components.Logging(Logs.ToWriter(Console.Out)).Level(LogLevel.Warn)).Build();
-            _ldClient = new LdClient(config);
             _context = Context.Builder(LdUser).Name(environmentName).Build();
             _ldClient = new LdClient(config);
         }

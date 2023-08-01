@@ -626,8 +626,11 @@ namespace BookingsApi.IntegrationTests.Steps
             };
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Generic")
+                .With(x => x.CaseTypeServiceId = "VHG1")
                 .With(x => x.HearingTypeName = "Automated Test")
+                .With(x => x.HearingTypeCode = "AutomatedTest")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
+                .With(x=> x.HearingVenueCode = "231596")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)

@@ -78,6 +78,7 @@ namespace BookingsApi.AcceptanceTests.Steps
                     .Excluding(x => x.LinkedParticipants)
                     .Excluding(x => x.IsMultiDayHearing)
                     .Excluding(x => x.HearingTypeCode)
+                    .Excluding(x => x.HearingVenueCode)
                     .Excluding(x => x.CaseTypeServiceId));
 
             var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
