@@ -1,5 +1,4 @@
-﻿using BookingsApi.Contract.Responses;
-using BookingsApi.Domain;
+﻿using BookingsApi.Domain;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -7,7 +6,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Queries;
+using BookingsApi.Contract.V1.Queries;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController

@@ -1,6 +1,7 @@
-﻿using BookingsApi.Contract.Requests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations;
+using BookingsApi.Validations.V1;
 using FluentValidation.Results;
 
 namespace BookingsApi.Helpers

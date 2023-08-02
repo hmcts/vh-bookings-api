@@ -1,8 +1,8 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Domain;
+﻿using BookingsApi.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.V1.Requests;
 using Newtonsoft.Json;
 using FluentValidation.Results;
 

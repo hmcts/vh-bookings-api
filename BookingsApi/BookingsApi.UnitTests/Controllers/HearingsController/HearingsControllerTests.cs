@@ -8,9 +8,9 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.Common;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
     public class HearingsControllerTests
     {
-        protected BookingsApi.Controllers.HearingsController Controller;
+        protected BookingsApi.Controllers.V1.HearingsController Controller;
         protected Mock<IQueryHandler> QueryHandlerMock;
         protected Mock<ICommandHandler> CommandHandlerMock;
         protected Mock<IRandomGenerator> RandomGenerator;
@@ -67,9 +67,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             Controller = GetControllerObject(false);
         }
 
-        protected BookingsApi.Controllers.HearingsController GetControllerObject(bool withQueueClient)
+        protected BookingsApi.Controllers.V1.HearingsController GetControllerObject(bool withQueueClient)
         {
-            return  new BookingsApi.Controllers.HearingsController(QueryHandlerMock.Object,
+            return  new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object,
                 CommandHandlerMock.Object,
                 withQueueClient ? _eventPublisher: EventPublisherMock.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
                 HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);

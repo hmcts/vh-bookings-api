@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System;
 using Moq;
 using System.Text.RegularExpressions;
+using BookingsApi.Validations.V1;
 
 namespace BookingsApi.UnitTests.Validation
 {

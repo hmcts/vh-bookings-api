@@ -1,5 +1,5 @@
 ﻿using System;
-using BookingsApi.Contract.Enums;
+using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;

@@ -1,4 +1,3 @@
-using BookingsApi.Contract.Configuration;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
@@ -12,6 +11,7 @@ using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Services;
+using BookingsApi.Contract.V1.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Common;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

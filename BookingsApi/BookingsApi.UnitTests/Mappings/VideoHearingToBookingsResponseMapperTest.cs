@@ -8,6 +8,7 @@ using Testing.Common.Builders.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain.Helper;
+using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 

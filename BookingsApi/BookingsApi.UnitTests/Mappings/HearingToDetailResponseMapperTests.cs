@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
 using Testing.Common.Builders.Domain;
 

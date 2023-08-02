@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Mappings.V1;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

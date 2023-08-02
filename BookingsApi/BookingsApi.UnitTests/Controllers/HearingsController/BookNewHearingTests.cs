@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands;
@@ -15,6 +14,7 @@ using NUnit.Framework;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Linq;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController

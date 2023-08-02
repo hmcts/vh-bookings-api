@@ -90,11 +90,11 @@
       "operationGenerationMode": "SingleClientFromOperationId",
       "additionalNamespaceUsages": [
         "Microsoft.AspNetCore.Mvc",
-        "BookingsApi.Contract.Queries",
-        "BookingsApi.Contract.Requests",
-        "BookingsApi.Contract.Responses",
-        "BookingsApi.Contract.Configuration",
-        "BookingsApi.Contract.Enums"
+        "BookingsApi.Contract.V1.Queries",
+        "BookingsApi.Contract.V1.Requests",
+        "BookingsApi.Contract.V1.Responses",
+        "BookingsApi.Contract.V1.Configuration",
+        "BookingsApi.Contract.V1.Enums"
       ],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,

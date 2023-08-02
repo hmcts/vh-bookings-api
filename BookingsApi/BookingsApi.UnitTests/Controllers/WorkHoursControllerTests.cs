@@ -1,5 +1,4 @@
 ﻿using System;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -9,7 +8,9 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -17,6 +18,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Validations;
+using BookingsApi.Validations.V1;
 using FluentAssertions;
 using Testing.Common.Assertions;
 

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Mappings;
+using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
 using Newtonsoft.Json;
 using NUnit.Framework;

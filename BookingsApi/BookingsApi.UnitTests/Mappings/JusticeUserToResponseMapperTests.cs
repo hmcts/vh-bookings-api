@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings;
+using BookingsApi.Mappings.V1;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using JusticeUserRole = BookingsApi.Contract.V1.Requests.Enums.JusticeUserRole;
 
 namespace BookingsApi.UnitTests.Mappings
 {
@@ -31,8 +33,8 @@ namespace BookingsApi.UnitTests.Mappings
             };
             justiceUser.AddRoles(userRoles);
 
-            List<Contract.Requests.Enums.JusticeUserRole> roles = new List<Contract.Requests.Enums.JusticeUserRole>();
-            roles.Add(Contract.Requests.Enums.JusticeUserRole.VhTeamLead);
+            List<JusticeUserRole> roles = new List<JusticeUserRole>();
+            roles.Add(JusticeUserRole.VhTeamLead);
             var expectedJusticeUserResponse = new JusticeUserResponse
             {
                 FirstName = "FirstName",

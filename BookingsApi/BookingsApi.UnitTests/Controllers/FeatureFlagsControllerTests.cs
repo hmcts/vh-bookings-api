@@ -1,5 +1,6 @@
-﻿using BookingsApi.Contract.Configuration;
+﻿using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Controllers;
+using BookingsApi.Controllers.V1;
 using BookingsApi.Services;
 using FluentAssertions;
 using Moq;

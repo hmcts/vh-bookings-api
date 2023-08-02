@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Controllers;
+using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Queries.Core;
 using Moq;
 using NUnit.Framework;

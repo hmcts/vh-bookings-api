@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using BookingsApi.Contract.Enums;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Enums;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.Mappings;
+using BookingsApi.Mappings.V1;
 using FluentAssertions;
 using NUnit.Framework;
 

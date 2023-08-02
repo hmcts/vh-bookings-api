@@ -180,15 +180,6 @@ namespace BookingsApi.DAL.Services
                 .AsSplitQuery()
                 .AsNoTracking()
                 .ToListAsync();
-            List<VideoHearing> list = new List<VideoHearing>();
-
-            foreach (Guid id in hearingIds)
-            {
-                VideoHearing hearing = await GetHearing(id);
-                list. Add(hearing);
-            }
-
-            return list;
         }
 
         private async Task<VideoHearing> GetHearing(Guid hearingId)

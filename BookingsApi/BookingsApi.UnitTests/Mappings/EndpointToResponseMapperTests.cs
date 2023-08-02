@@ -1,11 +1,12 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Mappings;
+﻿using BookingsApi.Mappings;
 using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using System;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Mappings.V1;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Mappings

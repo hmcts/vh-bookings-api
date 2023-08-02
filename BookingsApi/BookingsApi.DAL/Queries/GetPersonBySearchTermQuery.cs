@@ -1,5 +1,4 @@
-﻿using BookingsApi.Contract.Configuration;
-using BookingsApi.DAL.Queries.Core;
+﻿using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

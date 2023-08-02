@@ -8,16 +8,16 @@ using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.AcceptanceTests.Models;
-using BookingsApi.Contract.Queries;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using BookingsApi.Contract.Requests.Enums;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 using UpdateBookingStatusRequest = BookingsApi.AcceptanceTests.Models.UpdateBookingStatusRequest;
 using UpdateHearingRequest = BookingsApi.AcceptanceTests.Models.UpdateHearingRequest;
 using System.Net.Http;
+using BookingsApi.Contract.V1.Queries;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
@@ -239,7 +239,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
-            model.Status.Should().Be((Contract.Enums.BookingStatus)status);
+            model.Status.Should().Be((Contract.V1.Enums.BookingStatus)status);
             if (status == BookingStatus.Created)
             {
                 model.ConfirmedBy.Should().NotBeNullOrEmpty();

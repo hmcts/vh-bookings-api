@@ -1,11 +1,12 @@
-﻿using BookingsApi.Contract.Requests;
-using BookingsApi.Controllers;
+﻿using BookingsApi.Controllers;
 using BookingsApi.Common.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Controllers.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands.Core;

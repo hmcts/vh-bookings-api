@@ -1,5 +1,4 @@
 using System;
-using BookingsApi.Contract.Requests;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;

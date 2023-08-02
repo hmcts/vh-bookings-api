@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using BookingsApi.Contract.Queries;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Queries;
+using BookingsApi.Contract.V1.Requests;
 
 namespace Testing.Common.Builders.Api
 {

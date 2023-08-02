@@ -1,20 +1,20 @@
-﻿using BookingsApi.Contract.Requests;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.V1.Requests;
 using Microsoft.Azure.ServiceBus;
 
 namespace BookingsApi.AcceptanceTests.Models
 {
     internal static class UpdateHearingRequest
     {
-        public static BookingsApi.Contract.Requests.UpdateHearingRequest BuildRequest(string caseName)
+        public static Contract.V1.Requests.UpdateHearingRequest BuildRequest(string caseName)
         {
             var caseList = new List<CaseRequest>
             {
                 new CaseRequest {Name = caseName, Number = "CaseNumber"}
             };
 
-            return new BookingsApi.Contract.Requests.UpdateHearingRequest
+            return new Contract.V1.Requests.UpdateHearingRequest
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,

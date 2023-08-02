@@ -1,10 +1,10 @@
-﻿
-using BookingsApi.Contract.Requests;
-using BookingsApi.Validations;
+﻿using BookingsApi.Validations;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Validations.V1;
 
 namespace BookingsApi.UnitTests.Validation
 {

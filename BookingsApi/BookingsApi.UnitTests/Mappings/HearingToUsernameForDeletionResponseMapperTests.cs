@@ -2,6 +2,7 @@ using System.Linq;
 using BookingsApi.Mappings;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Mappings.V1;
 using FluentAssertions;
 using NUnit.Framework;
 using Testing.Common.Builders.Domain;

@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;

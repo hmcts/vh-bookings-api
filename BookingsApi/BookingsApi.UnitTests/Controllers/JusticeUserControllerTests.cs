@@ -12,7 +12,9 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Commands.Core;
+using BookingsApi.Mappings.V1;
 using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.UnitTests.Controllers

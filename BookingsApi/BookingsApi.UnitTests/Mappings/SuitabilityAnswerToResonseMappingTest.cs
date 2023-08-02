@@ -3,6 +3,7 @@ using BookingsApi.Domain;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
+using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
 
 namespace BookingsApi.UnitTests.Mappings
