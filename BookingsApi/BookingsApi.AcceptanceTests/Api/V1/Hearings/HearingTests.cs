@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders.Api.Request;
+using Testing.Common.Builders.Api.V1.Request;
 
 namespace BookingsApi.AcceptanceTests.Api.V1.Hearings;
 

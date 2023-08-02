@@ -9,7 +9,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api.Request;
+using Testing.Common.Builders.Api.V1.Request;
 using static Testing.Common.Builders.Api.ApiUriFactory.ParticipantsEndpoints;
 using UpdateParticipantRequest = BookingsApi.AcceptanceTests.Models.UpdateParticipantRequest;
 

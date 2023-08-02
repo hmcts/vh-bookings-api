@@ -17,6 +17,7 @@ using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Validations;
 using BookingsApi.Validations.V1;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

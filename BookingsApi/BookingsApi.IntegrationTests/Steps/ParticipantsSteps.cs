@@ -14,7 +14,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api.Request;
+using Testing.Common.Builders.Api.V1.Request;
 using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 using static Testing.Common.Builders.Api.ApiUriFactory.ParticipantsEndpoints;
 

@@ -4,7 +4,7 @@ using BookingsApi.Mappings;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
 using NUnit.Framework;
-using Testing.Common.Builders.Api.Request;
+using Testing.Common.Builders.Api.V1.Request;
 
 namespace BookingsApi.UnitTests.Mappings
 {

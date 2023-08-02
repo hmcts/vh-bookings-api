@@ -21,7 +21,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
     public class BookNewHearingTests : HearingsControllerTests
     {
-        private readonly BookNewHearingRequest request = RequestBuilder.Build();
+        private readonly BookNewHearingRequest request = RequestBuilderV1.Build();
         private VideoHearing _videoHearing;
 
         private static List<CaseRole> CaseRoles => new List<CaseRole>
@@ -134,7 +134,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_successfully_book_hearing_without_endpoint()
         {
-            var newRequest = RequestBuilder.Build();
+            var newRequest = RequestBuilderV1.Build();
             newRequest.Endpoints = null;
             var response = await Controller.BookNewHearing(newRequest);
 
@@ -201,7 +201,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             if (referenceDataToggle)
                 FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
             
-            var newRequest = RequestBuilder.Build();
+            var newRequest = RequestBuilderV1.Build();
             QueryHandlerMock.Setup(qh => qh.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
                 .Throws<Exception>();
 
@@ -216,7 +216,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [TestCase(" FirstName WithSpaces ")]
         public async Task Should_successfully_book_hearing_with_participant_first_name_starting_or_ending_with_spaces(string firstName)
         {
-            var newRequest = RequestBuilder.Build();
+            var newRequest = RequestBuilderV1.Build();
             newRequest.Participants[0].FirstName = firstName;
             
             var response = await Controller.BookNewHearing(newRequest);
@@ -247,7 +247,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [TestCase(" LastName WithSpaces ")]
         public async Task Should_successfully_book_hearing_with_participant_last_name_starting_or_ending_with_spaces(string lastName)
         {
-            var newRequest = RequestBuilder.Build();
+            var newRequest = RequestBuilderV1.Build();
             newRequest.Participants[0].LastName = lastName;
             
             var response = await Controller.BookNewHearing(newRequest);

@@ -2,42 +2,37 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Requests;
 using BookingsApi.IntegrationTests.Helper;
-using BookingsApi.Validations.V1;
+using BookingsApi.Validations.V2;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
-using Testing.Common.Builders.Api.V1.Request;
-using Testing.Common.Stubs;
+using Testing.Common.Builders.Api.V2;
 
-namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
+namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
-public class BookNewHearingWithRefDataToggleOnTests : ApiTest
+public class BookNewHearingTests : ApiTest
 {
-    private FeatureTogglesStub _featureToggleStub;
     private readonly List<Guid> _hearingIds = new();
-
+    
     [SetUp]
     public void Setup()
     {
         _hearingIds.Clear();
-        _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
-        _featureToggleStub!.RefData = true;
     }
-
+    
     [TearDown]
-    public async Task TearDown()
+    public new async Task TearDown()
     {
         foreach (var hearingId in _hearingIds)
         {
             await Hooks.RemoveVideoHearing(hearingId);
         }
     }
-
+    
     [Test]
     public async Task should_book_a_hearing_with_codes_instead_of_names()
     {
@@ -46,7 +41,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
 
         // assert
         result.IsSuccessStatusCode.Should().BeTrue();
@@ -71,7 +66,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -96,7 +91,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -115,7 +110,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -134,7 +129,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -143,17 +138,14 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
             .Be("Hearing venue does not exist");
     }
-
+    
     private BookNewHearingRequest CreateBookingRequestWithServiceIdsAndCodes()
     {
         var hearingSchedule = DateTime.UtcNow;
         var caseName = "Bookings Api Integration Automated";
-        var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
-        request.CaseTypeName = "Generic";
+        var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule).Build();
         request.CaseTypeServiceId = "vhG1"; // intentionally incorrect case
-        request.HearingTypeName = "Automated Test";
         request.HearingTypeCode = "automatedtest"; // intentionally incorrect case
-        request.HearingVenueName = "Birmingham Civil and Family Justice Centre";
         request.HearingVenueCode = "231596";
         return request;
     }

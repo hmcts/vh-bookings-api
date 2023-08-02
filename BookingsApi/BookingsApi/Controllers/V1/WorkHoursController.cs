@@ -12,6 +12,7 @@ using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Extensions;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Validations;
 using BookingsApi.Validations.V1;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
