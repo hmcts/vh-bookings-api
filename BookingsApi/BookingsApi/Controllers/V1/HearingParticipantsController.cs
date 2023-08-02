@@ -29,6 +29,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("hearings")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class HearingParticipantsController : Controller
     {
@@ -55,6 +56,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetAllParticipantsInHearing(Guid hearingId)
         {
             if (hearingId == Guid.Empty)
@@ -91,6 +93,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ParticipantResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetParticipantInHearing(Guid hearingId, Guid participantId)
         {
             if (hearingId == Guid.Empty)
@@ -138,6 +141,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
             [FromBody] AddParticipantsToHearingRequest request)
         {
@@ -214,6 +218,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId, [FromBody] UpdateHearingParticipantsRequest request)
         {
             if (hearingId == Guid.Empty)
@@ -319,6 +324,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> RemoveParticipantFromHearing(Guid hearingId, Guid participantId)
         {
             if (hearingId == Guid.Empty)
@@ -382,6 +388,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ParticipantResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequest request)
         {
             if (hearingId == Guid.Empty)
@@ -477,6 +484,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)
         {
             if (hearingId == Guid.Empty)

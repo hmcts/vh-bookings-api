@@ -17,6 +17,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [AllowAnonymous]
+    [ApiVersion("1.0")]
     [ApiController]
     public class HealthCheckController : Controller
     {
@@ -36,6 +37,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("CheckServiceHealth")]
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BookingsApiHealthResponse), (int)HttpStatusCode.InternalServerError)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> CheckServiceHealth()
         {
             var response = new BookingsApiHealthResponse

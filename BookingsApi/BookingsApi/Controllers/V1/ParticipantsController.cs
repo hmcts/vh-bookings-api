@@ -15,6 +15,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("Participants")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class ParticipantsController : Controller
     {
@@ -35,6 +36,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetParticipantsByUsername(string username)
         {
             if (!username.IsValidEmail())

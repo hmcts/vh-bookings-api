@@ -14,6 +14,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("hearingvenues")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class HearingVenuesController : Controller
     {
@@ -32,6 +33,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetHearingVenues")]
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingVenues([FromQuery] bool excludeExpiredVenue = false)
         {
             var query = new GetHearingVenuesQuery(excludeExpiredVenue);
@@ -53,6 +55,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetHearingVenuesForHearingsToday")]  
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingVenuesIncludingExpiredVenuesForHearingsToday()
         {
             var hearingsToday = await _queryHandler.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(new GetHearingsForTodayQuery());
@@ -71,6 +74,7 @@ namespace BookingsApi.Controllers.V1
         [HttpGet("Allocated")]
         [OpenApiOperation("GetHearingVenuesByAllocatedCso")]
         [ProducesResponseType(typeof(IList<string>), (int) HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingVenueNamesByAllocatedCso([FromQuery] IEnumerable<Guid> csoIds)
         {
             var query = new GetAllocationHearingsBySearchQuery(cso: csoIds, fromDate: DateTime.Today);

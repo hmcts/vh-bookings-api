@@ -13,6 +13,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("casetypes")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class CaseTypesController : Controller
     {
@@ -29,6 +30,7 @@ namespace BookingsApi.Controllers.V1
         [HttpGet]
         [OpenApiOperation("GetCaseTypes")]
         [ProducesResponseType(typeof(List<CaseTypeResponse>), (int) HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetCaseTypes()
         {
             var query = new GetAllCaseTypesQuery();
@@ -58,6 +60,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetCaseRolesForCaseType")]
         [ProducesResponseType(typeof(List<CaseRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetCaseRolesForCaseType(string caseTypeParam)
         {
             var query = new GetCaseTypeQuery(caseTypeParam);
@@ -86,6 +89,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetHearingRolesForCaseRole")]
         [ProducesResponseType(typeof(List<HearingRoleResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
         {            
             var query = new GetCaseTypeQuery(caseTypeName);

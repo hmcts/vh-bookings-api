@@ -22,6 +22,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("justiceuser")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class JusticeUserController : Controller
     {
@@ -46,6 +47,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> AddJusticeUser(AddJusticeUserRequest request)
         {
             var validation = await new AddJusticeUserRequestValidation().ValidateAsync(request);
@@ -89,6 +91,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(JusticeUserResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> EditJusticeUser(EditJusticeUserRequest request)
         {
             var validation = await new EditJusticeUserRequestValidation().ValidateAsync(request);
@@ -125,6 +128,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetJusticeUserByUsername")]
         [ProducesResponseType(typeof(JusticeUserResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetJusticeUserByUsername(string username)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
@@ -150,6 +154,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetJusticeUserList")]
         [ProducesResponseType(typeof(List<JusticeUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetJusticeUserList(string term, bool includeDeleted = false)
         {
             var query = new GetJusticeUserListQuery(term, includeDeleted);
@@ -169,6 +174,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> DeleteJusticeUser(Guid id)
         {
             if (id == Guid.Empty)
@@ -201,6 +207,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> RestoreJusticeUser(RestoreJusticeUserRequest request)
         {
             var validation = await new RestoreJusticeUserRequestValidation().ValidateAsync(request);

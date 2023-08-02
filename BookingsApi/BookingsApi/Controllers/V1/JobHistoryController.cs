@@ -15,6 +15,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("JobHistory")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class JobHistoryController : Controller
     {
@@ -36,6 +37,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("UpdateJobHistory")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateJobHistory(string jobName, bool isSuccessful)
         {
             await _commandHandler.Handle(new AddJobHistoryCommand {JobName = jobName, IsSuccessful = true});
@@ -51,6 +53,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetJobHistory")]
         [ProducesResponseType(typeof(List<JobHistoryResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetJobHistory(string jobName)
         {
             var jobHistories = await _queryHandler.Handle<GetJobHistoryByJobNameQuery, List<JobHistory>>(new GetJobHistoryByJobNameQuery(jobName));   

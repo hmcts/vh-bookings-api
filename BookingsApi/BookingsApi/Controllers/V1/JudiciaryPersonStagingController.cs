@@ -15,6 +15,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("judiciarypersonstaging")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class JudiciaryPersonStagingController : Controller
     {
@@ -30,6 +31,7 @@ namespace BookingsApi.Controllers.V1
         [HttpDelete("RemoveAllJudiciaryPersonsStaging")]
         [OpenApiOperation("RemoveAllJudiciaryPersonsStaging")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> RemoveAllJudiciaryPersonsStagingAsync()
         {
             await _commandHandler.Handle(new RemoveAllJudiciaryPersonStagingCommand());
@@ -40,6 +42,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("BulkJudiciaryPersonsStaging")]
         [OpenApiOperation("BulkJudiciaryPersonsStaging")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> BulkJudiciaryPersonsStagingAsync(IEnumerable<JudiciaryPersonStagingRequest> request)
         {
             var judiciaryPersonStagingRequests = request.ToList();

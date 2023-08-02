@@ -12,31 +12,72 @@ using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using NSwag.Generation.AspNetCore;
+
 
 namespace BookingsApi
 {
     public static class ConfigureServicesExtensions
     {
-        public static IServiceCollection AddSwagger(this IServiceCollection services)
+        public static IServiceCollection AddApiVersioning(this IServiceCollection services)
         {
-            services.AddOpenApiDocument((document, serviceProvider) =>
+            services.AddApiVersioning(opt =>
             {
-                document.AddSecurity("JWT", Enumerable.Empty<string>(),
-                    new OpenApiSecurityScheme
-                    {
-                        Type = OpenApiSecuritySchemeType.ApiKey,
-                        Name = "Authorization",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                        Description = "Type into the textbox: Bearer {your JWT token}.",
-                        Scheme = "bearer"
-                    });
-                document.Title = "Bookings API";
-                document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
-                document.OperationProcessors.Add(new AuthResponseOperationProcessor());
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.ReportApiVersions = true; // keep this true for backwards-compatibility with the old routes (i.e. the non versioned)
+                opt.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader()
+                );
+            }).AddVersionedApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV"; // version format: 'v'[major][.minor][-status]
+                setup.SubstituteApiVersionInUrl = true;
             });
             return services;
+        }
+        public static IServiceCollection AddSwagger(this IServiceCollection services)
+        {
+            var apiVersionDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
+            foreach (var groupName in  apiVersionDescription.ApiVersionDescriptions.Select(x=> x.GroupName))
+            {
+                services.AddOpenApiDocument((configure) =>
+                {
+                    ConfigureSwaggerForVersion(configure, groupName, new[] { groupName });
+                });
+            }
+            
+            // to build a single a client for all versions of the api, create one document with all the groups
+            var groupNames = apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName).ToArray();
+            services.AddOpenApiDocument((configure) =>
+            {
+                ConfigureSwaggerForVersion(configure, "all", groupNames);
+            });
+            return services;
+        }
+
+        private static void ConfigureSwaggerForVersion(AspNetCoreOpenApiDocumentGeneratorSettings configure,
+             string documentName, string[] apiGroupNames)
+        {
+            configure.DocumentName = documentName;
+            configure.ApiGroupNames = apiGroupNames;
+            configure.AddSecurity("JWT", Enumerable.Empty<string>(),
+                new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}.",
+                    Scheme = "bearer"
+                });
+            configure.Title = "Bookings API";
+            configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            configure.OperationProcessors.Add(new AuthResponseOperationProcessor());
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)

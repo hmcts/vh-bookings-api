@@ -12,6 +12,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("suitability-answers")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class SuitabilityAnswersController : Controller
     {

@@ -20,6 +20,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("work-hours")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class WorkHoursController : Controller
     {
@@ -40,6 +41,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("SaveWorkHours")]
         [OpenApiOperation("SaveWorkHours")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
         {
 
@@ -67,6 +69,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("SaveNonWorkingHours")]
         [OpenApiOperation("SaveNonWorkingHours")]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
         {
 
@@ -94,6 +97,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetVhoWorkAvailabilityHours")]
         [ProducesResponseType(typeof(List<VhoWorkHoursResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetVhoWorkAvailabilityHours(string username)
         {
             if (!username.IsValidEmail())
@@ -119,6 +123,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetVhoNonAvailabilityHours")]
         [ProducesResponseType(typeof(List<VhoNonAvailabilityWorkHoursResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetVhoNonAvailabilityHours(string username)
         {
             if (!username.IsValidEmail())
@@ -146,6 +151,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateVhoNonAvailabilityHours(string username, UpdateNonWorkingHoursRequest request)
         {
             var query = new GetJusticeUserByUsernameQuery(username);
@@ -197,6 +203,7 @@ namespace BookingsApi.Controllers.V1
         [HttpDelete("/NonAvailability")]
         [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
         {
             try

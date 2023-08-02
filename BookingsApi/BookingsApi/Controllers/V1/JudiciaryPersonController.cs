@@ -22,6 +22,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("judiciaryperson")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class JudiciaryPersonController : Controller
     {
@@ -44,6 +45,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(BulkJudiciaryPersonResponse), (int) HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> BulkJudiciaryPersonsAsync(IEnumerable<JudiciaryPersonRequest> request)
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
@@ -107,6 +109,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(BulkJudiciaryLeaverResponse), (int) HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> BulkJudiciaryLeaversAsync(IEnumerable<JudiciaryLeaverRequest> request)
         {
             const string bulkItemErrorMessage = "Could not add or update external Judiciary user with Personal Code: {0}";
@@ -178,6 +181,7 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
             if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))

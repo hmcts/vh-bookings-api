@@ -14,6 +14,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("staffmember")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class StaffMemberController : Controller
     {
@@ -34,6 +35,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(IList<PersonResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetStaffMemberBySearchTerm(string term)
         {
             if(term.Length < 3)

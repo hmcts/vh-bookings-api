@@ -7,6 +7,7 @@ namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]
     [Route("feature-flags")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class FeatureFlagsController : Controller
     {
