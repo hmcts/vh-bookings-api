@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.IntegrationTests.Helper;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,12 @@ public class ApiTest
         RegisterSettings();
         RunMigrations();
         Application = new VhApiWebApplicationFactory();
+    }
+    
+    [TearDown]
+    public async Task TearDown()
+    {
+        await Hooks.ClearSeededHearings();
     }
 
     private void RegisterSettings()

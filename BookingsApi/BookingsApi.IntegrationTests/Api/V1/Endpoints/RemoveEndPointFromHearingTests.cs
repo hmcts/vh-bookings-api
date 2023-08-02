@@ -7,7 +7,6 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.IntegrationTests.Helper;
-using BookingsApi.Validations.V1;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -126,11 +125,5 @@ public class RemoveEndPointFromHearingTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
         var response = await ApiClientResponse.GetResponses<string>(result.Content);
         response.Should().Be($"Endpoint {endpointId} does not exist");
-    }
-    
-    [TearDown]
-    public async Task TearDown()
-    {
-        await Hooks.ClearSeededHearings();
     }
 }

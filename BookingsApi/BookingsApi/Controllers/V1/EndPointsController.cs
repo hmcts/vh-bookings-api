@@ -59,21 +59,21 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(EndpointResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AddEndPointToHearingAsync(Guid hearingId, AddEndpointRequest addEndpointRequest)
         {
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = await new AddEndpointRequestValidation().ValidateAsync(addEndpointRequest);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             try
@@ -86,25 +86,20 @@ namespace BookingsApi.Controllers.V1
 
                 var hearing =
                     await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-                var endpoint = hearing.GetEndpoints().FirstOrDefault(x => x.DisplayName.Equals(addEndpointRequest.DisplayName));
-                if (endpoint != null)
-                {
-                    var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint); 
-                    
-                    if (hearing.Status == BookingStatus.Created)
-                    {
-                        await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endpoint));    
-                    }
+                var endpoint = hearing.GetEndpoints().First(x => x.DisplayName.Equals(addEndpointRequest.DisplayName));
 
-                    return Ok(endpointResponse);
+                var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
+                if (hearing.Status == BookingStatus.Created)
+                {
+                    await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endpoint));
                 }
+                return Ok(endpointResponse);
+
             }
             catch (HearingNotFoundException exception)
             {
                 return NotFound(exception.Message);
             }
-            
-            return NoContent();
         }
 
         /// <summary>
@@ -169,14 +164,14 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = new UpdateEndpointRequestValidation().Validate(updateEndpointRequest);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             try
