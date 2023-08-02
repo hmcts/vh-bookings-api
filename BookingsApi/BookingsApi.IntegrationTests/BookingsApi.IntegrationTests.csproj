@@ -40,10 +40,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Api\V1\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Update="Features\V1\CloneHearing.feature.cs">
         <DependentUpon>CloneHearing.feature</DependentUpon>
         <AutoGen>true</AutoGen>

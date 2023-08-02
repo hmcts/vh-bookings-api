@@ -117,14 +117,14 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("RemoveEndPointFromHearing")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> RemoveEndPointFromHearingAsync(Guid hearingId, Guid endpointId)
         {
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             try
@@ -133,8 +133,8 @@ namespace BookingsApi.Controllers.V1
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
                 var command = new RemoveEndPointFromHearingCommand(hearingId, endpointId);
                 await _commandHandler.Handle(command);
-                var ep = hearing.GetEndpoints().FirstOrDefault(x => x.Id == endpointId);
-                if (ep != null && hearing.Status == BookingStatus.Created)
+                var ep = hearing.GetEndpoints().First(x => x.Id == endpointId);
+                if (hearing.Status == BookingStatus.Created)
                 {
                     await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, ep.Sip));
                 }
