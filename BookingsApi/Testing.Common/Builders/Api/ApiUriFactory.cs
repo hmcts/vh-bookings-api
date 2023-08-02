@@ -27,7 +27,7 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetHearingShellById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
             public static string BookNewHearing => $"{ApiRoot}";
-            public static string HearingTypesRelativePath => $"{ApiRoot}/types";
+            public static string GetHearingsByTypes => $"{ApiRoot}/types";
             public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string CancelBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/cancel";

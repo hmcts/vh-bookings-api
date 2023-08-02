@@ -687,7 +687,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="request"></param>
         /// <returns>A cursor-based result of a list of matching hearings</returns>
-        [HttpGet("all/types")]
+        [HttpPost("types")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]

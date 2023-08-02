@@ -224,8 +224,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var request = new GetHearingRequest { Limit = 1 };
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -272,7 +272,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
             var request = new GetHearingRequest { Limit = 1 };
 
-            Context.Uri = HearingTypesRelativePath;
+            Context.Uri = GetHearingsByTypes;
             Context.HttpMethod = HttpMethod.Get;
             Context.HttpContent = GetHttpContent(request);
 
@@ -282,8 +282,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var bookings = RequestHelper.Deserialise<BookingsResponse>(json);
 
             request.Cursor = bookings.NextCursor;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -297,8 +297,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var request = new GetHearingRequest { Limit = 1 };
 
             Context.TestData.NewHearingId = secondSeededHearing.Id;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -318,8 +318,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var request = new GetHearingRequest { Types = new List<int> { caseType } };
 
             Context.HttpContent = GetHttpContent(request);
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a (.*) hearing cancellation request")]

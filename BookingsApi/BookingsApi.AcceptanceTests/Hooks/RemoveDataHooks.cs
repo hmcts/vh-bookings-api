@@ -38,8 +38,8 @@ namespace BookingsApi.AcceptanceTests.Hooks
                 var client = new TestHttpClient();
 
                 var response = client.ExecuteAsync(
-                        context, HearingTypesRelativePath,
-                        request, HttpMethod.Get)
+                        context, GetHearingsByTypes,
+                        request, HttpMethod.Post)
                     .Result;
 
                 var hearings = RequestHelper.Deserialise<BookingsResponse>(response.Content.ReadAsStringAsync().Result);

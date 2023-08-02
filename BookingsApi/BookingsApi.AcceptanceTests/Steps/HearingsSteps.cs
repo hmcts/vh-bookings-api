@@ -171,8 +171,8 @@ namespace BookingsApi.AcceptanceTests.Steps
 
             var result = client.ExecuteAsync(
                 _context,
-                HearingTypesRelativePath,
-                request, HttpMethod.Get)
+                GetHearingsByTypes,
+                request, HttpMethod.Post)
                 .Result;
 
             var response = RequestHelper.Deserialise<BookingsResponse>(
