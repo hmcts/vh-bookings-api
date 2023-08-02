@@ -97,7 +97,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingIds">Hearing Reference ID array</param>
         /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpPost("get-allocation", Name = "GetAllocationsForHearings")]
+        [HttpPost("get-allocation")]
         [OpenApiOperation("GetAllocationsForHearings")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
@@ -119,7 +119,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingVenueNames">Hearing Venue Name array</param>
         /// <returns>list of hearing Ids with the allocated cso</returns>
-        [HttpPost("get-allocation/venues", Name = "GetAllocationsForHearingsByVenue")]
+        [HttpPost("get-allocation/venues")]
         [OpenApiOperation("GetAllocationsForHearingsByVenue")]
         [ProducesResponseType(typeof(IList<AllocatedCsoResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
@@ -139,7 +139,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="searchRequest">Search criteria</param>
         /// <returns>list of hearings matching search criteria</returns>
-        [HttpGet("allocation/search", Name = "SearchForAllocationHearings")]
+        [HttpGet("allocation/search")]
         [OpenApiOperation("SearchForAllocationHearings")]
         [ProducesResponseType(typeof(List<HearingAllocationsResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]

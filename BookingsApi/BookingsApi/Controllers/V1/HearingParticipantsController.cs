@@ -51,7 +51,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <returns>List of participants</returns>
-        [HttpGet("{hearingId}/participants", Name = "GetAllParticipantsInHearing")]
+        [HttpGet("{hearingId}/participants")]
         [OpenApiOperation("GetAllParticipantsInHearing")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -88,7 +88,7 @@ namespace BookingsApi.Controllers.V1
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="participantId">The Id of the participant</param>
         /// <returns>The participant</returns>
-        [HttpGet("{hearingId}/participants/{participantId}", Name = "GetParticipantInHearing")]
+        [HttpGet("{hearingId}/participants/{participantId}")]
         [OpenApiOperation("GetParticipantInHearing")]
         [ProducesResponseType(typeof(ParticipantResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -136,7 +136,7 @@ namespace BookingsApi.Controllers.V1
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participant information to add</param>
         /// <returns>The participant</returns>
-        [HttpPost("{hearingId}/participants", Name = "AddParticipantsToHearing")]
+        [HttpPost("{hearingId}/participants")]
         [OpenApiOperation("AddParticipantsToHearing")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -145,6 +145,8 @@ namespace BookingsApi.Controllers.V1
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId,
             [FromBody] AddParticipantsToHearingRequest request)
         {
+            // regex pattern to get all characters between quotes
+            const string pattern = "\"([^\"]*)\"";
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
@@ -213,7 +215,7 @@ namespace BookingsApi.Controllers.V1
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participants information</param>
         /// <returns>204 No Content</returns>
-        [HttpPost("{hearingId}/updateParticipants", Name = "UpdateHearingParticipants")]
+        [HttpPost("{hearingId}/updateParticipants")]
         [OpenApiOperation("UpdateHearingParticipants")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -319,7 +321,7 @@ namespace BookingsApi.Controllers.V1
         /// <param name="hearingId">Id of hearing to look up</param>
         /// <param name="participantId">Id of participant to remove</param>
         /// <returns></returns>
-        [HttpDelete("{hearingId}/participants/{participantId}", Name = "RemoveParticipantFromHearing")]
+        [HttpDelete("{hearingId}/participants/{participantId}")]
         [OpenApiOperation("RemoveParticipantFromHearing")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -383,7 +385,7 @@ namespace BookingsApi.Controllers.V1
         /// <param name="participantId">Id of participant to remove</param>
         /// <param name="request">The participant information to add</param>
         /// <returns></returns>
-        [HttpPut("{hearingId}/participants/{participantId}", Name = "UpdateParticipantDetails")]
+        [HttpPut("{hearingId}/participants/{participantId}")]
         [OpenApiOperation("UpdateParticipantDetails")]
         [ProducesResponseType(typeof(ParticipantResponse),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -479,7 +481,7 @@ namespace BookingsApi.Controllers.V1
         /// <param name="participantId">Id of participant</param>
         /// <param name="answers">A list of suitability answers to update</param>
         /// <returns>Http status</returns>
-        [HttpPut("{hearingId}/participants/{participantId}/suitability-answers", Name = "UpdateSuitabilityAnswers")]
+        [HttpPut("{hearingId}/participants/{participantId}/suitability-answers")]
         [OpenApiOperation("UpdateSuitabilityAnswers")]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

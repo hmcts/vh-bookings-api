@@ -526,10 +526,18 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CancelBookingAsync(System.Guid hearingId, CancelBookingRequest request, System.Threading.CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Get all hearings by a given case type
+        /// </summary>
+        /// <returns>A cursor-based result of a list of matching hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get all hearings by a given case type
+        /// </summary>
+        /// <returns>A cursor-based result of a list of matching hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request, System.Threading.CancellationToken cancellationToken);
 
@@ -4495,6 +4503,10 @@ namespace BookingsApi.Client
             }
         }
 
+        /// <summary>
+        /// Get all hearings by a given case type
+        /// </summary>
+        /// <returns>A cursor-based result of a list of matching hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request)
         {
@@ -4502,6 +4514,10 @@ namespace BookingsApi.Client
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get all hearings by a given case type
+        /// </summary>
+        /// <returns>A cursor-based result of a list of matching hearings</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(GetHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
@@ -4509,7 +4525,7 @@ namespace BookingsApi.Client
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/types");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/all/types");
 
             var client_ = _httpClient;
             var disposeClient_ = false;

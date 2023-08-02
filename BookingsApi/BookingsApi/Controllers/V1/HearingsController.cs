@@ -74,7 +74,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("{hearingId}", Name = "GetHearingDetailsById")]
+        [HttpGet("{hearingId}")]
         [OpenApiOperation("GetHearingDetailsById")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -105,7 +105,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
-        [HttpGet(Name = "GetHearingsByUsername")]
+        [HttpGet]
         [OpenApiOperation("GetHearingsByUsername")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -123,7 +123,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("today/username", Name = "GetConfirmedHearingsByUsernameForToday")]
+        [HttpGet("today/username")]
         [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -145,8 +145,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingIds">hearing ids to anonymise data with</param>
         /// <returns></returns>
-        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case",
-            Name = "AnonymiseParticipantAndCaseByHearingId")]
+        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case")]
         [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
@@ -161,7 +160,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="groupId">the group id of the single day or multi day hearing</param>
         /// <returns>Hearing details</returns>
-        [HttpGet("{groupId}/hearings", Name = "GetHearingsByGroupId")]
+        [HttpGet("{groupId}/hearings")]
         [OpenApiOperation("GetHearingsByGroupId")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
@@ -179,7 +178,7 @@ namespace BookingsApi.Controllers.V1
         /// Get list of all hearings for notification between next 48 to 72 hrs. 
         /// </summary>
         /// <returns>Hearing details</returns>
-        [HttpGet("notifications/gethearings", Name = "GetHearingsForNotification")]
+        [HttpGet("notifications/gethearings")]
         [OpenApiOperation("GetHearingsForNotification")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
@@ -683,7 +682,12 @@ namespace BookingsApi.Controllers.V1
             await _commandHandler.Handle(command);
         }
 
-        [HttpGet("types", Name = "GetHearingsByTypes")]
+        /// <summary>
+        /// Get all hearings by a given case type
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>A cursor-based result of a list of matching hearings</returns>
+        [HttpGet("all/types")]
         [OpenApiOperation("GetHearingsByTypes")]
         [ProducesResponseType(typeof(BookingsResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -759,7 +763,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="searchQuery">Search criteria</param>
         /// <returns>list of hearings matching search criteria</returns>
-        [HttpGet("audiorecording/search", Name = "SearchForHearings")]
+        [HttpGet("audiorecording/search")]
         [OpenApiOperation("SearchForHearings")]
         [ProducesResponseType(typeof(List<AudioRecordedHearingsBySearchResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -781,7 +785,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Booking status</returns>
-        [HttpGet("{hearingId}/status", Name = "GetBookingStatusById")]
+        [HttpGet("{hearingId}/status")]
         [OpenApiOperation("GetBookingStatusById")]
         [ProducesResponseType(typeof(Contract.V1.Enums.BookingStatus), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
@@ -810,7 +814,7 @@ namespace BookingsApi.Controllers.V1
         /// Return hearing details for todays hearings
         /// </summary>
         /// <returns>Booking status</returns>
-        [HttpGet("today", Name = "GetHearingsForToday")]
+        [HttpGet("today")]
         [OpenApiOperation("GetHearingsForToday")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -830,7 +834,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="venueNames">List of hearing venue names provided in payload</param>
         /// <returns>Booking status</returns>
-        [HttpPost("today/venue", Name = "GetHearingsForTodayByVenue")]
+        [HttpPost("today/venue")]
         [OpenApiOperation("GetHearingsForTodayByVenue")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

@@ -31,7 +31,7 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="username">The username of the participant</param>
         /// <returns>Participant</returns>
-        [HttpGet("username/{username}", Name = "GetParticipantsByUsername")]
+        [HttpGet("username/{username}")]
         [OpenApiOperation("GetParticipantsByUsername")]
         [ProducesResponseType(typeof(List<ParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
