@@ -7,10 +7,12 @@ using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
@@ -90,10 +92,7 @@ namespace BookingsApi.Controllers.V2
             }
 
 
-            var hearingVenues =
-                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
-            var hearingVenue = hearingVenues.SingleOrDefault(x =>
-                string.Equals(x.VenueCode, requestV2.HearingVenueCode, StringComparison.CurrentCultureIgnoreCase));
+            var hearingVenue = await GetHearingVenue(requestV2.HearingVenueCode);
             if (hearingVenue == null)
             {
                 ModelState.AddModelError(nameof(requestV2.HearingVenueCode),
@@ -112,14 +111,14 @@ namespace BookingsApi.Controllers.V2
             var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
-        
+
         /// <summary>
         /// Get details for a given hearing
         /// </summary>
         /// <param name="hearingId">Id for a hearing</param>
         /// <returns>Hearing details</returns>
         [HttpGet("{hearingId}")]
-        [OpenApiOperation("GetHearingDetailsById")]
+        [OpenApiOperation("GetHearingDetailsByIdV2")]
         [ProducesResponseType(typeof(HearingDetailsResponseV2), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -144,6 +143,83 @@ namespace BookingsApi.Controllers.V2
             return Ok(response);
         }
         
+        
+        /// <summary>
+        /// Update the details of a hearing such as venue, time and duration
+        /// </summary>
+        /// <param name="hearingId">The id of the hearing to update</param>
+        /// <param name="request">Details to update</param>
+        /// <returns>Details of updated hearing</returns>
+        [HttpPut("{hearingId}")]
+        [OpenApiOperation("UpdateHearingDetails")]
+        [ProducesResponseType(typeof(HearingDetailsResponseV2), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequestV2 request)
+        {
+            var result = await new UpdateHearingRequestValidationV2().ValidateAsync(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+            if (videoHearing == null)
+            {
+                return NotFound();
+            }
+
+            var venue = await GetHearingVenue(request.HearingVenueCode);
+            if (venue == null)
+            {
+                ModelState.AddModelError(nameof(request.HearingVenueCode),
+                    $"Hearing venue code {request.HearingVenueCode} does not exist");
+                _logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", request.HearingVenueCode);
+                return ValidationProblem(ModelState);
+            }
+
+            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+
+            // use existing video hearing values here when request properties are null
+            request.AudioRecordingRequired ??= videoHearing.AudioRecordingRequired;
+            request.HearingRoomName ??= videoHearing.HearingRoomName;
+            request.OtherInformation ??= videoHearing.OtherInformation;
+
+            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
+                request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
+                request.UpdatedBy, cases, false, request.AudioRecordingRequired.Value);
+
+            await _commandHandler.Handle(command);
+
+        
+            var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var response = HearingToDetailsResponseMapper.Map(updatedHearing);
+
+            if (videoHearing.Status == BookingStatus.Created)
+            {
+                await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
+                if (request.ScheduledDateTime.Ticks != videoHearing.ScheduledDateTime.Ticks)
+                {
+                    await _eventPublisher.PublishAsync(new HearingDateTimeChangedIntegrationEvent(updatedHearing, videoHearing.ScheduledDateTime));
+                }
+            }
+
+            return Ok(response);
+        }
+        
+        private async Task<HearingVenue> GetHearingVenue(string venueCode)
+        {
+            var hearingVenues =
+                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
+            var hearingVenue = hearingVenues.SingleOrDefault(x =>
+                string.Equals(x.VenueCode, venueCode, StringComparison.CurrentCultureIgnoreCase));
+            return hearingVenue;
+        }
+        
         private async Task<Hearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -154,7 +230,7 @@ namespace BookingsApi.Controllers.V2
         {
             if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
             {
-                // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
+                // The event below handles creating users, sending the hearing notifications to the participants if the hearing is not a multi day
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
             }
             else
