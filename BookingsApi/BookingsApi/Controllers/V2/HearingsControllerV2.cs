@@ -72,8 +72,7 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var caseType =
-                await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(new GetCaseTypeQuery(requestV2.CaseTypeServiceId));
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(requestV2.CaseTypeServiceId));
             if (caseType == null)
             {
                 ModelState.AddModelError(nameof(requestV2.CaseTypeServiceId), "Case type does not exist");

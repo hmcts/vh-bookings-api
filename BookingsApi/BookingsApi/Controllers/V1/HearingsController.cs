@@ -237,7 +237,7 @@ namespace BookingsApi.Controllers.V1
                 }
 
                 var queryValue = rDataFlag ? request.CaseTypeServiceId : request.CaseTypeName;
-                var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(new GetCaseTypeQuery(queryValue));
+                var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(new GetCaseRolesForCaseTypeQuery(queryValue));
                 if (caseType == null)
                 {
                     const string logCaseDoesNotExist = "BookNewHearing Error: Case type does not exist";
@@ -245,7 +245,8 @@ namespace BookingsApi.Controllers.V1
                 }
 
                 var hearingTypeQueryValue = rDataFlag ? request.HearingTypeCode : request.HearingTypeName;
-                var hearingType = rDataFlag ? caseType.HearingTypes.SingleOrDefault(x => x.Code.ToLower() == hearingTypeQueryValue.ToLower())
+                var hearingType = rDataFlag ?
+                    caseType.HearingTypes.SingleOrDefault(x => x.Code.ToLower() == hearingTypeQueryValue.ToLower())
                         : caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
                 if (hearingType == null)
                 {

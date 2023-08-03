@@ -168,8 +168,8 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var caseTypequery = new GetCaseTypeQuery(videoHearing.CaseType.Name);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypequery);
+            var caseTypequery = new GetCaseRolesForCaseTypeQuery(videoHearing.CaseType.Name);
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(caseTypequery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
             var representatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
@@ -244,8 +244,8 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var caseTypeQuery = new GetCaseTypeQuery(videoHearing.CaseType.Name);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(caseTypeQuery);
+            var caseTypeQuery = new GetCaseRolesForCaseTypeQuery(videoHearing.CaseType.Name);
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(caseTypeQuery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
             var representatives = request.NewParticipants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();

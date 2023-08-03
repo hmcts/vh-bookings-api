@@ -63,8 +63,8 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetCaseRolesForCaseType(string caseTypeParam)
         {
-            var query = new GetCaseTypeQuery(caseTypeParam);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+            var query = new GetCaseRolesForCaseTypeQuery(caseTypeParam);
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(query);
 
             if (caseType == null)
             {
@@ -92,8 +92,8 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingRolesForCaseRole(string caseTypeName, string caseRoleName)
         {            
-            var query = new GetCaseTypeQuery(caseTypeName);
-            var caseType = await _queryHandler.Handle<GetCaseTypeQuery, CaseType>(query);
+            var query = new GetCaseRolesForCaseTypeQuery(caseTypeName);
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(query);
 
             if (caseType == null)
             {
