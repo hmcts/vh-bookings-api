@@ -26,8 +26,13 @@ namespace BookingsApi.Validations.V2
             RuleFor(x => x.CaseTypeServiceId)
                 .NotEmpty().WithMessage(CaseTypeServiceIdErrorMessage);
             
-            RuleFor(x => x.ScheduledDateTime.Date)
-                .GreaterThanOrEqualTo(DateTime.Now.Date).WithMessage(ScheduleDateTimeInPastErrorMessage);
+            RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>
+            {
+                if (dateTime.Date < DateTime.Now.Date)
+                {
+                    context.AddFailure(ScheduleDateTimeInPastErrorMessage);
+                }
+            });
 
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(ScheduleDurationErrorMessage);

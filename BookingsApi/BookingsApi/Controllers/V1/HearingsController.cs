@@ -471,14 +471,14 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = new UpdateHearingRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -494,7 +494,7 @@ namespace BookingsApi.Controllers.V1
             if (venue == null)
             {
                 ModelState.AddModelError(rDataFlag ? nameof(request.HearingVenueCode) : nameof(request.HearingVenueName), "Hearing venue does not exist");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var cases = MapCase(request.Cases);

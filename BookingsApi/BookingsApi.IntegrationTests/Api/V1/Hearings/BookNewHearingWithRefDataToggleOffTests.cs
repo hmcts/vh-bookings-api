@@ -91,12 +91,15 @@ public class BookNewHearingWithRefDataToggleOffTests : ApiTest
             .Be(BookNewHearingRequestValidation.HearingTypeNameErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.Cases)][0].Should()
-            .Be("'Cases' must not be empty");
+            .Be("'Cases' must not be empty.");
         
         validationProblemDetails.Errors[nameof(request.Cases)][1].Should()
             .Be(BookNewHearingRequestValidation.CasesErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.Participants)][0].Should()
+            .Be("'Participants' must not be empty.");
+        
+        validationProblemDetails.Errors[nameof(request.Participants)][1].Should()
             .Be(BookNewHearingRequestValidation.ParticipantsErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.ScheduledDuration)][0].Should()

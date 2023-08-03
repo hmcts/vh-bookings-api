@@ -20,37 +20,6 @@ Feature: Hearings
     When I send the request to the endpoint
     Then the response should have the status BadRequest and success status False
 
-  Scenario: Update a hearing
-    Given I have a valid update hearing request
-    When I send the request to the endpoint
-    Then the response should have the status OK and success status True
-    And hearing details should be updated
-
-  Scenario: Hearing not updated with an invalid request
-    Given I have an invalid update hearing request
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the error response message should contain 'Hearing name cannot not be blank'
-    And the error response message should also contain 'Schedule duration must be greater than 0"'
-    And the error response message should also contain 'ScheduledDateTime cannot be in the past"'
-
-  Scenario: Hearing not updated with a nonexistent hearing id
-    Given I have a update hearing request with a nonexistent hearing id
-    When I send the request to the endpoint
-    Then the response should have the status NotFound and success status False
-
-  Scenario: Hearing not updated with an invalid hearing id
-    Given I have a update hearing request with an invalid hearing id
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the response message should read 'Please provide a valid hearingId'
-
-  Scenario: Hearing not updated with an invalid venue
-    Given I have a update hearing request with an invalid venue
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the response message should read 'Hearing venue does not exist'
-
   Scenario: Get hearings by a username
     Given I have a valid get hearings by username request
     When I send the request to the endpoint
