@@ -23,7 +23,7 @@ namespace BookingsApi.Validations.V2
                 .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);
             RuleFor(x => x.HearingTypeCode)
                 .NotEmpty().WithMessage(HearingTypeCodeErrorMessage);
-            RuleFor(x => x.CaseTypeServiceId)
+            RuleFor(x => x.ServiceId)
                 .NotEmpty().WithMessage(CaseTypeServiceIdErrorMessage);
             
             RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>

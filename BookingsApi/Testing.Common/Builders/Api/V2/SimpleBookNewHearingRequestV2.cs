@@ -77,7 +77,7 @@ public class SimpleBookNewHearingRequestV2
         const string createdBy = "bookingsapi.acautomation@hmcts.net";
             
         _requestV2 = Builder<BookNewHearingRequestV2>.CreateNew()
-            .With(x => x.CaseTypeServiceId = "AAA6") // Civil Money Claims
+            .With(x => x.ServiceId = "AAA6") // Civil Money Claims
             .With(x => x.HearingTypeCode = "AAA6-APP") // Application Hearings
             .With(x => x.HearingVenueCode = "231596") // Birmingham Civil and Family Justice Centre
             .With(x => x.ScheduledDateTime = hearingScheduled)

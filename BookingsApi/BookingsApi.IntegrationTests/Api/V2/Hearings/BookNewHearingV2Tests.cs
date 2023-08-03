@@ -67,7 +67,7 @@ public class BookNewHearingV2Tests : ApiTest
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
         request.HearingVenueCode = null;
-        request.CaseTypeServiceId = null;
+        request.ServiceId = null;
         request.HearingTypeCode = null;
 
         // act
@@ -81,7 +81,7 @@ public class BookNewHearingV2Tests : ApiTest
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
             .Be(BookNewHearingRequestValidationV2.HearingVenueCodeErrorMessage);
         
-        validationProblemDetails.Errors[nameof(request.CaseTypeServiceId)][0].Should()
+        validationProblemDetails.Errors[nameof(request.ServiceId)][0].Should()
             .Be(BookNewHearingRequestValidationV2.CaseTypeServiceIdErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
@@ -93,7 +93,7 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.CaseTypeServiceId = "999299292929";
+        request.ServiceId = "999299292929";
 
         // act
         using var client = Application.CreateClient();
@@ -103,7 +103,7 @@ public class BookNewHearingV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[nameof(request.CaseTypeServiceId)][0].Should()
+        validationProblemDetails.Errors[nameof(request.ServiceId)][0].Should()
             .Be("Case type does not exist");
     }
     
@@ -154,7 +154,7 @@ public class BookNewHearingV2Tests : ApiTest
         var hearingSchedule = DateTime.UtcNow;
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule).Build();
-        request.CaseTypeServiceId = "vhG1"; // intentionally incorrect case
+        request.ServiceId = "vhG1"; // intentionally incorrect case
         request.HearingTypeCode = "automatedtest"; // intentionally incorrect case
         request.HearingVenueCode = "231596";
         return request;

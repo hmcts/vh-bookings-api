@@ -32,9 +32,9 @@ namespace BookingsApi.Contract.V2.Requests
         public string HearingVenueCode { get; set; }
 
         /// <summary>
-        ///     The name of the case type
+        ///     The service Id
         /// </summary>
-        public string CaseTypeServiceId { get; set; }
+        public string ServiceId { get; set; }
 
         /// <summary>
         /// The code of the hearing type

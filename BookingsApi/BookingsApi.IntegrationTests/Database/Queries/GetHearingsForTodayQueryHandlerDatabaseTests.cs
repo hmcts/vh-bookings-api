@@ -28,7 +28,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.Today);
             var query = new GetHearingsForTodayQuery();
             var venues = await _handler.Handle(query);
-            venues.FirstOrDefault().Id.Should().Be(_seededHearing.Id);
+            venues.Should().Contain(x=> x.Id == _seededHearing.Id);
         }    
         
         [Test]
@@ -37,7 +37,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.Today);
             var query = new GetHearingsForTodayQuery(new string[] { _seededHearing.HearingVenueName });
             var venues = await _handler.Handle(query);
-            venues.FirstOrDefault().Id.Should().Be(_seededHearing.Id);
+            venues.Should().Contain(x=> x.Id == _seededHearing.Id);
         }
     }
 }

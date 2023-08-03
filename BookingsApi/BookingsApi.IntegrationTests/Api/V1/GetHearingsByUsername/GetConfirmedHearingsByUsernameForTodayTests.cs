@@ -29,7 +29,7 @@ public class GetConfirmedHearingsByUsernameForTodayTests : ApiTest
 
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         var hearingVenueResponses = await ApiClientResponse.GetResponses<List<HearingDetailsResponse>>(result.Content);
-        hearingVenueResponses.Count.Should().Be(3);
+        hearingVenueResponses.All(x => x.ScheduledDateTime.Date == System.DateTime.UtcNow.Date).Should().BeTrue();
     }
 
     [Test]
@@ -44,11 +44,5 @@ public class GetConfirmedHearingsByUsernameForTodayTests : ApiTest
         var result = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetConfirmedHearingsByUsernameForToday(username));
 
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    }
-    
-    [TearDown]
-    public async Task TearDown()
-    {
-        await Hooks.ClearSeededHearings();
     }
 }

@@ -72,11 +72,11 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(requestV2.CaseTypeServiceId));
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(requestV2.ServiceId));
             if (caseType == null)
             {
-                ModelState.AddModelError(nameof(requestV2.CaseTypeServiceId), "Case type does not exist");
-                _logger.LogTrace("CaseTypeServiceId {CaseTypeServiceId} does not exist", requestV2.CaseTypeServiceId);
+                ModelState.AddModelError(nameof(requestV2.ServiceId), "Case type does not exist");
+                _logger.LogTrace("CaseTypeServiceId {CaseTypeServiceId} does not exist", requestV2.ServiceId);
                 return ValidationProblem(ModelState);
             }
 

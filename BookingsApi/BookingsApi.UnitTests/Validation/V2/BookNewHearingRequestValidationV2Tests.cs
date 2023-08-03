@@ -88,7 +88,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_missing_case_type_service_id_error()
         {
             var request = BuildRequest();
-            request.CaseTypeServiceId = string.Empty;
+            request.ServiceId = string.Empty;
            
             var result = await _validator.ValidateAsync(request);
 
