@@ -22,7 +22,7 @@ using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
-public class UpdateHearingRequestV2Tests : ApiTest
+public class UpdateHearingV2Tests : ApiTest
 {
     private FeatureTogglesStub _featureToggleStub;
     

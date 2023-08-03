@@ -23,10 +23,7 @@ namespace BookingsApi.Validations.V2
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }
             });
-
-            RuleFor(x => x.ScheduledDateTime.Date)
-                .GreaterThanOrEqualTo(DateTime.Now.Date).WithMessage(ScheduleDateTimeInPastErrorMessage);
-
+            
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
 
