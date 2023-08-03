@@ -20,44 +20,6 @@ Feature: Hearings
     When I send the request to the endpoint
     Then the response should have the status BadRequest and success status False
 
-  Scenario: Create a new hearing
-    Given I have a valid book a new hearing request
-    When I send the request to the endpoint
-    Then the response should have the status Created and success status True
-    And hearing details should be retrieved
-
-  Scenario: Hearing not created with an invalid request
-    Given I have an invalid book a new hearing request
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the error response message should contain 'Cases' must not be empty'
-    And the error response message should also contain 'Please provide at least one case'
-    And the error response message should also contain 'Please provide a case type name'
-    And the error response message should also contain 'Participants' must not be empty'
-    And the error response message should also contain 'Please provide at least one participant'
-    And the error response message should also contain 'Please provide a hearing type name'
-    And the error response message should also contain 'Hearing venue cannot not be blank'
-    And the error response message should also contain 'Schedule duration must be greater than 0'
-    And the error response message should also contain 'ScheduledDateTime cannot be in the past'
-
-  Scenario: Hearing not created with an invalid case type
-    Given I have a book a new hearing request with an invalid case type
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the response message should read 'Case type does not exist'
-
-  Scenario: Hearing not created with an invalid hearing type
-    Given I have a book a new hearing request with an invalid hearing type
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the response message should read 'Hearing type does not exist'
-
-  Scenario: Hearing not created with an invalid venue name
-    Given I have a book a new hearing request with an invalid venue name
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-    And the response message should read 'Hearing venue does not exist'
-
   Scenario: Update a hearing
     Given I have a valid update hearing request
     When I send the request to the endpoint

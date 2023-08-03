@@ -16,7 +16,7 @@ using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
-public class BookNewHearingWithRefDataToggleOnTests : ApiTest
+public class BookNewHearingWithRefDataToggleOffTests : ApiTest
 {
     private FeatureTogglesStub _featureToggleStub;
     private readonly List<Guid> _hearingIds = new();
@@ -26,9 +26,9 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
     {
         _hearingIds.Clear();
         _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
-        _featureToggleStub!.RefData = true;
+        _featureToggleStub!.RefData = false;
     }
-
+    
     [TearDown]
     public new async Task TearDown()
     {
@@ -37,9 +37,9 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
             await Hooks.RemoveVideoHearing(hearingId);
         }
     }
-
+    
     [Test]
-    public async Task should_book_a_hearing_with_codes_instead_of_names()
+    public async Task should_book_a_hearing()
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
@@ -65,9 +65,13 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.HearingVenueCode = null;
-        request.CaseTypeServiceId = null;
-        request.HearingTypeCode = null;
+        request.HearingVenueName = null;
+        request.CaseTypeName = null;
+        request.HearingTypeName = null;
+        request.Cases = new List<CaseRequest>();
+        request.Participants = new List<ParticipantRequest>();
+        request.ScheduledDuration = -100;
+        request.ScheduledDateTime = DateTime.Today.AddDays(-5);
 
         // act
         using var client = Application.CreateClient();
@@ -77,22 +81,37 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
-            .Be(BookNewHearingRequestValidation.HearingVenueCodeErrorMessage);
+        validationProblemDetails.Errors[nameof(request.HearingVenueName)][0].Should()
+            .Be(BookNewHearingRequestValidation.HearingVenueErrorMessage);
         
-        validationProblemDetails.Errors[nameof(request.CaseTypeServiceId)][0].Should()
-            .Be(BookNewHearingRequestValidation.CaseTypeServiceIdErrorMessage);
+        validationProblemDetails.Errors[nameof(request.CaseTypeName)][0].Should()
+            .Be(BookNewHearingRequestValidation.CaseTypeNameErrorMessage);
         
-        validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
-            .Be(BookNewHearingRequestValidation.HearingTypeCodeErrorMessage);
+        validationProblemDetails.Errors[nameof(request.HearingTypeName)][0].Should()
+            .Be(BookNewHearingRequestValidation.HearingTypeNameErrorMessage);
+        
+        validationProblemDetails.Errors[nameof(request.Cases)][0].Should()
+            .Be("'Cases' must not be empty");
+        
+        validationProblemDetails.Errors[nameof(request.Cases)][1].Should()
+            .Be(BookNewHearingRequestValidation.CasesErrorMessage);
+        
+        validationProblemDetails.Errors[nameof(request.Participants)][0].Should()
+            .Be(BookNewHearingRequestValidation.ParticipantsErrorMessage);
+        
+        validationProblemDetails.Errors[nameof(request.ScheduledDuration)][0].Should()
+            .Be(BookNewHearingRequestValidation.ScheduleDurationErrorMessage);
+        
+        validationProblemDetails.Errors[nameof(request.ScheduledDateTime)][0].Should()
+            .Be(BookNewHearingRequestValidation.ScheduleDateTimeInPastErrorMessage);
     }
     
     [Test]
-    public async Task should_return_validation_error_when_case_type_service_id_is_not_found()
+    public async Task should_return_validation_error_when_case_type_name_is_not_found()
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.CaseTypeServiceId = "999299292929";
+        request.CaseTypeName = "doesnotexist";
 
         // act
         using var client = Application.CreateClient();
@@ -102,16 +121,16 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[nameof(request.CaseTypeServiceId)][0].Should()
+        validationProblemDetails.Errors[nameof(request.CaseTypeName)][0].Should()
             .Be("Case type does not exist");
     }
     
     [Test]
-    public async Task should_return_validation_error_when_hearing_type_code_is_not_found()
+    public async Task should_return_validation_error_when_hearing_type_name_is_not_found()
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.HearingTypeCode = "999299292929";
+        request.HearingTypeName = "doesnotexist";
 
         // act
         using var client = Application.CreateClient();
@@ -121,16 +140,16 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
+        validationProblemDetails.Errors[nameof(request.HearingTypeName)][0].Should()
             .Be("Hearing type does not exist");
     }
     
     [Test]
-    public async Task should_return_validation_error_when_venue_code_is_not_found()
+    public async Task should_return_validation_error_when_venue_name_is_not_found()
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.HearingVenueCode = "999299292929";
+        request.HearingVenueName = "doesnotexist";
 
         // act
         using var client = Application.CreateClient();
@@ -140,7 +159,7 @@ public class BookNewHearingWithRefDataToggleOnTests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
+        validationProblemDetails.Errors[nameof(request.HearingVenueName)][0].Should()
             .Be("Hearing venue does not exist");
     }
 
