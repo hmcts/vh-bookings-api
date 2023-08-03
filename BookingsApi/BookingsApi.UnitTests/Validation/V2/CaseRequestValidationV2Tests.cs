@@ -7,14 +7,14 @@ using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Validation.V2
 {
-    public class CaseRequestValidationTests
+    public class CaseRequestValidationV2Tests
     {
-        private CaseRequestValidation _validator;
+        private CaseRequestValidationV2 _validator;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _validator = new CaseRequestValidation();
+            _validator = new CaseRequestValidationV2();
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNameMessage)
+            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidationV2.CaseNameMessage)
                 .Should().BeTrue();
         }
         
@@ -51,13 +51,13 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNumberMessage)
+            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidationV2.CaseNumberMessage)
                 .Should().BeTrue();
         }
 
-        private CaseRequest BuildRequest()
+        private CaseRequestV2 BuildRequest()
         {
-            return new CaseRequest
+            return new CaseRequestV2
             {
                 Name = "A vs B",
                 Number = "1234567890",

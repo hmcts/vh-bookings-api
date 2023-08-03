@@ -10,14 +10,14 @@ using Testing.Common.Builders.Api.V2;
 
 namespace BookingsApi.UnitTests.Validation.V2
 {
-    public class BookNewHearingRequestValidationTests
+    public class BookNewHearingRequestValidationV2Tests
     {
-        private BookNewHearingRequestValidation _validator;
+        private BookNewHearingRequestValidationV2 _validator;
         
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _validator = new BookNewHearingRequestValidation();
+            _validator = new BookNewHearingRequestValidationV2();
         }
         
         [Test]
@@ -40,7 +40,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueCodeErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.HearingVenueCodeErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -54,7 +54,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeCodeErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.HearingTypeCodeErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -67,7 +67,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDateTimeInPastErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.ScheduleDateTimeInPastErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -80,7 +80,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDurationErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.ScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -94,7 +94,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseTypeServiceIdErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.CaseTypeServiceIdErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -102,13 +102,13 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_missing_participants_error()
         {
             var request = BuildRequest();
-            request.Participants = Enumerable.Empty<ParticipantRequest>().ToList();
+            request.Participants = Enumerable.Empty<ParticipantRequestV2>().ToList();
            
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ParticipantsErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.ParticipantsErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -116,13 +116,13 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_missing_cases_error()
         {
             var request = BuildRequest();
-            request.Cases = Enumerable.Empty<CaseRequest>().ToList();
+            request.Cases = Enumerable.Empty<CaseRequestV2>().ToList();
            
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CasesErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.CasesErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -136,7 +136,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNameMessage)
+            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidationV2.CaseNameMessage)
                 .Should().BeTrue();
         }
         
@@ -144,7 +144,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_case_duplication_error()
         {
             var request = BuildRequest();
-            request.Cases = new List<CaseRequest>
+            request.Cases = new List<CaseRequestV2>
             {
                 new() {Name = "one", Number = "one" },
                 new() {Name = "one", Number = "one" }
@@ -154,7 +154,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseDuplicationErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.CaseDuplicationErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -162,14 +162,14 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_Pass_When_Linked_Participant_Is_Empty()
         {
             var request = BuildRequest();
-            request.LinkedParticipants = new List<LinkedParticipantRequest>();
+            request.LinkedParticipants = new List<LinkedParticipantRequestV2>();
 
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeTrue();
         }
         
-        private BookNewHearingRequest BuildRequest()
+        private BookNewHearingRequestV2 BuildRequest()
         {
             var date = DateTime.UtcNow.AddMinutes(5);
             var caseName = $"Auto Test {Guid.NewGuid():N}";

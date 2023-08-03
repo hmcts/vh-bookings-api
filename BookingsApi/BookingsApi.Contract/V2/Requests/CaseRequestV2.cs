@@ -1,6 +1,6 @@
 namespace BookingsApi.Contract.V2.Requests
 {
-    public class CaseRequest
+    public class CaseRequestV2
     {
         /// <summary>
         ///     The case number

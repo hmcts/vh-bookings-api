@@ -1,13 +1,13 @@
 using System.Linq;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain;
-using BookingsApi.Mappings.V1.Extensions;
+using BookingsApi.Mappings.V2.Extensions;
 
-namespace BookingsApi.Mappings.V1
+namespace BookingsApi.Mappings.V2
 {
     public static class HearingToDetailsResponseMapper
     {
-        public static HearingDetailsResponse Map(Hearing videoHearing)
+        public static HearingDetailsResponseV2 Map(Hearing videoHearing)
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
@@ -24,7 +24,7 @@ namespace BookingsApi.Mappings.V1
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
                 .ToList();
             
-            var response = new HearingDetailsResponse
+            var response = new HearingDetailsResponseV2
             {
                 Id = videoHearing.Id,
                 ScheduledDuration = videoHearing.ScheduledDuration,
@@ -43,7 +43,6 @@ namespace BookingsApi.Mappings.V1
                 ConfirmedBy = videoHearing.ConfirmedBy,
                 ConfirmedDate = videoHearing.ConfirmedDate,
                 Status = videoHearing.Status.MapToContractEnum(),
-                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,

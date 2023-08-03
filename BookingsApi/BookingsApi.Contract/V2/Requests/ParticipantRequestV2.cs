@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookingsApi.Contract.V2.Requests
 {
-    public class ParticipantRequest
+    public class ParticipantRequestV2
     {
         /// <summary>
         ///     Participant Title.

@@ -8,14 +8,14 @@ using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Validation.V2
 {
-    public class ParticipantRequestValidationTests
+    public class ParticipantRequestValidationV2Tests
     {
-        private ParticipantRequestValidation _validator;
+        private ParticipantRequestValidationV2 _validator;
         
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _validator = new ParticipantRequestValidation();
+            _validator = new ParticipantRequestValidationV2();
         }
 
 
@@ -39,9 +39,9 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidDisplayNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -55,7 +55,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCaseRoleNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoCaseRoleNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -69,7 +69,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoHearingRoleNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoHearingRoleNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -83,7 +83,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoFirstNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -97,7 +97,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoLastNameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -113,7 +113,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoUsernameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoUsernameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -127,7 +127,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -141,7 +141,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -156,7 +156,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidJudgeUsernameErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidJudgeUsernameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -194,7 +194,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTelephoneNumberErrorMessage)
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoTelephoneNumberErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -235,16 +235,16 @@ namespace BookingsApi.UnitTests.Validation.V2
             if (!expectedResult)
             {
                 result.Errors.Count.Should().Be(2);
-                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.FirstNameDoesntMatchRegex)
+                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.FirstNameDoesntMatchRegex)
                     .Should().BeTrue();
-                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.LastNameDoesntMatchRegex)
+                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.LastNameDoesntMatchRegex)
                     .Should().BeTrue();
             }
         }
 
-        private static ParticipantRequest BuildRequest()
+        private static ParticipantRequestV2 BuildRequest()
         {
-            return Builder<ParticipantRequest>.CreateNew()
+            return Builder<ParticipantRequestV2>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")
                  .With(x => x.HearingRoleName = "Representative")
                  .With(x => x.TelephoneNumber = "020 7946 0101")

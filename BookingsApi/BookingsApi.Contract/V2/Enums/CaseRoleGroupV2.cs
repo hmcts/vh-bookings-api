@@ -1,6 +1,6 @@
 namespace BookingsApi.Contract.V2.Enums
 {
-    public enum CaseRoleGroup
+    public enum CaseRoleGroupV2
     {
         Judge = 0,
         Claimant = 1,

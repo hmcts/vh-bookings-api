@@ -1,6 +1,6 @@
 ﻿namespace BookingsApi.Contract.V2.Enums
 {
-    public enum BookingStatus
+    public enum BookingStatusV2
     {
         /// <summary>
         /// Hearing booked

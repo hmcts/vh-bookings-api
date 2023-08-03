@@ -1,6 +1,6 @@
 ﻿namespace BookingsApi.Contract.V2.Enums
 {
-    public enum HearingMediumType
+    public enum HearingMediumTypeV2
     {
         FullyVideo = 1,
         Telephone = 2,

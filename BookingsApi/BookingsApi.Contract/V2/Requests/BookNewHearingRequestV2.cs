@@ -6,14 +6,14 @@ namespace BookingsApi.Contract.V2.Requests
     /// <summary>
     /// Book a new hearing request model based on using codes
     /// </summary>
-    public class BookNewHearingRequest
+    public class BookNewHearingRequestV2
     {
-        public BookNewHearingRequest()
+        public BookNewHearingRequestV2()
         {
-            Cases = new List<CaseRequest>();
-            Participants = new List<ParticipantRequest>();
-            LinkedParticipants = new List<LinkedParticipantRequest>();
-            Endpoints = new List<EndpointRequest>();
+            Cases = new List<CaseRequestV2>();
+            Participants = new List<ParticipantRequestV2>();
+            LinkedParticipants = new List<LinkedParticipantRequestV2>();
+            Endpoints = new List<EndpointRequestV2>();
         }
 
         /// <summary>
@@ -44,12 +44,12 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
-        public List<CaseRequest> Cases { get; set; }
+        public List<CaseRequestV2> Cases { get; set; }
 
         /// <summary>
         ///     List of participants in hearing
         /// </summary>
-        public List<ParticipantRequest> Participants { get; set; }
+        public List<ParticipantRequestV2> Participants { get; set; }
 
         /// <summary>
         ///     The hearing room name at the hearing venue
@@ -74,8 +74,8 @@ namespace BookingsApi.Contract.V2.Requests
         
         public bool IsMultiDayHearing { get; set; } = false;
 
-        public List<EndpointRequest> Endpoints { get; set; }
+        public List<EndpointRequestV2> Endpoints { get; set; }
         
-        public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
+        public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; }
     }
 }

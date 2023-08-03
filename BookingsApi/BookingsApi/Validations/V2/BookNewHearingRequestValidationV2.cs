@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace BookingsApi.Validations.V2
 {
-    public class BookNewHearingRequestValidation : AbstractValidator<BookNewHearingRequest>
+    public class BookNewHearingRequestValidationV2 : AbstractValidator<BookNewHearingRequestV2>
     {
         public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public const string ScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
@@ -17,7 +17,7 @@ namespace BookingsApi.Validations.V2
         public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
         public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
-        public BookNewHearingRequestValidation()
+        public BookNewHearingRequestValidationV2()
         {
             RuleFor(x => x.HearingVenueCode)
                 .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);
@@ -43,17 +43,17 @@ namespace BookingsApi.Validations.V2
                 .WithMessage(CaseDuplicationErrorMessage);
 
             RuleForEach(x => x.Participants)
-                .SetValidator(new ParticipantRequestValidation());
+                .SetValidator(new ParticipantRequestValidationV2());
 
             RuleForEach(x => x.Cases)
-                .SetValidator(new CaseRequestValidation());
+                .SetValidator(new CaseRequestValidationV2());
 
             RuleForEach(x => x.LinkedParticipants)
-                .SetValidator(new LinkedParticipantRequestValidation())
+                .SetValidator(new LinkedParticipantRequestValidationV2())
                 .When(x => !x.LinkedParticipants.IsNullOrEmpty());
 
             RuleForEach(x => x.Endpoints)
-                .SetValidator(x => new EndpointRequestValidation())
+                .SetValidator(x => new EndpointRequestValidationV2())
                 .When(x => x.Endpoints.Any());
         }
     }

@@ -1,16 +1,15 @@
 using System.Linq;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Extensions;
-using BookingsApi.Mappings.V1.Extensions;
+using BookingsApi.Mappings.V2.Extensions;
 
-namespace BookingsApi.Mappings.V1
+namespace BookingsApi.Mappings.V2
 {
     public class ParticipantToResponseMapper
     {
-        public ParticipantResponse MapParticipantToResponse(Participant participant)
+        public ParticipantResponseV2 MapParticipantToResponse(Participant participant)
         {
-            var participantResponse = new ParticipantResponse
+            var participantResponse = new ParticipantResponseV2
             {
                 Id = participant.Id,
                 DisplayName = participant.DisplayName,
@@ -25,8 +24,8 @@ namespace BookingsApi.Mappings.V1
                 ContactEmail = participant.Person.ContactEmail,
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
-                LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponse
-                    {LinkedId = x.LinkedId, Type = x.Type.MapToContractEnum()}).ToList()
+                LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2
+                    {LinkedId = x.LinkedId, TypeV2 = x.Type.MapToContractEnum()}).ToList()
             };
 
             switch (participant.HearingRole.UserRole.Name)

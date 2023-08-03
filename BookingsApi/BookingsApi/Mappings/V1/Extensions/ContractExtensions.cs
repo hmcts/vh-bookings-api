@@ -1,7 +1,7 @@
 using System;
 using BookingsApi.Contract.V1.Enums;
 
-namespace BookingsApi.Extensions
+namespace BookingsApi.Mappings.V1.Extensions
 {
     public static class ContractExtensions
     {

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Common.Services;
+using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations.V2;
@@ -11,17 +12,22 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 using Testing.Common.Builders.Api.V2;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
-public class BookNewHearingTests : ApiTest
+public class BookNewHearingV2Tests : ApiTest
 {
+    private FeatureTogglesStub _featureToggleStub;
     private readonly List<Guid> _hearingIds = new();
     
     [SetUp]
     public void Setup()
     {
         _hearingIds.Clear();
+        // TODO: remove after new queries are built
+        _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
+        _featureToggleStub!.RefData = true;
     }
     
     [TearDown]
@@ -44,13 +50,13 @@ public class BookNewHearingTests : ApiTest
         var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
 
         // assert
-        result.IsSuccessStatusCode.Should().BeTrue();
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
         result.StatusCode.Should().Be(HttpStatusCode.Created);
         
         var getHearingUri = result.Headers.Location;
         var getResponse = await client.GetAsync(getHearingUri);
-        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
-        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
         createdResponse.Should().BeEquivalentTo(hearingResponse);
         _hearingIds.Add(hearingResponse.Id);
     }
@@ -73,13 +79,13 @@ public class BookNewHearingTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
-            .Be(BookNewHearingRequestValidation.HearingVenueCodeErrorMessage);
+            .Be(BookNewHearingRequestValidationV2.HearingVenueCodeErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.CaseTypeServiceId)][0].Should()
-            .Be(BookNewHearingRequestValidation.CaseTypeServiceIdErrorMessage);
+            .Be(BookNewHearingRequestValidationV2.CaseTypeServiceIdErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
-            .Be(BookNewHearingRequestValidation.HearingTypeCodeErrorMessage);
+            .Be(BookNewHearingRequestValidationV2.HearingTypeCodeErrorMessage);
     }
     
     [Test]
@@ -116,8 +122,12 @@ public class BookNewHearingTests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        
+        // regex to find the error message as the error message is not consistent
+        // message should contain "Hearing type code [code] does not exist"
+        // regex for message 'Hearing type code [0-9]+ does not exist'
         validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
-            .Be("Hearing type does not exist");
+            .MatchRegex("Hearing type code [A-Za-z0-9]+ does not exist");
     }
     
     [Test]
@@ -136,10 +146,10 @@ public class BookNewHearingTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
-            .Be("Hearing venue does not exist");
+            .MatchRegex("Hearing venue code [A-Za-z0-9]+ does not exist");
     }
     
-    private BookNewHearingRequest CreateBookingRequestWithServiceIdsAndCodes()
+    private BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
     {
         var hearingSchedule = DateTime.UtcNow;
         var caseName = "Bookings Api Integration Automated";

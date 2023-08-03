@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace BookingsApi.Validations.V2
 {
-    public class ParticipantRequestValidation : AbstractValidator<ParticipantRequest>
+    public class ParticipantRequestValidationV2 : AbstractValidator<ParticipantRequestV2>
     {
         private const string NameRegex = "^(\\w+(?:\\w|[\\s'._-](?![\\s'._-]))*\\w+)$";
         public static readonly string FirstNameDoesntMatchRegex = "First name must match regular expression";
@@ -20,7 +20,7 @@ namespace BookingsApi.Validations.V2
         public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
         public static readonly string InvalidJudgeUsernameErrorMessage = "Judge username is Invalid";
 
-        public ParticipantRequestValidation()
+        public ParticipantRequestValidationV2()
         {
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
             RuleFor(x => x.FirstName).Matches(NameRegex).WithMessage(FirstNameDoesntMatchRegex);

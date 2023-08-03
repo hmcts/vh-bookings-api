@@ -3,17 +3,17 @@ using FluentValidation;
 
 namespace BookingsApi.Validations.V2
 {
-    public class LinkedParticipantRequestValidation : AbstractValidator<LinkedParticipantRequest>
+    public class LinkedParticipantRequestValidationV2 : AbstractValidator<LinkedParticipantRequestV2>
     {
         public static readonly string NoParticipantEmail = "Contact email for participant is required";
         public static readonly string NoLinkedParticipantEmail = "Contact email for linked participant is required";
         public static readonly string InvalidType = "A valid linked participant type is required";
         
-        public LinkedParticipantRequestValidation()
+        public LinkedParticipantRequestValidationV2()
         {
             RuleFor(x => x.ParticipantContactEmail).NotEmpty().WithMessage(NoParticipantEmail);
             RuleFor(x => x.LinkedParticipantContactEmail).NotEmpty().WithMessage(NoLinkedParticipantEmail);
-            RuleFor(x => x.Type).IsInEnum().WithMessage(InvalidType);
+            RuleFor(x => x.TypeV2).IsInEnum().WithMessage(InvalidType);
         }
     }
 }

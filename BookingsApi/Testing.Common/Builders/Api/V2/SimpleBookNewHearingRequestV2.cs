@@ -8,12 +8,12 @@ namespace Testing.Common.Builders.Api.V2;
 
 public class SimpleBookNewHearingRequestV2
 {
-    private readonly BookNewHearingRequest _request;
+    private readonly BookNewHearingRequestV2 _requestV2;
 
     public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime)
     {
         var hearingScheduled = scheduledDateTime;
-        var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
+        var participants = Builder<ParticipantRequestV2>.CreateListOfSize(5).All()
             .With(x => x.Title = "Mrs")
             .With(x => x.TelephoneNumber = "01234567890")
             .With(x => x.OrganisationName = TestUsers.Organisation1)
@@ -69,14 +69,14 @@ public class SimpleBookNewHearingRequestV2
         participants[4].Username = participant4.Username;
         participants[4].DisplayName = participant4.DisplayName;
 
-        var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
+        var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;
         cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
         cases[0].Number = $"{Faker.RandomNumber.Next(0, 9999)}/{Faker.RandomNumber.Next(0, 9999)}";
 
         const string createdBy = "bookingsapi.acautomation@hmcts.net";
             
-        _request = Builder<BookNewHearingRequest>.CreateNew()
+        _requestV2 = Builder<BookNewHearingRequestV2>.CreateNew()
             .With(x => x.CaseTypeServiceId = "AAA6") // Civil Money Claims
             .With(x => x.HearingTypeCode = "AAA6-APP") // Application Hearings
             .With(x => x.HearingVenueCode = "231596") // Birmingham Civil and Family Justice Centre
@@ -89,8 +89,8 @@ public class SimpleBookNewHearingRequestV2
             .Build();
     }
     
-    public BookNewHearingRequest Build()
+    public BookNewHearingRequestV2 Build()
     {
-        return _request;
+        return _requestV2;
     }
 }
