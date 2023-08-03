@@ -294,13 +294,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             typedMessage.Hearing.CaseName.Should().Be("name");
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task Should_return_notfound_when_no_matching_venue_found(bool referenceDataToggle)
+        public async Task Should_return_notfound_when_no_matching_venue_found()
         {
-            if (referenceDataToggle)
-                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
-            
             var request = new UpdateHearingRequest
             {
                 ScheduledDateTime = DateTime.Now.AddDays(2),
@@ -310,7 +305,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 HearingVenueName = "venue2",
                 HearingVenueCode = "venue2Code",
                 Cases = new List<CaseRequest>
-                    { new CaseRequest { Name = "123XX", Number = "123YY", IsLeadCase = true } },
+                    {new CaseRequest {Name = "123XX", Number = "123YY", IsLeadCase = true}},
                 UpdatedBy = "test@hmcts.net"
             };
 
@@ -318,12 +313,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var hearing = GetHearing("123");
             hearing.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
             hearing.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
-                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
+                15, "123", "note", "administrator", new List<Case> {new Case("123", "name")}, true, true);
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
 
-            var venues = new List<HearingVenue> { new HearingVenue(1, "venue1", venueCode: "notvalid"), };
+            var venues = new List<HearingVenue> {new HearingVenue(1, "venue1", venueCode: "notvalid"),};
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(venues);
@@ -331,31 +326,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateHearingDetails(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            if (referenceDataToggle)
-            {
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueCode), "Hearing venue does not exist");
-            }
-            else
-            {
-                ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName), "Hearing venue does not exist");
-            }
-        }
+            var objectResult = (BadRequestObjectResult) result;
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
 
-        [Test]
-        public async Task Should_return_badrequest_with_an_invalid_hearingid()
-        {
-            var request = new UpdateHearingRequest();
-            var hearingId = Guid.Empty;
 
-            var result = await Controller.UpdateHearingDetails(hearingId, request);
+            ((SerializableError) objectResult.Value).ContainsKeyAndErrorMessage(nameof(request.HearingVenueName),
+                "Hearing venue does not exist");
 
-            result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
-                $"Please provide a valid {nameof(hearingId)}");
         }
 
         [Test]

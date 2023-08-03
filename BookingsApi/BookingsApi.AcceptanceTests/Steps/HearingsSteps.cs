@@ -76,10 +76,7 @@ namespace BookingsApi.AcceptanceTests.Steps
                 o => o.Excluding(x => x.Participants)
                     .Excluding(x => x.Endpoints)
                     .Excluding(x => x.LinkedParticipants)
-                    .Excluding(x => x.IsMultiDayHearing)
-                    .Excluding(x => x.HearingTypeCode)
-                    .Excluding(x => x.HearingVenueCode)
-                    .Excluding(x => x.CaseTypeServiceId));
+                    .Excluding(x => x.IsMultiDayHearing));
 
             var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
             var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));

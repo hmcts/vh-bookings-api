@@ -39,7 +39,6 @@ namespace BookingsApi.Controllers.V1
     [ApiController]
     public class HearingsController : Controller
     {
-
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IEventPublisher _eventPublisher;
@@ -48,7 +47,6 @@ namespace BookingsApi.Controllers.V1
         private readonly IHearingService _hearingService;
         private readonly IFeatureToggles _featureToggles;
         private readonly ILogger _logger;
-        
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IEventPublisher eventPublisher,
@@ -457,12 +455,6 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return ValidationProblem(ModelState);
-            }
-
             var result = new UpdateHearingRequestValidation().Validate(request);
             if (!result.IsValid)
             {

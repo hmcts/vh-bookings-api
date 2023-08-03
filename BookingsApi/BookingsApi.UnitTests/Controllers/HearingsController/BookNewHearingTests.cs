@@ -71,38 +71,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
              .ReturnsAsync(_videoHearing);
         }
 
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public async Task Should_successfully_book_new_hearing(bool referenceDataToggle)
-        {
-            if (referenceDataToggle)
-                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
-
-            var response = await Controller.BookNewHearing(request);
-
-            response.Should().NotBeNull();
-            var result = (CreatedAtActionResult)response;
-            result.StatusCode.Should().Be((int)HttpStatusCode.Created);
-
-            if (referenceDataToggle)
-                QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.Is<GetCaseRolesForCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeServiceId)), Times.Once);
-            else
-                QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.Is<GetCaseRolesForCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeName)), Times.Once);        
-
-            QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
-
-            QueryHandlerMock.Verify(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Once);
-
-            RandomGenerator.Verify(x => x.GetWeakDeterministic(It.IsAny<long>(), It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
-
-            CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.Endpoints.Count == 1
-                                                                                        && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
-                                                                                        && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
-
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
-        }
-
         [Test]
         public async Task Should_successfully_book_new_hearing_when_judge_not_present()
         {
@@ -194,20 +162,15 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
         
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void Should_log_exception_when_thrown_with_request_details(bool referenceDataToggle)
+        [Test]
+        public void Should_log_exception_when_thrown_with_request_details()
         {
-            if (referenceDataToggle)
-                FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
             
             var newRequest = RequestBuilderV1.Build();
             QueryHandlerMock.Setup(qh => qh.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()))
                 .Throws<Exception>();
 
             Assert.ThrowsAsync<Exception>(async () => await Controller.BookNewHearing(newRequest));
-            if (referenceDataToggle)
-              Logger.Verify(c => c.TrackError(It.IsAny<Exception>(), It.Is<Dictionary<string,string>>(e => e.Count == 7)), Times.Once());
         }
 
         [TestCase("FirstNameWithSpaces ")]

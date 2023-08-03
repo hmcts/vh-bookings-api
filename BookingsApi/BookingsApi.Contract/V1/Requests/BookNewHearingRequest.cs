@@ -28,21 +28,11 @@ namespace BookingsApi.Contract.V1.Requests
         ///     The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
-        
-        /// <summary>
-        ///     The code of the hearing venue
-        /// </summary>
-        public string HearingVenueCode { get; set; }
 
         /// <summary>
         ///     The name of the case type
         /// </summary>
         public string CaseTypeName { get; set; }
-        
-        /// <summary>
-        ///     The name of the case type
-        /// </summary>
-        public string CaseTypeServiceId { get; set; }
 
         /// <summary>
         ///     The name of the hearing type
@@ -83,17 +73,21 @@ namespace BookingsApi.Contract.V1.Requests
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
-        
-        /// <summary>
-        /// The code of the hearing type
-        /// </summary>
-        public string HearingTypeCode { get; set; }
 
+        /// <summary>
+        /// Get or set if this request is a part of a multi-day hearing
+        /// </summary>
         [DefaultValue(false)]
         public bool IsMultiDayHearing { get; set; } = false;
 
+        /// <summary>
+        /// List of video access points
+        /// </summary>
         public List<EndpointRequest> Endpoints { get; set; }
         
+        /// <summary>
+        /// List of linked participants (i.e. interpreters and LIPs)
+        /// </summary>
         public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
     }
 }

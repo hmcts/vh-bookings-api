@@ -87,8 +87,6 @@ public class SimpleBookNewHearingRequest
             .With(x => x.CreatedBy = createdBy)
             .With(x => x.QuestionnaireNotRequired = false)
             .With(x => x.AudioRecordingRequired = true)
-            .With(x => x.HearingTypeCode = "AutomatedTest")
-            .With(x => x.HearingVenueCode = "231596")
             .Build();
     }
 

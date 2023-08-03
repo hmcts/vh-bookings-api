@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.IntegrationTests.Helper;
@@ -12,21 +11,17 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 using Testing.Common.Builders.Api.V1.Request;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
-public class BookNewHearingWithRefDataToggleOffTests : ApiTest
+public class BookNewHearingTests : ApiTest
 {
-    private FeatureTogglesStub _featureToggleStub;
     private readonly List<Guid> _hearingIds = new();
 
     [SetUp]
     public void Setup()
     {
         _hearingIds.Clear();
-        _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
-        _featureToggleStub!.RefData = false;
     }
     
     [TearDown]
@@ -172,11 +167,8 @@ public class BookNewHearingWithRefDataToggleOffTests : ApiTest
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
         request.CaseTypeName = "Generic";
-        request.CaseTypeServiceId = "vhG1"; // intentionally incorrect case
         request.HearingTypeName = "Automated Test";
-        request.HearingTypeCode = "automatedtest"; // intentionally incorrect case
         request.HearingVenueName = "Birmingham Civil and Family Justice Centre";
-        request.HearingVenueCode = "231596";
         return request;
     }
 }
