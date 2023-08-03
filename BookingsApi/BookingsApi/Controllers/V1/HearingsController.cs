@@ -220,8 +220,7 @@ namespace BookingsApi.Controllers.V1
 
                 SanitiseRequest(request);
 
-                var rDataFlag = _featureToggles.ReferenceDataToggle();
-                var result = await new BookNewHearingRequestValidation(rDataFlag).ValidateAsync(request);
+                var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
                 if (!result.IsValid)
                 {
                     const string logBookNewHearingValidationError = "BookNewHearing Validation Errors";
@@ -236,31 +235,29 @@ namespace BookingsApi.Controllers.V1
                     return ValidationProblem(ModelState);
                 }
 
-                var queryValue = rDataFlag ? request.CaseTypeServiceId : request.CaseTypeName;
+                var queryValue = request.CaseTypeName;
                 var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(new GetCaseRolesForCaseTypeQuery(queryValue));
                 if (caseType == null)
                 {
                     const string logCaseDoesNotExist = "BookNewHearing Error: Case type does not exist";
-                    return ModelStateErrorLogger(rDataFlag ? nameof(request.CaseTypeServiceId) : nameof(request.CaseTypeName), "Case type does not exist", logCaseDoesNotExist, queryValue, SeverityLevel.Error);
+                    return ModelStateErrorLogger(nameof(request.CaseTypeName), "Case type does not exist", logCaseDoesNotExist, queryValue, SeverityLevel.Error);
                 }
 
-                var hearingTypeQueryValue = rDataFlag ? request.HearingTypeCode : request.HearingTypeName;
-                var hearingType = rDataFlag ?
-                    caseType.HearingTypes.SingleOrDefault(x => x.Code.ToLower() == hearingTypeQueryValue.ToLower())
-                        : caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
+                var hearingTypeQueryValue = request.HearingTypeName;
+                var hearingType = caseType.HearingTypes.SingleOrDefault(x => x.Name == hearingTypeQueryValue);
                 if (hearingType == null)
                 {
                     const string logHearingTypeDoesNotExist = "BookNewHearing Error: Hearing type does not exist";
-                    return ModelStateErrorLogger(rDataFlag ? nameof(request.HearingTypeCode) : nameof(request.HearingTypeName), "Hearing type does not exist", logHearingTypeDoesNotExist, hearingTypeQueryValue, SeverityLevel.Error);
+                    return ModelStateErrorLogger(nameof(request.HearingTypeName), "Hearing type does not exist", logHearingTypeDoesNotExist, hearingTypeQueryValue, SeverityLevel.Error);
                 }
 
-                var venueId = rDataFlag ? request.HearingVenueCode : request.HearingVenueName;
-                var venue = await GetVenue(venueId, rDataFlag);
+                var venueId = request.HearingVenueName;
+                var venue = await GetVenue(venueId);
                 if (venue == null)
                 {
                     const string logHearingVenueDoesNotExist = "BookNewHearing Error: Hearing venue does not exist";
 
-                    return ModelStateErrorLogger(rDataFlag ? nameof(request.HearingVenueCode) : nameof(request.HearingVenueName),
+                    return ModelStateErrorLogger(nameof(request.HearingVenueName),
                         "Hearing venue does not exist", logHearingVenueDoesNotExist, venueId, SeverityLevel.Error);
                 }
 
@@ -296,8 +293,6 @@ namespace BookingsApi.Controllers.V1
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},
                     {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
                 };
-                if (rDataFlag)
-                    logTrace.Add("CaseTypeServiceId", queriedVideoHearing.CaseType?.ServiceId);
                 _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
                 
                 var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
@@ -325,11 +320,6 @@ namespace BookingsApi.Controllers.V1
                         {keyCaseTypeName, request.CaseTypeName},
                         {keyHearingTypeName, request.HearingTypeName}
                     };
-                    if (_featureToggles.ReferenceDataToggle())
-                    {
-                        errorLog.Add("CaseTypeServiceId", request.CaseTypeServiceId);
-                        errorLog.Add("HearingTypeCode", request.HearingTypeCode);
-                    }
                     _logger.TrackError(ex, errorLog);
                 }
                 throw;
@@ -467,7 +457,6 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
-            var rDataFlag = _featureToggles.ReferenceDataToggle();
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
@@ -489,11 +478,11 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var venueId = rDataFlag ? request.HearingVenueCode : request.HearingVenueName;
-            var venue = await GetVenue(venueId, rDataFlag);
+            var venueId = request.HearingVenueName;
+            var venue = await GetVenue(venueId);
             if (venue == null)
             {
-                ModelState.AddModelError(rDataFlag ? nameof(request.HearingVenueCode) : nameof(request.HearingVenueName), "Hearing venue does not exist");
+                ModelState.AddModelError(nameof(request.HearingVenueName), "Hearing venue does not exist");
                 return ValidationProblem(ModelState);
             }
 
@@ -749,14 +738,12 @@ namespace BookingsApi.Controllers.V1
             return await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
         }
 
-        private async Task<HearingVenue> GetVenue(string venueId, bool rDataFlag)
+        private async Task<HearingVenue> GetVenue(string venueId)
         {
             var getHearingVenuesQuery = new GetHearingVenuesQuery();
             var hearingVenues =
                 await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
-            return rDataFlag ? 
-                hearingVenues.SingleOrDefault(x => x.VenueCode.Equals(venueId, StringComparison.InvariantCultureIgnoreCase)) 
-                : hearingVenues.SingleOrDefault(x => x.Name.Equals(venueId, StringComparison.InvariantCultureIgnoreCase));
+            return hearingVenues.SingleOrDefault(x => x.Name.Equals(venueId, StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>

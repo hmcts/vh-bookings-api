@@ -83,67 +83,41 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseTypeNameErrorMessage)
                 .Should().BeTrue();
         }
-        
-        [TestCase(false)]
-        [TestCase(true)]
-        public async Task Should_return_missing_hearing_type_error(bool referenceDataToggle)
+
+        [Test]
+        public async Task Should_return_missing_hearing_type_error()
         {
             var request = BuildRequest();
-            if (referenceDataToggle)
-            {
-                request.HearingTypeCode = string.Empty;   
-            }
-            else
-            {
-                request.HearingTypeName = string.Empty;
-            }
+            request.HearingTypeName = string.Empty;
 
-            var validator = new BookNewHearingRequestValidation(referenceDataToggle);
+
+            var validator = new BookNewHearingRequestValidation();
             var result = await validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            if (referenceDataToggle)
-            {
-                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeCodeErrorMessage)
-                    .Should().BeTrue();
-            }
-            else
-            {
-                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeNameErrorMessage)
-                    .Should().BeTrue();
-            }
+
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeNameErrorMessage)
+                .Should().BeTrue();
+
         }
-        
-        [TestCase(false)]
-        [TestCase(true)]
-        public async Task Should_return_missing_hearing_venue_error(bool referenceDataToggle)
+
+        [Test]
+        public async Task Should_return_missing_hearing_venue_error()
         {
             var request = BuildRequest();
-            if (referenceDataToggle)
-            {
-                request.HearingVenueCode = string.Empty;   
-            }
-            else
-            {
-                request.HearingVenueName = string.Empty;
-            }
 
-            var validator = new BookNewHearingRequestValidation(referenceDataToggle);
+            request.HearingVenueName = string.Empty;
+
+
+            var validator = new BookNewHearingRequestValidation();
             var result = await validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            if (referenceDataToggle)
-            {
-                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueCodeErrorMessage)
-                    .Should().BeTrue();
-            }
-            else
-            {
-                result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
-                    .Should().BeTrue();
-            }
+
+            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
+                .Should().BeTrue();
         }
 
         [Test]

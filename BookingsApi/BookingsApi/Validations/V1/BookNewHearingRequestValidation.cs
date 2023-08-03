@@ -20,26 +20,15 @@ namespace BookingsApi.Validations.V1
         public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
         public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
-        public BookNewHearingRequestValidation(bool referenceDataFeatureEnabled = false)
+        public BookNewHearingRequestValidation()
         {
-            if (referenceDataFeatureEnabled)
-            {
-                RuleFor(x => x.HearingVenueCode)
-                    .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);
-                RuleFor(x => x.HearingTypeCode)
-                    .NotEmpty().WithMessage(HearingTypeCodeErrorMessage);
-                RuleFor(x => x.CaseTypeServiceId)
-                    .NotEmpty().WithMessage(CaseTypeServiceIdErrorMessage);
-            }
-            else
-            {
-                RuleFor(x => x.HearingTypeName)
-                    .NotEmpty().WithMessage(HearingTypeNameErrorMessage);
-                RuleFor(x => x.HearingVenueName)
-                    .NotEmpty().WithMessage(HearingVenueErrorMessage);
-                RuleFor(x => x.CaseTypeName)
-                    .NotEmpty().WithMessage(CaseTypeNameErrorMessage);
-            }
+            RuleFor(x => x.HearingTypeName)
+                .NotEmpty().WithMessage(HearingTypeNameErrorMessage);
+            RuleFor(x => x.HearingVenueName)
+                .NotEmpty().WithMessage(HearingVenueErrorMessage);
+            RuleFor(x => x.CaseTypeName)
+                .NotEmpty().WithMessage(CaseTypeNameErrorMessage);
+
 
             RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>
             {
@@ -48,16 +37,16 @@ namespace BookingsApi.Validations.V1
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }
             });
-            
+
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(ScheduleDurationErrorMessage);
-            
+
             RuleFor(x => x.Participants).NotEmpty()
                 .NotEmpty().WithMessage(ParticipantsErrorMessage);
 
             RuleFor(x => x.Cases).NotEmpty()
                 .NotEmpty().WithMessage(CasesErrorMessage);
-            
+
             RuleFor(x => x.Cases)
                 .Must(cases => !cases.GroupBy(i => new {i.Number, i.Name}).Any(i => i.Count() > 1))
                 .WithMessage(CaseDuplicationErrorMessage);
@@ -69,7 +58,8 @@ namespace BookingsApi.Validations.V1
                 .SetValidator(new CaseRequestValidation());
 
             RuleForEach(x => x.LinkedParticipants)
-                .SetValidator(new LinkedParticipantRequestValidation()).When(x => !x.LinkedParticipants.IsNullOrEmpty());
+                .SetValidator(new LinkedParticipantRequestValidation())
+                .When(x => !x.LinkedParticipants.IsNullOrEmpty());
 
         }
     }
