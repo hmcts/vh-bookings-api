@@ -57,7 +57,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             };
 
             QueryHandlerMock
-            .Setup(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
+            .Setup(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()))
             .ReturnsAsync(caseType);
 
             QueryHandlerMock
@@ -86,9 +86,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
             if (referenceDataToggle)
-                QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.Is<GetCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeServiceId)), Times.Once);
+                QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.Is<GetCaseRolesForCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeServiceId)), Times.Once);
             else
-                QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.Is<GetCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeName)), Times.Once);        
+                QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.Is<GetCaseRolesForCaseTypeQuery>(e => e.CaseTypeQueryParameter == request.CaseTypeName)), Times.Once);        
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
@@ -115,7 +115,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
@@ -142,7 +142,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
@@ -167,7 +167,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
@@ -202,7 +202,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 FeatureTogglesMock.Setup(r => r.ReferenceDataToggle()).Returns(true);
             
             var newRequest = RequestBuilderV1.Build();
-            QueryHandlerMock.Setup(qh => qh.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()))
+            QueryHandlerMock.Setup(qh => qh.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()))
                 .Throws<Exception>();
 
             Assert.ThrowsAsync<Exception>(async () => await Controller.BookNewHearing(newRequest));
@@ -225,7 +225,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 
@@ -256,7 +256,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = (CreatedAtActionResult)response;
             result.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
-            QueryHandlerMock.Verify(x => x.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandlerMock.Verify(x => x.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
 
             QueryHandlerMock.Verify(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()), Times.Once);
 

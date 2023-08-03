@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(videoHearing);
              
-            QueryHandler.Setup(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>())).ReturnsAsync(CaseType);
+            QueryHandler.Setup(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>())).ReturnsAsync(CaseType);
         }
 
         protected CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName,string userRole, List<string> roles)

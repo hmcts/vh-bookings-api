@@ -6,32 +6,32 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {
-    public class GetCaseRolesForCaseTypeQuery : IQuery
+    public class GetCaseRolesForCaseServiceQuery : IQuery
     {
-        public GetCaseRolesForCaseTypeQuery(string caseTypeQueryParameter)
+        public GetCaseRolesForCaseServiceQuery(string serviceId)
         {
-            CaseTypeQueryParameter = caseTypeQueryParameter;
+            ServiceId = serviceId;
         }
 
         /// <summary>
         /// Can be caseType name or ServiceId (depending on whether refData flag on/off)
         /// </summary>
-        public string CaseTypeQueryParameter { get; }
+        public string ServiceId { get; }
     }
     
-    public class GetCaseRolesForCaseTypeQueryHandler : IQueryHandler<GetCaseRolesForCaseTypeQuery, CaseType>
+    public class GetCaseRolesForCaseServiceQueryHandler : IQueryHandler<GetCaseRolesForCaseServiceQuery, CaseType>
     {
         private readonly BookingsDbContext _context;
 
-        public GetCaseRolesForCaseTypeQueryHandler(BookingsDbContext context)
+        public GetCaseRolesForCaseServiceQueryHandler(BookingsDbContext context)
         {
             _context = context;
         }
 
-        public async Task<CaseType> Handle(GetCaseRolesForCaseTypeQuery query)
+        public async Task<CaseType> Handle(GetCaseRolesForCaseServiceQuery query)
         {
             var caseTypesQuery = CaseTypes.Get(_context);
-            var caseType = await caseTypesQuery.SingleOrDefaultAsync(x => x.Name == query.CaseTypeQueryParameter);
+            var caseType = await caseTypesQuery.SingleOrDefaultAsync(x => EF.Functions.Like(x.ServiceId, $"{query.ServiceId}"));
             caseType.PopulateCaseRoles();
             return caseType;
         }
