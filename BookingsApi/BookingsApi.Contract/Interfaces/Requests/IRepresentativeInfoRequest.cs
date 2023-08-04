@@ -1,4 +1,4 @@
-﻿namespace BookingsApi.Contract.V1.Requests
+﻿namespace BookingsApi.Contract.Interfaces.Requests
 {
     public interface IRepresentativeInfoRequest
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using BookingsApi.Contract.Interfaces.Requests;
 
-namespace BookingsApi.Contract.V1.Requests
+namespace BookingsApi.Contract.V2.Requests
 {
-    public class UpdatePersonDetailsRequest
+    public class UpdatePersonDetailsRequestV2
     {
         /// <summary>
         ///     Participant first name.
@@ -23,7 +23,7 @@ namespace BookingsApi.Contract.V1.Requests
         public string Username { get; set; }
     }
     
-    public class UpdateParticipantRequest : IRepresentativeInfoRequest
+    public class UpdateParticipantRequestV2 : IRepresentativeInfoRequest
     {
         /// <summary>
         ///     Participant Id.
@@ -66,6 +66,6 @@ namespace BookingsApi.Contract.V1.Requests
         /// <summary>
         ///     List of linked participants
         /// </summary>
-        public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
+        public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; }
     }
 }

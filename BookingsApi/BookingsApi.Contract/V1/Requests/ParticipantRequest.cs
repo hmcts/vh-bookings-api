@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BookingsApi.Contract.Interfaces.Requests;
 
 namespace BookingsApi.Contract.V1.Requests
 {

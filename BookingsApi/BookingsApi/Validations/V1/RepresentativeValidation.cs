@@ -1,4 +1,4 @@
-﻿using BookingsApi.Contract.V1.Requests;
+﻿using BookingsApi.Contract.Interfaces.Requests;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V1

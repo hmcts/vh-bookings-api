@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using BookingsApi.Contract.Interfaces.Requests;
 
 namespace BookingsApi.Contract.V2.Requests
 {
-    public class ParticipantRequestV2
+    public class ParticipantRequestV2 : IRepresentativeInfoRequest
     {
         /// <summary>
         ///     Participant Title.
