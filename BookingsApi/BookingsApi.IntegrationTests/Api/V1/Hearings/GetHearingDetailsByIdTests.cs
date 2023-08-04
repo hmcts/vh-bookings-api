@@ -1,18 +1,18 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.IntegrationTests.Helper;
-using BookingsApi.Mappings.V2;
+using BookingsApi.Mappings.V1;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 
-namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
+namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
-public class GetHearingDetailsByIdV2Tests : ApiTest
+public class GetHearingDetailsByIdTests : ApiTest
 {
     [Test]
     public async Task should_return_bad_request_when_an_invalid_id_is_provided()
@@ -23,7 +23,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearingId));
+        var result = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -42,7 +42,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearingId));
+        var result = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId));
 
         // assert
         result.IsSuccessStatusCode.Should().BeFalse();
@@ -53,22 +53,22 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
     public async Task should_return_a_hearing_when_matched_with_a_given_id()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 1, false);
+        var hearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 1);
         var hearingId = hearing.Id;
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearingId.ToString()));
+        var result = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId.ToString()));
 
         // assert
         result.IsSuccessStatusCode.Should().BeTrue();
         result.StatusCode.Should().Be(HttpStatusCode.OK);
-        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
         hearingResponse.Should().NotBeNull();
         hearingResponse.Id.Should().Be(hearingId);
-        hearingResponse.HearingVenueCode.Should().Be(hearing.HearingVenue.VenueCode);
-        hearingResponse.HearingTypeCode.Should().Be(hearing.HearingType.Code);
-        hearingResponse.ServiceId.Should().Be(hearing.CaseType.ServiceId);
+        hearingResponse.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
+        hearingResponse.HearingTypeName.Should().Be(hearing.HearingType.Name);
+        hearingResponse.CaseTypeName.Should().Be(hearing.CaseType.Name);
         
         hearingResponse.ScheduledDateTime.Should().BeAfter(hearing.ScheduledDateTime.ToUniversalTime());
         hearingResponse.ScheduledDuration.Should().BePositive();
@@ -79,7 +79,8 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
 
         foreach (var @case in hearing.GetCases())
         {
-            hearingResponse.Cases.Should().ContainEquivalentOf(new CaseResponseV2
+            hearingResponse.Cases.Should().ContainEquivalentOf(new CaseResponse
+                
             {
                 IsLeadCase = @case.IsLeadCase,
                 Name = @case.Name,
@@ -91,12 +92,12 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
         foreach (var participant in hearing.GetParticipants())
         {
             hearingResponse.Participants.Should()
-                .ContainEquivalentOf(new ParticipantToResponseV2Mapper().MapParticipantToResponse(participant));
+                .ContainEquivalentOf(new ParticipantToResponseMapper().MapParticipantToResponse(participant));
         }
 
         foreach (var endpoint in hearing.GetEndpoints())
         {
-            hearingResponse.Endpoints.Should().ContainEquivalentOf(new EndpointResponseV2
+            hearingResponse.Endpoints.Should().ContainEquivalentOf(new EndpointResponse
             {
                 DisplayName = endpoint.DisplayName,
                 DefenceAdvocateId = endpoint.DefenceAdvocate?.Id,

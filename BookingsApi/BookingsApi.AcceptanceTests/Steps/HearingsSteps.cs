@@ -34,7 +34,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have a get details for a given hearing request with a valid hearing id")]
         public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidHearingId()
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
         }
 
         [Given(@"I have a valid book a new hearing request")]
@@ -137,7 +137,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Then(@"the hearing no longer exists")]
         public void ThenTheHearingNoLongerExists()
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -232,7 +232,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Then(@"hearing should be (.*)")]
         public void ThenHearingShouldBe(BookingStatus status)
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();

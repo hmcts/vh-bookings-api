@@ -55,12 +55,6 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
         {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-
             var query = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
@@ -191,7 +185,7 @@ namespace BookingsApi.Controllers.V1
                         null, SeverityLevel.Information);
                 }
 
-                SanitiseRequest(request);
+                request.SanitizeRequest();
 
                 var result = await new BookNewHearingRequestValidation().ValidateAsync(request);
                 if (!result.IsValid)
@@ -329,24 +323,6 @@ namespace BookingsApi.Controllers.V1
             return NoContent();
         }
 
-        // private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
-        // {
-        //     if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
-        //     {
-        //         // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
-        //         await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
-        //     }
-        //     else
-        //     {
-        //         await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(videoHearing, videoHearing.Participants));
-        //         if (!isMultiDay)
-        //         {
-        //             await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
-        //         }
-        //     }
-        //     
-        // }
-
         private IActionResult ModelStateErrorLogger(string key, string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
         {
             ModelState.AddModelError(key, exception);
@@ -462,14 +438,9 @@ namespace BookingsApi.Controllers.V1
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.QuestionnaireNotRequired.Value, request.AudioRecordingRequired.Value);
-
-            await _commandHandler.Handle(command);
-
         
-            var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
             var response = HearingToDetailsResponseMapper.Map(updatedHearing);
-
-            await _bookingService.PublishHearingUpdated(updatedHearing, videoHearing);
             return Ok(response);
         }
 
@@ -867,15 +838,6 @@ namespace BookingsApi.Controllers.V1
         {
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
-        }
-        
-        private static void SanitiseRequest(BookNewHearingRequest request)
-        {
-            foreach (var participant in request.Participants)
-            {
-                participant.FirstName = participant.FirstName?.Trim();
-                participant.LastName = participant.LastName?.Trim();
-            }
         }
     }
 }

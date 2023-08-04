@@ -33,17 +33,17 @@ namespace BookingsApi.Controllers.V2
         /// <summary>
         /// Request to book a new hearing
         /// </summary>
-        /// <param name="requestV2">Details of a new hearing to book</param>
+        /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Details of the newly booked hearing</returns>
         [HttpPost]
         [OpenApiOperation("BookNewHearingWithCode")]
         [ProducesResponseType(typeof(HearingDetailsResponseV2), (int) HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
         [MapToApiVersion("2.0")]
-        public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 requestV2)
+        public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
-            SanitiseRequest(requestV2);
-            var result = await new BookNewHearingRequestValidationV2().ValidateAsync(requestV2);
+            request.SanitizeRequest();
+            var result = await new BookNewHearingRequestValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
@@ -51,39 +51,39 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(requestV2.ServiceId));
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(request.ServiceId));
             if (caseType == null)
             {
-                ModelState.AddModelError(nameof(requestV2.ServiceId), "Case type does not exist");
-                _logger.LogTrace("CaseTypeServiceId {CaseTypeServiceId} does not exist", requestV2.ServiceId);
+                ModelState.AddModelError(nameof(request.ServiceId), "Case type does not exist");
+                _logger.LogTrace("CaseTypeServiceId {CaseTypeServiceId} does not exist", request.ServiceId);
                 return ValidationProblem(ModelState);
             }
 
             var hearingType = caseType.HearingTypes.SingleOrDefault(x =>
-                string.Equals(x.Code, requestV2.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
+                string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
             if (hearingType == null)
             {
-                ModelState.AddModelError(nameof(requestV2.HearingTypeCode),
-                    $"Hearing type code {requestV2.HearingTypeCode} does not exist");
-                _logger.LogTrace("HearingTypeCode {HearingTypeCode} does not exist", requestV2.HearingTypeCode);
+                ModelState.AddModelError(nameof(request.HearingTypeCode),
+                    $"Hearing type code {request.HearingTypeCode} does not exist");
+                _logger.LogTrace("HearingTypeCode {HearingTypeCode} does not exist", request.HearingTypeCode);
                 return ValidationProblem(ModelState);
             }
             
-            var hearingVenue = await GetHearingVenue(requestV2.HearingVenueCode);
+            var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
             if (hearingVenue == null)
             {
-                ModelState.AddModelError(nameof(requestV2.HearingVenueCode),
-                    $"Hearing venue code {requestV2.HearingVenueCode} does not exist");
-                _logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", requestV2.HearingVenueCode);
+                ModelState.AddModelError(nameof(request.HearingVenueCode),
+                    $"Hearing venue code {request.HearingVenueCode} does not exist");
+                _logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", request.HearingVenueCode);
                 return ValidationProblem(ModelState);
             }
             
-            var cases = requestV2.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
-            var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
-                requestV2, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+            var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+            var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
+                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
 
-            var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, requestV2.IsMultiDayHearing);
-            var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
+            var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
+            var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
 
@@ -108,7 +108,7 @@ namespace BookingsApi.Controllers.V2
                 return NotFound();
             }
 
-            var response = HearingToDetailsResponseMapper.Map(videoHearing);
+            var response = HearingToDetailsResponseV2Mapper.Map(videoHearing);
             return Ok(response);
         }
         
@@ -162,17 +162,11 @@ namespace BookingsApi.Controllers.V2
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, false, request.AudioRecordingRequired.Value);
 
-            await _commandHandler.Handle(command);
-
-        
-            var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-            var response = HearingToDetailsResponseMapper.Map(updatedHearing);
-
-            await _bookingService.PublishHearingUpdated(updatedHearing, videoHearing);
-
+            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
+            var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);
             return Ok(response);
         }
-        
+
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
         {
             var hearingVenues =
@@ -180,21 +174,6 @@ namespace BookingsApi.Controllers.V2
             var hearingVenue = hearingVenues.SingleOrDefault(x =>
                 string.Equals(x.VenueCode, venueCode, StringComparison.CurrentCultureIgnoreCase));
             return hearingVenue;
-        }
-        
-        private async Task<VideoHearing> GetHearingAsync(Guid hearingId)
-        {
-            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
-            return await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        }
-
-        private static void SanitiseRequest(BookNewHearingRequestV2 requestV2)
-        {
-            foreach (var participant in requestV2.Participants)
-            {
-                participant.FirstName = participant.FirstName?.Trim();
-                participant.LastName = participant.LastName?.Trim();
-            }
         }
     }
 }

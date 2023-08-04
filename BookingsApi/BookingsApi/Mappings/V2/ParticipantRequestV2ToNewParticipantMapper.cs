@@ -6,7 +6,7 @@ namespace BookingsApi.Mappings.V2
     /// This class is used to map a participant request object to the NewParticipant model
     /// used by the AddParticipantsToVideoHearingCommand.
     /// </summary>
-    public static class ParticipantRequestToNewParticipantMapper
+    public static class ParticipantRequestV2ToNewParticipantMapper
     {
         public static NewParticipant Map(ParticipantRequestV2 requestV2Participant, CaseType caseType)
         {

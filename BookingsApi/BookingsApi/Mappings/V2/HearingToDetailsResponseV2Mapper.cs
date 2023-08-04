@@ -3,12 +3,12 @@ using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2
 {
-    public static class HearingToDetailsResponseMapper
+    public static class HearingToDetailsResponseV2Mapper
     {
         public static HearingDetailsResponseV2 Map(Hearing videoHearing)
         {
-            var caseMapper = new CaseToResponseMapper();
-            var participantMapper = new ParticipantToResponseMapper();
+            var caseMapper = new CaseToResponseV2Mapper();
+            var participantMapper = new ParticipantToResponseV2Mapper();
             
             var cases = videoHearing.GetCases()
                 .Select(x => caseMapper.MapCaseToResponse(x))
@@ -19,7 +19,7 @@ namespace BookingsApi.Mappings.V2
                 .ToList();
 
             var endpoints = videoHearing.GetEndpoints()
-                .Select(EndpointToResponseMapper.MapEndpointToResponse)
+                .Select(EndpointToResponseV2Mapper.MapEndpointToResponse)
                 .ToList();
             
             var response = new HearingDetailsResponseV2
@@ -27,9 +27,9 @@ namespace BookingsApi.Mappings.V2
                 Id = videoHearing.Id,
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType?.Name,
-                CaseTypeName = videoHearing.CaseType.Name,
-                HearingVenueName = videoHearing.HearingVenueName,
+                HearingTypeCode = videoHearing.HearingType?.Code,
+                ServiceId = videoHearing.CaseType.ServiceId,
+                HearingVenueCode = videoHearing.HearingVenue.VenueCode,
                 Cases = cases,
                 Participants = participants,
                 HearingRoomName = videoHearing.HearingRoomName,

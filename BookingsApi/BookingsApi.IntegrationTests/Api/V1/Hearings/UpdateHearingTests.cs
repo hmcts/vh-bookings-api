@@ -20,7 +20,7 @@ using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
-public class UpdateHearingV1Tests : ApiTest
+public class UpdateHearingTests : ApiTest
 {
     [Test]
     public async Task should_return_bad_request_and_validation_errors_when_payload_fails_validation()

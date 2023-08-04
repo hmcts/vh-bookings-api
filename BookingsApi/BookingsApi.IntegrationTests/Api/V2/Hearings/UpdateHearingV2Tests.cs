@@ -74,7 +74,7 @@ public class UpdateHearingV2Tests : ApiTest
         var hearing = await Hooks.SeedVideoHearing();
         var hearingId = hearing.Id;
         var request = BuildRequest();
-        request.HearingVenueCode = "shouldnotexist";
+        request.HearingVenueCode = "ShouldNotExist";
 
         // act
         using var client = Application.CreateClient();
@@ -116,7 +116,7 @@ public class UpdateHearingV2Tests : ApiTest
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
         
-        hearingFromDb.HearingVenueName.Should().Be("Manchester County and Family Court");
+        hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
         hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
         hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);
@@ -124,7 +124,7 @@ public class UpdateHearingV2Tests : ApiTest
         hearingFromDb.OtherInformation.Should().Be(request.OtherInformation);
         
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
-        createdResponse.HearingVenueName.Should().Be("Manchester County and Family Court");
+        createdResponse.HearingVenueCode.Should().Be(request.HearingVenueCode);
         createdResponse.ScheduledDuration.Should().Be(request.ScheduledDuration);
         createdResponse.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
         createdResponse.UpdatedBy.Should().Be(request.UpdatedBy);
@@ -143,7 +143,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_update_hearing_and_not_publish_when_hearing_status_is_not_created()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked);
+        var hearing = await Hooks.SeedVideoHearing(null);
         var hearingId = hearing.Id;
         var request = BuildRequest();
 

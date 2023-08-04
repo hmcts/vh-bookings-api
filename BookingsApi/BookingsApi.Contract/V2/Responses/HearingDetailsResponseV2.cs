@@ -23,19 +23,19 @@ public class HearingDetailsResponseV2
         public int ScheduledDuration { get; set; }
 
         /// <summary>
-        ///     The name of the hearing venue
+        ///     The code for the hearing venue
         /// </summary>
-        public string HearingVenueName { get; set; }
+        public string HearingVenueCode { get; set; }
 
         /// <summary>
-        ///     The name of the case type
+        ///     The ID for the service
         /// </summary>
-        public string CaseTypeName { get; set; }
+        public string ServiceId { get; set; }
 
         /// <summary>
-        ///     The name of the hearing type
+        ///     The code for the hearing type
         /// </summary>
-        public string HearingTypeName { get; set; }
+        public string HearingTypeCode { get; set; }
 
         /// <summary>
         ///     List of cases associated to the hearing

@@ -4,22 +4,6 @@ Feature: Hearings
   As an api service
   I want to be able to create, update and retrieve hearings data
 
-  Scenario: Get details for a given hearing
-    Given I have a get details for a given hearing request with a valid hearing id
-    When I send the request to the endpoint
-    Then the response should have the status OK and success status True
-    And hearing details should be retrieved
-
-  Scenario: Get details for a given hearing with a nonexistent hearing
-    Given I have a get details for a given hearing request with a nonexistent hearing id
-    When I send the request to the endpoint
-    Then the response should have the status NotFound and success status False
-
-  Scenario: Get details for a given hearing with a bad request
-    Given I have a get details for a given hearing request with an invalid hearing id
-    When I send the request to the endpoint
-    Then the response should have the status BadRequest and success status False
-
   Scenario: Get hearings by a username
     Given I have a valid get hearings by username request
     When I send the request to the endpoint

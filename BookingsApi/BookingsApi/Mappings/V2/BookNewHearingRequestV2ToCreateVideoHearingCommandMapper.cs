@@ -2,7 +2,7 @@ using BookingsApi.Contract.V2.Requests;
 
 namespace BookingsApi.Mappings.V2;
 
-public static class BookNewHearingRequestToCreateVideoHearingCommandMapper
+public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
 {
     public static CreateVideoHearingCommand Map(
         BookNewHearingRequestV2 requestV2,
@@ -31,7 +31,7 @@ public static class BookNewHearingRequestToCreateVideoHearingCommandMapper
     private static List<NewParticipant> MapParticipants(BookNewHearingRequestV2 requestV2, CaseType caseType)
     {
         var newParticipants = requestV2.Participants.Select(
-            x => ParticipantRequestToNewParticipantMapper.Map(x, caseType)).ToList();
+            x => ParticipantRequestV2ToNewParticipantMapper.Map(x, caseType)).ToList();
         return newParticipants;
     }
 
@@ -42,7 +42,7 @@ public static class BookNewHearingRequestToCreateVideoHearingCommandMapper
         if (requestV2.Endpoints != null)
         {
             endpoints = requestV2.Endpoints.Select(x =>
-                EndpointToResponseMapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
+                EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(x, randomGenerator, sipAddressStem)).ToList();
         }
 
         return endpoints;
@@ -50,7 +50,7 @@ public static class BookNewHearingRequestToCreateVideoHearingCommandMapper
 
     private static List<LinkedParticipantDto> MapLinkedParticipants(BookNewHearingRequestV2 requestV2)
     {
-        var dto = LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(requestV2.LinkedParticipants)
+        var dto = LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(requestV2.LinkedParticipants)
             .ToList();
         return dto;
     }

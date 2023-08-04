@@ -143,7 +143,7 @@ namespace BookingsApi.AcceptanceTests.Steps
 
         private HearingDetailsResponse GetHearing()
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             return model;

@@ -58,7 +58,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
 
-            Context.Uri = GetHearingDetailsById(_hearingId);
+            Context.Uri = GetHearingDetailsById(_hearingId.ToString());
             Context.HttpMethod = HttpMethod.Get;
         }
 

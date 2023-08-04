@@ -24,7 +24,7 @@ namespace Testing.Common.Builders.Api
         public static class HearingsEndpoints
         {
             private const string ApiRoot = "hearings";
-            public static string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+            public static string GetHearingDetailsById(string hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetHearingShellById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
             public static string BookNewHearing => $"{ApiRoot}";
             public static string GetHearingsByTypes => $"{ApiRoot}/types";

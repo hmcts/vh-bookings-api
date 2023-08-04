@@ -29,14 +29,15 @@ public interface IBookingService
     /// <param name="totalDays"></param>
     /// <returns></returns>
     Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays);
-    
+
     /// <summary>
     /// Send a message to the service bus to publish the update of a hearing
     /// </summary>
-    /// <param name="updatedHearing"></param>
+    /// <param name="updateHearingCommand"></param>
     /// <param name="originalHearing"></param>
+    /// <param name="updatedHearing"></param>
     /// <returns></returns>
-    Task PublishHearingUpdated(VideoHearing updatedHearing, VideoHearing originalHearing);
+    Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing);
 
     /// <summary>
     /// Send a message to the service bus to publish the cancellation of a hearing
@@ -101,9 +102,11 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task PublishHearingUpdated(VideoHearing updatedHearing, VideoHearing originalHearing)
+    public async Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing)
     {
-        if (updatedHearing?.Status != BookingStatus.Created) return;
+        await _commandHandler.Handle(updateHearingCommand);
+        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(originalHearing.Id));
+        if (updatedHearing.Status != BookingStatus.Created) return updatedHearing;
 
         await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
         if (updatedHearing.ScheduledDateTime.Ticks != originalHearing.ScheduledDateTime.Ticks)
@@ -112,5 +115,6 @@ public class BookingService : IBookingService
                 new HearingDateTimeChangedIntegrationEvent(updatedHearing, originalHearing.ScheduledDateTime));
         }
 
+        return updatedHearing;
     }
 }

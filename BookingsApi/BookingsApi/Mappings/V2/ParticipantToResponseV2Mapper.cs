@@ -3,7 +3,7 @@ using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2
 {
-    public class ParticipantToResponseMapper
+    public class ParticipantToResponseV2Mapper
     {
         public ParticipantResponseV2 MapParticipantToResponse(Participant participant)
         {
