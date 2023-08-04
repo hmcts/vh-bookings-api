@@ -108,7 +108,7 @@ public class UpdateEndpointTests : ApiTest
     }
 
     [Test]
-    public async Task should_return_no_content_when_endpoint_is_updated()
+    public async Task should_return_no_content_when_endpoint_display_name_and_defence_advocate_is_updated()
     {
         // arrange
         var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Created, 1);
