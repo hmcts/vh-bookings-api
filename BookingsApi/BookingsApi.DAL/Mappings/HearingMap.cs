@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.CaseTypeId).IsRequired();
             builder.Property(x => x.HearingTypeId).IsRequired();
             builder.Property(x => x.HearingVenueName);
-            builder.Property(x => x.ScheduledDateTime);
+            builder.Property(x => x.ScheduledDateTime).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.ScheduledDuration);
             builder.Property(x => x.CreatedDate);
             builder.Property(x => x.UpdatedDate);

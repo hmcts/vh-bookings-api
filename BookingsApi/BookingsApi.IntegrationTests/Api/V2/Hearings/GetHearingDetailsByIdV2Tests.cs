@@ -70,7 +70,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
         hearingResponse.HearingTypeCode.Should().Be(hearing.HearingType.Code);
         hearingResponse.ServiceId.Should().Be(hearing.CaseType.ServiceId);
         
-        hearingResponse.ScheduledDateTime.Should().BeAfter(hearing.ScheduledDateTime.ToUniversalTime());
+        hearingResponse.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime.ToUniversalTime());
         hearingResponse.ScheduledDuration.Should().BePositive();
         hearingResponse.HearingRoomName.Should().NotBeNullOrEmpty();
         hearingResponse.OtherInformation.Should().NotBeNullOrEmpty();
