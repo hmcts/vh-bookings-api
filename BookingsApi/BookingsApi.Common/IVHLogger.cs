@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Common
 {
-    public interface ILogger
+    public interface IVhLogger
     {
         void TrackError(Exception ex, Dictionary<string, string> properties = null);
         void TrackPageView(string viewName);

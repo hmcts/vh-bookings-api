@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V2.Responses;
-using BookingsApi.Domain;
 
 namespace BookingsApi.Mappings.V2
 {

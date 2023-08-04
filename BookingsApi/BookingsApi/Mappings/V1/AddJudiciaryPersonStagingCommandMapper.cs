@@ -1,5 +1,4 @@
 ﻿using BookingsApi.Contract.V1.Requests;
-using BookingsApi.DAL.Commands;
 
 namespace BookingsApi.Mappings.V1
 {

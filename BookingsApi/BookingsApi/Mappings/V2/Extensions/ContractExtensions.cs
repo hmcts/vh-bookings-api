@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Contract.V2.Enums;
 
 namespace BookingsApi.Mappings.V2.Extensions

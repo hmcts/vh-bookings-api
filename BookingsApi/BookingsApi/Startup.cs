@@ -1,21 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BookingsApi.Common.Configuration;
 using BookingsApi.DAL;
-using BookingsApi.Extensions;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Domain.Configuration;
 

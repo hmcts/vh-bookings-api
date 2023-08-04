@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL;
@@ -18,22 +17,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
 public class UpdateHearingV1Tests : ApiTest
 {
-    private FeatureTogglesStub _featureToggleStub;
-    
-    [SetUp]
-    public void Setup()
-    {
-        // TODO: remove after new queries are built
-        _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
-        _featureToggleStub!.RefData = false;
-    }
-
     [Test]
     public async Task should_return_bad_request_and_validation_errors_when_payload_fails_validation()
     {
@@ -185,7 +173,6 @@ public class UpdateHearingV1Tests : ApiTest
             OtherInformation = "OtherInformationUpdate",
             UpdatedBy = "test@hmcts.net",
             Cases = cases,
-            HearingVenueCode = "701411", // Manchester County and Family Court
             AudioRecordingRequired = false,
             HearingVenueName = "Manchester County and Family Court"
         };

@@ -44,6 +44,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 request.ScheduledDateTime, request.ScheduledDuration, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, new List<Case>(), request.QuestionnaireNotRequired.Value,
                 request.AudioRecordingRequired.Value);
+            updatedHearing.UpdateStatus(BookingStatus.Created, "initial", null);
 
             QueryHandlerMock
                 .SetupSequence(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))

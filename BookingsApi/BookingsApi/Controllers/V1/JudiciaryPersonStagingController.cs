@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using BookingsApi.Contract.V1.Requests;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Commands.Core;
+﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Mappings.V1;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NSwag.Annotations;
 
 namespace BookingsApi.Controllers.V1
 {

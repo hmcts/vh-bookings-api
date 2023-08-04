@@ -1,5 +1,6 @@
-using System;
 using BookingsApi.Contract.V1.Enums;
+using BookingStatus = BookingsApi.Contract.V1.Enums.BookingStatus;
+using LinkedParticipantType = BookingsApi.Contract.V1.Enums.LinkedParticipantType;
 
 namespace BookingsApi.Mappings.V1.Extensions
 {

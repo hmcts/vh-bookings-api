@@ -1,8 +1,3 @@
-using System.Net;
-using BookingsApi.Services;
-using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
-
 namespace BookingsApi.Controllers.V1
 {
     [Produces("application/json")]

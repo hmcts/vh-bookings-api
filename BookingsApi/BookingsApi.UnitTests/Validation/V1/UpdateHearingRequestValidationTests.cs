@@ -29,13 +29,12 @@ namespace BookingsApi.UnitTests.Validation.V1
         }
 
         [Test]
-        public async Task Should_return_missing_hearing_venue_name_error_when_reference_data_is_false()
+        public async Task Should_return_missing_hearing_venue_name_error()
         {
             // arrange
             // venue name and code are both empty
             _validator = new UpdateHearingRequestValidation();
             var request = BuildRequest();
-            request.HearingVenueCode = string.Empty;
             request.HearingVenueName = string.Empty;
 
             // act
@@ -43,30 +42,6 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             // assert
             result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
-                .Should().BeTrue();
-            
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueCodeErrorMessage)
-                .Should().BeFalse();
-        }
-        
-        [Test]
-        public async Task Should_return_missing_hearing_venue_code_error_when_reference_data_is_true()
-        {
-            // arrange
-            // venue name and code are both empty
-            _validator = new UpdateHearingRequestValidation();
-            var request = BuildRequest();
-            request.HearingVenueCode = string.Empty;
-            request.HearingVenueName = string.Empty;
-
-            // act
-            var result = await _validator.ValidateAsync(request);
-
-            // assert
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
-                .Should().BeFalse();
-            
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueCodeErrorMessage)
                 .Should().BeTrue();
         }
         

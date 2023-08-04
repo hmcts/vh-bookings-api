@@ -1,9 +1,5 @@
-using System;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Commands;
-using BookingsApi.Domain;
 
 namespace BookingsApi.Mappings.V1
 {

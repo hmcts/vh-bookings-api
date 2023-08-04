@@ -1,13 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
-using BookingsApi.Domain.RefData;
-using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 
 namespace BookingsApi.Controllers.V1
 {

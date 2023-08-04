@@ -1,35 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using BookingsApi.Common;
-using BookingsApi.Common.Configuration;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
-using BookingsApi.DAL.Helper;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
-using BookingsApi.Domain.Validations;
-using BookingsApi.Extensions;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using NSwag.Annotations;
 
 namespace BookingsApi.Controllers.V1
 {
@@ -41,28 +16,28 @@ namespace BookingsApi.Controllers.V1
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
         private readonly IFeatureToggles _featureToggles;
-        private readonly ILogger _logger;
+        private readonly IVhLogger _ivhLogger;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher,
+            IBookingService bookingService,
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IFeatureToggles featureToggles,
-            ILogger logger)
+            IVhLogger ivhLogger)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _eventPublisher = eventPublisher;
+            _bookingService = bookingService;
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
             _featureToggles = featureToggles;
-            _logger = logger;
+            _ivhLogger = ivhLogger;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
@@ -229,7 +204,7 @@ namespace BookingsApi.Controllers.V1
                     var dictionary = result.Errors.ToDictionary(x => x.PropertyName + "-" + Guid.NewGuid(), x => x.ErrorMessage);
                     var payload = JsonConvert.SerializeObject(request);
                     dictionary.Add(keyPayload, !string.IsNullOrWhiteSpace(payload) ? payload : emptyPayLoadErrorMessage);
-                    _logger.TrackTrace(logBookNewHearingValidationError, SeverityLevel.Error, dictionary);
+                    _ivhLogger.TrackTrace(logBookNewHearingValidationError, SeverityLevel.Error, dictionary);
                     return ValidationProblem(ModelState);
                 }
 
@@ -262,7 +237,7 @@ namespace BookingsApi.Controllers.V1
                 var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
                 const string logHasCases = "BookNewHearing got cases";
                 const string keyCases = "Cases";
-                _logger.TrackTrace(logHasCases, SeverityLevel.Information, new Dictionary<string, string>
+                _ivhLogger.TrackTrace(logHasCases, SeverityLevel.Information, new Dictionary<string, string>
                 {
                     {keyCases, string.Join(", ", cases.Select(x => new {x.Name, x.Number}))}
                 });
@@ -275,11 +250,10 @@ namespace BookingsApi.Controllers.V1
                 const string logSaveSuccess = "BookNewHearing DB Save Success";
                 const string logNewHearingId = "NewHearingId";
 
-                _logger.TrackTrace(logCallingDb, SeverityLevel.Information, new Dictionary<string, string> { { dbCommand, JsonConvert.SerializeObject(createVideoHearingCommand) } });
-                await _commandHandler.Handle(createVideoHearingCommand);
-                _logger.TrackTrace(logSaveSuccess, SeverityLevel.Information, new Dictionary<string, string> { { logNewHearingId, createVideoHearingCommand.NewHearingId.ToString() } });
-                var queriedVideoHearing = await GetHearingAsync(createVideoHearingCommand.NewHearingId);
-                await PublishEventForNewBooking(queriedVideoHearing, request.IsMultiDayHearing);
+                _ivhLogger.TrackTrace(logCallingDb, SeverityLevel.Information, new Dictionary<string, string> { { dbCommand, JsonConvert.SerializeObject(createVideoHearingCommand) } });
+                var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
+                _ivhLogger.TrackTrace(logSaveSuccess, SeverityLevel.Information, new Dictionary<string, string> { { logNewHearingId, createVideoHearingCommand.NewHearingId.ToString() } });
+                
 
                 const string logRetrieveNewHearing = "BookNewHearing Retrieved new hearing from DB";
                 const string keyHearingId = "HearingId";
@@ -291,11 +265,11 @@ namespace BookingsApi.Controllers.V1
                     {keyCaseType, queriedVideoHearing.CaseType?.Name},
                     {keyParticipantCount, queriedVideoHearing.Participants.Count.ToString()},
                 };
-                _logger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
+                _ivhLogger.TrackTrace(logRetrieveNewHearing, SeverityLevel.Information, logTrace);
                 
                 var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
                 const string logProcessFinished = "BookNewHearing Finished, returning response";
-                _logger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> { { "response", JsonConvert.SerializeObject(response) } });
+                _ivhLogger.TrackTrace(logProcessFinished, SeverityLevel.Information, new Dictionary<string, string> { { "response", JsonConvert.SerializeObject(response) } });
 
                 return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
             }
@@ -318,7 +292,7 @@ namespace BookingsApi.Controllers.V1
                         {keyCaseTypeName, request.CaseTypeName},
                         {keyHearingTypeName, request.HearingTypeName}
                     };
-                    _logger.TrackError(ex, errorLog);
+                    _ivhLogger.TrackError(ex, errorLog);
                 }
                 throw;
             }
@@ -349,40 +323,40 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddModelError(nameof(hearingId), $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
                 return BadRequest(ModelState);
             }
-            
-            await PublishEventForNewBooking(hearing, false);
+
+            await _bookingService.PublishNewHearing(hearing, false);
 
             return NoContent();
         }
 
-        private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
-        {
-            if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
-            {
-                // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
-                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
-            }
-            else
-            {
-                await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(videoHearing, videoHearing.Participants));
-                if (!isMultiDay)
-                {
-                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
-                }
-            }
-            
-        }
+        // private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
+        // {
+        //     if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
+        //     {
+        //         // The event below handles creatign users, sending the hearing notifications to the participants if the hearing is not a multi day
+        //         await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
+        //     }
+        //     else
+        //     {
+        //         await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(videoHearing, videoHearing.Participants));
+        //         if (!isMultiDay)
+        //         {
+        //             await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
+        //         }
+        //     }
+        //     
+        // }
 
         private IActionResult ModelStateErrorLogger(string key, string exception, string logErrorMessage, string errorValue, SeverityLevel severity)
         {
             ModelState.AddModelError(key, exception);
             if (errorValue == null)
             {
-                _logger.TrackTrace(logErrorMessage, severity);
+                _ivhLogger.TrackTrace(logErrorMessage, severity);
             }
             else
             {
-                _logger.TrackTrace(logErrorMessage, severity, new Dictionary<string, string> { { key, errorValue } });
+                _ivhLogger.TrackTrace(logErrorMessage, severity, new Dictionary<string, string> { { key, errorValue } });
             }
             return ValidationProblem(ModelState);
         }
@@ -431,12 +405,11 @@ namespace BookingsApi.Controllers.V1
             foreach (var command in commands)
             {
                 // dbcontext is not thread safe. loop one at a time
-                await _commandHandler.Handle(command);
-                await PublishEventForNewBooking(await GetHearingAsync(command.NewHearingId), true);
+                await _bookingService.SaveNewHearingAndPublish(command, true);
             }
             
             // publish multi day hearing notification event
-            await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(videoHearing, totalDays));
+            await _bookingService.PublishMultiDayHearing(videoHearing, totalDays);
 
             return NoContent();
         }
@@ -496,15 +469,7 @@ namespace BookingsApi.Controllers.V1
             var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
             var response = HearingToDetailsResponseMapper.Map(updatedHearing);
 
-            if (videoHearing.Status == BookingStatus.Created)
-            {
-                await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
-                if (request.ScheduledDateTime.Ticks != videoHearing.ScheduledDateTime.Ticks)
-                {
-                    await _eventPublisher.PublishAsync(new HearingDateTimeChangedIntegrationEvent(updatedHearing, videoHearing.ScheduledDateTime));
-                }
-            }
-
+            await _bookingService.PublishHearingUpdated(updatedHearing, videoHearing);
             return Ok(response);
         }
 
@@ -539,11 +504,7 @@ namespace BookingsApi.Controllers.V1
 
             await _commandHandler.Handle(command);
 
-            if (videoHearing.Status == BookingStatus.Created)
-            {
-                // publish the event only for confirmed(created) hearing  
-                await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
-            }
+            await _bookingService.PublishHearingCancelled(videoHearing);
             return NoContent();
         }
 
@@ -585,7 +546,7 @@ namespace BookingsApi.Controllers.V1
                 var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString());
                 if (videoHearing.Status != bookingStatus)
                 {
-                    await UpdateStatus(hearingId, request.UpdatedBy, request.CancelReason, bookingStatus);
+                    await UpdateStatus(videoHearing, request.UpdatedBy, request.CancelReason, bookingStatus);
                 }
                 return NoContent();
             }
@@ -635,7 +596,7 @@ namespace BookingsApi.Controllers.V1
 
             try
             {
-                await UpdateStatus(hearingId, request.UpdatedBy, request.CancelReason, BookingStatus.Cancelled);
+                await UpdateStatus(videoHearing, request.UpdatedBy, request.CancelReason, BookingStatus.Cancelled);
                 return NoContent();
             }
             catch (DomainRuleException exception)
@@ -645,14 +606,15 @@ namespace BookingsApi.Controllers.V1
             }
         }
 
-        private async Task UpdateStatus(Guid hearingId, string updatedBy, string cancelReason, BookingStatus bookingStatus)
+        private async Task UpdateStatus(VideoHearing videoHearing, string updatedBy, string cancelReason,
+            BookingStatus bookingStatus)
         {
-            await UpdateHearingStatusAsync(hearingId, bookingStatus, updatedBy, cancelReason);
+            await UpdateHearingStatusAsync(videoHearing.Id, bookingStatus, updatedBy, cancelReason);
 
             switch (bookingStatus)
             {
                 case BookingStatus.Cancelled:
-                        await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(hearingId));
+                    await _bookingService.PublishHearingCancelled(videoHearing);
                     break;
             }
         }
@@ -724,7 +686,7 @@ namespace BookingsApi.Controllers.V1
 
         
 
-        private async Task<Hearing> GetHearingAsync(Guid hearingId)
+        private async Task<VideoHearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             return await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);

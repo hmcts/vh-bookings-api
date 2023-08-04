@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using BookingsApi.Contract.V2.Requests;
 using Castle.Core.Internal;
 using FluentValidation;

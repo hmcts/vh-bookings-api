@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
-using BookingsApi.Common;
 using BookingsApi.Common.Helpers;
-using System.Net;
 using System.Text;
-using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.Extensions
 {

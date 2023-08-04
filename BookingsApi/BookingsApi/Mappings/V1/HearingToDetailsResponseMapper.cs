@@ -1,6 +1,4 @@
-using System.Linq;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Domain;
 using BookingsApi.Mappings.V1.Extensions;
 
 namespace BookingsApi.Mappings.V1

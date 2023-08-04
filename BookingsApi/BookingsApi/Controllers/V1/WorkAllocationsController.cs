@@ -1,22 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Validations;
-using BookingsApi.Extensions;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings.V1;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NSwag.Annotations;
 
 namespace BookingsApi.Controllers.V1
 {

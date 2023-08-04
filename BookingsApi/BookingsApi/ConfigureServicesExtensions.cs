@@ -1,21 +1,13 @@
-﻿using BookingsApi.Common;
-using BookingsApi.Common.Security;
-using BookingsApi.Common.Services;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Queries.Core;
+﻿using BookingsApi.Common.Security;
 using BookingsApi.DAL.Services;
-using BookingsApi.Services;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 
@@ -96,9 +88,10 @@ namespace BookingsApi
             services.AddScoped<ICommandHandler, CommandHandler>();
             services.AddScoped<IHearingService, HearingService>();
             services.AddScoped<IRandomGenerator, RandomGenerator>();
-            services.AddScoped<ILogger, Logger>();
+            services.AddScoped<IVhLogger, VhLogger>();
             services.AddScoped<IHearingAllocationService, HearingAllocationService>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
+            services.AddScoped<IBookingService, BookingService>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

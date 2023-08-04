@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Domain;
+﻿using BookingsApi.Contract.V1.Responses;
 using JusticeUserRole = BookingsApi.Contract.V1.Requests.Enums.JusticeUserRole;
 
 namespace BookingsApi.Mappings.V1

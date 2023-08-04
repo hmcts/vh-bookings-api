@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Domain.Participants;
+﻿using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.Mappings.V1
 {

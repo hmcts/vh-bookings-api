@@ -1,17 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
-using BookingsApi.Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 
 namespace BookingsApi.Controllers.V1
 {

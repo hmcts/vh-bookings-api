@@ -1,11 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Dtos;
-using BookingsApi.Domain;
-using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.Mappings.V1
 {

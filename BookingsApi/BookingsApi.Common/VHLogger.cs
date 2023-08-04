@@ -5,11 +5,11 @@ using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Common
 {
-    public class Logger : ILogger
+    public class VhLogger : IVhLogger
     {
         private readonly TelemetryClient _telemetryClient;
 
-        public Logger(TelemetryClient telemetryClient)
+        public VhLogger(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient;
         }

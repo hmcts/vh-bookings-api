@@ -1,5 +1,4 @@
-﻿using System;
-using BookingsApi.Contract.V1.Requests;
+﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using FluentValidation;
 

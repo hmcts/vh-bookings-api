@@ -1,28 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using BookingsApi.Common.Configuration;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Queries;
-using BookingsApi.DAL.Queries.Core;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
-using BookingsApi.Extensions;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NSwag.Annotations;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -34,18 +13,18 @@ namespace BookingsApi.Controllers.V2
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
 
         public HearingsControllerV2(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IEventPublisher eventPublisher, ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
+            IBookingService bookingService, ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfigurationOption)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _eventPublisher = eventPublisher;
+            _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
             _kinlyConfiguration = kinlyConfigurationOption.Value;
@@ -89,8 +68,7 @@ namespace BookingsApi.Controllers.V2
                 _logger.LogTrace("HearingTypeCode {HearingTypeCode} does not exist", requestV2.HearingTypeCode);
                 return ValidationProblem(ModelState);
             }
-
-
+            
             var hearingVenue = await GetHearingVenue(requestV2.HearingVenueCode);
             if (hearingVenue == null)
             {
@@ -104,9 +82,7 @@ namespace BookingsApi.Controllers.V2
             var createVideoHearingCommand = BookNewHearingRequestToCreateVideoHearingCommandMapper.Map(
                 requestV2, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
 
-            await _commandHandler.Handle(createVideoHearingCommand);
-            var queriedVideoHearing = await GetHearingAsync(createVideoHearingCommand.NewHearingId);
-            await PublishEventForNewBooking(queriedVideoHearing, requestV2.IsMultiDayHearing);
+            var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, requestV2.IsMultiDayHearing);
             var response = HearingToDetailsResponseMapper.Map(queriedVideoHearing);
             return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
         }
@@ -192,14 +168,7 @@ namespace BookingsApi.Controllers.V2
             var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
             var response = HearingToDetailsResponseMapper.Map(updatedHearing);
 
-            if (videoHearing.Status == BookingStatus.Created)
-            {
-                await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
-                if (request.ScheduledDateTime.Ticks != videoHearing.ScheduledDateTime.Ticks)
-                {
-                    await _eventPublisher.PublishAsync(new HearingDateTimeChangedIntegrationEvent(updatedHearing, videoHearing.ScheduledDateTime));
-                }
-            }
+            await _bookingService.PublishHearingUpdated(updatedHearing, videoHearing);
 
             return Ok(response);
         }
@@ -213,28 +182,10 @@ namespace BookingsApi.Controllers.V2
             return hearingVenue;
         }
         
-        private async Task<Hearing> GetHearingAsync(Guid hearingId)
+        private async Task<VideoHearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             return await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        }
-        
-        private async Task PublishEventForNewBooking(Hearing videoHearing, bool isMultiDay)
-        {
-            if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
-            {
-                // The event below handles creating users, sending the hearing notifications to the participants if the hearing is not a multi day
-                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
-            }
-            else
-            {
-                await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(videoHearing, videoHearing.Participants));
-                if (!isMultiDay)
-                {
-                    await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
-                }
-            }
-            
         }
 
         private static void SanitiseRequest(BookNewHearingRequestV2 requestV2)

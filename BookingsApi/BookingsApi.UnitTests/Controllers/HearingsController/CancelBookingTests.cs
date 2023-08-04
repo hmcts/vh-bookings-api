@@ -30,8 +30,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 UpdatedBy = "email@hmcts.net",
                 CancelReason = "Adjournment"
             };
-            var hearingId = Guid.NewGuid();
             var hearing = GetHearing("123");
+            hearing.UpdateStatus(BookingStatus.Created, "needs to be created for deletion", null);
+            var hearingId = hearing.Id;
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))

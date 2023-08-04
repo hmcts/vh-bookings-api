@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.DAL.Dtos;
 using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2

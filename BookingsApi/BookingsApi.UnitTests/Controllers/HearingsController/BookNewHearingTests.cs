@@ -50,6 +50,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [SetUp]
         public void TestInitialize()
         {
+            CommandHandlerMock.Reset();
+            QueryHandlerMock.Reset();
             var caseType = new CaseType(1, "Civil")
             {
                 CaseRoles = CaseRoles,
@@ -125,6 +127,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_successfully_book_first_day_of_multiday_hearing_without_Judge()
         {
+            
             //remove judge from request
             request.Participants.Remove(request.Participants.Find(e => e.HearingRoleName == "Judge"));
             request.IsMultiDayHearing = true;

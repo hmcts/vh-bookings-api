@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Domain;
+﻿using BookingsApi.Contract.V1.Responses;
 using Castle.Core.Internal;
 
 namespace BookingsApi.Mappings.V1
