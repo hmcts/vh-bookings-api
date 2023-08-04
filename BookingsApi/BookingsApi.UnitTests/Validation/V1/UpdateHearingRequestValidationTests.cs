@@ -33,8 +33,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         {
             // arrange
             // venue name and code are both empty
-            const bool refDataToggle = false;
-            _validator = new UpdateHearingRequestValidation(refDataToggle);
+            _validator = new UpdateHearingRequestValidation();
             var request = BuildRequest();
             request.HearingVenueCode = string.Empty;
             request.HearingVenueName = string.Empty;
@@ -55,8 +54,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         {
             // arrange
             // venue name and code are both empty
-            const bool refDataToggle = true;
-            _validator = new UpdateHearingRequestValidation(refDataToggle);
+            _validator = new UpdateHearingRequestValidation();
             var request = BuildRequest();
             request.HearingVenueCode = string.Empty;
             request.HearingVenueName = string.Empty;

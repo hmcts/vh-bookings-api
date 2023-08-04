@@ -11,19 +11,11 @@ namespace BookingsApi.Validations.V1
         public static readonly string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public static readonly string NoScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
         public static readonly string NoUpdatedByErrorMessage = "UpdatedBy is missing";
-        
-        public UpdateHearingRequestValidation(bool referenceDataFeatureEnabled = false)
+
+        public UpdateHearingRequestValidation()
         {
-            if (referenceDataFeatureEnabled)
-            {
-                RuleFor(x => x.HearingVenueCode)
-                    .NotEmpty().WithMessage(NoHearingVenueCodeErrorMessage);
-            }
-            else
-            {
-                RuleFor(x => x.HearingVenueName)
-                    .NotEmpty().WithMessage(NoHearingVenueNameErrorMessage);
-            }
+            RuleFor(x => x.HearingVenueName)
+                .NotEmpty().WithMessage(NoHearingVenueNameErrorMessage);
 
             RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>
             {
@@ -32,10 +24,10 @@ namespace BookingsApi.Validations.V1
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }
             });
-            
+
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
-            
+
             RuleFor(x => x.UpdatedBy)
                 .NotEmpty().WithMessage(NoUpdatedByErrorMessage);
         }

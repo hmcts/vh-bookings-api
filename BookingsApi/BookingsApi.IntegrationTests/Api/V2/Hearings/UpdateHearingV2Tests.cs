@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.DAL;
@@ -18,21 +17,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
 public class UpdateHearingV2Tests : ApiTest
 {
-    private FeatureTogglesStub _featureToggleStub;
-    
-    [SetUp]
-    public void Setup()
-    {
-        // TODO: remove after new queries are built
-        _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
-        _featureToggleStub!.RefData = true;
-    }
 
     [Test]
     public async Task should_return_bad_request_and_validation_errors_when_payload_fails_validation()

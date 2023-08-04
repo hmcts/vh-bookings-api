@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Common.Services;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.IntegrationTests.Helper;
@@ -12,22 +11,17 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using Testing.Common.Builders.Api;
 using Testing.Common.Builders.Api.V2;
-using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
 public class BookNewHearingV2Tests : ApiTest
 {
-    private FeatureTogglesStub _featureToggleStub;
     private readonly List<Guid> _hearingIds = new();
     
     [SetUp]
     public void Setup()
     {
         _hearingIds.Clear();
-        // TODO: remove after new queries are built
-        _featureToggleStub = Application.Services.GetService(typeof(IFeatureToggles)) as FeatureTogglesStub;
-        _featureToggleStub!.RefData = true;
     }
     
     [TearDown]
