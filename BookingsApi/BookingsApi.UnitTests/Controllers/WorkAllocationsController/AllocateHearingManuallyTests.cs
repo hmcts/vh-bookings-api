@@ -13,12 +13,8 @@ using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
 using BookingsApi.Mappings.V1;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {

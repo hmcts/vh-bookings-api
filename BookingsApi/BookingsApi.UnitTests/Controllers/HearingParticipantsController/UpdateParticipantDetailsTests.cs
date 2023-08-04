@@ -8,10 +8,7 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController

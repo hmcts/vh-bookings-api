@@ -1,16 +1,11 @@
-using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services;
-using BookingsApi.Infrastructure.Services.Dtos;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class IntegrationDtoMapperTests
     {

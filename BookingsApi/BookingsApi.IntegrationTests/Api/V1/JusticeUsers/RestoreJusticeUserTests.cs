@@ -6,6 +6,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
 using BookingsApi.IntegrationTests.Helper;
+using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +35,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             
             // Assert
             result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Id == justiceUserToRestore.Id);
             justiceUser.Should().NotBeNull();
-            justiceUser.Deleted.Should().BeFalse();
+            justiceUser!.Deleted.Should().BeFalse();
         }
 
         [Test]
@@ -46,41 +48,51 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
         {
             // Arrange
             using var client = Application.CreateClient();
-            var id = Guid.NewGuid();
+            _request = new RestoreJusticeUserRequest()
+            {
+                Id = Guid.NewGuid(),
+                Username = "random@test.com"
+            };
 
             // Act
-            var result = await client.DeleteAsync(
-                ApiUriFactory.JusticeUserEndpoints.DeleteJusticeUser(id));
+            var result = await client.PatchAsync(
+                ApiUriFactory.JusticeUserEndpoints.RestoreJusticeUser, RequestBody.Set(_request));
             
             // Assert
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
             var responseBody = await ApiClientResponse.GetResponses<string>(result.Content);
-            responseBody.Should().Be($"Justice user with id {id} not found");
+            responseBody.Should().Be($"Justice user with id {_request.Id} not found");
         }
 
         [Test]
-        public async Task Should_return_bad_request_when_invalid_id_specified()
+        public async Task Should_return_bad_request_when_invalid_payload_provided()
         {
             // Arrange
             using var client = Application.CreateClient();
-            var id = Guid.Empty;
+            _request = new RestoreJusticeUserRequest()
+            {
+                Id = Guid.Empty,
+                Username = string.Empty
+            };
             
             // Act
-            var result = await client.DeleteAsync(
-                ApiUriFactory.JusticeUserEndpoints.DeleteJusticeUser(id));
+            var result = await client.PatchAsync(
+                ApiUriFactory.JusticeUserEndpoints.RestoreJusticeUser, RequestBody.Set(_request));
             
             // Assert
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            var responseBody = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            var errors = responseBody.Errors["id"];
-            errors[0].Should().Be($"Please provide a valid {nameof(id)}");
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(_request.Id)][0].Should()
+                .Be(RestoreJusticeUserRequestValidation.NoIdErrorMessage);
+            validationProblemDetails.Errors[nameof(_request.Username)][0].Should()
+                .Be(RestoreJusticeUserRequestValidation.NoUsernameErrorMessage);
         }
         
         [TearDown]
-        public async Task TearDown()
+        public new async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             

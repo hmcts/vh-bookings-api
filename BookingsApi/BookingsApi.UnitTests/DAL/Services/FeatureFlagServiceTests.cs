@@ -3,10 +3,7 @@ using BookingsApi.Common.Exceptions;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Services;
-using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.DAL.Services
 {

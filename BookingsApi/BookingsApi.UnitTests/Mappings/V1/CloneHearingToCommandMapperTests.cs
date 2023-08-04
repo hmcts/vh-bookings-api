@@ -1,15 +1,12 @@
 using System;
 using System.Linq;
 using BookingsApi.Common.Services;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Helper;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
+using BookingsApi.Domain.Participants;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class CloneHearingToCommandMapperTests
     {

@@ -1,7 +1,4 @@
 using BookingsApi.Domain;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {

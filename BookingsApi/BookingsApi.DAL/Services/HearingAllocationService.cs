@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

@@ -3,13 +3,11 @@ using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using BookingsApi.Mappings;
 using BookingsApi.Mappings.V1;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using JusticeUserRole = BookingsApi.Contract.V1.Requests.Enums.JusticeUserRole;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class JusticeUserToResponseMapperTests
     {

@@ -1,7 +1,7 @@
 ﻿using BookingsApi.DAL.Commands;
 using BookingsApi.Domain.Dtos;
 
-namespace BookingsApi.DAL.Mappings
+namespace BookingsApi.DAL.Helper
 {
     public static class UpdateJudiciaryPersonDtoMapper
     {

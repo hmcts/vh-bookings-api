@@ -7,10 +7,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 

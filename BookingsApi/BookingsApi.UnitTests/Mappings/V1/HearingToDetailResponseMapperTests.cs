@@ -1,18 +1,14 @@
-﻿using BookingsApi.Mappings;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using FizzWare.NBuilder;
-using FluentAssertions;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
-using Testing.Common.Builders.Domain;
+using FizzWare.NBuilder;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class HearingToDetailResponseMapperTests : TestBase
     {

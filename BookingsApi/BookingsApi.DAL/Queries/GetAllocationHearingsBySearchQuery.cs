@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.DAL.Queries.Core;
-using Castle.Core.Internal;
-using Microsoft.EntityFrameworkCore;
+﻿using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -79,7 +71,7 @@ namespace BookingsApi.DAL.Queries
                     .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoNonAvailability);
             }
 
-            if (!query.CaseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrWhiteSpace(query.CaseNumber))
                 hearings = hearings
                     .Where(h3 => h3.HearingCases
                         .Any(c => c.Case.Number.ToLower().Trim().Contains(query.CaseNumber)));

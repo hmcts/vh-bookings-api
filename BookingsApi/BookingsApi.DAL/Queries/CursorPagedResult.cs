@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace BookingsApi.DAL.Queries
 {
     public class CursorPagedResult<TResult, TCursor> : IEnumerable<TResult>

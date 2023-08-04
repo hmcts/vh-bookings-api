@@ -1,8 +1,5 @@
-using System.Threading.Tasks;
 using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.Domain.RefData;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {

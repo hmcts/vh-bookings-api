@@ -3,8 +3,6 @@ using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -19,7 +17,6 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Validations;
 using BookingsApi.Validations.V1;
-using FluentAssertions;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers

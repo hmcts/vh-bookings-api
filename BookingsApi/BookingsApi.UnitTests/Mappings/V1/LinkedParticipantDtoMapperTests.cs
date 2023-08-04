@@ -2,11 +2,8 @@ using System;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services;
-using BookingsApi.Infrastructure.Services.Dtos;
-using FluentAssertions;
-using NUnit.Framework;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class LinkedParticipantDtoMapperTests
     {

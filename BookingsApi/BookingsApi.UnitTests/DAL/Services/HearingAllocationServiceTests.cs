@@ -11,13 +11,9 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 using JusticeUser = BookingsApi.Domain.JusticeUser;
 
 namespace BookingsApi.UnitTests.DAL.Services

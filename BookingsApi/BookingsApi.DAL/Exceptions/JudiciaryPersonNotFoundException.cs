@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.Serialization;
-
 namespace BookingsApi.DAL.Exceptions
 {
     public abstract class JudiciaryPersonException : Exception

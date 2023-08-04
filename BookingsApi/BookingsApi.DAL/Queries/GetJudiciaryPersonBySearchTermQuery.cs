@@ -1,11 +1,4 @@
-﻿using BookingsApi.DAL.Queries.Core;
-using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BookingsApi.DAL.Queries
+﻿namespace BookingsApi.DAL.Queries
 {
     public class GetJudiciaryPersonBySearchTermQuery : IQuery
     {

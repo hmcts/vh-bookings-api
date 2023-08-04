@@ -1,12 +1,9 @@
 ﻿using BookingsApi.Contract.V1.Requests;
-using FluentAssertions;
-using BookingsApi.Mappings;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
-using NUnit.Framework;
 using Testing.Common.Builders.Api.V1.Request;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class UpdateParticipantRequestToNewRepresentativeMapperTest : TestBase
     {

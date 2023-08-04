@@ -28,7 +28,7 @@ public class GetConfirmedHearingsByUsernameForTodayTests : ApiTest
 
         var result = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetConfirmedHearingsByUsernameForToday(username));
 
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         var hearingVenueResponses = await ApiClientResponse.GetResponses<List<HearingDetailsResponse>>(result.Content);
         hearingVenueResponses.All(x => x.ScheduledDateTime.Date == System.DateTime.UtcNow.Date).Should().BeTrue();
     }

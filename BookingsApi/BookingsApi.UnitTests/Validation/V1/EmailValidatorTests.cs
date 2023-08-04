@@ -1,7 +1,5 @@
 using System;
 using BookingsApi.Validations;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Validation.V1
 {

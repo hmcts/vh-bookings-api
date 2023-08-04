@@ -4,9 +4,6 @@ using System.Linq;
 using BookingsApi.Common;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations.V1;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Validation.V1
 {

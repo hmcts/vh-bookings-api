@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace BookingsApi.DAL.Queries.Core
+﻿namespace BookingsApi.DAL.Queries.Core
 {
     public interface IQueryHandler
     {

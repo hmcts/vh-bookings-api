@@ -1,17 +1,13 @@
-﻿using BookingsApi.Mappings;
-using BookingsApi.Domain;
-using BookingsApi.Domain.RefData;
-using Castle.Core.Internal;
-using FluentAssertions;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
-using Testing.Common.Builders.Domain;
+using Castle.Core.Internal;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class AudioRecordedHearingsBySearchResponseMapperTests : TestBase
     {

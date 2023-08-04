@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BookingsApi.DAL.Helper
+﻿namespace BookingsApi.DAL.Helper
 {
     public static class UserRoleForHearingRole
     {

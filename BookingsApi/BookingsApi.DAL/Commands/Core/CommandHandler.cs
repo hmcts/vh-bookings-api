@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace BookingsApi.DAL.Commands.Core
+﻿namespace BookingsApi.DAL.Commands.Core
 {
     public class CommandHandler : ICommandHandler
     {

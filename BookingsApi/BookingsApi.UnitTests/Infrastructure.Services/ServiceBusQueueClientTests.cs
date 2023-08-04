@@ -1,8 +1,6 @@
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Infrastructure.Services
 {

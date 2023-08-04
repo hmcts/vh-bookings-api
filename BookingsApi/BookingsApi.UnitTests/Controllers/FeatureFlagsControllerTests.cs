@@ -2,9 +2,6 @@
 using BookingsApi.Controllers;
 using BookingsApi.Controllers.V1;
 using BookingsApi.Services;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers
 {

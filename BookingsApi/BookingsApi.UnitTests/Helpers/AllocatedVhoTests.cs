@@ -1,8 +1,5 @@
 using BookingsApi.Domain;
 using BookingsApi.Domain.Helper;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Helpers;
 

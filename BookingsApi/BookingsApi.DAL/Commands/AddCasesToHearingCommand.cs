@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Commands
 {
     public class AddCasesToHearingCommand : ICommand

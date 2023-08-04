@@ -1,6 +1,4 @@
-using System.Linq;
 using BookingsApi.Domain.RefData;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries.BaseQueries;
 

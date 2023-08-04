@@ -10,11 +10,8 @@ using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Testing.Common.Assertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers
 {

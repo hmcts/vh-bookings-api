@@ -5,10 +5,7 @@ using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers.Persons
 {

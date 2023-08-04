@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
 using Testing.Common.Builders.Api.V1.Request;
 
 namespace BookingsApi.UnitTests.Validation.V1

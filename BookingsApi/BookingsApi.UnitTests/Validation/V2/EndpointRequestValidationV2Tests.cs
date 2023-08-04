@@ -2,8 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Validations.V2;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Validation.V2;
 

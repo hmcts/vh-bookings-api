@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 namespace BookingsApi.DAL.Queries.BaseQueries
 {
     public static class JobHistory

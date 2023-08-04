@@ -1,12 +1,3 @@
-using System;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL.Exceptions;
-
 namespace BookingsApi.DAL.Commands
 {
     public class DeleteNonWorkingHoursCommand : ICommand

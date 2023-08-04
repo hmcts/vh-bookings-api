@@ -1,7 +1,7 @@
 ﻿using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class JudiciaryPersonToResponseMapper
     {

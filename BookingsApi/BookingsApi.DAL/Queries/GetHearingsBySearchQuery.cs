@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.DAL.Queries.Core;
-using Castle.Core.Internal;
-using Microsoft.EntityFrameworkCore;
+﻿using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -41,7 +33,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.CaseType)
                 .Where(x => x.AudioRecordingRequired && x.Status == BookingStatus.Created);
 
-            if (!query.CaseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrWhiteSpace(query.CaseNumber))
             {
                 var caseNumber  = query.CaseNumber.ToLower().Trim();
                 efQuery = efQuery.Where(x =>

@@ -1,8 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using BookingsApi.Extensions;
-using FluentAssertions;
-using NUnit.Framework;
 using Testing.Common.Builders.Api.V1.Request;
 using Testing.Common.Builders.Api.V2;
 

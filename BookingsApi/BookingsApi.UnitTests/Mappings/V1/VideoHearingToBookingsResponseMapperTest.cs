@@ -1,18 +1,13 @@
 ﻿using System;
-using BookingsApi.Mappings;
-using BookingsApi.Domain;
-using BookingsApi.Domain.RefData;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Helper;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class VideoHearingToBookingsResponseMapperTest : TestBase
     {

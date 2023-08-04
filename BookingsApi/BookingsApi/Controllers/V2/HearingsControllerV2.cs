@@ -12,7 +12,6 @@ namespace BookingsApi.Controllers.V2
     public class HearingsControllerV2 : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
-        private readonly ICommandHandler _commandHandler;
         private readonly IBookingService _bookingService;
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
@@ -23,7 +22,6 @@ namespace BookingsApi.Controllers.V2
             IOptions<KinlyConfiguration> kinlyConfigurationOption)
         {
             _queryHandler = queryHandler;
-            _commandHandler = commandHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;

@@ -1,8 +1,4 @@
-﻿using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace BookingsApi.DAL.Mappings
+﻿namespace BookingsApi.DAL.Mappings
 {
     public class JobHistoryMap : IEntityTypeConfiguration<JobHistory>
     {
@@ -12,6 +8,7 @@ namespace BookingsApi.DAL.Mappings
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.LastRunDate);
+            builder.Property(x => x.LastRunDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
         }
     }
 }

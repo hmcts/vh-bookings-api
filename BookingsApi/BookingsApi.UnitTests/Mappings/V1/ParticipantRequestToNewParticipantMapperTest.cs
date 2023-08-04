@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using FluentAssertions;
 using BookingsApi.Common;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Mappings;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
-using NUnit.Framework;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V1
 {
     public class ParticipantRequestToNewParticipantMapperTest : TestBase
     {

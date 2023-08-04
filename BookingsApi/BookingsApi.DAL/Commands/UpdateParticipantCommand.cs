@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Domain.Participants;
-using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands

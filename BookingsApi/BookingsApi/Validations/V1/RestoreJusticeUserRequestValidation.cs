@@ -10,7 +10,7 @@ public class RestoreJusticeUserRequestValidation : AbstractValidator<RestoreJust
     
     public RestoreJusticeUserRequestValidation()
     {
-        RuleFor(x => x.Id).NotNull().WithMessage(NoIdErrorMessage);
+        RuleFor(x => x.Id).NotEmpty().WithMessage(NoIdErrorMessage);
         RuleFor(x => x.Username).NotEmpty().WithMessage(NoUsernameErrorMessage);
     }
 }

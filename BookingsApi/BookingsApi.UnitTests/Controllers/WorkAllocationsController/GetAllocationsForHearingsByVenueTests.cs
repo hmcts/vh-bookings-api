@@ -5,10 +5,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController;
 

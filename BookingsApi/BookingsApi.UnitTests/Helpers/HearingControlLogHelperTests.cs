@@ -1,11 +1,8 @@
 ﻿using BookingsApi.Helpers;
-using FluentAssertions;
-using NUnit.Framework;
 using System;
 using System.Linq;
 using BookingsApi.Contract.V1.Requests;
 using FluentValidation.Results;
-using Testing.Common.Builders.Domain;
 using Newtonsoft.Json;
 
 namespace BookingsApi.UnitTests.Helpers

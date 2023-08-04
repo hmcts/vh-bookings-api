@@ -1,17 +1,10 @@
-﻿using BookingsApi.Mappings;
-using BookingsApi.Common.Services;
+﻿using BookingsApi.Common.Services;
+using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
-using System;
-using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Mappings.V1;
-using Testing.Common.Builders.Domain;
+using BookingsApi.Mappings.V2;
 
-namespace BookingsApi.UnitTests.Mappings
+namespace BookingsApi.UnitTests.Mappings.V2
 {
-    
     public class EndpointToResponseMapperTests
     {
         [TestCase]
@@ -19,9 +12,9 @@ namespace BookingsApi.UnitTests.Mappings
         {
             var sipAddStream = "TestSipStream";
             var randomGen = new Mock<IRandomGenerator>();
-            var endpointRequest = new EndpointRequest { DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName" };
+            var endpointRequest = new EndpointRequestV2 { DefenceAdvocateContactEmail = "TestUserName", DisplayName = "TestDispName" };
 
-            var result = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointRequest,randomGen.Object, sipAddStream);
+            var result = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointRequest,randomGen.Object, sipAddStream);
 
             result.Should().NotBeNull();
             result.Sip.EndsWith(sipAddStream).Should().BeTrue();
@@ -37,7 +30,7 @@ namespace BookingsApi.UnitTests.Mappings
 
             var source = new Endpoint("displayName", "sip", "pin", participant[0]);
 
-            var result = EndpointToResponseMapper.MapEndpointToResponse(source);
+            var result = EndpointToResponseV2Mapper.MapEndpointToResponse(source);
 
             result.Id.Should().Be(source.Id);
             result.DisplayName.Should().Be(source.DisplayName);

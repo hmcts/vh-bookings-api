@@ -4,10 +4,7 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController

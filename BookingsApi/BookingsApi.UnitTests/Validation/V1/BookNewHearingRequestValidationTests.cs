@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.UnitTests.Controllers.HearingsController.Helpers;
 using BookingsApi.Validations.V1;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Validation.V1
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.Domain;
-
-namespace BookingsApi.DAL.Commands
+﻿namespace BookingsApi.DAL.Commands
 {
     public class AddJudiciaryPersonStagingCommand : ICommand 
     {

@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
-using BookingsApi.Domain;
-using Castle.Core.Internal;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Commands
 {
     public class RemoveHearingCommand : ICommand
@@ -39,7 +29,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
 
-            if (hearingsIncCloned.IsNullOrEmpty())
+            if (!hearingsIncCloned.Any())
             {
                 throw new HearingNotFoundException(command.HearingId);
             }
