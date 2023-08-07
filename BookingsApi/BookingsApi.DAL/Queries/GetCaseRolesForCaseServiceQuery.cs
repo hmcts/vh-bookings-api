@@ -1,5 +1,9 @@
+using System.Linq;
+using System.Threading.Tasks;
 using BookingsApi.DAL.Queries.BaseQueries;
 using BookingsApi.Domain.RefData;
+using BookingsApi.DAL.Queries.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -29,7 +33,8 @@ namespace BookingsApi.DAL.Queries
         {
             var caseTypesQuery = CaseTypes.Get(_context);
             var caseType = await caseTypesQuery.SingleOrDefaultAsync(x => EF.Functions.Like(x.ServiceId, $"{query.ServiceId}"));
-            caseType.PopulateCaseRoles();
+            if (caseType?.CaseRoles != null && caseType.CaseRoles.Any())
+                caseType.PopulateCaseRoles();
             return caseType;
         }
     }

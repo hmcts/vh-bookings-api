@@ -7,7 +7,7 @@ using BookingsApi.Helpers;
 namespace BookingsApi.Controllers.V2
 {
     [Produces("application/json")]
-    [Route("hearings")]
+    [Route(template:"v{version:apiVersion}/hearings")]
     [ApiVersion("2.0")]
     [ApiController]
     public class HearingParticipantsControllerV2 : Controller
@@ -62,7 +62,7 @@ namespace BookingsApi.Controllers.V2
                 return NotFound();
             }
 
-            var caseTypequery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.Name);
+            var caseTypequery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypequery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
@@ -139,7 +139,7 @@ namespace BookingsApi.Controllers.V2
                 return NotFound();
             }
 
-            var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.Name);
+            var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
 
             var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
