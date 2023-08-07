@@ -2,7 +2,7 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
-using BookingsApi.Helpers; 
+using BookingsApi.Helpers;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -77,9 +77,9 @@ namespace BookingsApi.Controllers.V2
             }
 
             var participants = request.Participants
-                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
+                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
             var linkedParticipants =
-                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+                LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants, linkedParticipants);
 
@@ -154,7 +154,7 @@ namespace BookingsApi.Controllers.V2
             }
 
             var newParticipants = request.NewParticipants
-                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
+                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
 
             var existingParticipants = videoHearing.Participants
                 .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
@@ -186,7 +186,7 @@ namespace BookingsApi.Controllers.V2
              
 
             var linkedParticipants =
-                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+                LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
             var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
@@ -216,7 +216,7 @@ namespace BookingsApi.Controllers.V2
         {
             if (participants.Any())
             {
-                var mapper = new ParticipantToResponseMapper();
+                var mapper = new ParticipantToResponseV2Mapper();
                 return participants.Select(x => mapper.MapParticipantToResponse(x)).ToList();
             }
 
