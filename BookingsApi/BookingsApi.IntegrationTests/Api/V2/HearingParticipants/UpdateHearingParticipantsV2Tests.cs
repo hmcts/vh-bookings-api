@@ -1,22 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
-
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
 public class UpdateHearingParticipantsV2Tests : ApiTest
 {
     [Test]
-    public async Task should_update_participant_in_a_hearing_and_return_200()
+    public async Task should_update_individual_participant_in_a_hearing_and_return_200()
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearing(options
