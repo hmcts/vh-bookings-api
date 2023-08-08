@@ -40,7 +40,6 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId, [FromBody] AddParticipantsToHearingRequestV2 request)
         {
             // regex pattern to get all characters between quotes
-            const string pattern = "\"([^\"]*)\"";
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");

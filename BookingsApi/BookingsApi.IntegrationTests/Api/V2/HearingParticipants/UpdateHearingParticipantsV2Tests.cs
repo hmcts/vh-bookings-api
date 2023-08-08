@@ -15,27 +15,14 @@ namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
 public class UpdateHearingParticipantsV2Tests : ApiTest
 {
-    private readonly List<Guid> _hearingIds = new();
-    
-    [SetUp]
-    public void Setup() => _hearingIds.Clear();
-    
-        
-    [TearDown]
-    public new void TearDown() => _hearingIds.Select(async id => await Hooks.RemoveVideoHearing(id));
-    
-    
     [Test]
     public async Task should_update_participant_in_a_hearing_and_return_200()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
-        {
-            options.Case = new Case("Case1 Num", "Case1 Name");
-        },false, BookingStatus.Created);
-        _hearingIds.Add(hearing.Id);
-
-        var participantToUpdate = hearing.Participants[0];
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("Case1 Num", "Case1 Name"); },false, BookingStatus.Created);
+        
+        var participantToUpdate = hearing.Participants.First(e => e.HearingRole.UserRole.IsIndividual);
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants = new List<UpdateParticipantRequestV2>()
@@ -51,10 +38,10 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // act
         using var client = Application.CreateClient();
         var result = await client
-            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(_hearingIds[0]),RequestBody.Set(request));
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
 
         // assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
     }
 
 }
