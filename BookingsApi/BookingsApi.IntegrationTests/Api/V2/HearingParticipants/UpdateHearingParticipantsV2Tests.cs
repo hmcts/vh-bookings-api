@@ -26,7 +26,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     
     
     [Test]
-    public async Task should_update_participant_in_a_hearing_and_return_200()
+    public async Task should_update_individual_participant_in_a_hearing_and_return_200()
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearing(options =>
@@ -35,7 +35,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         },false, BookingStatus.Created);
         _hearingIds.Add(hearing.Id);
 
-        var participantToUpdate = hearing.Participants[0];
+        var participantToUpdate = hearing.Participants.First(x => x.HearingRole.UserRole.IsIndividual);
         var request = new UpdateHearingParticipantsRequestV2
         {
             ExistingParticipants = new List<UpdateParticipantRequestV2>()
@@ -54,7 +54,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(_hearingIds[0]),RequestBody.Set(request));
 
         // assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
     }
 
 }
