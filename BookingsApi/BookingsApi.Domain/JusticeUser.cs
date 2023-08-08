@@ -11,6 +11,7 @@ namespace BookingsApi.Domain
     {
         public JusticeUser()
         {
+            Id = Guid.NewGuid();
             VhoNonAvailability = new List<VhoNonAvailability>();
             VhoWorkHours = new List<VhoWorkHours>();
             Allocations = new List<Allocation>();

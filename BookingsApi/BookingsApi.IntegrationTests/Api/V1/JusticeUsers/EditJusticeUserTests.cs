@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
-using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 using JusticeUserRole = BookingsApi.Contract.V1.Requests.Enums.JusticeUserRole;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers

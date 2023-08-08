@@ -1,11 +1,8 @@
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
-using NUnit.Framework;
 using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Configuration;
 

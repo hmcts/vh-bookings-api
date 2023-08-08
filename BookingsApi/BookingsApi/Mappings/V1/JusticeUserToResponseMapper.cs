@@ -5,22 +5,21 @@ namespace BookingsApi.Mappings.V1
 {
     public static class JusticeUserToResponseMapper
     {
-        public static JusticeUserResponse Map(
-            JusticeUser judiciaryPersonStagingRequest)
+        public static JusticeUserResponse Map(JusticeUser justiceUser)
         {
             return new JusticeUserResponse
                 {
-                    FirstName = judiciaryPersonStagingRequest.FirstName,
-                    Lastname = judiciaryPersonStagingRequest.Lastname,
-                    ContactEmail = judiciaryPersonStagingRequest.ContactEmail,
-                    Username = judiciaryPersonStagingRequest.Username,
-                    Telephone = judiciaryPersonStagingRequest.Telephone,
-                    UserRoles = judiciaryPersonStagingRequest.JusticeUserRoles.Select(x=> (JusticeUserRole) x.UserRole.Id).ToList(),
-                    IsVhTeamLeader = judiciaryPersonStagingRequest.IsTeamLeader(),
-                    CreatedBy = judiciaryPersonStagingRequest.CreatedBy,
-                    Id = judiciaryPersonStagingRequest.Id,
-                    FullName = judiciaryPersonStagingRequest.FirstName + " " + judiciaryPersonStagingRequest.Lastname,
-                    Deleted = judiciaryPersonStagingRequest.Deleted
+                    FirstName = justiceUser.FirstName,
+                    Lastname = justiceUser.Lastname,
+                    ContactEmail = justiceUser.ContactEmail,
+                    Username = justiceUser.Username,
+                    Telephone = justiceUser.Telephone,
+                    UserRoles = justiceUser.JusticeUserRoles.Select(x=> (JusticeUserRole) x.UserRole.Id).ToList(),
+                    IsVhTeamLeader = justiceUser.IsTeamLeader(),
+                    CreatedBy = justiceUser.CreatedBy,
+                    Id = justiceUser.Id,
+                    FullName = justiceUser.FirstName + " " + justiceUser.Lastname,
+                    Deleted = justiceUser.Deleted
                 };
         }
     }

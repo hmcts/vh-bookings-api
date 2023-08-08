@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 using DayOfWeek = BookingsApi.Domain.DayOfWeek;
 

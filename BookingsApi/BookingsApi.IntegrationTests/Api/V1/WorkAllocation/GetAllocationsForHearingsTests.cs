@@ -1,14 +1,7 @@
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkAllocation;
 
@@ -24,7 +17,7 @@ public class GetAllocationsForHearingsTests : ApiTest
         {
             TestContext.WriteLine("Removing user from previous run due to failed cleanup");
             Hooks.AddJusticeUserForCleanup(user.Id);
-            await Hooks.ClearJusticeUsersAsync();
+            await Hooks.ClearSeededJusticeUsersAsync();
         }
     }
     
@@ -102,7 +95,7 @@ public class GetAllocationsForHearingsTests : ApiTest
     [TearDown]
     public async Task TearDown()
     {
-        await Hooks.ClearJusticeUsersAsync();
+        await Hooks.ClearSeededJusticeUsersAsync();
         await Hooks.ClearSeededHearings();
     }
 }

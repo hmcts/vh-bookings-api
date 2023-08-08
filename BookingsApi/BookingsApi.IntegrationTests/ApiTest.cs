@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
 using BookingsApi.DAL;
-using BookingsApi.IntegrationTests.Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
 using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests;
@@ -28,6 +25,7 @@ public class ApiTest
     public async Task TearDown()
     {
         await Hooks.ClearSeededHearings();
+        await Hooks.ClearSeededJusticeUsersAsync();
     }
 
     private void RegisterSettings()

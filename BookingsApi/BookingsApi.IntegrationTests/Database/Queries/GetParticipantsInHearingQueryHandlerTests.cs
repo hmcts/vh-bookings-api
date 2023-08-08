@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

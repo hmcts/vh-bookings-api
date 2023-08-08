@@ -1,11 +1,5 @@
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Persons;
 

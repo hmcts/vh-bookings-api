@@ -1,11 +1,4 @@
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.CaseTypes;
 
