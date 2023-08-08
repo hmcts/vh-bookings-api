@@ -51,9 +51,15 @@ namespace Testing.Common.Builders.Api
         public static class HearingParticipantsEndpointsV2
         {
             private const string ApiRoot = "v2/hearings";
-            public static string BookNewHearing => $"{ApiRoot}";
             public static string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
             public static string UpdateHearingParticipants(Guid hearingId) => $"{ApiRoot}/{hearingId}/updateParticipants";
+        }
+                
+        public static class CaseTypesEndpointsV2
+        {
+            private const string ApiRoot = "v2/casetypes";
+            public static string GetCaseRolesForCaseType(string serviceId) => $"{ApiRoot}/{serviceId}/caseroles";
+            public static string GetHearingRolesForCaseRole(string serviceId, string caseRoleName) => $"{ApiRoot}/{serviceId}/caseroles/{caseRoleName}/hearingroles";
         }
         
         public static class HearingVenueEndpoints
