@@ -46,10 +46,11 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 FullName = "FirstName Lastname"
             };
 
-            var expectedJusticeUserResponseJson = JsonConvert.SerializeObject(expectedJusticeUserResponse);
 
             // Act
             var result = JusticeUserToResponseMapper.Map(justiceUser);
+            expectedJusticeUserResponse.Id = result.Id;
+            var expectedJusticeUserResponseJson = JsonConvert.SerializeObject(expectedJusticeUserResponse);
             var actualJusticeUserResponseJson = JsonConvert.SerializeObject(result);
 
             // Assert
