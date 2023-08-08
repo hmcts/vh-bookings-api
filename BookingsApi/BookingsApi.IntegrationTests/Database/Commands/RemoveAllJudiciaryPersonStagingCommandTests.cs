@@ -1,6 +1,4 @@
-﻿using BookingsApi.DAL;
-using BookingsApi.DAL.Commands;
-using BookingsApi.Domain;
+﻿using BookingsApi.DAL.Commands;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using BookingsApi.DAL;
-using BookingsApi.DAL.Commands;
+﻿using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 

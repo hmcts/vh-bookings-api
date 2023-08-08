@@ -1,8 +1,6 @@
-using System;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Mappings.V2;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 

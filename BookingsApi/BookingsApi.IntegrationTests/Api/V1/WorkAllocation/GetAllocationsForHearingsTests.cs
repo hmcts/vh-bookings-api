@@ -1,6 +1,4 @@
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkAllocation;

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
+﻿using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.IntegrationTests.Database.Queries

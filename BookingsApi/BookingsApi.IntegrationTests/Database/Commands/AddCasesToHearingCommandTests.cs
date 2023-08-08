@@ -1,9 +1,6 @@
-using System;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {

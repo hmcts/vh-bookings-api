@@ -1,5 +1,5 @@
-using System.Net.Http;
-using AcceptanceTests.Common.Api.Helpers;
+using BookingsApi.Common.Helpers;
+using Newtonsoft.Json;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -8,7 +8,8 @@ namespace BookingsApi.IntegrationTests.Helper
         public static async Task<T> GetResponses<T>(HttpContent content)
         {
             var json = await content.ReadAsStringAsync();
-            return RequestHelper.Deserialise<T>(json);
+            return JsonConvert.DeserializeObject<T>(json,
+                DefaultSerializerSettings.DefaultNewtonsoftSerializerSettings());
         }
     }
 }

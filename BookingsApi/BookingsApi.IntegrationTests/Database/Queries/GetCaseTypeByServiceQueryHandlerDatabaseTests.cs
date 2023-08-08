@@ -1,6 +1,4 @@
-using System.Linq;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.RefData;
 using Moq;

@@ -1,5 +1,4 @@
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;

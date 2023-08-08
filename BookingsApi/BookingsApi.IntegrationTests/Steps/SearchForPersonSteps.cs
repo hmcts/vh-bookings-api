@@ -1,6 +1,3 @@
-using System;	
-using System.Linq;	
-using System.Net.Http;	
 using TechTalk.SpecFlow;	
 using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;
 

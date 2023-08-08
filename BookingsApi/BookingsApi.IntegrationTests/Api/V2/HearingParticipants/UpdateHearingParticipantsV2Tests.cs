@@ -1,6 +1,4 @@
-using System.Linq;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 

@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using NuGet.Packaging;
 using DayOfWeek = System.DayOfWeek;

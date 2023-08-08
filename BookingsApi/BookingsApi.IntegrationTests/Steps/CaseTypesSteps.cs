@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using AcceptanceTests.Common.Api.Helpers;
+﻿using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.IntegrationTests.Contexts;
 using TechTalk.SpecFlow;

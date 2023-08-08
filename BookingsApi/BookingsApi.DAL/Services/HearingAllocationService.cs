@@ -108,18 +108,16 @@ namespace BookingsApi.DAL.Services
         /// <exception cref="DomainRuleException"></exception>
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
         {
-            VideoHearing hearing = await GetHearing(hearingId);
-            
-            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
+            var hearing = await GetHearing(hearingId);
             
             // only in automatic allocation we check if hearing has been allocated
-            if (allocations.Any())
+            if (hearing.Allocations.Any())
             {
                 throw new DomainRuleException("HearingAlreadyAllocated",
                     $"Hearing {hearing.Id} has already been allocated");
             }
             
-            JusticeUser cso = SelectCso(hearing);
+            var cso = SelectCso(hearing);
             if (cso == null)
             {
                 throw new DomainRuleException("NoCsosAvailable",
@@ -167,10 +165,10 @@ namespace BookingsApi.DAL.Services
             return await _context.VideoHearings
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
-                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.VhoWorkHours)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
-                .Include(h=> h.HearingVenue)
-                .Where(x=> hearingIds.Contains(x.Id))
+                .Include(h => h.HearingVenue)
+                .Where(x => hearingIds.Contains(x.Id))
                 .AsSplitQuery()
                 .AsNoTracking()
                 .ToListAsync();
@@ -182,9 +180,9 @@ namespace BookingsApi.DAL.Services
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
-                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.VhoWorkHours)
-                .Include(h=>h.Participants).ThenInclude(i=>i.HearingRole).ThenInclude(aa=>aa.UserRole)
-                .Include(h=> h.HearingVenue)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
+                .Include(h => h.Participants).ThenInclude(i => i.HearingRole).ThenInclude(aa => aa.UserRole)
+                .Include(h => h.HearingVenue)
                 .AsSplitQuery().SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
@@ -197,7 +195,7 @@ namespace BookingsApi.DAL.Services
 
         private async Task AllocateHearingToCso(JusticeUser cso, VideoHearing hearing)
         {
-            _context.Allocations.Add(new Allocation
+            hearing.Allocations.Add(new Allocation
             {
                 Hearing = hearing,
                 JusticeUser = cso
@@ -301,7 +299,6 @@ namespace BookingsApi.DAL.Services
                 .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
                 .Where(ju => ju.JusticeUserRoles.Any(jur => jur.UserRole.Id == (int)UserRoleId.Vho))
                 .ToList();
-
 
             return csos
                 .Where(cso => hearing.CanAllocate(cso, _configuration))

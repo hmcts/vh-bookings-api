@@ -1,12 +1,9 @@
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
-using System.Linq;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Configuration;
 

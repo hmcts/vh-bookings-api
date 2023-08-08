@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {

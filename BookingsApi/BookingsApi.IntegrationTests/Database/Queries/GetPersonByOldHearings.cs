@@ -1,6 +1,4 @@
-﻿using System;
-using BookingsApi.DAL;
-using BookingsApi.DAL.Helper;
+﻿using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 
 namespace BookingsApi.IntegrationTests.Database.Queries

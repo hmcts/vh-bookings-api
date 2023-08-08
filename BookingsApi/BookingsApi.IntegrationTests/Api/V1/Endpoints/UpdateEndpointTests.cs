@@ -1,10 +1,6 @@
-using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.DAL;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Validations.V1;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Endpoints;
