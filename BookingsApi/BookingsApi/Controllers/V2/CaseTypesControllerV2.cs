@@ -20,11 +20,11 @@ public class CaseTypesController : Controller
     /// <param name="serviceId"></param>
     /// <returns>Available case roles for given case type</returns>
     [HttpGet("{serviceId}/caseroles")]
-    [OpenApiOperation("GetCaseRolesForCaseType")]
+    [OpenApiOperation("GetCaseRolesForCaseService")]
     [ProducesResponseType(typeof(List<CaseRoleResponseV2>), (int) HttpStatusCode.OK)]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [MapToApiVersion("2.0")]
-    public async Task<IActionResult> GetCaseRolesForCaseType(string serviceId)
+    public async Task<IActionResult> GetCaseRolesForCaseService(string serviceId)
     {
         var query = new GetCaseRolesForCaseServiceQuery(serviceId);
         var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(query);
@@ -46,11 +46,11 @@ public class CaseTypesController : Controller
     /// <param name="caseRoleName">Hearing case role</param>
     /// <returns>Available hearing roles for given case role</returns>
     [HttpGet("{serviceId}/caseroles/{caseRoleName}/hearingroles")]
-    [OpenApiOperation("GetHearingRolesForCaseRole")]
+    [OpenApiOperation("GetHearingRolesForCaseRoleV2")]
     [ProducesResponseType(typeof(List<HearingRoleResponseV2>), (int) HttpStatusCode.OK)]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [MapToApiVersion("2.0")]
-    public async Task<IActionResult> GetHearingRolesForCaseRole(string serviceId, string caseRoleName)
+    public async Task<IActionResult> GetHearingRolesForCaseRoleV2(string serviceId, string caseRoleName)
     {            
         var query = new GetCaseRolesForCaseServiceQuery(serviceId);
         var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(query);
