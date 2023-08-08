@@ -4,18 +4,6 @@ Feature: Persons
   As an api service
   I want to be able to retrieve persons stored in the system
 
-  Scenario: Get person by contact email search term
-    Given I have a get person by contact email search term request
-    When I send the request to the endpoint
-    Then the response should have the status OK and success status True
-    And persons details should be retrieved
-
-  Scenario: Get person by contact email search term, case insensitive
-    Given I have a get person by contact email search term request that case insensitive
-    When I send the request to the endpoint
-    Then the response should have the status OK and success status True
-    And persons details should be retrieved
-
   Scenario: Get person suitability answers for invalid username
     Given I have a get person suitability answers by username request with an invalid username
     When I send the request to the endpoint

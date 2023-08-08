@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

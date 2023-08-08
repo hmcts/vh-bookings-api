@@ -1,15 +1,13 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain;
 using BookingsApi.IntegrationTests.Contexts;
-using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
+using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 
 namespace BookingsApi.IntegrationTests.Steps
 {

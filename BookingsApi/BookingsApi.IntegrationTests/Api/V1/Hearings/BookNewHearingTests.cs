@@ -1,15 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations.V1;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 using Testing.Common.Builders.Api.V1.Request;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;

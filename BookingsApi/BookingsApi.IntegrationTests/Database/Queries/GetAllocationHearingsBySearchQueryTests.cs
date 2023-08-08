@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
 using NuGet.Packaging;
-using NUnit.Framework;
 using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;

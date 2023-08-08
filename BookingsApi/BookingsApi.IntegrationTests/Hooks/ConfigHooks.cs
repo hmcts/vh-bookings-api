@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
@@ -7,8 +6,6 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.IntegrationTests.Contexts;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
 using GST.Fake.Authentication.JwtBearer;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +17,7 @@ using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Stubs;
 using ConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
+using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 using TestData = Testing.Common.Configuration.TestData;
 
 namespace BookingsApi.IntegrationTests.Hooks

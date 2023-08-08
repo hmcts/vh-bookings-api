@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL;
@@ -9,14 +7,10 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using BookingsApi.IntegrationTests.Helper;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 

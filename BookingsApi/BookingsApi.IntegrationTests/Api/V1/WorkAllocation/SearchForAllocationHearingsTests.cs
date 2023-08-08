@@ -1,16 +1,9 @@
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Helper;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkAllocation;
 
@@ -80,7 +73,7 @@ public class SearchForAllocationHearingsTests: ApiTest
     [TearDown]
     public async Task TearDown()
     {
-        await Hooks.ClearJusticeUsersAsync();
+        await Hooks.ClearSeededJusticeUsersAsync();
         await Hooks.ClearSeededHearings();
     }
 }

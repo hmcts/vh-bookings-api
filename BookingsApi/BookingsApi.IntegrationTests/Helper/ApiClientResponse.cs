@@ -1,5 +1,4 @@
 using System.Net.Http;
-using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 
 namespace BookingsApi.IntegrationTests.Helper

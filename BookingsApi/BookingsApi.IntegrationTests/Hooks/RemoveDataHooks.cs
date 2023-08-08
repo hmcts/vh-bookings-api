@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
@@ -11,6 +10,7 @@ using GST.Fake.Authentication.JwtBearer;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
+using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 
 namespace BookingsApi.IntegrationTests.Hooks
 {

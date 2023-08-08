@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
-using BookingsApi.DAL;
-using BookingsApi.IntegrationTests.Helper;
+﻿using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
 using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database
@@ -36,7 +33,7 @@ namespace BookingsApi.IntegrationTests.Database
             await Hooks.ClearSeededHearings();
             await Hooks.ClearJudiciaryPersonsAsync();
             await Hooks.ClearJusticeUserRolesAsync();
-            await Hooks.ClearJusticeUsersAsync();
+            await Hooks.ClearSeededJusticeUsersAsync();
             await Hooks.ClearAllocationsAsync();
         }
     }

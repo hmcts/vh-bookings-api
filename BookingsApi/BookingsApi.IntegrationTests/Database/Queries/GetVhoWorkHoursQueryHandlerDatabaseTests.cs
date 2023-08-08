@@ -1,14 +1,11 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

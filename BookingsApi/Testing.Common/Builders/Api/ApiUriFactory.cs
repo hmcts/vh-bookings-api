@@ -132,6 +132,8 @@ namespace Testing.Common.Builders.Api
             public static string DeleteJusticeUser(Guid justiceUserId) => $"{ApiRoot}/{justiceUserId}";
             public static string RestoreJusticeUser => $"{ApiRoot}/restore";
             public static string EditJusticeUser => $"{ApiRoot}";
+            public static string GetJusticeUserByUsername(string username) => $"{ApiRoot}/GetJusticeUserByUsername?username={username}";
+            public static string GetJusticeUserList(string term, bool includeDeleted) => $"{ApiRoot}/GetJusticeUserList?term={term}&includeDeleted={includeDeleted.ToString()}";
         }
     }
 }
