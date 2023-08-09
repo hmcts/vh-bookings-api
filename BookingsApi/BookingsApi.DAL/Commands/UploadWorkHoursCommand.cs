@@ -5,8 +5,8 @@ namespace BookingsApi.DAL.Commands
 {
     public class UploadWorkHoursCommand : ICommand
     {
-        public List<UploadWorkHoursDto> UploadWorkHoursRequests { get; set; }
-        public List<string> FailedUploadUsernames { get; set; } = new List<string>();
+        public List<UploadWorkHoursDto> UploadWorkHoursRequests { get; }
+        public List<string> FailedUploadUsernames { get; } = new();
 
         public UploadWorkHoursCommand(List<UploadWorkHoursDto> uploadWorkHoursRequests)
         {
