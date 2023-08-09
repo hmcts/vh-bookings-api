@@ -1,4 +1,3 @@
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
 

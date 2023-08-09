@@ -1,9 +1,4 @@
-using System;
-using System.Linq;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers

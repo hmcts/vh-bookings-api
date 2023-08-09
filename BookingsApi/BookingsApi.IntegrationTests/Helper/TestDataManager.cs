@@ -1,20 +1,17 @@
-using System;
 using System.IO;
-using System.Linq;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Faker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using NuGet.Packaging;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Helper
@@ -55,7 +52,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
 
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
-            bool isTeamLead = false, bool isDeleted = false)
+            bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -84,18 +81,22 @@ namespace BookingsApi.IntegrationTests.Helper
                 justiceUser.AddRoles(vhoRole);
             }
 
-            await db.JusticeUsers.AddAsync(justiceUser);
-            // var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            // {
-            //     ContactEmail = userName,
-            //     Username = userName,
-            //     CreatedBy = "integration.test@test.com",
-            //     CreatedDate = DateTime.Now,
-            //     FirstName = firstName,
-            //     Lastname = lastName,
-            // });
+            if (initWorkHours)
+            {
+                justiceUser.VhoWorkHours.AddRange(new List<VhoWorkHours>()
+                {
+                    new() {DayOfWeekId = 1, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 2, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 3, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 4, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 5, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 6, StartTime = null, EndTime = null},
+                    new() {DayOfWeekId = 7, StartTime = null, EndTime = null},
 
-            // await SeedJusticeUsersRole(db, justiceUser.Entity, isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho);
+                });
+            }
+
+            await db.JusticeUsers.AddAsync(justiceUser);
             await db.SaveChangesAsync();
 
             _seededJusticeUserIds.Add(justiceUser.Id);
@@ -545,7 +546,10 @@ namespace BookingsApi.IntegrationTests.Helper
                 try
                 {
                     await using var db = new BookingsDbContext(_dbContextOptions);
-                    var justiceUser = await db.JusticeUsers.Include(x => x.JusticeUserRoles).IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
+                    var justiceUser = await db.JusticeUsers.Include(x => x.JusticeUserRoles)
+                        .Include(x=> x.VhoWorkHours)
+                        .Include(x=> x.VhoNonAvailability)
+                        .IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
                     if (justiceUser != null)
                     {
                         db.JusticeUsers.Remove(justiceUser);
@@ -559,6 +563,7 @@ namespace BookingsApi.IntegrationTests.Helper
                     TestContext.WriteLine(@$"Ignoring cleanup for Justice User: {id}. Does not exist.");
                 }
             }
+            _seededJusticeUserIds.Clear();
         }
 
         public async Task ClearAllJusticeUsersAsync()

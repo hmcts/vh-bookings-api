@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using BookingsApi.IntegrationTests.Models;
+﻿using BookingsApi.IntegrationTests.Models;
 using TechTalk.SpecFlow;
 
 namespace BookingsApi.IntegrationTests.Transformations

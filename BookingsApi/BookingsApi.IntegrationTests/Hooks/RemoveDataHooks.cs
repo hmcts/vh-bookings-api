@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;

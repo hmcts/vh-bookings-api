@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

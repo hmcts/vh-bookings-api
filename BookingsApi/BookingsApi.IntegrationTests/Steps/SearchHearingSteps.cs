@@ -1,9 +1,6 @@
-using System.Linq;
-using System.Net.Http;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Domain;
 using BookingsApi.IntegrationTests.Contexts;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;

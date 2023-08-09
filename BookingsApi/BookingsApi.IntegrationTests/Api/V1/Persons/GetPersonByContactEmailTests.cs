@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V1.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Persons;
 

@@ -1,5 +1,3 @@
-using System.Linq;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 

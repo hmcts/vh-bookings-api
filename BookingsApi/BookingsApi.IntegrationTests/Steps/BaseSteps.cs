@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using BookingsApi.DAL;
-using BookingsApi.IntegrationTests.Contexts;
+﻿using BookingsApi.IntegrationTests.Contexts;
 using Microsoft.EntityFrameworkCore;
 using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 

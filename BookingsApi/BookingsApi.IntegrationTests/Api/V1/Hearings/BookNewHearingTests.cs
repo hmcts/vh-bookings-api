@@ -1,8 +1,6 @@
-using System;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Validations.V1;
-using Microsoft.AspNetCore.Mvc;
 using Testing.Common.Builders.Api.V1.Request;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;

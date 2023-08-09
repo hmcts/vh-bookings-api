@@ -1,7 +1,5 @@
-using System;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain.Enumerations;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace BookingsApi.IntegrationTests.Api.V1.CancelBooking;

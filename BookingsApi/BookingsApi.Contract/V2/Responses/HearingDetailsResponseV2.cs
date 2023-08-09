@@ -46,11 +46,6 @@ public class HearingDetailsResponseV2
         ///     List of participants in hearing
         /// </summary>
         public List<ParticipantResponseV2> Participants { get; set; }
-        
-        /// <summary>
-        ///     List of telephone participants in the hearing
-        /// </summary>
-        public List<TelephoneParticipantResponse> TelephoneParticipants { get; set; }
 
         /// <summary>
         ///     The hearing room name at the hearing venue

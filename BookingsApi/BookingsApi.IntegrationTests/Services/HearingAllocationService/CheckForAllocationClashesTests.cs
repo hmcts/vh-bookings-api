@@ -1,7 +1,4 @@
-using System;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;

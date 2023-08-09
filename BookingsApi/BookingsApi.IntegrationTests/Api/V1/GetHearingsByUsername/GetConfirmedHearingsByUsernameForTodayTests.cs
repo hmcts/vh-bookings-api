@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
 

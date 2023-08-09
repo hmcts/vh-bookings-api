@@ -1,4 +1,3 @@
-using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;

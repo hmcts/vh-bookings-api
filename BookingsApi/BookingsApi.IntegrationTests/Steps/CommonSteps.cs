@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using BookingsApi.Domain.Enumerations;
+﻿using BookingsApi.Domain.Enumerations;
 using TechTalk.SpecFlow;
 
 namespace BookingsApi.IntegrationTests.Steps

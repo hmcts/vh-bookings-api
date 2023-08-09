@@ -1,12 +1,7 @@
-using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JusticeUserRole = BookingsApi.Contract.V1.Requests.Enums.JusticeUserRole;
 

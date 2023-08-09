@@ -1,8 +1,5 @@
-using System;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 

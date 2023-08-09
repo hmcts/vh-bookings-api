@@ -1,9 +1,7 @@
-﻿using System.Net.Http;
-using AcceptanceTests.Common.Configuration.Users;
+﻿using AcceptanceTests.Common.Configuration.Users;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.DAL;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.IntegrationTests.Contexts;
 using GST.Fake.Authentication.JwtBearer;

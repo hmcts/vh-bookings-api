@@ -1,7 +1,5 @@
-using System.Net.Http;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
-using BookingsApi.DAL;
 using GST.Fake.Authentication.JwtBearer;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
