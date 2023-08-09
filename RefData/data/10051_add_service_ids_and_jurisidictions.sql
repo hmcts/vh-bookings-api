@@ -18,7 +18,7 @@ BEGIN
 
     IF EXISTS(SELECT TOP 1 1 FROM CaseType WHERE Name = @name)
         BEGIN
-            UPDATE CaseType SET ServiceId = @serviceId, JurisdictionId = @jurisdictionId WHERE Name = @name
+            UPDATE CaseType SET ServiceId = @serviceId, JurisdictionId = @jurisdictionId, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = @name
         END
     ELSE
         BEGIN
