@@ -1,6 +1,4 @@
-﻿using BookingsApi.Domain.Enumerations;
-
-namespace BookingsApi.DAL.Queries
+﻿namespace BookingsApi.DAL.Queries
 {
     public class GetAllocationHearingsBySearchQuery : IQuery
     {

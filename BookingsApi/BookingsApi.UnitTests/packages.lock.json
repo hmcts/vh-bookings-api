@@ -3127,7 +3127,6 @@
         "type": "Project",
         "dependencies": {
           "BookingsApi.Common": "[1.0.0, )",
-          "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.Domain": "[1.0.0, )",
           "Microsoft.Data.SqlClient": "[5.0.0, )",
           "Microsoft.EntityFrameworkCore": "[6.0.9, )",

@@ -41,7 +41,16 @@ namespace BookingsApi.Controllers.V1
                 return BadRequest(ModelState);
             }
 
-            var uploadWorkHoursCommand = new UploadWorkHoursCommand(uploadWorkHoursRequests);
+            
+            var dto = uploadWorkHoursRequests.Select(request => 
+                new UploadWorkHoursDto(
+                    request.Username,
+                    request.WorkingHours.Select(workingHours => 
+                            new WorkHoursDto(workingHours.DayOfWeekId, 
+                                workingHours.StartTimeHour, workingHours.StartTimeMinutes, 
+                                workingHours.EndTimeHour, workingHours.EndTimeMinutes)).ToList()))
+                .ToList();
+            var uploadWorkHoursCommand = new UploadWorkHoursCommand(dto);
 
             await _commandHandler.Handle(uploadWorkHoursCommand);
 
@@ -56,12 +65,14 @@ namespace BookingsApi.Controllers.V1
         /// <returns>List of usernames that were not found</returns>
         [HttpPost("SaveNonWorkingHours")]
         [OpenApiOperation("SaveNonWorkingHours")]
-        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> SaveNonWorkingHours([FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
+        public async Task<IActionResult> SaveNonWorkingHours(
+            [FromBody] List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
         {
 
-            var validationResult = new UploadNonWorkingHoursRequestsValidation().ValidateRequests(uploadNonWorkingHoursRequests);
+            var validationResult =
+                new UploadNonWorkingHoursRequestsValidation().ValidateRequests(uploadNonWorkingHoursRequests);
 
             if (!validationResult.IsValid)
             {
@@ -69,13 +80,15 @@ namespace BookingsApi.Controllers.V1
                 return BadRequest(ModelState);
             }
 
-            var uploadNonWorkingHoursCommand = new UploadNonWorkingHoursCommand(uploadNonWorkingHoursRequests);
+            var dto = uploadNonWorkingHoursRequests.Select(request =>
+                new AddNonWorkHoursDto(request.Username, request.StartTime, request.EndTime)).ToList();
+            var uploadNonWorkingHoursCommand = new UploadNonWorkingHoursCommand(dto);
 
             await _commandHandler.Handle(uploadNonWorkingHoursCommand);
 
             return Ok(uploadNonWorkingHoursCommand.FailedUploadUsernames);
         }
-                
+
         /// <summary>
         /// Search for a vho and return with availability work hours
         /// </summary>
@@ -177,7 +190,9 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
                 return BadRequest(ModelState);
             }
-            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(userId, request.Hours);
+            
+            var dto = request.Hours.Select(r => new NonWorkHoursDto(r.Id, r.StartTime, r.EndTime)).ToList();
+            var updateNonWorkingHoursCommand = new UpdateNonWorkingHoursCommand(userId, dto);
             await _commandHandler.Handle(updateNonWorkingHoursCommand);
             
             return NoContent();
@@ -207,7 +222,7 @@ namespace BookingsApi.Controllers.V1
             }
             catch (NonWorkingHoursNotFoundException ex)
             {
-                ModelState.AddModelError(nameof(id), $"Id has not been found {nameof(id)}");
+                ModelState.AddModelError(nameof(id), ex.Message);
                 return NotFound(ModelState);
             }
         }

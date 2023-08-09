@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using System.Threading;
 using BookingsApi.Domain.Participants;
-using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.DAL
 {

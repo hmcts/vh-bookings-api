@@ -1,7 +1,6 @@
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.Domain.Configuration;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
 using Microsoft.Extensions.Logging;

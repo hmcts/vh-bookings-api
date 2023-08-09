@@ -1,14 +1,14 @@
-using BookingsApi.Contract.V1.Requests;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UploadNonWorkingHoursCommand : ICommand
     {
-        public List<UploadNonWorkingHoursRequest> UploadNonWorkingHoursRequests { get; set; }
+        public List<AddNonWorkHoursDto> UploadNonWorkingHoursRequests { get; set; }
         public List<string> FailedUploadUsernames { get; set; } = new List<string>();
 
-        public UploadNonWorkingHoursCommand(List<UploadNonWorkingHoursRequest> uploadNonWorkingHoursRequests)
+        public UploadNonWorkingHoursCommand(List<AddNonWorkHoursDto> uploadNonWorkingHoursRequests)
         {
             UploadNonWorkingHoursRequests = uploadNonWorkingHoursRequests;
         }

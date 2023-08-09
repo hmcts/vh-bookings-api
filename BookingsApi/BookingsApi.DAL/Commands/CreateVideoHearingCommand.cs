@@ -1,4 +1,3 @@
-using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Services;

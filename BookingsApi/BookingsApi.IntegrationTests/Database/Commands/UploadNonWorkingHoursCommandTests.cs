@@ -1,5 +1,5 @@
 using BookingsApi.DAL.Commands;
-using BookingsApi.Contract.V1.Requests;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -23,8 +23,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             var username = "dontexist@test.com";
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new AddNonWorkHoursDto(
                     username,
                     DateTime.Now,
                     DateTime.Now.AddDays(2)
@@ -57,13 +57,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserTwoNonWorkingHoursStartTime = new DateTime(2022, 2, 10, 9, 0, 0);
             var justiceUserTwoNonWorkingHoursEndTime = new DateTime(2022, 2, 11, 16, 30, 0);
 
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new(
                     justiceUserOne.Username,
                     justiceUserOneNonWorkingHoursStartTime,
                     justiceUserOneNonWorkingHoursEndTime
                 ),
-                new UploadNonWorkingHoursRequest(
+                new(
                     justiceUserTwo.Username,
                     justiceUserTwoNonWorkingHoursStartTime,
                     justiceUserTwoNonWorkingHoursEndTime
@@ -74,7 +74,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
 
             // Test user with existing non-working hours gets updated
-            requests[1].EndTime = requests[1].EndTime.AddHours(1);
+            requests[1] = new AddNonWorkHoursDto(requests[1].Username, requests[1].StartTime, requests[1].EndTime.AddHours(1));
 
             command = new UploadNonWorkingHoursCommand(requests);
 
@@ -82,8 +82,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
 
             var nonAvailabilities = _context.VhoNonAvailabilities;
-            var justiceUserOneNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUserOne.Id);
-            var justiceUserTwoNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUserTwo.Id);
+            var justiceUserOneNonWorkHours = nonAvailabilities.Single(x => x.JusticeUserId == justiceUserOne.Id);
+            var justiceUserTwoNonWorkHours = nonAvailabilities.Single(x => x.JusticeUserId == justiceUserTwo.Id);
 
             // Assert
             nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 2);
@@ -107,13 +107,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserNonWorkingHoursStartTime2 = new DateTime(2022, 2, 1);
             var justiceUserNonWorkingHoursEndTime2 = new DateTime(2022, 2, 11, 16, 30, 0);
 
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new (
                     justiceUser.Username,
                     justiceUserNonWorkingHoursStartTime1,
                     justiceUserNonWorkingHoursEndTime1
                 ),
-                new UploadNonWorkingHoursRequest(
+                new (
                     justiceUser.Username,
                     justiceUserNonWorkingHoursStartTime2,
                     justiceUserNonWorkingHoursEndTime2
@@ -129,7 +129,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
 
             var nonAvailabilities = _context.VhoNonAvailabilities;
-            var justiceUserNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUser.Id);
+            var justiceUserNonWorkHours = nonAvailabilities.Single(x => x.JusticeUserId == justiceUser.Id);
 
             // Assert
             nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 1);
@@ -164,13 +164,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing2.AllocatedTo.Should().NotBeNull();
             hearing2.AllocatedTo.Id.Should().Be(allocatedUser2.Id);
 
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new (
                     allocatedUser1.Username,
                     DateTime.Today.AddDays(1).AddHours(0).AddMinutes(0),
                     DateTime.Today.AddDays(1).AddHours(23).AddMinutes(0)
                 ),
-                new UploadNonWorkingHoursRequest(
+                new (
                     allocatedUser2.Username,
                     DateTime.Today.AddDays(1).AddHours(0).AddMinutes(0),
                     DateTime.Today.AddDays(1).AddHours(23).AddMinutes(0)

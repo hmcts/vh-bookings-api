@@ -1,5 +1,3 @@
-using BookingsApi.Domain.RefData;
-
 namespace BookingsApi.DAL.Mappings.RefData
 {
     public class HearingTypeMap : IEntityTypeConfiguration<HearingType>

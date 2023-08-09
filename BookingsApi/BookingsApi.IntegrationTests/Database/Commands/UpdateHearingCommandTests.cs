@@ -119,7 +119,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
+            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
             _context.Allocations.Add(new Allocation
             {
                 HearingId = seededHearing.Id,

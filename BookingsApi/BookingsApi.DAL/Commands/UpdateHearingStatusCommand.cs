@@ -1,5 +1,3 @@
-using BookingsApi.Domain.Enumerations;
-
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateHearingStatusCommand : ICommand

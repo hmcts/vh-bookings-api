@@ -1,5 +1,4 @@
-﻿using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.Participants;
+﻿using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.DAL.Mappings
 {

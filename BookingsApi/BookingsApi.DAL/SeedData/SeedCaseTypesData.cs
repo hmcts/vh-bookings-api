@@ -1,6 +1,3 @@
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
-
 namespace BookingsApi.DAL.SeedData
 {
     public class SeedCaseTypesData

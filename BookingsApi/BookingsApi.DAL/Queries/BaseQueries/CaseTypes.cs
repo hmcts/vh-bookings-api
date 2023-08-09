@@ -1,5 +1,3 @@
-using BookingsApi.Domain.RefData;
-
 namespace BookingsApi.DAL.Queries.BaseQueries;
 
 public static class CaseTypes

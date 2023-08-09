@@ -3,6 +3,7 @@
 global using System;
 global using System.Collections;
 global using System.Collections.Generic;
+global using System.Globalization;
 global using System.Linq;
 global using System.Runtime.Serialization;
 global using System.Threading.Tasks;
@@ -10,6 +11,8 @@ global using BookingsApi.DAL.Commands.Core;
 global using BookingsApi.DAL.Exceptions;
 global using BookingsApi.DAL.Queries.Core;
 global using BookingsApi.Domain;
+global using BookingsApi.Domain.Enumerations;
+global using BookingsApi.Domain.RefData;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Design;
 global using Microsoft.EntityFrameworkCore.Metadata;

@@ -1,5 +1,3 @@
-using BookingsApi.Domain.RefData;
-
 namespace BookingsApi.DAL.Queries
 {
     public class GetAllCaseTypesQuery : IQuery

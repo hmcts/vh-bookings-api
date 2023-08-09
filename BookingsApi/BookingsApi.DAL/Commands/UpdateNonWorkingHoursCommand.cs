@@ -1,4 +1,4 @@
-using BookingsApi.Contract.V1.Requests;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
@@ -6,9 +6,9 @@ namespace BookingsApi.DAL.Commands
     public class UpdateNonWorkingHoursCommand : ICommand
     {
         public Guid JusticeUserId { get; set; }
-        public IList<NonWorkingHours> Hours { get; set; }
+        public IList<NonWorkHoursDto> Hours { get; set; }
 
-        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkingHours> hours)
+        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkHoursDto> hours)
         {
             JusticeUserId = justiceUserId;
             Hours = hours;
