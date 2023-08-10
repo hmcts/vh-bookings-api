@@ -29,6 +29,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("SaveWorkHours")]
         [OpenApiOperation("SaveWorkHours")]
         [ProducesResponseType(typeof(List<string>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> SaveWorkHours([FromBody] List<UploadWorkHoursRequest> uploadWorkHoursRequests)
         {
@@ -38,7 +39,7 @@ namespace BookingsApi.Controllers.V1
             if (!validationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             

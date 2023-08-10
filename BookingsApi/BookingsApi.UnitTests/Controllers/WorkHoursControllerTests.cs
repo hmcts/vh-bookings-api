@@ -57,58 +57,6 @@ namespace BookingsApi.UnitTests.Controllers
             
             _controller = new WorkHoursController(_commandHandlerMock.Object, _queryHandlerMock.Object);
         }
-
-        [Test]
-        public async Task SaveWorkHours_ReturnsErrors_WhenValidationFails()
-        {
-            // Arrange
-            var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
-            {
-                new UploadWorkHoursRequest
-                {
-                    Username = _username,
-                    WorkingHours = new List<WorkingHours> {
-                        new WorkingHours(1, null, 1, 1, 1)
-                    }
-                }
-            };
-
-            // Act
-            var response = (await _controller.SaveWorkHours(uploadWorkAllocationRequests)) as BadRequestObjectResult;
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
-        }
-
-        [Test]
-        public async Task SaveWorkHours_CalllsUploadWorkAllocationCommand_AndReturnsResult()
-        {
-            // Arrange
-            var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
-            {
-                new()
-                {
-                    Username = _username,
-                    WorkingHours = new List<WorkingHours> {
-                        new(1, 9, 0, 17, 0),
-                        new(2, 9, 0, 17, 0),
-                        new(3, 9, 0, 17, 0),
-                        new(4, 9, 0, 17, 0),
-                        new(5, 9, 0, 17, 0),
-                        new(6, null, null, null, null),
-                        new(7, null, null, null, null)
-                    }
-                }
-            };
-
-            // Act
-            var response = (await _controller.SaveWorkHours(uploadWorkAllocationRequests)) as OkObjectResult;
-
-            // Assert
-            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadWorkHoursCommand>()), Times.Once);
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<List<string>>(response.Value);
-        }
         
         [Test]
         public async Task GetVhoWorkHours_InvokesGetVhoWorkAllocation_AndReturnsResult()

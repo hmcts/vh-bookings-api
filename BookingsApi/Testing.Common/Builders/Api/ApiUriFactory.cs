@@ -126,6 +126,12 @@ namespace Testing.Common.Builders.Api
 
             public static string AllocateHearingAutomatically(Guid hearingId) => $"{ApiRoot}/{hearingId}/allocations/automatic";
         }
+
+        public static class WorkHoursEndpoints
+        {
+            private const string ApiRoot = "work-hours";
+            public static string SaveWorkHours => $"{ApiRoot}/SaveWorkHours";
+        }
         
         public static class JusticeUserEndpoints
         {
