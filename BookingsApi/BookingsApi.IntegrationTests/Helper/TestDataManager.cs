@@ -9,7 +9,6 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Faker;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NuGet.Packaging;
 using Testing.Common.Builders.Domain;

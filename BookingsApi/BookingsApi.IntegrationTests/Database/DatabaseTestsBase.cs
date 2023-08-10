@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database
@@ -34,6 +33,13 @@ namespace BookingsApi.IntegrationTests.Database
             await Hooks.ClearJusticeUserRolesAsync();
             await Hooks.ClearSeededJusticeUsersAsync();
             await Hooks.ClearAllocationsAsync();
+
+            await Cleanup();
+        }
+
+        protected virtual Task Cleanup()
+        {
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,7 +1,6 @@
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
