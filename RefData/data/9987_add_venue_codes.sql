@@ -7,7 +7,9 @@ As
 BEGIN
     IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = @venueName)
         BEGIN
-            Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, 9999, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
+            DECLARE @id int = (SELECT MAX(Id) FROM HearingVenue) + 1
+
+            Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, @id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
         END
 END
 GO;
