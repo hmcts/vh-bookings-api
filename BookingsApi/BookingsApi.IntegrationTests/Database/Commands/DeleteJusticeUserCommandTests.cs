@@ -73,48 +73,24 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             
             // Justice user
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "db@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "Test",
-                Lastname = "User",
-            });
-            var userRole = db.UserRoles.First(e => e.Id == (int)UserRoleId.Vho);
-            db.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
+            var justiceUser = await Hooks.SeedJusticeUser(username, "Test", "User", isTeamLead: false, initWorkHours: true);
+            db.Attach(justiceUser);
             
-            // Work hours
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 1, 8, 0, 0),
+                new DateTime(2022, 1, 1, 17, 0, 0)
+                );
             
-            // Non availabilities
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 1, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 1, 17, 0, 0)
-            });
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 2, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 2, 17, 0, 0)
-            });
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 2, 8, 0, 0),
+                new DateTime(2022, 1, 2, 17, 0, 0)
+            );
             
             // Allocations
-            _hearing.AllocateVho(justiceUser.Entity);
-
-            Hooks.AddJusticeUserForCleanup(justiceUser.Entity.Id);
+            _hearing.AllocateVho(justiceUser);
             await db.SaveChangesAsync();
 
-            return justiceUser.Entity;
+            return justiceUser;
         }
     }
 }

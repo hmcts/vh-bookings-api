@@ -8,7 +8,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
     public class RestoreJusticeUserTests : ApiTest
     {
         private RestoreJusticeUserRequest _request;
-        private Guid? _justiceUserId;
 
         [Test]
         public async Task Should_restore_justice_user()
@@ -80,25 +79,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
                 .Be(RestoreJusticeUserRequestValidation.NoUsernameErrorMessage);
         }
         
-        [TearDown]
-        public new async Task TearDown()
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            
-            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
-            if(justiceUserRoles.Any())
-                db.RemoveRange(justiceUserRoles);
-
-            var justiceUser = db.JusticeUsers.IgnoreQueryFilters().FirstOrDefault(x => x.Id == _justiceUserId);
-            if (justiceUser != null)
-            {
-                db.Remove(justiceUser);
-                await db.SaveChangesAsync();
-            }
-            
-            _justiceUserId = null;
-        }
-
         private async Task<JusticeUser> SeedDeletedJusticeUser(string username)
         {
             var justiceUser = await Hooks.SeedJusticeUser(username, "ApiTest", "User", initWorkHours: true);
@@ -108,7 +88,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             justiceUser.Delete();
             await db.SaveChangesAsync();
             
-            _justiceUserId = justiceUser.Id;
             return justiceUser;
         }
         
