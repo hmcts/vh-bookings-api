@@ -15,8 +15,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_Return_List_Of_Hearings_For_Notifcations()
         {
-            var groupId = Guid.NewGuid();
-
             var caseNames = new List<string>
             {
                 "Test Case"

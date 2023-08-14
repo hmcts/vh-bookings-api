@@ -182,8 +182,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_Valid_Request_Returns_NoContent()
         {
             // Arrange
-            var username = "test.user@hearings.reform.hmcts.net";
-
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
@@ -228,8 +226,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_EndTime_Before_StartTime_Returns_BadRequest()
         {
             // Arrange
-            var username = "test.user@hearings.reform.hmcts.net";
-            
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
@@ -292,8 +288,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_EndTime_EqualTo_StartTime_Returns_BadRequest()
         {
             // Arrange
-            var username = "test.user@hearings.reform.hmcts.net";
-            
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
@@ -427,7 +421,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_Overlapping_Times_Returns_BadRequest()
         {
             // Arrange
-            var username = "test.user@hearings.reform.hmcts.net";
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>
@@ -478,7 +471,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_Empty_Hours_List_In_Request_BadRequest()
         {
             // Arrange
-            var username = "test.user@hearings.reform.hmcts.net";
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = new List<NonWorkingHours>()
@@ -499,7 +491,6 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task UpdateVhoNonAvailabilityHours_With_Null_Hours_List_In_Request_BadRequest()
         {
             // Arrange
-            var username = "test.user@hearings.reform.hmcts.net";
             var request = new UpdateNonWorkingHoursRequest
             {
                 Hours = null

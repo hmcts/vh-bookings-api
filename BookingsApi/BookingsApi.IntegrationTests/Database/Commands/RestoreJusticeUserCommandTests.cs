@@ -1,6 +1,5 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
-using BookingsApi.Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -65,7 +64,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<JusticeUserNotFoundException>(async () =>
             {
                 await _commandHandler.Handle(command);
-            }).Message.Should().Be($"Justice user with id {id} not found");
+            })!.Message.Should().Be($"Justice user with id {id} not found");
         }
 
         [TearDown]
@@ -82,57 +81,30 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             
             // Justice user
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "db@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "Test",
-                Lastname = "User"
-            });
+            var justiceUser = await Hooks.SeedJusticeUser(username, "Test", "User", isTeamLead: false, isDeleted: true,
+                initWorkHours: true);
+            db.Attach(justiceUser);
+
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 1, 8, 0, 0),
+                new DateTime(2022, 1, 1, 17, 0, 0)
+                );
             
-            // Work hours
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 2, 8, 0, 0),
+                new DateTime(2022, 1, 2, 17, 0, 0)
+            );
             
-            // Non availabilities
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 1, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 1, 17, 0, 0)
-            });
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 2, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 2, 17, 0, 0)
-            });
+            hearing.AllocateVho(justiceUser);
+            
+            // call delete again to clear non availability hours
+            justiceUser.Delete();
             
             // Allocations
-            _hearing.AllocateVho(justiceUser.Entity);
-
+            
             await db.SaveChangesAsync();
 
-            var newUser = db.JusticeUsers
-                // .IgnoreQueryFilters()
-                .Where(x => x.Id == justiceUser.Entity.Id)
-                .Include(x => x.Allocations).ThenInclude(x => x.Hearing)
-                .Include(x => x.VhoWorkHours)
-                .Include(x => x.VhoNonAvailability)
-                .Include(x => x.JusticeUserRoles).ThenInclude(x => x.UserRole)
-                .FirstOrDefault();
-            
-            newUser.Delete();
-            await db.SaveChangesAsync();
-            
-            return newUser;
+            return justiceUser;
         }
     }
 }
