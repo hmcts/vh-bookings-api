@@ -1,5 +1,6 @@
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
+using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using DayOfWeek = System.DayOfWeek;
 
@@ -218,24 +219,16 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_exclude_deleted_work_hours()
     {
         // Arrange
+        var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
         var justiceUser =
             await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true, initWorkHours: false);
         await Hooks.AddAllocation(_seededHearing1, justiceUser);
-
-        var deletedWorkHours = new List<VhoWorkHours>();
         
         for (var i = 1; i <= 7; i++)
         {
-            deletedWorkHours.Add(new VhoWorkHours
-            {
-                DayOfWeekId = i, 
-                StartTime = new TimeSpan(10, 0, 0), 
-                EndTime = new TimeSpan(18, 0, 0),
-                JusticeUserId = justiceUser.Id
-            });
+            var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+            justiceUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(10, 0, 0), new TimeSpan(18, 0, 0));
         }
-        
-        _context.VhoWorkHours.AddRange(deletedWorkHours);
 
         await _context.SaveChangesAsync();
         
@@ -247,20 +240,13 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         
         justiceUser.Restore();
         
-        var nonDeletedWorkHours = new List<VhoWorkHours>();
-        
         for (var i = 1; i <= 7; i++)
         {
-            nonDeletedWorkHours.Add(new VhoWorkHours
-            {
-                DayOfWeekId = i, 
-                StartTime = new TimeSpan(8, 0, 0), 
-                EndTime = new TimeSpan(17, 0, 0),
-                JusticeUserId = justiceUser.Id
-            });
+            var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+            justiceUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(8, 0, 0), new TimeSpan(17, 0, 0));
         }
-        
-        _context.VhoWorkHours.AddRange(nonDeletedWorkHours);
+
+        var nonDeletedWorkHours = justiceUser.VhoWorkHours.Where(x => !x.Deleted).ToList();
 
         await _context.SaveChangesAsync();
 

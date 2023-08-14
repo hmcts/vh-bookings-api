@@ -60,12 +60,8 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 CreatedBy = "integration.test@test.com",
                 CreatedDate = DateTime.UtcNow,
-
             };
-            if (isDeleted)
-            {
-                justiceUser.Delete();
-            }
+            
             
             var userRoles = await db.UserRoles.ToListAsync();
 
@@ -94,6 +90,11 @@ namespace BookingsApi.IntegrationTests.Helper
                     new() {DayOfWeekId = 7, StartTime = null, EndTime = null},
 
                 });
+            }
+            
+            if (isDeleted)
+            {
+                justiceUser.Delete();
             }
 
             await db.JusticeUsers.AddAsync(justiceUser);

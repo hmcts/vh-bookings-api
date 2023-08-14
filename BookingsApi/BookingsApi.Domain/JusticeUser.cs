@@ -40,6 +40,27 @@ namespace BookingsApi.Domain
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
         public virtual IList<Allocation> Allocations { get; protected set; }
 
+        public void AddOrUpdateWorkHour(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+        {
+            var existingHour = VhoWorkHours.SingleOrDefault(hours => !hours.Deleted && hours.DayOfWeekId == dayOfWeek.Id);
+            if (existingHour == null)
+            {
+                VhoWorkHours.Add(new VhoWorkHours()
+                {
+                    DayOfWeek = dayOfWeek,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    JusticeUser = this
+                });
+            }
+            else
+            {
+                existingHour.StartTime = startTime;
+                existingHour.EndTime = endTime;
+                UpdatedDate = DateTime.UtcNow;
+            }
+        }
+        
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
             return IsDateBetweenWorkingHours(startDate, endDate, configuration) &&

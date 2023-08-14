@@ -3,6 +3,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
@@ -73,21 +74,18 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_deallocate_when_scheduled_datetime_changes_and_user_is_not_available_due_to_work_hours()
         {
+            var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
             await Hooks.AddAllocation(seededHearing, allocatedUser);
-            
+
+            _context.Attach(allocatedUser); // re-attach to avoid another query to db
             for (var i = 1; i <= 7; i++)
             {
-                _context.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i,
-                    StartTime = new TimeSpan(1, 0, 0),
-                    EndTime = new TimeSpan(2, 0, 0),
-                    JusticeUserId = allocatedUser.Id
-                });
+                var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+                allocatedUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(1, 0, 0), new TimeSpan(2, 0, 0));
             }
 
             await _context.SaveChangesAsync();
@@ -148,6 +146,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_not_deallocate_when_scheduled_datetime_changes_and_user_is_available_due_to_work_hours()
         {
+            var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
@@ -156,13 +155,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             
             for (var i = 1; i <= 7; i++)
             {
-                _context.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i,
-                    StartTime = new TimeSpan(0, 0, 0),
-                    EndTime = new TimeSpan(23, 59, 59),
-                    JusticeUserId = allocatedUser.Id
-                });
+                var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+                allocatedUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(0, 0, 0), new TimeSpan(23, 59, 59));
             }
             _context.VhoNonAvailabilities.Add(new VhoNonAvailability
             {
