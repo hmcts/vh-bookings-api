@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Validations.V2;

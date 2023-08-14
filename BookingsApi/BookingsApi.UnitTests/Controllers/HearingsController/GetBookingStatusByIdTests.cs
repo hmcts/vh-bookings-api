@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;

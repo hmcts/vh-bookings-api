@@ -1,4 +1,3 @@
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Validations;
 

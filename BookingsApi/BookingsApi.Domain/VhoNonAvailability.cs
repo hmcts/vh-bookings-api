@@ -19,6 +19,12 @@ namespace BookingsApi.Domain
             Id = id;
         }
         public bool Deleted { get; set; }
+        
+        public void Update(DateTime startTime, DateTime endTime)
+        {
+            StartTime = startTime;
+            EndTime = endTime;
+        }
 
         public void Delete()
         {

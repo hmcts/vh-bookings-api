@@ -101,35 +101,15 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
 
         private async Task<JusticeUser> SeedDeletedJusticeUser(string username)
         {
+            var justiceUser = await Hooks.SeedJusticeUser(username, "ApiTest", "User", initWorkHours: true);
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-  
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "deletejusticeuser.test@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "ApiTest",
-                Lastname = "User",
-            });
-            
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
-            
-            justiceUser.Entity.Delete();
-            
-            await db.SaveChangesAsync();
 
-            _justiceUserId = justiceUser.Entity.Id;
+            db.Attach(justiceUser);
+            justiceUser.Delete();
+            await db.SaveChangesAsync();
             
-            return justiceUser.Entity;
+            _justiceUserId = justiceUser.Id;
+            return justiceUser;
         }
         
         private static RestoreJusticeUserRequest BuildValidRestoreJusticeUserRequest(JusticeUser justiceUser)

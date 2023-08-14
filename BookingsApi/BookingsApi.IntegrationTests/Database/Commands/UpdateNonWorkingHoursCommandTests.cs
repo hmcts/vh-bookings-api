@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -49,7 +50,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(_justiceUser.Id, newHours));
             
             // Assert
-            var nonWorkingHours = _context.VhoNonAvailabilities;
+            var nonWorkingHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability).First(x =>x.Id == _justiceUser.Id).VhoNonAvailability;
             
             var updatedHour1 = nonWorkingHours.First(h => h.Id == _hourIdMappings[1]);
             updatedHour1.StartTime.Should().Be(newHour1.StartTime);
@@ -65,9 +66,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             await SeedNonWorkingHours();
-            
+
             var justiceUserId = _justiceUser.Id;
-            var originalNonWorkingHoursLength = _context.VhoNonAvailabilities.Where(x => x.JusticeUserId == justiceUserId).Count();
+            var originalNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count();
 
             var newHour1 = new
             {
@@ -77,17 +79,18 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var newHours = new List<NonWorkHoursDto>
             {
-                new(-1, newHour1.StartTime,newHour1.EndTime)
+                new(-1, newHour1.StartTime, newHour1.EndTime)
             };
 
             // Act
             await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(justiceUserId, newHours));
-            var newNonWorkingHoursLength = _context.VhoNonAvailabilities.Count(x => x.JusticeUserId == justiceUserId);
+            var newNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count(x => x.JusticeUserId == justiceUserId);
 
             // Assert
             Assert.AreEqual(originalNonWorkingHoursLength + 1, newNonWorkingHoursLength);
         }
-        
+
         [Test]
         public async Task Should_deallocate_hearings_when_users_no_longer_available()
         {
@@ -140,18 +143,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 new(2, new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc))
             };
 
+            _context.Attach(_justiceUser);
             foreach (var hour in existingHours)
             {
-                var vhoNonWorkingHour = _context.VhoNonAvailabilities.Add(new VhoNonAvailability
-                {
-                    JusticeUser = _context.JusticeUsers.FirstOrDefault(u => u.Id == _justiceUser.Id),
-                    StartTime = hour.StartTime,
-                    EndTime = hour.EndTime
-                });
+                _justiceUser.AddOrUpdateNonAvailability(hour.StartTime, hour.EndTime);
 
                 await _context.SaveChangesAsync();
 
-                _hourIdMappings[hour.Id] = vhoNonWorkingHour.Entity.Id;
+                _hourIdMappings[hour.Id] = _justiceUser.VhoNonAvailability.First(x => x.StartTime == hour.StartTime && x.EndTime == hour.EndTime).Id;
             }
         }
     }

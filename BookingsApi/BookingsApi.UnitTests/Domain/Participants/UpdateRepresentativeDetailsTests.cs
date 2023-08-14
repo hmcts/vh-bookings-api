@@ -1,6 +1,5 @@
 ﻿using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
-using System;
 
 namespace BookingsApi.UnitTests.Domain.Participants
 {

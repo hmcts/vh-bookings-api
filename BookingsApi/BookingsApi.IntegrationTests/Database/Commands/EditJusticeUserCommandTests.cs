@@ -34,7 +34,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         var justiceUser = db.JusticeUsers
             .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
             .FirstOrDefault(ju => ju.Username == command.Username);
-        Hooks._seededJusticeUserIds.Add(justiceUser.Id);
+        Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         // Assert
         justiceUser.Should().NotBeNull();
         justiceUser.JusticeUserRoles.Select(e => e.UserRole.Id).Should().Contain((int)roleId);

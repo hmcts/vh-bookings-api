@@ -10,14 +10,14 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
     public class EditJusticeUserTests : ApiTest
     {
         private EditJusticeUserRequest _request;
-        private Guid? _justiceUserId;
-        
+
         [Test]
         public async Task should_edit_justice_user()
         {
             // arrange
             using var client = Application.CreateClient();
-            var justiceUserToEdit = await SeedJusticeUser("api_test_edit_justice_user@test.com");
+            var justiceUserToEdit = await Hooks.SeedJusticeUser("api_test_edit_justice_user@test.com", "ApiTest",
+                "User", initWorkHours: true);
             _request = BuildValidEditJusticeUserRequest(justiceUserToEdit);
             
             // act
@@ -33,7 +33,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var justiceUser = db.JusticeUsers
                 .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
-                .FirstOrDefault(x => x.Username == _request.Username);
+                .First(x => x.Username == _request.Username);
             
             justiceUser.Should().NotBeNull();
             justiceUser.JusticeUserRoles.Should().Contain(jur => jur.UserRole.IsVhTeamLead);
@@ -81,23 +81,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
-        [TearDown]
-        public async Task TearDown()
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);            
-            
-            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
-            if(justiceUserRoles.Any())
-                db.RemoveRange(justiceUserRoles);
-
-            var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Id == _justiceUserId);
-            if (justiceUser != null)
-            {
-                db.Remove(justiceUser);
-                await db.SaveChangesAsync();
-            }
-        }
-        
         private static EditJusticeUserRequest BuildValidEditJusticeUserRequest(JusticeUser justiceUser)
         {
             return Builder<EditJusticeUserRequest>.CreateNew()
@@ -105,37 +88,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
                 .With(x=> x.Id, justiceUser.Id)
                 .With(x => x.Roles = new List<JusticeUserRole>() { JusticeUserRole.VhTeamLead })
                 .Build();
-        }
-
-        private async Task<JusticeUser> SeedJusticeUser(string username)
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-  
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "editjusticeuser.test@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "ApiTest",
-                Lastname = "User",
-            });
-            
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
-            
-            await db.SaveChangesAsync();
-
-            _justiceUserId = justiceUser.Entity.Id;
-            
-            return justiceUser.Entity;
         }
     }
 }

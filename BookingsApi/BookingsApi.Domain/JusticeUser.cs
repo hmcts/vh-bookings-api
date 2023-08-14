@@ -60,7 +60,28 @@ namespace BookingsApi.Domain
                 UpdatedDate = DateTime.UtcNow;
             }
         }
-        
+
+        public void AddOrUpdateNonAvailability(DateTime startTime, DateTime endTime)
+        {
+            var vhoNonWorkingHours =
+                VhoNonAvailability.SingleOrDefault(x => x.StartTime == startTime || x.EndTime == endTime);
+
+            if (vhoNonWorkingHours == null)
+            {
+                VhoNonAvailability.Add(new VhoNonAvailability()
+                {
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    JusticeUser = this
+                });
+            }
+            else
+            {
+                vhoNonWorkingHours.StartTime = startTime;
+                vhoNonWorkingHours.EndTime = endTime;
+            }
+        }
+
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
             return IsDateBetweenWorkingHours(startDate, endDate, configuration) &&

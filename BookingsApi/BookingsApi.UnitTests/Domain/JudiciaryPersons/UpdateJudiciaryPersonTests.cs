@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Domain;
 
 namespace BookingsApi.UnitTests.Domain.JudiciaryPersons

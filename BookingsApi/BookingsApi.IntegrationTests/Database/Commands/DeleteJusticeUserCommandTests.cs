@@ -111,7 +111,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Allocations
             _hearing.AllocateVho(justiceUser.Entity);
 
-            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            Hooks.AddJusticeUserForCleanup(justiceUser.Entity.Id);
             await db.SaveChangesAsync();
 
             return justiceUser.Entity;

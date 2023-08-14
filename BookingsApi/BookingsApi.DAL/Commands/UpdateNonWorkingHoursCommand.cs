@@ -28,25 +28,23 @@ namespace BookingsApi.DAL.Commands
         
         public async Task Handle(UpdateNonWorkingHoursCommand command)
         {
+            var justiceUser = await _context.JusticeUsers.Include(x=> x.VhoNonAvailability).FirstOrDefaultAsync(x => x.Id == command.JusticeUserId);
+            if (justiceUser == null)
+            {
+                throw new JusticeUserNotFoundException(command.JusticeUserId);
+                
+            }
             foreach (var hour in command.Hours)
             {
-                var nonWorkingHour = _context.VhoNonAvailabilities.SingleOrDefault(a => a.Id == hour.Id);
-
-                var isNewNonWorkingHourEntry = nonWorkingHour == null;
-
-                if (isNewNonWorkingHourEntry)
-                {
-                    nonWorkingHour = new VhoNonAvailability();
-                    nonWorkingHour.JusticeUserId = command.JusticeUserId;
+                var nonWorkingHour = justiceUser.VhoNonAvailability.SingleOrDefault(a => a.Id == hour.Id);
+                if (nonWorkingHour == null)
+                { 
+                    justiceUser.AddOrUpdateNonAvailability(hour.StartTime, hour.EndTime);   
                 }
-                
-                nonWorkingHour.StartTime = hour.StartTime;
-                nonWorkingHour.EndTime = hour.EndTime;
-
-                if (isNewNonWorkingHourEntry)
-                    _context.Add(nonWorkingHour);
                 else
-                    _context.Update(nonWorkingHour);
+                {
+                    nonWorkingHour.Update(hour.StartTime, hour.EndTime);
+                }
             }
             
             await _hearingAllocationService.DeallocateFromUnavailableHearings(command.JusticeUserId);

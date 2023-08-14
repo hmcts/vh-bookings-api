@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;

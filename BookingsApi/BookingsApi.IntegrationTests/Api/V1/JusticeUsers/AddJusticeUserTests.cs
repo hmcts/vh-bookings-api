@@ -77,7 +77,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
         }
 
         [TearDown]
-        public async Task TearDown()
+        public new async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             

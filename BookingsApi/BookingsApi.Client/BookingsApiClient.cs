@@ -1233,7 +1233,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id);
+        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? nonAvailabilityId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1241,7 +1241,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? nonAvailabilityId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get case roles for a case service type
@@ -9601,9 +9601,9 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id)
+        public virtual System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? nonAvailabilityId)
         {
-            return DeleteVhoNonAvailabilityHoursAsync(id, System.Threading.CancellationToken.None);
+            return DeleteVhoNonAvailabilityHoursAsync(nonAvailabilityId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -9612,13 +9612,13 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? nonAvailabilityId, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability?");
-            if (id != null)
+            if (nonAvailabilityId != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("id") + "=").Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("nonAvailabilityId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(nonAvailabilityId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 

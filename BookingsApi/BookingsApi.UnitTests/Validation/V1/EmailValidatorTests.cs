@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Validations;
 
 namespace BookingsApi.UnitTests.Validation.V1

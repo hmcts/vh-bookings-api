@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using BookingsApi.Controllers;
+﻿using BookingsApi.Controllers;
 using BookingsApi.Controllers.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;

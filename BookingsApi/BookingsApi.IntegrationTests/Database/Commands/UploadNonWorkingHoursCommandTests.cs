@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -45,8 +46,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_save_non_working_hours_to_database()
         {
             // Arrange
-            var oldNonAvailabilitiesCount = _context.VhoNonAvailabilities.Count();
-
             var justiceUserOne = await Hooks
                 .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
             var justiceUserTwo = await Hooks
@@ -81,12 +80,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Act
             await _commandHandler.Handle(command);
 
-            var nonAvailabilities = _context.VhoNonAvailabilities;
-            var justiceUserOneNonWorkHours = nonAvailabilities.Single(x => x.JusticeUserId == justiceUserOne.Id);
-            var justiceUserTwoNonWorkHours = nonAvailabilities.Single(x => x.JusticeUserId == justiceUserTwo.Id);
+            var justiceUserOneNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == justiceUserOne.Id).VhoNonAvailability[0];
+            var justiceUserTwoNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == justiceUserTwo.Id).VhoNonAvailability[0];
 
             // Assert
-            nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 2);
             justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHoursStartTime);
             justiceUserOneNonWorkHours.EndTime.Should().Be(justiceUserOneNonWorkingHoursEndTime);
             justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHoursStartTime);
@@ -97,8 +96,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_not_duplicate_overlapping_non_working_hours_to_database()
         {
             // Arrange
-            var oldNonAvailabilitiesCount = _context.VhoNonAvailabilities.Count();
-
             var justiceUser = await Hooks
                 .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
 
@@ -128,13 +125,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Act
             await _commandHandler.Handle(command);
 
-            var nonAvailabilities = _context.VhoNonAvailabilities;
-            var justiceUserNonWorkHours = nonAvailabilities.Single(x => x.JusticeUserId == justiceUser.Id);
+            var justiceUserNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == justiceUser.Id).VhoNonAvailability;
+
+            justiceUserNonWorkHours.Count.Should().Be(1);
 
             // Assert
-            nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 1);
-            justiceUserNonWorkHours.StartTime.Should().Be(justiceUserNonWorkingHoursStartTime2);
-            justiceUserNonWorkHours.EndTime.Should().Be(justiceUserNonWorkingHoursEndTime2);
+            justiceUserNonWorkHours[0].StartTime.Should().Be(justiceUserNonWorkingHoursStartTime2);
+            justiceUserNonWorkHours[0].EndTime.Should().Be(justiceUserNonWorkingHoursEndTime2);
         }
         
         [Test]

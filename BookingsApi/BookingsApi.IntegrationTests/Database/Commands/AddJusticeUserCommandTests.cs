@@ -37,7 +37,7 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         var justiceUser = db.JusticeUsers
             .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
             .FirstOrDefault(ju => ju.Username == command.Username);
-        Hooks._seededJusticeUserIds.Add(justiceUser.Id);
+        Hooks.AddJusticeUserForCleanup(justiceUser.Id);
 
         justiceUser.Should().NotBeNull();
         justiceUser.FirstName.Should().Be(command.FirstName);

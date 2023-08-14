@@ -116,12 +116,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
             await Hooks.AddAllocation(seededHearing, allocatedUser);
-            _context.VhoNonAvailabilities.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0),
-                EndTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 23, 59, 59),
-                JusticeUserId = allocatedUser.Id
-            });
+            allocatedUser.AddOrUpdateNonAvailability(
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0),
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 23, 59, 59)
+                );
 
             await _context.SaveChangesAsync();
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
@@ -158,12 +156,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 var dayOfWeek = daysOfWeek.First(x => x.Id == i);
                 allocatedUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(0, 0, 0), new TimeSpan(23, 59, 59));
             }
-            _context.VhoNonAvailabilities.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 1, 0, 0),
-                EndTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 2, 0, 0),
-                JusticeUserId = allocatedUser.Id
-            });
+            allocatedUser.AddOrUpdateNonAvailability(
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 1, 0, 0),
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 2, 0, 0)
+            );
             
             await _context.SaveChangesAsync();
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.DAL.Services;

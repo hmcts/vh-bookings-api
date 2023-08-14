@@ -1,6 +1,4 @@
 ﻿using BookingsApi.Helpers;
-using System;
-using System.Linq;
 using BookingsApi.Contract.V1.Requests;
 using FluentValidation.Results;
 using Newtonsoft.Json;

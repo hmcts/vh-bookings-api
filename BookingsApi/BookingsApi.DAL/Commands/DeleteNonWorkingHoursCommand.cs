@@ -2,12 +2,13 @@ namespace BookingsApi.DAL.Commands
 {
     public class DeleteNonWorkingHoursCommand : ICommand
     {
-        public long Id { get; }
-        public List<string> FailedUploadUsernames { get; set; } = new List<string>();
+        public Guid JusticeUserId { get; }
+        public long NonAvailableHourId { get; }
 
-        public DeleteNonWorkingHoursCommand(long id)
+        public DeleteNonWorkingHoursCommand(Guid justiceUserId, long nonAvailableHourId)
         {
-            Id = id;
+            JusticeUserId = justiceUserId;
+            NonAvailableHourId = nonAvailableHourId;
         }
     }
 
@@ -22,18 +23,21 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(DeleteNonWorkingHoursCommand command)
         {
-            var hours = await _context.VhoNonAvailabilities
-                .FirstOrDefaultAsync(x => x.Id == command.Id);
+            var justiceUser = await _context.JusticeUsers.FirstOrDefaultAsync(x => x.Id == command.JusticeUserId);
             
-            if (hours == null)
+            if (justiceUser == null)
             {
-                throw new NonWorkingHoursNotFoundException(command.Id);
+                throw new JusticeUserNotFoundException(command.JusticeUserId);
+                
             }
 
-            hours.Delete();
+            var nonAvailability = justiceUser.VhoNonAvailability.FirstOrDefault(x => x.Id == command.NonAvailableHourId);
+            if (nonAvailability == null)
+            {
+                throw new NonWorkingHoursNotFoundException(command.NonAvailableHourId);
+            }
             
-            _context.Update(hours);
-
+            nonAvailability.Delete();
             await _context.SaveChangesAsync();
         }
     }

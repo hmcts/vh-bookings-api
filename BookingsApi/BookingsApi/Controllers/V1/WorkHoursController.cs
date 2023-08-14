@@ -202,28 +202,28 @@ namespace BookingsApi.Controllers.V1
         /// <summary>
         /// Delete non availability work hours for vho
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="nonAvailabilityId"></param>
         /// <returns>vho with list of non availability work hours</returns>
         [HttpDelete("/NonAvailability")]
         [OpenApiOperation("DeleteVhoNonAvailabilityHours")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> DeleteVhoNonAvailabilityHours(long id)
+        public async Task<IActionResult> DeleteVhoNonAvailabilityHours( long nonAvailabilityId)
         {
             try
             {
-                if (id <= 0)
+                if (nonAvailabilityId <= 0)
                 {
-                    ModelState.AddModelError(nameof(id), $"Please provide a valid {nameof(id)}");
+                    ModelState.AddModelError(nameof(nonAvailabilityId), $"Please provide a valid {nameof(nonAvailabilityId)}");
                     return BadRequest(ModelState);
                 }
-                var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(id);
+                var deleteNonWorkingHoursCommand = new DeleteNonWorkingHoursCommand(Guid.NewGuid(),nonAvailabilityId);
                 await _commandHandler.Handle(deleteNonWorkingHoursCommand);
                 return Ok();
             }
             catch (NonWorkingHoursNotFoundException ex)
             {
-                ModelState.AddModelError(nameof(id), ex.Message);
+                ModelState.AddModelError(nameof(nonAvailabilityId), ex.Message);
                 return NotFound(ModelState);
             }
         }

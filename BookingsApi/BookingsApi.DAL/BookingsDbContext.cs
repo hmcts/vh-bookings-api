@@ -20,7 +20,6 @@ namespace BookingsApi.DAL
         public DbSet<JusticeUser> JusticeUsers { get; set; }
         public DbSet<JudiciaryPersonStaging> JudiciaryPersonsStaging { get; set; }
         public DbSet<Jurisdiction> Jurisdiction { get; set; }
-        public DbSet<VhoNonAvailability> VhoNonAvailabilities { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<JusticeUserRole> JusticeUserRoles { get; set; }
 

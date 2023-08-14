@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using BookingsApi.DAL;
+﻿using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using Microsoft.EntityFrameworkCore;
 
