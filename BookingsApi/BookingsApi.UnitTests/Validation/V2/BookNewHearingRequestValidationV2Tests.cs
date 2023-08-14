@@ -60,7 +60,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_hearing_schedule_date_time_in_past_error()
         {
             var request = BuildRequest();
-            request.ScheduledDateTime = DateTime.MinValue;
+            request.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-5);
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();

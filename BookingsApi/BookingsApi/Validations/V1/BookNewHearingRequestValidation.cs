@@ -10,13 +10,10 @@ namespace BookingsApi.Validations.V1
         public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public const string ScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
         public const string CaseTypeNameErrorMessage = "Please provide a case type name";
-        public const string CaseTypeServiceIdErrorMessage = "Please provide a case type service ID";
         public const string HearingTypeNameErrorMessage = "Please provide a hearing type name";
         public const string ParticipantsErrorMessage = "Please provide at least one participant";
         public const string CasesErrorMessage = "Please provide at least one case";
         public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
-        public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
-        public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
         public BookNewHearingRequestValidation()
         {
@@ -30,7 +27,7 @@ namespace BookingsApi.Validations.V1
 
             RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>
             {
-                if (dateTime.Date < DateTime.Now.Date)
+                if (dateTime < DateTime.UtcNow)
                 {
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }
