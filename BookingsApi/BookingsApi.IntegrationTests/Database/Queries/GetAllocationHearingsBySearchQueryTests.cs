@@ -109,7 +109,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_get_hearing_details_by_unallocated()
     {
         //ARRANGE
-        await Hooks.AddAllocation(_seededHearing2);
+        await Hooks.AddAllocation(_seededHearing2, null); // null cso will create one
         
         //ACT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(isUnallocated:true));

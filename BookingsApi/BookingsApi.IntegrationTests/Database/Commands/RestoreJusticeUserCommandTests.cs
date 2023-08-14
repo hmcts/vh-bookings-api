@@ -8,6 +8,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     public class RestoreJusticeUserCommandTests : DatabaseTestsBase
     {
         private RestoreJusticeUserCommandHandler _commandHandler;
+        private VideoHearing _hearing;
 
         [SetUp]
         public void Setup()
@@ -20,8 +21,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_restore_justice_user()
         {
             // Arrange
-            var hearing = await SeedHearing();
-            var justiceUserToRestore = await SeedDeletedJusticeUser("should_delete_justice_user4@testdb.com", hearing);
+            _hearing = await Hooks.SeedVideoHearing();
+            var justiceUserToRestore = await SeedDeletedJusticeUser("should_delete_justice_user4@testdb.com", _hearing);
 
             var command = new RestoreJusticeUserCommand(justiceUserToRestore.Id);
             
@@ -71,11 +72,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public new async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Include(x => x.JusticeUserRoles).Where(ju => ju.CreatedBy == "db@test.com"));
+            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Include(x => x.JusticeUserRoles)
+                .Where(ju => ju.CreatedBy == "db@test.com"));
             await db.SaveChangesAsync();
         }
-        
-        private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
         private async Task<JusticeUser> SeedDeletedJusticeUser(string username, VideoHearing hearing)
         {
@@ -116,12 +116,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             });
             
             // Allocations
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = hearing.Id,
-                JusticeUserId = justiceUser.Entity.Id
-            });
-            
+            _hearing.AllocateVho(justiceUser.Entity);
+
             await db.SaveChangesAsync();
 
             var newUser = db.JusticeUsers

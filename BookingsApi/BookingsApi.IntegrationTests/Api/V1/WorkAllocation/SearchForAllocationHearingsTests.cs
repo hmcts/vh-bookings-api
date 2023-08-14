@@ -31,13 +31,8 @@ public class SearchForAllocationHearingsTests: ApiTest
             options.CaseTypeName = nonGenericCaseTypeName;
             options.HearingVenue = venueWithWorkAllocationEnabled;
         });
-        db.Allocations.Add(new Allocation()
-        {
-            HearingId = hearingWithWorkAllocationVenueAndAllocation.Id,
-            JusticeUserId = justiceUser.Id
-        });
-        await db.SaveChangesAsync();
-        
+        await Hooks.AddAllocation(hearingWithWorkAllocationVenueAndAllocation, justiceUser);
+
         var hearingWithoutWorkAllocationVenue = await Hooks.SeedVideoHearing(options =>
         {
             options.Case = new Case(caseNumber,"Integration");
@@ -66,12 +61,5 @@ public class SearchForAllocationHearingsTests: ApiTest
 
         hearingAllocationSearchResponse.Should()
             .NotContain(response => response.HearingId == hearingWithoutWorkAllocationVenue.Id);
-    }
-    
-    [TearDown]
-    public async Task TearDown()
-    {
-        await Hooks.ClearSeededJusticeUsersAsync();
-        await Hooks.ClearSeededHearings();
     }
 }

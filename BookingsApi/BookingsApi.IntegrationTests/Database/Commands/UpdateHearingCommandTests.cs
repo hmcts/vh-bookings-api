@@ -77,11 +77,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
+            
             for (var i = 1; i <= 7; i++)
             {
                 _context.VhoWorkHours.Add(new VhoWorkHours
@@ -120,11 +117,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
             _context.VhoNonAvailabilities.Add(new VhoNonAvailability
             {
                 StartTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0),
@@ -159,11 +152,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
+            
             for (var i = 1; i <= 7; i++)
             {
                 _context.VhoWorkHours.Add(new VhoWorkHours
@@ -209,12 +199,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
-            await _context.SaveChangesAsync();
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             hearing.AllocatedTo.Should().NotBeNull();
             hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);

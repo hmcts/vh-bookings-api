@@ -9,6 +9,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands;
 public class EditJusticeUserCommandTests : DatabaseTestsBase
 {
     private EditJusticeUserCommandHandler _commandHandler;
+    private VideoHearing _hearing;
 
     [SetUp]
     public void Setup()
@@ -22,8 +23,8 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     public async Task should_edit_a_justice_user(UserRoleId roleId)
     {
         // Arrange
-        var hearing = await SeedHearing();
-        var userToEdit = await SeedJusticeUser(hearing.Id, "testuser@hmcts.net");
+        _hearing = await Hooks.SeedVideoHearing();
+        var userToEdit = await SeedJusticeUser(_hearing.Id, "testuser@hmcts.net");
         
         var command = new EditJusticeUserCommand(userToEdit.Id, userToEdit.Username, (int)roleId);
         
@@ -52,9 +53,6 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
             await _commandHandler.Handle(command);
         }).Message.Should().Be($"Justice user with id {id} not found");
     }
-    
-
-    private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
     private async Task<JusticeUser> SeedJusticeUser(Guid allocatedHearingId, string username)
     {
@@ -95,19 +93,12 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         });
         
         // Allocations
-        db.Allocations.Add(new Allocation
-        {
-            HearingId = allocatedHearingId,
-            JusticeUserId = justiceUser.Entity.Id
-        });
+        _hearing.AllocateVho(justiceUser.Entity);
 
         await Hooks.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
 
         await db.SaveChangesAsync();
-        
-        var allocationIds = db.Allocations.Where(x => x.JusticeUserId == justiceUser.Entity.Id).Select(e => e.Id);
-        Hooks._seededAllocationIds.AddRange(allocationIds);
-        
+
         return justiceUser.Entity;
     }
 }

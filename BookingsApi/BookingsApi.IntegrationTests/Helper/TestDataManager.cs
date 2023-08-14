@@ -144,12 +144,9 @@ namespace BookingsApi.IntegrationTests.Helper
                 FirstName = firstName,
                 Lastname = lastName,
             });
+            var hearing = await db.VideoHearings.Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).FirstAsync();
 
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = db.VideoHearings.FirstOrDefault()!.Id,
-                JusticeUserId = justiceUser.Entity.Id
-            });
+            hearing.AllocateVho(justiceUser.Entity);
 
             _seededJusticeUserIds.Add(justiceUser.Entity.Id);
             await SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
@@ -832,39 +829,29 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
         }
 
-        public async Task<Allocation> AddAllocation(Hearing hearing, JusticeUser user = null)
+        public async Task<Allocation> AddAllocation(VideoHearing hearing, JusticeUser user)
         {
             user ??= await SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true);
 
             await using var db = new BookingsDbContext(_dbContextOptions);
-
-            var allocation = await db.Allocations.AddAsync(new Allocation
-            {
-                HearingId = hearing.Id,
-                JusticeUserId = user.Id,
-            });
+            var dbHearing = await db.VideoHearings.Include(x => x.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.Allocations)
+                .FirstAsync(x => x.Id == hearing.Id);
+            dbHearing.AllocateVho(user);
             await db.SaveChangesAsync();
 
-            _seededAllocationIds.Add(allocation.Entity.Id);
-
-            return allocation.Entity;
+            var allocation = dbHearing.Allocations.First(x => x.JusticeUserId == user.Id);
+            _seededAllocationIds.Add(allocation.Id);
+            return allocation;
         }
 
         public async Task ClearAllocationsAsync()
         {
-            foreach (var id in _seededAllocationIds)
-            {
-                await using var db = new BookingsDbContext(_dbContextOptions);
-                var allocations = await db.Allocations.SingleOrDefaultAsync(x => x.Id == id);
-                if (allocations != null)
-                {
-                    db.Allocations.Remove(allocations);
-                    await db.SaveChangesAsync();
-                }
-
-                TestContext.WriteLine(@$"Remove allocation: {id}.");
-
-            }
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var seededForRemoval = await db.VideoHearings.Include(x => x.Allocations).Where(x =>
+                x.Allocations.Any(allocation => _seededAllocationIds.Contains(allocation.Id))).ToListAsync();
+            
+            seededForRemoval.ForEach(vh => vh.Deallocate());
+            await db.SaveChangesAsync();
         }
         
         public async Task ClearJusticeUserRolesAsync()

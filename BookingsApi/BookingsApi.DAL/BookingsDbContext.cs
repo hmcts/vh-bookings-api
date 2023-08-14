@@ -7,8 +7,6 @@ namespace BookingsApi.DAL
     public class BookingsDbContext : DbContext
     {
         public BookingsDbContext(DbContextOptions options) : base(options){}
-
-        public DbSet<Allocation> Allocations { get; set; }
         public DbSet<Case> Cases { get; set; }
         public DbSet<VideoHearing> VideoHearings { get; set; }
         public DbSet<Person> Persons { get; set; }

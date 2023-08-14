@@ -137,11 +137,9 @@ namespace BookingsApi.DAL.Services
         /// <exception cref="DomainRuleException"></exception>
         public async Task<JusticeUser> AllocateManually(Guid hearingId, Guid justiceUserCsoId)
         {
-            VideoHearing hearing = await GetHearing(hearingId);
-            
-            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
+            var hearing = await GetHearing(hearingId);
 
-            if (allocations.Any())
+            if (hearing.IsVhoAllocated())
             {
                 // we need to unallocate the hearing and allocate to the new user
                 hearing.Deallocate();

@@ -11,7 +11,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private BookingsDbContext _context;
         private Dictionary<long, long> _hourIdMappings;
         private const string Username = "team.lead.1@hearings.reform.hmcts.net";
-        private Guid _justiceUserId;
+        private JusticeUser _justiceUser;
         
         [SetUp]
         public void Setup()
@@ -46,7 +46,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             };
 
             // Act
-            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(_justiceUserId, newHours));
+            await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(_justiceUser.Id, newHours));
             
             // Assert
             var nonWorkingHours = _context.VhoNonAvailabilities;
@@ -66,7 +66,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Arrange
             await SeedNonWorkingHours();
             
-            var justiceUserId = _justiceUserId;
+            var justiceUserId = _justiceUser.Id;
             var originalNonWorkingHoursLength = _context.VhoNonAvailabilities.Where(x => x.JusticeUserId == justiceUserId).Count();
 
             var newHour1 = new
@@ -93,14 +93,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             await SeedNonWorkingHours();
-            var userId = _justiceUserId;
+            var userId = _justiceUser.Id;
             var seededHearing = await Hooks.SeedVideoHearing();
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = userId
-            });
-            await _context.SaveChangesAsync();
+            await Hooks.AddAllocation(seededHearing, _justiceUser);
+            
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             hearing.AllocatedTo.Should().NotBeNull();
             hearing.AllocatedTo.Id.Should().Be(userId);
@@ -133,10 +129,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         
         private async Task SeedNonWorkingHours()
         {
-            var user = await Hooks
+            _justiceUser = await Hooks
                 .SeedJusticeUser(Username, "firstName", "secondname", true);
-            _justiceUserId = user.Id;
-            
+
             _hourIdMappings = new Dictionary<long, long>();
             
             var existingHours = new List<NonWorkHoursDto>
@@ -149,7 +144,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             {
                 var vhoNonWorkingHour = _context.VhoNonAvailabilities.Add(new VhoNonAvailability
                 {
-                    JusticeUser = _context.JusticeUsers.FirstOrDefault(u => u.Id == user.Id),
+                    JusticeUser = _context.JusticeUsers.FirstOrDefault(u => u.Id == _justiceUser.Id),
                     StartTime = hour.StartTime,
                     EndTime = hour.EndTime
                 });

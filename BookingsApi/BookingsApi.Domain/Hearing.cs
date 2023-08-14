@@ -404,6 +404,31 @@ namespace BookingsApi.Domain
 
             return true;
         }
+
+        public bool IsVhoAllocated()
+        {
+            return Allocations.Any();
+        }
+        
+        public void AllocateVho(JusticeUser user)
+        {
+            if (Allocations.Any(x => x.JusticeUserId == user.Id))
+            {
+                throw new DomainRuleException("Allocation", $"User {user.Id} is already allocated to hearing {Id}");
+
+            }
+
+            Allocations.Add(new Allocation
+            {
+                Hearing = this,
+                JusticeUserId = user.Id,
+            });
+        }
+
+        public void Deallocate()
+        {
+            Allocations?.Clear();
+        }
         
         private int CountConcurrentAllocatedHearings(IEnumerable<Allocation> allocations)
         {
@@ -515,11 +540,6 @@ namespace BookingsApi.Domain
             {
                 Deallocate();
             }
-        }
-
-        public void Deallocate()
-        {
-            Allocations?.Clear();
         }
     }
 }

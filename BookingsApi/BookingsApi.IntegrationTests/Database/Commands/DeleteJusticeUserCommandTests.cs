@@ -9,6 +9,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     public class DeleteJusticeUserCommandTests : DatabaseTestsBase
     {
         private DeleteJusticeUserCommandHandler _commandHandler;
+        private VideoHearing _hearing;
 
         [SetUp]
         public void Setup()
@@ -21,8 +22,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_delete_justice_user()
         {
             // Arrange
-            var hearing = await SeedHearing();
-            var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com", hearing.Id);
+            _hearing = await Hooks.SeedVideoHearing();
+            var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com", _hearing.Id);
 
             var command = new DeleteJusticeUserCommand(justiceUserToDelete.Id);
             
@@ -64,10 +65,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<JusticeUserNotFoundException>(async () =>
             {
                 await _commandHandler.Handle(command);
-            }).Message.Should().Be($"Justice user with id {id} not found");
+            })!.Message.Should().Be($"Justice user with id {id} not found");
         }
-        
-        private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
         private async Task<JusticeUser> SeedJusticeUser(string username, Guid allocatedHearingId)
         {
@@ -110,16 +109,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             });
             
             // Allocations
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = allocatedHearingId,
-                JusticeUserId = justiceUser.Entity.Id
-            });
+            _hearing.AllocateVho(justiceUser.Entity);
+
             Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
             await db.SaveChangesAsync();
-            
-            var allocationIds = db.Allocations.Where(x => x.JusticeUserId == justiceUser.Entity.Id).Select(e => e.Id);
-            Hooks._seededAllocationIds.AddRange(allocationIds);
 
             return justiceUser.Entity;
         }

@@ -96,17 +96,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var daysOfWeek = await db.DaysOfWeek.ToListAsync();
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing1.Id,
-                JusticeUserId = allocatedUser1.Id
-            });
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing2.Id,
-                JusticeUserId = allocatedUser2.Id
-            });
-            await db.SaveChangesAsync();
+            await Hooks.AddAllocation(seededHearing1, allocatedUser1);
+            await Hooks.AddAllocation(seededHearing2, allocatedUser2);
+            
             var hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
             hearing1.AllocatedTo.Should().NotBeNull();
             hearing1.AllocatedTo.Id.Should().Be(allocatedUser1.Id);

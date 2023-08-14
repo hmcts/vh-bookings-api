@@ -58,9 +58,9 @@
             
             if (!_isTest)
                 hearings = hearings.Where(h1 => h1.CaseTypeId != 3); //exclude generic type test cases from prod
-            
+
             if (query.IsUnallocated)
-                hearings = hearings.Where(h2 => _context.Allocations.FirstOrDefault(a => a.HearingId == h2.Id) == null);
+                hearings = hearings.Where(x => !x.Allocations.Any());
 
             if (query.IncludeWorkHours)
             {
