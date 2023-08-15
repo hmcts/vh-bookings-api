@@ -22,9 +22,9 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("GetCaseTypes")]
         [ProducesResponseType(typeof(List<CaseTypeResponse>), (int) HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> GetCaseTypes()
+        public async Task<IActionResult> GetCaseTypes([FromQuery]bool includeDeleted = false)
         {
-            var query = new GetAllCaseTypesQuery(hideExpired:true);
+            var query = new GetAllCaseTypesQuery(hideExpired:!includeDeleted);
             var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
             var response = caseTypes.Select(caseType => new CaseTypeResponse
                 {

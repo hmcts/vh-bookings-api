@@ -12,6 +12,7 @@ using Faker;
 using Microsoft.Extensions.Configuration;
 using NuGet.Packaging;
 using Testing.Common.Builders.Domain;
+using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Helper
 {
@@ -395,9 +396,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var totalDays = orderedDates.Count + 1;
             var commands = orderedDates.Select((newDate, index) =>
             {
-                var config = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json")
-                    .Build();
+                var config = ConfigRootBuilder.Build();
                 var hearingDay = index + 2;
                 return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(),
                     config.GetValue<string>("KinlyConfiguration:SipAddressStem"), totalDays, hearingDay);
