@@ -29,7 +29,7 @@ namespace BookingsApi.DAL.Queries
             }
             
             // exclude case and hearing types that have expired
-            dbQuery = dbQuery.Where(x => x.ExpirationDate == null || x.ExpirationDate >= DateTime.Today);
+            dbQuery = dbQuery.Where(x => x.ExpirationDate == null || x.ExpirationDate >= DateTime.UtcNow);
 
             var caseTypes = await dbQuery.ToListAsync();
             foreach (var caseType in caseTypes)
