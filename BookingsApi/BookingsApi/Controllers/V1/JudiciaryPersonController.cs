@@ -134,12 +134,9 @@ namespace BookingsApi.Controllers.V1
                     }
                     else
                     {
-                        var message =
-                            $"Unable to update the record in Judiciary Person with Personal Code - '{item.PersonalCode}'";
-                        _logger.LogError(message);
                         bulkResponse.ErroredRequests.Add(new JudiciaryLeaverErrorResponse
                         {
-                            Message = message,
+                            Message = $"Unable to update the record in Judiciary Person with Personal Code - '{item.PersonalCode}'",
                             JudiciaryLeaverRequest = item
                         });
                     }
