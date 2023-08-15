@@ -561,7 +561,9 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 await using var db = new BookingsDbContext(_dbContextOptions);
                 var list = new List<JusticeUser>();
-                foreach (var user in db.JusticeUsers)
+                var users = await db.JusticeUsers.Include(x => x.JusticeUserRoles).Include(x => x.VhoWorkHours)
+                    .Include(x => x.VhoNonAvailability).IgnoreQueryFilters().ToListAsync();
+                foreach (var user in users)
                 {
                     list.Add(user);
                 }
