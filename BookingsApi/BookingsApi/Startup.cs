@@ -32,7 +32,7 @@ namespace BookingsApi
             
             services.AddControllers().AddNewtonsoftJson();
 
-            services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer());
+            services.AddSingleton<ITelemetryInitializer, CloudRoleNameInitializer>();
 
             var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
             services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
@@ -145,6 +145,7 @@ namespace BookingsApi
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
 
+            app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });

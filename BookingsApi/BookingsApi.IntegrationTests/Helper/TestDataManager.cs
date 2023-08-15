@@ -295,18 +295,11 @@ namespace BookingsApi.IntegrationTests.Helper
                 videoHearing.UpdateStatus(status, createdBy, "test");
             }
 
-            await using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                if (!db.Cases.Any(r => r.Number == CaseNumber))
-                {
-                    db.Cases.Add(new Case(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}"));
-                }
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            await db.VideoHearings.AddAsync(videoHearing);
+            await db.SaveChangesAsync();
 
-                await db.VideoHearings.AddAsync(videoHearing);
-                await db.SaveChangesAsync();
-            }
-
-            var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+            var hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
             _individualId = hearing.Participants.First(x => x.HearingRole.UserRole.IsIndividual).Id;
             _participantRepresentativeIds = hearing.Participants
@@ -317,7 +310,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 await AddQuestionnaire();
             }
 
-            hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+            hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
             _seededHearings.Add(hearing.Id);
             return hearing;

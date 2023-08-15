@@ -64,7 +64,6 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
-                .AsSplitQuery()
                 .AsNoTracking();
 
             hearings = ApplyOptionalFilters(query, hearings);

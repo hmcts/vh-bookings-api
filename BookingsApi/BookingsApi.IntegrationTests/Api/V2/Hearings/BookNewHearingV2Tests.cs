@@ -136,7 +136,7 @@ public class BookNewHearingV2Tests : ApiTest
     
     private BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
     {
-        var hearingSchedule = DateTime.UtcNow;
+        var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule).Build();
         request.ServiceId = "vhG1"; // intentionally incorrect case

@@ -23,7 +23,7 @@ public class HearingTests : ApiTest
     [Test]
     public async Task should_get_hearings_for_today()
     {
-        var hearingSchedule = DateTime.UtcNow;
+        var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api AC Automated";
         var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
         _hearing = await BookingsApiClient.BookNewHearingAsync(request);
@@ -36,7 +36,7 @@ public class HearingTests : ApiTest
     [Test]
     public async Task should_get_hearings_for_today_by_venue()
     {
-        var hearingSchedule = DateTime.UtcNow;
+        var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api AC Automated";
         var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
         _hearing = await BookingsApiClient.BookNewHearingAsync(request);

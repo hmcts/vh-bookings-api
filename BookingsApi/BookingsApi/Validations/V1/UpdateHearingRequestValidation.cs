@@ -17,7 +17,7 @@ namespace BookingsApi.Validations.V1
 
             RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>
             {
-                if (dateTime.Date < DateTime.Now.Date)
+                if (dateTime < DateTime.UtcNow)
                 {
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }

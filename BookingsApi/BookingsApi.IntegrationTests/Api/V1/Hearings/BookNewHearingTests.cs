@@ -154,7 +154,7 @@ public class BookNewHearingTests : ApiTest
 
     private BookNewHearingRequest CreateBookingRequestWithServiceIdsAndCodes()
     {
-        var hearingSchedule = DateTime.UtcNow;
+        var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequest(caseName, hearingSchedule).Build();
         request.CaseTypeName = "Generic";

@@ -25,7 +25,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         [SetUp]
         public void SetUp()
         {
-            var today = DateTime.Today.AddHours(11).AddMinutes(45);
+            var today = DateTime.UtcNow.Date.AddHours(11).AddMinutes(45).ToUniversalTime();
             var yesterdayHearing = new VideoHearingBuilder().WithCase().WithAllocatedJusticeUser().Build();
             yesterdayHearing.SetProtected(nameof(yesterdayHearing.ScheduledDateTime), today.AddDays(-1));
             _hearings = new List<VideoHearing>
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         [Test]
         public async Task Should_Return_OK_And_Not_Publish_When_Hearings_Are_Not_Today()
         {
-            var tomorrow = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
+            var tomorrow = DateTime.UtcNow.Date.AddDays(1).AddHours(11).AddMinutes(45);
             var yesterdayHearing = new VideoHearingBuilder().WithCase().WithAllocatedJusticeUser().Build();
             yesterdayHearing.SetProtected(nameof(yesterdayHearing.ScheduledDateTime), tomorrow.AddDays(-2));
             _hearings = new List<VideoHearing>

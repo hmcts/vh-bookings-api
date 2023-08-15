@@ -29,10 +29,10 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             _testVenues = new List<HearingVenue>()
             {
-                new(100001, "test-venue-1") { ExpirationDate = DateTime.Today }, // EXPIRED
-                new(100002, "test-venue-2") { ExpirationDate = DateTime.Now}, // EXPIRED
-                new(100004, "test-venue-3") { ExpirationDate = DateTime.Today.AddDays(-1) }, // EXPIRED
-                new(100003, "test-venue-4") { ExpirationDate = DateTime.Today.AddDays(1) } // NOT EXPIRED
+                new(100001, "test-venue-1") { ExpirationDate = DateTime.UtcNow.Date }, // EXPIRED
+                new(100002, "test-venue-2") { ExpirationDate = DateTime.UtcNow}, // EXPIRED
+                new(100004, "test-venue-3") { ExpirationDate = DateTime.UtcNow.Date.AddDays(-1) }, // EXPIRED
+                new(100003, "test-venue-4") { ExpirationDate = DateTime.UtcNow.Date.AddDays(1) } // NOT EXPIRED
             };
             foreach (var venue in _testVenues)
                 _context.Venues.Add(venue);

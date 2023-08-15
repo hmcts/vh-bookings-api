@@ -13,7 +13,7 @@ namespace BookingsApi.Common.Helpers
                 ContractResolver = new DefaultContractResolver {NamingStrategy = new SnakeCaseNamingStrategy()},
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                 Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects
             };
 
             settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
