@@ -9,6 +9,7 @@ namespace BookingsApi.DAL.Mappings.RefData
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name);
             builder.Property(x => x.Live).HasDefaultValue(true);
+            builder.HasIndex(x => x.Code).IsUnique();
         }
     }
 }

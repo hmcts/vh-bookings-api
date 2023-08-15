@@ -7,7 +7,7 @@
             builder.ToTable(nameof(HearingVenue));
             builder.Property(x => x.Id);
             builder.HasKey(x => x.Name);
-            builder.HasIndex(x => x.VenueCode);
+            builder.HasIndex(x => x.VenueCode).IsUnique();
             builder.Property(x => x.IsScottish).HasDefaultValue(false);
             builder.Property(x => x.IsWorkAllocationEnabled).HasDefaultValue(true);
         }
