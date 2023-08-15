@@ -88,7 +88,7 @@ public class WorkAllocationTests : ApiTest
     public async Task should_call_getAllocation_with_1000_ids_and_not_fail_and_return_the_valid_hearing()
     {
         // arrange
-        var hearingSchedule = DateTime.Today.AddHours(3);
+        var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         
         var bookNewHearingRequest = new SimpleBookNewHearingRequest(CaseName, hearingSchedule).Build();
         _hearing = await BookingsApiClient.BookNewHearingAsync(bookNewHearingRequest);
