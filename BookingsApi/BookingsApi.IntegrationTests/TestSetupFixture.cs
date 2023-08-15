@@ -1,7 +1,6 @@
 using AcceptanceTests.Common.Api;
 using BookingsApi.Common.Configuration;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests
 {

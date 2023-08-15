@@ -1,8 +1,5 @@
 using System;
 using BookingsApi.Domain.Validations;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Domain.Participants
 {

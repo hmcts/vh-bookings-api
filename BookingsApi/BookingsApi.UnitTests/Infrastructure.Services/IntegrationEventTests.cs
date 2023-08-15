@@ -8,9 +8,6 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Infrastructure.Services
 {

@@ -1,23 +1,17 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using Faker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
+using NuGet.Packaging;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Helper
@@ -58,25 +52,56 @@ namespace BookingsApi.IntegrationTests.Helper
 
 
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
-            bool isTeamLead = false)
+            bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = userName,
-                Username = userName,
-                CreatedBy = "integration.test@test.com",
-                CreatedDate = DateTime.Now,
-                FirstName = firstName,
-                Lastname = lastName,
-            });
 
-            await SeedJusticeUsersRole(db, justiceUser.Entity, isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho);
+            var justiceUser = new JusticeUser(firstName, lastName, userName, userName)
+            {
+                CreatedBy = "integration.test@test.com",
+                CreatedDate = DateTime.UtcNow,
+
+            };
+            if (isDeleted)
+            {
+                justiceUser.Delete();
+            }
+            
+            var userRoles = await db.UserRoles.ToListAsync();
+
+            if (isTeamLead)
+            {
+
+                var teamLeadRole = userRoles.First(x => x.Id == (int) UserRoleId.VhTeamLead);
+                justiceUser.AddRoles(teamLeadRole);
+            }
+            else
+            {
+                var vhoRole = userRoles.First(x => x.Id == (int) UserRoleId.Vho);
+                justiceUser.AddRoles(vhoRole);
+            }
+
+            if (initWorkHours)
+            {
+                justiceUser.VhoWorkHours.AddRange(new List<VhoWorkHours>()
+                {
+                    new() {DayOfWeekId = 1, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 2, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 3, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 4, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 5, StartTime = new TimeSpan(9, 0, 0), EndTime = new TimeSpan(17, 0, 0)},
+                    new() {DayOfWeekId = 6, StartTime = null, EndTime = null},
+                    new() {DayOfWeekId = 7, StartTime = null, EndTime = null},
+
+                });
+            }
+
+            await db.JusticeUsers.AddAsync(justiceUser);
             await db.SaveChangesAsync();
 
-            _seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            _seededJusticeUserIds.Add(justiceUser.Id);
 
-            return justiceUser.Entity;
+            return justiceUser;
         }
 
         public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName,
@@ -183,7 +208,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person5 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
             var judgePerson = new PersonBuilder(true).Build();
             var johPerson = new PersonBuilder(true).Build();
-            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            var scheduledDate = options.ScheduledDate ?? DateTime.UtcNow.Date.AddDays(1).AddHours(10).AddMinutes(30);
             const int duration = 45;
             const string hearingRoomName = "Room02";
             const string otherInformation = "OtherInformation02";
@@ -270,18 +295,11 @@ namespace BookingsApi.IntegrationTests.Helper
                 videoHearing.UpdateStatus(status, createdBy, "test");
             }
 
-            await using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                if (!db.Cases.Any(r => r.Number == CaseNumber))
-                {
-                    db.Cases.Add(new Case(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}"));
-                }
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            await db.VideoHearings.AddAsync(videoHearing);
+            await db.SaveChangesAsync();
 
-                await db.VideoHearings.AddAsync(videoHearing);
-                await db.SaveChangesAsync();
-            }
-
-            var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+            var hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
             _individualId = hearing.Participants.First(x => x.HearingRole.UserRole.IsIndividual).Id;
             _participantRepresentativeIds = hearing.Participants
@@ -292,7 +310,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 await AddQuestionnaire();
             }
 
-            hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
+            hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
             _seededHearings.Add(hearing.Id);
             return hearing;
@@ -514,14 +532,17 @@ namespace BookingsApi.IntegrationTests.Helper
             }
         }
 
-        public async Task ClearJusticeUsersAsync()
+        public async Task ClearSeededJusticeUsersAsync()
         {
             foreach (var id in _seededJusticeUserIds)
             {
                 try
                 {
                     await using var db = new BookingsDbContext(_dbContextOptions);
-                    var justiceUser = await db.JusticeUsers.Include(x => x.JusticeUserRoles).IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
+                    var justiceUser = await db.JusticeUsers.Include(x => x.JusticeUserRoles)
+                        .Include(x=> x.VhoWorkHours)
+                        .Include(x=> x.VhoNonAvailability)
+                        .IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
                     if (justiceUser != null)
                     {
                         db.JusticeUsers.Remove(justiceUser);
@@ -530,11 +551,12 @@ namespace BookingsApi.IntegrationTests.Helper
 
                     TestContext.WriteLine(@$"Remove Justice User: {id}.");
                 }
-                catch (JudiciaryPersonNotFoundException)
+                catch (JusticeUserNotFoundException)
                 {
                     TestContext.WriteLine(@$"Ignoring cleanup for Justice User: {id}. Does not exist.");
                 }
             }
+            _seededJusticeUserIds.Clear();
         }
 
         public async Task ClearAllJusticeUsersAsync()

@@ -4,10 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {

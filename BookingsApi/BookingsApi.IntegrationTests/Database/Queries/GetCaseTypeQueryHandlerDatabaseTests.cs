@@ -1,27 +1,19 @@
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.RefData;
-using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetCaseTypeQueryHandlerDatabaseTests : DatabaseTestsBase
     {
-        private GetCaseTypeQueryHandler _handler;
-        private Mock<IFeatureToggles> _featureTogglesMock;
+        private GetCaseRolesForCaseTypeQueryHandler _handler;
 
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _featureTogglesMock = new Mock<IFeatureToggles>();
-            _featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(false);
-            _handler = new GetCaseTypeQueryHandler(context, _featureTogglesMock.Object);
+            _handler = new GetCaseRolesForCaseTypeQueryHandler(context);
         }
 
         [Test]
@@ -29,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Generic";
             var caseRoleName = "Applicant";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -39,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Generic";
             var caseRoleName = "Respondent";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -49,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Applicant";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -59,7 +51,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Respondent";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -68,22 +60,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_have_sorted_user_roles_and_hearing_roles_for_financial_remedy()
         {
             var caseTypeName = "Financial Remedy";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertCaseRolesAndHearingRolesAreSortedAscendingByName(caseType);
         }
 
-        [Test] public async Task should_get_case_type_by_service_id()
-        {
-            _featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(true);
-            var caseTypeName = "Generic";
-            var serviceId = "vhG1"; // intentionally not the same case to verify case sensitivity is ignored
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(serviceId));
-            caseType.Should().NotBeNull();
-            caseType.Name.Should().Be(caseTypeName);
-            caseType.HearingTypes.Should().NotBeEmpty();
-        }
-        
         private void AssertCaseRolesAndHearingRolesAreSortedAscendingByName(CaseType caseType)
         {
             caseType.CaseRoles.Should().BeInAscendingOrder();

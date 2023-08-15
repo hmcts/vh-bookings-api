@@ -1,7 +1,5 @@
 using System;
 using BookingsApi.Domain;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Domain.JudiciaryPersons
 {

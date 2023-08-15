@@ -1,7 +1,5 @@
 ﻿using BookingsApi.Common.Exceptions;
-using BookingsApi.Common.Services;
-using BookingsApi.Contract.Configuration;
-using Microsoft.Extensions.Options;
+using BookingsApi.Contract.V1.Configuration;
 
 namespace BookingsApi.Services
 {

@@ -2,18 +2,16 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Controllers;
+using BookingsApi.Controllers.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using Testing.Common.Assertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers
 {

@@ -1,4 +1,3 @@
-using System.Net.Http;
 using BookingsApi.Common.Services;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using GST.Fake.Authentication.JwtBearer;

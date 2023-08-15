@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Domain;
+using BookingsApi.Mappings.V1;
+using BookingsApi.UnitTests.Utilities;
+using Newtonsoft.Json;
+using DayOfWeek = BookingsApi.Domain.DayOfWeek;
+
+namespace BookingsApi.UnitTests.Mappings.V1
+{
+    public class VhoAvailabilityWorkHoursToResponseMapperTest : TestBase
+    {
+        [Test]
+        public void Map_Availability_VhoNonAvailabilityWorkHoursToResponseMapper()
+        {
+            // Arrange
+            var start = TimeSpan.Zero;
+            var end = TimeSpan.Zero;
+            var vhoWorkHours = new List<VhoWorkHours>
+            {
+                new VhoWorkHours
+                {
+                    StartTime = start,
+                    EndTime = end,
+                    CreatedBy = "created.by@email.com",
+                    JusticeUserId = Guid.NewGuid(),
+                    DayOfWeekId = 1,
+                    DayOfWeek = new DayOfWeek {Day = "Monday"},
+                }
+            };
+
+            var vhoWorkHoursResponse = new List<VhoWorkHoursResponse>()
+            {
+                new VhoWorkHoursResponse
+                {
+                    StartTime = start,
+                    EndTime = end,
+                    DayOfWeekId = 1,
+                    DayOfWeek = "Monday"
+                }
+            };
+
+            var expectedJson = JsonConvert.SerializeObject(vhoWorkHoursResponse);
+
+            // Act
+            var result = VhoWorkHoursToResponseMapper.Map(vhoWorkHours);
+            var actualVhoNonAvailabilityResponseJson = JsonConvert.SerializeObject(result);
+
+            // Assert
+            Assert.AreEqual(expectedJson, actualVhoNonAvailabilityResponseJson);
+        }
+    }
+}

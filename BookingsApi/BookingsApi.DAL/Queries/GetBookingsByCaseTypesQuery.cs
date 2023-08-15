@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
-using BookingsApi.Common.Services;
+﻿using BookingsApi.Common.Services;
 
 namespace BookingsApi.DAL.Queries
 {
@@ -71,7 +64,6 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
-                .AsSplitQuery()
                 .AsNoTracking();
 
             hearings = ApplyOptionalFilters(query, hearings);

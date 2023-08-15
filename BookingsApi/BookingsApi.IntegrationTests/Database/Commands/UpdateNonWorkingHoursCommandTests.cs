@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -47,20 +39,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 EndTime = new DateTime(2022, 2, 2, 10, 0, 0, DateTimeKind.Utc)
             };
             
-            var newHours = new List<NonWorkingHours>
+            var newHours = new List<NonWorkHoursDto>
             {
-                new()
-                {
-                    Id = _hourIdMappings[1],
-                    StartTime = newHour1.StartTime,
-                    EndTime = newHour1.EndTime
-                },
-                new()
-                {
-                    Id = _hourIdMappings[2],
-                    StartTime = newHour2.StartTime,
-                    EndTime = newHour2.EndTime
-                }
+                new(_hourIdMappings[1],newHour1.StartTime, newHour1.EndTime),
+                new(_hourIdMappings[2],newHour2.StartTime, newHour2.EndTime)
             };
 
             // Act
@@ -69,11 +51,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Assert
             var nonWorkingHours = _context.VhoNonAvailabilities;
             
-            var updatedHour1 = nonWorkingHours.FirstOrDefault(h => h.Id == _hourIdMappings[1]);
+            var updatedHour1 = nonWorkingHours.First(h => h.Id == _hourIdMappings[1]);
             updatedHour1.StartTime.Should().Be(newHour1.StartTime);
             updatedHour1.EndTime.Should().Be(newHour1.EndTime);
             
-            var updatedHour2 = nonWorkingHours.FirstOrDefault(h => h.Id == _hourIdMappings[2]);
+            var updatedHour2 = nonWorkingHours.First(h => h.Id == _hourIdMappings[2]);
             updatedHour2.StartTime.Should().Be(newHour2.StartTime);
             updatedHour2.EndTime.Should().Be(newHour2.EndTime);
         }
@@ -93,18 +75,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 EndTime = new DateTime(2022, 2, 1, 10, 0, 0, DateTimeKind.Utc)
             };
 
-            var newHours = new List<NonWorkingHours>
+            var newHours = new List<NonWorkHoursDto>
             {
-                new()
-                {
-                    StartTime = newHour1.StartTime,
-                    EndTime = newHour1.EndTime
-                }
+                new(-1, newHour1.StartTime,newHour1.EndTime)
             };
 
             // Act
             await _commandHandler.Handle(new UpdateNonWorkingHoursCommand(justiceUserId, newHours));
-            var newNonWorkingHoursLength = _context.VhoNonAvailabilities.Where(x => x.JusticeUserId == justiceUserId).Count();
+            var newNonWorkingHoursLength = _context.VhoNonAvailabilities.Count(x => x.JusticeUserId == justiceUserId);
 
             // Assert
             Assert.AreEqual(originalNonWorkingHoursLength + 1, newNonWorkingHoursLength);
@@ -139,20 +117,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 EndTime = seededHearing.ScheduledDateTime.Date.AddHours(23)
             };
             
-            var newHours = new List<NonWorkingHours>
+            var newHours = new List<NonWorkHoursDto>
             {
-                new()
-                {
-                    Id = _hourIdMappings[1],
-                    StartTime = newHour1.StartTime,
-                    EndTime = newHour1.EndTime
-                },
-                new()
-                {
-                    Id = _hourIdMappings[2],
-                    StartTime = newHour2.StartTime,
-                    EndTime = newHour2.EndTime
-                }
+                new(_hourIdMappings[1],newHour1.StartTime, newHour1.EndTime),
+                new(_hourIdMappings[2],newHour2.StartTime, newHour2.EndTime)
             };
             
             // Act
@@ -171,20 +139,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             
             _hourIdMappings = new Dictionary<long, long>();
             
-            var existingHours = new List<NonWorkingHours>
+            var existingHours = new List<NonWorkHoursDto>
             {
-                new()
-                {
-                    Id = 1,
-                    StartTime = new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc),
-                    EndTime = new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc)
-                },
-                new()
-                {
-                    Id = 2,
-                    StartTime = new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc),
-                    EndTime = new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc)
-                }
+                new(1, new DateTime(2022, 1, 1, 6, 0, 0, DateTimeKind.Utc), new DateTime(2022, 1, 1, 10, 0, 0, DateTimeKind.Utc)),
+                new(2, new DateTime(2022, 1, 2, 6, 0, 0, DateTimeKind.Utc), new DateTime(2022, 1, 2, 10, 0, 0, DateTimeKind.Utc))
             };
 
             foreach (var hour in existingHours)

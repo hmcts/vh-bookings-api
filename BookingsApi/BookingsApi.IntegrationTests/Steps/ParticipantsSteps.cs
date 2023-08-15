@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
-using BookingsApi.IntegrationTests.Helper;
-using FluentAssertions;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api.Request;
+using Testing.Common.Builders.Api.V1.Request;
 using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 using static Testing.Common.Builders.Api.ApiUriFactory.ParticipantsEndpoints;
 

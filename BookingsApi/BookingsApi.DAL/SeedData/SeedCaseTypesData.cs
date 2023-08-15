@@ -1,8 +1,3 @@
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Domain.RefData;
-using Microsoft.EntityFrameworkCore.Migrations;
-
 namespace BookingsApi.DAL.SeedData
 {
     public class SeedCaseTypesData

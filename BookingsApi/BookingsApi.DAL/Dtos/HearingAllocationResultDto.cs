@@ -1,5 +1,3 @@
-using System;
-
 namespace BookingsApi.DAL.Dtos;
 
 public class HearingAllocationResultDto

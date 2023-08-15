@@ -1,7 +1,3 @@
-using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace BookingsApi.DAL.Mappings
 {
     public class JudiciaryPersonMap : IEntityTypeConfiguration<JudiciaryPerson>
@@ -21,9 +17,9 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.Fullname);
             builder.Property(x => x.PostNominals);
             builder.Property(x => x.Email);
-
-            builder.Property(x => x.CreatedDate);
-            builder.Property(x => x.UpdatedDate);
+            
+            builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         }
     }
 }

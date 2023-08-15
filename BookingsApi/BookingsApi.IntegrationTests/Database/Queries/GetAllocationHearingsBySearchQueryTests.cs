@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
 using NuGet.Packaging;
-using NUnit.Framework;
 using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
@@ -135,7 +127,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
      public async Task Should_include_work_hours_when_requested()
      {
          //ARRANGE
-         var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true);
+         var justiceUser =
+             await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true, initWorkHours: false);
          var nonavailability = new VhoNonAvailability
              {StartTime = DateTime.Today.AddHours(10), EndTime = DateTime.Today.AddHours(10)};
          justiceUser.VhoNonAvailability.Add(nonavailability);
@@ -225,7 +218,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_exclude_deleted_work_hours()
     {
         // Arrange
-        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
+        var justiceUser =
+            await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true, initWorkHours: false);
         await Hooks.AddAllocation(_seededHearing1, justiceUser);
 
         var deletedWorkHours = new List<VhoWorkHours>();
@@ -245,7 +239,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         await _context.SaveChangesAsync();
         
-        justiceUser = _context.JusticeUsers.FirstOrDefault(x => x.Id == justiceUser.Id);
+        justiceUser = _context.JusticeUsers.First(x => x.Id == justiceUser.Id);
         
         justiceUser.Delete();
         

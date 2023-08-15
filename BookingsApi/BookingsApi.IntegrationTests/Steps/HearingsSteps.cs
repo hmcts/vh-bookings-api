@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
-using BookingsApi.Contract.Responses;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using BookingsApi.IntegrationTests.Helper;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
@@ -58,7 +48,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
 
-            Context.Uri = GetHearingDetailsById(_hearingId);
+            Context.Uri = GetHearingDetailsById(_hearingId.ToString());
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -224,8 +214,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var request = new GetHearingRequest { Limit = 1 };
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -272,7 +262,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
             var request = new GetHearingRequest { Limit = 1 };
 
-            Context.Uri = HearingTypesRelativePath;
+            Context.Uri = GetHearingsByTypes;
             Context.HttpMethod = HttpMethod.Get;
             Context.HttpContent = GetHttpContent(request);
 
@@ -282,8 +272,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var bookings = RequestHelper.Deserialise<BookingsResponse>(json);
 
             request.Cursor = bookings.NextCursor;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -297,8 +287,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var request = new GetHearingRequest { Limit = 1 };
 
             Context.TestData.NewHearingId = secondSeededHearing.Id;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -318,8 +308,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var request = new GetHearingRequest { Types = new List<int> { caseType } };
 
             Context.HttpContent = GetHttpContent(request);
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a (.*) hearing cancellation request")]
@@ -626,11 +616,8 @@ namespace BookingsApi.IntegrationTests.Steps
             };
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.CaseTypeName = "Generic")
-                .With(x => x.CaseTypeServiceId = "VHG1")
                 .With(x => x.HearingTypeName = "Automated Test")
-                .With(x => x.HearingTypeCode = "AutomatedTest")
                 .With(x => x.HearingVenueName = "Birmingham Civil and Family Justice Centre")
-                .With(x=> x.HearingVenueCode = "231596")
                 .With(x => x.Participants = participants)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)

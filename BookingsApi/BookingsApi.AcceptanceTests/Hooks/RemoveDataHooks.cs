@@ -3,8 +3,8 @@ using System.Linq;
 using System.Net.Http;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.AcceptanceTests.Contexts;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
@@ -38,8 +38,8 @@ namespace BookingsApi.AcceptanceTests.Hooks
                 var client = new TestHttpClient();
 
                 var response = client.ExecuteAsync(
-                        context, HearingTypesRelativePath,
-                        request, HttpMethod.Get)
+                        context, GetHearingsByTypes,
+                        request, HttpMethod.Post)
                     .Result;
 
                 var hearings = RequestHelper.Deserialise<BookingsResponse>(response.Content.ReadAsStringAsync().Result);

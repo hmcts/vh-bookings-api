@@ -1,8 +1,6 @@
 ﻿using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.DAL.Queries
 {

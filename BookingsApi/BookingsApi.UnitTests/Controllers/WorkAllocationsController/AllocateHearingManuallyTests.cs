@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
@@ -12,12 +12,9 @@ using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Mappings;
-using FluentAssertions;
+using BookingsApi.Mappings.V1;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
 {
@@ -28,7 +25,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         [SetUp]
         public void SetUp()
         {
-            var today = DateTime.Today.AddHours(11).AddMinutes(45);
+            var today = DateTime.UtcNow.Date.AddHours(11).AddMinutes(45).ToUniversalTime();
             var yesterdayHearing = new VideoHearingBuilder().WithCase().WithAllocatedJusticeUser().Build();
             yesterdayHearing.SetProtected(nameof(yesterdayHearing.ScheduledDateTime), today.AddDays(-1));
             _hearings = new List<VideoHearing>
@@ -94,7 +91,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         [Test]
         public async Task Should_Return_OK_And_Not_Publish_When_Hearings_Are_Not_Today()
         {
-            var tomorrow = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
+            var tomorrow = DateTime.UtcNow.Date.AddDays(1).AddHours(11).AddMinutes(45);
             var yesterdayHearing = new VideoHearingBuilder().WithCase().WithAllocatedJusticeUser().Build();
             yesterdayHearing.SetProtected(nameof(yesterdayHearing.ScheduledDateTime), tomorrow.AddDays(-2));
             _hearings = new List<VideoHearing>

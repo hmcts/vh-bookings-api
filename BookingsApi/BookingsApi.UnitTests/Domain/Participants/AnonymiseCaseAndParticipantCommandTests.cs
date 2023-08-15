@@ -7,9 +7,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Domain.Participants
 {

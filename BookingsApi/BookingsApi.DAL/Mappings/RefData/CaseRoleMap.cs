@@ -1,7 +1,3 @@
-using BookingsApi.Domain.RefData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace BookingsApi.DAL.Mappings.RefData
 {
     public class CaseRoleMap : IEntityTypeConfiguration<CaseRole>

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController

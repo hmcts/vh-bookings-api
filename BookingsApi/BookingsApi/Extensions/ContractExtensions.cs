@@ -1,22 +1,24 @@
-using System;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V2.Requests;
+namespace BookingsApi.Extensions;
 
-namespace BookingsApi.Extensions
+public static class ContractExtensions
 {
-    public static class ContractExtensions
+    public static void SanitizeRequest(this BookNewHearingRequest request)
     {
-        public static Contract.Enums.BookingStatus MapToContractEnum(this Domain.Enumerations.BookingStatus status)
+        foreach (var participant in request.Participants)
         {
-            return Enum.Parse<Contract.Enums.BookingStatus>(status.ToString());
+            participant.FirstName = participant.FirstName?.Trim();
+            participant.LastName = participant.LastName?.Trim();
         }
-        
-        public static Contract.Enums.LinkedParticipantType MapToContractEnum(this Domain.Enumerations.LinkedParticipantType type)
+    }
+    
+    public static void SanitizeRequest(this BookNewHearingRequestV2 request)
+    {
+        foreach (var participant in request.Participants)
         {
-            return Enum.Parse<Contract.Enums.LinkedParticipantType>(type.ToString());
-        }
-        
-        public static Domain.Enumerations.LinkedParticipantType MapToDomainEnum(this Contract.Enums.LinkedParticipantType type)
-        {
-            return Enum.Parse<Domain.Enumerations.LinkedParticipantType>(type.ToString());
+            participant.FirstName = participant.FirstName?.Trim();
+            participant.LastName = participant.LastName?.Trim();
         }
     }
 }

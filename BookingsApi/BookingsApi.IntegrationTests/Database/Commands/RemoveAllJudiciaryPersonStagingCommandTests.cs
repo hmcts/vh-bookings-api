@@ -1,10 +1,5 @@
-﻿using System.Threading.Tasks;
-using BookingsApi.DAL;
-using BookingsApi.DAL.Commands;
-using BookingsApi.Domain;
-using FluentAssertions;
+﻿using BookingsApi.DAL.Commands;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {

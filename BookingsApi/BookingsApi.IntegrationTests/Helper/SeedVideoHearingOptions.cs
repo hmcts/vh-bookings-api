@@ -1,6 +1,3 @@
-using System;
-using BookingsApi.Domain;
-
 namespace BookingsApi.IntegrationTests.Helper
 {
     public class SeedVideoHearingOptions

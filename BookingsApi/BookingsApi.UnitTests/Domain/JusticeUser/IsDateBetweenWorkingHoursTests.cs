@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using FizzWare.NBuilder;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Domain.JusticeUser;
 

@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using Castle.Core.Internal;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {

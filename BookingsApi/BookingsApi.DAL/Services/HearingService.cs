@@ -1,15 +1,8 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Helper;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookingsApi.DAL.Services
 {

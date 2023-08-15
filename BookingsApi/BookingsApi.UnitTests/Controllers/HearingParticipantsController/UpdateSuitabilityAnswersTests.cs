@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController

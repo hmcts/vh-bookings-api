@@ -1,9 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BookingsApi.Domain.RefData;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Queries
 {
     public class GetAllCaseTypesQuery : IQuery

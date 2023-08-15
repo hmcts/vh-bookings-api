@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace BookingsApi.DAL.Mappings
+﻿namespace BookingsApi.DAL.Mappings
 {
     public class DayOfWeekrMap : IEntityTypeConfiguration<Domain.DayOfWeek>
     {

@@ -1,15 +1,14 @@
 ﻿using System;
-using BookingsApi.Contract.Requests;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -17,7 +16,7 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Validations;
-using FluentAssertions;
+using BookingsApi.Validations.V1;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers
@@ -57,58 +56,6 @@ namespace BookingsApi.UnitTests.Controllers
                 .ReturnsAsync(_justiceUser);
             
             _controller = new WorkHoursController(_commandHandlerMock.Object, _queryHandlerMock.Object);
-        }
-
-        [Test]
-        public async Task SaveWorkHours_ReturnsErrors_WhenValidationFails()
-        {
-            // Arrange
-            var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
-            {
-                new UploadWorkHoursRequest
-                {
-                    Username = _username,
-                    WorkingHours = new List<WorkingHours> {
-                        new WorkingHours(1, null, 1, 1, 1)
-                    }
-                }
-            };
-
-            // Act
-            var response = (await _controller.SaveWorkHours(uploadWorkAllocationRequests)) as BadRequestObjectResult;
-
-            // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
-        }
-
-        [Test]
-        public async Task SaveWorkHours_CalllsUploadWorkAllocationCommand_AndReturnsResult()
-        {
-            // Arrange
-            var uploadWorkAllocationRequests = new List<UploadWorkHoursRequest>
-            {
-                new()
-                {
-                    Username = _username,
-                    WorkingHours = new List<WorkingHours> {
-                        new(1, 9, 0, 17, 0),
-                        new(2, 9, 0, 17, 0),
-                        new(3, 9, 0, 17, 0),
-                        new(4, 9, 0, 17, 0),
-                        new(5, 9, 0, 17, 0),
-                        new(6, null, null, null, null),
-                        new(7, null, null, null, null)
-                    }
-                }
-            };
-
-            // Act
-            var response = (await _controller.SaveWorkHours(uploadWorkAllocationRequests)) as OkObjectResult;
-
-            // Assert
-            _commandHandlerMock.Verify(x => x.Handle(It.IsAny<UploadWorkHoursCommand>()), Times.Once);
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<List<string>>(response.Value);
         }
         
         [Test]

@@ -1,7 +1,3 @@
-using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace BookingsApi.DAL.Mappings
 {
     public class LinkedParticipantMap : IEntityTypeConfiguration<LinkedParticipant>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands;
@@ -11,10 +11,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
@@ -55,7 +52,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
-            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandler.Verify(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantsAddedIntegrationEvent>()), Times.Never);
         }
@@ -76,7 +73,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
-            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandler.Verify(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.Is<ParticipantsAddedIntegrationEvent>
             (
@@ -103,7 +100,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
-            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandler.Verify(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
@@ -138,7 +135,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
-            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandler.Verify(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
         }
@@ -205,7 +202,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
-            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandler.Verify(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantsAddedIntegrationEvent>()), Times.Never);
         }
@@ -225,7 +222,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             QueryHandler.Verify(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()), Times.Exactly(2));
-            QueryHandler.Verify(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>()), Times.Once);
+            QueryHandler.Verify(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>()), Times.Once);
             CommandHandler.Verify(c => c.Handle(It.IsAny<AddParticipantsToVideoHearingCommand>()), Times.Once);
             EventPublisher.Verify(e => e.PublishAsync(It.IsAny<ParticipantsAddedIntegrationEvent>()), Times.Once);
         }

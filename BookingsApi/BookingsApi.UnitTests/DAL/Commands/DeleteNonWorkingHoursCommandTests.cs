@@ -4,9 +4,7 @@ using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.DAL.Commands
 {

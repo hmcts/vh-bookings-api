@@ -1,21 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateNonWorkingHoursCommand : ICommand
     {
         public Guid JusticeUserId { get; set; }
-        public IList<NonWorkingHours> Hours { get; set; }
+        public IList<NonWorkHoursDto> Hours { get; set; }
 
-        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkingHours> hours)
+        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkHoursDto> hours)
         {
             JusticeUserId = justiceUserId;
             Hours = hours;

@@ -73,6 +73,8 @@ namespace BookingsApi.Domain
         public virtual IList<HearingCase> HearingCases { get; set; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
+        
+        [Obsolete("This property is no longer used and will be removed in a future release.")]
         public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }

@@ -3,13 +3,10 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.DAL.Queries
 {

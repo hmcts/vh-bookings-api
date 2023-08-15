@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Common.Services;
-using BookingsApi.DAL;
+﻿using BookingsApi.Common.Services;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries

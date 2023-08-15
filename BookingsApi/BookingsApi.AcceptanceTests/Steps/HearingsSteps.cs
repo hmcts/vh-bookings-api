@@ -8,16 +8,16 @@ using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.AcceptanceTests.Models;
-using BookingsApi.Contract.Queries;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using BookingsApi.Contract.Requests.Enums;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 using UpdateBookingStatusRequest = BookingsApi.AcceptanceTests.Models.UpdateBookingStatusRequest;
 using UpdateHearingRequest = BookingsApi.AcceptanceTests.Models.UpdateHearingRequest;
 using System.Net.Http;
+using BookingsApi.Contract.V1.Queries;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
@@ -34,7 +34,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have a get details for a given hearing request with a valid hearing id")]
         public void GivenIHaveAGetDetailsForAGivenHearingRequestWithAValidHearingId()
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
         }
 
         [Given(@"I have a valid book a new hearing request")]
@@ -76,10 +76,7 @@ namespace BookingsApi.AcceptanceTests.Steps
                 o => o.Excluding(x => x.Participants)
                     .Excluding(x => x.Endpoints)
                     .Excluding(x => x.LinkedParticipants)
-                    .Excluding(x => x.IsMultiDayHearing)
-                    .Excluding(x => x.HearingTypeCode)
-                    .Excluding(x => x.HearingVenueCode)
-                    .Excluding(x => x.CaseTypeServiceId));
+                    .Excluding(x => x.IsMultiDayHearing));
 
             var expectedIndividuals = _context.TestData.CreateHearingRequest.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
             var actualIndividuals = model.Participants.FindAll(x => x.HearingRoleName.Contains("Applicant") || x.HearingRoleName.Contains("Respondent"));
@@ -140,7 +137,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Then(@"the hearing no longer exists")]
         public void ThenTheHearingNoLongerExists()
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
             _context.Response = _context.Client().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -171,8 +168,8 @@ namespace BookingsApi.AcceptanceTests.Steps
 
             var result = client.ExecuteAsync(
                 _context,
-                HearingTypesRelativePath,
-                request, HttpMethod.Get)
+                GetHearingsByTypes,
+                request, HttpMethod.Post)
                 .Result;
 
             var response = RequestHelper.Deserialise<BookingsResponse>(
@@ -235,11 +232,11 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Then(@"hearing should be (.*)")]
         public void ThenHearingShouldBe(BookingStatus status)
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             model.UpdatedBy.Should().NotBeNullOrEmpty();
-            model.Status.Should().Be((Contract.Enums.BookingStatus)status);
+            model.Status.Should().Be((Contract.V1.Enums.BookingStatus)status);
             if (status == BookingStatus.Created)
             {
                 model.ConfirmedBy.Should().NotBeNullOrEmpty();

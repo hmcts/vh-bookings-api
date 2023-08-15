@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.Validations;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -114,18 +107,16 @@ namespace BookingsApi.DAL.Services
         /// <exception cref="DomainRuleException"></exception>
         public async Task<JusticeUser> AllocateAutomatically(Guid hearingId)
         {
-            VideoHearing hearing = await GetHearing(hearingId);
-            
-            var allocations = _context.Allocations.Where(a => a.HearingId == hearing.Id).ToList();
+            var hearing = await GetHearing(hearingId);
             
             // only in automatic allocation we check if hearing has been allocated
-            if (allocations.Any())
+            if (hearing.Allocations.Any())
             {
                 throw new DomainRuleException("HearingAlreadyAllocated",
                     $"Hearing {hearing.Id} has already been allocated");
             }
             
-            JusticeUser cso = SelectCso(hearing);
+            var cso = SelectCso(hearing);
             if (cso == null)
             {
                 throw new DomainRuleException("NoCsosAvailable",
@@ -173,22 +164,13 @@ namespace BookingsApi.DAL.Services
             return await _context.VideoHearings
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
-                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.VhoWorkHours)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
-                .Include(h=> h.HearingVenue)
-                .Where(x=> hearingIds.Contains(x.Id))
+                .Include(h => h.HearingVenue)
+                .Where(x => hearingIds.Contains(x.Id))
                 .AsSplitQuery()
                 .AsNoTracking()
                 .ToListAsync();
-            List<VideoHearing> list = new List<VideoHearing>();
-
-            foreach (Guid id in hearingIds)
-            {
-                VideoHearing hearing = await GetHearing(id);
-                list. Add(hearing);
-            }
-
-            return list;
         }
 
         private async Task<VideoHearing> GetHearing(Guid hearingId)
@@ -197,9 +179,9 @@ namespace BookingsApi.DAL.Services
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
-                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.VhoWorkHours)
-                .Include(h=>h.Participants).ThenInclude(i=>i.HearingRole).ThenInclude(aa=>aa.UserRole)
-                .Include(h=> h.HearingVenue)
+                .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
+                .Include(h => h.Participants).ThenInclude(i => i.HearingRole).ThenInclude(aa => aa.UserRole)
+                .Include(h => h.HearingVenue)
                 .AsSplitQuery().SingleOrDefaultAsync(x => x.Id == hearingId);
             if (hearing == null)
             {
@@ -212,7 +194,7 @@ namespace BookingsApi.DAL.Services
 
         private async Task AllocateHearingToCso(JusticeUser cso, VideoHearing hearing)
         {
-            _context.Allocations.Add(new Allocation
+            hearing.Allocations.Add(new Allocation
             {
                 Hearing = hearing,
                 JusticeUser = cso
@@ -316,7 +298,6 @@ namespace BookingsApi.DAL.Services
                 .Include(u => u.Allocations).ThenInclude(a => a.Hearing)
                 .Where(ju => ju.JusticeUserRoles.Any(jur => jur.UserRole.Id == (int)UserRoleId.Vho))
                 .ToList();
-
 
             return csos
                 .Where(cso => hearing.CanAllocate(cso, _configuration))

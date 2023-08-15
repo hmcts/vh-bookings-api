@@ -16,4 +16,7 @@
     </PackageReference>
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="V1\" />
+  </ItemGroup>
 </Project>

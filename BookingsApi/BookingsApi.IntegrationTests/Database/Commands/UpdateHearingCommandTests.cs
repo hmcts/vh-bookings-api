@@ -1,18 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -127,7 +119,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
+            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
             _context.Allocations.Add(new Allocation
             {
                 HearingId = seededHearing.Id,

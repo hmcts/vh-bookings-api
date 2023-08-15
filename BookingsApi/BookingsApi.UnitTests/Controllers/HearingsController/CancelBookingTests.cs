@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Domain.Validations;
@@ -30,8 +27,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 UpdatedBy = "email@hmcts.net",
                 CancelReason = "Adjournment"
             };
-            var hearingId = Guid.NewGuid();
             var hearing = GetHearing("123");
+            hearing.UpdateStatus(BookingStatus.Created, "needs to be created for deletion", null);
+            var hearingId = hearing.Id;
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))

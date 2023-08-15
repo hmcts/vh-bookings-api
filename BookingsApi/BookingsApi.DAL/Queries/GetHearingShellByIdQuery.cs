@@ -1,9 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Queries
 {
     public class GetHearingShellByIdQuery : IQuery

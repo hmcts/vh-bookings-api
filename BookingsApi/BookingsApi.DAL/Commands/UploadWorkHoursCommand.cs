@@ -1,20 +1,14 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UploadWorkHoursCommand : ICommand
     {
-        public List<UploadWorkHoursRequest> UploadWorkHoursRequests { get; set; }
-        public List<string> FailedUploadUsernames { get; set; } = new List<string>();
+        public List<UploadWorkHoursDto> UploadWorkHoursRequests { get; }
+        public List<string> FailedUploadUsernames { get; } = new();
 
-        public UploadWorkHoursCommand(List<UploadWorkHoursRequest> uploadWorkHoursRequests)
+        public UploadWorkHoursCommand(List<UploadWorkHoursDto> uploadWorkHoursRequests)
         {
             UploadWorkHoursRequests = uploadWorkHoursRequests;
         }
@@ -35,7 +29,7 @@ namespace BookingsApi.DAL.Commands
         {
             foreach (var uploadWorkHoursRequest in command.UploadWorkHoursRequests)
             {
-                var user = await _context.JusticeUsers
+                var user = await _context.JusticeUsers.Include(x=> x.VhoWorkHours)
                     .SingleOrDefaultAsync(x => x.Username == uploadWorkHoursRequest.Username);
 
                 if (user == null)
@@ -44,31 +38,27 @@ namespace BookingsApi.DAL.Commands
                     continue;
                 }
 
-                var vhoWorkHours = _context.VhoWorkHours
-                    .Where(x => x.JusticeUser.Username == uploadWorkHoursRequest.Username);
-
                 foreach (var workHours in uploadWorkHoursRequest.WorkingHours)
                 {
-                    var vhoWorkHour = vhoWorkHours
+                    var vhoWorkHour = user.VhoWorkHours
                         .SingleOrDefault(x => x.DayOfWeekId == workHours.DayOfWeekId);
-
-                    bool doesVhoWorkHourExist = true;
 
                     if (vhoWorkHour == null)
                     {
-                        doesVhoWorkHourExist = false;
-                        vhoWorkHour = new VhoWorkHours();
+                        vhoWorkHour = new VhoWorkHours()
+                        {
+                            DayOfWeekId = workHours.DayOfWeekId,
+                            JusticeUserId = user.Id,
+                            StartTime = workHours.StartTime,
+                            EndTime = workHours.EndTime
+                        };
+                        user.VhoWorkHours.Add(vhoWorkHour);
                     }
-
-                    vhoWorkHour.DayOfWeekId = workHours.DayOfWeekId;
-                    vhoWorkHour.JusticeUserId = user.Id;
-                    vhoWorkHour.StartTime = workHours.StartTime;
-                    vhoWorkHour.EndTime = workHours.EndTime;
-
-                    if (doesVhoWorkHourExist) 
-                        _context.Update(vhoWorkHour);
-                    else 
-                        _context.Add(vhoWorkHour);
+                    else
+                    {
+                        vhoWorkHour.StartTime = workHours.StartTime;
+                        vhoWorkHour.EndTime = workHours.EndTime;
+                    }
                 }
 
                 await _hearingAllocationService.DeallocateFromUnavailableHearings(user.Id);

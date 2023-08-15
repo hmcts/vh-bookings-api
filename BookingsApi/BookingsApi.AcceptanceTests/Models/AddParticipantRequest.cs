@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using FizzWare.NBuilder;
 using Testing.Common.Configuration;
 using Testing.Common.Data;
