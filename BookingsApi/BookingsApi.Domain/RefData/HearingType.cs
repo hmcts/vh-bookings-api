@@ -18,7 +18,7 @@ namespace BookingsApi.Domain.RefData
         
         public bool HasExpired()
         {
-            return ExpirationDate != null && ExpirationDate < DateTime.Today;
+            return ExpirationDate != null && ExpirationDate <= DateTime.UtcNow;
         }
     }
 }
