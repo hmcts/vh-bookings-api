@@ -24,7 +24,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetCaseTypes([FromQuery]bool includeDeleted = false)
         {
-            var query = new GetAllCaseTypesQuery(hideExpired:!includeDeleted);
+            var query = new GetAllCaseTypesQuery(includeDeleted);
             var caseTypes = await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query);
             var response = caseTypes.Select(caseType => new CaseTypeResponse
                 {

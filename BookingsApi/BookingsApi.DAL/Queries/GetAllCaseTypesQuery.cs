@@ -2,12 +2,12 @@ namespace BookingsApi.DAL.Queries
 {
     public class GetAllCaseTypesQuery : IQuery
     {
-        public GetAllCaseTypesQuery(bool hideExpired)
+        public GetAllCaseTypesQuery(bool includeDeleted)
         {
-            HideExpired = hideExpired;
+            IncludeDeleted = includeDeleted;
         }
 
-        public bool HideExpired { get; }
+        public bool IncludeDeleted { get; }
     }
     
     public class GetAllCaseTypesQueryHandler : IQueryHandler<GetAllCaseTypesQuery, List<CaseType>>
@@ -23,7 +23,7 @@ namespace BookingsApi.DAL.Queries
         {
             var dbQuery = _context.CaseTypes.Include(x=> x.HearingTypes).AsNoTracking();
 
-            if (!query.HideExpired)
+            if (!query.IncludeDeleted)
             {
                 return await dbQuery.ToListAsync();
             }
