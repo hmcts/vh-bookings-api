@@ -68,7 +68,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var justiceUserId = _justiceUser.Id;
             var originalNonWorkingHoursLength = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
-                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count();
+                .First(x => x.Id == _justiceUser.Id).VhoNonAvailability.Count;
 
             var newHour1 = new
             {

@@ -94,7 +94,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         // Allocations
         _hearing.AllocateVho(justiceUser.Entity);
 
-        await Hooks.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
+        await TestDataManager.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
 
         await db.SaveChangesAsync();
 

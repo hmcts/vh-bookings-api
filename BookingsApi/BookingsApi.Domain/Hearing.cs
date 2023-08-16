@@ -352,7 +352,7 @@ namespace BookingsApi.Domain
 
             if (cases.Any())
             {
-                UpdateCase(cases.First());
+                UpdateCase(cases[0]);
             }
 
             ScheduledDateTime = scheduledDateTime;

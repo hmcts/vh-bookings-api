@@ -1440,7 +1440,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 .WithMessage($"Unable to allocate to hearing {hearingId}, no CSOs available");
         }
 
-        private void AssertCsoAllocated(JusticeUser actualCso, JusticeUser expectedCso, Hearing hearing)
+        private static void AssertCsoAllocated(JusticeUser actualCso, JusticeUser expectedCso, Hearing hearing)
         {
             actualCso.Should().NotBeNull();
             actualCso.Id.Should().Be(expectedCso.Id);

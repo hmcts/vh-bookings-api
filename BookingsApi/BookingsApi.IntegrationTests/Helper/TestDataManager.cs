@@ -152,7 +152,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser.Entity;
         }
 
-        public async Task SeedJusticeUsersRole(BookingsDbContext context, JusticeUser user, params int[] roleIds)
+        public static async Task SeedJusticeUsersRole(BookingsDbContext context, JusticeUser user, params int[] roleIds)
         {
             var userRoles = await context.UserRoles.Where(x => roleIds.Contains(x.Id)).ToListAsync();
             var entities = userRoles.Select(ur => new JusticeUserRole(user, ur)).ToArray();

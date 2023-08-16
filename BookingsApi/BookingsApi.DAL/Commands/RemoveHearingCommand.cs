@@ -58,7 +58,7 @@ namespace BookingsApi.DAL.Commands
                 var hearingIdsForPerson = await _context.Participants.Where(x => x.PersonId == person.Id).Select(x=> x.HearingId).ToListAsync();
                 var hearingIds = hearingsIncCloned.Select(x => x.Id).ToList();
                 // if all hearings for a person are being removed then remove the person
-                if (hearingIdsForPerson.All(hearingIds.Contains))
+                if (hearingIdsForPerson.TrueForAll(hearingIds.Contains))
                 {
                     removePersons.Add(person);
                 }

@@ -183,7 +183,7 @@ namespace BookingsApi.Controllers.V1
             var hourValidationResult = new UpdateNonWorkingHoursRequestValidation().ValidateHours(request, nonDeletedHours);
             if (!hourValidationResult.IsValid)
             {
-                if (hourValidationResult.Errors.Any(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))
+                if (hourValidationResult.Errors.Exists(x => x.ErrorMessage.Contains(UpdateNonWorkingHoursRequestValidation.HourIdsNotFoundErrorMessage)))
                 {
                     return NotFound();
                 }
