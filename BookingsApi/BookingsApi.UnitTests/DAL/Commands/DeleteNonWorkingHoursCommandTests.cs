@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
             var updatedJusticeUser = await _context.JusticeUsers.Include(x => x.VhoNonAvailability)
                 .FirstAsync(x => x.Id == _justiceUser.Id);
 
-            updatedJusticeUser.VhoNonAvailability.First(x=> x.Id == slot.Id).Deleted.Should().BeTrue();
+            updatedJusticeUser.VhoNonAvailability.Should().BeEmpty();
         }
         
         [Test]

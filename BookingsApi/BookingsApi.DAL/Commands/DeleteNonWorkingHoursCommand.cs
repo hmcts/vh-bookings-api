@@ -38,7 +38,7 @@ namespace BookingsApi.DAL.Commands
                 throw new NonWorkingHoursNotFoundException(command.NonAvailableHourId);
             }
             
-            nonAvailability.Delete();
+            justiceUser.RemoveNonAvailability(nonAvailability);
             await _context.SaveChangesAsync();
         }
     }

@@ -22,7 +22,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             _hearing = await Hooks.SeedVideoHearing();
-            var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com", _hearing.Id);
+            var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com");
+            await Hooks.AddAllocation(_hearing, justiceUserToDelete);
 
             var command = new DeleteJusticeUserCommand(justiceUserToDelete.Id);
             
@@ -36,19 +37,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 .Include(u => u.VhoWorkHours)
                 .Include(u => u.VhoNonAvailability)
                 .Include(u => u.Allocations)
-                .FirstOrDefaultAsync(x => x.Id == justiceUserToDelete.Id);
+                .FirstAsync(x => x.Id == justiceUserToDelete.Id);
             justiceUser.Should().NotBeNull();
             justiceUser.Deleted.Should().BeTrue();
-            justiceUser.VhoWorkHours.Count.Should().Be(justiceUserToDelete.VhoWorkHours.Count);
-            foreach (var workHour in justiceUser.VhoWorkHours)
-            {
-                workHour.Deleted.Should().BeTrue();
-            }
-            justiceUser.VhoNonAvailability.Count.Should().Be(justiceUserToDelete.VhoNonAvailability.Count);
-            foreach (var nonAvailability in justiceUser.VhoNonAvailability)
-            {
-                nonAvailability.Deleted.Should().BeTrue();
-            }
+            justiceUser.VhoWorkHours.Should().BeEmpty();
+            justiceUser.VhoNonAvailability.Should().BeEmpty();
             justiceUser.Allocations.Should().BeEmpty();
         }
         
@@ -67,7 +60,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             })!.Message.Should().Be($"Justice user with id {id} not found");
         }
 
-        private async Task<JusticeUser> SeedJusticeUser(string username, Guid allocatedHearingId)
+        private async Task<JusticeUser> SeedJusticeUser(string username)
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             

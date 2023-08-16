@@ -88,6 +88,6 @@ public class DeleteVhoNonAvailabilityHoursTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var updatedUser = await db.JusticeUsers.Include(x => x.VhoNonAvailability).FirstAsync(x => x.Username == justiceUser.Username);
-        updatedUser.VhoNonAvailability.Where(x=> !x.Deleted).Should().BeEmpty();
+        updatedUser.VhoNonAvailability.Should().BeEmpty();
     }
 }

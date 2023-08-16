@@ -4,6 +4,7 @@ using BookingsApi.Domain.RefData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
@@ -79,6 +80,8 @@ namespace BookingsApi.Domain
             {
                 vhoNonWorkingHours.StartTime = startTime;
                 vhoNonWorkingHours.EndTime = endTime;
+                vhoNonWorkingHours.Deleted = false;
+                // should we undelete if being re-added?
             }
         }
 
@@ -139,16 +142,8 @@ namespace BookingsApi.Domain
         public void Delete()
         {
             Deleted = true;
-
-            foreach (var workHour in VhoWorkHours)
-            {
-                workHour.Delete();
-            }
-
-            foreach (var nonAvailability in VhoNonAvailability)
-            {
-                nonAvailability.Delete();
-            }
+            VhoWorkHours.Clear();
+            VhoNonAvailability.Clear();
             
             foreach (var hearing in Allocations.Select(a => a.Hearing))
             {
@@ -162,5 +157,15 @@ namespace BookingsApi.Domain
         }
         
         public bool IsTeamLeader() => JusticeUserRoles.Any(jur => jur.UserRole.IsVhTeamLead);
+
+        public void RemoveNonAvailability(VhoNonAvailability nonAvailability)
+        {
+            var existing = VhoNonAvailability.SingleOrDefault(x => x.Id == nonAvailability.Id);
+            if (existing == null)
+            {
+                throw new DomainRuleException("JusticeUser", "NonAvailability does not exist");
+            }
+            VhoNonAvailability.Remove(nonAvailability);
+        }
     }
 }
