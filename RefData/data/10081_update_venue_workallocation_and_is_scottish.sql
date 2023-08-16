@@ -11,7 +11,9 @@ Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCo
 Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCode = 999991, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = 'Kilmarnock';
 Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCode = 999990, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = 'Kirkcaldy';
 Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCode = 999989, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = 'Kirkwall';
-Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCode = 999988, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = 'Lerwick';    
+Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCode = 999988, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = 'Lerwick';
+Update dbo.HearingVenue SET IsScottish = 1, IsWorkAllocationEnabled = 0, VenueCode = 999984, UpdatedDate = CURRENT_TIMESTAMP WHERE Name = 'Stranraer';
+
 COMMIT
 
 SET XACT_ABORT OFF
