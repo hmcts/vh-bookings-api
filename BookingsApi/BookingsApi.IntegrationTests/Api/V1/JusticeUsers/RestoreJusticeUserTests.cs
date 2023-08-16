@@ -1,7 +1,6 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
 {

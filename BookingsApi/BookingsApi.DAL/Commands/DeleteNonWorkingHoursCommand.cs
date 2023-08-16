@@ -2,12 +2,12 @@ namespace BookingsApi.DAL.Commands
 {
     public class DeleteNonWorkingHoursCommand : ICommand
     {
-        public Guid JusticeUserId { get; }
+        public string Username { get; }
         public long NonAvailableHourId { get; }
 
-        public DeleteNonWorkingHoursCommand(Guid justiceUserId, long nonAvailableHourId)
+        public DeleteNonWorkingHoursCommand(string username, long nonAvailableHourId)
         {
-            JusticeUserId = justiceUserId;
+            Username = username;
             NonAvailableHourId = nonAvailableHourId;
         }
     }
@@ -23,11 +23,12 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(DeleteNonWorkingHoursCommand command)
         {
-            var justiceUser = await _context.JusticeUsers.FirstOrDefaultAsync(x => x.Id == command.JusticeUserId);
+            var justiceUser = await _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .FirstOrDefaultAsync(x => x.Username == command.Username);
             
             if (justiceUser == null)
             {
-                throw new JusticeUserNotFoundException(command.JusticeUserId);
+                throw new JusticeUserNotFoundException(command.Username);
                 
             }
 

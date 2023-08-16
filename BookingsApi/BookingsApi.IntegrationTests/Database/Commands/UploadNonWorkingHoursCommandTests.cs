@@ -1,7 +1,6 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {

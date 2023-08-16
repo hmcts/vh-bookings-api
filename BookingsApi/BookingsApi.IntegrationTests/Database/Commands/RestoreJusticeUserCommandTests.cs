@@ -1,6 +1,5 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {

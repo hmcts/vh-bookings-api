@@ -1,6 +1,5 @@
 ﻿using BookingsApi.Common.Services;
 using BookingsApi.DAL.Queries;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Testing.Common.Builders.Domain;
 

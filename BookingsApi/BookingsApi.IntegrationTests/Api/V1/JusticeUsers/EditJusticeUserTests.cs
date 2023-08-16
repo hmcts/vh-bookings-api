@@ -2,7 +2,6 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using Microsoft.EntityFrameworkCore;
 using JusticeUserRole = BookingsApi.Contract.V1.Requests.Enums.JusticeUserRole;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers

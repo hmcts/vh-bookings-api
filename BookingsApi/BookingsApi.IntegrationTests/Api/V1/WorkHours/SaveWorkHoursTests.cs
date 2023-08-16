@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V1.Requests;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkHours;
 

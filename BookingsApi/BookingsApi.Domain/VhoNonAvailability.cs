@@ -24,11 +24,13 @@ namespace BookingsApi.Domain
         {
             StartTime = startTime;
             EndTime = endTime;
+            UpdatedDate = DateTime.UtcNow;
         }
 
         public void Delete()
         {
             Deleted = true;
+            UpdatedDate = DateTime.UtcNow;
         }
     }
 }

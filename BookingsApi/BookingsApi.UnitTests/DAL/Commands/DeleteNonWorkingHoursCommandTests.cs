@@ -55,7 +55,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
         public async Task should_delete_slot_for_valid_id()
         {
             var slot = _justiceUser.VhoNonAvailability.First();
-            var command = new DeleteNonWorkingHoursCommand(_justiceUser.Id, slot.Id);
+            var command = new DeleteNonWorkingHoursCommand(_justiceUser.Username, slot.Id);
 
             await _handler.Handle(command);
 
@@ -68,7 +68,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
         [Test]
         public void should_not_delete_slot_for_not_valid_id()
         {
-            var command = new DeleteNonWorkingHoursCommand(_justiceUser.Id, 99999999);
+            var command = new DeleteNonWorkingHoursCommand(_justiceUser.Username, 99999999);
             
             Assert.ThrowsAsync<NonWorkingHoursNotFoundException>(async () => await _handler.Handle(command));
         }

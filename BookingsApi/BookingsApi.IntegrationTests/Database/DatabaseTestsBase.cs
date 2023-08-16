@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database

@@ -1,5 +1,4 @@
 using BookingsApi.DAL.Queries;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

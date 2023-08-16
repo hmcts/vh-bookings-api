@@ -1,7 +1,6 @@
 using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
-using Microsoft.EntityFrameworkCore;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JudiciaryPersonsEndpoints;
 using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;

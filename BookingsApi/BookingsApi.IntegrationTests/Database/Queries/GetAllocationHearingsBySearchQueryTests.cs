@@ -1,6 +1,5 @@
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
-using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using DayOfWeek = System.DayOfWeek;
 

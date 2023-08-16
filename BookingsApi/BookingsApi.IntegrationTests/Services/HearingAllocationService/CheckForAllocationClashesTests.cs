@@ -1,7 +1,6 @@
 using BookingsApi.Common.Services;
 using BookingsApi.Domain.Configuration;
 using FizzWare.NBuilder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Testing.Common.Builders.Domain;

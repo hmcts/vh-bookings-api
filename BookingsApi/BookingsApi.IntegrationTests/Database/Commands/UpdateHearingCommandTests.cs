@@ -3,7 +3,6 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Configuration;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 

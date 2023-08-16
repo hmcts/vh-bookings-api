@@ -2,7 +2,6 @@ using AcceptanceTests.Common.Model.UserRole;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain.Enumerations;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands;
 

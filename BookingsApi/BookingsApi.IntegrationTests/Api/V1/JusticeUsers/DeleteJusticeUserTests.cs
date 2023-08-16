@@ -1,5 +1,4 @@
 using BookingsApi.Domain.Enumerations;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
 {
