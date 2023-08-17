@@ -69,48 +69,62 @@ EXEC #HearingType_Create 354, 'TIS Trial of Issue', @CaseTypeId, 'TIS', 'Treial 
 EXEC #HearingType_Create 355, 'TRL Trial', @CaseTypeId, 'TRL', 'Treial'
 
 -- Case Roles
-DECLARE @CaseRoleId_Party INT = 356
+DECLARE @CaseRoleId_Judge INT = 356
 DECLARE @CaseRoleId_Observer INT = 357
 DECLARE @CaseRoleId_PanelMember INT = 358
-DECLARE @CaseRoleGroup_Party INT = 26
+DECLARE @CaseRoleId_Party INT = 359
+DECLARE @CaseRoleId_StaffMember INT = 360
+DECLARE @CaseRoleGroup_Judge INT = 0
 DECLARE @CaseRoleGroup_Observer INT = 5
 DECLARE @CaseRoleGroup_PanelMember INT = 6
+DECLARE @CaseRoleGroup_Party INT = 26
+DECLARE @CaseRoleGroup_StaffMember INT = 12
 
-EXEC #CaseRole_Create @CaseRoleId_Party, 'Party', @CaseRoleGroup_Party, @CaseTypeId
+EXEC #CaseRole_Create @CaseRoleId_Judge, 'Judge', @CaseRoleGroup_Judge, @CaseTypeId
 EXEC #CaseRole_Create @CaseRoleId_Observer, 'Observer', @CaseRoleGroup_Observer, @CaseTypeId
 EXEC #CaseRole_Create @CaseRoleId_PanelMember, 'Panel Member', @CaseRoleGroup_PanelMember, @CaseTypeId
+EXEC #CaseRole_Create @CaseRoleId_Party, 'Party', @CaseRoleGroup_Party, @CaseTypeId
+EXEC #CaseRole_Create @CaseRoleId_StaffMember, 'Staff Member', @CaseRoleGroup_StaffMember, @CaseTypeId
 
 -- Hearing Roles
+DECLARE @UserRoleId_Judge INT = 4
 DECLARE @UserRoleId_Individual INT = 5
 DECLARE @UserRoleId_Representative INT = 6
 DECLARE @UserRoleId_Joh INT = 7
+DECLARE @UserRoleId_StaffMember INT = 8
 
-EXEC #HearingRole_Create 1163, 'Appellant', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1164, 'Appointee', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1165, 'Joint Party', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1166, 'Other Party', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1167, 'Respondent', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1168, 'Welfare Representative', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1169, 'Legal Representative', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1170, 'Barrister', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1171, 'Interpreter', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1172, 'Representative', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1173, 'Support', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1174, 'Applicant', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1175, 'Victim', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1176, 'Witness', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1177, 'Party', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1178, 'Defendant', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1179, 'Intermediaries', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1180, 'Prosecutor', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1181, 'Police', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1182, 'Defence Counsel', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1183, 'Prosecution Counsel', @UserRoleId_Representative, @CaseRoleId_Party
-EXEC #HearingRole_Create 1184, 'Claimant', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1185, 'Expert', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1186, 'Litigation Friend', @UserRoleId_Individual, @CaseRoleId_Party
-EXEC #HearingRole_Create 1187, 'Observer', @UserRoleId_Individual, @CaseRoleId_Observer
-EXEC #HearingRole_Create 1188, 'Panel Member', @UserRoleId_Joh, @CaseRoleId_PanelMember
+EXEC #HearingRole_Create 1163, 'Judge', @UserRoleId_Judge, @CaseRoleId_Judge
+
+EXEC #HearingRole_Create 1164, 'Observer', @UserRoleId_Individual, @CaseRoleId_Observer
+
+EXEC #HearingRole_Create 1165, 'Panel Member', @UserRoleId_Joh, @CaseRoleId_PanelMember
+
+EXEC #HearingRole_Create 1166, 'Appellant', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1167, 'Appointee', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1168, 'Joint Party', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1169, 'Other Party', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1170, 'Respondent', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1171, 'Welfare Representative', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1172, 'Legal Representative', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1173, 'Barrister', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1174, 'Interpreter', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1175, 'Representative', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1176, 'Support', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1177, 'Applicant', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1178, 'Victim', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1179, 'Witness', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1180, 'Party', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1181, 'Defendant', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1182, 'Intermediaries', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1183, 'Prosecutor', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1184, 'Police', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1185, 'Defence Counsel', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1186, 'Prosecution Counsel', @UserRoleId_Representative, @CaseRoleId_Party
+EXEC #HearingRole_Create 1187, 'Claimant', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1188, 'Expert', @UserRoleId_Individual, @CaseRoleId_Party
+EXEC #HearingRole_Create 1189, 'Litigation Friend', @UserRoleId_Individual, @CaseRoleId_Party
+
+EXEC #HearingRole_Create 1190, 'Staff Member', @UserRoleId_StaffMember, @CaseRoleId_StaffMember
 
 COMMIT
 
