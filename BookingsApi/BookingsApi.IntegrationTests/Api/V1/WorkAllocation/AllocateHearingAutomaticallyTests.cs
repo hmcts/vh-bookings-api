@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Responses;
 using Microsoft.EntityFrameworkCore;
 using Testing.Common.Assertions;
+using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkAllocation;
 
@@ -90,7 +91,9 @@ public class AllocateHearingAutomaticallyTests : ApiTest
         {
             options.Case = new Case(caseNumber, "Integration");
             options.CaseTypeName = nonGenericCaseTypeName;
+            options.ScheduledDate = MoveHearingToWorkingDay(); // Needed as the seeded justice users do not work on weekends
         });
+
         var j1 = await Hooks.SeedJusticeUser($"{Guid.NewGuid():N}@test.com", "testfirstname1", "testsurname1", initWorkHours:true);
         
         // act
@@ -134,5 +137,16 @@ public class AllocateHearingAutomaticallyTests : ApiTest
             user.Restore();
         }
         await db.SaveChangesAsync();
+    }
+
+    private static DateTime MoveHearingToWorkingDay()
+    {
+        var scheduledDateTime = DateTime.UtcNow.Date.AddDays(1).AddHours(10).AddMinutes(30);
+
+        if (scheduledDateTime.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+        {
+            scheduledDateTime = scheduledDateTime.AddDays(2);
+        }
+        return scheduledDateTime;
     }
 }
