@@ -23,7 +23,7 @@ namespace BookingsApi.DAL.Queries
         {
             var dbQuery = _context.CaseTypes.Include(x=> x.HearingTypes).AsNoTracking();
 
-            if (!query.IncludeDeleted)
+            if (query.IncludeDeleted)
             {
                 return await dbQuery.ToListAsync();
             }

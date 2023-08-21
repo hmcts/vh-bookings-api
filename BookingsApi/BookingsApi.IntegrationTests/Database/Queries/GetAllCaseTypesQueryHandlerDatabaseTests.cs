@@ -27,9 +27,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         }
 
         [Test]
-        public async Task Should_return_all_case_types_and_their_hearing_types()
+        public async Task Should_return_all_case_types_and_their_hearing_types_including_expired()
         {
-            var caseTypes = await _handler.Handle(new GetAllCaseTypesQuery(includeDeleted:false));
+            var caseTypes = await _handler.Handle(new GetAllCaseTypesQuery(includeDeleted:true));
             var financialRemedy = caseTypes.First(c => c.Name == "Financial Remedy");
             financialRemedy.Should().NotBeNull();
             financialRemedy.HearingTypes.Count.Should().BePositive();
@@ -44,7 +44,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await UpdateHearingTypeExpirationDate(expiredDate, CivilMoneyClaimsCaseTypeId, HearingTypeId);
 
             // act
-            var caseTypes = await _handler.Handle(new GetAllCaseTypesQuery(includeDeleted:true));
+            var caseTypes = await _handler.Handle(new GetAllCaseTypesQuery(includeDeleted:false));
 
             // assert
             caseTypes.Should().NotContain(c => c.Id == FinancialRemedyCaseTypeId);
