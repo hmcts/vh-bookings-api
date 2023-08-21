@@ -144,7 +144,7 @@ namespace BookingsApi.IntegrationTests.Helper
             });
             var hearing = await db.VideoHearings.Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).FirstAsync();
 
-            hearing.AllocateVho(justiceUser.Entity);
+            hearing.AllocateJusticeUser(justiceUser.Entity);
 
             _seededJusticeUserIds.Add(justiceUser.Entity.Id);
             await SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
@@ -835,7 +835,7 @@ namespace BookingsApi.IntegrationTests.Helper
             await using var db = new BookingsDbContext(_dbContextOptions);
             var dbHearing = await db.VideoHearings.Include(x => x.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.Allocations)
                 .FirstAsync(x => x.Id == hearing.Id);
-            dbHearing.AllocateVho(user);
+            dbHearing.AllocateJusticeUser(user);
             await db.SaveChangesAsync();
 
             var allocation = dbHearing.Allocations.First(x => x.JusticeUserId == user.Id);

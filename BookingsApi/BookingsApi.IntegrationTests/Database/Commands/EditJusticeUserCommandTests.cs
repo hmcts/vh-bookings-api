@@ -92,7 +92,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         });
         
         // Allocations
-        _hearing.AllocateVho(justiceUser.Entity);
+        _hearing.AllocateJusticeUser(justiceUser.Entity);
 
         await TestDataManager.SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
 

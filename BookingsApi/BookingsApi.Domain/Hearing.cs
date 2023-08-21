@@ -405,12 +405,12 @@ namespace BookingsApi.Domain
             return true;
         }
 
-        public bool IsVhoAllocated()
+        public bool IsJusticeUserAllocated()
         {
             return Allocations.Any();
         }
         
-        public void AllocateVho(JusticeUser user)
+        public void AllocateJusticeUser(JusticeUser user)
         {
             if (Allocations.Any(x => x.JusticeUserId == user.Id))
             {

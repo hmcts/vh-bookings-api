@@ -139,7 +139,7 @@ namespace BookingsApi.DAL.Services
         {
             var hearing = await GetHearing(hearingId);
 
-            if (hearing.IsVhoAllocated())
+            if (hearing.IsJusticeUserAllocated())
             {
                 // we need to unallocate the hearing and allocate to the new user
                 hearing.Deallocate();

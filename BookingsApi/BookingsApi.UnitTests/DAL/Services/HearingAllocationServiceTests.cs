@@ -1419,7 +1419,7 @@ namespace BookingsApi.UnitTests.DAL.Services
 
         private void AllocateAutomaticallyToHearing(JusticeUser justiceUser, VideoHearing hearing)
         {
-            hearing.AllocateVho(justiceUser);
+            hearing.AllocateJusticeUser(justiceUser);
             _context.SaveChanges();
         }
         

@@ -79,7 +79,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             );
             
             // Allocations
-            _hearing.AllocateVho(justiceUser);
+            _hearing.AllocateJusticeUser(justiceUser);
             await db.SaveChangesAsync();
 
             return justiceUser;

@@ -94,7 +94,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 new DateTime(2022, 1, 2, 17, 0, 0)
             );
             
-            hearing.AllocateVho(justiceUser);
+            hearing.AllocateJusticeUser(justiceUser);
             
             // call delete again to clear non availability hours
             justiceUser.Delete();
