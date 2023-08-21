@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.DAL.Queries;
 using BookingsApi.UnitTests.Utilities;
 

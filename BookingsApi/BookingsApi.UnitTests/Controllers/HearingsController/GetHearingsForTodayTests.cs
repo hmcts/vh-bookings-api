@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.DAL.Queries;
 using Microsoft.AspNetCore.Mvc;

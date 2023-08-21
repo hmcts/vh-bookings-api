@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.DAL.Commands;
@@ -10,7 +8,6 @@ using BookingsApi.UnitTests.Controllers.HearingsController.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using System.Linq;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations;
 

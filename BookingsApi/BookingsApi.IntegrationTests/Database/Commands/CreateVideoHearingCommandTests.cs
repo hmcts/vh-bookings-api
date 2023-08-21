@@ -4,7 +4,6 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using Microsoft.EntityFrameworkCore;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands

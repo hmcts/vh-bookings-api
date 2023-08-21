@@ -1,7 +1,6 @@
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Endpoints;
 

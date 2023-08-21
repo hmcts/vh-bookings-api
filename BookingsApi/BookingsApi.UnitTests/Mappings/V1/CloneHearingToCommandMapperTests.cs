@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;

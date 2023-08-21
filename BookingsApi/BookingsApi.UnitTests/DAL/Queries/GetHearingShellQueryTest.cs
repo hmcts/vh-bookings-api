@@ -4,9 +4,6 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using FizzWare.NBuilder;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookingsApi.UnitTests.DAL.Queries
 {

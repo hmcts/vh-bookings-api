@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;

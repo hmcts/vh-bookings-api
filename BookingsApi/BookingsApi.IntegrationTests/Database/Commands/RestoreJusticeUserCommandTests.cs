@@ -1,13 +1,12 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
-using BookingsApi.Domain.Enumerations;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class RestoreJusticeUserCommandTests : DatabaseTestsBase
     {
         private RestoreJusticeUserCommandHandler _commandHandler;
+        private VideoHearing _hearing;
 
         [SetUp]
         public void Setup()
@@ -20,8 +19,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_restore_justice_user()
         {
             // Arrange
-            var hearing = await SeedHearing();
-            var justiceUserToRestore = await SeedDeletedJusticeUser("should_delete_justice_user4@testdb.com", hearing);
+            _hearing = await Hooks.SeedVideoHearing();
+            var justiceUserToRestore = await SeedDeletedJusticeUser("should_delete_justice_user4@testdb.com", _hearing);
 
             var command = new RestoreJusticeUserCommand(justiceUserToRestore.Id);
             
@@ -64,79 +63,47 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<JusticeUserNotFoundException>(async () =>
             {
                 await _commandHandler.Handle(command);
-            }).Message.Should().Be($"Justice user with id {id} not found");
+            })!.Message.Should().Be($"Justice user with id {id} not found");
         }
 
         [TearDown]
         public new async Task TearDown()
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Include(x => x.JusticeUserRoles).Where(ju => ju.CreatedBy == "db@test.com"));
+            db.JusticeUsers.RemoveRange(db.JusticeUsers.IgnoreQueryFilters().Include(x => x.JusticeUserRoles)
+                .Where(ju => ju.CreatedBy == "db@test.com"));
             await db.SaveChangesAsync();
         }
-        
-        private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
         private async Task<JusticeUser> SeedDeletedJusticeUser(string username, VideoHearing hearing)
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             
             // Justice user
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "db@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "Test",
-                Lastname = "User"
-            });
+            var justiceUser = await Hooks.SeedJusticeUser(username, "Test", "User", isTeamLead: false, isDeleted: true,
+                initWorkHours: true);
+            db.Attach(justiceUser);
+
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 1, 8, 0, 0),
+                new DateTime(2022, 1, 1, 17, 0, 0)
+                );
             
-            // Work hours
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 2, 8, 0, 0),
+                new DateTime(2022, 1, 2, 17, 0, 0)
+            );
             
-            // Non availabilities
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 1, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 1, 17, 0, 0)
-            });
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 2, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 2, 17, 0, 0)
-            });
+            hearing.AllocateJusticeUser(justiceUser);
+            
+            // call delete again to clear non availability hours
+            justiceUser.Delete();
             
             // Allocations
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = hearing.Id,
-                JusticeUserId = justiceUser.Entity.Id
-            });
             
             await db.SaveChangesAsync();
 
-            var newUser = db.JusticeUsers
-                // .IgnoreQueryFilters()
-                .Where(x => x.Id == justiceUser.Entity.Id)
-                .Include(x => x.Allocations).ThenInclude(x => x.Hearing)
-                .Include(x => x.VhoWorkHours)
-                .Include(x => x.VhoNonAvailability)
-                .Include(x => x.JusticeUserRoles).ThenInclude(x => x.UserRole)
-                .FirstOrDefault();
-            
-            newUser.Delete();
-            await db.SaveChangesAsync();
-            
-            return newUser;
+            return justiceUser;
         }
     }
 }

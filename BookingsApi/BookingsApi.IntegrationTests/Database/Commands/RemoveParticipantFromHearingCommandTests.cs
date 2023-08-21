@@ -13,10 +13,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private RemoveParticipantFromHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
+        private List<string> _personsToRemove;
 
         [SetUp]
         public void Setup()
         {
+            _personsToRemove = new List<string>();
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveParticipantFromHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
@@ -52,8 +54,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var beforeCount = seededHearing.GetParticipants().Count;
-
             var participant = seededHearing.GetParticipants().First();
+            _personsToRemove.Add(participant.Person.ContactEmail);
             await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant));
 
             var returnedVideoHearing =
@@ -71,6 +73,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var beforeCount = seededHearing.GetParticipants().Count;
 
             var endpoint = seededHearing.GetEndpoints().First(ep => ep.DefenceAdvocate != null);
+            _personsToRemove.Add(endpoint.DefenceAdvocate.Person.ContactEmail);
             await _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(seededHearing.Id, endpoint.DefenceAdvocate));
 
@@ -88,12 +91,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var participantWithALink = seededHearing.Participants.First(x => x.LinkedParticipants.Any());
+            _personsToRemove.Add(participantWithALink.Person.ContactEmail);
             await _commandHandler.Handle(
                 new RemoveParticipantFromHearingCommand(seededHearing.Id, participantWithALink));
-
             var hearingWithNoLinks = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
             hearingWithNoLinks.Participants.Where(x => x.LinkedParticipants.Any()).Should().BeNullOrEmpty();
+        }
+        
+        [TearDown]
+        public new async Task TearDown()
+        {
+            await base.TearDown();
+            await Hooks.ClearUnattachedPersons(_personsToRemove);
         }
     }
 }

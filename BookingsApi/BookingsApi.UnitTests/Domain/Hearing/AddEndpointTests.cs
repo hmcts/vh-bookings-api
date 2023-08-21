@@ -1,5 +1,4 @@
-﻿using System;
-using BookingsApi.Domain.Validations;
+﻿using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
