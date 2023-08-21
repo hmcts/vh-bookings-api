@@ -71,6 +71,7 @@ namespace BookingsApi.Domain
         public virtual IList<Participant> Participants { get; }
         public virtual IList<Endpoint> Endpoints { get; }
         public virtual IList<HearingCase> HearingCases { get; set; }
+        public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         

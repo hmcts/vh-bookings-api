@@ -31,6 +31,7 @@ namespace BookingsApi.DAL.Mappings
             builder.HasMany<Allocation>(nameof(Hearing.Allocations)).WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
             builder.HasMany<Endpoint>("Endpoints").WithOne("Hearing").HasForeignKey(x => x.HearingId);
             builder.HasMany<Participant>("Participants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
+            builder.HasMany<JudiciaryParticipant>("JudiciaryParticipants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
 
             builder.HasOne(x => x.CaseType).WithMany().HasForeignKey(x => x.CaseTypeId).IsRequired();
             builder.HasOne(x => x.HearingType).WithMany().HasForeignKey(x => x.HearingTypeId).IsRequired();

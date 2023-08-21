@@ -20,6 +20,8 @@ namespace BookingsApi.DAL.Mappings
             
             builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            
+            builder.HasMany<JudiciaryParticipant>("JudiciaryParticipants").WithOne("JudiciaryPerson").HasForeignKey(x => x.JudiciaryPersonId);
         }
     }
 }
