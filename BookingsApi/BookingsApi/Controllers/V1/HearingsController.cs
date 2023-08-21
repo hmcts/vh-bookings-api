@@ -431,7 +431,7 @@ namespace BookingsApi.Controllers.V1
 
             // use existing video hearing values here when request properties are null
             request.AudioRecordingRequired ??= videoHearing.AudioRecordingRequired;
-            request.QuestionnaireNotRequired ??= videoHearing.QuestionnaireNotRequired;
+            request.QuestionnaireNotRequired = false;
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 

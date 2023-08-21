@@ -148,7 +148,7 @@ public class UpdateHearingTests : ApiTest
         message.Should().BeNull();
     }
     
-    private UpdateHearingRequest BuildRequest()
+    private static UpdateHearingRequest BuildRequest()
     {
         var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;

@@ -33,7 +33,7 @@ public class HearingParticipantService : IHearingParticipantService
             {
                 await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
             }
-            else if (participants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+            else if (participants.Exists(x => x.HearingRole.UserRole.Name == "Judge"))
             {
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, participants));
             }
@@ -49,11 +49,11 @@ public class HearingParticipantService : IHearingParticipantService
     {
         var eventNewParticipants = hearing
             .GetParticipants()
-            .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail))
+            .Where(x => newParticipants.Exists(y => y.Person.ContactEmail == x.Person.ContactEmail))
             .ToList();
         var eventExistingParticipants = hearing
             .GetParticipants()
-            .Where(x => existingParticipants.Any(y => y.ParticipantId == x.Id))
+            .Where(x => existingParticipants.Exists(y => y.ParticipantId == x.Id))
             .ToList();
         
         if (eventNewParticipants.Any() || removedParticipantIds.Any())
@@ -80,7 +80,7 @@ public class HearingParticipantService : IHearingParticipantService
                 var hearingParticipantsUpdatedIntegrationEvent = new HearingParticipantsUpdatedIntegrationEvent(hearing, eventExistingParticipants, eventNewParticipants, removedParticipantIds, eventLinkedParticipants);
                 await _eventPublisher.PublishAsync(hearingParticipantsUpdatedIntegrationEvent);
             }
-            else if (eventNewParticipants.Any(x => x.HearingRole.UserRole.Name == "Judge"))
+            else if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge"))
             {
                 await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, eventNewParticipants));

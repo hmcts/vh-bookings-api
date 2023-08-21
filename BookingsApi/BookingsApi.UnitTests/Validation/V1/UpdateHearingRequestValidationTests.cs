@@ -83,7 +83,7 @@ namespace BookingsApi.UnitTests.Validation.V1
                 .Should().BeTrue();
         }
 
-        private UpdateHearingRequest BuildRequest()
+        private static UpdateHearingRequest BuildRequest()
         {
             return new UpdateHearingRequest
             {

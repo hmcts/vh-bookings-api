@@ -27,7 +27,7 @@ namespace BookingsApi.Validations.V1
             var requestedWorkHourIds = request.Hours.Select(h => h.Id).Where(x => x != 0).ToList();
             var foundWorkHourIds = existingHours.Select(h => h.Id).ToList();
 
-            var requestedWorkHourIdsFound = requestedWorkHourIds.All(foundWorkHourIds.Contains);
+            var requestedWorkHourIdsFound = requestedWorkHourIds.TrueForAll(foundWorkHourIds.Contains);
 
             if (!requestedWorkHourIdsFound)
             {
@@ -72,7 +72,7 @@ namespace BookingsApi.Validations.V1
                 if (firstHour != null)
                 {
                     checkedHours.Add(firstHour);
-                    var uncheckedHours = hoursForUser.Where(x => (x.StartTime >= firstHour.StartTime && x != firstHour) && checkedHours.All(m => m != x));
+                    var uncheckedHours = hoursForUser.Where(x => (x.StartTime >= firstHour.StartTime && x != firstHour) && checkedHours.TrueForAll(m => m != x));
         
                     if (uncheckedHours.Any(uncheckedHour => OverlapsWith(firstHour, uncheckedHour)))
                     {

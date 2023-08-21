@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             };
 
             var result = await _validator.ValidateAsync(request);
-            result.Errors.Any(x => x.ErrorMessage == AddEndpointRequestValidation.NoDisplayNameError)
+            result.Errors.Exists(x => x.ErrorMessage == AddEndpointRequestValidation.NoDisplayNameError)
                 .Should().BeTrue();
         }
     }
