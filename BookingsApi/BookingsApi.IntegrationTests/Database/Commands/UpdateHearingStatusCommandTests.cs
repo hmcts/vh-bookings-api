@@ -63,11 +63,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             var justiceUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = justiceUser.Id
-            });
+            await Hooks.AddAllocation(seededHearing, justiceUser);
+            
             await db.SaveChangesAsync();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var newBookingStatus = BookingStatus.Cancelled;

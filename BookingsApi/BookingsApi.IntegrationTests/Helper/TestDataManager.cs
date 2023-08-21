@@ -21,8 +21,8 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly DbContextOptions<BookingsDbContext> _dbContextOptions;
         private readonly List<Guid> _seededHearings = new();
         public List<string> JudiciaryPersons { get; } = new();
-        public readonly List<Guid> _seededJusticeUserIds = new();
-        public readonly List<long> _seededAllocationIds = new();
+        private readonly List<Guid> _seededJusticeUserIds = new();
+        private readonly List<long> _seededAllocationIds = new();
         public string CaseNumber { get; } = "2222/3511";
         private Guid _individualId;
         private List<Guid> _participantRepresentativeIds;
@@ -60,18 +60,12 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 CreatedBy = "integration.test@test.com",
                 CreatedDate = DateTime.UtcNow,
-
             };
-            if (isDeleted)
-            {
-                justiceUser.Delete();
-            }
             
             var userRoles = await db.UserRoles.ToListAsync();
 
             if (isTeamLead)
             {
-
                 var teamLeadRole = userRoles.First(x => x.Id == (int) UserRoleId.VhTeamLead);
                 justiceUser.AddRoles(teamLeadRole);
             }
@@ -94,6 +88,11 @@ namespace BookingsApi.IntegrationTests.Helper
                     new() {DayOfWeekId = 7, StartTime = null, EndTime = null},
 
                 });
+            }
+            
+            if (isDeleted)
+            {
+                justiceUser.Delete();
             }
 
             await db.JusticeUsers.AddAsync(justiceUser);
@@ -144,12 +143,9 @@ namespace BookingsApi.IntegrationTests.Helper
                 FirstName = firstName,
                 Lastname = lastName,
             });
+            var hearing = await db.VideoHearings.Include(x => x.Allocations).ThenInclude(x => x.JusticeUser).FirstAsync();
 
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = db.VideoHearings.FirstOrDefault()!.Id,
-                JusticeUserId = justiceUser.Entity.Id
-            });
+            hearing.AllocateJusticeUser(justiceUser.Entity);
 
             _seededJusticeUserIds.Add(justiceUser.Entity.Id);
             await SeedJusticeUsersRole(db, justiceUser.Entity, (int)UserRoleId.Vho);
@@ -157,7 +153,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser.Entity;
         }
 
-        public async Task SeedJusticeUsersRole(BookingsDbContext context, JusticeUser user, params int[] roleIds)
+        public static async Task SeedJusticeUsersRole(BookingsDbContext context, JusticeUser user, params int[] roleIds)
         {
             var userRoles = await context.UserRoles.Where(x => roleIds.Contains(x.Id)).ToListAsync();
             var entities = userRoles.Select(ur => new JusticeUserRole(user, ur)).ToArray();
@@ -563,14 +559,15 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 await using var db = new BookingsDbContext(_dbContextOptions);
                 var list = new List<JusticeUser>();
-                foreach (var user in db.JusticeUsers)
+                var users = await db.JusticeUsers.Include(x => x.JusticeUserRoles).Include(x => x.VhoWorkHours)
+                    .Include(x => x.VhoNonAvailability).IgnoreQueryFilters().ToListAsync();
+                foreach (var user in users)
                 {
                     list.Add(user);
                 }
 
                 foreach (var user in list)
                 {
-                    db.JusticeUserRoles.RemoveRange(db.JusticeUserRoles.Where(e => e.JusticeUser == user));
                     db.JusticeUsers.Remove(user);
                     await db.SaveChangesAsync();
                     TestContext.WriteLine(@$"Remove Justice User: {user.Id}.");
@@ -830,56 +827,29 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
         }
 
-        public async Task<Allocation> AddAllocation(Hearing hearing, JusticeUser user = null)
+        public async Task<Allocation> AddAllocation(VideoHearing hearing, JusticeUser user)
         {
             user ??= await SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true);
 
             await using var db = new BookingsDbContext(_dbContextOptions);
-
-            var allocation = await db.Allocations.AddAsync(new Allocation
-            {
-                HearingId = hearing.Id,
-                JusticeUserId = user.Id,
-            });
+            var dbHearing = await db.VideoHearings.Include(x => x.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x=> x.Allocations)
+                .FirstAsync(x => x.Id == hearing.Id);
+            dbHearing.AllocateJusticeUser(user);
             await db.SaveChangesAsync();
 
-            _seededAllocationIds.Add(allocation.Entity.Id);
-
-            return allocation.Entity;
+            var allocation = dbHearing.Allocations.First(x => x.JusticeUserId == user.Id);
+            _seededAllocationIds.Add(allocation.Id);
+            return allocation;
         }
 
         public async Task ClearAllocationsAsync()
         {
-            foreach (var id in _seededAllocationIds)
-            {
-                await using var db = new BookingsDbContext(_dbContextOptions);
-                var allocations = await db.Allocations.SingleOrDefaultAsync(x => x.Id == id);
-                if (allocations != null)
-                {
-                    db.Allocations.Remove(allocations);
-                    await db.SaveChangesAsync();
-                }
-
-                TestContext.WriteLine(@$"Remove allocation: {id}.");
-
-            }
-        }
-        
-        public async Task ClearJusticeUserRolesAsync()
-        {
-            foreach (var id in _seededJusticeUserIds)
-            {
-                await using var db = new BookingsDbContext(_dbContextOptions);
-                var justiceUserRole = await db.JusticeUserRoles
-                    .IgnoreQueryFilters()
-                    .Where(x => x.JusticeUser.Id == id).ToListAsync();
-                if (justiceUserRole.Any())
-                {
-                    db.JusticeUserRoles.RemoveRange(justiceUserRole);
-                    await db.SaveChangesAsync();
-                }
-                TestContext.WriteLine(@$"Remove justice user roles, for justiceUser: {id}.");
-            }
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var seededForRemoval = await db.VideoHearings.Include(x => x.Allocations).Where(x =>
+                x.Allocations.Any(allocation => _seededAllocationIds.Contains(allocation.Id))).ToListAsync();
+            
+            seededForRemoval.ForEach(vh => vh.Deallocate());
+            await db.SaveChangesAsync();
         }
     }
 }

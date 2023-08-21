@@ -8,6 +8,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     public class DeleteJusticeUserCommandTests : DatabaseTestsBase
     {
         private DeleteJusticeUserCommandHandler _commandHandler;
+        private VideoHearing _hearing;
 
         [SetUp]
         public void Setup()
@@ -20,8 +21,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task should_delete_justice_user()
         {
             // Arrange
-            var hearing = await SeedHearing();
-            var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com", hearing.Id);
+            _hearing = await Hooks.SeedVideoHearing();
+            var justiceUserToDelete = await SeedJusticeUser("should_delete_justice_user@testdb.com");
+            await Hooks.AddAllocation(_hearing, justiceUserToDelete);
 
             var command = new DeleteJusticeUserCommand(justiceUserToDelete.Id);
             
@@ -35,19 +37,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 .Include(u => u.VhoWorkHours)
                 .Include(u => u.VhoNonAvailability)
                 .Include(u => u.Allocations)
-                .FirstOrDefaultAsync(x => x.Id == justiceUserToDelete.Id);
+                .FirstAsync(x => x.Id == justiceUserToDelete.Id);
             justiceUser.Should().NotBeNull();
             justiceUser.Deleted.Should().BeTrue();
-            justiceUser.VhoWorkHours.Count.Should().Be(justiceUserToDelete.VhoWorkHours.Count);
-            foreach (var workHour in justiceUser.VhoWorkHours)
-            {
-                workHour.Deleted.Should().BeTrue();
-            }
-            justiceUser.VhoNonAvailability.Count.Should().Be(justiceUserToDelete.VhoNonAvailability.Count);
-            foreach (var nonAvailability in justiceUser.VhoNonAvailability)
-            {
-                nonAvailability.Deleted.Should().BeTrue();
-            }
+            justiceUser.VhoWorkHours.Should().BeEmpty();
+            justiceUser.VhoNonAvailability.Should().BeEmpty();
             justiceUser.Allocations.Should().BeEmpty();
         }
         
@@ -63,64 +57,32 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             Assert.ThrowsAsync<JusticeUserNotFoundException>(async () =>
             {
                 await _commandHandler.Handle(command);
-            }).Message.Should().Be($"Justice user with id {id} not found");
+            })!.Message.Should().Be($"Justice user with id {id} not found");
         }
-        
-        private async Task<VideoHearing> SeedHearing() => await Hooks.SeedVideoHearing();
 
-        private async Task<JusticeUser> SeedJusticeUser(string username, Guid allocatedHearingId)
+        private async Task<JusticeUser> SeedJusticeUser(string username)
         {
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             
             // Justice user
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "db@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "Test",
-                Lastname = "User",
-            });
-            var userRole = db.UserRoles.First(e => e.Id == (int)UserRoleId.Vho);
-            db.JusticeUserRoles.Add(new JusticeUserRole(justiceUser.Entity, userRole));
+            var justiceUser = await Hooks.SeedJusticeUser(username, "Test", "User", isTeamLead: false, initWorkHours: true);
+            db.Attach(justiceUser);
             
-            // Work hours
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 1, 8, 0, 0),
+                new DateTime(2022, 1, 1, 17, 0, 0)
+                );
             
-            // Non availabilities
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 1, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 1, 17, 0, 0)
-            });
-            justiceUser.Entity.VhoNonAvailability.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(2022, 1, 2, 8, 0, 0),
-                EndTime = new DateTime(2022, 1, 2, 17, 0, 0)
-            });
+            justiceUser.AddOrUpdateNonAvailability(
+                new DateTime(2022, 1, 2, 8, 0, 0),
+                new DateTime(2022, 1, 2, 17, 0, 0)
+            );
             
             // Allocations
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = allocatedHearingId,
-                JusticeUserId = justiceUser.Entity.Id
-            });
-            Hooks._seededJusticeUserIds.Add(justiceUser.Entity.Id);
+            _hearing.AllocateJusticeUser(justiceUser);
             await db.SaveChangesAsync();
-            
-            var allocationIds = db.Allocations.Where(x => x.JusticeUserId == justiceUser.Entity.Id).Select(e => e.Id);
-            Hooks._seededAllocationIds.AddRange(allocationIds);
 
-            return justiceUser.Entity;
+            return justiceUser;
         }
     }
 }

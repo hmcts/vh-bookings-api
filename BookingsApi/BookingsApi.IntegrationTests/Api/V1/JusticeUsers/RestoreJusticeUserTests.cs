@@ -7,7 +7,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
     public class RestoreJusticeUserTests : ApiTest
     {
         private RestoreJusticeUserRequest _request;
-        private Guid? _justiceUserId;
 
         [Test]
         public async Task Should_restore_justice_user()
@@ -79,56 +78,16 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
                 .Be(RestoreJusticeUserRequestValidation.NoUsernameErrorMessage);
         }
         
-        [TearDown]
-        public new async Task TearDown()
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            
-            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
-            if(justiceUserRoles.Any())
-                db.RemoveRange(justiceUserRoles);
-
-            var justiceUser = db.JusticeUsers.IgnoreQueryFilters().FirstOrDefault(x => x.Id == _justiceUserId);
-            if (justiceUser != null)
-            {
-                db.Remove(justiceUser);
-                await db.SaveChangesAsync();
-            }
-            
-            _justiceUserId = null;
-        }
-
         private async Task<JusticeUser> SeedDeletedJusticeUser(string username)
         {
+            var justiceUser = await Hooks.SeedJusticeUser(username, "ApiTest", "User", initWorkHours: true);
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-  
-            var justiceUser = db.JusticeUsers.Add(new JusticeUser
-            {
-                ContactEmail = username,
-                Username = username,
-                CreatedBy = "deletejusticeuser.test@test.com",
-                CreatedDate = DateTime.UtcNow,
-                FirstName = "ApiTest",
-                Lastname = "User",
-            });
-            
-            for (var i = 1; i <= 7; i++)
-            {
-                justiceUser.Entity.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i, 
-                    StartTime = new TimeSpan(8, 0, 0), 
-                    EndTime = new TimeSpan(17, 0, 0)
-                });
-            }
-            
-            justiceUser.Entity.Delete();
-            
-            await db.SaveChangesAsync();
 
-            _justiceUserId = justiceUser.Entity.Id;
+            db.Attach(justiceUser);
+            justiceUser.Delete();
+            await db.SaveChangesAsync();
             
-            return justiceUser.Entity;
+            return justiceUser;
         }
         
         private static RestoreJusticeUserRequest BuildValidRestoreJusticeUserRequest(JusticeUser justiceUser)

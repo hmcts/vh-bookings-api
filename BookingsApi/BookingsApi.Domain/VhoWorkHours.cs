@@ -4,8 +4,13 @@ namespace BookingsApi.Domain
 {
     public class VhoWorkHours : TrackableEntity<long>
     {
+        public VhoWorkHours()
+        {
+            CreatedDate = DateTime.UtcNow;
+            UpdatedDate = DateTime.UtcNow;
+        }
         public Guid JusticeUserId { get; set; }
-        public JusticeUser JusticeUser { get; set; }
+        public virtual JusticeUser JusticeUser { get; set; }
         public int DayOfWeekId { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
         public TimeSpan? StartTime { get; set; }

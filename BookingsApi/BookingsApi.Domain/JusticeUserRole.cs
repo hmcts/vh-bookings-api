@@ -1,3 +1,4 @@
+using System;
 using BookingsApi.Domain.RefData;
 
 namespace BookingsApi.Domain;
@@ -11,6 +12,8 @@ public class JusticeUserRole : TrackableEntity<int>
         UserRole = userRole;
     }
 
+    public Guid JusticeUserId { get; set; }
     public virtual JusticeUser JusticeUser { get; set; }
+    public int UserRoleId { get; set; }
     public virtual UserRole UserRole { get; set; }
 }

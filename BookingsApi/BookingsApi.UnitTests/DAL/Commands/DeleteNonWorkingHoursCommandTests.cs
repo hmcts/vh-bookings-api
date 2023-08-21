@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using BookingsApi.DAL;
+﻿using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.UnitTests.DAL.Commands
@@ -12,22 +12,29 @@ namespace BookingsApi.UnitTests.DAL.Commands
     {
         private BookingsDbContext _context;
         private DeleteNonWorkingHoursCommandHandler _handler;
-        
+        private JusticeUser _justiceUser;
+
         [OneTimeSetUp]
         public void InitialSetup()
         {
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
                 .UseInMemoryDatabase("VhBookingsInMemory").Options;
             _context = new BookingsDbContext(contextOptions);
-            _context.VhoNonAvailabilities.Add(
-                new VhoNonAvailability()
-                {
-                    JusticeUser = new JusticeUser() { Username = "username@mail.com" },
-                    StartTime = new DateTime(),
-                    EndTime = new DateTime(),
-                    JusticeUserId = Guid.NewGuid()
-                }
-            );
+            
+            _justiceUser = new JusticeUser()
+            {
+                ContactEmail = "username@mail.com",
+                Username = "username@mail.com",
+                CreatedBy = "test@test.com",
+                CreatedDate = DateTime.Now,
+                FirstName = "firstName",
+                Lastname = "lastName",
+            };
+            var userRoleCso = new UserRole((int)UserRoleId.Vho, "Video hearings officer");
+            _justiceUser.JusticeUserRoles.Add(new JusticeUserRole(_justiceUser, userRoleCso));
+            _justiceUser.AddOrUpdateNonAvailability(new DateTime(), new DateTime());
+
+            _context.JusticeUsers.Add(_justiceUser);
             _context.SaveChangesAsync();
 
         }
@@ -47,20 +54,21 @@ namespace BookingsApi.UnitTests.DAL.Commands
         [Test]
         public async Task should_delete_slot_for_valid_id()
         {
-            var slot = await _context.VhoNonAvailabilities.FirstOrDefaultAsync();
-            var command = new DeleteNonWorkingHoursCommand(slot.Id);
+            var slot = _justiceUser.VhoNonAvailability.First();
+            var command = new DeleteNonWorkingHoursCommand(_justiceUser.Username, slot.Id);
 
             await _handler.Handle(command);
-            var slotAfterDelete = await _context.VhoNonAvailabilities.FirstOrDefaultAsync();
 
-            slotAfterDelete.Deleted.Should().BeTrue();
+            var updatedJusticeUser = await _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .FirstAsync(x => x.Id == _justiceUser.Id);
+
+            updatedJusticeUser.VhoNonAvailability.Should().BeEmpty();
         }
         
         [Test]
-        public async Task should_not_delete_slot_for_not_valid_id()
+        public void should_not_delete_slot_for_not_valid_id()
         {
-            var slot = await _context.VhoNonAvailabilities.FirstOrDefaultAsync();
-            var command = new DeleteNonWorkingHoursCommand(111);
+            var command = new DeleteNonWorkingHoursCommand(_justiceUser.Username, 99999999);
             
             Assert.ThrowsAsync<NonWorkingHoursNotFoundException>(async () => await _handler.Handle(command));
         }

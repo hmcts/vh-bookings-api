@@ -1231,17 +1231,21 @@ namespace BookingsApi.Client
         /// <summary>
         /// Delete non availability work hours for vho
         /// </summary>
+        /// <param name="username">the justice user username</param>
+        /// <param name="nonAvailabilityId">Identifier for the non-available period</param>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id);
+        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(string username, long nonAvailabilityId);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete non availability work hours for vho
         /// </summary>
+        /// <param name="username">the justice user username</param>
+        /// <param name="nonAvailabilityId">Identifier for the non-available period</param>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(string username, long nonAvailabilityId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get case roles for a case service type
@@ -9604,28 +9608,32 @@ namespace BookingsApi.Client
         /// <summary>
         /// Delete non availability work hours for vho
         /// </summary>
+        /// <param name="username">the justice user username</param>
+        /// <param name="nonAvailabilityId">Identifier for the non-available period</param>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id)
+        public virtual System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(string username, long nonAvailabilityId)
         {
-            return DeleteVhoNonAvailabilityHoursAsync(id, System.Threading.CancellationToken.None);
+            return DeleteVhoNonAvailabilityHoursAsync(username, nonAvailabilityId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete non availability work hours for vho
         /// </summary>
+        /// <param name="username">the justice user username</param>
+        /// <param name="nonAvailabilityId">Identifier for the non-available period</param>
         /// <returns>vho with list of non availability work hours</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(long? id, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task DeleteVhoNonAvailabilityHoursAsync(string username, long nonAvailabilityId, System.Threading.CancellationToken cancellationToken)
         {
+            if (nonAvailabilityId == null)
+                throw new System.ArgumentNullException("nonAvailabilityId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability?");
-            if (id != null)
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("id") + "=").Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/NonAvailability/VHO/{username}/{nonAvailabilityId}");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{nonAvailabilityId}", System.Uri.EscapeDataString(ConvertToString(nonAvailabilityId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9669,6 +9677,26 @@ namespace BookingsApi.Client
                         if (status_ == 200)
                         {
                             return;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ValidationProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<ValidationProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
