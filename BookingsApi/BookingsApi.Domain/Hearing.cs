@@ -26,6 +26,7 @@ namespace BookingsApi.Domain
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
+            JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -252,6 +253,23 @@ namespace BookingsApi.Domain
 
         public bool HasHost => GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member");
 
+        public JudiciaryParticipant AddJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName, HearingRoleCode hearingRoleCode)
+        {
+            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
+            }
+
+            if (IsJudiciaryPersonALeaver(judiciaryPerson))
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
+            }
+            
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
+            JudiciaryParticipants.Add(participant);
+            return participant;
+        }
+        
         public void ValidateHostCount()
         {
             if (!HasHost)
@@ -306,6 +324,11 @@ namespace BookingsApi.Domain
         public IList<Endpoint> GetEndpoints()
         {
             return Endpoints;
+        }
+        
+        public IList<JudiciaryParticipant> GetJudiciaryParticipants()
+        {
+            return JudiciaryParticipants;
         }
 
         public void RemoveEndpoint(Endpoint endpoint)
@@ -467,6 +490,16 @@ namespace BookingsApi.Domain
         private bool DoesEndpointExist(string sip)
         {
             return Endpoints.Any(x => x.Sip.Equals(sip, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        private bool DoesJudiciaryParticipantExistByPersonalCode(string personalCode)
+        {
+            return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
+        }
+
+        private bool IsJudiciaryPersonALeaver(JudiciaryPerson judiciaryPerson)
+        {
+            return judiciaryPerson.Leaver || judiciaryPerson.HasLeft;
         }
         
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,

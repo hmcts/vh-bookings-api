@@ -5,13 +5,9 @@ namespace BookingsApi.Domain
 {
     public class JudiciaryParticipant : TrackableEntity<Guid>
     {
-        protected JudiciaryParticipant()
+        public JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, HearingRoleCode hearingRoleCode)
         {
             Id = Guid.NewGuid();
-        }
-        
-        protected JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, HearingRoleCode hearingRoleCode)
-        {
             DisplayName = displayName;
             JudiciaryPerson = judiciaryPerson;
             HearingRoleCode = hearingRoleCode;
