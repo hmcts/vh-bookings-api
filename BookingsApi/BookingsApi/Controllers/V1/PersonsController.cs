@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
@@ -150,6 +151,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [Obsolete("This method is deprecated.")]
+        [ExcludeFromCodeCoverage]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
         {

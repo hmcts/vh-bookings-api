@@ -27,7 +27,7 @@ public class AddNonAvailableHoursTests : ApiTest
     {
         if (_newNonWorkingHoursId.HasValue)
         {
-            await BookingsApiClient.DeleteVhoNonAvailabilityHoursAsync(_newNonWorkingHoursId.Value);
+            await BookingsApiClient.DeleteVhoNonAvailabilityHoursAsync(_cso.Username, _newNonWorkingHoursId.Value);
             TestContext.WriteLine($"Removed non working hours (id: {_newNonWorkingHoursId}) for user {_cso.Username}");
             _newNonWorkingHoursId = null;
             

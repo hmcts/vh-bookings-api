@@ -2,7 +2,6 @@
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using Microsoft.EntityFrameworkCore;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders.Api.V1.Request;
 using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;

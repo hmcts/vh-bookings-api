@@ -7,8 +7,6 @@ namespace BookingsApi.DAL
     public class BookingsDbContext : DbContext
     {
         public BookingsDbContext(DbContextOptions options) : base(options){}
-
-        public DbSet<Allocation> Allocations { get; set; }
         public DbSet<Case> Cases { get; set; }
         public DbSet<VideoHearing> VideoHearings { get; set; }
         public DbSet<Person> Persons { get; set; }
@@ -22,10 +20,7 @@ namespace BookingsApi.DAL
         public DbSet<JusticeUser> JusticeUsers { get; set; }
         public DbSet<JudiciaryPersonStaging> JudiciaryPersonsStaging { get; set; }
         public DbSet<Jurisdiction> Jurisdiction { get; set; }
-        public DbSet<VhoNonAvailability> VhoNonAvailabilities { get; set; }
-        public DbSet<VhoWorkHours> VhoWorkHours { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
-        public DbSet<JusticeUserRole> JusticeUserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

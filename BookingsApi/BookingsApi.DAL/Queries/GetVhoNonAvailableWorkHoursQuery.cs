@@ -19,11 +19,13 @@
             var justiceUser = await _context.JusticeUsers
                 .Include(e => e.VhoNonAvailability)
                 .FirstOrDefaultAsync(e => e.Username == query.UserName);
-            
-            if(justiceUser == null)    
-                return null;
 
-            return justiceUser.VhoNonAvailability.Where(x => x.Deleted != true).ToList() ?? new List<VhoNonAvailability>();
+            if (justiceUser == null)
+            {
+                throw new JusticeUserNotFoundException(query.UserName);
+            }
+
+            return justiceUser.VhoNonAvailability.Where(x => !x.Deleted).ToList();
         }
     }
 }

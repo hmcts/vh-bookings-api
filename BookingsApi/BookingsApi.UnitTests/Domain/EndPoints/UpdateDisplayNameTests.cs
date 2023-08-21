@@ -1,5 +1,4 @@
 ﻿using BookingsApi.Domain;
-using System;
 
 namespace BookingsApi.UnitTests.Domain.EndPoints
 {

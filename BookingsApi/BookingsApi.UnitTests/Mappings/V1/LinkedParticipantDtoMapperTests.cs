@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services;

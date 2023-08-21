@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Common.Services;
 
 namespace BookingsApi.UnitTests.Services

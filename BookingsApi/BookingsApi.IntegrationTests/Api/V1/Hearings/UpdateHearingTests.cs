@@ -5,7 +5,6 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 

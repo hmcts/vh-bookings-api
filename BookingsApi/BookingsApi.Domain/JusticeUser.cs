@@ -4,6 +4,7 @@ using BookingsApi.Domain.RefData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
@@ -39,6 +40,50 @@ namespace BookingsApi.Domain
         public virtual IList<VhoNonAvailability> VhoNonAvailability { get; protected set; }
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
         public virtual IList<Allocation> Allocations { get; protected set; }
+
+        public void AddOrUpdateWorkHour(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+        {
+            var existingHour = VhoWorkHours.SingleOrDefault(hours => !hours.Deleted && hours.DayOfWeekId == dayOfWeek.Id);
+            if (existingHour == null)
+            {
+                VhoWorkHours.Add(new VhoWorkHours()
+                {
+                    DayOfWeek = dayOfWeek,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    JusticeUser = this
+                });
+            }
+            else
+            {
+                existingHour.StartTime = startTime;
+                existingHour.EndTime = endTime;
+                UpdatedDate = DateTime.UtcNow;
+            }
+        }
+
+        public void AddOrUpdateNonAvailability(DateTime startTime, DateTime endTime)
+        {
+            var vhoNonWorkingHours =
+                VhoNonAvailability.SingleOrDefault(x => x.StartTime == startTime || x.EndTime == endTime);
+
+            if (vhoNonWorkingHours == null)
+            {
+                VhoNonAvailability.Add(new VhoNonAvailability()
+                {
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    JusticeUser = this
+                });
+            }
+            else
+            {
+                vhoNonWorkingHours.StartTime = startTime;
+                vhoNonWorkingHours.EndTime = endTime;
+                vhoNonWorkingHours.Deleted = false;
+                // should we undelete if being re-added?
+            }
+        }
 
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
@@ -97,16 +142,8 @@ namespace BookingsApi.Domain
         public void Delete()
         {
             Deleted = true;
-
-            foreach (var workHour in VhoWorkHours)
-            {
-                workHour.Delete();
-            }
-
-            foreach (var nonAvailability in VhoNonAvailability)
-            {
-                nonAvailability.Delete();
-            }
+            VhoWorkHours.Clear();
+            VhoNonAvailability.Clear();
             
             foreach (var hearing in Allocations.Select(a => a.Hearing))
             {
@@ -120,5 +157,15 @@ namespace BookingsApi.Domain
         }
         
         public bool IsTeamLeader() => JusticeUserRoles.Any(jur => jur.UserRole.IsVhTeamLead);
+
+        public void RemoveNonAvailability(VhoNonAvailability nonAvailability)
+        {
+            var existing = VhoNonAvailability.SingleOrDefault(x => x.Id == nonAvailability.Id);
+            if (existing == null)
+            {
+                throw new DomainRuleException("JusticeUser", "NonAvailability does not exist");
+            }
+            VhoNonAvailability.Remove(nonAvailability);
+        }
     }
 }

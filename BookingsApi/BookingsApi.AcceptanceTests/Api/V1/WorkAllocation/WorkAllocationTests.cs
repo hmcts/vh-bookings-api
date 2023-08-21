@@ -161,7 +161,7 @@ public class WorkAllocationTests : ApiTest
 
         foreach (var na in nonAvailabilities)
         {
-            await BookingsApiClient.DeleteVhoNonAvailabilityHoursAsync(na.Id);
+            await BookingsApiClient.DeleteVhoNonAvailabilityHoursAsync(_cso.Username, na.Id);
         }
     }
     

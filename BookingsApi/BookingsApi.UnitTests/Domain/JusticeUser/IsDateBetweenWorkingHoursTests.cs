@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;

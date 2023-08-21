@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using Microsoft.AspNetCore.Mvc;

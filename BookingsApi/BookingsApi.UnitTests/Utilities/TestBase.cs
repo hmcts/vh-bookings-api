@@ -1,5 +1,3 @@
-using System;
-
 namespace BookingsApi.UnitTests.Utilities
 {
     /// <summary>

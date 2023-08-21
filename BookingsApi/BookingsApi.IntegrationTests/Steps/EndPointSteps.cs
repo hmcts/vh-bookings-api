@@ -2,7 +2,6 @@
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain.Enumerations;
-using Microsoft.EntityFrameworkCore;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JVEndPointEndpoints;
 
