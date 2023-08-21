@@ -21,7 +21,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         }
 
         [Test]
-        public void Should_not_add_existing_judiciary_participant_to_hearing()
+        public void Should_raise_exception_if_judiciary_participant_already_exists()
         {
             var hearing = new VideoHearingBuilder().Build();
             var existingJudiciaryPerson = new JudiciaryPersonBuilder().Build();
@@ -40,7 +40,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         [TestCase(true, true)]
         [TestCase(false, true)]
         [TestCase(true, false)]
-        public void Should_not_add_leaver_judiciary_participant_to_hearing(bool hasLeft, bool leaver)
+        public void Should_raise_exception_if_judiciary_participant_is_a_leaver(bool hasLeft, bool leaver)
         {
             var hearing = new VideoHearingBuilder().Build();
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
@@ -54,6 +54,39 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Cannot add a participant who is a leaver").Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+        
+        [TestCase("")]
+        [TestCase(null)]
+        [TestCase(" ")]
+        public void Should_raise_exception_if_display_name_is_not_specified(string displayName)
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            
+            var action = () => 
+                hearing.AddJudiciaryParticipant(newJudiciaryPerson, displayName, HearingRoleCode.PanelMember);
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == "Display name cannot be empty").Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+
+        [Test]
+        public void Should_raise_exception_if_judiciary_person_is_null()
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            
+            var action = () => 
+                hearing.AddJudiciaryParticipant(null, "Display Name", HearingRoleCode.PanelMember);
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == "Judiciary person cannot be null").Should().BeTrue();
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
         }

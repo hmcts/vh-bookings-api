@@ -255,14 +255,24 @@ namespace BookingsApi.Domain
 
         public JudiciaryParticipant AddJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName, HearingRoleCode hearingRoleCode)
         {
+            if (judiciaryPerson == null)
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary person cannot be null");
+            }
+            
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
             }
 
-            if (IsJudiciaryPersonALeaver(judiciaryPerson))
+            if (judiciaryPerson.IsALeaver())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
+            }
+            
+            if (displayName == null || displayName.Trim() == string.Empty)
+            {
+                throw new DomainRuleException(nameof(displayName), "Display name cannot be empty");
             }
             
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
@@ -497,11 +507,6 @@ namespace BookingsApi.Domain
             return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
         }
 
-        private bool IsJudiciaryPersonALeaver(JudiciaryPerson judiciaryPerson)
-        {
-            return judiciaryPerson.Leaver || judiciaryPerson.HasLeft;
-        }
-        
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
             HearingType hearingType)
         {
