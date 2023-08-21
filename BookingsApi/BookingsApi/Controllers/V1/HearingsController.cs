@@ -404,19 +404,19 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
-            var result = new UpdateHearingRequestValidation().Validate(request);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return ValidationProblem(ModelState);
-            }
-
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             if (videoHearing == null)
             {
                 return NotFound();
+            }
+            
+            var result = new UpdateHearingRequestValidation(videoHearing).Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return ValidationProblem(ModelState);
             }
 
             var venueId = request.HearingVenueName;
