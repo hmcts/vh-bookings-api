@@ -9,20 +9,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     {
         private GetBookingsByCaseTypesQueryHandler _handler;
         private BookingsDbContext _context;
-        private Mock<IFeatureToggles> FeatureTogglesMock;
 
         private const string FinancialRemedy = "Financial Remedy";
 
         [SetUp]
         public void Setup()
         {
-            FeatureTogglesMock = new Mock<IFeatureToggles>();
-
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
-
             _context = new BookingsDbContext(BookingsDbContextOptions);
-
-            _handler = new GetBookingsByCaseTypesQueryHandler(_context, FeatureTogglesMock.Object);
+            _handler = new GetBookingsByCaseTypesQueryHandler(_context);
         }
 
         [Test]

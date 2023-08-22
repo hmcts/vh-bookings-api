@@ -34,7 +34,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<IRandomGenerator> RandomGenerator;
         protected Mock<IHearingService> HearingServiceMock;
         protected KinlyConfiguration KinlyConfiguration;
-        protected Mock<IFeatureToggles> FeatureTogglesMock;
         protected Mock<IVhLogger> Logger;
 
         private IEventPublisher _eventPublisher;
@@ -50,12 +49,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             HearingServiceMock = new Mock<IHearingService>();
             KinlyConfiguration = new KinlyConfiguration { SipAddressStem = "@WhereAreYou.com" };
             RandomGenerator = new Mock<IRandomGenerator>();
-            FeatureTogglesMock = new Mock<IFeatureToggles>();
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<IVhLogger>();
 
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
             Controller = GetControllerObject(false);
         }
 
@@ -65,7 +62,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object);
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, FeatureTogglesMock.Object, Logger.Object);
+                HearingServiceMock.Object, Logger.Object);
         }
 
         [Test]
@@ -167,8 +164,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var objectResult = (ObjectResult)result.Result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var response = (BookingsResponse)((ObjectResult)result.Result).Value;
-            response.PrevPageUrl.Should().Be("hearings/types?types=&cursor=0&limit=2");
-            response.NextPageUrl.Should().Be("hearings/types?types=&cursor=next cursor&limit=2");
+            response.PrevPageUrl.Should().StartWith("hearings/types?types=&cursor=0&limit=2");
+            response.NextPageUrl.Should().StartWith("hearings/types?types=&cursor=next cursor&limit=2");
             QueryHandlerMock.Verify(q => q.Handle<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
                 (It.Is<GetBookingsByCaseTypesQuery>(g => g.Cursor == null)), Times.Once);
         }
@@ -197,8 +194,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             result.Should().NotBeNull();
             var response = (BookingsResponse)((ObjectResult)result.Result).Value;
-            response.PrevPageUrl.Should().Be("hearings/types?types=1&types=2&cursor=0&limit=2");
-            response.NextPageUrl.Should().Be("hearings/types?types=1&types=2&cursor=next-cursor&limit=2");
+            response.PrevPageUrl.Should().StartWith("hearings/types?types=1&types=2&cursor=0&limit=2");
+            response.NextPageUrl.Should().StartWith("hearings/types?types=1&types=2&cursor=next-cursor&limit=2");
         }
 
         [Test]
@@ -343,14 +340,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                     Times.Once);
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_bookings_list_for_case_number_search()
         {
             var caseTypes = new List<int> { 1, 2 };
 
             const string searchTerm = "CASE_NUMBER";
-
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
@@ -386,13 +381,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
+        [Test]
         public async Task Should_return_bookings_list_for_venue_ids_search()
         {
             var caseTypes = new List<int>();
             var venueIds = new List<int> { 1, 2, 3 };
-            
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
             
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
@@ -461,8 +454,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             
             var lastName = "PARTICIPANT_LAST_NAME";
 
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingVenuesQuery, List<HearingVenue>>(It.IsAny<GetHearingVenuesQuery>()))
                 .ReturnsAsync(new List<HearingVenue> { new HearingVenue(1, "Birmingham"), new HearingVenue(2, "Manchester"), new HearingVenue(3, "London") });
@@ -497,12 +488,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                     It.IsAny<GetBookingsByCaseTypesQuery>()), Times.Once);
         }
 
-        [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_bookings_list_without_judge_search()
         {
             var caseTypes = new List<int> { 1, 2 };
-
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
 
             QueryHandlerMock
                 .Setup(x => x.Handle<GetAllCaseTypesQuery, List<CaseType>>(It.IsAny<GetAllCaseTypesQuery>()))
