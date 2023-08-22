@@ -317,7 +317,6 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.JudiciaryParticipant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CreatedDate")
@@ -1138,7 +1137,7 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("BookingsApi.Domain.JudiciaryPerson", "JudiciaryPerson")
-                        .WithMany("JudiciaryParticipants")
+                        .WithMany()
                         .HasForeignKey("JudiciaryPersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1330,11 +1329,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("JudiciaryParticipants");
 
                     b.Navigation("Participants");
-                });
-
-            modelBuilder.Entity("BookingsApi.Domain.JudiciaryPerson", b =>
-                {
-                    b.Navigation("JudiciaryParticipants");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Jurisdiction", b =>

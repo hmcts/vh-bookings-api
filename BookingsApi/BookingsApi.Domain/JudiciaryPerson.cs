@@ -40,7 +40,6 @@ namespace BookingsApi.Domain
         public bool HasLeft { get; set; }
         public bool Leaver { get; set; }
         public string LeftOn { get; set; }
-        public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
 
         public void Update(string personalCode, string title, string knownAs, string surname, string fullname, 
             string postNominals, string email, bool hasLeft, bool leaver, string leftOn)

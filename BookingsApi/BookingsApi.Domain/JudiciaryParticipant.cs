@@ -13,6 +13,11 @@ namespace BookingsApi.Domain
             HearingRoleCode = hearingRoleCode;
         }
         
+        protected JudiciaryParticipant()
+        {
+            Id = Guid.NewGuid();
+        }
+        
         public string DisplayName { get; private set; }
         public Guid JudiciaryPersonId { get; private set; }
         public virtual JudiciaryPerson JudiciaryPerson { get; private set; }

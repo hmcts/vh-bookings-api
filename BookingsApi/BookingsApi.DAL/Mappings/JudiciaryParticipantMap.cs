@@ -5,6 +5,7 @@ namespace BookingsApi.DAL.Mappings
         public void Configure(EntityTypeBuilder<JudiciaryParticipant> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
             builder.HasOne(x => x.Hearing);
             builder.HasOne(x => x.JudiciaryPerson);
             
