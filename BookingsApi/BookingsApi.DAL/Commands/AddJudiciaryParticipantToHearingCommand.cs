@@ -1,4 +1,5 @@
 using BookingsApi.Domain.Validations;
+
 namespace BookingsApi.DAL.Commands
 {
     public class AddJudiciaryParticipantToHearingCommand : ICommand
