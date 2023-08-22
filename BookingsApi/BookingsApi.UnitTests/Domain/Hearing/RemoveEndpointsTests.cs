@@ -1,7 +1,5 @@
 ﻿using BookingsApi.Domain;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {

@@ -5,7 +5,6 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
@@ -15,7 +14,8 @@ public class UpdateHearingTests : ApiTest
     public async Task should_return_bad_request_and_validation_errors_when_payload_fails_validation()
     {
         // arrange
-        var hearingId = Guid.NewGuid();
+        var hearing = await Hooks.SeedVideoHearing();
+        var hearingId = hearing.Id;
         var request = new UpdateHearingRequest();
 
         // act
@@ -148,7 +148,7 @@ public class UpdateHearingTests : ApiTest
         message.Should().BeNull();
     }
     
-    private UpdateHearingRequest BuildRequest()
+    private static UpdateHearingRequest BuildRequest()
     {
         var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;

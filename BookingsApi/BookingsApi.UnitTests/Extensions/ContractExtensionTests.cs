@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 using BookingsApi.Extensions;
 using Testing.Common.Builders.Api.V1.Request;

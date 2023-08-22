@@ -131,6 +131,11 @@ namespace Testing.Common.Builders.Api
         {
             private const string ApiRoot = "work-hours";
             public static string SaveWorkHours => $"{ApiRoot}/SaveWorkHours";
+
+            public static string UpdateVhoNonAvailabilityHours(string username) => $"NonAvailability/VHO/{username}";
+
+            public static string DeleteVhoNonAvailabilityHours(string username, long id) =>
+                $"/NonAvailability/VHO/{username}/{id}";
         }
         
         public static class JusticeUserEndpoints

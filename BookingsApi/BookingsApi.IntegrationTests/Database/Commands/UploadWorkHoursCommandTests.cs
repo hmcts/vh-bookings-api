@@ -1,7 +1,6 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
-using Microsoft.EntityFrameworkCore;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -43,8 +42,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_save_work_hours_to_database()
         {
             // Arrange
-            var oldWorkCount = _context.VhoWorkHours.Count();
-
             var justiceUserOne = await Hooks
                 .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true, initWorkHours:false);
             var justiceUserTwo = await Hooks
@@ -72,15 +69,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Act
             await _commandHandler.Handle(command);
 
-            var workHours = _context.VhoWorkHours;
-            var justiceUserOneWorkHours = workHours.Single(x => x.JusticeUserId == justiceUserOne.Id);
-            var justiceUserTwoWorkHours = workHours.Single(x => x.JusticeUserId == justiceUserTwo.Id);
+            
+            var justiceUserOneDb = await _context.JusticeUsers.Include(x => x.VhoWorkHours)
+                .FirstAsync(x => x.Id == justiceUserOne.Id);
+            var justiceUserTwoDb = await _context.JusticeUsers.Include(x => x.VhoWorkHours)
+                .FirstAsync(x => x.Id == justiceUserTwo.Id);
+            var justiceUserOneWorkHours = justiceUserOneDb.VhoWorkHours[0];
+            var justiceUserTwoWorkHours = justiceUserTwoDb.VhoWorkHours[0];
 
             // Assert
-            workHours.Count().Should().Be(oldWorkCount + 2);
             justiceUserOneWorkHours.DayOfWeekId.Should().Be(1);
             justiceUserOneWorkHours.StartTime.Should().Be(new TimeSpan(9, 0, 0));
             justiceUserOneWorkHours.EndTime.Should().Be(new TimeSpan(18, 0, 0));
+            
             justiceUserTwoWorkHours.DayOfWeekId.Should().Be(2);
             justiceUserTwoWorkHours.StartTime.Should().Be(new TimeSpan(9, 30, 0));
             justiceUserTwoWorkHours.EndTime.Should().Be(new TimeSpan(17, 30, 0));
@@ -96,17 +97,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var daysOfWeek = await db.DaysOfWeek.ToListAsync();
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing1.Id,
-                JusticeUserId = allocatedUser1.Id
-            });
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing2.Id,
-                JusticeUserId = allocatedUser2.Id
-            });
-            await db.SaveChangesAsync();
+            await Hooks.AddAllocation(seededHearing1, allocatedUser1);
+            await Hooks.AddAllocation(seededHearing2, allocatedUser2);
+            
             var hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
             hearing1.AllocatedTo.Should().NotBeNull();
             hearing1.AllocatedTo.Id.Should().Be(allocatedUser1.Id);

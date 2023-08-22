@@ -32,9 +32,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
             
             createdResponse.Should().BeEquivalentTo(justiceUserResponse);
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == _request.Username);
-            justiceUser.Should().NotBeNull();
+            var justiceUser = db.JusticeUsers.First(x => x.Username == _request.Username);
             justiceUser.Id.Should().Be(justiceUserResponse.Id);
+            Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         }
 
         [Test]
@@ -72,26 +72,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
                 ApiUriFactory.JusticeUserEndpoints.AddJusticeUser, RequestBody.Set(_request));
             // assert
             result1.IsSuccessStatusCode.Should().BeTrue();
+            var createdResponse1 = await ApiClientResponse.GetResponses<JusticeUserResponse>(result1.Content);
+            Hooks.AddJusticeUserForCleanup(createdResponse1.Id);
             result2.IsSuccessStatusCode.Should().BeFalse();
             result2.StatusCode.Should().Be(HttpStatusCode.Conflict);
         }
-
-        [TearDown]
-        public async Task TearDown()
-        {
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            
-            var justiceUserRoles = db.JusticeUserRoles.Where(x => x.JusticeUser.Username == _request.Username);
-            if(justiceUserRoles.Any())
-                db.RemoveRange(justiceUserRoles);
-                
-            var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == _request.Username);
-            if (justiceUser != null)
-            {
-                db.Remove(justiceUser);
-                await db.SaveChangesAsync();
-            }
-        }
+        
         private static AddJusticeUserRequest BuildValidAddJusticeUserRequest()
         {
             return Builder<AddJusticeUserRequest>.CreateNew()

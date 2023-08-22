@@ -1,7 +1,5 @@
 ﻿using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
-using System;
-using System.Linq;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
@@ -109,6 +107,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_update_hearing_status_to_created()
         {
             var hearing = new VideoHearingBuilder().Build();
+            // use reflection because some machines are too quick and the updated date is the same created
+            hearing.SetProtected(nameof(hearing.UpdatedDate), DateTime.UtcNow.AddDays(-1));
             var updatedDate = DateTime.UtcNow;
             var updatedBy = "testuser";
             hearing.UpdateStatus(BookingStatus.Created, updatedBy, "");

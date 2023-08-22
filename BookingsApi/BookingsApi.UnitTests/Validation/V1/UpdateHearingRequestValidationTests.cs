@@ -1,7 +1,5 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Domain;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.UnitTests.Validation.V1
@@ -9,11 +7,15 @@ namespace BookingsApi.UnitTests.Validation.V1
     public class UpdateHearingRequestValidationTests
     {
         private UpdateHearingRequestValidation _validator;
+        private DateTime _scheduledDateTime;
+        private VideoHearing _hearing;
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        [SetUp]
+        public void SetUp()
         {
-            _validator = new UpdateHearingRequestValidation();
+            _scheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30);
+            _hearing = new VideoHearingBuilder().WithScheduledDateTime(_scheduledDateTime).Build();
+            _validator = new UpdateHearingRequestValidation(_hearing);
         }
 
         [Test]
@@ -31,7 +33,6 @@ namespace BookingsApi.UnitTests.Validation.V1
         {
             // arrange
             // venue name and code are both empty
-            _validator = new UpdateHearingRequestValidation();
             var request = BuildRequest();
             request.HearingVenueName = string.Empty;
 
@@ -82,7 +83,7 @@ namespace BookingsApi.UnitTests.Validation.V1
                 .Should().BeTrue();
         }
 
-        private UpdateHearingRequest BuildRequest()
+        private static UpdateHearingRequest BuildRequest()
         {
             return new UpdateHearingRequest
             {

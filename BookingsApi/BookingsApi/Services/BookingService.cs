@@ -35,7 +35,6 @@ public interface IBookingService
     /// </summary>
     /// <param name="updateHearingCommand"></param>
     /// <param name="originalHearing"></param>
-    /// <param name="updatedHearing"></param>
     /// <returns></returns>
     Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing);
 

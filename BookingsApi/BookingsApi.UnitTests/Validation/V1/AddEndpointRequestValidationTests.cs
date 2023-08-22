@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Contract.V1.Requests;
+﻿using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.UnitTests.Validation.V1
@@ -37,7 +35,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             };
 
             var result = await _validator.ValidateAsync(request);
-            result.Errors.Any(x => x.ErrorMessage == AddEndpointRequestValidation.NoDisplayNameError)
+            result.Errors.Exists(x => x.ErrorMessage == AddEndpointRequestValidation.NoDisplayNameError)
                 .Should().BeTrue();
         }
     }

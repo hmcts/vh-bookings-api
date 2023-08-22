@@ -11,5 +11,6 @@ global using BookingsApi.Domain;
 global using BookingsApi.IntegrationTests.Helper;
 global using FluentAssertions;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
 global using NUnit.Framework;
 global using Testing.Common.Builders.Api;

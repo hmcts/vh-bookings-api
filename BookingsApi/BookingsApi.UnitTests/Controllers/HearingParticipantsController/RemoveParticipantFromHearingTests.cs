@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands;

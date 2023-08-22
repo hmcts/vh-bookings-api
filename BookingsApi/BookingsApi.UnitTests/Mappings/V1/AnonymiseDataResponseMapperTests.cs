@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.Mappings.V1;
 

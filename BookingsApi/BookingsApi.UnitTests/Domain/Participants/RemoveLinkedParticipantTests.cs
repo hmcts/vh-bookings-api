@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;

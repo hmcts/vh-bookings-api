@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using BookingsApi.Extensions;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 using System.Net;
 using BookingsApi.Common;
 using Microsoft.Extensions.Logging;

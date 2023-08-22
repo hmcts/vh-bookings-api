@@ -2,7 +2,6 @@ using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
 using GST.Fake.Authentication.JwtBearer;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
 using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests.Contexts

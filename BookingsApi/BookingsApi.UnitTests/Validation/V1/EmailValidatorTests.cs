@@ -1,4 +1,3 @@
-using System;
 using BookingsApi.Validations;
 
 namespace BookingsApi.UnitTests.Validation.V1
@@ -23,6 +22,13 @@ namespace BookingsApi.UnitTests.Validation.V1
         public void Should_fail_validation_when_format_is_invalid()
         {
             var email = GetInvalidEmail();
+            email.IsValidEmail().Should().BeFalse();
+        }
+
+        [Test]
+        public void should_pass_validation_when_email_has_ampersand()
+        {
+            var email = "test&more@foo.com";
             email.IsValidEmail().Should().BeFalse();
         }
 

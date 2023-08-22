@@ -29,7 +29,8 @@ namespace BookingsApi.DAL.Commands
         {
             foreach (var uploadNonWorkingHoursRequest in command.UploadNonWorkingHoursRequests)
             {
-                var user = await _context.JusticeUsers
+                var user = await _context.JusticeUsers 
+                    .Include(x=> x.VhoNonAvailability)
                     .SingleOrDefaultAsync(x => x.Username == uploadNonWorkingHoursRequest.Username);
 
                 if (user == null)
@@ -38,29 +39,7 @@ namespace BookingsApi.DAL.Commands
                     continue;
                 }
 
-                var vhoNonAvailabilities = _context.VhoNonAvailabilities
-                    .Where(x => x.JusticeUser.Username == uploadNonWorkingHoursRequest.Username && !x.Deleted);
-
-                var vhoNonWorkingHours = vhoNonAvailabilities
-                    .SingleOrDefault(x => x.StartTime == uploadNonWorkingHoursRequest.StartTime
-                        || x.EndTime == uploadNonWorkingHoursRequest.EndTime);
-
-                bool doesVhoNonWorkingHoursExist = true;
-
-                if (vhoNonWorkingHours == null)
-                {
-                    doesVhoNonWorkingHoursExist = false;
-                    vhoNonWorkingHours = new VhoNonAvailability();
-                }
-
-                vhoNonWorkingHours.JusticeUserId = user.Id;
-                vhoNonWorkingHours.StartTime = uploadNonWorkingHoursRequest.StartTime;
-                vhoNonWorkingHours.EndTime = uploadNonWorkingHoursRequest.EndTime;
-
-                if (doesVhoNonWorkingHoursExist)
-                    _context.Update(vhoNonWorkingHours);
-                else
-                    _context.Add(vhoNonWorkingHours);
+                user.AddOrUpdateNonAvailability(uploadNonWorkingHoursRequest.StartTime, uploadNonWorkingHoursRequest.EndTime);
 
                 await _hearingAllocationService.DeallocateFromUnavailableHearings(user.Id);
                 

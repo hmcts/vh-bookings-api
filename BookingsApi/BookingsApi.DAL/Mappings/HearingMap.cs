@@ -28,6 +28,7 @@ namespace BookingsApi.DAL.Mappings
             builder.Ignore(x => x.IsFirstDayOfMultiDayHearing);
 
             builder.HasMany<HearingCase>("HearingCases").WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
+            builder.HasMany<Allocation>(nameof(Hearing.Allocations)).WithOne(x => x.Hearing).HasForeignKey(x => x.HearingId);
             builder.HasMany<Endpoint>("Endpoints").WithOne("Hearing").HasForeignKey(x => x.HearingId);
             builder.HasMany<Participant>("Participants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
 

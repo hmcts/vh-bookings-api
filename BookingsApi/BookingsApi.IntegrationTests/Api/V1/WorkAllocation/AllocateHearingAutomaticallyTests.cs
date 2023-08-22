@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V1.Responses;
-using Microsoft.EntityFrameworkCore;
 using Testing.Common.Assertions;
 using DayOfWeek = System.DayOfWeek;
 

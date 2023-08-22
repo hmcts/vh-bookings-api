@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Helper;
 using BookingsApi.Domain.RefData;
@@ -28,10 +26,10 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var firstGroup = mappedHearings[0];
             firstGroup.ScheduledDate.Should().Be(hearings[0].ScheduledDateTime.Date);
             firstGroup.Hearings.Count.Should().Be(1);
-            firstGroup.Hearings.First().QuestionnaireNotRequired.Should().BeFalse();
-            firstGroup.Hearings.First().AudioRecordingRequired.Should().BeTrue();
-            firstGroup.Hearings.First().CancelReason.Should().Be(hearings[0].CancelReason);
-            firstGroup.Hearings.First().GroupId.Should().Be(hearings[0].Id);
+            firstGroup.Hearings[0].QuestionnaireNotRequired.Should().BeFalse();
+            firstGroup.Hearings[0].AudioRecordingRequired.Should().BeTrue();
+            firstGroup.Hearings[0].CancelReason.Should().Be(hearings[0].CancelReason);
+            firstGroup.Hearings[0].GroupId.Should().Be(hearings[0].Id);
         }
 
         private static VideoHearing MockHearingAtDate(DateTime datetime, bool audioRecordingRequired,

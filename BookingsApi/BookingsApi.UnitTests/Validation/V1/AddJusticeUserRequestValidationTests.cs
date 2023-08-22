@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Validations.V1;
@@ -95,9 +93,9 @@ namespace BookingsApi.UnitTests.Validation.V1
             var result = await _validator.ValidateAsync(request);
             
             result.IsValid.Should().BeFalse();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.FirstNameDoesntMatchRegex)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.FirstNameDoesntMatchRegex)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.LastNameDoesntMatchRegex)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.LastNameDoesntMatchRegex)
                 .Should().BeTrue();
         }
         

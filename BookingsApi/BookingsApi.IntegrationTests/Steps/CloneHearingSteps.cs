@@ -2,7 +2,6 @@ using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Common;
 using BookingsApi.Contract.V1.Requests;
-using Microsoft.EntityFrameworkCore;
 using TechTalk.SpecFlow;
 
 namespace BookingsApi.IntegrationTests.Steps

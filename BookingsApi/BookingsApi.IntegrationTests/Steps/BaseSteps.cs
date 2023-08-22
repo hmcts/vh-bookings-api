@@ -1,5 +1,4 @@
 ﻿using BookingsApi.IntegrationTests.Contexts;
-using Microsoft.EntityFrameworkCore;
 using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 
 namespace BookingsApi.IntegrationTests.Steps

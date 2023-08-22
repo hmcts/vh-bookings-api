@@ -7,7 +7,6 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using FizzWare.NBuilder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
