@@ -163,14 +163,15 @@ namespace BookingsApi.IntegrationTests.Helper
         public Task<VideoHearing> SeedVideoHearing(
             bool addSuitabilityAnswer = false,
             BookingStatus status = BookingStatus.Booked,
-            bool isMultiDayFirstHearing = false)
+            bool isMultiDayFirstHearing = false,
+            bool addJudge = true)
         {
-            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing);
+            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing, addJudge: addJudge);
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
             bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
-            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
+            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false, bool addJudge = true)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -232,8 +233,11 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
                 $"{person5.FirstName} {person5.LastName}");
 
-            videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
-                $"{judgePerson.FirstName} {judgePerson.LastName}");
+            if (addJudge)
+            {
+                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
+                    $"{judgePerson.FirstName} {judgePerson.LastName}");
+            }
 
             if (addJoh)
             {
