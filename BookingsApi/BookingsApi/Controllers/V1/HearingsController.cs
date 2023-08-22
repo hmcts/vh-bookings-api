@@ -758,7 +758,7 @@ namespace BookingsApi.Controllers.V1
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
 
-        private string BuildCursorPageUrl(
+        private static string BuildCursorPageUrl(
             string cursor,
             int limit,
             List<int> caseTypes,

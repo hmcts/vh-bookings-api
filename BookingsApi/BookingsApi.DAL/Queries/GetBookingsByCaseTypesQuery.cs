@@ -151,7 +151,7 @@ namespace BookingsApi.DAL.Queries
             try
             {
                 var parts = cursor.Split('_');
-                scheduledDateTime = new DateTime(long.Parse(parts[0]));
+                scheduledDateTime = new DateTime(long.Parse(parts[0]), DateTimeKind.Utc);
                 id = Guid.Parse(parts[1]);
             }
             catch (Exception e)
