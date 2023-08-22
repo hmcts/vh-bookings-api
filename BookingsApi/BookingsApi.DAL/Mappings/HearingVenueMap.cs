@@ -1,4 +1,4 @@
-﻿namespace BookingsApi.DAL.Mappings
+namespace BookingsApi.DAL.Mappings
 {
     public class HearingVenueMap : IEntityTypeConfiguration<HearingVenue>
     {
@@ -10,6 +10,7 @@
             builder.HasIndex(x => x.VenueCode).IsUnique();
             builder.Property(x => x.IsScottish).HasDefaultValue(false);
             builder.Property(x => x.IsWorkAllocationEnabled).HasDefaultValue(true);
+            builder.Property(x => x.ExpirationDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
         }
     }
 }

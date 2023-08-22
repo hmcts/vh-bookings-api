@@ -32,6 +32,13 @@ namespace BookingsApi.IntegrationTests.Database
             await Hooks.ClearJudiciaryPersonsAsync();
             await Hooks.ClearSeededJusticeUsersAsync();
             await Hooks.ClearAllocationsAsync();
+
+            await Cleanup();
+        }
+
+        protected virtual Task Cleanup()
+        {
+            return Task.CompletedTask;
         }
     }
 }

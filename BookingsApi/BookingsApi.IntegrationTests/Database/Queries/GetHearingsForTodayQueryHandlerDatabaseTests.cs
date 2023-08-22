@@ -21,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.Date);
             var query = new GetHearingsForTodayQuery();
             var venues = await _handler.Handle(query);
-            venues.Should().Contain(x=> x.Id == _seededHearing.Id);
+            venues.Should().Contain(h => h.Id == _seededHearing.Id);
         }    
         
         [Test]
