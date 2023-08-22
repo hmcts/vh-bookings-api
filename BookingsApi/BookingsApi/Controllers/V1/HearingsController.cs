@@ -20,7 +20,6 @@ namespace BookingsApi.Controllers.V1
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
-        private readonly IFeatureToggles _featureToggles;
         private readonly IVhLogger _ivhLogger;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
@@ -28,7 +27,6 @@ namespace BookingsApi.Controllers.V1
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
-            IFeatureToggles featureToggles,
             IVhLogger ivhLogger)
         {
             _queryHandler = queryHandler;
@@ -36,7 +34,6 @@ namespace BookingsApi.Controllers.V1
             _bookingService = bookingService;
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
-            _featureToggles = featureToggles;
             _ivhLogger = ivhLogger;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
@@ -781,26 +778,24 @@ namespace BookingsApi.Controllers.V1
 
             var pageUrl = $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
 
-            // Executes when Admin_Search feature toggle is ON and search action is performed
-            if (_featureToggles.AdminSearchToggle())
+            if (!string.IsNullOrWhiteSpace(caseNumber))
             {
-                if (!string.IsNullOrWhiteSpace(caseNumber))
-                {
-                    pageUrl += $"&caseNumber={caseNumber}";
-                }
-
-                var venueIds = string.Empty;
-                if (hearingVenueIds != null && hearingVenueIds.Any())
-                {
-                    venueIds = string.Join("&venueIds=", hearingVenueIds);
-                }
-                pageUrl += $"&venueIds={venueIds}";
-
-                if (!string.IsNullOrWhiteSpace(lastName))
-                {
-                    pageUrl += $"&lastName={lastName}";
-                } 
+                pageUrl += $"&caseNumber={caseNumber}";
             }
+
+            var venueIds = string.Empty;
+            if (hearingVenueIds != null && hearingVenueIds.Any())
+            {
+                venueIds = string.Join("&venueIds=", hearingVenueIds);
+            }
+
+            pageUrl += $"&venueIds={venueIds}";
+
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                pageUrl += $"&lastName={lastName}";
+            }
+
 
             return pageUrl;
         }

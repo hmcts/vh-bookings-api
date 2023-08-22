@@ -46,12 +46,10 @@ namespace BookingsApi.DAL.Queries
         IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
-        private readonly IFeatureToggles _featureToggles;
 
-        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context, IFeatureToggles featureToggles)
+        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context)
         {
             _context = context;
-            _featureToggles = featureToggles;
         }
 
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
