@@ -7,13 +7,11 @@ namespace BookingsApi.Extensions;
 
 public class RequestBodyLoggingMiddleware
 {
-    private readonly ILogger<RequestBodyLoggingMiddleware> _logger;
     private readonly RequestDelegate _next;
 
-    public RequestBodyLoggingMiddleware(RequestDelegate next, ILogger<RequestBodyLoggingMiddleware> logger)
+    public RequestBodyLoggingMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)

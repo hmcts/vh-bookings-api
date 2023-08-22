@@ -93,7 +93,7 @@ namespace BookingsApi.Controllers.V1
             try
             {
                 var participants = await _queryHandler.Handle<GetParticipantsInHearingQuery, List<Participant>>(query);
-                var participant = participants.FirstOrDefault(x => x.Id == participantId);
+                var participant = participants.Find(x => x.Id == participantId);
 
                 if (participant == null)
                 {
@@ -341,7 +341,7 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var participant = participants.FirstOrDefault(x => x.Id == participantId);
+            var participant = participants.Find(x => x.Id == participantId);
             if (participant == null)
             {
                 return NotFound();

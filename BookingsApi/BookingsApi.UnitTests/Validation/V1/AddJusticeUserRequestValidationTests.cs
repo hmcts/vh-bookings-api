@@ -93,9 +93,9 @@ namespace BookingsApi.UnitTests.Validation.V1
             var result = await _validator.ValidateAsync(request);
             
             result.IsValid.Should().BeFalse();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.FirstNameDoesntMatchRegex)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.FirstNameDoesntMatchRegex)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.LastNameDoesntMatchRegex)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.LastNameDoesntMatchRegex)
                 .Should().BeTrue();
         }
         
