@@ -1,19 +1,20 @@
+using BookingsApi.Domain.Validations;
 namespace BookingsApi.DAL.Commands
 {
     public class AddJudiciaryParticipantToHearingCommand : ICommand
     {
         public AddJudiciaryParticipantToHearingCommand(string displayName, Guid judiciaryPersonId, 
-            HearingRoleCode hearingRoleCode, Guid hearingId)
+            JudiciaryParticipantHearingRoleCode judiciaryParticipantHearingRoleCode, Guid hearingId)
         {
             DisplayName = displayName;
             JudiciaryPersonId = judiciaryPersonId;
-            HearingRoleCode = hearingRoleCode;
+            JudiciaryParticipantHearingRoleCode = judiciaryParticipantHearingRoleCode;
             HearingId = hearingId;
         }
         
         public string DisplayName { get; }
         public Guid JudiciaryPersonId { get; }
-        public HearingRoleCode HearingRoleCode { get; }
+        public JudiciaryParticipantHearingRoleCode JudiciaryParticipantHearingRoleCode { get; }
         public Guid HearingId { get; }
     }
 
@@ -43,9 +44,20 @@ namespace BookingsApi.DAL.Commands
             {
                 throw new JudiciaryPersonNotFoundException(command.JudiciaryPersonId);
             }
-            
-            hearing.AddJudiciaryParticipant(judiciaryPerson, command.DisplayName, command.HearingRoleCode);
-            
+
+            switch (command.JudiciaryParticipantHearingRoleCode)
+            {
+                case JudiciaryParticipantHearingRoleCode.Judge:
+                    hearing.AddJudiciaryJudge(judiciaryPerson, command.DisplayName);
+                    break;
+                case JudiciaryParticipantHearingRoleCode.PanelMember:
+                    hearing.AddJudiciaryPanelMember(judiciaryPerson, command.DisplayName);
+                    break;
+                default:
+                    throw new DomainRuleException(command.JudiciaryParticipantHearingRoleCode.ToString(),
+                        $"Role {command.JudiciaryParticipantHearingRoleCode} not recognised");
+            }
+
             await _context.SaveChangesAsync();
         }
     }

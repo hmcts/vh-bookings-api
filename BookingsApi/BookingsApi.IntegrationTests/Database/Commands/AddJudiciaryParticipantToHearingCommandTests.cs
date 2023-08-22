@@ -18,9 +18,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
         }
 
-        [TestCase(HearingRoleCode.Judge)]
-        [TestCase(HearingRoleCode.PanelMember)]
-        public async Task Should_add_judiciary_participant_to_hearing(HearingRoleCode hearingRoleCode)
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
+        public async Task Should_add_judiciary_participant_to_hearing(JudiciaryParticipantHearingRoleCode judiciaryParticipantHearingRoleCode)
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             var personalCode = Guid.NewGuid().ToString();
@@ -31,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var command = new AddJudiciaryParticipantToHearingCommand(
                 displayName,
                 judiciaryPersonId,
-                hearingRoleCode,
+                judiciaryParticipantHearingRoleCode,
                 hearingId);
             var beforeCount = seededHearing.GetJudiciaryParticipants().Count;
 
@@ -46,7 +46,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             newJudiciaryParticipant.Should().NotBeNull();
             newJudiciaryParticipant.DisplayName.Should().Be(displayName);
             newJudiciaryParticipant.JudiciaryPersonId.Should().Be(judiciaryPersonId);
-            newJudiciaryParticipant.HearingRoleCode.Should().Be(hearingRoleCode);
+            newJudiciaryParticipant.HearingRoleCode.Should().Be(judiciaryParticipantHearingRoleCode);
             newJudiciaryParticipant.HearingId.Should().Be(hearingId);
         }
         
@@ -57,7 +57,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededJudiciaryPerson = await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             const string displayName = "Display Name";
             var judiciaryPersonId = seededJudiciaryPerson.Id;
-            const HearingRoleCode hearingRoleCode = HearingRoleCode.PanelMember;
+            const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             var hearingId = Guid.NewGuid();
             var command = new AddJudiciaryParticipantToHearingCommand(
                 displayName,
@@ -74,7 +74,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             const string displayName = "Display Name";
             var judiciaryPersonId = Guid.NewGuid();
-            const HearingRoleCode hearingRoleCode = HearingRoleCode.PanelMember;
+            const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             var hearingId = seededHearing.Id;
             var command = new AddJudiciaryParticipantToHearingCommand(
                 displayName,

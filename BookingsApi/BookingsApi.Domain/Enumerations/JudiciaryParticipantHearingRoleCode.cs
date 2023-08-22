@@ -1,6 +1,6 @@
 namespace BookingsApi.Domain.Enumerations
 {
-    public enum HearingRoleCode
+    public enum JudiciaryParticipantHearingRoleCode
     {
         Judge = 1,
         PanelMember = 2
