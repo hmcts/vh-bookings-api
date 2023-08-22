@@ -4,6 +4,7 @@ using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230810082305_AddExpirationDateColumnToCaseAndHearingType")]
+    partial class AddExpirationDateColumnToCaseAndHearingType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,9 +289,7 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasKey("Name");
 
-                    b.HasIndex("VenueCode")
-                        .IsUnique()
-                        .HasFilter("[VenueCode] IS NOT NULL");
+                    b.HasIndex("VenueCode");
 
                     b.ToTable("HearingVenue", (string)null);
                 });
@@ -807,7 +807,7 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -832,10 +832,6 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CaseTypeId");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasFilter("[Code] IS NOT NULL");
 
                     b.ToTable("HearingType", (string)null);
                 });

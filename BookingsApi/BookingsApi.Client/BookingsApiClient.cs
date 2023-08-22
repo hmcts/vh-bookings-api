@@ -35,7 +35,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>A list of available case types</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(bool? includeDeleted);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -43,7 +43,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>A list of available case types</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(bool? includeDeleted, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get case roles for a case type
@@ -1413,9 +1413,9 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>A list of available case types</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync()
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(bool? includeDeleted)
         {
-            return GetCaseTypesAsync(System.Threading.CancellationToken.None);
+            return GetCaseTypesAsync(includeDeleted, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1424,10 +1424,15 @@ namespace BookingsApi.Client
         /// </summary>
         /// <returns>A list of available case types</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CaseTypeResponse>> GetCaseTypesAsync(bool? includeDeleted, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/casetypes?");
+            if (includeDeleted != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("includeDeleted") + "=").Append(System.Uri.EscapeDataString(ConvertToString(includeDeleted, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
 
             var client_ = _httpClient;
             var disposeClient_ = false;

@@ -807,7 +807,7 @@ namespace BookingsApi.Controllers.V1
                 return true;
             }
 
-            var query = new GetAllCaseTypesQuery();
+            var query = new GetAllCaseTypesQuery(includeDeleted:true);
             var validCaseTypes = (await _queryHandler.Handle<GetAllCaseTypesQuery, List<CaseType>>(query))
                 .Select(caseType => caseType.Id);
 

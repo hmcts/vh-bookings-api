@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace BookingsApi.Domain.RefData
@@ -19,6 +20,7 @@ namespace BookingsApi.Domain.RefData
         
         public string ServiceId { get; set; }
         public bool Live { get; set; }
+        public DateTime? ExpirationDate { get; set; }
         
     }
 }

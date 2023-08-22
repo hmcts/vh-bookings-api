@@ -11,6 +11,7 @@ namespace BookingsApi.DAL.Mappings.RefData
 
             builder.HasMany(x => x.HearingTypes);
             builder.HasMany(x => x.CaseRoles);
+            builder.Property(x => x.ExpirationDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
         }
     }
 }

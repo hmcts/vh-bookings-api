@@ -10,7 +10,7 @@ public class CaseTypesTests : ApiTest
     public async Task should_get_all_case_types()
     {
         // arrange/ act
-        var allCaseTypes = await BookingsApiClient.GetCaseTypesAsync();
+        var allCaseTypes = await BookingsApiClient.GetCaseTypesAsync(includeDeleted:false);
 
         // assert
         allCaseTypes.Should().NotBeNullOrEmpty();
