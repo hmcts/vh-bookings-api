@@ -138,6 +138,21 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
                 .Should().BeTrue();
         }
+        
+        [Test]
+        public async Task Should_return_invalid_email_error_when_ampersand_is_present()
+        {
+            var request = BuildRequest();
+            request.ContactEmail = "test&more@foo.com";
+            request.Username = "test&more@foo.com";
+
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
+                .Should().BeTrue();
+        }
 
         [Test]
         public async Task Should_return_invalid_judge_username_error()

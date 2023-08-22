@@ -25,6 +25,13 @@ namespace BookingsApi.UnitTests.Validation.V1
             email.IsValidEmail().Should().BeFalse();
         }
 
+        [Test]
+        public void should_pass_validation_when_email_has_ampersand()
+        {
+            var email = "test&more@foo.com";
+            email.IsValidEmail().Should().BeFalse();
+        }
+
         public static string GetInvalidEmail()
         {
             const string firstName = "Automatically";
