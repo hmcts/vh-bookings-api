@@ -46,12 +46,10 @@ namespace BookingsApi.DAL.Queries
         IQueryHandler<GetBookingsByCaseTypesQuery, CursorPagedResult<VideoHearing, string>>
     {
         private readonly BookingsDbContext _context;
-        private readonly IFeatureToggles _featureToggles;
 
-        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context, IFeatureToggles featureToggles)
+        public GetBookingsByCaseTypesQueryHandler(BookingsDbContext context)
         {
             _context = context;
-            _featureToggles = featureToggles;
         }
 
         public async Task<CursorPagedResult<VideoHearing, string>> Handle(GetBookingsByCaseTypesQuery query)
@@ -153,7 +151,7 @@ namespace BookingsApi.DAL.Queries
             try
             {
                 var parts = cursor.Split('_');
-                scheduledDateTime = new DateTime(long.Parse(parts[0]));
+                scheduledDateTime = new DateTime(long.Parse(parts[0]), DateTimeKind.Utc);
                 id = Guid.Parse(parts[1]);
             }
             catch (Exception e)

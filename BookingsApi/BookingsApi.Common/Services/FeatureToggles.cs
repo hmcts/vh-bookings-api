@@ -8,7 +8,6 @@ namespace BookingsApi.Common.Services
 {
     public interface IFeatureToggles
     {
-        public bool AdminSearchToggle();
         public bool EJudFeature();
     }
 
@@ -17,7 +16,6 @@ namespace BookingsApi.Common.Services
         private readonly ILdClient _ldClient;
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
-        private const string AdminSearchToggleKey = "admin_search";
         private const string EJudFeatureKey = "ejud-feature";
 
         public FeatureToggles(string sdkKey, string environmentName)
@@ -28,7 +26,6 @@ namespace BookingsApi.Common.Services
             _ldClient = new LdClient(config);
         }
 
-        public bool AdminSearchToggle() => GetBoolToggle(AdminSearchToggleKey);
         public bool EJudFeature() => GetBoolToggle(EJudFeatureKey);
         
         private bool GetBoolToggle(string key)

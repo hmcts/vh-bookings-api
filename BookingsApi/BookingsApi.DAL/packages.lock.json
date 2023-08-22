@@ -73,9 +73,9 @@
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[8.53.0.62665, )",
-        "resolved": "8.53.0.62665",
-        "contentHash": "95zMbdyOocAs7TCvfw+sRMSWMOCYDV6kKkoBW7vO1yY0RZOb3gg6k7ql9EzgWY6tZknBqYg7qWUa2CPoiQkt5w=="
+        "requested": "[9.8.0.76515, )",
+        "resolved": "9.8.0.76515",
+        "contentHash": "Ux5Z0ZpRcnHblU/5o3RZlmOkEY+GMxyY3vx0bGT3Y304SGoDL20J7SJXLb+u49XzsIJQYntibZey6Fj3gSETXw=="
       },
       "System.IdentityModel.Tokens.Jwt": {
         "type": "Direct",
@@ -934,11 +934,6 @@
         "dependencies": {
           "System.Runtime": "4.3.0"
         }
-      },
-      "System.ComponentModel.Annotations": {
-        "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg=="
       },
       "System.ComponentModel.Primitives": {
         "type": "Transitive",
@@ -1830,14 +1825,6 @@
           "Microsoft.Extensions.Configuration.UserSecrets": "[7.0.0, )",
           "Microsoft.Identity.Client": "[4.50.0, )",
           "Newtonsoft.Json": "[13.0.2, )"
-        }
-      },
-      "bookingsapi.contract": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration.Json": "[7.0.0, )",
-          "Newtonsoft.Json": "[13.0.2, )",
-          "System.ComponentModel.Annotations": "[5.0.0, )"
         }
       },
       "bookingsapi.domain": {
