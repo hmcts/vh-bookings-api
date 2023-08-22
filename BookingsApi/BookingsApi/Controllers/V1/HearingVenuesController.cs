@@ -52,7 +52,7 @@ namespace BookingsApi.Controllers.V1
             var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
 
             var response = hearingVenues.Where(e =>
-                e.ExpirationDate == null || e.ExpirationDate > DateTime.Today || hearingsToday.Any(h => h.HearingVenueName == e.Name));
+                e.ExpirationDate == null || e.ExpirationDate > DateTime.Today || hearingsToday.Exists(h => h.HearingVenueName == e.Name));
 
             return Ok(response.Select(x => new HearingVenueResponse { Id = x.Id, Name = x.Name }).ToList());
         }

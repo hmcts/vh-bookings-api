@@ -166,7 +166,7 @@ namespace BookingsApi.Controllers.V1
                 var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
                 
                 // need to broadcast acknowledgment message for the allocation
-                await PublishAllocationsToServiceBus(list, list.First().AllocatedTo);
+                await PublishAllocationsToServiceBus(list, list[0].AllocatedTo);
                 
                 return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }

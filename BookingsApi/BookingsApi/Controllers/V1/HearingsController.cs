@@ -20,7 +20,6 @@ namespace BookingsApi.Controllers.V1
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
-        private readonly IFeatureToggles _featureToggles;
         private readonly IVhLogger _ivhLogger;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
@@ -28,7 +27,6 @@ namespace BookingsApi.Controllers.V1
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
-            IFeatureToggles featureToggles,
             IVhLogger ivhLogger)
         {
             _queryHandler = queryHandler;
@@ -36,7 +34,6 @@ namespace BookingsApi.Controllers.V1
             _bookingService = bookingService;
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
-            _featureToggles = featureToggles;
             _ivhLogger = ivhLogger;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
@@ -404,19 +401,19 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateHearingDetails(Guid hearingId, [FromBody] UpdateHearingRequest request)
         {
-            var result = new UpdateHearingRequestValidation().Validate(request);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return ValidationProblem(ModelState);
-            }
-
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             if (videoHearing == null)
             {
                 return NotFound();
+            }
+            
+            var result = new UpdateHearingRequestValidation(videoHearing).Validate(request);
+            if (!result.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(result.Errors);
+                return ValidationProblem(ModelState);
             }
 
             var venueId = request.HearingVenueName;
@@ -431,7 +428,7 @@ namespace BookingsApi.Controllers.V1
 
             // use existing video hearing values here when request properties are null
             request.AudioRecordingRequired ??= videoHearing.AudioRecordingRequired;
-            request.QuestionnaireNotRequired ??= videoHearing.QuestionnaireNotRequired;
+            request.QuestionnaireNotRequired = false;
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
@@ -761,7 +758,7 @@ namespace BookingsApi.Controllers.V1
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
 
-        private string BuildCursorPageUrl(
+        private static string BuildCursorPageUrl(
             string cursor,
             int limit,
             List<int> caseTypes,
@@ -781,26 +778,24 @@ namespace BookingsApi.Controllers.V1
 
             var pageUrl = $"{resourceUrl}?types={types}&cursor={cursor}&limit={limit}";
 
-            // Executes when Admin_Search feature toggle is ON and search action is performed
-            if (_featureToggles.AdminSearchToggle())
+            if (!string.IsNullOrWhiteSpace(caseNumber))
             {
-                if (!string.IsNullOrWhiteSpace(caseNumber))
-                {
-                    pageUrl += $"&caseNumber={caseNumber}";
-                }
-
-                var venueIds = string.Empty;
-                if (hearingVenueIds != null && hearingVenueIds.Any())
-                {
-                    venueIds = string.Join("&venueIds=", hearingVenueIds);
-                }
-                pageUrl += $"&venueIds={venueIds}";
-
-                if (!string.IsNullOrWhiteSpace(lastName))
-                {
-                    pageUrl += $"&lastName={lastName}";
-                } 
+                pageUrl += $"&caseNumber={caseNumber}";
             }
+
+            var venueIds = string.Empty;
+            if (hearingVenueIds != null && hearingVenueIds.Any())
+            {
+                venueIds = string.Join("&venueIds=", hearingVenueIds);
+            }
+
+            pageUrl += $"&venueIds={venueIds}";
+
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                pageUrl += $"&lastName={lastName}";
+            }
+
 
             return pageUrl;
         }
