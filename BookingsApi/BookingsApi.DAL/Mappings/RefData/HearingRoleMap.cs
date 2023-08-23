@@ -7,11 +7,12 @@ namespace BookingsApi.DAL.Mappings.RefData
             builder.ToTable(nameof(HearingRole));
 
             builder.HasKey(x => x.Id);
+            
             builder.Property(x => x.Name);
             builder.Property(x => x.UserRoleId);
-
-            builder.HasOne(x => x.UserRole);
             builder.Property(x => x.Live).HasDefaultValue(true);
+            
+            builder.HasOne(x => x.UserRole);
         }
     }
 }
