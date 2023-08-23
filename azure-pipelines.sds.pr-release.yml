@@ -24,6 +24,7 @@ trigger: none
 
 pr:
   - master
+  - manual-cherry-pick-for-1.46-3
 
 pool:
   vmImage: ubuntu-22.04
