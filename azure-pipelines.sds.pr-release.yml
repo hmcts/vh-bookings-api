@@ -69,16 +69,16 @@ stages:
     variables:
       - template: variables/shared.yaml
     jobs:
-      - job: Generate_Entity_Framework_Script
-        displayName: "Generate Entity Framework Script"
-        steps:
-          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-            parameters:
-              outputPath: $(Build.StagingDirectory)
-              contextName: ${{ variables.efContextName }}
-              workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
-              migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-              projectName: ${{ variables.efProjectName }}
+      # - job: Generate_Entity_Framework_Script
+      #   displayName: "Generate Entity Framework Script"
+      #   steps:
+      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+      #       parameters:
+      #         outputPath: $(Build.StagingDirectory)
+      #         contextName: ${{ variables.efContextName }}
+      #         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
+      #         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+      #         projectName: ${{ variables.efProjectName }}
 
       - job: package_nuget
         displayName: "Package NuGet Packages"
@@ -152,42 +152,41 @@ stages:
               imageTags:
                 - "${{ variables.prTagName }}"
 
-  #####################################################
-  # Run Entity Framework Dev. #########################
-  - stage: Run_Entity_Framework_Dev
-    displayName: Run Entity Framework Dev
-    dependsOn: Dock
-    variables:
-      - template: variables/dev.yaml
-      - template: variables/shared.yaml
-        parameters:
-          env: ${{ variables.env }}
-          prNumber: ${{ variables.pr_number }}
-    jobs:
-      - job: Run_Entity_Framework_Dev
-        pool:
-          vmImage: "windows-latest" # This Job Must be Run on Windows
-        displayName: Run Entity Framework Dev
-        steps:
-          - download: current
-            displayName: Download Sql Artifact
+  # #####################################################
+  # # Run Entity Framework Dev. #########################
+  # - stage: Run_Entity_Framework_Dev
+  #   displayName: Run Entity Framework Dev
+  #   dependsOn: Dock
+  #   variables:
+  #     - template: variables/dev.yaml
+  #     - template: variables/shared.yaml
+  #       parameters:
+  #         env: ${{ variables.env }}
+  #         prNumber: ${{ variables.pr_number }}
+  #   jobs:
+  #     - job: Run_Entity_Framework_Dev
+  #       pool:
+  #         vmImage: "windows-latest" # This Job Must be Run on Windows
+  #       displayName: Run Entity Framework Dev
+  #       steps:
+  #         - download: current
+  #           displayName: Download Sql Artifact
 
-          - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
-            parameters:
-              sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-              sqlServerName: ${{ variables.vhSQLServerName }}
-              databaseName: ${{ variables.BookingsApiDbName }}
-              azureSubscription: ${{ variables.subscriptionName }}
-              sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
-              kvfirewallRequired: false
-              kvName: ${{ variables.vhKeyVault }}
-              kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
-              kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+  #         - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+  #           parameters:
+  #             sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+  #             sqlServerName: ${{ variables.vhSQLServerName }}
+  #             databaseName: ${{ variables.BookingsApiDbName }}
+  #             azureSubscription: ${{ variables.subscriptionName }}
+  #             sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
+  #             kvfirewallRequired: false
+  #             kvName: ${{ variables.vhKeyVault }}
+  #             kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+  #             kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
   #####################################################
   # Deploy Helm Chart to Dev. #########################
   - stage: Install
-    dependsOn: Run_Entity_Framework_Dev
     displayName: Deploy Helm Chart Dev AKS
     variables:
       - group: vh-github-app-credentials
@@ -247,7 +246,6 @@ stages:
   ##################################################
   # Deploy Nuget Packages. #########################
   - stage: Push_Nuget
-    dependsOn: Run_Entity_Framework_Dev
     displayName: Deploy NuGet Packages
     variables:
       - template: variables/dev.yaml
