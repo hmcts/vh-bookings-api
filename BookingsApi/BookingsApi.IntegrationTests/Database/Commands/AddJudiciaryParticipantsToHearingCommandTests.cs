@@ -7,14 +7,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 {
     public class AddJudiciaryParticipantsToHearingCommandTests : DatabaseTestsBase
     {
-        private AddJudiciaryParticipantToHearingCommandHandler _commandHandler;
+        private AddJudiciaryParticipantsToHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _commandHandler = new AddJudiciaryParticipantToHearingCommandHandler(context);
+            _commandHandler = new AddJudiciaryParticipantsToHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
         }
 

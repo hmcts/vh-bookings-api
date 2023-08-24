@@ -21,11 +21,11 @@ namespace BookingsApi.DAL.Commands
         public Guid HearingId { get; }
     }
 
-    public class AddJudiciaryParticipantToHearingCommandHandler : ICommandHandler<AddJudiciaryParticipantsToHearingCommand>
+    public class AddJudiciaryParticipantsToHearingCommandHandler : ICommandHandler<AddJudiciaryParticipantsToHearingCommand>
     {
         private readonly BookingsDbContext _context;
 
-        public AddJudiciaryParticipantToHearingCommandHandler(BookingsDbContext context)
+        public AddJudiciaryParticipantsToHearingCommandHandler(BookingsDbContext context)
         {
             _context = context;
         }
