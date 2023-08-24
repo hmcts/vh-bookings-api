@@ -164,14 +164,17 @@ namespace BookingsApi.IntegrationTests.Helper
             bool addSuitabilityAnswer = false,
             BookingStatus status = BookingStatus.Booked,
             bool isMultiDayFirstHearing = false,
-            bool addJudge = true)
+            bool addJudge = true,
+            bool addJudiciaryPanelMember = false)
         {
-            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing, addJudge: addJudge);
+            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing, 
+                addJudge: addJudge, addJudiciaryPanelMember: addJudiciaryPanelMember);
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
             bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
-            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false, bool addJudge = true)
+            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false, bool addJudge = true,
+            bool addJudiciaryPanelMember = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -296,6 +299,16 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             await using var db = new BookingsDbContext(_dbContextOptions);
+            
+            if (addJudiciaryPanelMember)
+            {
+                var personalCode = Guid.NewGuid().ToString();
+
+                var judiciaryPanelMemberPerson = await AddJudiciaryPerson(db, personalCode: personalCode);
+
+                videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Display Name");
+            }
+            
             await db.VideoHearings.AddAsync(videoHearing);
             await db.SaveChangesAsync();
 
@@ -471,6 +484,17 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             return caseType;
+        }
+
+        private JudiciaryPerson GetJudiciaryPersonFromDb(string personalCode)
+        {
+            JudiciaryPerson judiciaryPerson;
+            using (var db = new BookingsDbContext(_dbContextOptions))
+            {
+                judiciaryPerson = db.JudiciaryPersons.FirstOrDefault(x => x.PersonalCode == personalCode);
+            }
+
+            return judiciaryPerson;
         }
 
         private static void CreateParticipantLinks(Participant interpretee, Participant interpreter)
@@ -822,6 +846,19 @@ namespace BookingsApi.IntegrationTests.Helper
             AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
 
             return judiciaryPerson;
+        }
+        
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(BookingsDbContext db, string personalCode = null)
+        {
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
+
+            var person = db.JudiciaryPersons.FirstOrDefault(x => x.PersonalCode == personalCode);
+            
+            return person;
         }
 
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)

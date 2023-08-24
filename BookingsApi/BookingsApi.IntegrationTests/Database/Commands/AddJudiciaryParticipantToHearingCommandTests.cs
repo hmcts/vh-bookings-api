@@ -24,13 +24,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             var personalCode = Guid.NewGuid().ToString();
-            var seededJudiciaryPerson = await Hooks.AddJudiciaryPerson(personalCode: personalCode);
+            await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             const string displayName = "Display Name";
-            var judiciaryPersonId = seededJudiciaryPerson.Id;
             var hearingId = seededHearing.Id;
             var command = new AddJudiciaryParticipantToHearingCommand(
                 displayName,
-                judiciaryPersonId,
+                personalCode,
                 judiciaryParticipantHearingRoleCode,
                 hearingId);
             var beforeCount = seededHearing.GetJudiciaryParticipants().Count;
@@ -42,10 +41,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var newJudiciaryParticipants = updatedHearing.GetJudiciaryParticipants();
             var afterCount = newJudiciaryParticipants.Count;
             afterCount.Should().BeGreaterThan(beforeCount);
-            var newJudiciaryParticipant = newJudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPersonId == judiciaryPersonId);
+            var newJudiciaryParticipant = newJudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
             newJudiciaryParticipant.Should().NotBeNull();
             newJudiciaryParticipant.DisplayName.Should().Be(displayName);
-            newJudiciaryParticipant.JudiciaryPersonId.Should().Be(judiciaryPersonId);
+            newJudiciaryParticipant.JudiciaryPerson.PersonalCode.Should().Be(personalCode);
             newJudiciaryParticipant.HearingRoleCode.Should().Be(judiciaryParticipantHearingRoleCode);
             newJudiciaryParticipant.HearingId.Should().Be(hearingId);
         }
@@ -54,14 +53,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_throw_exception_when_hearing_does_not_exist()
         {
             var personalCode = Guid.NewGuid().ToString();
-            var seededJudiciaryPerson = await Hooks.AddJudiciaryPerson(personalCode: personalCode);
+            await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             const string displayName = "Display Name";
-            var judiciaryPersonId = seededJudiciaryPerson.Id;
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             var hearingId = Guid.NewGuid();
             var command = new AddJudiciaryParticipantToHearingCommand(
                 displayName,
-                judiciaryPersonId,
+                personalCode,
                 hearingRoleCode,
                 hearingId);
 
@@ -73,12 +71,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             const string displayName = "Display Name";
-            var judiciaryPersonId = Guid.NewGuid();
+            var personalCode = Guid.NewGuid().ToString();
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             var hearingId = seededHearing.Id;
             var command = new AddJudiciaryParticipantToHearingCommand(
                 displayName,
-                judiciaryPersonId,
+                personalCode,
                 hearingRoleCode,
                 hearingId);
 

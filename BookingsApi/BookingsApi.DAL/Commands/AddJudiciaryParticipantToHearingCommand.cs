@@ -4,17 +4,17 @@ namespace BookingsApi.DAL.Commands
 {
     public class AddJudiciaryParticipantToHearingCommand : ICommand
     {
-        public AddJudiciaryParticipantToHearingCommand(string displayName, Guid judiciaryPersonId, 
+        public AddJudiciaryParticipantToHearingCommand(string displayName, string personalCode, 
             JudiciaryParticipantHearingRoleCode judiciaryParticipantHearingRoleCode, Guid hearingId)
         {
             DisplayName = displayName;
-            JudiciaryPersonId = judiciaryPersonId;
+            PersonalCode = personalCode;
             JudiciaryParticipantHearingRoleCode = judiciaryParticipantHearingRoleCode;
             HearingId = hearingId;
         }
         
         public string DisplayName { get; }
-        public Guid JudiciaryPersonId { get; }
+        public string PersonalCode { get; }
         public JudiciaryParticipantHearingRoleCode JudiciaryParticipantHearingRoleCode { get; }
         public Guid HearingId { get; }
     }
@@ -31,6 +31,7 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(AddJudiciaryParticipantToHearingCommand command)
         {
             var hearing = await _context.VideoHearings
+                .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -39,11 +40,11 @@ namespace BookingsApi.DAL.Commands
             }
             
             var judiciaryPerson = await _context.JudiciaryPersons
-                .SingleOrDefaultAsync(x => x.Id == command.JudiciaryPersonId);
+                .SingleOrDefaultAsync(x => x.PersonalCode == command.PersonalCode);
 
             if (judiciaryPerson == null)
             {
-                throw new JudiciaryPersonNotFoundException(command.JudiciaryPersonId);
+                throw new JudiciaryPersonNotFoundException(command.PersonalCode);
             }
 
             switch (command.JudiciaryParticipantHearingRoleCode)
