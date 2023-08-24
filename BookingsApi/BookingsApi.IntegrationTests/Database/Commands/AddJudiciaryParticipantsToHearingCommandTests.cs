@@ -5,7 +5,7 @@ using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
-    public class AddJudiciaryParticipantToHearingCommandTests : DatabaseTestsBase
+    public class AddJudiciaryParticipantsToHearingCommandTests : DatabaseTestsBase
     {
         private AddJudiciaryParticipantToHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
@@ -27,11 +27,16 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             const string displayName = "Display Name";
             var hearingId = seededHearing.Id;
-            var command = new AddJudiciaryParticipantToHearingCommand(
-                displayName,
-                personalCode,
-                judiciaryParticipantHearingRoleCode,
-                hearingId);
+            var participants = new List<NewJudiciaryParticipant>
+            {
+                 new()
+                 {
+                     DisplayName = displayName,
+                     PersonalCode = personalCode,
+                     HearingRoleCode = judiciaryParticipantHearingRoleCode
+                 }
+            };
+            var command = new AddJudiciaryParticipantsToHearingCommand(hearingId, participants);
             var beforeCount = seededHearing.GetJudiciaryParticipants().Count;
 
             await _commandHandler.Handle(command);
@@ -57,11 +62,16 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             const string displayName = "Display Name";
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             var hearingId = Guid.NewGuid();
-            var command = new AddJudiciaryParticipantToHearingCommand(
-                displayName,
-                personalCode,
-                hearingRoleCode,
-                hearingId);
+            var participants = new List<NewJudiciaryParticipant>
+            {
+                new()
+                {
+                    DisplayName = displayName,
+                    PersonalCode = personalCode,
+                    HearingRoleCode = hearingRoleCode
+                }
+            };
+            var command = new AddJudiciaryParticipantsToHearingCommand(hearingId, participants);
 
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(command));
         }
@@ -74,11 +84,16 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var personalCode = Guid.NewGuid().ToString();
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             var hearingId = seededHearing.Id;
-            var command = new AddJudiciaryParticipantToHearingCommand(
-                displayName,
-                personalCode,
-                hearingRoleCode,
-                hearingId);
+            var participants = new List<NewJudiciaryParticipant>
+            {
+                new()
+                {
+                    DisplayName = displayName,
+                    PersonalCode = personalCode,
+                    HearingRoleCode = hearingRoleCode
+                }
+            };
+            var command = new AddJudiciaryParticipantsToHearingCommand(hearingId, participants);
 
             Assert.ThrowsAsync<JudiciaryPersonNotFoundException>(() => _commandHandler.Handle(command));
         }
