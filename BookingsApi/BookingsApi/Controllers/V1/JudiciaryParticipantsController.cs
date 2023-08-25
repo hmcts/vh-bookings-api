@@ -13,11 +13,16 @@ namespace BookingsApi.Controllers.V1
     {
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
+        private readonly IHearingParticipantService _hearingParticipantService;
         
-        public JudiciaryParticipantsController(IQueryHandler queryHandler, ICommandHandler commandHandler)
+        public JudiciaryParticipantsController(
+            IQueryHandler queryHandler, 
+            ICommandHandler commandHandler,
+            IEventPublisher eventPublisher)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
+            _hearingParticipantService = new HearingParticipantService(commandHandler, eventPublisher);
         }
         
         /// <summary>
@@ -65,6 +70,7 @@ namespace BookingsApi.Controllers.V1
             }
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants);
 
             var addedParticipants = hearing.JudiciaryParticipants
                 .Where(x => request.Participants.Select(p => p.PersonalCode).Contains(x.JudiciaryPerson.PersonalCode));

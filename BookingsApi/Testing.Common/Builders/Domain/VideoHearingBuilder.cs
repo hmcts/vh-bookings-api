@@ -138,6 +138,22 @@ namespace Testing.Common.Builders.Domain
             return this;
         }
         
+        public VideoHearingBuilder WithJudiciaryJudge()
+        {
+            var personalCode = Guid.NewGuid().ToString();
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode: personalCode).Build();
+            _videoHearing.AddJudiciaryJudge(judiciaryPerson, "Judge Test");
+            return this;
+        }
+
+        public VideoHearingBuilder WithJudiciaryPanelMember()
+        {
+            var personalCode = Guid.NewGuid().ToString();
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode: personalCode).Build();
+            _videoHearing.AddJudiciaryPanelMember(judiciaryPerson, "PanelMember Test");
+            return this;
+        }
+        
         public Person Judge => _judgePerson;
 
         public Person JudicialOfficeHolder => _johPerson;

@@ -9,7 +9,7 @@ public interface IHearingParticipantService
         List<NewParticipant> newParticipants,
         List<Guid> removedParticipantIds,
         List<LinkedParticipantDto> linkedParticipants);
-
+    public Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants);
 }
 
 public class HearingParticipantService : IHearingParticipantService
@@ -64,6 +64,20 @@ public class HearingParticipantService : IHearingParticipantService
         {
             await PublishExistingParticipantUpdatedEvent(hearing, existingParticipants, eventExistingParticipants);
         }
+    }
+    
+    public async Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants)
+    {
+        var participants = hearing.GetJudiciaryParticipants()
+            .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
+            .ToList();
+        
+        if (!participants.Any())
+        {
+            return;
+        }
+        
+        await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
     }
 
     private async Task ProcessParticipantListChange(Hearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,

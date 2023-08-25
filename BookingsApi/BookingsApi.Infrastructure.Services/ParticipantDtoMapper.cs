@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 
@@ -29,5 +30,37 @@ namespace BookingsApi.Infrastructure.Services
                     LinkedParticipants = participant.LinkedParticipants.Select(LinkedParticipantDtoMapper.MapToDto).ToList()
                 };
         }
+        
+        public static ParticipantDto MapToDto(JudiciaryParticipant judiciaryParticipant) =>
+            new()
+            {
+                ParticipantId = judiciaryParticipant.Id,
+                Fullname = $"{judiciaryParticipant.JudiciaryPerson.Fullname}",
+                Username = judiciaryParticipant.JudiciaryPerson.Email,
+                FirstName = judiciaryParticipant.JudiciaryPerson.KnownAs,
+                LastName = judiciaryParticipant.JudiciaryPerson.Surname,
+                ContactEmail = judiciaryParticipant.JudiciaryPerson.Email,
+                DisplayName = judiciaryParticipant.DisplayName,
+                HearingRole = judiciaryParticipant.HearingRoleCode.ToString(),
+                UserRole = MapUserRoleForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode),
+                CaseGroupType = MapCaseGroupTypeForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode)
+            };
+
+        private static string MapUserRoleForJudiciaryParticipant(JudiciaryParticipantHearingRoleCode hearingRoleCode) =>
+            // TODO these strings should come from BookingsApi.DAL.Helper.UserRoles but we don't have a project reference to it
+            hearingRoleCode switch
+            {
+                JudiciaryParticipantHearingRoleCode.Judge => "Judge",
+                JudiciaryParticipantHearingRoleCode.PanelMember => "Judicial Office Holder",
+                _ => throw new ArgumentOutOfRangeException(nameof(hearingRoleCode), hearingRoleCode, null)
+            };
+
+        private static CaseRoleGroup MapCaseGroupTypeForJudiciaryParticipant(JudiciaryParticipantHearingRoleCode hearingRoleCode) =>
+            hearingRoleCode switch
+            {
+                JudiciaryParticipantHearingRoleCode.Judge => CaseRoleGroup.Judge,
+                JudiciaryParticipantHearingRoleCode.PanelMember => CaseRoleGroup.PanelMember,
+                _ => throw new ArgumentOutOfRangeException(nameof(hearingRoleCode), hearingRoleCode, null)
+            };
     }
 }
