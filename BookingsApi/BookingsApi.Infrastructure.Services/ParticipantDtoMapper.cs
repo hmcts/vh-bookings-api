@@ -47,7 +47,6 @@ namespace BookingsApi.Infrastructure.Services
             };
 
         private static string MapUserRoleForJudiciaryParticipant(JudiciaryParticipantHearingRoleCode hearingRoleCode) =>
-            // TODO these strings should come from BookingsApi.DAL.Helper.UserRoles but we don't have a project reference to it
             hearingRoleCode switch
             {
                 JudiciaryParticipantHearingRoleCode.Judge => "Judge",
