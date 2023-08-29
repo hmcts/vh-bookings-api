@@ -606,5 +606,13 @@ namespace BookingsApi.Domain
                 Deallocate();
             }
         }
+
+        public ParticipantBase GetJudge()
+        {
+            var judge = Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+
+            return (ParticipantBase)judge ?? judiciaryJudge;
+        }
     }
 }

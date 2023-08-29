@@ -10,8 +10,7 @@ namespace BookingsApi.Infrastructure.Services
         public static HearingAllocationDto MapToDto(Hearing hearing)
         {
             var @case = hearing.GetCases()[0];
-            var judge = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
-            var judiciaryJudge = hearing.JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var judge = hearing.GetJudge();
 
             return new HearingAllocationDto
             {
@@ -25,7 +24,7 @@ namespace BookingsApi.Infrastructure.Services
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType.Name,
-                JudgeDisplayName = judge != null ? judge.DisplayName : judiciaryJudge?.DisplayName
+                JudgeDisplayName = judge?.DisplayName
             };
         }
     }

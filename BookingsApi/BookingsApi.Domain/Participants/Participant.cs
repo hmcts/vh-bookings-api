@@ -8,7 +8,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain.Participants
 {
-    public abstract class Participant : Entity<Guid>
+    public abstract class Participant : ParticipantBase
     {
         protected readonly ValidationFailures _validationFailures = new ValidationFailures();
 
@@ -26,8 +26,7 @@ namespace BookingsApi.Domain.Participants
             HearingRoleId = hearingRole.Id;
             CaseRoleId = caseRole.Id;
         }
-
-        public string DisplayName { get; set; }
+        
         public int CaseRoleId { get; set; }
         public virtual CaseRole CaseRole { get; set; }
         public int HearingRoleId { get; set; }

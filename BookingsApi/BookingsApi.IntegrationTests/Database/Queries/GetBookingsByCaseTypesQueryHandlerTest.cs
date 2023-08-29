@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Common.Services;
+using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.DAL.Queries;
 using Moq;
 using Testing.Common.Builders.Domain;
@@ -96,6 +97,24 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var bookingsWithJudge = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })
+            {
+                NoJudge = true
+            };
+
+            var hearings = await _handler.Handle(query);
+
+            AssertHearingsContainsNoJdge(hearings);
+        }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_with_no_judiciary_judge()
+        {
+            
+            var bookingsWithNoJugde = await Hooks.SeedVideoHearingWithNoJudge();
+            
+            var bookingsWithJudiciaryJudge = await Hooks.SeedVideoHearing(addJudge: false, addJudiciaryJudge: true);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudiciaryJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })
             {
                 NoJudge = true
             };
@@ -224,8 +243,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .SelectMany(r => r.Participants)
                 .Distinct()
                 .All(r => !r.Discriminator.Equals("judge", StringComparison.InvariantCultureIgnoreCase));
+            
+            var containsHearingsFilteredWithNoJudiciaryJudge = hearings
+                .SelectMany(r => r.JudiciaryParticipants)
+                .Distinct()
+                .All(r => r.HearingRoleCode != Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
 
             containsHearingsFilteredWithNoJudge.Should().BeTrue();
+            containsHearingsFilteredWithNoJudiciaryJudge.Should().BeTrue();
 
             hearings.Count().Should().Be(1);
         }
