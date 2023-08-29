@@ -51,8 +51,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<IList<JudiciaryParticipantResponse>>(result.Content);
             response.Should().BeEquivalentTo(request.Participants);
-
-            // TODO assert on participants added event being published
         }
 
         [Test]

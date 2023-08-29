@@ -116,6 +116,5 @@ public class HearingDetailsResponseV2
         /// <summary>
         /// List of judiciary participants in a hearing
         /// </summary>
-        [JsonProperty("joh")] // TODO confirm with Murali
         public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
 }
