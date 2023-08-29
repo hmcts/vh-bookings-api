@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
@@ -45,7 +46,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
     public async Task should_return_a_hearing_when_matched_with_a_given_id()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 1, false);
+        var hearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 1, false, addJudiciaryPanelMember: true);
         var hearingId = hearing.Id;
 
         // act
@@ -96,6 +97,12 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
                 Pin = endpoint.Pin,
                 Sip = endpoint.Sip,
             });
+        }
+
+        foreach (var judiciaryParticipant in hearing.GetJudiciaryParticipants())
+        {
+            hearingResponse.JudiciaryParticipants.Should()
+                .ContainEquivalentOf(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
         }
     }
 }
