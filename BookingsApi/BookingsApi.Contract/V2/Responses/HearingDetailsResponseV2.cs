@@ -116,5 +116,6 @@ public class HearingDetailsResponseV2
         /// <summary>
         /// List of judiciary participants in a hearing
         /// </summary>
+        [JsonProperty("judicial_office_holders")]
         public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
 }

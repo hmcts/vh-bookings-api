@@ -3,7 +3,6 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Validations.V1;
-using FizzWare.NBuilder;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
@@ -41,16 +40,16 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
             var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
-            judiciaryParticipants.Count.Should().Be(request.Participants.Count);
+            judiciaryParticipants.Count.Should().Be(request.Count);
             judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryPersonJudge.Id);
-            judiciaryParticipants[0].DisplayName.Should().Be(request.Participants[0].DisplayName);
+            judiciaryParticipants[0].DisplayName.Should().Be(request[0].DisplayName);
             judiciaryParticipants[0].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
             judiciaryParticipants[1].JudiciaryPersonId.Should().Be(judiciaryPersonPanelMember.Id);
-            judiciaryParticipants[1].DisplayName.Should().Be(request.Participants[1].DisplayName);
+            judiciaryParticipants[1].DisplayName.Should().Be(request[1].DisplayName);
             judiciaryParticipants[1].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             
             var response = await ApiClientResponse.GetResponses<IList<JudiciaryParticipantResponse>>(result.Content);
-            response.Should().BeEquivalentTo(request.Participants);
+            response.Should().BeEquivalentTo(request);
         }
 
         [Test]
@@ -76,10 +75,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
             var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
-            judiciaryParticipants.Count.Should().Be(request.Participants.Count + judiciaryParticipantsCountBefore);
+            judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
             
             var response = await ApiClientResponse.GetResponses<IList<JudiciaryParticipantResponse>>(result.Content);
-            response.Should().BeEquivalentTo(request.Participants);
+            response.Should().BeEquivalentTo(request);
         }
         
         [Test]
@@ -145,8 +144,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["Participants[0].PersonalCode"][0].Should().Be(JudiciaryParticipantRequestValidation.NoPersonalCodeErrorMessage);
-            validationProblemDetails.Errors["Participants[0].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
+            validationProblemDetails.Errors["[0].PersonalCode"][0].Should().Be(JudiciaryParticipantRequestValidation.NoPersonalCodeErrorMessage);
+            validationProblemDetails.Errors["[0].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
+            validationProblemDetails.Errors["[1].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
         }
         
         [Test]
@@ -156,27 +156,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var hearingId = Guid.NewGuid();
             
             var request = BuildAddJudiciaryParticipantsRequestWithEmptyParticipants();
-
-            // Act
-            using var client = Application.CreateClient();
-            var result = await client.PostAsync(
-                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(hearingId), 
-                RequestBody.Set(request));
-            
-            // Assert
-            result.IsSuccessStatusCode.Should().BeFalse();
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["Participants"][0].Should().Be(AddJudiciaryParticipantsToHearingRequestValidation.NoParticipantsErrorMessage);
-        }
-        
-        [Test]
-        public async Task Should_return_bad_request_when_request_contains_null_participants()
-        {
-            // Arrange
-            var hearingId = Guid.NewGuid();
-            
-            var request = BuildAddJudiciaryParticipantsRequestWithNullParticipants();
 
             // Act
             using var client = Application.CreateClient();
@@ -200,7 +179,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var existingParticipant = seededHearing.JudiciaryParticipants.FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
 
             var request = BuildValidAddJudiciaryParticipantsRequest();
-            var newParticipant = request.Participants.FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+            var newParticipant = request.Find(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             newParticipant.PersonalCode = existingParticipant.JudiciaryPerson.PersonalCode;
 
             // Act
@@ -216,68 +195,60 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("Judiciary participant already exists in the hearing");
         }
 
-        private AddJudiciaryParticipantsRequest BuildValidAddJudiciaryParticipantsRequest()
+        private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsRequest()
         {
-            return Builder<AddJudiciaryParticipantsRequest>.CreateNew()
-                .With(x => x.Participants = new List<JudiciaryParticipantRequest>
+            return new List<JudiciaryParticipantRequest>
+            {
+                new()
                 {
-                    new()
-                    {
-                        PersonalCode = _personalCodeJudge,
-                        DisplayName = "A Judge",
-                        HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge
-                    },
-                    new()
-                    {
-                        PersonalCode = _personalCodePanelMember,
-                        DisplayName = "B Panel Member",
-                        HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
-                    }
-                })
-                .Build();
+                    PersonalCode = _personalCodeJudge,
+                    DisplayName = "A Judge",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge
+                },
+                new()
+                {
+                    PersonalCode = _personalCodePanelMember,
+                    DisplayName = "B Panel Member",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                }
+            };
         }
         
-        private AddJudiciaryParticipantsRequest BuildValidAddJudiciaryParticipantsRequestWithoutJudge()
+        private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsRequestWithoutJudge()
         {
-            return Builder<AddJudiciaryParticipantsRequest>.CreateNew()
-                .With(x => x.Participants = new List<JudiciaryParticipantRequest>
+            return new List<JudiciaryParticipantRequest>
+            {
+                new()
                 {
-                    new()
-                    {
-                        PersonalCode = _personalCodePanelMember,
-                        DisplayName = "B Panel Member",
-                        HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
-                    }
-                })
-                .Build();
+                    PersonalCode = _personalCodePanelMember,
+                    DisplayName = "B Panel Member",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                }
+            };
         }
         
-        private AddJudiciaryParticipantsRequest BuildInvalidAddJudiciaryParticipantsRequest()
+        private List<JudiciaryParticipantRequest> BuildInvalidAddJudiciaryParticipantsRequest()
         {
-            return Builder<AddJudiciaryParticipantsRequest>.CreateNew()
-                .With(x => x.Participants = new List<JudiciaryParticipantRequest>
+            return new List<JudiciaryParticipantRequest>
+            {
+                new()
                 {
-                    new()
-                    {
-                        PersonalCode = "",
-                        DisplayName = "",
-                        HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
-                    }
-                })
-                .Build();
+                    PersonalCode = "",
+                    DisplayName = "",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                },
+                new()
+                {
+                    PersonalCode = _personalCodePanelMember,
+                    DisplayName = "",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                }
+            };
         }
 
-        private AddJudiciaryParticipantsRequest BuildAddJudiciaryParticipantsRequestWithEmptyParticipants()
+        private static List<JudiciaryParticipantRequest> BuildAddJudiciaryParticipantsRequestWithEmptyParticipants()
         {
-            return Builder<AddJudiciaryParticipantsRequest>.CreateNew()
-                .With(x => x.Participants = new List<JudiciaryParticipantRequest>())
-                .Build();
-        }
-        
-        private AddJudiciaryParticipantsRequest BuildAddJudiciaryParticipantsRequestWithNullParticipants()
-        {
-            return Builder<AddJudiciaryParticipantsRequest>.CreateNew()
-                .Build();
+            return new List<JudiciaryParticipantRequest>();
         }
     }
 }

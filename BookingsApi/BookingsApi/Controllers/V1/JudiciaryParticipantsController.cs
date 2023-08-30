@@ -36,16 +36,16 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> AddJudiciaryParticipantsToHearing(Guid hearingId, [FromBody] AddJudiciaryParticipantsRequest request)
+        public async Task<IActionResult> AddJudiciaryParticipantsToHearing(Guid hearingId, [FromBody] List<JudiciaryParticipantRequest> request)
         {
-            var validation = await new AddJudiciaryParticipantsToHearingRequestValidation().ValidateAsync(request);
+            var validation = await AddJudiciaryParticipantsToHearingRequestValidation.ValidateAsync(request);
             if (!validation.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }
 
-            var participants = request.Participants
+            var participants = request
                 .Select(JudiciaryParticipantRequestToNewJudiciaryParticipantMapper.Map)
                 .ToList();
 
@@ -73,7 +73,7 @@ namespace BookingsApi.Controllers.V1
             await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants);
 
             var addedParticipants = hearing.JudiciaryParticipants
-                .Where(x => request.Participants.Select(p => p.PersonalCode).Contains(x.JudiciaryPerson.PersonalCode));
+                .Where(x => request.Select(p => p.PersonalCode).Contains(x.JudiciaryPerson.PersonalCode));
 
             var mapper = new JudiciaryParticipantToResponseMapper();
             var response = addedParticipants.Select(mapper.MapJudiciaryParticipantToResponse).ToList();

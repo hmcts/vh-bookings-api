@@ -694,7 +694,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="hearingId">The id of the hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, AddJudiciaryParticipantsRequest request);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, System.Collections.Generic.IEnumerable<JudiciaryParticipantRequest> request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -702,7 +702,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="hearingId">The id of the hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, AddJudiciaryParticipantsRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, System.Collections.Generic.IEnumerable<JudiciaryParticipantRequest> request, System.Threading.CancellationToken cancellationToken);
 
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BulkJudiciaryPersonResponse> BulkJudiciaryPersonsAsync(System.Collections.Generic.IEnumerable<JudiciaryPersonRequest> request);
@@ -5718,7 +5718,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="hearingId">The id of the hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, AddJudiciaryParticipantsRequest request)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, System.Collections.Generic.IEnumerable<JudiciaryParticipantRequest> request)
         {
             return AddJudiciaryParticipantsToHearingAsync(hearingId, request, System.Threading.CancellationToken.None);
         }
@@ -5729,7 +5729,7 @@ namespace BookingsApi.Client
         /// </summary>
         /// <param name="hearingId">The id of the hearing</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, AddJudiciaryParticipantsRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryParticipantResponse>> AddJudiciaryParticipantsToHearingAsync(System.Guid hearingId, System.Collections.Generic.IEnumerable<JudiciaryParticipantRequest> request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");

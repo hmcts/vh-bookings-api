@@ -11,7 +11,7 @@ namespace BookingsApi.Contract.V1.Requests
         /// <summary>
         /// The list of participants to add
         /// </summary>
-        [JsonProperty("joh")]
+        [JsonProperty("judicial_office_holders")]
         public IList<JudiciaryParticipantRequest> Participants { get; set; }
     }
 }
