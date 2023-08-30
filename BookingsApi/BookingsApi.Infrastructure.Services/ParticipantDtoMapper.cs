@@ -41,11 +41,19 @@ namespace BookingsApi.Infrastructure.Services
                 LastName = judiciaryParticipant.JudiciaryPerson.Surname,
                 ContactEmail = judiciaryParticipant.JudiciaryPerson.Email,
                 DisplayName = judiciaryParticipant.DisplayName,
-                HearingRole = judiciaryParticipant.HearingRoleCode.ToString(),
+                HearingRole = MapHearingRoleForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode),
                 UserRole = MapUserRoleForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode),
                 CaseGroupType = MapCaseGroupTypeForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode)
             };
 
+        private static string MapHearingRoleForJudiciaryParticipant(JudiciaryParticipantHearingRoleCode hearingRoleCode) =>
+            hearingRoleCode switch
+            {
+                JudiciaryParticipantHearingRoleCode.Judge => "Judge",
+                JudiciaryParticipantHearingRoleCode.PanelMember => "Panel Member",
+                _ => throw new ArgumentOutOfRangeException(nameof(hearingRoleCode), hearingRoleCode, null)
+            };
+        
         private static string MapUserRoleForJudiciaryParticipant(JudiciaryParticipantHearingRoleCode hearingRoleCode) =>
             hearingRoleCode switch
             {

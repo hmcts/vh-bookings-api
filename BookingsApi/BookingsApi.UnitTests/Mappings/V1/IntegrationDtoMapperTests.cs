@@ -83,7 +83,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
             result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
             result.DisplayName.Should().Be(participant.DisplayName);
-            result.HearingRole.Should().Be(JudiciaryParticipantHearingRoleCode.Judge.ToString());
+            result.HearingRole.Should().Be("Judge");
             result.UserRole.Should().Be("Judge");
             result.CaseGroupType.Should().Be(CaseRoleGroup.Judge);
         }
@@ -102,7 +102,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
             result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
             result.DisplayName.Should().Be(participant.DisplayName);
-            result.HearingRole.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember.ToString());
+            result.HearingRole.Should().Be("Panel Member");
             result.UserRole.Should().Be("Judicial Office Holder");
             result.CaseGroupType.Should().Be(CaseRoleGroup.PanelMember);
         }
