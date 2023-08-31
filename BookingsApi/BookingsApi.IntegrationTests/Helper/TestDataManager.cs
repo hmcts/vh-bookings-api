@@ -160,22 +160,18 @@ namespace BookingsApi.IntegrationTests.Helper
             await context.AddRangeAsync(entities);
         }
 
-        public Task<VideoHearing> SeedVideoHearing(
-            bool addSuitabilityAnswer = false,
-            BookingStatus status = BookingStatus.Booked,
-            bool isMultiDayFirstHearing = false,
-            bool addJudge = true,
-            bool addJudiciaryPanelMember = false,
-            bool addJudiciaryJudge = false)
-        {
-            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing, 
-                addJudge: addJudge, addJudiciaryPanelMember: addJudiciaryPanelMember, addJudiciaryJudge: addJudiciaryJudge);
-        }
+        // public Task<VideoHearing> SeedVideoHearing(
+        //     bool addSuitabilityAnswer = false,
+        //     BookingStatus status = BookingStatus.Booked,
+        //     bool isMultiDayFirstHearing = false,
+        //     Action<SeedVideoHearingOptions> configureOptions = null)
+        // {
+        //     return SeedVideoHearing(configureOptions, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing);
+        // }
 
-        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
             bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
-            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false, bool addJudge = true,
-            bool addJudiciaryPanelMember = false, bool addJudiciaryJudge = false)
+            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -237,7 +233,7 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
                 $"{person5.FirstName} {person5.LastName}");
 
-            if (addJudge)
+            if (options.AddJudge)
             {
                 videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
                     $"{judgePerson.FirstName} {judgePerson.LastName}");
@@ -301,7 +297,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             await using var db = new BookingsDbContext(_dbContextOptions);
             
-            if (addJudiciaryPanelMember)
+            if (options.AddJudiciaryPanelMember)
             {
                 var personalCode = Guid.NewGuid().ToString();
 
@@ -310,7 +306,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Display Name");
             }
 
-            if (addJudiciaryJudge)
+            if (options.AddJudiciaryJudge)
             {
                 var personalCode = Guid.NewGuid().ToString();
                 

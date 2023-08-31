@@ -17,7 +17,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_shell_by_id()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(false, Domain.Enumerations.BookingStatus.Created, false);
+            var seededHearing = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: Domain.Enumerations.BookingStatus.Created, isMultiDayFirstHearing: false);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             var hearing = await _handler.Handle(new GetHearingShellByIdQuery(seededHearing.Id));
 

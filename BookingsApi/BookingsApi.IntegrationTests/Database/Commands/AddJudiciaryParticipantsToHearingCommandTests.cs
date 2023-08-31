@@ -23,7 +23,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
         public async Task Should_add_judiciary_participant_to_hearing(JudiciaryParticipantHearingRoleCode judiciaryParticipantHearingRoleCode)
         {
-            var seededHearing = await Hooks.SeedVideoHearing(addJudge: false);
+            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            {
+                options.AddJudge = false;
+            });
             var personalCode = Guid.NewGuid().ToString();
             await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             const string displayName = "Display Name";
