@@ -19,7 +19,7 @@ public class GetHearingRolesQueryHandler : IQueryHandler<GetHearingRolesQuery, L
 
     public async Task<List<HearingRole>> Handle(GetHearingRolesQuery query)
     {
-        return await _context.HearingRoles
+        return await _context.HearingRoles.Include(x=> x.UserRole)
             .Where(hr => hr.CaseRoleId == null)
             .ToListAsync();
     }
