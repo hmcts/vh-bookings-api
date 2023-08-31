@@ -11,11 +11,14 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false).Build();
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
             var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            const string displayName = "Display Name";
 
-            hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name");
-            
-            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName);
+
+            var judiciaryParticipants = hearing.GetJudiciaryParticipants();
+            var afterAddCount = judiciaryParticipants.Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            judiciaryParticipants.Should().Contain(x => x.DisplayName == "Display Name");
         }
         
         [Test]

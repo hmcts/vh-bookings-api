@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Dtos;
 

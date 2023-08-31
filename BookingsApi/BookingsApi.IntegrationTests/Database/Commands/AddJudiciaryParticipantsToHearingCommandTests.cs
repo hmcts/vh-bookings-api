@@ -2,6 +2,7 @@ using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -22,7 +23,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
         public async Task Should_add_judiciary_participant_to_hearing(JudiciaryParticipantHearingRoleCode judiciaryParticipantHearingRoleCode)
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearing(addJudge: false);
             var personalCode = Guid.NewGuid().ToString();
             await Hooks.AddJudiciaryPerson(personalCode: personalCode);
             const string displayName = "Display Name";

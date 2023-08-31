@@ -21,9 +21,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_add_judiciary_participants()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(addJudge: false);
+            var seededHearing = await Hooks.SeedVideoHearing(addJudge: false, addJudiciaryPanelMember: true);
             var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
             var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            var judiciaryParticipantsCountBefore = seededHearing.JudiciaryParticipants.Count;
             
             var request = BuildValidAddJudiciaryParticipantsRequest();
 
@@ -40,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
             var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
-            judiciaryParticipants.Count.Should().Be(request.Count);
+            judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
             judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryPersonJudge.Id);
             judiciaryParticipants[0].DisplayName.Should().Be(request[0].DisplayName);
             judiciaryParticipants[0].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
@@ -52,35 +53,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             response.Should().BeEquivalentTo(request);
         }
 
-        [Test]
-        public async Task Should_only_return_participants_added_from_request()
-        {
-            // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(addJudiciaryPanelMember: true);
-            await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
-            var judiciaryParticipantsCountBefore = seededHearing.JudiciaryParticipants.Count;
-            
-            var request = BuildValidAddJudiciaryParticipantsRequestWithoutJudge();
-
-            // Act
-            using var client = Application.CreateClient();
-            var result = await client.PostAsync(
-                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
-                RequestBody.Set(request));
-            
-            // Assert
-            result.IsSuccessStatusCode.Should().BeTrue();
-            result.StatusCode.Should().Be(HttpStatusCode.OK);
-            
-            await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
-            var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
-            judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
-            
-            var response = await ApiClientResponse.GetResponses<IList<JudiciaryParticipantResponse>>(result.Content);
-            response.Should().BeEquivalentTo(request);
-        }
-        
         [Test]
         public async Task Should_return_not_found_when_hearing_does_not_exist()
         {
@@ -193,6 +165,29 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("Judiciary participant already exists in the hearing");
+        }
+
+        [Test]
+        public async Task Should_return_bad_request_when_non_judiciary_judge_already_exists_in_the_hearing()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearing(addJudge: true);
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("A participant with Judge role already exists in the hearing");
         }
 
         private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsRequest()

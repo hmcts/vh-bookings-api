@@ -34,6 +34,7 @@ namespace BookingsApi.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
+                .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
@@ -60,8 +61,7 @@ namespace BookingsApi.DAL.Commands
                         hearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);
                         break;
                     default:
-                        throw new DomainRuleException(participant.HearingRoleCode.ToString(),
-                            $"Role {participant.HearingRoleCode} not recognised");
+                        throw new ArgumentException($"Role {participant.HearingRoleCode} not recognised");
                 }
             }
   

@@ -1,6 +1,4 @@
-using System.Linq;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services
