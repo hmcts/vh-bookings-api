@@ -12,6 +12,7 @@ namespace BookingsApi.Validations.V1
         {
             RuleFor(x => x.PersonalCode).NotEmpty().WithMessage(NoPersonalCodeErrorMessage);
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
+            RuleFor(x => x.HearingRoleCode).IsInEnum();
         }
     }
 }
