@@ -1,7 +1,4 @@
-﻿using BookingsApi.Common.Services;
-using BookingsApi.Contract.V1.Requests.Enums;
-using BookingsApi.DAL.Queries;
-using Moq;
+﻿using BookingsApi.DAL.Queries;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries

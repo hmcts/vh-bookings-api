@@ -160,15 +160,6 @@ namespace BookingsApi.IntegrationTests.Helper
             await context.AddRangeAsync(entities);
         }
 
-        // public Task<VideoHearing> SeedVideoHearing(
-        //     bool addSuitabilityAnswer = false,
-        //     BookingStatus status = BookingStatus.Booked,
-        //     bool isMultiDayFirstHearing = false,
-        //     Action<SeedVideoHearingOptions> configureOptions = null)
-        // {
-        //     return SeedVideoHearing(configureOptions, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing);
-        // }
-
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
             bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
             bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)

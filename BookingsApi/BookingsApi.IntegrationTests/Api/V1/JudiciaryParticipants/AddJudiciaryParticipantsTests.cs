@@ -8,10 +8,11 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
     public class AddJudiciaryParticipantsTests : ApiTest
     {
-        private readonly string _personalCodeJudge;
-        private readonly string _personalCodePanelMember;
+        private string _personalCodeJudge;
+        private string _personalCodePanelMember;
 
-        public AddJudiciaryParticipantsTests()
+        [SetUp]
+        public void Setup()
         {
             _personalCodeJudge = Guid.NewGuid().ToString();
             _personalCodePanelMember = Guid.NewGuid().ToString();
@@ -123,9 +124,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["[0].PersonalCode"][0].Should().Be(JudiciaryParticipantRequestValidation.NoPersonalCodeErrorMessage);
-            validationProblemDetails.Errors["[0].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
-            validationProblemDetails.Errors["[1].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
+            validationProblemDetails.Errors["judiciaryParticipants[0].PersonalCode"][0].Should().Be(JudiciaryParticipantRequestValidation.NoPersonalCodeErrorMessage);
+            validationProblemDetails.Errors["judiciaryParticipants[0].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
+            validationProblemDetails.Errors["judiciaryParticipants[1].DisplayName"][0].Should().Be(JudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
         }
         
         [Test]
@@ -222,20 +223,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 }
             };
         }
-        
-        private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsRequestWithoutJudge()
-        {
-            return new List<JudiciaryParticipantRequest>
-            {
-                new()
-                {
-                    PersonalCode = _personalCodePanelMember,
-                    DisplayName = "B Panel Member",
-                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
-                }
-            };
-        }
-        
+
         private List<JudiciaryParticipantRequest> BuildInvalidAddJudiciaryParticipantsRequest()
         {
             return new List<JudiciaryParticipantRequest>

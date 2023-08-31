@@ -3,7 +3,6 @@ using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BookingsApi.Controllers.V1
 {
@@ -37,11 +36,10 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<JudiciaryParticipantResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [AllowAnonymous]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AddJudiciaryParticipantsToHearing(Guid hearingId, [FromBody] List<JudiciaryParticipantRequest> request)
         {
-            var validation = await new AddJudiciaryParticipantsToHearingRequestValidation().ValidateRequestsAsync(request);
+            var validation = await new AddJudiciaryParticipantsToHearingRequestValidation().ValidateAsync(request);
             if (!validation.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validation.Errors);
