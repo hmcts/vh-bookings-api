@@ -4,6 +4,7 @@ using BookingsApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    partial class BookingsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230821133429_AddJudiciaryParticipant")]
+    partial class AddJudiciaryParticipant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -317,6 +319,7 @@ namespace BookingsApi.DAL.Migrations
             modelBuilder.Entity("BookingsApi.Domain.JudiciaryParticipant", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CreatedDate")
@@ -765,9 +768,6 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("JurisdictionId")
                         .HasColumnType("int");
 
@@ -842,9 +842,6 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Live")
@@ -1137,7 +1134,7 @@ namespace BookingsApi.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("BookingsApi.Domain.JudiciaryPerson", "JudiciaryPerson")
-                        .WithMany()
+                        .WithMany("JudiciaryParticipants")
                         .HasForeignKey("JudiciaryPersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1329,6 +1326,11 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("JudiciaryParticipants");
 
                     b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.JudiciaryPerson", b =>
+                {
+                    b.Navigation("JudiciaryParticipants");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.Jurisdiction", b =>

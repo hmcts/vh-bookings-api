@@ -148,5 +148,11 @@ namespace Testing.Common.Builders.Api
             public static string GetJusticeUserByUsername(string username) => $"{ApiRoot}/GetJusticeUserByUsername?username={username}";
             public static string GetJusticeUserList(string term, bool includeDeleted) => $"{ApiRoot}/GetJusticeUserList?term={term}&includeDeleted={includeDeleted.ToString()}";
         }
+
+        public static class JudiciaryParticipantEndpoints
+        {
+            private const string ApiRoot = "hearings";
+            public static string AddJudiciaryParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh";
+        }
     }
 }

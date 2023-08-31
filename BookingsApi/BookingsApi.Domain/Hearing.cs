@@ -26,6 +26,7 @@ namespace BookingsApi.Domain
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
+            JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -71,6 +72,7 @@ namespace BookingsApi.Domain
         public virtual IList<Participant> Participants { get; }
         public virtual IList<Endpoint> Endpoints { get; }
         public virtual IList<HearingCase> HearingCases { get; set; }
+        public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         
@@ -191,7 +193,7 @@ namespace BookingsApi.Domain
 
         public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if(!string.Equals(hearingRole.Name, "Judge", StringComparison.InvariantCultureIgnoreCase))
+            if(!hearingRole.IsJudge())
             {
                 throw new DomainRuleException(nameof(hearingRole), "Hearing role should be Judge");
             }
@@ -201,7 +203,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
             }
 
-            if(Participants.Any(x => x.HearingRole == hearingRole))
+            if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(person), "A participant with Judge role already exists in the hearing");
             }
@@ -251,6 +253,54 @@ namespace BookingsApi.Domain
 
         public bool HasHost => GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member");
 
+        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
+            
+            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
+            
+            if (DoesJudgeExist())
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "A participant with Judge role already exists in the hearing");
+            }
+            
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
+            JudiciaryParticipants.Add(participant);
+            return participant;
+        }
+        
+        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
+            
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
+            JudiciaryParticipants.Add(participant);
+            return participant;
+        }
+
+        private void ValidateJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            if (judiciaryPerson == null)
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary person cannot be null");
+            }
+            
+            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
+            }
+
+            if (judiciaryPerson.IsALeaver())
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
+            }
+            
+            if (displayName == null || displayName.Trim() == string.Empty)
+            {
+                throw new DomainRuleException(nameof(displayName), "Display name cannot be empty");
+            }
+        }
+        
         public void ValidateHostCount()
         {
             if (!HasHost)
@@ -305,6 +355,11 @@ namespace BookingsApi.Domain
         public IList<Endpoint> GetEndpoints()
         {
             return Endpoints;
+        }
+        
+        public IList<JudiciaryParticipant> GetJudiciaryParticipants()
+        {
+            return JudiciaryParticipants;
         }
 
         public void RemoveEndpoint(Endpoint endpoint)
@@ -467,7 +522,17 @@ namespace BookingsApi.Domain
         {
             return Endpoints.Any(x => x.Sip.Equals(sip, StringComparison.InvariantCultureIgnoreCase));
         }
-        
+
+        private bool DoesJudiciaryParticipantExistByPersonalCode(string personalCode)
+        {
+            return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
+        }
+
+        private bool DoesJudgeExist()
+        {
+            return Participants.Any(x => x.HearingRole?.IsJudge() ?? false) || JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+        }
+
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
             HearingType hearingType)
         {
@@ -540,6 +605,14 @@ namespace BookingsApi.Domain
             {
                 Deallocate();
             }
+        }
+
+        public ParticipantBase GetJudge()
+        {
+            var judge = Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+
+            return (ParticipantBase)judge ?? judiciaryJudge;
         }
     }
 }

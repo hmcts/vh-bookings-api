@@ -5,6 +5,7 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -167,7 +168,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
             var newVenue = allVenues.Last();
-            var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
+            var newDateTime = GetNextWorkingDay(seededHearing.ScheduledDateTime);
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
             
@@ -217,6 +218,17 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 MinimumGapBetweenHearingsInMinutes = 30,
                 MaximumConcurrentHearings = 3
             };
+        }
+        
+        private static DateTime GetNextWorkingDay(DateTime startingDateTime)
+        {
+            var newDateTime = startingDateTime.AddDays(1);
+
+            if (newDateTime.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+            {
+                newDateTime = newDateTime.AddDays(2);
+            }
+            return newDateTime;
         }
     }
 }

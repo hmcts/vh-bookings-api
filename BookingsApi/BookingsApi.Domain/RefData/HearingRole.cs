@@ -24,5 +24,8 @@ namespace BookingsApi.Domain.RefData
         {
             return this.CompareTo((HearingRole) obj);
         }
+        
+        public bool IsJudge() => 
+            string.Equals(Name, "Judge", StringComparison.InvariantCultureIgnoreCase);
     }
 }

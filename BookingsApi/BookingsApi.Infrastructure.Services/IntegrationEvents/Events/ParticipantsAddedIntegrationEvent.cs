@@ -15,6 +15,12 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             Participants = participants.Select(ParticipantDtoMapper.MapToDto).ToList();
             Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
         }
+        
+        public ParticipantsAddedIntegrationEvent(Hearing hearing, IEnumerable<JudiciaryParticipant> judiciaryParticipants)
+        {
+            Hearing = HearingDtoMapper.MapToDto(hearing);
+            Participants = judiciaryParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
+        }
 
         public HearingDto Hearing { get; }
 

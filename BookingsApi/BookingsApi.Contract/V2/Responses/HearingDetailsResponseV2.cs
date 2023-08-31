@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Contract.V2.Enums;
+using Newtonsoft.Json;
 
 namespace BookingsApi.Contract.V2.Responses;
 
@@ -111,4 +112,10 @@ public class HearingDetailsResponseV2
         /// The group id for a hearing
         /// </summary>
         public Guid? GroupId { get; set; }
+        
+        /// <summary>
+        /// List of judiciary participants in a hearing
+        /// </summary>
+        [JsonProperty("judicial_office_holders")]
+        public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
 }

@@ -37,8 +37,8 @@ namespace BookingsApi.DAL.Exceptions
     [Serializable]
     public class JudiciaryPersonNotFoundException : JudiciaryPersonException
     {
-        public JudiciaryPersonNotFoundException(string username) : 
-            base($"Judiciary Person with username {GetObfuscatedUsernameAsync(username)} does not exist")
+        public JudiciaryPersonNotFoundException(string personalCode) : 
+            base($"Judiciary Person with personal code: {personalCode} does not exist")
         {
         }
         
@@ -46,7 +46,7 @@ namespace BookingsApi.DAL.Exceptions
             base($"Judiciary Person with External ref id: {id} does not exist")
         {
         }
-        
+
         protected JudiciaryPersonNotFoundException(SerializationInfo info, StreamingContext context) 
             : base(info, context)
         {
