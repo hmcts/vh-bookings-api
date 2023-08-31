@@ -1,5 +1,5 @@
 using BookingsApi.Contract.V2.Responses;
-using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2.Extensions;
 
 namespace BookingsApi.Mappings.V2

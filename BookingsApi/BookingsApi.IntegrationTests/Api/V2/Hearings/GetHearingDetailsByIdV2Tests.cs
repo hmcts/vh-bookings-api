@@ -1,6 +1,6 @@
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
-using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;

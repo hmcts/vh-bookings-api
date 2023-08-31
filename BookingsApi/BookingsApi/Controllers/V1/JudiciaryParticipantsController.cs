@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
 using Microsoft.AspNetCore.Authorization;

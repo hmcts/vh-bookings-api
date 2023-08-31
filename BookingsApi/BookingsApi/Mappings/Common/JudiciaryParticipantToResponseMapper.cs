@@ -1,7 +1,7 @@
 using BookingsApi.Contract.V1.Responses;
 using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
 
-namespace BookingsApi.Mappings.V1
+namespace BookingsApi.Mappings.Common
 {
     public class JudiciaryParticipantToResponseMapper
     {
