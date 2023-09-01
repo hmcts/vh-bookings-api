@@ -274,13 +274,13 @@ namespace BookingsApi.Domain
         {
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
             
-            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
+            ValidateAddJudiciaryParticipant(judiciaryPerson, displayName);
             
             if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
             }
-            
+
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
             JudiciaryParticipants.Add(participant);
             return participant;
@@ -288,19 +288,43 @@ namespace BookingsApi.Domain
         
         public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
         {
-            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
+            ValidateAddJudiciaryParticipant(judiciaryPerson, displayName);
             
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             return participant;
         }
 
-        private void ValidateJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
+        public JudiciaryParticipant UpdateJudiciaryJudge(JudiciaryParticipant judiciaryParticipant, string displayName, 
+            JudiciaryParticipantHearingRoleCode hearingRoleCode)
         {
-            if (judiciaryPerson == null)
+            return UpdateJudiciaryParticipant(judiciaryParticipant, displayName, hearingRoleCode);
+        }
+        
+        public JudiciaryParticipant UpdateJudiciaryPanelMember(JudiciaryParticipant judiciaryParticipant, string displayName, 
+            JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        {
+            if (hearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist())
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary person cannot be null");
+                throw new DomainRuleException(nameof(judiciaryParticipant), "A participant with Judge role already exists in the hearing");
             }
+            
+            return UpdateJudiciaryParticipant(judiciaryParticipant, displayName, hearingRoleCode);
+        }
+
+        private JudiciaryParticipant UpdateJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant, string displayName, 
+            JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        {
+            ValidateJudiciaryParticipant(judiciaryParticipant.JudiciaryPerson, displayName);
+
+            judiciaryParticipant.DisplayName = displayName;
+            judiciaryParticipant.HearingRoleCode = hearingRoleCode;
+            return judiciaryParticipant;
+        }
+
+        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
             
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
@@ -311,13 +335,21 @@ namespace BookingsApi.Domain
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
             }
-            
+        }
+        
+        private void ValidateJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            if (judiciaryPerson == null)
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary person cannot be null");
+            }
+
             if (displayName == null || displayName.Trim() == string.Empty)
             {
                 throw new DomainRuleException(nameof(displayName), "Display name cannot be empty");
             }
         }
-        
+
         public void ValidateHostCount()
         {
             if (!HasHost)

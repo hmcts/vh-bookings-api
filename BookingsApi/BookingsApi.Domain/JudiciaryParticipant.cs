@@ -26,7 +26,7 @@ namespace BookingsApi.Domain
         
         public Guid JudiciaryPersonId { get; private set; }
         public virtual JudiciaryPerson JudiciaryPerson { get; private set; }
-        public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; private set; }
+        public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
         public Guid HearingId { get; private set; }
         public virtual Hearing Hearing { get; private set; }
         public DateTime? CreatedDate { get; set; }
