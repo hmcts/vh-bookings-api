@@ -272,23 +272,21 @@ namespace BookingsApi.Domain
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
         {
-            const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
-            
-            ValidateAddJudiciaryParticipant(judiciaryPerson, displayName);
+            ValidateAddJudiciaryParticipant(judiciaryPerson);
             
             if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
             }
 
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             return participant;
         }
         
         public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
         {
-            ValidateAddJudiciaryParticipant(judiciaryPerson, displayName);
+            ValidateAddJudiciaryParticipant(judiciaryPerson);
             
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
@@ -315,17 +313,13 @@ namespace BookingsApi.Domain
         private JudiciaryParticipant UpdateJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant, string displayName, 
             JudiciaryParticipantHearingRoleCode hearingRoleCode)
         {
-            ValidateJudiciaryParticipant(judiciaryParticipant.JudiciaryPerson, displayName);
-
-            judiciaryParticipant.DisplayName = displayName;
-            judiciaryParticipant.HearingRoleCode = hearingRoleCode;
+            judiciaryParticipant.UpdateDisplayName(displayName);
+            judiciaryParticipant.UpdateHearingRoleCode(hearingRoleCode);
             return judiciaryParticipant;
         }
 
-        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
+        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson)
         {
-            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
-            
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
@@ -334,19 +328,6 @@ namespace BookingsApi.Domain
             if (judiciaryPerson.IsALeaver())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
-            }
-        }
-        
-        private void ValidateJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
-        {
-            if (judiciaryPerson == null)
-            {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary person cannot be null");
-            }
-
-            if (displayName == null || displayName.Trim() == string.Empty)
-            {
-                throw new DomainRuleException(nameof(displayName), "Display name cannot be empty");
             }
         }
 
