@@ -64,13 +64,13 @@ public class BookNewHearingV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
-            .Be(BookNewHearingRequestValidationV2.HearingVenueCodeErrorMessage);
+            .Be(BookNewHearingRequestInputValidationV2.HearingVenueCodeErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.ServiceId)][0].Should()
-            .Be(BookNewHearingRequestValidationV2.CaseTypeServiceIdErrorMessage);
+            .Be(BookNewHearingRequestInputValidationV2.CaseTypeServiceIdErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
-            .Be(BookNewHearingRequestValidationV2.HearingTypeCodeErrorMessage);
+            .Be(BookNewHearingRequestInputValidationV2.HearingTypeCodeErrorMessage);
     }
     
     [Test]
@@ -131,7 +131,7 @@ public class BookNewHearingV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
-            .MatchRegex("Hearing venue code [A-Za-z0-9]+ does not exist");
+            .MatchRegex("HearingVenueCode [A-Za-z0-9]+ does not exist");
     }
     
     private BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
