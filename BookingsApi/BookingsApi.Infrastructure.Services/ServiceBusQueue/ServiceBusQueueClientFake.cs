@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.AcceptanceTests.Contexts;
-using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.V1.Requests;
 using FizzWare.NBuilder;
 using Testing.Common.Configuration;
 using Testing.Common.Data;
@@ -96,7 +96,6 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.AudioRecordingRequired = true)
                 .With(x => x.Endpoints = new List<EndpointRequest> {new EndpointRequest{ DisplayName = "New Endpoint"}})
-                .With(x => x.HearingTypeCode = "AutomatedTest")
                 .Build();
         }
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BookingsApi.DAL.Commands.Core
+﻿namespace BookingsApi.DAL.Commands.Core
 {
     public class CommandHandlerFactory : ICommandHandlerFactory
     {

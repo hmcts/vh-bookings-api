@@ -1,14 +1,7 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
-using FluentAssertions;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -31,11 +24,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             var username = "dontexist@test.com";
-            var requests = new List<UploadWorkHoursRequest> {
-                new UploadWorkHoursRequest
-                {
-                    Username = username,
-                }
+            var requests = new List<UploadWorkHoursDto> {
+                new (username, new List<WorkHoursDto>())
             };
 
             var command = new UploadWorkHoursCommand(requests);
@@ -52,53 +42,46 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_save_work_hours_to_database()
         {
             // Arrange
-            var oldWorkCount = _context.VhoWorkHours.Count();
-            var oldWorkCount2 = _context.JusticeUsers;
-
             var justiceUserOne = await Hooks
-                .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
+                .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true, initWorkHours:false);
             var justiceUserTwo = await Hooks
-                .SeedJusticeUser("team.lead.2@hearings.reform.hmcts.net", "firstName2", "secondname2", true);
+                .SeedJusticeUser("team.lead.2@hearings.reform.hmcts.net", "firstName2", "secondname2", true, initWorkHours:false);
 
-            var requests = new List<UploadWorkHoursRequest> {
-                new UploadWorkHoursRequest
+            var requests = new List<UploadWorkHoursDto> {
+                new (justiceUserOne.Username, new List<WorkHoursDto>
                 {
-                    Username = justiceUserOne.Username,
-                    WorkingHours = new List<WorkingHours>
-                    {
-                        new WorkingHours(1, 9, 0, 17, 0)
-                    }
-                },
-                new UploadWorkHoursRequest
+                    new (1, 9, 0, 17, 0)
+                }),
+                new (justiceUserTwo.Username, new List<WorkHoursDto>
                 {
-                    Username = justiceUserTwo.Username,
-                    WorkingHours = new List<WorkingHours>
-                    {
-                        new WorkingHours(2, 9, 30, 17, 30)
-                    }
-                }
+                    new (2, 9, 30, 17, 30)
+                })
             };
 
             var command = new UploadWorkHoursCommand(requests);
             await _commandHandler.Handle(command);
 
             // Test user with existing work hours  gets updated
-            requests[0].WorkingHours[0].EndTimeHour = 18;
+            requests[0].WorkingHours[0].SetProtected(nameof(WorkHoursDto.EndTimeHour), 18);
 
             command = new UploadWorkHoursCommand(requests);
 
             // Act
             await _commandHandler.Handle(command);
 
-            var workHours = _context.VhoWorkHours;
-            var justiceUserOneWorkHours = workHours.SingleOrDefault(x => x.JusticeUserId == justiceUserOne.Id);
-            var justiceUserTwoWorkHours = workHours.SingleOrDefault(x => x.JusticeUserId == justiceUserTwo.Id);
+            
+            var justiceUserOneDb = await _context.JusticeUsers.Include(x => x.VhoWorkHours)
+                .FirstAsync(x => x.Id == justiceUserOne.Id);
+            var justiceUserTwoDb = await _context.JusticeUsers.Include(x => x.VhoWorkHours)
+                .FirstAsync(x => x.Id == justiceUserTwo.Id);
+            var justiceUserOneWorkHours = justiceUserOneDb.VhoWorkHours[0];
+            var justiceUserTwoWorkHours = justiceUserTwoDb.VhoWorkHours[0];
 
             // Assert
-            workHours.Count().Should().Be(oldWorkCount + 2);
             justiceUserOneWorkHours.DayOfWeekId.Should().Be(1);
             justiceUserOneWorkHours.StartTime.Should().Be(new TimeSpan(9, 0, 0));
             justiceUserOneWorkHours.EndTime.Should().Be(new TimeSpan(18, 0, 0));
+            
             justiceUserTwoWorkHours.DayOfWeekId.Should().Be(2);
             justiceUserTwoWorkHours.StartTime.Should().Be(new TimeSpan(9, 30, 0));
             justiceUserTwoWorkHours.EndTime.Should().Be(new TimeSpan(17, 30, 0));
@@ -113,17 +96,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var allocatedUser1 = await Hooks.SeedJusticeUser("cso1@email.com", "Cso1", "Test");
             var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing1.Id,
-                JusticeUserId = allocatedUser1.Id
-            });
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing2.Id,
-                JusticeUserId = allocatedUser2.Id
-            });
-            await db.SaveChangesAsync();
+            var daysOfWeek = await db.DaysOfWeek.ToListAsync();
+            await Hooks.AddAllocation(seededHearing1, allocatedUser1);
+            await Hooks.AddAllocation(seededHearing2, allocatedUser2);
+            
             var hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
             hearing1.AllocatedTo.Should().NotBeNull();
             hearing1.AllocatedTo.Id.Should().Be(allocatedUser1.Id);
@@ -131,26 +107,21 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing2.AllocatedTo.Should().NotBeNull();
             hearing2.AllocatedTo.Id.Should().Be(allocatedUser2.Id);
 
-            var requests = new List<UploadWorkHoursRequest> {
-                new()
+            var dayOfWeek1 = daysOfWeek.First(x => x.Day == hearing1.ScheduledDateTime.DayOfWeek.ToString());
+            var dayOfWeek2 = daysOfWeek.First(x => x.Day == hearing1.ScheduledDateTime.DayOfWeek.ToString());
+            var dto = new List<UploadWorkHoursDto>
+            {
+                new(allocatedUser1.Username, new List<WorkHoursDto>
                 {
-                    Username = allocatedUser1.Username,
-                    WorkingHours = new List<WorkingHours>
-                    {
-                        new WorkingHours(1, 22, 0, 23, 0)
-                    }
-                },
-                new()
+                    new(dayOfWeek1.Id, 22, 0, 23, 0)
+                }),
+                new(allocatedUser2.Username, new List<WorkHoursDto>
                 {
-                    Username = allocatedUser2.Username,
-                    WorkingHours = new List<WorkingHours>
-                    {
-                        new WorkingHours(1, 22, 0, 23, 0)
-                    }
-                }
+                    new(dayOfWeek2.Id, 22, 0, 23, 0)
+                })
             };
             
-            var command = new UploadWorkHoursCommand(requests);
+            var command = new UploadWorkHoursCommand(dto);
             
             // Act
             await _commandHandler.Handle(command);

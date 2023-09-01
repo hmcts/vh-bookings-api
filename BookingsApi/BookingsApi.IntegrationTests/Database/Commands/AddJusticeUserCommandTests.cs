@@ -1,12 +1,6 @@
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Commands;
 
@@ -41,8 +35,8 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         var justiceUser = db.JusticeUsers
             .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
-            .FirstOrDefault(ju => ju.Username == command.Username);
-        Hooks._seededJusticeUserIds.Add(justiceUser.Id);
+            .First(ju => ju.Username == command.Username);
+        Hooks.AddJusticeUserForCleanup(justiceUser.Id);
 
         justiceUser.Should().NotBeNull();
         justiceUser.FirstName.Should().Be(command.FirstName);
@@ -58,13 +52,16 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
     {
         var command = new AddJusticeUserCommand("test1", "test2", "should_add_a_justice_user@testdb.com",
             "should_throw_an_exception_when_adding_a_justice_user_with_an_existing_username@testdb.com", "db@test.com", (int) UserRoleId.Vho);
-        
         await _commandHandler.Handle(command);
-
+        
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var justiceUser = db.JusticeUsers.First(ju => ju.Username == command.Username);
+        Hooks.AddJusticeUserForCleanup(justiceUser.Id);
+        
         Assert.ThrowsAsync<JusticeUserAlreadyExistsException>(async () =>
         {
             await _commandHandler.Handle(command);
-        }).Message.Should().Be($"A justice user with the username {command.Username} already exists");
+        })!.Message.Should().Be($"A justice user with the username {command.Username} already exists");
     }
 
     [Test]
@@ -79,7 +76,8 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
 
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         
-        var justiceUser = db.JusticeUsers.FirstOrDefault(x => x.Username == username);
+        var justiceUser = db.JusticeUsers.First(x => x.Username == username);
+        Hooks.AddJusticeUserForCleanup(justiceUser.Id);
         justiceUser.Delete();
         
         await db.SaveChangesAsync();
@@ -87,6 +85,6 @@ public class AddJusticeUserCommandTests : DatabaseTestsBase
         Assert.ThrowsAsync<JusticeUserAlreadyExistsException>(async () =>
         {
             await _commandHandler.Handle(command);
-        }).Message.Should().Be($"A justice user with the username {command.Username} already exists");
+        })!.Message.Should().Be($"A justice user with the username {command.Username} already exists");
     }
 }

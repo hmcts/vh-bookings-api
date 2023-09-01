@@ -1,7 +1,4 @@
-using System;
 using BookingsApi.Common.Services;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Services
 {

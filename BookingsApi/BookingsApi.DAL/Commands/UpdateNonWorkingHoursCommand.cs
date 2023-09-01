@@ -1,21 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateNonWorkingHoursCommand : ICommand
     {
         public Guid JusticeUserId { get; set; }
-        public IList<NonWorkingHours> Hours { get; set; }
+        public IList<NonWorkHoursDto> Hours { get; set; }
 
-        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkingHours> hours)
+        public UpdateNonWorkingHoursCommand(Guid justiceUserId, IList<NonWorkHoursDto> hours)
         {
             JusticeUserId = justiceUserId;
             Hours = hours;
@@ -35,25 +28,23 @@ namespace BookingsApi.DAL.Commands
         
         public async Task Handle(UpdateNonWorkingHoursCommand command)
         {
+            var justiceUser = await _context.JusticeUsers.Include(x=> x.VhoNonAvailability).FirstOrDefaultAsync(x => x.Id == command.JusticeUserId);
+            if (justiceUser == null)
+            {
+                throw new JusticeUserNotFoundException(command.JusticeUserId);
+                
+            }
             foreach (var hour in command.Hours)
             {
-                var nonWorkingHour = _context.VhoNonAvailabilities.SingleOrDefault(a => a.Id == hour.Id);
-
-                var isNewNonWorkingHourEntry = nonWorkingHour == null;
-
-                if (isNewNonWorkingHourEntry)
-                {
-                    nonWorkingHour = new VhoNonAvailability();
-                    nonWorkingHour.JusticeUserId = command.JusticeUserId;
+                var nonWorkingHour = justiceUser.VhoNonAvailability.SingleOrDefault(a => a.Id == hour.Id);
+                if (nonWorkingHour == null)
+                { 
+                    justiceUser.AddOrUpdateNonAvailability(hour.StartTime, hour.EndTime);   
                 }
-                
-                nonWorkingHour.StartTime = hour.StartTime;
-                nonWorkingHour.EndTime = hour.EndTime;
-
-                if (isNewNonWorkingHourEntry)
-                    _context.Add(nonWorkingHour);
                 else
-                    _context.Update(nonWorkingHour);
+                {
+                    nonWorkingHour.Update(hour.StartTime, hour.EndTime);
+                }
             }
             
             await _hearingAllocationService.DeallocateFromUnavailableHearings(command.JusticeUserId);

@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace BookingsApi.DAL.Helper
+﻿namespace BookingsApi.DAL.Helper
 {
     public static class UserRoleForHearingRole
     {
 
-        public static Dictionary<string, int> UserRoleId = new Dictionary<string, int>
+        public static Dictionary<string, int> UserRoleId => new Dictionary<string, int>
         {
             { UserRoles.Judge, 4 },
             { UserRoles.Individual, 5},

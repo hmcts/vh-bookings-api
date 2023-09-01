@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using BookingsApi.Contract.Enums;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookingsApi.DAL.Migrations

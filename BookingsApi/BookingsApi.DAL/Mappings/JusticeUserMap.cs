@@ -1,7 +1,4 @@
-﻿using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-namespace BookingsApi.DAL.Mappings
+﻿namespace BookingsApi.DAL.Mappings
 {
     public class JusticeUserMap : IEntityTypeConfiguration<JusticeUser>
     {
@@ -9,11 +6,17 @@ namespace BookingsApi.DAL.Mappings
         {
             builder.ToTable("JusticeUser");
             builder.HasKey(x => x.Id);
-            builder.HasMany<VhoWorkHours>("VhoWorkHours").WithOne("JusticeUser").HasForeignKey(x => x.JusticeUserId);
-            builder.HasMany<VhoNonAvailability>("VhoNonAvailability").WithOne("JusticeUser").HasForeignKey(x => x.JusticeUserId);
+            builder.HasMany(x => x.VhoWorkHours).WithOne(x => x.JusticeUser).HasForeignKey(x => x.JusticeUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(x => x.VhoNonAvailability).WithOne(x => x.JusticeUser).HasForeignKey(x => x.JusticeUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(x => x.Allocations).WithOne(x => x.JusticeUser).HasForeignKey(x => x.JusticeUserId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasIndex(u => u.Username).IsUnique();
             builder.Property(u => u.Username).HasMaxLength(450);
             builder.Property(u => u.UserRoleId).IsRequired(false).HasDefaultValue(null);
+            builder.HasMany(u => u.JusticeUserRoles).WithOne(x => x.JusticeUser).HasForeignKey(x => x.JusticeUserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

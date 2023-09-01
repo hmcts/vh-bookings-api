@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -8,9 +6,6 @@ using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Infrastructure.Services
 {

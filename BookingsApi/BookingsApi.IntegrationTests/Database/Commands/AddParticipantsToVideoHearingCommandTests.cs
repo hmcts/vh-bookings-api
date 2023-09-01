@@ -1,21 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -275,7 +266,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TestCase("Staff Member", "Staff Member")]
         public async Task Should_add_participant_to_video_hearing(string caseRole, string hearingRole)
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            {
+                options.AddJudge = false;
+            });
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 

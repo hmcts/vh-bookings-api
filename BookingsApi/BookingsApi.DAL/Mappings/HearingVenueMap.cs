@@ -1,7 +1,3 @@
-﻿using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace BookingsApi.DAL.Mappings
 {
     public class HearingVenueMap : IEntityTypeConfiguration<HearingVenue>
@@ -11,7 +7,10 @@ namespace BookingsApi.DAL.Mappings
             builder.ToTable(nameof(HearingVenue));
             builder.Property(x => x.Id);
             builder.HasKey(x => x.Name);
-            builder.HasIndex(x => x.EpimsCode);
+            builder.HasIndex(x => x.VenueCode).IsUnique();
+            builder.Property(x => x.IsScottish).HasDefaultValue(false);
+            builder.Property(x => x.IsWorkAllocationEnabled).HasDefaultValue(true);
+            builder.Property(x => x.ExpirationDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
         }
     }
 }

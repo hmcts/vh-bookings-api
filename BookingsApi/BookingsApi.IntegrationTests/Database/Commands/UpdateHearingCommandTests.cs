@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
+using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -81,24 +74,18 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_deallocate_when_scheduled_datetime_changes_and_user_is_not_available_due_to_work_hours()
         {
+            var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
+
+            _context.Attach(allocatedUser); // re-attach to avoid another query to db
             for (var i = 1; i <= 7; i++)
             {
-                _context.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i,
-                    StartTime = new TimeSpan(1, 0, 0),
-                    EndTime = new TimeSpan(2, 0, 0),
-                    JusticeUserId = allocatedUser.Id
-                });
+                var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+                allocatedUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(1, 0, 0), new TimeSpan(2, 0, 0));
             }
 
             await _context.SaveChangesAsync();
@@ -127,18 +114,12 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
-            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
-            _context.VhoNonAvailabilities.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0),
-                EndTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 23, 59, 59),
-                JusticeUserId = allocatedUser.Id
-            });
+            var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test", initWorkHours: false);
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
+            allocatedUser.AddOrUpdateNonAvailability(
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 0, 0, 0),
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 23, 59, 59)
+                );
 
             await _context.SaveChangesAsync();
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
@@ -163,31 +144,22 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_not_deallocate_when_scheduled_datetime_changes_and_user_is_available_due_to_work_hours()
         {
+            var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
+            
             for (var i = 1; i <= 7; i++)
             {
-                _context.VhoWorkHours.Add(new VhoWorkHours
-                {
-                    DayOfWeekId = i,
-                    StartTime = new TimeSpan(0, 0, 0),
-                    EndTime = new TimeSpan(23, 59, 59),
-                    JusticeUserId = allocatedUser.Id
-                });
+                var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+                allocatedUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(0, 0, 0), new TimeSpan(23, 59, 59));
             }
-            _context.VhoNonAvailabilities.Add(new VhoNonAvailability
-            {
-                StartTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 1, 0, 0),
-                EndTime = new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 2, 0, 0),
-                JusticeUserId = allocatedUser.Id
-            });
+            allocatedUser.AddOrUpdateNonAvailability(
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 1, 0, 0),
+                new DateTime(seededHearing.ScheduledDateTime.Year, seededHearing.ScheduledDateTime.Month, seededHearing.ScheduledDateTime.Day, 2, 0, 0)
+            );
             
             await _context.SaveChangesAsync();
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
@@ -196,7 +168,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var allVenues = await _getHearingVenuesQueryHandler.Handle(new GetHearingVenuesQuery());
             var newVenue = allVenues.Last();
-            var newDateTime = seededHearing.ScheduledDateTime.AddDays(1);
+            var newDateTime = GetNextWorkingDay(seededHearing.ScheduledDateTime);
             var updatedBy = "testuser";
             var casesToUpdate = new List<Case>();
             
@@ -217,12 +189,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
             var allocatedUser = await Hooks.SeedJusticeUser("cso@email.com", "Cso", "Test");
-            _context.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing.Id,
-                JusticeUserId = allocatedUser.Id
-            });
-            await _context.SaveChangesAsync();
+            await Hooks.AddAllocation(seededHearing, allocatedUser);
             var hearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             hearing.AllocatedTo.Should().NotBeNull();
             hearing.AllocatedTo.Id.Should().Be(allocatedUser.Id);
@@ -251,6 +218,17 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                 MinimumGapBetweenHearingsInMinutes = 30,
                 MaximumConcurrentHearings = 3
             };
+        }
+        
+        private static DateTime GetNextWorkingDay(DateTime startingDateTime)
+        {
+            var newDateTime = startingDateTime.AddDays(1);
+
+            if (newDateTime.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+            {
+                newDateTime = newDateTime.AddDays(2);
+            }
+            return newDateTime;
         }
     }
 }

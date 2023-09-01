@@ -1,6 +1,3 @@
-using BookingsApi.Contract.Configuration;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
 using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -8,15 +5,14 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using BookingsApi.Services;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
+using BookingsApi.Contract.V1.Configuration;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Controllers.V1;
 
 namespace BookingsApi.UnitTests.Controllers
 {

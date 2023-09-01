@@ -1,17 +1,10 @@
-using BookingsApi.Contract.Configuration;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
-using NUnit.Framework;
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
+using BookingsApi.Contract.V1.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {

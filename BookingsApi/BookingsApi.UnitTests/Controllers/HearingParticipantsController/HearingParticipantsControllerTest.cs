@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
@@ -7,9 +6,6 @@ using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using Moq;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 {
@@ -44,7 +40,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             }
         }
 
-        protected BookingsApi.Controllers.HearingParticipantsController Controller;
+        protected BookingsApi.Controllers.V1.HearingParticipantsController Controller;
 
         protected Guid hearingId;
         protected Guid participantId;
@@ -84,14 +80,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
             videoHearing = GetVideoHearing();
-            Controller = new BookingsApi.Controllers.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
+            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);
 
             QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(videoHearing);
              
-            QueryHandler.Setup(q => q.Handle<GetCaseTypeQuery, CaseType>(It.IsAny<GetCaseTypeQuery>())).ReturnsAsync(CaseType);
+            QueryHandler.Setup(q => q.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(It.IsAny<GetCaseRolesForCaseTypeQuery>())).ReturnsAsync(CaseType);
         }
 
         protected CaseRole CreateCaseAndHearingRoles(int caseId, string caseRoleName,string userRole, List<string> roles)

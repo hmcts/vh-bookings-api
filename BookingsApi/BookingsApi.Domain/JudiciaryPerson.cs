@@ -88,5 +88,10 @@ namespace BookingsApi.Domain
             }
             
         }
+        
+        public bool IsALeaver()
+        {
+            return Leaver || HasLeft;
+        }
     }
 }

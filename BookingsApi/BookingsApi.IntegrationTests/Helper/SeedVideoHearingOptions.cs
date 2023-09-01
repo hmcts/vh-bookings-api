@@ -1,6 +1,3 @@
-using System;
-using BookingsApi.Domain;
-
 namespace BookingsApi.IntegrationTests.Helper
 {
     public class SeedVideoHearingOptions
@@ -8,6 +5,9 @@ namespace BookingsApi.IntegrationTests.Helper
         public SeedVideoHearingOptions()
         {
             CaseTypeName = Generic;
+            AddJudge = true;
+            AddJudiciaryPanelMember = false;
+            AddJudiciaryJudge = false;
         }
 
         private const string Generic = "Generic";
@@ -28,5 +28,13 @@ namespace BookingsApi.IntegrationTests.Helper
         public DateTime? ScheduledDate { get; internal set; }
         
         public HearingVenue HearingVenue { get; set; }
+        
+        public Case Case { get; set; }
+
+        public bool AddJudge { get; set; }
+
+        public bool AddJudiciaryPanelMember { get; set; }
+        
+        public bool AddJudiciaryJudge { get; set; }
     }
 }

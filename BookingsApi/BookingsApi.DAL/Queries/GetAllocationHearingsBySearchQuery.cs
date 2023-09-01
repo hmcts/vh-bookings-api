@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Contract.Helper;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.DAL.Queries.Core;
-using Castle.Core.Internal;
-using Microsoft.EntityFrameworkCore;
-
-namespace BookingsApi.DAL.Queries
+﻿namespace BookingsApi.DAL.Queries
 {
     public class GetAllocationHearingsBySearchQuery : IQuery
     {
@@ -55,6 +44,7 @@ namespace BookingsApi.DAL.Queries
         public async Task<List<VideoHearing>> Handle(GetAllocationHearingsBySearchQuery query)
         {
             var hearings =  _context.VideoHearings
+                .Include(h => h.HearingVenue)
                 .Include(h => h.CaseType)
                 .Include(h => h.HearingType)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
@@ -62,14 +52,15 @@ namespace BookingsApi.DAL.Queries
                 .Where(x 
                     => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
                          && x.Status != BookingStatus.Cancelled
-                         && HearingAllocationExcludedVenueList.ExcludedHearingVenueNames.All(venueName => venueName != x.HearingVenueName))
+                         && x.HearingVenue.IsWorkAllocationEnabled)
+                .AsSplitQuery()
                 .AsQueryable();
             
             if (!_isTest)
                 hearings = hearings.Where(h1 => h1.CaseTypeId != 3); //exclude generic type test cases from prod
-            
+
             if (query.IsUnallocated)
-                hearings = hearings.Where(h2 => _context.Allocations.FirstOrDefault(a => a.HearingId == h2.Id) == null);
+                hearings = hearings.Where(x => !x.Allocations.Any());
 
             if (query.IncludeWorkHours)
             {
@@ -78,7 +69,7 @@ namespace BookingsApi.DAL.Queries
                     .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoNonAvailability);
             }
 
-            if (!query.CaseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrWhiteSpace(query.CaseNumber))
                 hearings = hearings
                     .Where(h3 => h3.HearingCases
                         .Any(c => c.Case.Number.ToLower().Trim().Contains(query.CaseNumber)));

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Responses;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.IntegrationTests.Contexts;
 using GST.Fake.Authentication.JwtBearer;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
+using TestContext = BookingsApi.IntegrationTests.Contexts.TestContext;
 
 namespace BookingsApi.IntegrationTests.Hooks
 {
@@ -51,8 +48,8 @@ namespace BookingsApi.IntegrationTests.Hooks
             using var client = context.Server.CreateClient();
             client.SetFakeBearerToken("admin", new[] { "ROLE_ADMIN", "ROLE_GENTLEMAN" });
 
-            context.Uri = client.BaseAddress + HearingTypesRelativePath;
-            context.HttpMethod = HttpMethod.Get;
+            context.Uri = client.BaseAddress + GetHearingsByTypes;
+            context.HttpMethod = HttpMethod.Post;
             context.HttpContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             var response = await client.SendAsync(

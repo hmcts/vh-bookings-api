@@ -1,13 +1,8 @@
-﻿using System;
-using System.IO;
-using NUnit.Framework;
+﻿using System.IO;
 using BookingsApi.Extensions;
 using Microsoft.AspNetCore.Http;
-using Moq;
-using System.Threading.Tasks;
 using System.Net;
 using BookingsApi.Common;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
 namespace BookingsApi.UnitTests.Middleware

@@ -1,10 +1,8 @@
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database
 {

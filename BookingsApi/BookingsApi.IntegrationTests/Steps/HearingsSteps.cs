@@ -1,25 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Requests;
-using BookingsApi.Contract.Requests.Enums;
-using BookingsApi.Contract.Responses;
-using BookingsApi.DAL;
-using BookingsApi.Domain;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using BookingsApi.IntegrationTests.Helper;
 using FizzWare.NBuilder;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 
@@ -58,7 +47,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
             }
 
-            Context.Uri = GetHearingDetailsById(_hearingId);
+            Context.Uri = GetHearingDetailsById(_hearingId.ToString());
             Context.HttpMethod = HttpMethod.Get;
         }
 
@@ -145,6 +134,7 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.TestData.NewHearingId = seededHearing.Id;
             Context.TestData.UpdateHearingRequest = BuildUpdateHearingRequestRequest(Context.TestData.CaseName,
                 Context.Config.TestSettings.UsernameStem);
+            
             if (scenario == Scenario.Invalid)
             {
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
@@ -223,8 +213,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             var request = new GetHearingRequest { Limit = 1 };
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -271,7 +261,7 @@ namespace BookingsApi.IntegrationTests.Steps
 
             var request = new GetHearingRequest { Limit = 1 };
 
-            Context.Uri = HearingTypesRelativePath;
+            Context.Uri = GetHearingsByTypes;
             Context.HttpMethod = HttpMethod.Get;
             Context.HttpContent = GetHttpContent(request);
 
@@ -281,8 +271,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var bookings = RequestHelper.Deserialise<BookingsResponse>(json);
 
             request.Cursor = bookings.NextCursor;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -296,8 +286,8 @@ namespace BookingsApi.IntegrationTests.Steps
             var request = new GetHearingRequest { Limit = 1 };
 
             Context.TestData.NewHearingId = secondSeededHearing.Id;
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
             Context.HttpContent = GetHttpContent(request);
         }
 
@@ -314,19 +304,18 @@ namespace BookingsApi.IntegrationTests.Steps
                 _ => throw new InvalidOperationException("Unexpected type of case type: " + scenario)
             };
 
-            var request  = new GetHearingRequest { Types = new List<int> { caseType } };
+            var request = new GetHearingRequest { Types = new List<int> { caseType } };
 
             Context.HttpContent = GetHttpContent(request);
-            Context.Uri = HearingTypesRelativePath;
-            Context.HttpMethod = HttpMethod.Get;
+            Context.Uri = GetHearingsByTypes;
+            Context.HttpMethod = HttpMethod.Post;
         }
 
         [Given(@"I have a (.*) hearing cancellation request")]
         public async Task GivenIHaveAHearingCancellationRequest(Scenario scenario)
         {
             await SeedHearingForScenarioAsync(scenario);
-
-            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled);
+            CancelBooking();
         }
 
         [Given(@"I have a (.*) hearing failed confirmation request")]
@@ -480,7 +469,7 @@ namespace BookingsApi.IntegrationTests.Steps
             hearingReadyForVideoEvent.Hearing.HearingVenueName.Should().Be(response.HearingVenueName);
         }
 
-        private static StringContent GetHttpContent<T>(T data) where T: class
+        private static StringContent GetHttpContent<T>(T data) where T : class
             => new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
 
         private async Task SeedHearingForScenarioAsync(Scenario scenario)
@@ -651,7 +640,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 ScheduledDateTime = DateTime.Today.AddDays(3).AddHours(11).AddMinutes(45),
                 ScheduledDuration = 100,
-                HearingVenueName = "Manchester Civil and Family Justice Centre",
+                HearingVenueName = "Manchester County and Family Court",
                 OtherInformation = "OtherInfo",
                 QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,
@@ -687,6 +676,18 @@ namespace BookingsApi.IntegrationTests.Steps
             });
             Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);
+            Context.HttpMethod = HttpMethod.Patch;
+        }
+
+        private void CancelBooking(string updatedBy = "testuser")
+        {
+            var jsonBody = RequestHelper.Serialise(new CancelBookingRequest
+            {
+                UpdatedBy = updatedBy,
+                CancelReason = "cancelled due to covid-19"
+            });
+            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.Uri = CancelBookingUri(_hearingId);
             Context.HttpMethod = HttpMethod.Patch;
         }
 

@@ -1,13 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BookingsApi.Domain.RefData;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Queries
 {
     public class GetAllCaseTypesQuery : IQuery
     {
+        public GetAllCaseTypesQuery(bool includeDeleted)
+        {
+            IncludeDeleted = includeDeleted;
+        }
+
+        public bool IncludeDeleted { get; }
     }
     
     public class GetAllCaseTypesQueryHandler : IQueryHandler<GetAllCaseTypesQuery, List<CaseType>>
@@ -21,9 +21,23 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<CaseType>> Handle(GetAllCaseTypesQuery query)
         {
-        return await _context.CaseTypes
-                .Include(x => x.HearingTypes)
-                .ToListAsync();
+            var dbQuery = _context.CaseTypes.Include(x=> x.HearingTypes).AsNoTracking();
+
+            if (query.IncludeDeleted)
+            {
+                return await dbQuery.ToListAsync();
+            }
+            
+            // exclude case and hearing types that have expired
+            dbQuery = dbQuery.Where(x => x.ExpirationDate == null || x.ExpirationDate >= DateTime.UtcNow);
+
+            var caseTypes = await dbQuery.ToListAsync();
+            foreach (var caseType in caseTypes)
+            {
+                caseType.HearingTypes = caseType.HearingTypes.Where(x => !x.HasExpired()).ToList();
+            }
+
+            return caseTypes;
         }
     }
 }

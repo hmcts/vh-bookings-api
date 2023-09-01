@@ -1,8 +1,4 @@
-using BookingsApi.DAL;
-using BookingsApi.IntegrationTests.Helper;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
 using Testing.Common.Configuration;
 
 namespace BookingsApi.IntegrationTests;
@@ -22,6 +18,14 @@ public class ApiTest
         RunMigrations();
         Application = new VhApiWebApplicationFactory();
     }
+    
+    [TearDown]
+    public async Task TearDown()
+    {
+        await Hooks.ClearSeededHearings();
+        await Hooks.ClearSeededJusticeUsersAsync();
+        await Hooks.ClearJudiciaryPersonsAsync();
+    }
 
     private void RegisterSettings()
     {
@@ -32,7 +36,6 @@ public class ApiTest
     {
         _databaseConnectionString = _configRoot.GetConnectionString("VhBookings");
         var dbContextOptionsBuilder = new DbContextOptionsBuilder<BookingsDbContext>();
-        TestContext.WriteLine($"Connection string: {_databaseConnectionString}");
         dbContextOptionsBuilder.UseSqlServer(_databaseConnectionString);
         BookingsDbContextOptions = dbContextOptionsBuilder.Options;
         Hooks = new TestDataManager(BookingsDbContextOptions, "Bookings Api Integration Test");

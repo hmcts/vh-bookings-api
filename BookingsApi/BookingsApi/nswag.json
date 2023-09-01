@@ -41,7 +41,7 @@
       "contractResolverType": null,
       "serializerSettingsType": null,
       "useDocumentProvider": true,
-      "documentName": "v1",
+      "documentName": "all",
       "aspNetCoreEnvironment": null,
       "createWebHostBuilderMethod": null,
       "startupType": null,
@@ -90,11 +90,14 @@
       "operationGenerationMode": "SingleClientFromOperationId",
       "additionalNamespaceUsages": [
         "Microsoft.AspNetCore.Mvc",
-        "BookingsApi.Contract.Queries",
-        "BookingsApi.Contract.Requests",
-        "BookingsApi.Contract.Responses",
-        "BookingsApi.Contract.Configuration",
-        "BookingsApi.Contract.Enums"
+        "BookingsApi.Contract.V1.Queries",
+        "BookingsApi.Contract.V1.Requests",
+        "BookingsApi.Contract.V1.Responses",
+        "BookingsApi.Contract.V1.Configuration",
+        "BookingsApi.Contract.V1.Enums",
+        "BookingsApi.Contract.V2.Requests",
+        "BookingsApi.Contract.V2.Responses",
+        "BookingsApi.Contract.V2.Enums"
       ],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,

@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.Common.Services;
-using BookingsApi.DAL;
-using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using NUnit.Framework;
+﻿using BookingsApi.DAL.Queries;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -18,20 +7,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     {
         private GetBookingsByCaseTypesQueryHandler _handler;
         private BookingsDbContext _context;
-        private Mock<IFeatureToggles> FeatureTogglesMock;
 
         private const string FinancialRemedy = "Financial Remedy";
 
         [SetUp]
         public void Setup()
         {
-            FeatureTogglesMock = new Mock<IFeatureToggles>();
-
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(false);
-
             _context = new BookingsDbContext(BookingsDbContextOptions);
-
-            _handler = new GetBookingsByCaseTypesQueryHandler(_context, FeatureTogglesMock.Object);
+            _handler = new GetBookingsByCaseTypesQueryHandler(_context);
         }
 
         [Test]
@@ -72,9 +55,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_video_hearings_filtered_by_case_number()
         {
             await Hooks.SeedVideoHearing();
-
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
+            
             var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
@@ -84,7 +65,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var result = await _handler.Handle(query);
 
-            AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
+            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == Hooks.CaseNumber)).Should().BeTrue();
         }
 
         [Test(Description = "With AdminSearchToggle On")]
@@ -94,8 +75,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             await Hooks.SeedVideoHearing();
 
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
+            
             var query = new GetBookingsByCaseTypesQuery
             {
                 LastName = participantLastName
@@ -108,8 +88,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_with_no_judge()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
+            
             var bookingsWithNoJugde = await Hooks.SeedVideoHearingWithNoJudge();
 
             var bookingsWithJudge = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
@@ -123,13 +102,34 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             AssertHearingsContainsNoJdge(hearings);
         }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_with_no_judiciary_judge()
+        {
+            
+            var bookingsWithNoJugde = await Hooks.SeedVideoHearingWithNoJudge();
+            
+            var bookingsWithJudiciaryJudge = await Hooks.SeedVideoHearing(configureOptions: options =>
+            {
+                options.AddJudge = false;
+                options.AddJudiciaryJudge = true;
+            });
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudiciaryJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })
+            {
+                NoJudge = true
+            };
+
+            var hearings = await _handler.Handle(query);
+
+            AssertHearingsContainsNoJdge(hearings);
+        }
 
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_venue_ids()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
-            var venues = new RefDataBuilder().HearingVenues;
+            
+            var venues = await _context.Venues.AsNoTracking().ToListAsync();
 
             var venue1 = venues[0];
             var venue2 = venues[1];
@@ -154,9 +154,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_multiple_criteria()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-            
-            var venues = new RefDataBuilder().HearingVenues;
+                        var venues = await _context.Venues.AsNoTracking().ToListAsync();
         
             var venue1 = venues[0];
             var venue2 = venues[1];
@@ -180,15 +178,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             var result = await _handler.Handle(query);
 
-            AssertHearingsAreFilteredByCaseNumber(result, Hooks.CaseNumber);
+            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == Hooks.CaseNumber)).Should().BeTrue();
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
         
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_user_id()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
+            
 
             var users = new RefDataBuilder().Users;
 
@@ -210,25 +207,21 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_not_allocated_empty()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-            await Hooks.SeedJusticeUserList("team.lead@hearings.reform.hmcts.net", "firstName", "secondname", true);
-            
             
             var query = new GetBookingsByCaseTypesQuery
             {
-                NoAllocated = true
+                Unallocated = true
             };
 
             var result = await _handler.Handle(query);
 
-            AssertHearingsAreFilteredByNoAllocatedEmpty(result);
+            result.All(x=>x.AllocatedTo == null).Should().BeTrue();
         }
         
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_not_allocated_not_empty()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-            await Hooks.SeedVideoHearing();
+                        await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
             await Hooks.SeedAllocatedJusticeUser("team.lead@hearings.reform.hmcts.net", "firstName", 
@@ -237,21 +230,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             var query = new GetBookingsByCaseTypesQuery
             {
-                NoAllocated = true
+                Unallocated = true
             };
 
             var result = await _handler.Handle(query);
 
             AssertHearingsAreFilteredByNoAllocatedNotEmpty(result);
-        }
-
-        private static void AssertHearingsAreFilteredByCaseNumber(IEnumerable<VideoHearing> hearings, string caseNumber)
-        {
-            var containsHearingsFilteredByCaseNumber = hearings
-                .SelectMany(r => r.HearingCases)
-                .All(r => r.Case.Number == caseNumber);
-            
-            containsHearingsFilteredByCaseNumber.Should().BeTrue();
         }
 
         private static void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
@@ -260,8 +244,14 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 .SelectMany(r => r.Participants)
                 .Distinct()
                 .All(r => !r.Discriminator.Equals("judge", StringComparison.InvariantCultureIgnoreCase));
+            
+            var containsHearingsFilteredWithNoJudiciaryJudge = hearings
+                .SelectMany(r => r.JudiciaryParticipants)
+                .Distinct()
+                .All(r => r.HearingRoleCode != Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
 
             containsHearingsFilteredWithNoJudge.Should().BeTrue();
+            containsHearingsFilteredWithNoJudiciaryJudge.Should().BeTrue();
 
             hearings.Count().Should().Be(1);
         }
@@ -285,15 +275,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             containsHearingsFilteredByUsers.Should().BeTrue();
         }
-        
-        private static void AssertHearingsAreFilteredByNoAllocatedEmpty(IEnumerable<VideoHearing> hearings)
-        {
-            var containsHearingsFilteredByUsers = hearings
-                .Where(r => r.Allocations.Count <= 0);
-            
-            containsHearingsFilteredByUsers.Should().BeEmpty();
-        }
-        
         private static void AssertHearingsAreFilteredByNoAllocatedNotEmpty(IEnumerable<VideoHearing> hearings)
         {
             var containsHearingsFilteredByUsers = hearings
@@ -391,8 +372,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_hearings_on_or_after_the_from_date_and_before_to_date()
         {
-            FeatureTogglesMock.Setup(r => r.AdminSearchToggle()).Returns(true);
-
+            
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(1));
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(3));
             await Hooks.SeedVideoHearing(configureOptions => configureOptions.ScheduledDate = DateTime.UtcNow.AddDays(4));

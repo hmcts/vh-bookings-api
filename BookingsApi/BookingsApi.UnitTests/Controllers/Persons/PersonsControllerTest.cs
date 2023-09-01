@@ -1,15 +1,11 @@
-﻿using System;
-using System.Linq;
-using BookingsApi.Controllers;
+﻿using BookingsApi.Controllers;
+using BookingsApi.Controllers.V1;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Controllers.Persons
 {

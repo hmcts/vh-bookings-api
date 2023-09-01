@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BookingsApi.DAL.Dtos
+﻿namespace BookingsApi.DAL.Dtos
 {
     public class AnonymisationDataDto
     {

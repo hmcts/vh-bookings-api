@@ -1,10 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.DAL.Commands.Core;
-using BookingsApi.DAL.Exceptions;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Commands
 {
     public class UpdateHearingStatusCommand : ICommand

@@ -1,20 +1,11 @@
-﻿using BookingsApi.DAL;
-using BookingsApi.DAL.Commands;
+﻿using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -26,6 +17,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
         private VideoHearing _hearing;
         private CaseType _genericCaseType;
+        private List<string> _personsToRemove;
 
         private List<ExistingParticipantDetails> _existingParticipants { get; set; }
         private List<NewParticipant> _newParticipants { get; set; }
@@ -36,6 +28,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [SetUp]
         public async Task Setup()
         {
+            _personsToRemove = new List<string>();
             _context = new BookingsDbContext(BookingsDbContextOptions);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(_context);
             _genericCaseType = _context.CaseTypes
@@ -205,9 +198,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_remove_participants()
         {
             //Arrange
-            var participantToRemoveIdOne = _hearing.Participants.First(p => p.HearingRole.Name != "Judge").Id;
-            var participantToRemoveIdTwo = _hearing.Participants.Last(p => p.HearingRole.Name != "Judge").Id;
+            var participantToRemoveOne = _hearing.Participants.First(p => p.HearingRole.Name != "Judge");
+            var participantToRemoveTwo = _hearing.Participants.Last(p => p.HearingRole.Name != "Judge");
+            var participantToRemoveIdOne = participantToRemoveOne.Id;
+            var participantToRemoveIdTwo = participantToRemoveTwo.Id;
 
+            _personsToRemove.Add(participantToRemoveOne.Person.ContactEmail);
+            _personsToRemove.Add(participantToRemoveTwo.Person.ContactEmail);
+            
             _removedParticipantIds = new List<Guid>
             {
                 participantToRemoveIdOne, participantToRemoveIdTwo
@@ -268,7 +266,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var judgeHearingRole =
                 judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
-            var oldJudgeId = _hearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id).Id;
+            var oldJudge = _hearing.GetParticipants().Single(x => x.HearingRole.Id == judgeHearingRole.Id);
+            _personsToRemove.Add(oldJudge.Person.ContactEmail);
+            var oldJudgeId = oldJudge.Id;
 
             var newJudge = new PersonBuilder(true).Build();
 
@@ -303,11 +303,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TearDown]
         public new async Task TearDown()
         {
-            if (_hearing.Id != Guid.Empty)
+            if (_hearing?.Id != Guid.Empty)
             {
                 TestContext.WriteLine($"Removing test hearing {_hearing.Id}");
                 await Hooks.RemoveVideoHearing(_hearing.Id);
+                _hearing = null;
             }
+
+            await Hooks.ClearUnattachedPersons(_personsToRemove);
         }
     }
 }

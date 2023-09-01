@@ -1,9 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
+﻿using BookingsApi.Domain.Enumerations;
 using TechTalk.SpecFlow;
 
 namespace BookingsApi.IntegrationTests.Steps
@@ -44,7 +39,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Then(@"the response should have the status (.*) and success status (.*)")]
         public void ThenTheResponseShouldHaveStatus(HttpStatusCode statusCode, bool isSuccess)
         {
-            Context.Response.StatusCode.Should().Be(statusCode);
+            Context.Response.StatusCode.Should().Be(statusCode, Context.Response.Content.ReadAsStringAsync().Result);
             Context.Response.IsSuccessStatusCode.Should().Be(isSuccess);
             NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
         }

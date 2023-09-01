@@ -1,8 +1,4 @@
-﻿using System;
-using BookingsApi.Domain.Validations;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
+﻿using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {

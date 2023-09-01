@@ -1,8 +1,10 @@
 ﻿using BookingsApi.Domain.Configuration;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.RefData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
 {
@@ -10,6 +12,7 @@ namespace BookingsApi.Domain
     {
         public JusticeUser()
         {
+            Id = Guid.NewGuid();
             VhoNonAvailability = new List<VhoNonAvailability>();
             VhoWorkHours = new List<VhoWorkHours>();
             Allocations = new List<Allocation>();
@@ -38,6 +41,50 @@ namespace BookingsApi.Domain
         public virtual IList<VhoWorkHours> VhoWorkHours { get; protected set; }
         public virtual IList<Allocation> Allocations { get; protected set; }
 
+        public void AddOrUpdateWorkHour(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+        {
+            var existingHour = VhoWorkHours.SingleOrDefault(hours => !hours.Deleted && hours.DayOfWeekId == dayOfWeek.Id);
+            if (existingHour == null)
+            {
+                VhoWorkHours.Add(new VhoWorkHours()
+                {
+                    DayOfWeek = dayOfWeek,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    JusticeUser = this
+                });
+            }
+            else
+            {
+                existingHour.StartTime = startTime;
+                existingHour.EndTime = endTime;
+                UpdatedDate = DateTime.UtcNow;
+            }
+        }
+
+        public void AddOrUpdateNonAvailability(DateTime startTime, DateTime endTime)
+        {
+            var vhoNonWorkingHours =
+                VhoNonAvailability.SingleOrDefault(x => x.StartTime == startTime || x.EndTime == endTime);
+
+            if (vhoNonWorkingHours == null)
+            {
+                VhoNonAvailability.Add(new VhoNonAvailability()
+                {
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    JusticeUser = this
+                });
+            }
+            else
+            {
+                vhoNonWorkingHours.StartTime = startTime;
+                vhoNonWorkingHours.EndTime = endTime;
+                vhoNonWorkingHours.Deleted = false;
+                // should we undelete if being re-added?
+            }
+        }
+
         public bool IsAvailable(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
             return IsDateBetweenWorkingHours(startDate, endDate, configuration) &&
@@ -57,7 +104,10 @@ namespace BookingsApi.Domain
 
         public bool IsDateBetweenWorkingHours(DateTime startDate, DateTime endDate, AllocateHearingConfiguration configuration)
         {
-            var workHours = VhoWorkHours.FirstOrDefault(wh => wh.SystemDayOfWeek == startDate.DayOfWeek);
+            var localStartDate = startDate.ToGmt();
+            var localEndDate = endDate.ToGmt();
+
+            var workHours = VhoWorkHours.FirstOrDefault(wh => wh.SystemDayOfWeek == localStartDate.DayOfWeek);
             
             if (workHours == null)
             {
@@ -67,18 +117,18 @@ namespace BookingsApi.Domain
             var workHourStartTime = workHours.StartTime;
             var workHourEndTime = workHours.EndTime;
             
-            if (workHourStartTime < startDate.TimeOfDay && workHourEndTime < startDate.TimeOfDay)
+            if (workHourStartTime < localStartDate.TimeOfDay && workHourEndTime < localStartDate.TimeOfDay)
             {
                 return false;
             }
             
-            if (workHourStartTime > endDate.TimeOfDay && workHourEndTime > endDate.TimeOfDay)
+            if (workHourStartTime > localEndDate.TimeOfDay && workHourEndTime > localEndDate.TimeOfDay)
             {
                 return false;
             }
             
-            return (workHourStartTime <= startDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
-                   (workHourEndTime >= endDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
+            return (workHourStartTime <= localStartDate.TimeOfDay || configuration.AllowHearingToStartBeforeWorkStartTime) && 
+                   (workHourEndTime >= localEndDate.TimeOfDay || configuration.AllowHearingToEndAfterWorkEndTime);
         }
         
         public void AddRoles(params UserRole[] userRoles)
@@ -92,16 +142,8 @@ namespace BookingsApi.Domain
         public void Delete()
         {
             Deleted = true;
-
-            foreach (var workHour in VhoWorkHours)
-            {
-                workHour.Delete();
-            }
-
-            foreach (var nonAvailability in VhoNonAvailability)
-            {
-                nonAvailability.Delete();
-            }
+            VhoWorkHours.Clear();
+            VhoNonAvailability.Clear();
             
             foreach (var hearing in Allocations.Select(a => a.Hearing))
             {
@@ -115,5 +157,15 @@ namespace BookingsApi.Domain
         }
         
         public bool IsTeamLeader() => JusticeUserRoles.Any(jur => jur.UserRole.IsVhTeamLead);
+
+        public void RemoveNonAvailability(VhoNonAvailability nonAvailability)
+        {
+            var existing = VhoNonAvailability.SingleOrDefault(x => x.Id == nonAvailability.Id);
+            if (existing == null)
+            {
+                throw new DomainRuleException("JusticeUser", "NonAvailability does not exist");
+            }
+            VhoNonAvailability.Remove(nonAvailability);
+        }
     }
 }

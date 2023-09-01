@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.Domain
@@ -7,16 +8,23 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
-        public HearingVenue(int id, string name)
+        public HearingVenue(int id, string name, bool isScottish = false, bool isWorkAllocationEnabled = true, string venueCode = null)
         {
             ValidateArguments(id, name);
 
             Id = id;
             Name = name;
+            IsScottish = isScottish;
+            IsWorkAllocationEnabled = isWorkAllocationEnabled;
+            VenueCode = venueCode;
         }
 
         public string Name { get; }
-        public string EpimsCode { get; }
+        public string VenueCode { get; }
+        public bool IsScottish { get; }
+        public bool IsWorkAllocationEnabled { get; }
+        
+        public DateTime? ExpirationDate { get; set; }
 
         private void ValidateArguments(int id, string name)
         {

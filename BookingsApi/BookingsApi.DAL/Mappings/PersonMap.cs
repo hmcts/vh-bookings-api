@@ -1,7 +1,3 @@
-using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 namespace BookingsApi.DAL.Mappings
 {
     public class PersonMap : IEntityTypeConfiguration<Person>
@@ -20,8 +16,8 @@ namespace BookingsApi.DAL.Mappings
             builder.HasIndex(x => x.ContactEmail).IsUnique();
             builder.HasIndex(x => x.Username).IsUnique();
 
-            builder.Property(x => x.CreatedDate);
-            builder.Property(x => x.UpdatedDate);
+            builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
             builder.Property("OrganisationId").IsRequired(false);
         }

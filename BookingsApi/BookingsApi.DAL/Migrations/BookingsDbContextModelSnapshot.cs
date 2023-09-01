@@ -263,18 +263,33 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EpimsCode")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsScottish")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsWorkAllocationEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("VenueCode")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Name");
 
-                    b.HasIndex("EpimsCode");
+                    b.HasIndex("VenueCode")
+                        .IsUnique()
+                        .HasFilter("[VenueCode] IS NOT NULL");
 
                     b.ToTable("HearingVenue", (string)null);
                 });
@@ -297,6 +312,38 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("JobHistory", (string)null);
+                });
+
+            modelBuilder.Entity("BookingsApi.Domain.JudiciaryParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("HearingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("HearingRoleCode")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("JudiciaryPersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HearingId");
+
+                    b.HasIndex("JudiciaryPersonId");
+
+                    b.ToTable("JudiciaryParticipant");
                 });
 
             modelBuilder.Entity("BookingsApi.Domain.JudiciaryPerson", b =>
@@ -718,6 +765,9 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("JurisdictionId")
                         .HasColumnType("int");
 
@@ -789,9 +839,12 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Live")
@@ -811,6 +864,10 @@ namespace BookingsApi.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CaseTypeId");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
 
                     b.ToTable("HearingType", (string)null);
                 });
@@ -1071,6 +1128,25 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Hearing");
                 });
 
+            modelBuilder.Entity("BookingsApi.Domain.JudiciaryParticipant", b =>
+                {
+                    b.HasOne("BookingsApi.Domain.Hearing", "Hearing")
+                        .WithMany("JudiciaryParticipants")
+                        .HasForeignKey("HearingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingsApi.Domain.JudiciaryPerson", "JudiciaryPerson")
+                        .WithMany()
+                        .HasForeignKey("JudiciaryPersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hearing");
+
+                    b.Navigation("JudiciaryPerson");
+                });
+
             modelBuilder.Entity("BookingsApi.Domain.JusticeUserRole", b =>
                 {
                     b.HasOne("BookingsApi.Domain.JusticeUser", "JusticeUser")
@@ -1249,6 +1325,8 @@ namespace BookingsApi.DAL.Migrations
                     b.Navigation("Endpoints");
 
                     b.Navigation("HearingCases");
+
+                    b.Navigation("JudiciaryParticipants");
 
                     b.Navigation("Participants");
                 });

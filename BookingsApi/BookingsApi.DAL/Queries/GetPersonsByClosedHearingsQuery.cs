@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL.Helper;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using BookingsApi.DAL.Helper;
 
 namespace BookingsApi.DAL.Queries
 {

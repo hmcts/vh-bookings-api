@@ -1,7 +1,4 @@
 ﻿using BookingsApi.Domain;
-using FluentAssertions;
-using NUnit.Framework;
-using System;
 
 namespace BookingsApi.UnitTests.Domain.EndPoints
 {

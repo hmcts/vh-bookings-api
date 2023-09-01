@@ -1,13 +1,11 @@
-﻿using System;
-using System.Net.Mail;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace BookingsApi.Validations
 {
     /// <summary>Simple validator to check email formats</summary>
     public static class EmailValidator
     {
-        private const string RegexPattern = @"^([!#-'*/-9=?A-Z^-~-]+(\.[!#-'*/-9=?A-Z^-~-]+)*)@([!#-'*/-9=?A-Z^-~-]+(\.[!#-'*/-9=?A-Z^-~-]+)+)$";
+        private const string RegexPattern = @"^([!#-'*/-9=?A-Z^-~-][^&@.]+(\.[!#-'*/-9=?A-Z^-~-][^&@.]+)*)@([!#-'*/-9=?A-Z^-~-][^&]*(\.[!#-'*/-9=?A-Z^-~-][^&]+)+)$";
         
         /// <summary>
         /// Test if the given string is specified and a valid email address

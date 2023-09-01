@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
 using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController

@@ -1,4 +1,4 @@
-﻿using BookingsApi.Contract.Enums;
+﻿using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using Microsoft.EntityFrameworkCore.Migrations;
 

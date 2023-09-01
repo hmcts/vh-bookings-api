@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Configuration;
 using FizzWare.NBuilder;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Domain.JusticeUser;
 
@@ -15,7 +12,7 @@ public class IsDateBetweenWorkingHoursTests
     {
         // arrange
         var config = new AllocateHearingConfiguration {AllowHearingToEndAfterWorkEndTime = false};
-        var hearingStartTime = DateTime.Today.AddHours(10);
+        var hearingStartTime = new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 0, 0, DateTimeKind.Utc);
         var hearingEndTime = hearingStartTime.AddMinutes(45);
         
         var justiceUser = Builder<BookingsApi.Domain.JusticeUser>.CreateNew()
@@ -34,18 +31,18 @@ public class IsDateBetweenWorkingHoursTests
     {
         // arrange
         var config = new AllocateHearingConfiguration {AllowHearingToEndAfterWorkEndTime = false};
-        var workHoursStartTime = DateTime.Today.AddHours(9);
-        var workHoursEndTime = DateTime.Today.AddHours(11);
+        var workHoursStartTime = new TimeSpan(9, 0, 0);
+        var workHoursEndTime = new TimeSpan(11, 0, 0);
         
-        var hearingStartTime = DateTime.Today.AddHours(10);
+        var hearingStartTime = new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 0, 0, DateTimeKind.Utc);
         var hearingEndTime = hearingStartTime.AddMinutes(45);
         
         var workHours = new VhoWorkHours
         {
             DayOfWeek = new BookingsApi.Domain.DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
             DayOfWeekId = (int) hearingStartTime.DayOfWeek,
-            StartTime = workHoursStartTime.TimeOfDay,
-            EndTime = workHoursEndTime.TimeOfDay
+            StartTime = workHoursStartTime,
+            EndTime = workHoursEndTime
         };
         var justiceUser = Builder<BookingsApi.Domain.JusticeUser>.CreateNew()
             .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
@@ -63,18 +60,18 @@ public class IsDateBetweenWorkingHoursTests
     {
         // arrange
         var config = new AllocateHearingConfiguration {AllowHearingToEndAfterWorkEndTime = false};
-        var workHoursStartTime = DateTime.Today.AddHours(9);
-        var workHoursEndTime = DateTime.Today.AddHours(11);
+        var workHoursStartTime = new TimeSpan(9, 0, 0);
+        var workHoursEndTime = new TimeSpan(11, 0, 0);
         
-        var hearingStartTime = workHoursStartTime.AddHours(-3);
-        var hearingEndTime = workHoursEndTime.AddMinutes(-10);
+        var hearingStartTime = new DateTime(DateTime.Today.Year + 1, 3, 1, workHoursStartTime.Hours - 3, 0, 0, DateTimeKind.Utc);
+        var hearingEndTime = new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 50, 0, DateTimeKind.Utc);
         
         var workHours = new VhoWorkHours
         {
             DayOfWeek = new BookingsApi.Domain.DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
             DayOfWeekId = (int) hearingStartTime.DayOfWeek,
-            StartTime = workHoursStartTime.TimeOfDay,
-            EndTime = workHoursEndTime.TimeOfDay
+            StartTime = workHoursStartTime,
+            EndTime = workHoursEndTime
         };
         var justiceUser = Builder<BookingsApi.Domain.JusticeUser>.CreateNew()
             .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
@@ -92,18 +89,18 @@ public class IsDateBetweenWorkingHoursTests
     {
         // arrange
         var config = new AllocateHearingConfiguration {AllowHearingToStartBeforeWorkStartTime = true};
-        var workHoursStartTime = DateTime.Today.AddHours(9);
-        var workHoursEndTime = DateTime.Today.AddHours(11);
+        var workHoursStartTime = new TimeSpan(9, 0, 0);
+        var workHoursEndTime = new TimeSpan(11, 0,0);
         
-        var hearingStartTime = workHoursStartTime.AddHours(-3);
-        var hearingEndTime = workHoursEndTime.AddMinutes(-10);
+        var hearingStartTime = new DateTime(DateTime.Today.Year + 1, 3, 1, workHoursStartTime.Hours - 3, 0, 0, DateTimeKind.Utc);
+        var hearingEndTime = new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 50, 0, DateTimeKind.Utc);
         
         var workHours = new VhoWorkHours
         {
             DayOfWeek = new BookingsApi.Domain.DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
             DayOfWeekId = (int) hearingStartTime.DayOfWeek,
-            StartTime = workHoursStartTime.TimeOfDay,
-            EndTime = workHoursEndTime.TimeOfDay
+            StartTime = workHoursStartTime,
+            EndTime = workHoursEndTime
         };
         var justiceUser = Builder<BookingsApi.Domain.JusticeUser>.CreateNew()
             .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
@@ -121,18 +118,18 @@ public class IsDateBetweenWorkingHoursTests
     {
         // arrange
         var config = new AllocateHearingConfiguration {AllowHearingToEndAfterWorkEndTime = false};
-        var workHoursStartTime = DateTime.Today.AddHours(9).AddMinutes(30);
-        var workHoursEndTime = DateTime.Today.AddHours(12).AddMinutes(30);
+        var workHoursStartTime = new TimeSpan(9, 30, 0);
+        var workHoursEndTime = new TimeSpan(12, 30, 0);
         
-        var hearingStartTime = DateTime.Today.AddHours(11);
+        var hearingStartTime = new DateTime(DateTime.Today.Year + 1, 3, 1, 11, 0, 0, DateTimeKind.Utc);
         var hearingEndTime = hearingStartTime.AddMinutes(480);
         
         var workHours = new VhoWorkHours
         {
             DayOfWeek = new BookingsApi.Domain.DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
             DayOfWeekId = (int) hearingStartTime.DayOfWeek,
-            StartTime = workHoursStartTime.TimeOfDay,
-            EndTime = workHoursEndTime.TimeOfDay
+            StartTime = workHoursStartTime,
+            EndTime = workHoursEndTime
         };
         var justiceUser = Builder<BookingsApi.Domain.JusticeUser>.CreateNew()
             .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})
@@ -150,18 +147,18 @@ public class IsDateBetweenWorkingHoursTests
     {
         // arrange
         var config = new AllocateHearingConfiguration {AllowHearingToEndAfterWorkEndTime = true};
-        var workHoursStartTime = DateTime.Today.AddHours(9);
-        var workHoursEndTime = DateTime.Today.AddHours(11);
+        var workHoursStartTime = new TimeSpan(9, 0, 0);
+        var workHoursEndTime = new TimeSpan(11, 0, 0);
         
-        var hearingStartTime = DateTime.Today.AddHours(10);
+        var hearingStartTime = new DateTime(DateTime.Today.Year + 1, 3, 1, 10, 0, 0, DateTimeKind.Utc);
         var hearingEndTime = hearingStartTime.AddMinutes(600);
         
         var workHours = new VhoWorkHours
         {
             DayOfWeek = new BookingsApi.Domain.DayOfWeek {Day = hearingStartTime.DayOfWeek.ToString()},
             DayOfWeekId = (int) hearingStartTime.DayOfWeek,
-            StartTime = workHoursStartTime.TimeOfDay,
-            EndTime = workHoursEndTime.TimeOfDay
+            StartTime = workHoursStartTime,
+            EndTime = workHoursEndTime
         };
         var justiceUser = Builder<BookingsApi.Domain.JusticeUser>.CreateNew()
             .With(x => x.VhoWorkHours, new List<VhoWorkHours> {workHours})

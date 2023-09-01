@@ -1,8 +1,4 @@
-﻿using BookingsApi.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace BookingsApi.DAL.Mappings
+﻿namespace BookingsApi.DAL.Mappings
 {
     public class AllocationMap : IEntityTypeConfiguration<Allocation>
     {
@@ -11,7 +7,9 @@ namespace BookingsApi.DAL.Mappings
             builder.ToTable("Allocation");
 
             builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.JusticeUser);
+            builder.HasIndex(x => new {x.JusticeUserId, x.HearingId}).IsUnique();
+            builder.HasOne(x => x.JusticeUser).WithMany(x=>x.Allocations).HasForeignKey(x => x.JusticeUserId);
+            builder.HasOne(x => x.Hearing).WithMany(x=>x.Allocations).HasForeignKey(x => x.HearingId);
         }
     }
 }

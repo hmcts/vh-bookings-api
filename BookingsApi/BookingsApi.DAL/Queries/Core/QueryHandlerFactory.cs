@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BookingsApi.DAL.Queries.Core
+﻿namespace BookingsApi.DAL.Queries.Core
 {
     public class QueryHandlerFactory : IQueryHandlerFactory
     {

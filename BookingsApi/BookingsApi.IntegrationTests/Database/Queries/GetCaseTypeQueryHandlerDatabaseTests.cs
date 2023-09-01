@@ -1,26 +1,19 @@
-using System.Linq;
-using System.Threading.Tasks;
 using BookingsApi.Common.Services;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.RefData;
-using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetCaseTypeQueryHandlerDatabaseTests : DatabaseTestsBase
     {
-        private GetCaseTypeQueryHandler _handler;
-        
+        private GetCaseRolesForCaseTypeQueryHandler _handler;
+
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            var featureTogglesMock = new Mock<IFeatureToggles>();
-            featureTogglesMock.Setup(x => x.ReferenceDataToggle()).Returns(false);
-            _handler = new GetCaseTypeQueryHandler(context, featureTogglesMock.Object);
+            _handler = new GetCaseRolesForCaseTypeQueryHandler(context);
         }
 
         [Test]
@@ -28,7 +21,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Generic";
             var caseRoleName = "Applicant";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -38,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Generic";
             var caseRoleName = "Respondent";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -48,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Applicant";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -58,7 +51,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var caseTypeName = "Financial Remedy";
             var caseRoleName = "Respondent";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertUserRolesForCaseRole(caseType, caseRoleName);
         }
@@ -67,7 +60,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_have_sorted_user_roles_and_hearing_roles_for_financial_remedy()
         {
             var caseTypeName = "Financial Remedy";
-            var caseType = await _handler.Handle(new GetCaseTypeQuery(caseTypeName));
+            var caseType = await _handler.Handle(new GetCaseRolesForCaseTypeQuery(caseTypeName));
             caseType.Should().NotBeNull();
             AssertCaseRolesAndHearingRolesAreSortedAscendingByName(caseType);
         }

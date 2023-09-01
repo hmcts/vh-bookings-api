@@ -1,10 +1,4 @@
-﻿using System.Threading.Tasks;
-using BookingsApi.DAL;
-using BookingsApi.DAL.Commands;
-using BookingsApi.Domain;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
+﻿using BookingsApi.DAL.Commands;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -12,6 +6,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private BookingsDbContext _context;
         private RemoveAllJudiciaryPersonStagingCommandHandler _command;
+        private JudiciaryPersonStaging _addedPerson;
 
         [OneTimeSetUp]
         public void InitialSetup()
@@ -20,15 +15,21 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [OneTimeTearDown]
-        public void FinalCleanUp()
+        public async Task FinalCleanUp()
         {
-            _context.Database.EnsureDeleted();
+            if (_addedPerson == null) return;
+            var dbResult = await _context.JudiciaryPersonsStaging.FirstOrDefaultAsync(x=> x.Email == _addedPerson.Email);
+            if (dbResult != null)
+            {
+                _context.Remove(dbResult);
+                await _context.SaveChangesAsync();
+            }
         }
         
         [SetUp]
         public async Task SetUp()
         {
-            await Hooks.AddJudiciaryPersonStaging();
+            _addedPerson = await Hooks.AddJudiciaryPersonStaging();
             
             _command = new RemoveAllJudiciaryPersonStagingCommandHandler(_context);
         }

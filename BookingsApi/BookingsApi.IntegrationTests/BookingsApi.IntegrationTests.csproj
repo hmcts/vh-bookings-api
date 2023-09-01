@@ -14,11 +14,11 @@
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="6.10.0" />
         <PackageReference Include="GST.Fake.Authentication.JwtBearer" Version="6.0.0" />
-        <PackageReference Include="LaunchDarkly.ServerSdk" Version="6.3.2" />
+        <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.9" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="8.53.0.62665">
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.8.0.76515">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -37,5 +37,56 @@
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Features\V1\CloneHearing.feature.cs">
+        <DependentUpon>CloneHearing.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\Hearings.feature.cs">
+        <DependentUpon>Hearings.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\JudiciaryPersons.feature.cs">
+        <DependentUpon>JudiciaryPersons.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\Participants.feature.cs">
+        <DependentUpon>Participants.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\Persons.feature.cs">
+        <DependentUpon>Persons.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\SearchForPersons.feature.cs">
+        <DependentUpon>SearchForPersons.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\SearchHearings.feature.cs">
+        <DependentUpon>SearchHearings.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\V1\SuitabilityAnswer.feature.cs">
+        <DependentUpon>SuitabilityAnswer.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
     </ItemGroup>
 </Project>

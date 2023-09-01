@@ -1,4 +1,3 @@
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Dtos;
 
@@ -8,7 +7,9 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static HearingAllocationDto MapToDto(Hearing hearing)
         {
-            var @case = hearing.GetCases().First();
+            var @case = hearing.GetCases()[0];
+            var judge = hearing.GetJudge();
+
             return new HearingAllocationDto
             {
                 HearingId = hearing.Id,
@@ -21,7 +22,7 @@ namespace BookingsApi.Infrastructure.Services
                 HearingVenueName = hearing.HearingVenueName,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType.Name,
-                JudgeDisplayName = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge)?.DisplayName
+                JudgeDisplayName = judge?.DisplayName
             };
         }
     }

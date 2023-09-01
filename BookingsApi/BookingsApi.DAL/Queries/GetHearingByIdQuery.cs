@@ -1,9 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using BookingsApi.Domain;
-using BookingsApi.DAL.Queries.Core;
-using Microsoft.EntityFrameworkCore;
-
 namespace BookingsApi.DAL.Queries
 {
     public class GetHearingByIdQuery : IQuery
@@ -33,8 +27,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include("HearingCases.Case")
-                .Include("Participants.Questionnaire")
-                .Include("Participants.Questionnaire.SuitabilityAnswers")
+                .Include(x=>x.Participants).ThenInclude(x=>x.Questionnaire).ThenInclude(x=> x.SuitabilityAnswers)
                 .Include(x => x.CaseType)
                 .ThenInclude(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)
@@ -43,7 +36,9 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate).ThenInclude(x => x.Person)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
+                .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
                 .AsNoTracking()
+                .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == query.HearingId);
         }
     }

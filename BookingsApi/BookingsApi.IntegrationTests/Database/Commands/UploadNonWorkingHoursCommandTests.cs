@@ -1,14 +1,6 @@
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Commands;
-using FluentAssertions;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
 {
@@ -31,8 +23,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             // Arrange
             var username = "dontexist@test.com";
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new AddNonWorkHoursDto(
                     username,
                     DateTime.Now,
                     DateTime.Now.AddDays(2)
@@ -53,8 +45,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_save_non_working_hours_to_database()
         {
             // Arrange
-            var oldNonAvailabilitiesCount = _context.VhoNonAvailabilities.Count();
-
             var justiceUserOne = await Hooks
                 .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
             var justiceUserTwo = await Hooks
@@ -65,13 +55,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserTwoNonWorkingHoursStartTime = new DateTime(2022, 2, 10, 9, 0, 0);
             var justiceUserTwoNonWorkingHoursEndTime = new DateTime(2022, 2, 11, 16, 30, 0);
 
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new(
                     justiceUserOne.Username,
                     justiceUserOneNonWorkingHoursStartTime,
                     justiceUserOneNonWorkingHoursEndTime
                 ),
-                new UploadNonWorkingHoursRequest(
+                new(
                     justiceUserTwo.Username,
                     justiceUserTwoNonWorkingHoursStartTime,
                     justiceUserTwoNonWorkingHoursEndTime
@@ -82,19 +72,19 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _commandHandler.Handle(command);
 
             // Test user with existing non-working hours gets updated
-            requests[1].EndTime = requests[1].EndTime.AddHours(1);
+            requests[1] = new AddNonWorkHoursDto(requests[1].Username, requests[1].StartTime, requests[1].EndTime.AddHours(1));
 
             command = new UploadNonWorkingHoursCommand(requests);
 
             // Act
             await _commandHandler.Handle(command);
 
-            var nonAvailabilities = _context.VhoNonAvailabilities;
-            var justiceUserOneNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUserOne.Id);
-            var justiceUserTwoNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUserTwo.Id);
+            var justiceUserOneNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == justiceUserOne.Id).VhoNonAvailability[0];
+            var justiceUserTwoNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == justiceUserTwo.Id).VhoNonAvailability[0];
 
             // Assert
-            nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 2);
             justiceUserOneNonWorkHours.StartTime.Should().Be(justiceUserOneNonWorkingHoursStartTime);
             justiceUserOneNonWorkHours.EndTime.Should().Be(justiceUserOneNonWorkingHoursEndTime);
             justiceUserTwoNonWorkHours.StartTime.Should().Be(justiceUserTwoNonWorkingHoursStartTime);
@@ -105,8 +95,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_not_duplicate_overlapping_non_working_hours_to_database()
         {
             // Arrange
-            var oldNonAvailabilitiesCount = _context.VhoNonAvailabilities.Count();
-
             var justiceUser = await Hooks
                 .SeedJusticeUser("team.lead.1@hearings.reform.hmcts.net", "firstName", "secondname", true);
 
@@ -115,13 +103,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var justiceUserNonWorkingHoursStartTime2 = new DateTime(2022, 2, 1);
             var justiceUserNonWorkingHoursEndTime2 = new DateTime(2022, 2, 11, 16, 30, 0);
 
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new (
                     justiceUser.Username,
                     justiceUserNonWorkingHoursStartTime1,
                     justiceUserNonWorkingHoursEndTime1
                 ),
-                new UploadNonWorkingHoursRequest(
+                new (
                     justiceUser.Username,
                     justiceUserNonWorkingHoursStartTime2,
                     justiceUserNonWorkingHoursEndTime2
@@ -136,13 +124,14 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             // Act
             await _commandHandler.Handle(command);
 
-            var nonAvailabilities = _context.VhoNonAvailabilities;
-            var justiceUserNonWorkHours = nonAvailabilities.SingleOrDefault(x => x.JusticeUserId == justiceUser.Id);
+            var justiceUserNonWorkHours = _context.JusticeUsers.Include(x => x.VhoNonAvailability)
+                .First(x => x.Id == justiceUser.Id).VhoNonAvailability;
+
+            justiceUserNonWorkHours.Count.Should().Be(1);
 
             // Assert
-            nonAvailabilities.Count().Should().Be(oldNonAvailabilitiesCount + 1);
-            justiceUserNonWorkHours.StartTime.Should().Be(justiceUserNonWorkingHoursStartTime2);
-            justiceUserNonWorkHours.EndTime.Should().Be(justiceUserNonWorkingHoursEndTime2);
+            justiceUserNonWorkHours[0].StartTime.Should().Be(justiceUserNonWorkingHoursStartTime2);
+            justiceUserNonWorkHours[0].EndTime.Should().Be(justiceUserNonWorkingHoursEndTime2);
         }
         
         [Test]
@@ -154,17 +143,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var allocatedUser1 = await Hooks.SeedJusticeUser("cso1@email.com", "Cso1", "Test");
             var allocatedUser2 = await Hooks.SeedJusticeUser("cso2@email.com", "Cso2", "Test");
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing1.Id,
-                JusticeUserId = allocatedUser1.Id
-            });
-            db.Allocations.Add(new Allocation
-            {
-                HearingId = seededHearing2.Id,
-                JusticeUserId = allocatedUser2.Id
-            });
-            await db.SaveChangesAsync();
+            await Hooks.AddAllocation(seededHearing1, allocatedUser1);
+            await Hooks.AddAllocation(seededHearing2, allocatedUser2);
+            
             var hearing1 = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing1.Id));
             hearing1.AllocatedTo.Should().NotBeNull();
             hearing1.AllocatedTo.Id.Should().Be(allocatedUser1.Id);
@@ -172,13 +153,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             hearing2.AllocatedTo.Should().NotBeNull();
             hearing2.AllocatedTo.Id.Should().Be(allocatedUser2.Id);
 
-            var requests = new List<UploadNonWorkingHoursRequest> {
-                new UploadNonWorkingHoursRequest(
+            var requests = new List<AddNonWorkHoursDto> {
+                new (
                     allocatedUser1.Username,
                     DateTime.Today.AddDays(1).AddHours(0).AddMinutes(0),
                     DateTime.Today.AddDays(1).AddHours(23).AddMinutes(0)
                 ),
-                new UploadNonWorkingHoursRequest(
+                new (
                     allocatedUser2.Username,
                     DateTime.Today.AddDays(1).AddHours(0).AddMinutes(0),
                     DateTime.Today.AddDays(1).AddHours(23).AddMinutes(0)

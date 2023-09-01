@@ -1,13 +1,8 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
 
 namespace BookingsApi.UnitTests.Controllers.Persons
 {

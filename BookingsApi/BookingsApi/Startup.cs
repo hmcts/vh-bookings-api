@@ -1,22 +1,16 @@
-﻿using System;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using BookingsApi.Common.Configuration;
 using BookingsApi.DAL;
-using BookingsApi.Extensions;
-using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
-using BookingsApi.Contract.Configuration;
-using BookingsApi.Common.Services;
+using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Domain.Configuration;
 
 namespace BookingsApi
@@ -34,13 +28,16 @@ namespace BookingsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApiVersioning();
+            
             services.AddControllers().AddNewtonsoftJson();
 
-            services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer());
+            services.AddSingleton<ITelemetryInitializer, CloudRoleNameInitializer>();
 
-            services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"]));
+            var envName = Configuration["Services:BookingsApiResourceId"]; // any service url will do here since we only care about the env name
+            services.AddSingleton<IFeatureToggles>(new FeatureToggles(Configuration["LaunchDarkly:SdkKey"], envName));
 
-            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+            services.AddApplicationInsightsTelemetry();
 
             services.AddSwagger();
             services.AddCors(options => options.AddPolicy("CorsPolicy",
@@ -148,6 +145,7 @@ namespace BookingsApi
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
 
+            app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });

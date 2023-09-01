@@ -1,12 +1,7 @@
-using System;
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
-using FluentAssertions;
-using NUnit.Framework;
-using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.UnitTests.Domain.Participants
 {

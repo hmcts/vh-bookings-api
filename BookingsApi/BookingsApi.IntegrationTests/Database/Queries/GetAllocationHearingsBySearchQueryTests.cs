@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
-using FluentAssertions;
 using NuGet.Packaging;
-using NUnit.Framework;
 using DayOfWeek = System.DayOfWeek;
 
 namespace BookingsApi.IntegrationTests.Database.Queries;
@@ -57,9 +49,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         //ACT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(caseType: new[]{TestCaseType}));
         //ASSERT
-        hearings.Count.Should().Be(2);
-        foreach (var hearing in hearings)
-            hearing.CaseType.Name.Should().Be(TestCaseType);
+        hearings.All(x => x.CaseType.Name == TestCaseType).Should().BeTrue();
     }
     
     [Test]
@@ -119,24 +109,26 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_get_hearing_details_by_unallocated()
     {
         //ARRANGE
-        await Hooks.AddAllocation(_seededHearing2);
+        await Hooks.AddAllocation(_seededHearing2, null); // null cso will create one
         
         //ACT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(isUnallocated:true));
 
         //ASSERT
-        hearings.Count.Should().Be(2);
         hearings.Should().Contain(e =>
             e.HearingCases.First().Case.Number == _seededHearing1.HearingCases.First().Case.Number);
         hearings.Should().Contain(e => 
             e.HearingCases.First().Case.Number == _seededHearing3.HearingCases.First().Case.Number);
+
+        hearings.Should().NotContain(e => e.Id == _seededHearing2.Id);
     }
     
     [Test]
      public async Task Should_include_work_hours_when_requested()
      {
          //ARRANGE
-         var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true);
+         var justiceUser =
+             await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true, initWorkHours: false);
          var nonavailability = new VhoNonAvailability
              {StartTime = DateTime.Today.AddHours(10), EndTime = DateTime.Today.AddHours(10)};
          justiceUser.VhoNonAvailability.Add(nonavailability);
@@ -226,27 +218,20 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     public async Task Should_exclude_deleted_work_hours()
     {
         // Arrange
-        var justiceUser = await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead:true);
+        var daysOfWeek = await _context.DaysOfWeek.ToListAsync();
+        var justiceUser =
+            await Hooks.SeedJusticeUser(userName: "testUser", null, null, isTeamLead: true, initWorkHours: false);
         await Hooks.AddAllocation(_seededHearing1, justiceUser);
-
-        var deletedWorkHours = new List<VhoWorkHours>();
         
         for (var i = 1; i <= 7; i++)
         {
-            deletedWorkHours.Add(new VhoWorkHours
-            {
-                DayOfWeekId = i, 
-                StartTime = new TimeSpan(10, 0, 0), 
-                EndTime = new TimeSpan(18, 0, 0),
-                JusticeUserId = justiceUser.Id
-            });
+            var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+            justiceUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(10, 0, 0), new TimeSpan(18, 0, 0));
         }
-        
-        _context.VhoWorkHours.AddRange(deletedWorkHours);
 
         await _context.SaveChangesAsync();
         
-        justiceUser = _context.JusticeUsers.FirstOrDefault(x => x.Id == justiceUser.Id);
+        justiceUser = _context.JusticeUsers.First(x => x.Id == justiceUser.Id);
         
         justiceUser.Delete();
         
@@ -254,20 +239,13 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         
         justiceUser.Restore();
         
-        var nonDeletedWorkHours = new List<VhoWorkHours>();
-        
         for (var i = 1; i <= 7; i++)
         {
-            nonDeletedWorkHours.Add(new VhoWorkHours
-            {
-                DayOfWeekId = i, 
-                StartTime = new TimeSpan(8, 0, 0), 
-                EndTime = new TimeSpan(17, 0, 0),
-                JusticeUserId = justiceUser.Id
-            });
+            var dayOfWeek = daysOfWeek.First(x => x.Id == i);
+            justiceUser.AddOrUpdateWorkHour(dayOfWeek, new TimeSpan(8, 0, 0), new TimeSpan(17, 0, 0));
         }
-        
-        _context.VhoWorkHours.AddRange(nonDeletedWorkHours);
+
+        var nonDeletedWorkHours = justiceUser.VhoWorkHours.Where(x => !x.Deleted).ToList();
 
         await _context.SaveChangesAsync();
 

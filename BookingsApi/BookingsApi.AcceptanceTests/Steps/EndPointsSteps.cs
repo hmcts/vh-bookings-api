@@ -1,14 +1,14 @@
-﻿using BookingsApi.Contract.Requests;
-using TechTalk.SpecFlow;
+﻿using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JVEndPointEndpoints;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
 using AcceptanceTests.Common.Api.Helpers;
-using BookingsApi.Contract.Responses;
 using System;
 using FluentAssertions;
 using System.Linq;
 using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.AcceptanceTests.Helpers;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
@@ -143,7 +143,7 @@ namespace BookingsApi.AcceptanceTests.Steps
 
         private HearingDetailsResponse GetHearing()
         {
-            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id));
+            _context.Request = _context.Get(GetHearingDetailsById(_context.TestData.Hearing.Id.ToString()));
             _context.Response = _context.Client().Execute(_context.Request);
             var model = RequestHelper.Deserialise<HearingDetailsResponse>(_context.Response.Content);
             return model;

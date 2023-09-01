@@ -1,17 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Common;
-using BookingsApi.Contract.Requests;
-using BookingsApi.DAL;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+using BookingsApi.Contract.V1.Requests;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders.Api;
 
 namespace BookingsApi.IntegrationTests.Steps
 {
