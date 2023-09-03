@@ -17,7 +17,7 @@ public class RemoveJudiciaryParticipantTests
 
         var judiciaryParticipants = hearing.GetJudiciaryParticipants();
         var beforeRemoveCount = judiciaryParticipants.Count;
-        var judgeToRemove = judiciaryParticipants.First();
+        var judgeToRemove = judiciaryParticipants[0];
         
         // act
         hearing.RemoveJudiciaryParticipant(judgeToRemove);
@@ -61,7 +61,7 @@ public class RemoveJudiciaryParticipantTests
         hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName);
 
         var judiciaryParticipants = hearing.GetJudiciaryParticipants();
-        var judgeToRemove = judiciaryParticipants.First();
+        var judgeToRemove = judiciaryParticipants[0];
         
         // act
         var action = () => hearing.RemoveJudiciaryParticipant(judgeToRemove);
