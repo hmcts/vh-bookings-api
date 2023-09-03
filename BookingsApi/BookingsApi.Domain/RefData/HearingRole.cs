@@ -12,6 +12,7 @@ namespace BookingsApi.Domain.RefData
         }
         public string Name { get; set; }
         public int UserRoleId { get; set; }
+        public int? CaseRoleId { get; set; }
         public UserRole UserRole { get; set; }
         public bool Live { get; set; }
 

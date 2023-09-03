@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
@@ -27,8 +26,8 @@ namespace BookingsApi.Domain.Participants
             CaseRoleId = caseRole.Id;
         }
         
-        public int CaseRoleId { get; set; }
-        public virtual CaseRole CaseRole { get; set; }
+        public int? CaseRoleId { get; set; }
+        public virtual CaseRole? CaseRole { get; set; }
         public int HearingRoleId { get; set; }
         public virtual HearingRole HearingRole { get; set; }
         public Guid PersonId { get; protected set; }
