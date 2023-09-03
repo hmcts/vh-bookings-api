@@ -6,8 +6,6 @@ namespace BookingsApi.Validations.V2;
 
 public class UpdateHearingParticipantsRequestDataValidationV2 : AbstractValidator<UpdateHearingParticipantsRequestV2>
 {
-    public static readonly string NoParticipantsErrorMessage = "Please provide at least one participant";
-
     public UpdateHearingParticipantsRequestDataValidationV2(CaseType caseType, List<HearingRole> hearingRoles)
     {
         RuleForEach(x=> x.NewParticipants).Custom((participant, context) =>
@@ -40,12 +38,7 @@ public class UpdateHearingParticipantsRequestDataValidationV2 : AbstractValidato
     private static void ValidateRoleFromCaseType(ParticipantRequestV2 participant, CaseType caseType,
         ValidationContext<UpdateHearingParticipantsRequestV2> context)
     {
-        if (caseType == null)
-        {
-            return;
-        }
-
-        var caseRole = caseType.CaseRoles.Find(x => x.Name == participant.CaseRoleName);
+        var caseRole = caseType?.CaseRoles.Find(x => x.Name == participant.CaseRoleName);
         if (caseRole == null)
         {
             context.AddFailure($"Invalid case role [{participant.CaseRoleName}]");
