@@ -10,7 +10,6 @@ namespace BookingsApi.Validations.V2
         public static readonly string LastNameDoesntMatchRegex = "Last name must match regular expression";
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
         public static readonly string InvalidDisplayNameErrorMessage = "Display name will accept upto 255 alphanumeric characters, spaces, and the following special characters: ',._-";
-        public static readonly string NoCaseRoleNameErrorMessage = "Case role is required";
         public static readonly string NoHearingRoleNameErrorMessage = "Hearing role is required";
         public static readonly string NoFirstNameErrorMessage = "First name is required";
         public static readonly string NoLastNameErrorMessage = "Last name is required";
@@ -36,7 +35,6 @@ namespace BookingsApi.Validations.V2
             RuleFor(x => x.DisplayName)
                 .NotEmpty().WithMessage(NoDisplayNameErrorMessage)
                 .Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
-            RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);
             RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleName != "Judge").WithMessage(NoTelephoneNumberErrorMessage);
         }

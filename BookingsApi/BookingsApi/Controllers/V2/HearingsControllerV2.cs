@@ -17,8 +17,8 @@ namespace BookingsApi.Controllers.V2
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
 
-        public HearingsControllerV2(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IBookingService bookingService, ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
+        public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
+            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfigurationOption)
         {
             _queryHandler = queryHandler;
@@ -45,31 +45,26 @@ namespace BookingsApi.Controllers.V2
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-
                 return ValidationProblem(ModelState);
             }
             
-            // var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(request.ServiceId));
             var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
             
-            var dataValidationResult = await new BookHearingPreSaveValidation(caseType, hearingVenue).ValidateAsync(request);
+            var dataValidationResult = await new BookNewHearingRequestDataValidationV2(caseType, hearingVenue, hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
-
                 return ValidationProblem(ModelState);
             }
 
-            var hearingType = caseType.HearingTypes.SingleOrDefault(x =>
+            var hearingType = caseType.HearingTypes.Find(x =>
                 string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
-            
-            
-            
-            
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+            
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
 
             var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
             var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);

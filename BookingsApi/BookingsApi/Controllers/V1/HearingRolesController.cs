@@ -1,10 +1,11 @@
 using BookingsApi.Contract.V2.Responses;
 
-namespace BookingsApi.Controllers.V2;
+namespace BookingsApi.Controllers.V1;
 
 [Produces("application/json")]
 [Route(template:"v{version:apiVersion}/hearingroles")]
-[ApiVersion("2.0")]
+[Route("hearingroles")]
+[ApiVersion("1.0")]
 [ApiController]
 public class HearingRolesController : ControllerBase
 {
@@ -21,7 +22,7 @@ public class HearingRolesController : ControllerBase
     [HttpGet]
     [OpenApiOperation("GetHearingRoles")]
     [ProducesResponseType(typeof(List<HearingRoleResponseV2>), (int) HttpStatusCode.OK)]
-    [MapToApiVersion("2.0")]
+    [MapToApiVersion("1.0")]
     public async Task<IActionResult> GetHearingRoles()
     {
         var query = new GetHearingRolesQuery();

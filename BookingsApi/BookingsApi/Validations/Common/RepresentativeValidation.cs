@@ -1,7 +1,7 @@
 ﻿using BookingsApi.Contract.Interfaces.Requests;
 using FluentValidation;
 
-namespace BookingsApi.Validations.V1
+namespace BookingsApi.Validations.Common
 {
     public class RepresentativeValidation : AbstractValidator<IRepresentativeInfoRequest>
     {

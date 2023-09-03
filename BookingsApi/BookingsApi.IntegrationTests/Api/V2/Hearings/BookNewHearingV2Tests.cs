@@ -47,6 +47,59 @@ public class BookNewHearingV2Tests : ApiTest
     }
 
     [Test]
+    public async Task should_book_a_hearing_without_case_roles()
+    {
+        // arrange
+        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        request.Participants.ForEach(x =>
+        {
+            x.CaseRoleName = null;
+            if(x.HearingRoleName == "Litigant in person")
+                x.HearingRoleName = "Applicant";
+            if (x.HearingRoleName == "Representative")
+                x.HearingRoleName = "Legal Representative";
+        });
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        _hearingIds.Add(createdResponse.Id);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+    }
+    
+    [Test]
+    public async Task should_return_validation_error_when_flat_structure_hearing_role_not_found()
+    {
+        // arrange
+        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var hearingRoleName = "Invalid Role";
+        request.Participants.ForEach(x =>
+        {
+            x.CaseRoleName = null;
+            x.HearingRoleName = hearingRoleName;
+        });
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors[$"{nameof(request.Participants)}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleName}]");
+    }
+    
+    [Test]
     public async Task should_return_validation_error_when_validation_fails()
     {
         // arrange
@@ -54,6 +107,7 @@ public class BookNewHearingV2Tests : ApiTest
         request.HearingVenueCode = null;
         request.ServiceId = null;
         request.HearingTypeCode = null;
+        request.ScheduledDateTime = DateTime.UtcNow.AddDays(-1);
 
         // act
         using var client = Application.CreateClient();

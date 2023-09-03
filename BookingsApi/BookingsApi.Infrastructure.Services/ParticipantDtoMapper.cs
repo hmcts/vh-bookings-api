@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
-using BookingsApi.Domain;
+using System;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services
@@ -12,6 +12,7 @@ namespace BookingsApi.Infrastructure.Services
         public static ParticipantDto MapToDto(Participant participant)
         {
             var representee = participant is Representative representative ? representative.Representee : string.Empty;
+            var caseGroupType = participant.CaseRole?.Group ?? InferCaseRoleGroupFromHearingRole(participant.HearingRole);
             return
                 new ParticipantDto
                 {
@@ -25,10 +26,33 @@ namespace BookingsApi.Infrastructure.Services
                     DisplayName = participant.DisplayName,
                     HearingRole = participant.HearingRole.Name,
                     UserRole = participant.HearingRole.UserRole.Name,
-                    CaseGroupType = participant.CaseRole.Group,
+                    CaseGroupType = caseGroupType,
                     Representee = representee,
                     LinkedParticipants = participant.LinkedParticipants.Select(LinkedParticipantDtoMapper.MapToDto).ToList()
                 };
+        }
+
+        /// <summary>
+        /// The flat hearing role structure means participants do not have a case role group, so we infer it from the hearing role
+        /// </summary>
+        /// <param name="hearingRole"></param>
+        /// <returns>Case role group</returns>
+        private static CaseRoleGroup InferCaseRoleGroupFromHearingRole(HearingRole hearingRole)
+        {
+            if(hearingRole.UserRole.IsJudge)
+            {
+                return CaseRoleGroup.Judge;
+            }
+            if(hearingRole.UserRole.IsJudicialOfficeHolder)
+            {
+                return CaseRoleGroup.PanelMember;
+            }
+            if(hearingRole.Name ==  "Observer")
+            {
+                return CaseRoleGroup.Observer;
+            }
+
+            return CaseRoleGroup.None;
         }
         
         public static ParticipantDto MapToDto(JudiciaryParticipant judiciaryParticipant) =>

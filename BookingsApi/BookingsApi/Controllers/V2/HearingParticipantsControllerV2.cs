@@ -2,7 +2,6 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
-using BookingsApi.Helpers;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -39,18 +38,11 @@ namespace BookingsApi.Controllers.V2
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> AddParticipantsToHearing(Guid hearingId, [FromBody] AddParticipantsToHearingRequestV2 request)
         {
-            // regex pattern to get all characters between quotes
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-
-            var result = new AddParticipantsToHearingRequestValidationV2().Validate(request);
+            var result = await new AddParticipantsToHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetHearingByIdQuery(hearingId);
@@ -60,23 +52,20 @@ namespace BookingsApi.Controllers.V2
             {
                 return NotFound();
             }
+            
+            var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
+            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
 
-            var caseTypequery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
-            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypequery);
-
-            var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-            var representatives = request.Participants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
-
-            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
-
-            if (!representativeValidationResult.IsValid)
+            var dataValidationResult = await new AddParticipantsToHearingRequestDataValidationV2(caseType).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
             {
-                ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
-                return BadRequest(ModelState);
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
             }
 
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var participants = request.Participants
-                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
+                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType, hearingRoles)).ToList();
             var linkedParticipants =
                 LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
@@ -98,7 +87,7 @@ namespace BookingsApi.Controllers.V2
 
             var addedParticipants = hearing.Participants.Where(x => request.Participants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail));
 
-            var response = CreateParticipantResponseV2List(addedParticipants);
+            var response = CreateParticipantResponseV2List(addedParticipants.ToList());
 
             return Ok(response);
         }
@@ -117,17 +106,11 @@ namespace BookingsApi.Controllers.V2
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId, [FromBody] UpdateHearingParticipantsRequestV2 request)
         {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-
-            var result = new UpdateHearingParticipantsRequestValidationV2().Validate(request);
+            var result = await new UpdateHearingParticipantsRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetHearingByIdQuery(hearingId);
@@ -137,52 +120,24 @@ namespace BookingsApi.Controllers.V2
             {
                 return NotFound();
             }
-
+            
             var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
-
-            var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-            var representatives = request.NewParticipants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
-
-            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
-
-            if (!representativeValidationResult.IsValid)
+            var dataValidationResult = await new UpdateHearingParticipantsRequestDataValidationV2(caseType, hearingRoles).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
             {
-                ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
-                return BadRequest(ModelState);
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
             }
-
+            
             var newParticipants = request.NewParticipants
-                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
+                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType, hearingRoles)).ToList();
 
             var existingParticipants = videoHearing.Participants
-                .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
+                .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
 
-            var existingParticipantDetails = new List<ExistingParticipantDetails>();
-
-            foreach (var existingParticipantRequest in request.ExistingParticipants)
-            {
-                var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-                if (existingParticipant == null)
-                {
-                    continue;
-                }
-
-                var existingParticipantDetail = new ExistingParticipantDetails
-                {
-                    DisplayName = existingParticipantRequest.DisplayName,
-                    OrganisationName = existingParticipantRequest.OrganisationName,
-                    ParticipantId = existingParticipantRequest.ParticipantId,
-                    Person = existingParticipant.Person,
-                    RepresentativeInformation = new RepresentativeInformation { Representee = existingParticipantRequest.Representee },
-                    TelephoneNumber = existingParticipantRequest.TelephoneNumber,
-                    Title = existingParticipantRequest.Title
-                };
-                existingParticipantDetail.Person.ContactEmail = existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
-                existingParticipantDetails.Add(existingParticipantDetail);
-            }
-             
+            var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequest(request, existingParticipants);
 
             var linkedParticipants =
                 LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
@@ -206,12 +161,46 @@ namespace BookingsApi.Controllers.V2
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
 
-            var response = CreateParticipantResponseV2List(upsertedParticipants);
+            var response = CreateParticipantResponseV2List(upsertedParticipants.ToList());
 
             return Ok(response);
         }
-        
-        private static List<ParticipantResponseV2> CreateParticipantResponseV2List(IEnumerable<Participant> participants)
+
+        private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request,
+            List<Participant> existingParticipants)
+        {
+            var existingParticipantDetails = new List<ExistingParticipantDetails>();
+
+            foreach (var existingParticipantRequest in request.ExistingParticipants)
+            {
+                var existingParticipant =
+                    existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+
+                if (existingParticipant == null)
+                {
+                    continue;
+                }
+
+                var existingParticipantDetail = new ExistingParticipantDetails
+                {
+                    DisplayName = existingParticipantRequest.DisplayName,
+                    OrganisationName = existingParticipantRequest.OrganisationName,
+                    ParticipantId = existingParticipantRequest.ParticipantId,
+                    Person = existingParticipant.Person,
+                    RepresentativeInformation = new RepresentativeInformation
+                        {Representee = existingParticipantRequest.Representee},
+                    TelephoneNumber = existingParticipantRequest.TelephoneNumber,
+                    Title = existingParticipantRequest.Title
+                };
+                existingParticipantDetail.Person.ContactEmail =
+                    existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
+                existingParticipantDetails.Add(existingParticipantDetail);
+            }
+
+            return existingParticipantDetails;
+        }
+
+        private static List<ParticipantResponseV2> CreateParticipantResponseV2List(List<Participant> participants)
         {
             if (participants.Any())
             {
