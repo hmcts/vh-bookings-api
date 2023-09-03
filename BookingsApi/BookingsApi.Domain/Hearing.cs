@@ -251,7 +251,24 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public bool HasHost => GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member");
+        public void RemoveJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant)
+        {
+            if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipant.JudiciaryPerson.PersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryParticipant),
+                    "Judiciary participant does not exist in the hearing");
+            }
+
+            var existingParticipant = JudiciaryParticipants.Single(x =>
+                x.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode);
+            JudiciaryParticipants.Remove(existingParticipant);
+            ValidateHostCount();
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public bool HasHost =>
+            GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
+            JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
         {

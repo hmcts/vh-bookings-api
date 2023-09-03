@@ -18,7 +18,7 @@ namespace Testing.Common.Builders.Domain
         private readonly Person _johPerson;
         private readonly Person _staffMemberPerson;
 
-        public VideoHearingBuilder(DateTime? scheduledDateTime = null, bool addJudge = true)
+        public VideoHearingBuilder(DateTime? scheduledDateTime = null, bool addJudge = true, bool addStaffMember = true)
         {
             var defaultDate = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
             var refDataBuilder = new RefDataBuilder();
@@ -92,11 +92,14 @@ namespace Testing.Common.Builders.Domain
             joh.SetProtected(nameof(indApplicant.CaseRole), johCaseRole);
             joh.SetProtected(nameof(joh.HearingRole), johHearingRole);
 
-            _videoHearing!.AddStaffMember(_staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
-                $"{_staffMemberPerson.FirstName} {_staffMemberPerson.LastName}");
-            var staffMember = _videoHearing?.Participants.Last();
-            staffMember.SetProtected(nameof(indApplicant.CaseRole), staffMemberCaseRole);
-            staffMember.SetProtected(nameof(staffMember.HearingRole), staffMemberHearingRole);
+            if (addStaffMember)
+            {
+                _videoHearing!.AddStaffMember(_staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
+                    $"{_staffMemberPerson.FirstName} {_staffMemberPerson.LastName}");
+                var staffMember = _videoHearing?.Participants.Last();
+                staffMember.SetProtected(nameof(indApplicant.CaseRole), staffMemberCaseRole);
+                staffMember.SetProtected(nameof(staffMember.HearingRole), staffMemberHearingRole);
+            }
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
