@@ -39,7 +39,7 @@ public class BookNewHearingRequestDataValidationV2 : AbstractValidator<BookNewHe
         
     }
 
-    private void ValidateHearingRole(ParticipantRequestV2 participant, CaseType caseType, List<HearingRole> hearingRoles, ValidationContext<BookNewHearingRequestV2> context)
+    private static void ValidateHearingRole(ParticipantRequestV2 participant, CaseType caseType, List<HearingRole> hearingRoles, ValidationContext<BookNewHearingRequestV2> context)
     {
         // if no case role is provided, this request is using the flat structure
         if (string.IsNullOrEmpty(participant.CaseRoleName))

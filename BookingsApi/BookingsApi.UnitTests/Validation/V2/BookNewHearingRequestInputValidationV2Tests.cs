@@ -164,7 +164,7 @@ namespace BookingsApi.UnitTests.Validation.V2
             result.IsValid.Should().BeTrue();
         }
         
-        private BookNewHearingRequestV2 BuildRequest()
+        private static BookNewHearingRequestV2 BuildRequest()
         {
             var date = DateTime.UtcNow.AddMinutes(5);
             var caseName = $"Auto Test {Guid.NewGuid():N}";

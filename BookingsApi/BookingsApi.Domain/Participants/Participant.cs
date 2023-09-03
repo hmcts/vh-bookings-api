@@ -27,7 +27,7 @@ namespace BookingsApi.Domain.Participants
         }
         
         public int? CaseRoleId { get; set; }
-        public virtual CaseRole? CaseRole { get; set; }
+        public virtual CaseRole CaseRole { get; set; }
         public int HearingRoleId { get; set; }
         public virtual HearingRole HearingRole { get; set; }
         public Guid PersonId { get; protected set; }

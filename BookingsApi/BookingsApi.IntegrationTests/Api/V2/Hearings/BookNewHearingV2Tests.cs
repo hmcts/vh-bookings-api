@@ -188,7 +188,7 @@ public class BookNewHearingV2Tests : ApiTest
             .MatchRegex("HearingVenueCode [A-Za-z0-9]+ does not exist");
     }
     
-    private BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
+    private static BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";

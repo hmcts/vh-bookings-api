@@ -21,7 +21,7 @@ public class UpdateHearingParticipantsRequestDataValidationV2 : AbstractValidato
             .SetValidator(new RepresentativeValidation());
     }
     
-    private void ValidateHearingRole(ParticipantRequestV2 participant, CaseType caseType, List<HearingRole> hearingRoles, ValidationContext<UpdateHearingParticipantsRequestV2> context)
+    private static void ValidateHearingRole(ParticipantRequestV2 participant, CaseType caseType, List<HearingRole> hearingRoles, ValidationContext<UpdateHearingParticipantsRequestV2> context)
     {
         // if no case role is provided, this request is using the flat structure
         if (string.IsNullOrEmpty(participant.CaseRoleName))
