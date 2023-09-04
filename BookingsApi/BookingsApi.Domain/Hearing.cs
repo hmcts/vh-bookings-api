@@ -251,7 +251,6 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-<<<<<<< HEAD
         public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
         {
             if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
@@ -267,8 +266,6 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
 
-=======
->>>>>>> 2e355a48 (Check for host existence)
         public bool HasHost =>
             GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
