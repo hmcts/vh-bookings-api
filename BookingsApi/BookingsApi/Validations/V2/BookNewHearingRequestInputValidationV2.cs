@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace BookingsApi.Validations.V2
 {
-    public class BookNewHearingRequestValidationV2 : AbstractValidator<BookNewHearingRequestV2>
+    public class BookNewHearingRequestInputValidationV2 : AbstractValidator<BookNewHearingRequestV2>
     {
         public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public const string ScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
@@ -15,7 +15,7 @@ namespace BookingsApi.Validations.V2
         public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
         public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
-        public BookNewHearingRequestValidationV2()
+        public BookNewHearingRequestInputValidationV2()
         {
             RuleFor(x => x.HearingVenueCode)
                 .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);

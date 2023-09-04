@@ -11,9 +11,10 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         HearingVenue venue,
         List<Case> cases,
         IRandomGenerator randomGenerator,
-        string sipAddressStem)
+        string sipAddressStem,
+        List<HearingRole> hearingRoles)
     {
-        var newParticipants = MapParticipants(requestV2, caseType);
+        var newParticipants = MapParticipants(requestV2, caseType, hearingRoles);
         var newEndpoints = MapEndpoints(requestV2, randomGenerator, sipAddressStem);
         var linkedParticipants = MapLinkedParticipants(requestV2);
 
@@ -27,11 +28,11 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
             CreatedBy = requestV2.CreatedBy
         };
     }
-
-    private static List<NewParticipant> MapParticipants(BookNewHearingRequestV2 requestV2, CaseType caseType)
+    
+    private static List<NewParticipant> MapParticipants(BookNewHearingRequestV2 requestV2, CaseType caseType, List<HearingRole> hearingRoles)
     {
         var newParticipants = requestV2.Participants.Select(
-            x => ParticipantRequestV2ToNewParticipantMapper.Map(x, caseType)).ToList();
+            x => ParticipantRequestV2ToNewParticipantMapper.Map(x, caseType, hearingRoles)).ToList();
         return newParticipants;
     }
 

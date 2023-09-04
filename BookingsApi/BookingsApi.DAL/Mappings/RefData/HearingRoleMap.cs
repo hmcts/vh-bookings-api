@@ -9,6 +9,7 @@ namespace BookingsApi.DAL.Mappings.RefData
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name);
             builder.Property(x => x.UserRoleId);
+            builder.Property(x => x.CaseRoleId).IsRequired(false);
 
             builder.HasOne(x => x.UserRole);
             builder.Property(x => x.Live).HasDefaultValue(true);

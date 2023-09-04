@@ -5,14 +5,14 @@ using Testing.Common.Builders.Api.V2;
 
 namespace BookingsApi.UnitTests.Validation.V2
 {
-    public class BookNewHearingRequestValidationV2Tests
+    public class BookNewHearingRequestInputValidationV2Tests
     {
-        private BookNewHearingRequestValidationV2 _validator;
+        private BookNewHearingRequestInputValidationV2 _validator;
         
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _validator = new BookNewHearingRequestValidationV2();
+            _validator = new BookNewHearingRequestInputValidationV2();
         }
         
         [Test]
@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.HearingVenueCodeErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.HearingVenueCodeErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -49,7 +49,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.HearingTypeCodeErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.HearingTypeCodeErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -62,7 +62,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.ScheduleDateTimeInPastErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.ScheduleDateTimeInPastErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -75,7 +75,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.ScheduleDurationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.ScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -89,7 +89,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.CaseTypeServiceIdErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.CaseTypeServiceIdErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -103,7 +103,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.ParticipantsErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.ParticipantsErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -117,7 +117,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.CasesErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.CasesErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -131,7 +131,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidationV2.CaseNameMessage)
+            result.Errors.Exists(x => x.ErrorMessage == CaseRequestValidationV2.CaseNameMessage)
                 .Should().BeTrue();
         }
         
@@ -149,7 +149,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidationV2.CaseDuplicationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.CaseDuplicationErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -164,7 +164,7 @@ namespace BookingsApi.UnitTests.Validation.V2
             result.IsValid.Should().BeTrue();
         }
         
-        private BookNewHearingRequestV2 BuildRequest()
+        private static BookNewHearingRequestV2 BuildRequest()
         {
             var date = DateTime.UtcNow.AddMinutes(5);
             var caseName = $"Auto Test {Guid.NewGuid():N}";

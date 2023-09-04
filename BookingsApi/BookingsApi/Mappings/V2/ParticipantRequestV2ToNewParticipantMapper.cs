@@ -8,13 +8,20 @@ namespace BookingsApi.Mappings.V2
     /// </summary>
     public static class ParticipantRequestV2ToNewParticipantMapper
     {
-        public static NewParticipant Map(ParticipantRequestV2 requestV2Participant, CaseType caseType)
+        public static NewParticipant Map(ParticipantRequestV2 requestV2Participant, CaseType caseType, List<HearingRole> hearingRoles)
         {
-            var caseRole = caseType.CaseRoles.Find(x => x.Name == requestV2Participant.CaseRoleName);
-            if (caseRole == null) throw new BadRequestException($"Invalid case role [{requestV2Participant.CaseRoleName}]");
-
-            var hearingRole = caseRole.HearingRoles.Find(x => x.Name == requestV2Participant.HearingRoleName);
-            if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestV2Participant.HearingRoleName}]");
+            HearingRole hearingRole;
+            CaseRole caseRole = null;
+            // if no case role is provided, this request is using the flat structure
+            if (string.IsNullOrEmpty(requestV2Participant.CaseRoleName))
+            {
+                hearingRole = hearingRoles.Find(x => x.Name == requestV2Participant.HearingRoleName);
+            }
+            else
+            {
+                caseRole = caseType.CaseRoles.Find(x => x.Name == requestV2Participant.CaseRoleName);
+                hearingRole = caseRole.HearingRoles.Find(x => x.Name == requestV2Participant.HearingRoleName);
+            }
 
             if (string.IsNullOrEmpty(requestV2Participant.Username))
             {

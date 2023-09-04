@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V1;
 using FizzWare.NBuilder;
 
@@ -26,7 +27,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == RepresentativeValidation.NoRepresentee)
+            result.Errors.Exists(x => x.ErrorMessage == RepresentativeValidation.NoRepresentee)
                 .Should().BeTrue();
         }
      
@@ -41,11 +42,11 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == RepresentativeValidation.NoOrganisation)
+            result.Errors.Exists(x => x.ErrorMessage == RepresentativeValidation.NoOrganisation)
                 .Should().BeTrue();
         }
 
-        private ParticipantRequest BuildRequest()
+        private static ParticipantRequest BuildRequest()
         {
             return Builder<ParticipantRequest>.CreateNew()
                  .With(x => x.CaseRoleName = "Applicant")

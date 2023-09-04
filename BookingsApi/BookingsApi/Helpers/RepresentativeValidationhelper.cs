@@ -1,6 +1,5 @@
 ﻿using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Validations.V1;
+using BookingsApi.Validations.Common;
 using FluentValidation.Results;
 
 namespace BookingsApi.Helpers
@@ -13,22 +12,6 @@ namespace BookingsApi.Helpers
         /// <param name="participantRequests"></param>
         /// <returns></returns>
         public static ValidationResult ValidateRepresentativeInfo(List<ParticipantRequest> participantRequests)
-        {
-            ValidationResult validationResult = new ValidationResult();
-            foreach (var participantRequest in participantRequests)
-            {
-                validationResult = new RepresentativeValidation().Validate(participantRequest);
-                if (!validationResult.IsValid)
-                    return validationResult;
-            }
-            return validationResult;
-        }
-        /// <summary>
-        /// Overloaded method to validate the representative info for V2
-        /// </summary>
-        /// <param name="participantRequests"></param>
-        /// <returns></returns>
-        public static ValidationResult ValidateRepresentativeInfo(List<ParticipantRequestV2> participantRequests)
         {
             ValidationResult validationResult = new ValidationResult();
             foreach (var participantRequest in participantRequests)

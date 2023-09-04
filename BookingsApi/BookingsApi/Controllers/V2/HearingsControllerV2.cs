@@ -17,8 +17,8 @@ namespace BookingsApi.Controllers.V2
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
 
-        public HearingsControllerV2(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IBookingService bookingService, ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
+        public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
+            ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfigurationOption)
         {
             _queryHandler = queryHandler;
@@ -41,44 +41,30 @@ namespace BookingsApi.Controllers.V2
         public async Task<IActionResult> BookNewHearingWithCode(BookNewHearingRequestV2 request)
         {
             request.SanitizeRequest();
-            var result = await new BookNewHearingRequestValidationV2().ValidateAsync(request);
+            var result = await new BookNewHearingRequestInputValidationV2().ValidateAsync(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-
                 return ValidationProblem(ModelState);
             }
-
+            
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(request.ServiceId));
-            if (caseType == null)
+            var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
+            
+            var dataValidationResult = await new BookNewHearingRequestDataValidationV2(caseType, hearingVenue, hearingRoles).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
             {
-                ModelState.AddModelError(nameof(request.ServiceId), "Case type does not exist");
-                _logger.LogTrace("CaseTypeServiceId {CaseTypeServiceId} does not exist", request.ServiceId);
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
 
-            var hearingType = caseType.HearingTypes.SingleOrDefault(x =>
+            var hearingType = caseType.HearingTypes.Find(x =>
                 string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
-            if (hearingType == null)
-            {
-                ModelState.AddModelError(nameof(request.HearingTypeCode),
-                    $"Hearing type code {request.HearingTypeCode} does not exist");
-                _logger.LogTrace("HearingTypeCode {HearingTypeCode} does not exist", request.HearingTypeCode);
-                return ValidationProblem(ModelState);
-            }
-            
-            var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
-            if (hearingVenue == null)
-            {
-                ModelState.AddModelError(nameof(request.HearingVenueCode),
-                    $"Hearing venue code {request.HearingVenueCode} does not exist");
-                _logger.LogTrace("HearingVenueCode {HearingVenueCode} does not exist", request.HearingVenueCode);
-                return ValidationProblem(ModelState);
-            }
-            
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
+            
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
 
             var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
             var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
