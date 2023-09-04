@@ -547,7 +547,7 @@ namespace BookingsApi.Domain
 
         private bool DoesJudgeExist()
         {
-            return Participants.Any(x => x.HearingRole?.IsJudge() ?? false) || JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            return Participants.Any(x => x is Judge)|| JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
         }
 
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,

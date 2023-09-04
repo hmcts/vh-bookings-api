@@ -470,20 +470,17 @@ namespace BookingsApi.IntegrationTests.Helper
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
-            CaseType caseType;
-            using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                caseType = db.CaseTypes
-                    .Include(x => x.CaseRoles)
-                    .ThenInclude(x => x.HearingRoles)
-                    .ThenInclude(x => x.UserRole)
-                    .Include(x => x.HearingTypes)
-                    .FirstOrDefault(x => x.Name == caseTypeName);
+            using var db = new BookingsDbContext(_dbContextOptions);
+            var caseType = db.CaseTypes
+                .Include(x => x.CaseRoles)
+                .ThenInclude(x => x.HearingRoles)
+                .ThenInclude(x => x.UserRole)
+                .Include(x => x.HearingTypes)
+                .FirstOrDefault(x => x.Name == caseTypeName);
 
-                if (caseType == null)
-                {
-                    throw new InvalidOperationException("Unknown case type: " + caseTypeName);
-                }
+            if (caseType == null)
+            {
+                throw new InvalidOperationException("Unknown case type: " + caseTypeName);
             }
 
             return caseType;
