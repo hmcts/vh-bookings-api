@@ -4,7 +4,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing;
 
-public class RemoveJudiciaryParticipantTests
+public class RemoveJudiciaryParticipantByPersonalCodeTests
 {
     [Test]
     public void Should_remove_judiciary_judge_from_hearing()
@@ -20,7 +20,7 @@ public class RemoveJudiciaryParticipantTests
         var judgeToRemove = judiciaryParticipants[0];
         
         // act
-        hearing.RemoveJudiciaryParticipant(judgeToRemove);
+        hearing.RemoveJudiciaryParticipantByPersonalCode(judgeToRemove.JudiciaryPerson.PersonalCode);
 
         // assert
         var afterRemoveCount = hearing.GetJudiciaryParticipants().Count;
@@ -42,7 +42,7 @@ public class RemoveJudiciaryParticipantTests
         var judiciaryParticipant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
 
         // act
-        var action = () => hearing.RemoveJudiciaryParticipant(judiciaryParticipant);
+        var action = () => hearing.RemoveJudiciaryParticipantByPersonalCode(judiciaryParticipant.JudiciaryPerson.PersonalCode);
 
         // assert
         action.Should().Throw<DomainRuleException>().And.ValidationFailures
@@ -64,7 +64,7 @@ public class RemoveJudiciaryParticipantTests
         var judgeToRemove = judiciaryParticipants[0];
         
         // act
-        var action = () => hearing.RemoveJudiciaryParticipant(judgeToRemove);
+        var action = () => hearing.RemoveJudiciaryParticipantByPersonalCode(judgeToRemove.JudiciaryPerson.PersonalCode);
 
         // assert
         action.Should().Throw<DomainRuleException>().And.ValidationFailures

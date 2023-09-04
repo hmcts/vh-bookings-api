@@ -30,7 +30,7 @@ public class RemoveJudiciaryParticipantFromHearingCommandTests : DatabaseTestsBa
         var judiciaryPerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
         var judiciaryParticipant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
         Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(
-            new RemoveJudiciaryParticipantFromHearingCommand(hearingId, judiciaryParticipant)));
+            new RemoveJudiciaryParticipantFromHearingCommand(hearingId, judiciaryParticipant.JudiciaryPerson.PersonalCode)));
     }
     
     [Test]
@@ -44,7 +44,7 @@ public class RemoveJudiciaryParticipantFromHearingCommandTests : DatabaseTestsBa
         const string displayName = "Judiciary To Remove";
         var judiciaryParticipant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
         Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(
-            new RemoveJudiciaryParticipantFromHearingCommand(seededHearing.Id, judiciaryParticipant)));
+            new RemoveJudiciaryParticipantFromHearingCommand(seededHearing.Id, judiciaryParticipant.JudiciaryPerson.PersonalCode)));
     }
     
     [Test]
@@ -62,7 +62,7 @@ public class RemoveJudiciaryParticipantFromHearingCommandTests : DatabaseTestsBa
         var beforeRemoveCount = judiciaryParticipants.Count;
         var judgeToRemove = judiciaryParticipants[0];
         
-        await _commandHandler.Handle(new RemoveJudiciaryParticipantFromHearingCommand(seededHearing.Id, judgeToRemove));
+        await _commandHandler.Handle(new RemoveJudiciaryParticipantFromHearingCommand(seededHearing.Id, judgeToRemove.JudiciaryPerson.PersonalCode));
         
         var updatedHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
         var afterRemoveCount = updatedHearing.GetJudiciaryParticipants().Count;

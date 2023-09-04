@@ -251,16 +251,16 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public void RemoveJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant)
+        public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
         {
-            if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipant.JudiciaryPerson.PersonalCode))
+            if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
             {
-                throw new DomainRuleException(nameof(judiciaryParticipant),
-                    "Judiciary participant does not exist in the hearing");
+                throw new DomainRuleException(nameof(judiciaryParticipantPersonalCode),
+                    DomainRuleErrorMessages.JudiciaryParticipantNotFound);
             }
 
             var existingParticipant = JudiciaryParticipants.Single(x =>
-                x.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode);
+                x.JudiciaryPerson.PersonalCode == judiciaryParticipantPersonalCode);
             JudiciaryParticipants.Remove(existingParticipant);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
@@ -322,7 +322,7 @@ namespace BookingsApi.Domain
         {
             if (!HasHost)
             {
-                throw new DomainRuleException("Host", "A hearing must have at least one host");
+                throw new DomainRuleException("Host", DomainRuleErrorMessages.HearingNeedsAHost);
             }
         }
 
