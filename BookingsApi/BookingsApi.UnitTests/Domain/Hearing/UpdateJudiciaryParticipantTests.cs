@@ -23,6 +23,24 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             updatedJudiciaryJudge.DisplayName.Should().Be(newDisplayName);
             updatedJudiciaryJudge.HearingRoleCode.Should().Be(newHearingRoleCode);
         }
+        
+        [Test]
+        public void Should_raise_exception_when_updating_judiciary_judge_to_panel_member_if_no_other_host_exists()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false, addStaffMember: false)
+                .WithJudiciaryJudge()
+                .Build();
+            var judiciaryJudge = hearing.GetJudiciaryParticipants()
+                .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var newDisplayName = "New Display Name";
+            var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
+            
+            var action = () => 
+                hearing.UpdateJudiciaryPanelMember(judiciaryJudge, newDisplayName, newHearingRoleCode);
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.HearingNeedsAHost).Should().BeTrue();
+        }
 
         [TestCase(" ")]
         [TestCase("")]
@@ -62,7 +80,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             updatedJudiciaryPanelMember.DisplayName.Should().Be(newDisplayName);
             updatedJudiciaryPanelMember.HearingRoleCode.Should().Be(newHearingRoleCode);
         }
-        
+
         [TestCase(" ")]
         [TestCase("")]
         [TestCase(null)]
@@ -82,7 +100,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Display name cannot be empty").Should().BeTrue();
         }
-        
+
         [Test]
         public void Should_raise_exception_when_updating_judiciary_panel_member_to_judge_if_judge_already_exists()
         {
