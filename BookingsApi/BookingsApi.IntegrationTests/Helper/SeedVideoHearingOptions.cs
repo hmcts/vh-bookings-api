@@ -8,6 +8,7 @@ namespace BookingsApi.IntegrationTests.Helper
             AddJudge = true;
             AddJudiciaryPanelMember = false;
             AddJudiciaryJudge = false;
+            AddStaffMember = false;
         }
 
         private const string Generic = "Generic";
@@ -36,5 +37,7 @@ namespace BookingsApi.IntegrationTests.Helper
         public bool AddJudiciaryPanelMember { get; set; }
         
         public bool AddJudiciaryJudge { get; set; }
+        
+        public bool AddStaffMember { get; set; }
     }
 }

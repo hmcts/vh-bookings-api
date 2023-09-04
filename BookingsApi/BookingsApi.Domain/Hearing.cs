@@ -251,7 +251,24 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public bool HasHost => GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member");
+        public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
+        {
+            if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryParticipantPersonalCode),
+                    DomainRuleErrorMessages.JudiciaryParticipantNotFound);
+            }
+
+            var existingParticipant = JudiciaryParticipants.Single(x =>
+                x.JudiciaryPerson.PersonalCode == judiciaryParticipantPersonalCode);
+            JudiciaryParticipants.Remove(existingParticipant);
+            ValidateHostCount();
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public bool HasHost =>
+            GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
+            JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
         {
@@ -305,7 +322,7 @@ namespace BookingsApi.Domain
         {
             if (!HasHost)
             {
-                throw new DomainRuleException("Host", "A hearing must have at least one host");
+                throw new DomainRuleException("Host", DomainRuleErrorMessages.HearingNeedsAHost);
             }
         }
 

@@ -186,7 +186,7 @@ namespace BookingsApi.IntegrationTests.Helper
             if (venue == null)
             {
                 var venues = new RefDataBuilder().HearingVenues;
-                venue = venues.First();
+                venue = venues[0];
             }
 
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
@@ -305,6 +305,15 @@ namespace BookingsApi.IntegrationTests.Helper
 
                 videoHearing.AddJudiciaryJudge(judiciaryJudge, "Display Name");
             }
+
+            if (options.AddStaffMember)
+            {
+                var staffMemberPerson = new PersonBuilder(true).Build();
+                var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
+                var staffMemberHearingRole = staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
+
+                videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole, "Staff Member 1");
+            }
             
             await db.VideoHearings.AddAsync(videoHearing);
             await db.SaveChangesAsync();
@@ -343,7 +352,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
-            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues.First();
+            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
 
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
@@ -481,17 +490,6 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             return caseType;
-        }
-
-        private JudiciaryPerson GetJudiciaryPersonFromDb(string personalCode)
-        {
-            JudiciaryPerson judiciaryPerson;
-            using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                judiciaryPerson = db.JudiciaryPersons.FirstOrDefault(x => x.PersonalCode == personalCode);
-            }
-
-            return judiciaryPerson;
         }
 
         private static void CreateParticipantLinks(Participant interpretee, Participant interpreter)
@@ -687,7 +685,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venues[0], hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
@@ -776,7 +774,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venues[0], hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
