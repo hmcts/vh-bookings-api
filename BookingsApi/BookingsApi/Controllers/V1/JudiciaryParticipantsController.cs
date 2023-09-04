@@ -15,6 +15,7 @@ namespace BookingsApi.Controllers.V1
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IHearingParticipantService _hearingParticipantService;
+        private readonly IEventPublisher _eventPublisher;
         
         public JudiciaryParticipantsController(
             IQueryHandler queryHandler, 
@@ -23,6 +24,7 @@ namespace BookingsApi.Controllers.V1
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
+            _eventPublisher = eventPublisher;
             _hearingParticipantService = new HearingParticipantService(commandHandler, eventPublisher);
         }
         
@@ -80,6 +82,49 @@ namespace BookingsApi.Controllers.V1
             var response = addedParticipants.Select(mapper.MapJudiciaryParticipantToResponse).ToList();
             
             return Ok(response);
+        }
+
+        [HttpDelete]
+        [Route("{hearingId}/joh/{personalCode}")]
+        [OpenApiOperation("RemoveJudiciaryParticipantFromHearing")]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> RemoveJudiciaryParticipantFromHearing(Guid hearingId, string personalCode)
+        {
+            var command = new RemoveJudiciaryParticipantFromHearingCommand(hearingId, personalCode);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+            }
+            catch (HearingNotFoundException exception)
+            {
+                return NotFound(exception.Message);
+            }
+            catch (DomainRuleException exception)
+            {
+                if (exception.ValidationFailures.Exists(x =>
+                        x.Message == DomainRuleErrorMessages.JudiciaryParticipantNotFound))
+                {
+                    return NotFound(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
+                }
+
+                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
+                return ValidationProblem(ModelState);
+            }
+
+            // ONLY publish this event when Hearing is set for ready for video
+            var videoHearing =
+                await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            if (videoHearing.Status == BookingStatus.Created)
+            {
+                await _eventPublisher.PublishAsync(
+                    new ParticipantRemovedIntegrationEvent(hearingId, command.RemovedParticipantId.Value));
+            }
+
+            return NoContent();
         }
     }
 }
