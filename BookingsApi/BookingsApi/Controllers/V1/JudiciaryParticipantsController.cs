@@ -126,5 +126,64 @@ namespace BookingsApi.Controllers.V1
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Updates a judiciary participant
+        /// </summary>
+        /// <param name="hearingId">The id of the hearing</param>
+        /// <param name="personalCode">The personal code of the judiciary participant</param>
+        /// <param name="request"></param>
+        [HttpPatch("{hearingId}/joh/{personalCode}")]
+        [OpenApiOperation("UpdateJudiciaryParticipant")]
+        [ProducesResponseType(typeof(JudiciaryParticipantResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateJudiciaryParticipant(Guid hearingId, string personalCode, 
+            [FromBody] UpdateJudiciaryParticipantRequest request)
+        {
+            var validation = await new UpdateJudiciaryParticipantRequestValidation().ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(validation.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            var hearingRoleCode = ApiJudiciaryParticipantHearingRoleCodeToDomainMapper.Map(request.HearingRoleCode);
+            
+            var command = new UpdateJudiciaryParticipantCommand(hearingId, personalCode, 
+                request.DisplayName, hearingRoleCode);
+
+            try
+            {
+                await _commandHandler.Handle(command);
+            }
+            catch (HearingNotFoundException exception)
+            {
+                return NotFound(exception.Message);
+            }
+            catch (DomainRuleException exception)
+            {
+                if (exception.ValidationFailures.Exists(x =>
+                        x.Message == DomainRuleErrorMessages.JudiciaryParticipantNotFound))
+                {
+                    return NotFound(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
+                }
+
+                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
+                return ValidationProblem(ModelState);
+            }
+            
+            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
+            
+            // TODO publish event to the service bus
+            
+            var updatedParticipant = hearing.JudiciaryParticipants
+                .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
+
+            var mapper = new JudiciaryParticipantToResponseMapper();
+            var response = mapper.MapJudiciaryParticipantToResponse(updatedParticipant);
+            
+            return Ok(response);
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newDisplayName = "New Display Name";
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
 
-            hearing.UpdateJudiciaryJudgeByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+            hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
 
             var updatedJudiciaryJudge = hearing.GetJudiciaryParticipants()
                 .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryJudge.JudiciaryPerson.PersonalCode);
@@ -38,7 +38,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             
             var action = () => 
-                hearing.UpdateJudiciaryPanelMemberByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == DomainRuleErrorMessages.HearingNeedsAHost).Should().BeTrue();
@@ -59,7 +59,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             
             var action = () => 
-                hearing.UpdateJudiciaryJudgeByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Display name cannot be empty").Should().BeTrue();
@@ -75,7 +75,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             
             var action = () => 
-                hearing.UpdateJudiciaryJudgeByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == DomainRuleErrorMessages.JudiciaryParticipantNotFound).Should().BeTrue();
@@ -93,7 +93,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newDisplayName = "New Display Name";
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
 
-            hearing.UpdateJudiciaryPanelMemberByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+            hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
 
             var updatedJudiciaryPanelMember = hearing.GetJudiciaryParticipants()
                 .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryPanelMember.JudiciaryPerson.PersonalCode);
@@ -116,7 +116,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             
             var action = () => 
-                hearing.UpdateJudiciaryPanelMemberByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Display name cannot be empty").Should().BeTrue();
@@ -132,7 +132,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
             
             var action = () => 
-                hearing.UpdateJudiciaryPanelMemberByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == DomainRuleErrorMessages.JudiciaryParticipantNotFound).Should().BeTrue();
@@ -151,7 +151,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
             
             var action = () => 
-                hearing.UpdateJudiciaryPanelMemberByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "A participant with Judge role already exists in the hearing").Should().BeTrue();
@@ -171,7 +171,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newHearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
             
             var action = () => 
-                hearing.UpdateJudiciaryPanelMemberByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+                hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "A participant with Judge role already exists in the hearing").Should().BeTrue();

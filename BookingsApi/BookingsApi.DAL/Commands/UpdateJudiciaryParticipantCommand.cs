@@ -38,17 +38,7 @@ namespace BookingsApi.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
             
-            switch (command.NewHearingRoleCode)
-            {
-                case JudiciaryParticipantHearingRoleCode.Judge:
-                    hearing.UpdateJudiciaryJudgeByPersonalCode(command.PersonalCode, command.NewDisplayName, command.NewHearingRoleCode);
-                    break;
-                case JudiciaryParticipantHearingRoleCode.PanelMember:
-                    hearing.UpdateJudiciaryPanelMemberByPersonalCode(command.PersonalCode, command.NewDisplayName, command.NewHearingRoleCode);
-                    break;
-                default:
-                    throw new ArgumentException($"Role {command.NewHearingRoleCode} not recognised");
-            }
+            hearing.UpdateJudiciaryParticipantByPersonalCode(command.PersonalCode, command.NewDisplayName, command.NewHearingRoleCode);
             
             await _context.SaveChangesAsync();
         }

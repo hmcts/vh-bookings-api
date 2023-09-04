@@ -293,28 +293,7 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public JudiciaryParticipant UpdateJudiciaryJudgeByPersonalCode(string personalCode, string newDisplayName, 
-            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
-        {
-            return UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
-        }
-        
-        public JudiciaryParticipant UpdateJudiciaryPanelMemberByPersonalCode(string personalCode, string newDisplayName, 
-            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
-        {
-            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist())
-            {
-                throw new DomainRuleException(nameof(personalCode), "A participant with Judge role already exists in the hearing");
-            }
-
-            var participant = UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
-
-            ValidateHostCount();
-
-            return participant;
-        }
-
-        private JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
+        public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
             JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
@@ -322,11 +301,18 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
             }
             
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist())
+            {
+                throw new DomainRuleException(nameof(personalCode), "A participant with Judge role already exists in the hearing");
+            }
+            
             var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
             
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
             participant.UpdatedDate = DateTime.UtcNow;
+            
+            ValidateHostCount();
             
             return participant;
         }
