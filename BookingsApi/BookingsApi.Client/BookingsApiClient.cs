@@ -741,10 +741,20 @@ namespace BookingsApi.Client
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RemoveJudiciaryParticipantFromHearingAsync(System.Guid hearingId, string personalCode, System.Threading.CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Updates a judiciary participant
+        /// </summary>
+        /// <param name="hearingId">The id of the hearing</param>
+        /// <param name="personalCode">The personal code of the judiciary participant</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<JudiciaryParticipantResponse> UpdateJudiciaryParticipantAsync(System.Guid hearingId, string personalCode, UpdateJudiciaryParticipantRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Updates a judiciary participant
+        /// </summary>
+        /// <param name="hearingId">The id of the hearing</param>
+        /// <param name="personalCode">The personal code of the judiciary participant</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<JudiciaryParticipantResponse> UpdateJudiciaryParticipantAsync(System.Guid hearingId, string personalCode, UpdateJudiciaryParticipantRequest request, System.Threading.CancellationToken cancellationToken);
 
@@ -6159,6 +6169,11 @@ namespace BookingsApi.Client
             }
         }
 
+        /// <summary>
+        /// Updates a judiciary participant
+        /// </summary>
+        /// <param name="hearingId">The id of the hearing</param>
+        /// <param name="personalCode">The personal code of the judiciary participant</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<JudiciaryParticipantResponse> UpdateJudiciaryParticipantAsync(System.Guid hearingId, string personalCode, UpdateJudiciaryParticipantRequest request)
         {
@@ -6166,6 +6181,11 @@ namespace BookingsApi.Client
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Updates a judiciary participant
+        /// </summary>
+        /// <param name="hearingId">The id of the hearing</param>
+        /// <param name="personalCode">The personal code of the judiciary participant</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<JudiciaryParticipantResponse> UpdateJudiciaryParticipantAsync(System.Guid hearingId, string personalCode, UpdateJudiciaryParticipantRequest request, System.Threading.CancellationToken cancellationToken)
         {

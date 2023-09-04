@@ -307,12 +307,15 @@ namespace BookingsApi.Domain
             }
             
             var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
+            if (participant == null)
+            {
+                throw new InvalidOperationException($"{nameof(participant)} cannot be null");
+            }
             
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
-            participant.UpdatedDate = DateTime.UtcNow;
-            
             ValidateHostCount();
+            UpdatedDate = DateTime.UtcNow;
             
             return participant;
         }

@@ -41,11 +41,15 @@ namespace BookingsApi.Domain
             }
 
             DisplayName = displayName;
+
+            UpdatedDate = _currentUTC;
         }
         
         public void UpdateHearingRoleCode(JudiciaryParticipantHearingRoleCode hearingRoleCode)
         {
             HearingRoleCode = hearingRoleCode;
+            
+            UpdatedDate = _currentUTC;
         }
     }
 }
