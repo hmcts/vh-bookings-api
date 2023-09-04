@@ -296,34 +296,39 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public JudiciaryParticipant UpdateJudiciaryJudge(JudiciaryParticipant judiciaryParticipant, string displayName, 
-            JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        public JudiciaryParticipant UpdateJudiciaryJudgeByPersonalCode(string personalCode, string newDisplayName, 
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            return UpdateJudiciaryParticipant(judiciaryParticipant, displayName, hearingRoleCode);
+            return UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
         }
         
-        public JudiciaryParticipant UpdateJudiciaryPanelMember(JudiciaryParticipant judiciaryParticipant, string displayName, 
-            JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        public JudiciaryParticipant UpdateJudiciaryPanelMemberByPersonalCode(string personalCode, string newDisplayName, 
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            if (hearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist())
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist())
             {
-                throw new DomainRuleException(nameof(judiciaryParticipant), "A participant with Judge role already exists in the hearing");
+                throw new DomainRuleException(nameof(personalCode), "A participant with Judge role already exists in the hearing");
             }
 
-            var participant = UpdateJudiciaryParticipant(judiciaryParticipant, displayName, hearingRoleCode);
+            var participant = UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
 
             ValidateHostCount();
 
             return participant;
         }
 
-        private JudiciaryParticipant UpdateJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant, string displayName, 
-            JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        private JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode);
+            if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
+            {
+                throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
+            }
             
-            participant.UpdateDisplayName(displayName);
-            participant.UpdateHearingRoleCode(hearingRoleCode);
+            var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
+            
+            participant.UpdateDisplayName(newDisplayName);
+            participant.UpdateHearingRoleCode(newHearingRoleCode);
             participant.UpdatedDate = DateTime.UtcNow;
             
             return participant;
