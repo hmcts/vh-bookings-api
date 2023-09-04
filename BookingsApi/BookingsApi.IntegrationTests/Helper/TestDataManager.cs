@@ -1,4 +1,3 @@
-using System.IO;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
@@ -48,9 +47,7 @@ namespace BookingsApi.IntegrationTests.Helper
             _dbContextOptions = dbContextOptions;
             _defaultCaseName = defaultCaseName;
         }
-
-
-
+        
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
             bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true)
         {

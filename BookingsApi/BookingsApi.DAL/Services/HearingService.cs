@@ -47,6 +47,8 @@ namespace BookingsApi.DAL.Services
         /// <param name="participants">List of participants</param>
         /// <returns></returns>
         void ValidateHostCount(IList<Participant> participants);
+
+        Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
     }
     public class HearingService : IHearingService
     {
@@ -131,7 +133,7 @@ namespace BookingsApi.DAL.Services
         {
             var hearing = await _context.VideoHearings.Include(x => x.HearingCases).ThenInclude(h => h.Case)
                 .FirstAsync(x => x.Id == hearingId);
-            var existingCase = hearing.GetCases().First();
+            var existingCase = hearing.GetCases()[0];
             hearing.UpdateCase(new Case(existingCase.Number, caseName)
             {
                 IsLeadCase = existingCase.IsLeadCase
@@ -191,6 +193,30 @@ namespace BookingsApi.DAL.Services
             if (!hasHost)
             {
                 throw new DomainRuleException("Host", "A hearing must have at least one host");
+            }
+        }
+
+        public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing,
+            NewJudiciaryParticipant participant)
+        {
+            var judiciaryPerson = await _context.JudiciaryPersons
+                .SingleOrDefaultAsync(x => x.PersonalCode == participant.PersonalCode);
+
+            if (judiciaryPerson == null)
+            {
+                throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
+            }
+
+            switch (participant.HearingRoleCode)
+            {
+                case JudiciaryParticipantHearingRoleCode.Judge:
+                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName);
+                    break;
+                case JudiciaryParticipantHearingRoleCode.PanelMember:
+                    videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);
+                    break;
+                default:
+                    throw new ArgumentException($"Role {participant.HearingRoleCode} not recognised");
             }
         }
 

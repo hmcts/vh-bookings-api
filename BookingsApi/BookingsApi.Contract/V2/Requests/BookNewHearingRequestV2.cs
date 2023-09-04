@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BookingsApi.Contract.V1.Requests;
 
 namespace BookingsApi.Contract.V2.Requests
 {
@@ -14,6 +15,7 @@ namespace BookingsApi.Contract.V2.Requests
             Participants = new List<ParticipantRequestV2>();
             LinkedParticipants = new List<LinkedParticipantRequestV2>();
             Endpoints = new List<EndpointRequestV2>();
+            JudiciaryParticipants = new List<JudiciaryParticipantRequest>();
         }
 
         /// <summary>
@@ -71,11 +73,12 @@ namespace BookingsApi.Contract.V2.Requests
         /// </summary>
         public bool AudioRecordingRequired { get; set; }
         
-        
         public bool IsMultiDayHearing { get; set; } = false;
 
         public List<EndpointRequestV2> Endpoints { get; set; }
         
         public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; }
+        
+        public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; }
     }
 }

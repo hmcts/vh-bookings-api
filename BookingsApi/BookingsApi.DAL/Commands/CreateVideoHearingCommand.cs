@@ -42,6 +42,7 @@ namespace BookingsApi.DAL.Commands
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
+        public List<NewJudiciaryParticipant> JudiciaryParticipants { get; set; } = new();
         public bool IsMultiDayFirstHearing { get; }
     }
 
@@ -60,7 +61,7 @@ namespace BookingsApi.DAL.Commands
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired, 
+                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired,
                 command.AudioRecordingRequired, command.CancelReason);
 
             // Ideally, the domain object would implement the clone method and so this change is a work around.
@@ -72,11 +73,16 @@ namespace BookingsApi.DAL.Commands
             }
 
             await _context.VideoHearings.AddAsync(videoHearing);
-            
+
             var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
-             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
-     
+            await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
+
+            foreach (var newJudiciaryParticipant in command.JudiciaryParticipants)
+            {
+                await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant);
+            }
+
             videoHearing.AddCases(command.Cases);
 
             if (command.Endpoints != null && command.Endpoints.Count > 0)

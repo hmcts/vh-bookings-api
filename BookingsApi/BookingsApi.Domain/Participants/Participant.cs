@@ -22,8 +22,8 @@ namespace BookingsApi.Domain.Participants
         {
             Person = person;
             PersonId = person.Id;
-            HearingRoleId = hearingRole.Id;
-            CaseRoleId = caseRole?.Id;
+            HearingRole = hearingRole;
+            CaseRole = caseRole;
         }
         
         public int? CaseRoleId { get; set; }
