@@ -147,11 +147,10 @@ namespace BookingsApi.Controllers.V1
                 ModelState.AddFluentValidationErrors(validation.Errors);
                 return ValidationProblem(ModelState);
             }
+
+            var participant = UpdateJudiciaryParticipantRequestToUpdatedJudiciaryParticipantMapper.Map(personalCode, request);
             
-            var hearingRoleCode = ApiJudiciaryParticipantHearingRoleCodeToDomainMapper.Map(request.HearingRoleCode);
-            
-            var command = new UpdateJudiciaryParticipantCommand(hearingId, personalCode, 
-                request.DisplayName, hearingRoleCode);
+            var command = new UpdateJudiciaryParticipantCommand(hearingId, participant);
 
             try
             {
@@ -174,9 +173,8 @@ namespace BookingsApi.Controllers.V1
             }
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-            
-            // TODO publish event to the service bus
-            
+            await _hearingParticipantService.PublishEventForUpdateJudiciaryParticipantAsync(hearing, participant);
+
             var updatedParticipant = hearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
 

@@ -33,7 +33,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             const string displayName = "New Display Name";
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
-            var command = new UpdateJudiciaryParticipantCommand(hearingId, personalCode, displayName, hearingRoleCode);
+            var participant = new UpdatedJudiciaryParticipant
+            {
+                DisplayName = displayName,
+                PersonalCode = personalCode,
+                HearingRoleCode = hearingRoleCode
+            };
+            var command = new UpdateJudiciaryParticipantCommand(hearingId, participant);
 
             await _commandHandler.Handle(command);
             
@@ -62,7 +68,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
             const string displayName = "New Display Name";
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
-            var command = new UpdateJudiciaryParticipantCommand(hearingId, personalCode, displayName, hearingRoleCode);
+            var participant = new UpdatedJudiciaryParticipant
+            {
+                DisplayName = displayName,
+                PersonalCode = personalCode,
+                HearingRoleCode = hearingRoleCode
+            };
+            var command = new UpdateJudiciaryParticipantCommand(hearingId, participant);
 
             await _commandHandler.Handle(command);
             
@@ -84,7 +96,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var personalCode = Guid.NewGuid().ToString();
             const string displayName = "Display Name";
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
-            var command = new UpdateJudiciaryParticipantCommand(hearingId, personalCode, displayName, hearingRoleCode);
+            var participant = new UpdatedJudiciaryParticipant
+            {
+                DisplayName = displayName,
+                PersonalCode = personalCode,
+                HearingRoleCode = hearingRoleCode
+            };
+            var command = new UpdateJudiciaryParticipantCommand(hearingId, participant);
 
             Assert.ThrowsAsync<HearingNotFoundException>(() => _commandHandler.Handle(command));
         }
@@ -97,7 +115,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var personalCode = Guid.NewGuid().ToString();
             const string displayName = "Display Name";
             const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember;
-            var command = new UpdateJudiciaryParticipantCommand(hearingId, personalCode, displayName, hearingRoleCode);
+            var participant = new UpdatedJudiciaryParticipant
+            {
+                DisplayName = displayName,
+                PersonalCode = personalCode,
+                HearingRoleCode = hearingRoleCode
+            };
+            var command = new UpdateJudiciaryParticipantCommand(hearingId, participant);
 
             Assert.ThrowsAsync<DomainRuleException>(() => _commandHandler.Handle(command));
         }

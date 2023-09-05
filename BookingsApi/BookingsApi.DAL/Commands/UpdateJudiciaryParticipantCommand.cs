@@ -1,19 +1,21 @@
 namespace BookingsApi.DAL.Commands
 {
+    public class UpdatedJudiciaryParticipant
+    {
+        public string DisplayName { get; set; }
+        public string PersonalCode { get; set; }
+        public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
+    }
+    
     public class UpdateJudiciaryParticipantCommand : ICommand
     {
         public Guid HearingId { get; set; }
-        public string PersonalCode { get; set; }
-        public string NewDisplayName { get; set; }
-        public JudiciaryParticipantHearingRoleCode NewHearingRoleCode { get; set; }
-        
-        public UpdateJudiciaryParticipantCommand(Guid hearingId, string personalCode, string newDisplayName, 
-            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+        public UpdatedJudiciaryParticipant UpdatedJudiciaryParticipant { get; set; }
+
+        public UpdateJudiciaryParticipantCommand(Guid hearingId, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
         {
             HearingId = hearingId;
-            PersonalCode = personalCode;
-            NewDisplayName = newDisplayName;
-            NewHearingRoleCode = newHearingRoleCode;
+            UpdatedJudiciaryParticipant = updatedJudiciaryParticipant;
         }
     }
 
@@ -38,7 +40,8 @@ namespace BookingsApi.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             }
             
-            hearing.UpdateJudiciaryParticipantByPersonalCode(command.PersonalCode, command.NewDisplayName, command.NewHearingRoleCode);
+            hearing.UpdateJudiciaryParticipantByPersonalCode(command.UpdatedJudiciaryParticipant.PersonalCode, 
+                command.UpdatedJudiciaryParticipant.DisplayName, command.UpdatedJudiciaryParticipant.HearingRoleCode);
             
             await _context.SaveChangesAsync();
         }

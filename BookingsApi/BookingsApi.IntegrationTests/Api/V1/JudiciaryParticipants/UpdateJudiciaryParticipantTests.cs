@@ -3,6 +3,8 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Validations;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
@@ -50,6 +52,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(request);
+            
+            var serviceBusStub =
+                Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+            var message = serviceBusStub!.ReadMessageFromQueue();
+            message.IntegrationEvent.Should()
+                .BeEquivalentTo(new ParticipantUpdatedIntegrationEvent(seededHearing.Id, judiciaryParticipants[0]));
         }
         
         [Test]
@@ -94,6 +102,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(request);
+            
+            var serviceBusStub =
+                Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+            var message = serviceBusStub!.ReadMessageFromQueue();
+            message.IntegrationEvent.Should()
+                .BeEquivalentTo(new ParticipantUpdatedIntegrationEvent(seededHearing.Id, judiciaryParticipants[0]));
         }
 
         [Test]
