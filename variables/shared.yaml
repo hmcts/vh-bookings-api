@@ -84,7 +84,7 @@ variables:
     value: BookingsApi.csproj
 
   - name: efDataContextName
-    value: RefDataDbContext
+    value: RefDataContext
   - name: efDataProjectName
     value: RefData.csproj
 
