@@ -1,6 +1,5 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 
@@ -36,17 +35,10 @@ namespace BookingsApi.DAL.Services
         /// <summary>
         /// Removes the link between participants
         /// </summary>
-        /// <param name="participant"></param>
-        /// <param name="linkedParticipantDtos"></param>
+        /// <param name="participants">All participants in a hearing</param>
+        /// <param name="participant">The participants with whom to remove links</param>
         /// <returns></returns>
         Task RemoveParticipantLinks(List<Participant> participants, Participant participant);
-
-        /// <summary>
-        /// Checks to see if a host is present
-        /// </summary>
-        /// <param name="participants">List of participants</param>
-        /// <returns></returns>
-        void ValidateHostCount(IList<Participant> participants);
 
         Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
     }
@@ -182,18 +174,6 @@ namespace BookingsApi.DAL.Services
                 interpreter.RemoveLink(lp1);
             }
             return Task.CompletedTask;
-        }
-
-        public void ValidateHostCount(IList<Participant> participants)
-        {
-            var hostHearingRoleIds = _context.HearingRoles.Where(x => x.Name == HearingRoles.Judge || x.Name == HearingRoles.StaffMember).Select(x => x.Id);
-
-            var hasHost = participants.Any(x => hostHearingRoleIds.Contains(x.HearingRoleId));
-
-            if (!hasHost)
-            {
-                throw new DomainRuleException("Host", "A hearing must have at least one host");
-            }
         }
 
         public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing,
