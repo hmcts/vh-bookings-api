@@ -82,6 +82,12 @@ variables:
     value: BookingsDbContext
   - name: efProjectName
     value: BookingsApi.csproj
+
+  - name: efDataContextName
+    value: RefDataDbContext
+  - name: efDataProjectName
+    value: RefData.csproj
+
   - name: vhKeyVault
     value: vh-infra-core-${{ parameters.env }}
   - name: vhSqlUsernameSecret
