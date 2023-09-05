@@ -281,6 +281,7 @@ namespace BookingsApi.Domain
 
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
         
@@ -290,6 +291,7 @@ namespace BookingsApi.Domain
             
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
 
