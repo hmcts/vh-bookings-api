@@ -21,4 +21,9 @@ public static class ContractExtensions
             participant.LastName = participant.LastName?.Trim();
         }
     }
+    
+    public static JudiciaryParticipantHearingRoleCode MapToDomainEnum(this Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode hearingRoleCode)
+    {
+        return Enum.Parse<JudiciaryParticipantHearingRoleCode>(hearingRoleCode.ToString());
+    }
 }

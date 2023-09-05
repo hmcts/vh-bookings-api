@@ -303,7 +303,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
             }
             
-            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist())
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist(personalCodeToIgnore: personalCode))
             {
                 throw new DomainRuleException(nameof(personalCode), "A participant with Judge role already exists in the hearing");
             }
@@ -562,9 +562,15 @@ namespace BookingsApi.Domain
             return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
         }
 
-        private bool DoesJudgeExist()
+        private bool DoesJudgeExist(string personalCodeToIgnore = null)
         {
-            return Participants.Any(x => x is Judge)|| JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var judiciaryJudges = JudiciaryParticipants.Where(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            if (!string.IsNullOrEmpty(personalCodeToIgnore))
+            {
+                judiciaryJudges = judiciaryJudges.Where(x => x.JudiciaryPerson.PersonalCode != personalCodeToIgnore);
+            }
+            
+            return Participants.Any(x => x is Judge) || judiciaryJudges.Any();
         }
 
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,

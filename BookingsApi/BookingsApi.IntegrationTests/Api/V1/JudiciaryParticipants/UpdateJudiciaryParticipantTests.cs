@@ -3,6 +3,7 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Validations;
+using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
@@ -10,8 +11,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
     public class UpdateJudiciaryParticipantTests : ApiTest
     {
-        [Test]
-        public async Task Should_update_judiciary_judge()
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
+        public async Task Should_update_judiciary_judge(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
             // Arrange
             var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
@@ -24,12 +26,11 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
-            var newHearingRole = JudiciaryParticipantHearingRoleCode.PanelMember;
 
             var request = new UpdateJudiciaryParticipantRequest
             {
                 DisplayName = newDisplayName,
-                HearingRoleCode = newHearingRole
+                HearingRoleCode = newHearingRoleCode
             };
             
             // Act
@@ -48,7 +49,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants.Count.Should().Be(1);
             judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryJudge.JudiciaryPersonId);
             judiciaryParticipants[0].DisplayName.Should().Be(newDisplayName);
-            judiciaryParticipants[0].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
+            judiciaryParticipants[0].HearingRoleCode.Should().Be(newHearingRoleCode.MapToDomainEnum());
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(request);
@@ -60,8 +61,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 .BeEquivalentTo(new ParticipantUpdatedIntegrationEvent(seededHearing.Id, judiciaryParticipants[0]));
         }
         
-        [Test]
-        public async Task Should_update_judiciary_panel_member()
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
+        public async Task Should_update_judiciary_panel_member(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
             // Arrange
             var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
@@ -74,12 +76,11 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
-            var newHearingRole = JudiciaryParticipantHearingRoleCode.Judge;
 
             var request = new UpdateJudiciaryParticipantRequest
             {
                 DisplayName = newDisplayName,
-                HearingRoleCode = newHearingRole
+                HearingRoleCode = newHearingRoleCode
             };
             
             // Act
@@ -98,7 +99,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants.Count.Should().Be(1);
             judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryPanelMember.JudiciaryPersonId);
             judiciaryParticipants[0].DisplayName.Should().Be(newDisplayName);
-            judiciaryParticipants[0].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
+            judiciaryParticipants[0].HearingRoleCode.Should().Be(newHearingRoleCode.MapToDomainEnum());
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(request);
