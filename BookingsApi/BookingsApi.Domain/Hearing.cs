@@ -305,7 +305,7 @@ namespace BookingsApi.Domain
             
             if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist(personalCodeToIgnore: personalCode))
             {
-                throw new DomainRuleException(nameof(personalCode), "A participant with Judge role already exists in the hearing");
+                throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
             }
             
             var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
