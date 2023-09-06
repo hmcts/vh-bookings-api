@@ -1,6 +1,5 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Dtos;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 
@@ -36,17 +35,12 @@ namespace BookingsApi.DAL.Services
         /// <summary>
         /// Removes the link between participants
         /// </summary>
-        /// <param name="participant"></param>
-        /// <param name="linkedParticipantDtos"></param>
+        /// <param name="participants">All participants in a hearing</param>
+        /// <param name="participant">The participants with whom to remove links</param>
         /// <returns></returns>
         Task RemoveParticipantLinks(List<Participant> participants, Participant participant);
 
-        /// <summary>
-        /// Checks to see if a host is present
-        /// </summary>
-        /// <param name="participants">List of participants</param>
-        /// <returns></returns>
-        void ValidateHostCount(IList<Participant> participants);
+        Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
     }
     public class HearingService : IHearingService
     {
@@ -131,7 +125,7 @@ namespace BookingsApi.DAL.Services
         {
             var hearing = await _context.VideoHearings.Include(x => x.HearingCases).ThenInclude(h => h.Case)
                 .FirstAsync(x => x.Id == hearingId);
-            var existingCase = hearing.GetCases().First();
+            var existingCase = hearing.GetCases()[0];
             hearing.UpdateCase(new Case(existingCase.Number, caseName)
             {
                 IsLeadCase = existingCase.IsLeadCase
@@ -182,15 +176,27 @@ namespace BookingsApi.DAL.Services
             return Task.CompletedTask;
         }
 
-        public void ValidateHostCount(IList<Participant> participants)
+        public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing,
+            NewJudiciaryParticipant participant)
         {
-            var hostHearingRoleIds = _context.HearingRoles.Where(x => x.Name == HearingRoles.Judge || x.Name == HearingRoles.StaffMember).Select(x => x.Id);
+            var judiciaryPerson = await _context.JudiciaryPersons
+                .SingleOrDefaultAsync(x => x.PersonalCode == participant.PersonalCode);
 
-            var hasHost = participants.Any(x => hostHearingRoleIds.Contains(x.HearingRoleId));
-
-            if (!hasHost)
+            if (judiciaryPerson == null)
             {
-                throw new DomainRuleException("Host", "A hearing must have at least one host");
+                throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
+            }
+
+            switch (participant.HearingRoleCode)
+            {
+                case JudiciaryParticipantHearingRoleCode.Judge:
+                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName);
+                    break;
+                case JudiciaryParticipantHearingRoleCode.PanelMember:
+                    videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);
+                    break;
+                default:
+                    throw new ArgumentException($"Role {participant.HearingRoleCode} not recognised");
             }
         }
 

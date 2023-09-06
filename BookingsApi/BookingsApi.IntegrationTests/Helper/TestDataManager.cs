@@ -1,4 +1,3 @@
-using System.IO;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
@@ -48,9 +47,7 @@ namespace BookingsApi.IntegrationTests.Helper
             _dbContextOptions = dbContextOptions;
             _defaultCaseName = defaultCaseName;
         }
-
-
-
+        
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
             bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true)
         {
@@ -473,20 +470,17 @@ namespace BookingsApi.IntegrationTests.Helper
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
-            CaseType caseType;
-            using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                caseType = db.CaseTypes
-                    .Include(x => x.CaseRoles)
-                    .ThenInclude(x => x.HearingRoles)
-                    .ThenInclude(x => x.UserRole)
-                    .Include(x => x.HearingTypes)
-                    .FirstOrDefault(x => x.Name == caseTypeName);
+            using var db = new BookingsDbContext(_dbContextOptions);
+            var caseType = db.CaseTypes
+                .Include(x => x.CaseRoles)
+                .ThenInclude(x => x.HearingRoles)
+                .ThenInclude(x => x.UserRole)
+                .Include(x => x.HearingTypes)
+                .FirstOrDefault(x => x.Name == caseTypeName);
 
-                if (caseType == null)
-                {
-                    throw new InvalidOperationException("Unknown case type: " + caseTypeName);
-                }
+            if (caseType == null)
+            {
+                throw new InvalidOperationException("Unknown case type: " + caseTypeName);
             }
 
             return caseType;

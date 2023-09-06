@@ -1,14 +1,8 @@
-using BookingsApi.Domain.Validations;
+using BookingsApi.DAL.Dtos;
+using BookingsApi.DAL.Services;
 
 namespace BookingsApi.DAL.Commands
 {
-    public class NewJudiciaryParticipant
-    {
-        public string DisplayName { get; set; }
-        public string PersonalCode { get; set; }
-        public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
-    }
-    
     public class AddJudiciaryParticipantsToHearingCommand : ICommand
     {
         public AddJudiciaryParticipantsToHearingCommand(Guid hearingId, List<NewJudiciaryParticipant> participants)
@@ -24,10 +18,12 @@ namespace BookingsApi.DAL.Commands
     public class AddJudiciaryParticipantsToHearingCommandHandler : ICommandHandler<AddJudiciaryParticipantsToHearingCommand>
     {
         private readonly BookingsDbContext _context;
+        private readonly IHearingService _hearingService;
 
-        public AddJudiciaryParticipantsToHearingCommandHandler(BookingsDbContext context)
+        public AddJudiciaryParticipantsToHearingCommandHandler(BookingsDbContext context, IHearingService hearingService)
         {
             _context = context;
+            _hearingService = hearingService;
         }
 
         public async Task Handle(AddJudiciaryParticipantsToHearingCommand command)
@@ -44,25 +40,7 @@ namespace BookingsApi.DAL.Commands
             
             foreach (var participant in command.Participants)
             {
-                var judiciaryPerson = await _context.JudiciaryPersons
-                    .SingleOrDefaultAsync(x => x.PersonalCode == participant.PersonalCode);
-
-                if (judiciaryPerson == null)
-                {
-                    throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
-                }
-
-                switch (participant.HearingRoleCode)
-                {
-                    case JudiciaryParticipantHearingRoleCode.Judge:
-                        hearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName);
-                        break;
-                    case JudiciaryParticipantHearingRoleCode.PanelMember:
-                        hearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);
-                        break;
-                    default:
-                        throw new ArgumentException($"Role {participant.HearingRoleCode} not recognised");
-                }
+                await _hearingService.AddJudiciaryParticipantToVideoHearing(hearing, participant);
             }
   
             await _context.SaveChangesAsync();
