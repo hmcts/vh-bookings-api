@@ -73,22 +73,12 @@ public class HearingParticipantService : IHearingParticipantService
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
             .ToList();
         
-        if (!participants.Any())
-        {
-            return;
-        }
-        
         await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
     }
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {
         var participant = hearing.GetJudiciaryParticipants()
             .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == updatedJudiciaryParticipant.PersonalCode);
-
-        if (participant == null)
-        {
-            return;
-        }
         
         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
     }
