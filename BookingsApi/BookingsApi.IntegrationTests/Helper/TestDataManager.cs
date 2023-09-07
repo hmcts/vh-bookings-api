@@ -206,8 +206,11 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
                 $"{person5.FirstName} {person5.LastName}");
 
-            videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
-                $"{judgePerson.FirstName} {judgePerson.LastName}");
+            if (options.IncludeJudge)
+            {
+                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
+                    $"{judgePerson.FirstName} {judgePerson.LastName}");
+            }
 
             if (addJoh)
             {

@@ -50,7 +50,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         [Test]
         public void Should_add_judge_to_hearing()
         {
-            var hearing = new VideoHearingBuilder().Build();
+            var hearing = new VideoHearingBuilder(skipJudge:true).Build();
             var judgeCaseRole = new CaseRole(5, "Judge");
             var judgeHearingRole = new HearingRole(13, "Judge");
 

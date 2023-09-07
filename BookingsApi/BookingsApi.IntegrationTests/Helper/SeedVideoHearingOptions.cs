@@ -28,5 +28,6 @@ namespace BookingsApi.IntegrationTests.Helper
         public DateTime? ScheduledDate { get; internal set; }
         
         public HearingVenue HearingVenue { get; set; }
+        public bool IncludeJudge { get; set; } = true;
     }
 }

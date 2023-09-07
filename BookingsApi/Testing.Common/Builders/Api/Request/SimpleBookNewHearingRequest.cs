@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Contract.Requests;
 using FizzWare.NBuilder;
 
-namespace BookingsApi.AcceptanceTests.Models;
+namespace Testing.Common.Builders.Api.Request;
 
-internal class SimpleBookNewHearingRequest
+public class SimpleBookNewHearingRequest
 {
     private readonly BookNewHearingRequest _request;
 

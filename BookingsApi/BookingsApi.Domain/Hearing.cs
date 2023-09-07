@@ -199,7 +199,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
             }
 
-            if(Participants.Any(x => x.HearingRole == hearingRole))
+            if(Participants.Any(x=> x is Judge))
             {
                 throw new DomainRuleException(nameof(person), "A participant with Judge role already exists in the hearing");
             }

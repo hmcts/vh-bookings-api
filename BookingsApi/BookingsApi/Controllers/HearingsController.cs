@@ -298,6 +298,11 @@ namespace BookingsApi.Controllers
 
                 return CreatedAtAction(nameof(GetHearingDetailsById), new { hearingId = response.Id }, response);
             }
+            catch (DomainRuleException ex)
+            {
+                ModelState.AddDomainRuleErrors(ex.ValidationFailures);
+                return ValidationProblem(ModelState);
+            }
             catch (Exception ex)
             {
                 const string keyPayload = "payload";

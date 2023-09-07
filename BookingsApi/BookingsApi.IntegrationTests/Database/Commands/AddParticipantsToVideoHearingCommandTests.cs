@@ -275,7 +275,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [TestCase("Staff Member", "Staff Member")]
         public async Task Should_add_participant_to_video_hearing(string caseRole, string hearingRole)
         {
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearing(options =>
+            {
+                options.IncludeJudge = false;
+            });
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             _newHearingId = seededHearing.Id;
 
