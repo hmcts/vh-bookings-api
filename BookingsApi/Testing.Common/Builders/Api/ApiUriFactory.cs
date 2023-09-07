@@ -161,6 +161,7 @@ namespace Testing.Common.Builders.Api
             private const string ApiRoot = "hearings";
             public static string AddJudiciaryParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh";
             public static string RemoveJudiciaryParticipantFromHearing(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
+            public static string UpdateJudiciaryParticipant(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
         }
     }
 }

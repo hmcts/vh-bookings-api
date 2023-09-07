@@ -272,36 +272,58 @@ namespace BookingsApi.Domain
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
         {
-            const JudiciaryParticipantHearingRoleCode hearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge;
-            
-            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
+            ValidateAddJudiciaryParticipant(judiciaryPerson);
             
             if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
             }
-            
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, hearingRoleCode);
+
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
         
         public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
         {
-            ValidateJudiciaryParticipant(judiciaryPerson, displayName);
+            ValidateAddJudiciaryParticipant(judiciaryPerson);
             
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
             return participant;
         }
 
-        private void ValidateJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string displayName)
+        public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            if (judiciaryPerson == null)
+            if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary person cannot be null");
+                throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
             }
             
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist(personalCodeToIgnore: personalCode))
+            {
+                throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
+            }
+            
+            var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
+            if (participant == null)
+            {
+                throw new InvalidOperationException($"{nameof(participant)} cannot be null");
+            }
+            
+            participant.UpdateDisplayName(newDisplayName);
+            participant.UpdateHearingRoleCode(newHearingRoleCode);
+            ValidateHostCount();
+            UpdatedDate = DateTime.UtcNow;
+            
+            return participant;
+        }
+
+        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson)
+        {
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
@@ -311,13 +333,8 @@ namespace BookingsApi.Domain
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
             }
-            
-            if (displayName == null || displayName.Trim() == string.Empty)
-            {
-                throw new DomainRuleException(nameof(displayName), "Display name cannot be empty");
-            }
         }
-        
+
         public void ValidateHostCount()
         {
             if (!HasHost)
@@ -545,9 +562,15 @@ namespace BookingsApi.Domain
             return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
         }
 
-        private bool DoesJudgeExist()
+        private bool DoesJudgeExist(string personalCodeToIgnore = null)
         {
-            return Participants.Any(x => x is Judge)|| JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var judiciaryJudges = JudiciaryParticipants.Where(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            if (!string.IsNullOrEmpty(personalCodeToIgnore))
+            {
+                judiciaryJudges = judiciaryJudges.Where(x => x.JudiciaryPerson.PersonalCode != personalCodeToIgnore);
+            }
+            
+            return Participants.Any(x => x is Judge) || judiciaryJudges.Any();
         }
 
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
