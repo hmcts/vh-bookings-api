@@ -31,6 +31,7 @@ namespace BookingsApi.DAL.Queries
                     x.ScheduledDateTime.Date == System.DateTime.UtcNow.Date &&
                     x.Status == Domain.Enumerations.BookingStatus.Created && // Only Confirmed
                     x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
+                .OrderBy(x=> x.ScheduledDateTime)
                 .ToListAsync();
         }
     }
