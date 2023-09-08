@@ -69,6 +69,44 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Representee.Should().Be(participant.Representee);
         }
 
+        [Test]
+        public void should_map_judge_judiciary_participant_to_dto()
+        {
+            var hearing = GetHearingWithJudiciaryParticipants();
+            var participant = hearing.GetJudiciaryParticipants().First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var result = ParticipantDtoMapper.MapToDto(participant);
+
+            result.ParticipantId.Should().Be(participant.Id);
+            result.Fullname.Should().Be(participant.JudiciaryPerson.Fullname);
+            result.Username.Should().Be(participant.JudiciaryPerson.Email);
+            result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
+            result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
+            result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
+            result.DisplayName.Should().Be(participant.DisplayName);
+            result.HearingRole.Should().Be("Judge");
+            result.UserRole.Should().Be("Judge");
+            result.CaseGroupType.Should().Be(CaseRoleGroup.Judge);
+        }
+
+        [Test]
+        public void should_map_panel_member_judiciary_participant_to_dto()
+        {
+            var hearing = GetHearingWithJudiciaryParticipants();
+            var participant = hearing.GetJudiciaryParticipants().First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+            var result = ParticipantDtoMapper.MapToDto(participant);
+
+            result.ParticipantId.Should().Be(participant.Id);
+            result.Fullname.Should().Be(participant.JudiciaryPerson.Fullname);
+            result.Username.Should().Be(participant.JudiciaryPerson.Email);
+            result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
+            result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
+            result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
+            result.DisplayName.Should().Be(participant.DisplayName);
+            result.HearingRole.Should().Be("Panel Member");
+            result.UserRole.Should().Be("Judicial Office Holder");
+            result.CaseGroupType.Should().Be(CaseRoleGroup.PanelMember);
+        }
+
         private static VideoHearing GetHearing()
         {
             var hearing = new VideoHearingBuilder().Build();
@@ -86,6 +124,16 @@ namespace BookingsApi.UnitTests.Mappings.V1
             }
             individuals[0].AddLink(individuals[1].Id, LinkedParticipantType.Interpreter);
 
+            return hearing;
+        }
+
+        private static VideoHearing GetHearingWithJudiciaryParticipants()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithJudiciaryJudge()
+                .WithJudiciaryPanelMember()
+                .Build();
+            
             return hearing;
         }
     }

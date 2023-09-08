@@ -35,23 +35,9 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoDisplayNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidDisplayNameErrorMessage)
-                .Should().BeTrue();
-        }
-
-        [Test]
-        public async Task Should_return_missing_case_role_name_error()
-        {
-            var request = BuildRequest();
-            request.CaseRoleName = string.Empty;
-
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoCaseRoleNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -65,7 +51,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoHearingRoleNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoHearingRoleNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -79,7 +65,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoFirstNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -93,7 +79,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoLastNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -109,7 +95,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoUsernameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoUsernameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -123,7 +109,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoContactEmailErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -137,7 +123,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidContactEmailErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -152,7 +138,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidJudgeUsernameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.InvalidJudgeUsernameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -190,7 +176,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.NoTelephoneNumberErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoTelephoneNumberErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -231,9 +217,9 @@ namespace BookingsApi.UnitTests.Validation.V2
             if (!expectedResult)
             {
                 result.Errors.Count.Should().Be(2);
-                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.FirstNameDoesntMatchRegex)
+                result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.FirstNameDoesntMatchRegex)
                     .Should().BeTrue();
-                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidationV2.LastNameDoesntMatchRegex)
+                result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.LastNameDoesntMatchRegex)
                     .Should().BeTrue();
             }
         }

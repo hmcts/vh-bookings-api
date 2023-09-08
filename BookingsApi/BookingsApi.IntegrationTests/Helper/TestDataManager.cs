@@ -1,4 +1,3 @@
-using System.IO;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
@@ -48,9 +47,7 @@ namespace BookingsApi.IntegrationTests.Helper
             _dbContextOptions = dbContextOptions;
             _defaultCaseName = defaultCaseName;
         }
-
-
-
+        
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
             bool isTeamLead = false, bool isDeleted = false, bool initWorkHours = true)
         {
@@ -160,15 +157,7 @@ namespace BookingsApi.IntegrationTests.Helper
             await context.AddRangeAsync(entities);
         }
 
-        public Task<VideoHearing> SeedVideoHearing(
-            bool addSuitabilityAnswer = false,
-            BookingStatus status = BookingStatus.Booked,
-            bool isMultiDayFirstHearing = false)
-        {
-            return SeedVideoHearing(null, addSuitabilityAnswer, status, isMultiDayFirstHearing: isMultiDayFirstHearing);
-        }
-
-        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions,
+        public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
             bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
             bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
@@ -194,7 +183,7 @@ namespace BookingsApi.IntegrationTests.Helper
             if (venue == null)
             {
                 var venues = new RefDataBuilder().HearingVenues;
-                venue = venues.First();
+                venue = venues[0];
             }
 
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
@@ -232,8 +221,11 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
                 $"{person5.FirstName} {person5.LastName}");
 
-            videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
-                $"{judgePerson.FirstName} {judgePerson.LastName}");
+            if (options.AddJudge)
+            {
+                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
+                    $"{judgePerson.FirstName} {judgePerson.LastName}");
+            }
 
             if (addJoh)
             {
@@ -292,6 +284,34 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             await using var db = new BookingsDbContext(_dbContextOptions);
+            
+            if (options.AddJudiciaryPanelMember)
+            {
+                var personalCode = Guid.NewGuid().ToString();
+
+                var judiciaryPanelMemberPerson = await AddJudiciaryPerson(db, personalCode: personalCode);
+
+                videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Display Name");
+            }
+
+            if (options.AddJudiciaryJudge)
+            {
+                var personalCode = Guid.NewGuid().ToString();
+                
+                var judiciaryJudge = await AddJudiciaryPerson(db, personalCode: personalCode);
+
+                videoHearing.AddJudiciaryJudge(judiciaryJudge, "Display Name");
+            }
+
+            if (options.AddStaffMember)
+            {
+                var staffMemberPerson = new PersonBuilder(true).Build();
+                var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
+                var staffMemberHearingRole = staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
+
+                videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole, "Staff Member 1");
+            }
+            
             await db.VideoHearings.AddAsync(videoHearing);
             await db.SaveChangesAsync();
 
@@ -329,7 +349,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
-            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues.First();
+            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
 
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
@@ -450,20 +470,17 @@ namespace BookingsApi.IntegrationTests.Helper
 
         private CaseType GetCaseTypeFromDb(string caseTypeName)
         {
-            CaseType caseType;
-            using (var db = new BookingsDbContext(_dbContextOptions))
-            {
-                caseType = db.CaseTypes
-                    .Include(x => x.CaseRoles)
-                    .ThenInclude(x => x.HearingRoles)
-                    .ThenInclude(x => x.UserRole)
-                    .Include(x => x.HearingTypes)
-                    .FirstOrDefault(x => x.Name == caseTypeName);
+            using var db = new BookingsDbContext(_dbContextOptions);
+            var caseType = db.CaseTypes
+                .Include(x => x.CaseRoles)
+                .ThenInclude(x => x.HearingRoles)
+                .ThenInclude(x => x.UserRole)
+                .Include(x => x.HearingTypes)
+                .FirstOrDefault(x => x.Name == caseTypeName);
 
-                if (caseType == null)
-                {
-                    throw new InvalidOperationException("Unknown case type: " + caseTypeName);
-                }
+            if (caseType == null)
+            {
+                throw new InvalidOperationException("Unknown case type: " + caseTypeName);
             }
 
             return caseType;
@@ -662,7 +679,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venues[0], hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
@@ -751,7 +768,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues.First(), hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
+                venues[0], hearingRoomName, otherInformation, createdBy, questionnaireNotRequired,
                 audioRecordingRequired, cancelReason);
 
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
@@ -807,7 +824,7 @@ namespace BookingsApi.IntegrationTests.Helper
             return judiciaryPersonStaging;
         }
 
-        public async Task AddJudiciaryPerson(string personalCode = null)
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(string personalCode = null)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -816,6 +833,21 @@ namespace BookingsApi.IntegrationTests.Helper
 
             await db.SaveChangesAsync();
             AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
+
+            return judiciaryPerson;
+        }
+        
+        public async Task<JudiciaryPerson> AddJudiciaryPerson(BookingsDbContext db, string personalCode = null)
+        {
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode).Build();
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
+
+            var person = db.JudiciaryPersons.FirstOrDefault(x => x.PersonalCode == personalCode);
+            
+            return person;
         }
 
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)

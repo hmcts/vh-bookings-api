@@ -24,6 +24,7 @@ public class ApiTest
     {
         await Hooks.ClearSeededHearings();
         await Hooks.ClearSeededJusticeUsersAsync();
+        await Hooks.ClearJudiciaryPersonsAsync();
     }
 
     private void RegisterSettings()

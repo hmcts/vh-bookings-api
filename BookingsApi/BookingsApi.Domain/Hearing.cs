@@ -26,6 +26,7 @@ namespace BookingsApi.Domain
             HearingCases = new List<HearingCase>();
             Endpoints = new List<Endpoint>();
             Allocations = new List<Allocation>();
+            JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
@@ -71,6 +72,7 @@ namespace BookingsApi.Domain
         public virtual IList<Participant> Participants { get; }
         public virtual IList<Endpoint> Endpoints { get; }
         public virtual IList<HearingCase> HearingCases { get; set; }
+        public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         
@@ -191,7 +193,7 @@ namespace BookingsApi.Domain
 
         public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if(!string.Equals(hearingRole.Name, "Judge", StringComparison.InvariantCultureIgnoreCase))
+            if(!hearingRole.IsJudge())
             {
                 throw new DomainRuleException(nameof(hearingRole), "Hearing role should be Judge");
             }
@@ -201,7 +203,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(person), "Judge with given username already exists in the hearing");
             }
 
-            if(Participants.Any(x => x.HearingRole == hearingRole))
+            if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(person), "A participant with Judge role already exists in the hearing");
             }
@@ -249,13 +251,95 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public bool HasHost => GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member");
+        public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
+        {
+            if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryParticipantPersonalCode),
+                    DomainRuleErrorMessages.JudiciaryParticipantNotFound);
+            }
+
+            var existingParticipant = JudiciaryParticipants.Single(x =>
+                x.JudiciaryPerson.PersonalCode == judiciaryParticipantPersonalCode);
+            JudiciaryParticipants.Remove(existingParticipant);
+            ValidateHostCount();
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public bool HasHost =>
+            GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
+            JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+
+        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            ValidateAddJudiciaryParticipant(judiciaryPerson);
+            
+            if (DoesJudgeExist())
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
+            }
+
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
+            JudiciaryParticipants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
+            return participant;
+        }
+        
+        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            ValidateAddJudiciaryParticipant(judiciaryPerson);
+            
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
+            JudiciaryParticipants.Add(participant);
+            UpdatedDate = DateTime.UtcNow;
+            return participant;
+        }
+
+        public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+        {
+            if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
+            {
+                throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
+            }
+            
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge && DoesJudgeExist(personalCodeToIgnore: personalCode))
+            {
+                throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
+            }
+            
+            var participant = JudiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
+            if (participant == null)
+            {
+                throw new InvalidOperationException($"{nameof(participant)} cannot be null");
+            }
+            
+            participant.UpdateDisplayName(newDisplayName);
+            participant.UpdateHearingRoleCode(newHearingRoleCode);
+            ValidateHostCount();
+            UpdatedDate = DateTime.UtcNow;
+            
+            return participant;
+        }
+
+        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson)
+        {
+            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
+            }
+
+            if (judiciaryPerson.IsALeaver())
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), "Cannot add a participant who is a leaver");
+            }
+        }
 
         public void ValidateHostCount()
         {
             if (!HasHost)
             {
-                throw new DomainRuleException("Host", "A hearing must have at least one host");
+                throw new DomainRuleException("Host", DomainRuleErrorMessages.HearingNeedsAHost);
             }
         }
 
@@ -305,6 +389,11 @@ namespace BookingsApi.Domain
         public IList<Endpoint> GetEndpoints()
         {
             return Endpoints;
+        }
+        
+        public IList<JudiciaryParticipant> GetJudiciaryParticipants()
+        {
+            return JudiciaryParticipants;
         }
 
         public void RemoveEndpoint(Endpoint endpoint)
@@ -467,7 +556,23 @@ namespace BookingsApi.Domain
         {
             return Endpoints.Any(x => x.Sip.Equals(sip, StringComparison.InvariantCultureIgnoreCase));
         }
-        
+
+        private bool DoesJudiciaryParticipantExistByPersonalCode(string personalCode)
+        {
+            return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
+        }
+
+        private bool DoesJudgeExist(string personalCodeToIgnore = null)
+        {
+            var judiciaryJudges = JudiciaryParticipants.Where(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            if (!string.IsNullOrEmpty(personalCodeToIgnore))
+            {
+                judiciaryJudges = judiciaryJudges.Where(x => x.JudiciaryPerson.PersonalCode != personalCodeToIgnore);
+            }
+            
+            return Participants.Any(x => x is Judge) || judiciaryJudges.Any();
+        }
+
         private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
             HearingType hearingType)
         {
@@ -540,6 +645,14 @@ namespace BookingsApi.Domain
             {
                 Deallocate();
             }
+        }
+
+        public ParticipantBase GetJudge()
+        {
+            var judge = Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+
+            return (ParticipantBase)judge ?? judiciaryJudge;
         }
     }
 }

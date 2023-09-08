@@ -12,6 +12,7 @@ namespace BookingsApi.Domain.RefData
         }
         public string Name { get; set; }
         public int UserRoleId { get; set; }
+        public int? CaseRoleId { get; set; }
         public UserRole UserRole { get; set; }
         public bool Live { get; set; }
 
@@ -24,5 +25,8 @@ namespace BookingsApi.Domain.RefData
         {
             return this.CompareTo((HearingRole) obj);
         }
+        
+        public bool IsJudge() => 
+            string.Equals(Name, "Judge", StringComparison.InvariantCultureIgnoreCase);
     }
 }

@@ -36,6 +36,7 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.HearingVenue)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate).ThenInclude(x => x.Person)
                 .Include(x => x.Allocations).ThenInclude(x => x.JusticeUser)
+                .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
                 .AsNoTracking()
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == query.HearingId);

@@ -5,6 +5,10 @@ namespace BookingsApi.IntegrationTests.Helper
         public SeedVideoHearingOptions()
         {
             CaseTypeName = Generic;
+            AddJudge = true;
+            AddJudiciaryPanelMember = false;
+            AddJudiciaryJudge = false;
+            AddStaffMember = false;
         }
 
         private const string Generic = "Generic";
@@ -27,5 +31,13 @@ namespace BookingsApi.IntegrationTests.Helper
         public HearingVenue HearingVenue { get; set; }
         
         public Case Case { get; set; }
+
+        public bool AddJudge { get; set; }
+
+        public bool AddJudiciaryPanelMember { get; set; }
+        
+        public bool AddJudiciaryJudge { get; set; }
+        
+        public bool AddStaffMember { get; set; }
     }
 }

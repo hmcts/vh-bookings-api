@@ -45,7 +45,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         [Test]
         public void Should_add_judge_to_hearing()
         {
-            var hearing = new VideoHearingBuilder().Build();
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
             var judgeCaseRole = new CaseRole(5, "Judge");
             var judgeHearingRole = new HearingRole(13, "Judge");
 
@@ -88,6 +88,22 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             When(() => hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Dredd"))
                 .Should().Throw<DomainRuleException>().WithMessage("Judge with given username already exists in the hearing");
 
+        }
+
+        [Test]
+        public void Should_raise_exception_if_judiciary_judge_already_exists()
+        {
+            var hearingBuilder = new VideoHearingBuilder(addJudge: false);
+            var hearing = hearingBuilder.Build();
+            var existingJudiciaryPerson = new JudiciaryPersonBuilder("Personal Code 1").Build();
+            hearing.AddJudiciaryJudge(existingJudiciaryPerson, "Display Name 1");
+            
+            var judgeCaseRole = new CaseRole(5, "Judge");
+            var judgeHearingRole = new HearingRole(13, "Judge");
+            var newPerson = new PersonBuilder(true).Build();
+
+            When(() => hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Dredd"))
+                .Should().Throw<DomainRuleException>().WithMessage("A participant with Judge role already exists in the hearing");
         }
         
         [Test]

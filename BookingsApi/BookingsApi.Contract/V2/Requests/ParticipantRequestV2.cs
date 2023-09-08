@@ -49,7 +49,7 @@ namespace BookingsApi.Contract.V2.Requests
         public string DisplayName { get; set; }
 
         /// <summary>
-        ///     The name of the participant's case role
+        ///     The name of the participant's case role (optional)
         /// </summary>
         public string CaseRoleName { get; set; }
 

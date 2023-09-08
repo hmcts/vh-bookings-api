@@ -12,7 +12,7 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.Id).ValueGeneratedNever();
             builder.HasIndex(x => new {ParticipantId = x.PersonId, x.HearingId}).IsUnique();
             builder.Property(x => x.DisplayName);
-            builder.Property(x => x.CaseRoleId);
+            builder.Property(x => x.CaseRoleId).IsRequired(false);
             builder.Property(x => x.HearingRoleId);
             builder.Property(x => x.Discriminator);
             builder.HasOne(x => x.CaseRole).WithMany().HasForeignKey(x => x.CaseRoleId);

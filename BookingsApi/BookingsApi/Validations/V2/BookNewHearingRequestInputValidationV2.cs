@@ -1,10 +1,11 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Validations.V1;
 using Castle.Core.Internal;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V2
 {
-    public class BookNewHearingRequestValidationV2 : AbstractValidator<BookNewHearingRequestV2>
+    public class BookNewHearingRequestInputValidationV2 : AbstractValidator<BookNewHearingRequestV2>
     {
         public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public const string ScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
@@ -15,7 +16,7 @@ namespace BookingsApi.Validations.V2
         public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
         public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
-        public BookNewHearingRequestValidationV2()
+        public BookNewHearingRequestInputValidationV2()
         {
             RuleFor(x => x.HearingVenueCode)
                 .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);
@@ -58,6 +59,8 @@ namespace BookingsApi.Validations.V2
             RuleForEach(x => x.Endpoints)
                 .SetValidator(new EndpointRequestValidationV2())
                 .When(x => x.Endpoints.Any());
+            
+            RuleForEach(request =>  request.JudiciaryParticipants).SetValidator(new JudiciaryParticipantRequestValidation());
         }
     }
 }

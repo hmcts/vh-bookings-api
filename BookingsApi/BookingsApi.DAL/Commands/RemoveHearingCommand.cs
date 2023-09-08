@@ -27,6 +27,7 @@ namespace BookingsApi.DAL.Commands
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)//.ThenInclude(x => x.Participant)
                 .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
+                .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();
 
             if (!hearingsIncCloned.Any())
@@ -43,7 +44,6 @@ namespace BookingsApi.DAL.Commands
 
             _context.RemoveRange(organisations);
             _context.RemoveRange(persons);
-
             _context.RemoveRange(hearingsIncCloned);
 
             await _context.SaveChangesAsync();

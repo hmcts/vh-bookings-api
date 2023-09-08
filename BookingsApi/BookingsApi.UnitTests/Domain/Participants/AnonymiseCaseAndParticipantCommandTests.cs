@@ -16,73 +16,20 @@ namespace BookingsApi.UnitTests.Domain.Participants
         private VideoHearing _hearing1, _hearing2, _hearing3;
         private CaseType _caseType1;
         private UserRole _userRole1, _userRole2;
+        private CaseRole _judgeCaseRole, _individualCaseRole, _repCaseRole;
         private HearingRole _hearingRole1, _hearingRole2;
-
-        [OneTimeSetUp]
-        public void InitialSetup()
-        {
-            var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
-                .UseInMemoryDatabase("VhBookingsInMemory").Options;
-            
-            _context = new BookingsDbContext(contextOptions);
-        }
-
-        [OneTimeTearDown]
-        public void FinalCleanUp()
-        {
-            _context.Database.EnsureDeleted();
-        }
-
+        
         [SetUp]
         public async Task SetUp()
         {
-            _userRole1 = new UserRole(1, "user role 1");
-            _userRole2 = new UserRole(2, "user role 2");
-
-            _hearingRole1 = new HearingRole(1, "judge") {UserRole = _userRole1};
-            _hearingRole2 = new HearingRole(2, "hearing role 2") {UserRole = _userRole2};
-
-            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
-            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), Faker.Internet.Email());
-            _representativePerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(),
-                    Faker.Internet.Email(), Faker.Internet.Email());
-            _anonymisedParticipantPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Internet.Email(), Faker.Name.Last(),
-                    Faker.Internet.Email());
-
-            _caseType1 = new CaseType(12, "case 1")
-                {HearingTypes = new List<HearingType> {new HearingType("Hearing type 1")}};
-
-            await _context.CaseTypes.AddAsync(_caseType1);
-            await _context.SaveChangesAsync();
-
-            var hearingType = _caseType1.HearingTypes.First();
-
-            _hearing1 = new VideoHearing(_caseType1,
-                hearingType, DateTime.Today, 40,
-                new HearingVenue(1, "venue 1"),
-                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
-
-            _hearing2 = new VideoHearing(_caseType1,
-                hearingType, DateTime.Today, 40,
-                new HearingVenue(1, "venue 1"),
-                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
-
-            _hearing3 = new VideoHearing(_caseType1,
-                hearingType, DateTime.Today, 40,
-                new HearingVenue(1, "venue 1"),
-                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
-
-            _hearing1.AddJudge(_person1, _hearingRole1, new CaseRole(1, "judge"), "Judge 123");
-            _hearing1.AddIndividual(_person2, _hearingRole2, new CaseRole(2, "individual"), "Individual 123");
-
-            _hearing2.AddJudge(_person1, _hearingRole1, new CaseRole(1, "judge"), "Judge 123");
-            _hearing2.AddIndividual(_person2, _hearingRole2, new CaseRole(2, "individual"), "Individual 123");
-
-            _hearing3.AddJudge(_person1, _hearingRole1, new CaseRole(1, "judge"), "Judge 123");
-            _hearing3.AddIndividual(_person2, _hearingRole2, new CaseRole(2, "individual"), "Individual 123");
-
-            await _context.VideoHearings.AddRangeAsync(_hearing1, _hearing2, _hearing3);
-            await _context.SaveChangesAsync();
+            var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+            
+            _context = new BookingsDbContext(contextOptions);
+            
+            // seed roles
+            await SeedRefData();
+            await SeedHearings();
 
             _command = new AnonymiseCaseAndParticipantCommandHandler(_context);
         }
@@ -90,8 +37,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         [TearDown]
         public async Task TearDown()
         {
-            _context.CaseTypes.Remove(_caseType1);
-            _context.VideoHearings.RemoveRange(_hearing1, _hearing2, _hearing3);
+            _context.VideoHearings.RemoveRange(_context.VideoHearings);
             await _context.SaveChangesAsync();
         }
 
@@ -128,9 +74,9 @@ namespace BookingsApi.UnitTests.Domain.Participants
         public async Task AnonymiseCaseAndParticipantCommand_Anonymises_Representee()
         {
             var repName = Faker.Name.FullName();
-            _hearing1.AddRepresentative(_representativePerson, _hearingRole1, new CaseRole(1, "rep"), "Rep 123",
+            _hearing1.AddRepresentative(_representativePerson, _hearingRole1, _repCaseRole, "Rep 123",
                 repName);
-            _hearing2.AddRepresentative(_representativePerson, _hearingRole1, new CaseRole(1, "rep"), "Rep 123",
+            _hearing2.AddRepresentative(_representativePerson, _hearingRole1, _repCaseRole, "Rep 456",
                 string.Empty);
 
             await _context.SaveChangesAsync();
@@ -168,7 +114,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         {
             var anonymisedParticipantDisplayName =
                 Faker.Name.Suffix() + AnonymiseCaseAndParticipantCommandHandler.AnonymisedNameSuffix;
-            _hearing1.AddIndividual(_anonymisedParticipantPerson, _hearingRole2, new CaseRole(2, "individual"),
+            _hearing1.AddIndividual(_anonymisedParticipantPerson, _hearingRole2, _individualCaseRole,
                 "Individual 123");
             _hearing1.Participants.FirstOrDefault(p => p.PersonId == _anonymisedParticipantPerson.Id).DisplayName =
                 anonymisedParticipantDisplayName;
@@ -240,5 +186,70 @@ namespace BookingsApi.UnitTests.Domain.Participants
             updatedHearing1.HearingCases.FirstOrDefault(hearing => hearing.HearingId == _hearing1.Id).Case.Name.Should()
                 .Be(caseName1);
         }
+        
+           private async Task SeedRefData()
+        {
+            _userRole1 = new UserRole(1, "user role 1");
+            _userRole2 = new UserRole(2, "user role 2");
+
+            _hearingRole1 = new HearingRole(1, "judge") {UserRole = _userRole1};
+            _hearingRole2 = new HearingRole(2, "hearing role 2") {UserRole = _userRole2};
+            
+            _judgeCaseRole = new CaseRole(1, "Judge");
+            _individualCaseRole = new CaseRole(2, "Individual");
+            _repCaseRole = new CaseRole(3, "rep");
+            _caseType1 = new CaseType(12, "case 1")
+            {
+                HearingTypes = new List<HearingType> {new HearingType("Hearing type 1")},
+                CaseRoles = new List<CaseRole>{_judgeCaseRole, _individualCaseRole, _repCaseRole}
+            };
+            
+            await _context.CaseTypes.AddAsync(_caseType1);
+            await _context.SaveChangesAsync();
+        }
+        
+        private async Task SeedHearings()
+        {
+            _person1 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
+                Faker.Internet.Email());
+            _person2 = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(),
+                Faker.Internet.Email());
+            _representativePerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(),
+                Faker.Internet.Email(), Faker.Internet.Email());
+            _anonymisedParticipantPerson = new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Internet.Email(),
+                Faker.Name.Last(),
+                Faker.Internet.Email());
+
+            var hearingType = _caseType1.HearingTypes[0];
+
+            _hearing1 = new VideoHearing(_caseType1,
+                hearingType, DateTime.Today, 40,
+                new HearingVenue(1, "venue 1"),
+                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
+
+            _hearing2 = new VideoHearing(_caseType1,
+                hearingType, DateTime.Today, 40,
+                new HearingVenue(1, "venue 1"),
+                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
+
+            _hearing3 = new VideoHearing(_caseType1,
+                hearingType, DateTime.Today, 40,
+                new HearingVenue(1, "venue 1"),
+                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
+
+            _hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
+            _hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
+
+            _hearing2.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
+            _hearing2.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
+
+            _hearing3.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
+            _hearing3.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
+
+
+            await _context.VideoHearings.AddRangeAsync(_hearing1, _hearing2, _hearing3);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

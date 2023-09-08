@@ -54,6 +54,13 @@ namespace Testing.Common.Builders.Api
             public static string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
             public static string UpdateHearingParticipants(Guid hearingId) => $"{ApiRoot}/{hearingId}/updateParticipants";
         }
+
+        public static class HearingRolesEndpoints
+        {
+            private const string ApiRoot = "hearingroles";
+            
+            public static string GetHearingRoles() => $"{ApiRoot}";
+        }
                 
         public static class CaseTypesEndpointsV2
         {
@@ -147,6 +154,14 @@ namespace Testing.Common.Builders.Api
             public static string EditJusticeUser => $"{ApiRoot}";
             public static string GetJusticeUserByUsername(string username) => $"{ApiRoot}/GetJusticeUserByUsername?username={username}";
             public static string GetJusticeUserList(string term, bool includeDeleted) => $"{ApiRoot}/GetJusticeUserList?term={term}&includeDeleted={includeDeleted.ToString()}";
+        }
+
+        public static class JudiciaryParticipantEndpoints
+        {
+            private const string ApiRoot = "hearings";
+            public static string AddJudiciaryParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh";
+            public static string RemoveJudiciaryParticipantFromHearing(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
+            public static string UpdateJudiciaryParticipant(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
         }
     }
 }
