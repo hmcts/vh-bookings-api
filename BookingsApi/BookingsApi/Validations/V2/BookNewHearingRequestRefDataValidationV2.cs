@@ -1,11 +1,12 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Validations.Common;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V2;
 
-public class BookNewHearingRequestDataValidationV2 : AbstractValidator<BookNewHearingRequestV2>
+public class BookNewHearingRequestRefDataValidationV2 : RefDataInputValidatorValidator<BookNewHearingRequestV2>
 {
-    public BookNewHearingRequestDataValidationV2(CaseType caseType, HearingVenue hearingVenue, List<HearingRole> hearingRoles)
+    public BookNewHearingRequestRefDataValidationV2(CaseType caseType, HearingVenue hearingVenue, List<HearingRole> hearingRoles)
     {
         RuleFor(x => x.ServiceId).Custom((_, context) =>
         {

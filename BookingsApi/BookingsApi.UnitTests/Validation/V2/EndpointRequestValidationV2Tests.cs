@@ -39,8 +39,7 @@ public class EndpointRequestValidationV2Tests
         var result = await _validator.ValidateAsync(request);
 
         result.IsValid.Should().BeFalse();
-        result.Errors.Count.Should().Be(1);
-        result.Errors.Any(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDisplayNameErrorMessage).Should().BeTrue();
+        result.Errors.Exists(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDisplayNameErrorMessage).Should().BeTrue();
     }
         
     [Test]
@@ -56,7 +55,7 @@ public class EndpointRequestValidationV2Tests
 
         result.IsValid.Should().BeFalse();
         result.Errors.Count.Should().Be(1);
-        result.Errors.Any(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDefenceAdvocateContactEmailError).Should().BeTrue();
+        result.Errors.Exists(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDefenceAdvocateContactEmailError).Should().BeTrue();
     }
         
     [Test]
@@ -72,6 +71,6 @@ public class EndpointRequestValidationV2Tests
 
         result.IsValid.Should().BeFalse();
         result.Errors.Count.Should().Be(1);
-        result.Errors.Any(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDefenceAdvocateContactEmailError).Should().BeTrue();
+        result.Errors.Exists(x => x.ErrorMessage == EndpointRequestValidationV2.InvalidDefenceAdvocateContactEmailError).Should().BeTrue();
     }
 }

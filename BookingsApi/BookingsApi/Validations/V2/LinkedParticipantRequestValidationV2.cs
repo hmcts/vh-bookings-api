@@ -13,7 +13,7 @@ namespace BookingsApi.Validations.V2
         {
             RuleFor(x => x.ParticipantContactEmail).NotEmpty().WithMessage(NoParticipantEmail);
             RuleFor(x => x.LinkedParticipantContactEmail).NotEmpty().WithMessage(NoLinkedParticipantEmail);
-            RuleFor(x => x.TypeV2).IsInEnum().WithMessage(InvalidType);
+            RuleFor(x => x.Type).NotEmpty().IsInEnum().WithMessage(InvalidType);
         }
     }
 }

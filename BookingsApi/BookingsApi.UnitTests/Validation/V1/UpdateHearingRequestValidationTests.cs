@@ -7,15 +7,11 @@ namespace BookingsApi.UnitTests.Validation.V1
     public class UpdateHearingRequestValidationTests
     {
         private UpdateHearingRequestValidation _validator;
-        private DateTime _scheduledDateTime;
-        private VideoHearing _hearing;
 
         [SetUp]
         public void SetUp()
         {
-            _scheduledDateTime = DateTime.Today.AddDays(5).AddHours(10).AddMinutes(30);
-            _hearing = new VideoHearingBuilder().WithScheduledDateTime(_scheduledDateTime).Build();
-            _validator = new UpdateHearingRequestValidation(_hearing);
+            _validator = new UpdateHearingRequestValidation();
         }
 
         [Test]
@@ -40,7 +36,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             var result = await _validator.ValidateAsync(request);
 
             // assert
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -53,7 +49,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -66,7 +62,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoScheduleDurationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidation.NoScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -79,7 +75,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == UpdateHearingRequestValidation.NoUpdatedByErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidation.NoUpdatedByErrorMessage)
                 .Should().BeTrue();
         }
 
