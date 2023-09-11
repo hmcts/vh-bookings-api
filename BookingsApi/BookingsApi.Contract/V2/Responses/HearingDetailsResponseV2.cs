@@ -27,11 +27,26 @@ public class HearingDetailsResponseV2
         ///     The code for the hearing venue
         /// </summary>
         public string HearingVenueCode { get; set; }
+        
+        /// <summary>
+        ///     The name for the hearing venue
+        /// </summary>
+        public string HearingVenueName { get; set; }
+        
+        /// <summary>
+        ///     Is the hearing venue Scottish
+        /// </summary>
+        public bool IsHearingVenueScottish { get; set; }
 
         /// <summary>
         ///     The ID for the service
         /// </summary>
         public string ServiceId { get; set; }
+        
+        /// <summary>
+        ///     The name for the service
+        /// </summary>
+        public string ServiceName { get; set; }
 
         /// <summary>
         ///     The code for the hearing type
@@ -92,7 +107,6 @@ public class HearingDetailsResponseV2
         /// </summary>
         public BookingStatusV2 Status { get; set; }
         
-
         /// <summary>
         /// Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false
         /// </summary>
