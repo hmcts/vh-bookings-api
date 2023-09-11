@@ -2,14 +2,15 @@ USE VhBookings;
 
 SET XACT_ABORT ON
 GO;
-CREATE OR ALTER PROC #HearingVenue_CreateIfNotExist @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
+CREATE OR ALTER PROC #HearingVenue_CreateIfNotExist @id int, @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
 As
 BEGIN
     IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = @venueName)
         BEGIN
-            DECLARE @id int = (SELECT MAX(Id) FROM HearingVenue) + 1
-
+            SET IDENTITY_INSERT dbo.HearingType ON
             Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, @id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
+    
+            SET IDENTITY_INSERT dbo.HearingType OFF
         END
 END
 GO;
@@ -36,16 +37,16 @@ BEGIN TRANSACTION;
 -- New venues to be added
 -- change to an insert
 
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Collection Enforcement Centre', @venueCode = '534560', @isScottish = 0, @isWorkAllocationEnabled = 1;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Council Chamber-Tunbridge Wells Town Hall', @venueCode = '213971', @isScottish = 0, @isWorkAllocationEnabled = 1;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'National Business Centre, Salford', @venueCode = '192280', @isScottish = 0, @isWorkAllocationEnabled = 1;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Crown House (Loughborough Offices)', @venueCode = '420587', @isScottish = 0, @isWorkAllocationEnabled = 1;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Cwmbran Offices (Gwent House)', @venueCode = '339076', @isScottish = 0, @isWorkAllocationEnabled = 1;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dumfries (1)', @venueCode = '999997', @isScottish = 1, @isWorkAllocationEnabled = 0;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dunfermline', @venueCode = '999995', @isScottish = 1, @isWorkAllocationEnabled = 0;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Wick', @venueCode = '999983', @isScottish = 1, @isWorkAllocationEnabled = 0;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Conwy', @venueCode = '999976', @isScottish = 0, @isWorkAllocationEnabled = 0;
-EXEC #HearingVenue_CreateIfNotExist @venueName = 'Dolgellau', @venueCode = '999978', @isScottish = 0, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @id = 465, @venueName = 'Collection Enforcement Centre', @venueCode = '534560', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @id = 466, @venueName = 'Council Chamber-Tunbridge Wells Town Hall', @venueCode = '213971', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @id = 467, @venueName = 'National Business Centre, Salford', @venueCode = '192280', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @id = 468, @venueName = 'Crown House (Loughborough Offices)', @venueCode = '420587', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @id = 469, @venueName = 'Cwmbran Offices (Gwent House)', @venueCode = '339076', @isScottish = 0, @isWorkAllocationEnabled = 1;
+EXEC #HearingVenue_CreateIfNotExist @id = 470, @venueName = 'Dumfries (1)', @venueCode = '999997', @isScottish = 1, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @id = 471, @venueName = 'Dunfermline', @venueCode = '999995', @isScottish = 1, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @id = 472, @venueName = 'Wick', @venueCode = '999983', @isScottish = 1, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @id = 473, @venueName = 'Conwy', @venueCode = '999976', @isScottish = 0, @isWorkAllocationEnabled = 0;
+EXEC #HearingVenue_CreateIfNotExist @id = 474, @venueName = 'Dolgellau', @venueCode = '999978', @isScottish = 0, @isWorkAllocationEnabled = 0;
 
 -- Fix typoes
 UPDATE HearingVenue SET Name = 'Sefton Magistrates Court', VenueCode = '395973', UpdatedDate = CURRENT_TIMESTAMP WHERE Name LIKE 'Sefton Magistrates Court%'
