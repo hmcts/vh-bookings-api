@@ -1,12 +1,14 @@
 SET XACT_ABORT ON
 GO
 
-CREATE OR ALTER PROC #Jurisdiction_CreateIfNotExist @name varchar(max)
+CREATE OR ALTER PROC #Jurisdiction_CreateIfNotExist @id int, @name varchar(max)
 AS
 BEGIN
     IF NOT EXISTS(SELECT TOP 1 1 FROM Jurisdiction WHERE Name = @name)
         BEGIN
+            SET IDENTITY_INSERT dbo.HearingType ON
             INSERT INTO Jurisdiction (Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES (@name, @name, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            SET IDENTITY_INSERT dbo.HearingType OFF
         END
 END
 GO
@@ -30,11 +32,11 @@ GO
 BEGIN TRANSACTION
 
 -- Add jurisdictions
-EXEC #Jurisdiction_CreateIfNotExist 'Health, Education and Social Care Chamber'
-EXEC #Jurisdiction_CreateIfNotExist 'General Regulatory Chamber'
-EXEC #Jurisdiction_CreateIfNotExist 'Immigration and Asylum Chamber'
-EXEC #Jurisdiction_CreateIfNotExist 'Property Chamber'
-EXEC #Jurisdiction_CreateIfNotExist 'War Pensions and Armed Forces Compensation Chamber'
+EXEC #Jurisdiction_CreateIfNotExist @id = 4, @name = 'Health, Education and Social Care Chamber'
+EXEC #Jurisdiction_CreateIfNotExist @id = 5, @name = 'General Regulatory Chamber'
+EXEC #Jurisdiction_CreateIfNotExist @id = 6, @name = 'Immigration and Asylum Chamber'
+EXEC #Jurisdiction_CreateIfNotExist @id = 7, @name = 'Property Chamber'
+EXEC #Jurisdiction_CreateIfNotExist @id = 8, @name = 'War Pensions and Armed Forces Compensation Chamber'
 
 -- Update case types
 EXEC #CaseType_Update 'Adoption', 'ABA4', 'Family'
