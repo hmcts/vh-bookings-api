@@ -85,7 +85,6 @@ public class SimpleBookNewHearingRequest
             .With(x => x.Participants = participants)
             .With(x => x.Cases = cases)
             .With(x => x.CreatedBy = createdBy)
-            .With(x => x.QuestionnaireNotRequired = false)
             .With(x => x.AudioRecordingRequired = true)
             .Build();
     }

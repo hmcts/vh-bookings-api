@@ -604,7 +604,6 @@ namespace BookingsApi.IntegrationTests.Steps
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.AudioRecordingRequired = true)
-                .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.Endpoints = endpoints)
                 .Build();
         }
@@ -625,7 +624,6 @@ namespace BookingsApi.IntegrationTests.Steps
                 ScheduledDuration = 100,
                 HearingVenueName = "Manchester County and Family Court",
                 OtherInformation = "OtherInfo",
-                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,
                 HearingRoomName = "20",
                 UpdatedBy = $"admin{usernameStem}",
