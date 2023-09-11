@@ -52,7 +52,7 @@ namespace BookingsApi.Controllers.V2
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(new GetCaseRolesForCaseServiceQuery(request.ServiceId));
             var hearingVenue = await GetHearingVenue(request.HearingVenueCode);
             
-            var dataValidationResult = await new BookNewHearingRequestDataValidationV2(caseType, hearingVenue, hearingRoles).ValidateAsync(request);
+            var dataValidationResult = await new BookNewHearingRequestRefDataValidationV2(caseType, hearingVenue, hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);

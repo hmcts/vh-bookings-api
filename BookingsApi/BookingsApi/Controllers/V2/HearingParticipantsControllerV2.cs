@@ -56,7 +56,7 @@ namespace BookingsApi.Controllers.V2
             var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
 
-            var dataValidationResult = await new AddParticipantsToHearingRequestDataValidationV2(caseType).ValidateAsync(request);
+            var dataValidationResult = await new AddParticipantsToHearingRequestRefDataValidationV2(caseType).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
@@ -124,7 +124,7 @@ namespace BookingsApi.Controllers.V2
             var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
-            var dataValidationResult = await new UpdateHearingParticipantsRequestDataValidationV2(caseType, hearingRoles).ValidateAsync(request);
+            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(caseType, hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
