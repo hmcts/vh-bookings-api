@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
 using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Domain.Configuration;
+using BookingsApi.Validations.Common;
+using FluentValidation;
 
 namespace BookingsApi
 {
@@ -39,6 +42,13 @@ namespace BookingsApi
 
             services.AddApplicationInsightsTelemetry();
 
+            services.AddValidatorsFromAssemblyContaining<RepresentativeValidation>(ServiceLifetime.Scoped, 
+                filter =>
+                {
+                    var valid = !filter.ValidatorType.GetInterfaces().ToList().Contains(typeof(IRefDataInputValidator));
+                    return valid;
+                });
+            
             services.AddSwagger();
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
