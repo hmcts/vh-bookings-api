@@ -73,7 +73,7 @@ namespace BookingsApi.DAL.Helper
                 do
                 {
                     sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-                } while (newEndpoints.Any(x => x.Sip.StartsWith(sip)));
+                } while (newEndpoints.Exists(x => x.Sip.StartsWith(sip)));
                 var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
                 var newEndpoint =  new NewEndpoint
                 {

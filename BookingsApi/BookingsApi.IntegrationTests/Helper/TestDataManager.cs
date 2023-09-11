@@ -22,7 +22,7 @@ namespace BookingsApi.IntegrationTests.Helper
         public List<string> JudiciaryPersons { get; } = new();
         private readonly List<Guid> _seededJusticeUserIds = new();
         private readonly List<long> _seededAllocationIds = new();
-        public string CaseNumber => "2222/3511";
+        public static string CaseNumber => "2222/3511";
         private readonly string _defaultCaseName;
 
         public void AddHearingForCleanup(Guid id)
@@ -313,11 +313,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            hearing.Participants
-                .Where(x => x.HearingRole.UserRole.IsRepresentative).Select(x => x.Id).ToList();
-
-            hearing = await new GetHearingByIdQueryHandler(db).Handle(
-                new GetHearingByIdQuery(videoHearing.Id));
+            
             _seededHearings.Add(hearing.Id);
             return hearing;
         }

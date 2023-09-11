@@ -1,5 +1,4 @@
 ﻿using BookingsApi.Controllers.V1;
-using BookingsApi.Domain;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
@@ -24,13 +23,6 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             LoggerMock = new Mock<ILogger<PersonsController>>();
             Controller = new PersonsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 EventPublisherMock.Object, LoggerMock.Object);
-        }
-        
-        protected VideoHearing TestData()
-        {
-            var builder = new VideoHearingBuilder();
-            var hearing = builder.Build();
-            return hearing;
         }
     }
 }
