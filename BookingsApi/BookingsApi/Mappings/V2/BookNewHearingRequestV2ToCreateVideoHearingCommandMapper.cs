@@ -20,15 +20,13 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         var linkedParticipants = MapLinkedParticipants(requestV2);
         var judiciaryParticipants = MapJudiciaryParticipants(requestV2);
 
-        return new CreateVideoHearingCommand(caseType, hearingType, requestV2.ScheduledDateTime,
-            requestV2.ScheduledDuration, venue, newParticipants, cases, requestV2.AudioRecordingRequired, newEndpoints,
-            linkedParticipants, requestV2.IsMultiDayHearing)
-        {
-            HearingRoomName = requestV2.HearingRoomName,
-            OtherInformation = requestV2.OtherInformation,
-            CreatedBy = requestV2.CreatedBy,
-            JudiciaryParticipants = judiciaryParticipants
-        };
+        return new CreateVideoHearingCommand(
+            new CreateVideoHearingRequiredDto(caseType, hearingType, requestV2.ScheduledDateTime,
+                requestV2.ScheduledDuration, venue, cases),
+            new CreateVideoHearingOptionalDto(newParticipants, requestV2.HearingRoomName, requestV2.OtherInformation,
+                requestV2.CreatedBy, requestV2.AudioRecordingRequired, newEndpoints, null, linkedParticipants,
+                judiciaryParticipants, requestV2.IsMultiDayHearing, null)
+        );
     }
 
     private static List<NewJudiciaryParticipant> MapJudiciaryParticipants(BookNewHearingRequestV2 requestV2)

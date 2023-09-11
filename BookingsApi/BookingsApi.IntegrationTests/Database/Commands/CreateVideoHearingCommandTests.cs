@@ -33,7 +33,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var hearingType = caseType.HearingTypes.First(x => x.Name == hearingTypeName);
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
-            var venue = new RefDataBuilder().HearingVenues.First();
+            var venue = new RefDataBuilder().HearingVenues[0];
 
             var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
             var applicantRepresentativeHearingRole =
@@ -96,15 +96,11 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                     LinkedParticipantType.Interpreter)
             };
 
-            var command =
-                new CreateVideoHearingCommand(caseType, hearingType, scheduledDate, duration, venue,
-                    participants, cases, audioRecordingRequired, endpoints,
-                    linkedParticipants, false)
-                {
-                    HearingRoomName = hearingRoomName,
-                    OtherInformation = otherInformation,
-                    CreatedBy = createdBy
-                };
+            var requiredDto = new CreateVideoHearingRequiredDto(caseType, hearingType, scheduledDate, duration, venue, cases);
+            var optionalDto = new CreateVideoHearingOptionalDto(participants, hearingRoomName, otherInformation,
+                createdBy, audioRecordingRequired, endpoints, null, linkedParticipants,
+                null, false, null);
+            var command = new CreateVideoHearingCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();
             _newHearingId = command.NewHearingId;

@@ -51,15 +51,11 @@ namespace BookingsApi.DAL.Helper
             var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
 
             var duration = 480;
-            var command = new CreateVideoHearingCommand(hearing.CaseType, hearing.HearingType, newDate,
-                duration, hearing.HearingVenue, participants, cases, hearing.AudioRecordingRequired, newEndpoints,
-                linkedParticipantDtos, false)
-            {
-                HearingRoomName = hearing.HearingRoomName,
-                OtherInformation = hearing.OtherInformation,
-                CreatedBy = hearing.CreatedBy,
-                SourceId = hearing.Id
-            };
+            var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
+                    hearing.CaseType, hearing.HearingType, newDate, duration, hearing.HearingVenue, cases),
+                new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,
+                    hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, null, linkedParticipantDtos,
+                    new List<NewJudiciaryParticipant>(), false, hearing.Id));
 
             return command;
         }
