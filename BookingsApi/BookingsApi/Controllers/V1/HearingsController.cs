@@ -92,7 +92,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
+        public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
         {
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
             var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
