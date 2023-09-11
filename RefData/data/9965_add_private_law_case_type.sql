@@ -4,9 +4,9 @@ BEGIN TRANSACTION;
 -- INSERT Family Jurisdiction if it does not exist and then grab the new ID
 BEGIN IF NOT EXISTS(SELECT * FROM dbo.Jurisdiction WHERE Name LIKE 'Family')
     BEGIN
-        SET IDENTITY_INSERT dbo.Jurisdiction ON
+        SET IDENTITY_INSERT Jurisdiction ON
         INSERT INTO dbo.Jurisdiction (Id, Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES (3, 'Family', 'Family', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-        SET IDENTITY_INSERT dbo.Jurisdiction OFF
+        SET IDENTITY_INSERT Jurisdiction OFF
     END
 END
 GO;

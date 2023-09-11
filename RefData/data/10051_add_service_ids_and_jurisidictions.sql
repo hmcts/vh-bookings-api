@@ -1,3 +1,4 @@
+USE VhBookings;
 SET XACT_ABORT ON
 GO
 
@@ -5,9 +6,10 @@ CREATE OR ALTER PROC #Jurisdiction_CreateIfNotExist @id int, @name varchar(max)
 AS
 BEGIN
     IF NOT EXISTS(SELECT TOP 1 1 FROM Jurisdiction WHERE Name = @name)
-        BEGIN
+        BEGIN 
             SET IDENTITY_INSERT Jurisdiction ON
-            INSERT INTO Jurisdiction (id, Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES (@id, @name, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            INSERT INTO Jurisdiction (id, Code, Name, IsLive, CreatedDate, UpdatedDate) 
+                VALUES (@id, @name, @name, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             SET IDENTITY_INSERT Jurisdiction OFF
         END
 END
