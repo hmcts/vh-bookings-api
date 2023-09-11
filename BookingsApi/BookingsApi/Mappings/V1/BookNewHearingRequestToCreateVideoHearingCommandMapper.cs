@@ -17,9 +17,9 @@ namespace BookingsApi.Mappings.V1
             var newEndpoints = MapEndpoints(request, randomGenerator, sipAddressStem);
             var linkedParticipants = MapLinkedParticipants(request);
 
-            return new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired, newEndpoints, linkedParticipants, request.IsMultiDayHearing)
+            return new CreateVideoHearingCommand(caseType, hearingType, request.ScheduledDateTime,
+                request.ScheduledDuration, venue, newParticipants, cases, request.AudioRecordingRequired, newEndpoints,
+                linkedParticipants, request.IsMultiDayHearing)
             {
                 HearingRoomName = request.HearingRoomName,
                 OtherInformation = request.OtherInformation,

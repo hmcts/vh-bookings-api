@@ -163,14 +163,5 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.TelephoneNumber.Should().Be(updateParticipantRequest.TelephoneNumber);
             model.LinkedParticipants.Count.Should().Be(participant == "Individual" ? 1 : 0);
         }
-
-        [Given(@"I have an update participant suitability answers with a valid user '(.*)'")]
-        public void GivenIHaveAnUpdateParticipantSuitabilityAnswersWithAValidUser(string role)
-        {
-            var participantId = _context.TestData.ParticipantsResponses.FirstOrDefault(x => x.UserRoleName.Equals(role)).Id;
-            var updateParticipantRequest = UpdateSuitabilityAnswersRequest.BuildRequest();
-            _context.TestData.Answers = updateParticipantRequest;
-            _context.Request = _context.Put(UpdateSuitabilityAnswers(_context.TestData.Hearing.Id, participantId), updateParticipantRequest);
-        }
     }
 }

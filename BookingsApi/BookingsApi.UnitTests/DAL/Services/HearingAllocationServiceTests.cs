@@ -1397,13 +1397,12 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearingRoomName = "Room03";
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                     new VideoHearing(_caseType, _hearingType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
-                        otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason))
+                        otherInformation, createdBy, audioRecordingRequired, cancelReason))
                 .Build();
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB

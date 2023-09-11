@@ -216,62 +216,6 @@ namespace BookingsApi.IntegrationTests.Steps
             CheckParticipantData(model);
         }
 
-        [Given(@"I have an update suitability answers request with a (.*) hearing id and (.*) participant id")]
-        [Given(@"I have an update suitability answers request with an (.*) hearing id and (.*) participant id")]
-        public async Task GivenIHaveAnUpdateSuitabilityAnswersRequest(Scenario hearingScenario, Scenario participantScenario)
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            Context.TestData.NewHearingId = seededHearing.Id;
-            Guid participantId;
-            Guid hearingId;
-
-            switch (hearingScenario)
-            {
-                case Scenario.Valid:
-                    {
-                        hearingId = Context.TestData.NewHearingId;
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    {
-                        hearingId = Guid.NewGuid();
-                        break;
-                    }
-                case Scenario.Invalid:
-                    {
-                        hearingId = Guid.Empty;
-                        break;
-                    }
-                default: throw new ArgumentOutOfRangeException(nameof(hearingScenario), hearingScenario, null);
-            }
-            switch (participantScenario)
-            {
-                case Scenario.Valid:
-                    {
-                        participantId = seededHearing.GetParticipants().First().Id;
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    {
-                        participantId = Guid.NewGuid();
-                        break;
-                    }
-                case Scenario.Invalid:
-                    {
-                        participantId = Guid.Empty;
-                        break;
-                    }
-                default: throw new ArgumentOutOfRangeException(nameof(participantScenario), participantScenario, null);
-            }
-
-            Context.Uri = UpdateSuitabilityAnswers(hearingId, participantId);
-            Context.HttpMethod = HttpMethod.Put;
-            var request = UpdateSuitabilityAnswersRequest();
-            var jsonBody = RequestHelper.Serialise(request);
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-        }
-
         private static void CheckParticipantData(IReadOnlyCollection<ParticipantResponse> model)
         {
             model.Should().NotBeNull();
@@ -383,14 +327,6 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 Participants = new List<ParticipantRequest> { newParticipant }
             };
-        }
-        private List<SuitabilityAnswersRequest> UpdateSuitabilityAnswersRequest()
-        {
-            var answers = new List<SuitabilityAnswersRequest>
-            {
-                new SuitabilityAnswersRequest {Key = "_Key", Answer = "_Answer", ExtendedAnswer = "_ExtendedAnswer"}
-            };
-            return answers;
         }
 
         [TearDown]

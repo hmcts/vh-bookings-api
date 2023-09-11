@@ -225,17 +225,17 @@ namespace BookingsApi.UnitTests.Domain.Participants
             _hearing1 = new VideoHearing(_caseType1,
                 hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
-                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
+                Faker.Name.First(), Faker.Name.First(), null, false, null);
 
             _hearing2 = new VideoHearing(_caseType1,
                 hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
-                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
+                Faker.Name.First(), Faker.Name.First(), null, false, null);
 
             _hearing3 = new VideoHearing(_caseType1,
                 hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
-                Faker.Name.First(), Faker.Name.First(), null, true, false, null);
+                Faker.Name.First(), Faker.Name.First(), null, false, null);
 
             _hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             _hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");

@@ -141,35 +141,6 @@ namespace BookingsApi.Controllers.V1
         }
 
         /// <summary>
-        /// Get a list of suitability answers for a given person
-        /// </summary>
-        /// <param name="username">The username of the person</param>
-        /// <returns>A list of suitability answers</returns>
-        [HttpGet("username/{username}/suitability-answers")]
-        [OpenApiOperation("GetPersonSuitabilityAnswers")]
-        [ProducesResponseType(typeof(List<PersonSuitabilityAnswerResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [Obsolete("This method is deprecated.")]
-        [ExcludeFromCodeCoverage]
-        [MapToApiVersion("1.0")]
-        public async Task<IActionResult> GetPersonSuitabilityAnswers(string username)
-        {
-            if (!username.IsValidEmail())
-            {
-                ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
-                return BadRequest(ModelState);
-            }
-
-            var query = new GetHearingsByUsernameQuery(username);
-            var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(query);
-
-            var personSuitabilityAnswers = hearings.Select(hearing => BuildResponse(hearing, username)).Where(s => s != null).ToList();
-
-            return Ok(personSuitabilityAnswers);
-        }
-
-        /// <summary>
         /// Get list of person from the old hearings
         /// </summary>
         /// <returns>list of usernames</returns>
@@ -332,30 +303,6 @@ namespace BookingsApi.Controllers.V1
             }
      
             return Accepted();
-        }
-        
-        private static PersonSuitabilityAnswerResponse BuildResponse(Hearing hearing, string username)
-        {
-            PersonSuitabilityAnswerResponse personSuitabilityAnswer = null;
-            if (hearing.Participants != null) {
-                var participant = hearing.Participants.FirstOrDefault(p => p.Person.Username.ToLower() == username.Trim().ToLower());
-                if (participant != null)
-                {
-                    var answers = participant.Questionnaire != null ? participant.Questionnaire.SuitabilityAnswers : new List<SuitabilityAnswer>();
-                    var suitabilityAnswerToResponseMapper = new SuitabilityAnswerToResponseMapper();
-                    personSuitabilityAnswer = new PersonSuitabilityAnswerResponse
-                    {
-                        HearingId = hearing.Id,
-                        ParticipantId = participant.Id,
-                        UpdatedAt = participant.Questionnaire?.UpdatedDate ?? DateTime.MinValue,
-                        ScheduledAt = hearing.ScheduledDateTime,
-                        Answers = suitabilityAnswerToResponseMapper.MapToResponses(answers),
-                        QuestionnaireNotRequired = hearing.QuestionnaireNotRequired
-                    };
-                }
-            }
-
-            return personSuitabilityAnswer;
         }
 
         /// <summary>

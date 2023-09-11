@@ -92,34 +92,6 @@ namespace BookingsApi.AcceptanceTests.Steps
             actual.Username.Should().Be(expected.Username);
         }
 
-        [Then(@"suitability answers for '(.*)' should be updated")]
-        public void ThenSuitabilityAnswersForShouldBeUpdated(string participant)
-        {
-            var username = _context.TestData.ParticipantsResponses
-                .FirstOrDefault(x => x.UserRoleName.Equals(participant)).Username;
-            var participantId = _context.TestData.ParticipantsResponses
-                .FirstOrDefault(x => x.UserRoleName.Equals(participant)).Id;
-            _context.Request = _context.Get(GetPersonSuitabilityAnswers(username));
-            _context.Response = _context.Client().Execute(_context.Request);
-            _context.Response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var model =
-                RequestHelper.Deserialise<List<PersonSuitabilityAnswerResponse>>(
-                    _context.Response.Content);
-            var expectedResult = _context.TestData.Answers;
-
-            expectedResult[0].Key.Should().Be(model[0].Answers[0].Key);
-            expectedResult[0].Answer.Should().Be(model[0].Answers[0].Answer);
-            expectedResult[0].ExtendedAnswer.Should().Be(model[0].Answers[0].ExtendedAnswer);
-            expectedResult[1].Key.Should().Be(model[0].Answers[1].Key);
-            expectedResult[1].Answer.Should().Be(model[0].Answers[1].Answer);
-            expectedResult[1].ExtendedAnswer.Should().Be(model[0].Answers[1].ExtendedAnswer);
-
-            model[0].HearingId.Should().Be(_context.TestData.Hearing.Id);
-            model[0].ParticipantId.Should().Be(participantId);
-            model[0].UpdatedAt.Should().BeAfter(DateTime.UtcNow.AddMinutes(-2));
-            model[0].QuestionnaireNotRequired.Should().BeFalse();
-        }
-
         [Then(@"a list of hearings for deletion is (.*)")]
         public void ThenAListOfHearingsForDeletionIs(int expectedNumOfHearings)
         {

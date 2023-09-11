@@ -93,22 +93,6 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpContent = new StringContent(searchTerm, Encoding.UTF8, "application/json");
         }
 
-        [Given(@"I have a get person suitability answers by username request with an (.*) username")]
-        public async Task GivenIHaveAGetPersonSuitabilityAnswersByUsernameRequest(Scenario scenario)
-        {
-            await SetUserNameForGivenScenario(scenario, true, true);
-            Context.Uri = GetPersonSuitabilityAnswers(_username);
-            Context.HttpMethod = HttpMethod.Get;
-        }
-
-        [Given(@"I have a get person without suitability answers by username request with an (.*) username")]
-        public async Task GivenIHaveAGetPersonWithoutSuitabilityAnswersByUsernameRequest(Scenario scenario)
-        {
-            await SetUserNameForGivenScenario(scenario);
-            Context.Uri = GetPersonSuitabilityAnswers(_username);
-            Context.HttpMethod = HttpMethod.Get;
-        }
-
         [Given(@"I have a request to get the usernames for old hearings")]
         public void GivenIHaveARequestToGetTheUsernamesForOldHearings()
         {
@@ -262,35 +246,7 @@ namespace BookingsApi.IntegrationTests.Steps
             model.Usernames.Count.Should().Be(4); // Individual, Representative & JOH participants
         }
 
-
-        [Then(@"suitability answers retrieved should '(.*)'")]
-        public async Task ThenPersonsSuitabilityAnswersShouldBeRetrieved(string scenario)
-        {
-            var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<List<PersonSuitabilityAnswerResponse>>(json);
-
-            model[0].Should().NotBeNull();
-            model[0].HearingId.Should().NotBeEmpty();
-            model[0].HearingId.Should().Be(Context.TestData.NewHearingId);
-            model[0].ParticipantId.Should().NotBeEmpty();
-            model[0].ParticipantId.Should().Be(Context.TestData.Participant.Id);
-            model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].QuestionnaireNotRequired.Should().Be(false);
-
-            if(scenario == "be empty")
-            {
-                model[0].Answers.Count.Should().Be(0);
-                model[0].UpdatedAt.Should().Be(DateTime.MinValue);
-            }
-            else
-            {
-                model[0].Answers.Should().NotBeNull();
-                model[0].Answers.Count.Should().Be(2);
-                model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
-            }
-            
-        }
-
+        
         private async Task SetUserNameForGivenScenario(Scenario scenario, bool hasSuitability = false, bool addSuitabilityAnswer = false)
         {
             switch (scenario)

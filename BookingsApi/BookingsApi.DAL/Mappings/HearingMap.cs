@@ -22,7 +22,7 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.Status).HasColumnName("HearingStatusId");
-            builder.Property(x => x.QuestionnaireNotRequired);
+            builder.Property<bool>("QuestionnaireNotRequired").HasDefaultValue(false);
             builder.Property(x => x.CancelReason).HasMaxLength(255);
             builder.Property(x => x.SourceId);
             builder.Ignore(x => x.IsFirstDayOfMultiDayHearing);

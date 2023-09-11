@@ -51,7 +51,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 mockedHearing.OtherInformation,
                 "admin@hmcts.net",
                 updatedCases,
-                false,
                 audioRecordingRequired
             );
             mockedHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;

@@ -82,11 +82,5 @@
         <DesignTime>true</DesignTime>
         <Visible>true</Visible>
       </Compile>
-      <Compile Update="Features\V1\SuitabilityAnswer.feature.cs">
-        <DependentUpon>SuitabilityAnswer.feature</DependentUpon>
-        <AutoGen>true</AutoGen>
-        <DesignTime>true</DesignTime>
-        <Visible>true</Visible>
-      </Compile>
     </ItemGroup>
 </Project>

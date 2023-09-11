@@ -36,8 +36,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             updatedHearing.SetProtected(nameof(updatedHearing.Id), videoHearing.Id);
             updatedHearing.UpdateHearingDetails(newVenue,
                 request.ScheduledDateTime, request.ScheduledDuration, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, new List<Case>(), request.QuestionnaireNotRequired.Value,
-                request.AudioRecordingRequired.Value);
+                request.UpdatedBy, new List<Case>(), request.AudioRecordingRequired.Value);
             updatedHearing.UpdateStatus(BookingStatus.Created, "initial", null);
 
             QueryHandlerMock

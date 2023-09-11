@@ -100,13 +100,6 @@ namespace Testing.Common.Builders.Api
             public static string UpdatePersonDetails(Guid personId) => $"{ApiRoot}/{personId}";
             public static string UpdatePersonUsername(string contactEmail, string username) => $"{ApiRoot}/user/{contactEmail}?username={username}";
         }
-
-        public static class SuitabilityAnswerEndpoints
-        {
-            private const string ApiRoot = "suitability-answers";
-            public static string GetSuitabilityAnswers(string cursor) => $"{ApiRoot}/{cursor}";
-            public static string GetSuitabilityAnswerWithLimit(string cursor = "", int limit = 100) => $"{ApiRoot}/?cursor={cursor}&limit={limit}";
-        }
             
         public static class JVEndPointEndpoints
         {

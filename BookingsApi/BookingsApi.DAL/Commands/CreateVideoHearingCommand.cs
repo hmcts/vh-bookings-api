@@ -8,8 +8,8 @@ namespace BookingsApi.DAL.Commands
     {
         public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases,
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints,
-            List<LinkedParticipantDto> linkedParticipants, bool isMultiDayFirstHearing)
+            bool audioRecordingRequired, List<NewEndpoint> endpoints, List<LinkedParticipantDto> linkedParticipants,
+            bool isMultiDayFirstHearing)
         {
             CaseType = caseType;
             HearingType = hearingType;
@@ -18,7 +18,6 @@ namespace BookingsApi.DAL.Commands
             Venue = venue;
             Participants = participants;
             Cases = cases;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
             Endpoints = endpoints;
             LinkedParticipants = linkedParticipants;
@@ -36,7 +35,6 @@ namespace BookingsApi.DAL.Commands
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public string CreatedBy { get; set; }
-        public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
         public List<NewEndpoint> Endpoints { get; }
         public string CancelReason { get; set; }
@@ -61,8 +59,7 @@ namespace BookingsApi.DAL.Commands
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired,
-                command.AudioRecordingRequired, command.CancelReason);
+                command.OtherInformation, command.CreatedBy, command.AudioRecordingRequired, command.CancelReason);
 
             // Ideally, the domain object would implement the clone method and so this change is a work around.
             videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;

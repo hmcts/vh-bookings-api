@@ -41,7 +41,6 @@ namespace BookingsApi.Mappings.V1
                 ConfirmedBy = videoHearing.ConfirmedBy,
                 ConfirmedDate = videoHearing.ConfirmedDate,
                 Status = videoHearing.Status.MapToContractEnum(),
-                QuestionnaireNotRequired = videoHearing.QuestionnaireNotRequired,
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,

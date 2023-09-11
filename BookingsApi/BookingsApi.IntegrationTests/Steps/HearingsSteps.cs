@@ -427,23 +427,6 @@ namespace BookingsApi.IntegrationTests.Steps
             json.Should().BeEquivalentTo("[]");
         }
 
-        [Then(@"hearing suitability answers should be retrieved")]
-        public async Task ThenHearingSuitabilityAnswersShouldBeRetrieved()
-        {
-            var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<List<HearingSuitabilityAnswerResponse>>(json);
-            model[0].Should().NotBeNull();
-            model[0].ParticipantId.Should().NotBeEmpty();
-            model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
-            model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
-            model[0].Answers.Should().NotBeNull();
-            var firstAnswer = model[0].Answers.First();
-            firstAnswer.Key.Should().NotBeEmpty();
-            firstAnswer.Answer.Should().NotBeEmpty();
-            firstAnswer.ExtendedAnswer.Should().NotBeEmpty();
-        }
-
         [Then(@"the service bus should have been queued with a new bookings message")]
         public async Task ThenTheServiceBusShouldHaveBeenQueuedWithAMessage()
         {

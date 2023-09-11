@@ -31,8 +31,7 @@ namespace BookingsApi.Domain
 
         protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
             int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool questionnaireNotRequired, 
-            bool audioRecordingRequired, string cancelReason)
+            string otherInformation, string createdBy, bool audioRecordingRequired, string cancelReason)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -47,7 +46,6 @@ namespace BookingsApi.Domain
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
             CreatedBy = createdBy;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
             CancelReason = cancelReason;
         }
@@ -75,9 +73,6 @@ namespace BookingsApi.Domain
         public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
-        
-        [Obsolete("This property is no longer used and will be removed in a future release.")]
-        public bool QuestionnaireNotRequired { get; set; }
         public bool AudioRecordingRequired { get; set; }
         public string CancelReason { get; set; }
         public Guid? SourceId { get; set; }
@@ -414,7 +409,7 @@ namespace BookingsApi.Domain
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
-            List<Case> cases, bool questionnaireNotRequired, bool audioRecordingRequired)
+            List<Case> cases, bool audioRecordingRequired)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -451,7 +446,6 @@ namespace BookingsApi.Domain
             OtherInformation = otherInformation;
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
-            QuestionnaireNotRequired = questionnaireNotRequired;
             AudioRecordingRequired = audioRecordingRequired;
         }
 
