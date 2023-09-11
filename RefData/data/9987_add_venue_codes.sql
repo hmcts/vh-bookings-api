@@ -7,10 +7,7 @@ As
 BEGIN
     IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = @venueName)
         BEGIN
-            SET IDENTITY_INSERT dbo.HearingVenue ON
             Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, @id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
-    
-            SET IDENTITY_INSERT dbo.HearingVenue OFF
         END
 END
 GO;
