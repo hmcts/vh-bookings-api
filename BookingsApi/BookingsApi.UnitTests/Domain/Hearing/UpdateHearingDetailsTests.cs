@@ -32,8 +32,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
             var updatedCases = hearing.GetCases();
-            updatedCases.First().Name.Should().Be(caseName);
-            updatedCases.First().Number.Should().Be(caseNumber);
+            updatedCases[0].Name.Should().Be(caseName);
+            updatedCases[0].Number.Should().Be(caseNumber);
         }
 
         [Test]

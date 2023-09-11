@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Mappings;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.DAL.Queries;
@@ -26,7 +25,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 ScheduledDateTime = DateTime.Today.AddDays(2),
                 HearingRoomName = "Updated room name",
                 HearingVenueName = "Updated venue name",
-                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,
                 Cases = null
             };
