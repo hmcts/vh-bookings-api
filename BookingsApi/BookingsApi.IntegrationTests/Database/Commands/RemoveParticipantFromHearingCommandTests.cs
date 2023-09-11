@@ -54,7 +54,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var beforeCount = seededHearing.GetParticipants().Count;
-            var participant = seededHearing.GetParticipants().First();
+            var participant = seededHearing.GetParticipants()[0];
             _personsToRemove.Add(participant.Person.ContactEmail);
             await _commandHandler.Handle(new RemoveParticipantFromHearingCommand(seededHearing.Id, participant));
 
@@ -87,7 +87,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_Remove_ParticipantLink_When_Participant_Is_Removed()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked, 0, false, true);
+            var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Booked, 0, false, true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var participantWithALink = seededHearing.Participants.First(x => x.LinkedParticipants.Any());

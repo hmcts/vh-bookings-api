@@ -17,11 +17,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_case_number()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
-            var caseData = seededHearing1.HearingCases.First();
+            var caseData = seededHearing1.HearingCases[0];
             TestContext.WriteLine($"New seeded video caseNumber: { caseData.Case.Number }");
 
             var hearing = await _handler.Handle(new GetHearingsBySearchQuery(caseData.Case.Number));
@@ -37,11 +37,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_partial_case_number()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
-            var caseData = seededHearing1.HearingCases.First();
+            var caseData = seededHearing1.HearingCases[0];
             TestContext.WriteLine($"New seeded video caseNumber: { caseData.Case.Number }");
 
             var caseNumber = caseData.Case.Number.Substring(0, 3);
@@ -59,11 +59,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_case_number_and_date()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
-            var caseData = seededHearing1.HearingCases.First();
+            var caseData = seededHearing1.HearingCases[0];
             TestContext.WriteLine($"New seeded video caseNumber: { caseData.Case.Number }");
 
             var caseNumber = caseData.Case.Number.Substring(0, 3);
@@ -81,11 +81,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_get_hearing_details_by_date()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
-            var caseData = seededHearing1.HearingCases.First();
+            var caseData = seededHearing1.HearingCases[0];
             TestContext.WriteLine($"New seeded video caseNumber: { caseData.Case.Number }");
             var hearings = await _handler.Handle(new GetHearingsBySearchQuery(null, seededHearing1.ScheduledDateTime));
 
@@ -101,11 +101,11 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_not_get_hearing_details_by_case_number_and_wrong_date()
         {
-            var seededHearing1 = await Hooks.SeedVideoHearing(addSuitabilityAnswer: false, status: BookingStatus.Created);
+            var seededHearing1 = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
 
             TestContext.WriteLine($"New seeded video hearing id: { seededHearing1.Id }");
 
-            var caseData = seededHearing1.HearingCases.First();
+            var caseData = seededHearing1.HearingCases[0];
             TestContext.WriteLine($"New seeded video caseNumber: { caseData.Case.Number }");
 
             var caseNumber = caseData.Case.Number.Substring(0, 3);
@@ -113,7 +113,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var hearings = await _handler.Handle(new GetHearingsBySearchQuery(caseNumber, date));
 
             hearings.Should().NotBeNull();
-            hearings.Any(x => x.Id == seededHearing1.Id).Should().BeFalse();
+            hearings.Exists(x => x.Id == seededHearing1.Id).Should().BeFalse();
         }
     }
 }

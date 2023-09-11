@@ -83,7 +83,7 @@ public class UpdateHearingTests : ApiTest
         var hearing = await Hooks.SeedVideoHearing(options =>
         {
             options.Case = new Case("Case1 Num", "Case1 Name");
-        }, false, BookingStatus.Created);
+        }, BookingStatus.Created);
         var hearingId = hearing.Id;
         var request = BuildRequest();
 
@@ -131,7 +131,7 @@ public class UpdateHearingTests : ApiTest
     public async Task should_update_hearing_and_not_publish_when_hearing_status_is_not_created()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked);
+        var hearing = await Hooks.SeedVideoHearing(status: BookingStatus.Booked);
         var hearingId = hearing.Id;
         var request = BuildRequest();
 

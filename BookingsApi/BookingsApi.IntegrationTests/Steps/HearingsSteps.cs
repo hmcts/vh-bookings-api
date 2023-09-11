@@ -198,7 +198,7 @@ namespace BookingsApi.IntegrationTests.Steps
             _hearingId = seededHearing.Id;
             var username = scenario switch
             {
-                Scenario.Valid => seededHearing.GetParticipants().First().Person.Username,
+                Scenario.Valid => seededHearing.GetParticipants()[0].Person.Username,
                 Scenario.Nonexistent => "madeupusername@hmcts.net",
                 _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null)
             };
@@ -369,8 +369,8 @@ namespace BookingsApi.IntegrationTests.Steps
 
             var updatedCases = model.Cases;
             var caseRequest = Context.TestData.UpdateHearingRequest.Cases.FirstOrDefault();
-            updatedCases.First().Name.Should().Be(caseRequest?.Name);
-            updatedCases.First().Number.Should().Be(caseRequest?.Number);
+            updatedCases[0].Name.Should().Be(caseRequest?.Name);
+            updatedCases[0].Number.Should().Be(caseRequest?.Number);
         }
 
         [Then(@"the hearing should be removed")]
@@ -388,7 +388,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var model = RequestHelper.Deserialise<BookingsResponse>(json);
             model.Hearings.Count.Should().BeGreaterThan(0);
 
-            var aHearing = model.Hearings.First().Hearings.First();
+            var aHearing = model.Hearings[0].Hearings[0];
             aHearing.HearingNumber.Should().NotBeNullOrEmpty();
             aHearing.HearingName.Should().NotBeNullOrEmpty();
         }
@@ -680,7 +680,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
+                        var seededHearing = await Context.TestDataManager.SeedVideoHearing();
                         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         _hearingId = seededHearing.Id;
                         Context.TestData.NewHearingId = seededHearing.Id;

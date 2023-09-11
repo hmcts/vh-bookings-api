@@ -6,6 +6,7 @@ using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.Domain
 {
+    [Obsolete("This class is no longer used.")]
     public class Questionnaire : Entity<long>
     {
         public Questionnaire()

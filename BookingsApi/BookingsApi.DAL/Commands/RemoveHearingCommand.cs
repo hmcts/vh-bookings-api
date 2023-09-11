@@ -24,8 +24,7 @@ namespace BookingsApi.DAL.Commands
             var hearingsIncCloned = await _context.VideoHearings
                 .Include(x => x.HearingCases).ThenInclude(x => x.Case)
                 .Include(x => x.Participants).ThenInclude(x => x.Person).ThenInclude(x => x.Organisation)
-                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)//.ThenInclude(x => x.Participant)
-                .Include(x => x.Participants).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.SuitabilityAnswers)
+                .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
                 .Include(x=> x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 .Where(x => x.Id == command.HearingId || x.SourceId == command.HearingId).ToListAsync();

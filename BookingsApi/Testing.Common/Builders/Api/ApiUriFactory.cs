@@ -83,7 +83,6 @@ namespace Testing.Common.Builders.Api
             public static string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
             public static string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
             public static string UpdateParticipantDetails(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
-            public static string UpdateSuitabilityAnswers(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}/suitability-answers";
         }
 
         public static class PersonEndpoints
@@ -92,7 +91,6 @@ namespace Testing.Common.Builders.Api
             public static string GetPersonByUsername(string username) => $"{ApiRoot}/username/{username}";
             public static string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
             public static string PostPersonBySearchTerm => $"{ApiRoot}";
-            public static string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
             public static string GetPersonByClosedHearings() => $"{ApiRoot}/userswithclosedhearings";
             public static string GetHearingsByUsernameForDeletion(string username) => $"{ApiRoot}/username/hearings?username={username}";
             public static string AnonymisePerson(string username) => $"{ApiRoot}/username/{username}/anonymise";

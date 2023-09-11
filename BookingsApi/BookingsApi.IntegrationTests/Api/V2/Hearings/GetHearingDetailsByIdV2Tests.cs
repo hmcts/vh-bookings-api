@@ -49,7 +49,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
         var hearing = await Hooks.SeedVideoHearing(configureOptions: options =>
         {
             options.AddJudiciaryPanelMember = true;
-        }, false, BookingStatus.Booked, 1, false);
+        }, BookingStatus.Booked, 1, false);
         var hearingId = hearing.Id;
 
         // act

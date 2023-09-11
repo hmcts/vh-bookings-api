@@ -22,9 +22,7 @@ namespace BookingsApi.IntegrationTests.Helper
         public List<string> JudiciaryPersons { get; } = new();
         private readonly List<Guid> _seededJusticeUserIds = new();
         private readonly List<long> _seededAllocationIds = new();
-        public string CaseNumber { get; } = "2222/3511";
-        private Guid _individualId;
-        private List<Guid> _participantRepresentativeIds;
+        public string CaseNumber => "2222/3511";
         private readonly string _defaultCaseName;
 
         public void AddHearingForCleanup(Guid id)
@@ -158,7 +156,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
+            BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
             bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
@@ -315,14 +313,8 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            _individualId = hearing.Participants.First(x => x.HearingRole.UserRole.IsIndividual).Id;
-            _participantRepresentativeIds = hearing.Participants
+            hearing.Participants
                 .Where(x => x.HearingRole.UserRole.IsRepresentative).Select(x => x.Id).ToList();
-
-            if (addSuitabilityAnswer)
-            {
-                await AddQuestionnaire();
-            }
 
             hearing = await new GetHearingByIdQueryHandler(db).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
@@ -425,42 +417,6 @@ namespace BookingsApi.IntegrationTests.Helper
                     retuendHearing.UpdateStatus(status, "test", "test");
                     dbContext.SaveChanges();
                 }
-            }
-        }
-
-        private async Task AddQuestionnaire()
-        {
-            await using var db = new BookingsDbContext(_dbContextOptions);
-            AddIndividualQuestionnaire(db);
-            AddRepresentativeQuestionnaire(db);
-
-            await db.SaveChangesAsync();
-        }
-
-        private void AddIndividualQuestionnaire(BookingsDbContext db)
-        {
-            var participant = db.Participants
-                .Include(x => x.Questionnaire).First(x => x.Id == _individualId);
-            participant.Questionnaire = new Questionnaire {Participant = participant, ParticipantId = _individualId};
-            participant.Questionnaire.AddSuitabilityAnswer("INTERPRETER", "No", "");
-            participant.Questionnaire.AddSuitabilityAnswer("ROOM", "Yes", "");
-            participant.UpdatedDate = DateTime.UtcNow;
-            db.Participants.Update(participant);
-        }
-
-        private void AddRepresentativeQuestionnaire(BookingsDbContext db)
-        {
-            foreach (var item in _participantRepresentativeIds)
-            {
-                var participantRepresentative = db.Participants
-                    .Include(x => x.Questionnaire).First(x => x.Id == item);
-                participantRepresentative.Questionnaire = new Questionnaire
-                    {Participant = participantRepresentative, ParticipantId = item};
-
-                participantRepresentative.Questionnaire.AddSuitabilityAnswer("ABOUT_YOUR_CLIENT", "No", "");
-                participantRepresentative.Questionnaire.AddSuitabilityAnswer("ROOM", "No", "Comments");
-                participantRepresentative.UpdatedDate = DateTime.UtcNow;
-                db.Participants.Update(participantRepresentative);
             }
         }
 
@@ -633,8 +589,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task<VideoHearing> SeedPastVideoHearing(DateTime pastScheduledDate,
-            Action<SeedVideoHearingOptions> configureOptions,
-            bool addSuitabilityAnswer = false, BookingStatus status = BookingStatus.Booked,
+            Action<SeedVideoHearingOptions> configureOptions, BookingStatus status = BookingStatus.Booked,
             bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
@@ -711,17 +666,9 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            _individualId = hearing.Participants.First(x =>
-                x.HearingRole.Name.ToLower().IndexOf("judge", StringComparison.Ordinal) < 0 &&
-                x.HearingRole.Name.ToLower().IndexOf("representative", StringComparison.Ordinal) < 0).Id;
-            _participantRepresentativeIds = hearing.Participants
+            hearing.Participants
                 .Where(x => x.HearingRole.Name.ToLower().Contains("representative", StringComparison.Ordinal))
                 .Select(x => x.Id).ToList();
-
-            if (addSuitabilityAnswer)
-            {
-                await AddQuestionnaire();
-            }
 
             hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
@@ -784,8 +731,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            _individualId = hearing.Participants.First(x => x.HearingRole.UserRole.IsIndividual).Id;
-            _participantRepresentativeIds = hearing.Participants
+            hearing.Participants
                 .Where(x => x.HearingRole.UserRole.IsRepresentative).Select(x => x.Id).ToList();
 
             hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(

@@ -44,7 +44,7 @@ namespace BookingsApi.IntegrationTests.Steps
                         }
                         else
                         {
-                            _username = seededHearing.GetParticipants().First().Person.ContactEmail;
+                            _username = seededHearing.GetParticipants()[0].Person.ContactEmail;
                         }
                         break;
                     }
@@ -67,7 +67,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            var email = seededHearing.GetParticipants().First().Person.ContactEmail;
+            var email = seededHearing.GetParticipants()[0].Person.ContactEmail;
             var searchTerm = RequestHelper.Serialise(
                 new SearchTermRequest(email.Substring(0, 3))
                 );
@@ -84,7 +84,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            var email = seededHearing.GetParticipants().First().Person.ContactEmail;
+            var email = seededHearing.GetParticipants()[0].Person.ContactEmail;
             var searchTerm = RequestHelper.Serialise(
                 new SearchTermRequest(email.Substring(0, 3).ToUpperInvariant())
                 );
@@ -153,7 +153,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveAMalformedUpdatePersonDetailsRequest()
         {
             var hearing = Context.TestData.SeededHearing;
-            var person = hearing.GetPersons().First();
+            var person = hearing.GetPersons()[0];
             var request = new UpdatePersonDetailsRequest
             {
                 Username = String.Empty,
@@ -169,7 +169,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveAValidUpdatePersonDetailsRequest()
         {
             var hearing = Context.TestData.SeededHearing;
-            var person = hearing.GetPersons().First();
+            var person = hearing.GetPersons()[0];
             var request = new UpdatePersonDetailsRequest
             {
                 Username = "new.me@hmcts.net",
@@ -247,24 +247,18 @@ namespace BookingsApi.IntegrationTests.Steps
         }
 
         
-        private async Task SetUserNameForGivenScenario(Scenario scenario, bool hasSuitability = false, bool addSuitabilityAnswer = false)
+        private async Task SetUserNameForGivenScenario(Scenario scenario)
         {
             switch (scenario)
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: addSuitabilityAnswer);
+                        var seededHearing = await Context.TestDataManager.SeedVideoHearing();
                         Context.TestData.NewHearingId = seededHearing.Id;
                         NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         var participants = seededHearing.GetParticipants();
-                        if(hasSuitability)
-                        {
-                            _username = participants.First(p => p.Questionnaire != null && p.Questionnaire.SuitabilityAnswers.Any()).Person.Username;
-                        }
-                        else
-                        {
-                            _username = participants.First().Person.Username;
-                        }
+                       _username = participants[0].Person.Username;
+                       
                         Context.TestData.Participant = participants.First(p => p.Person.Username.Equals(_username));
                         break;
                     }
@@ -291,7 +285,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 var result = response[0];
                 var hearing = Context.TestData.SeededHearing;
-                var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases().First();
+                var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases()[0];
                 result.HearingId.Should().Be(hearing.Id);
                 result.Venue.Should().Be(hearing.HearingVenueName);
                 result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);

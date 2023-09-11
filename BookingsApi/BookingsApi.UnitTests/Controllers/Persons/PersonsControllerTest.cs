@@ -1,7 +1,5 @@
-﻿using BookingsApi.Controllers;
-using BookingsApi.Controllers.V1;
+﻿using BookingsApi.Controllers.V1;
 using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
@@ -28,31 +26,10 @@ namespace BookingsApi.UnitTests.Controllers.Persons
                 EventPublisherMock.Object, LoggerMock.Object);
         }
         
-        protected VideoHearing TestData(bool addSuitability = true)
+        protected VideoHearing TestData()
         {
             var builder = new VideoHearingBuilder();
             var hearing = builder.Build();
-            if (addSuitability)
-            {
-                var participant = hearing.Participants.FirstOrDefault(p => p is Individual);
-                if (participant != null)
-                {
-                    var answer = new SuitabilityAnswer("AboutYou", "Yes", "")
-                    {
-                        UpdatedDate = DateTime.Now.AddDays(-2)
-                    };
-
-                    participant.Questionnaire = new Questionnaire
-                    {
-                        Participant = participant,
-                        ParticipantId = participant.Id
-                    };
-
-                    participant.Questionnaire.SuitabilityAnswers.Add(answer);
-                    participant.Questionnaire.UpdatedDate = DateTime.Now.AddDays(-2);
-                }
-
-            }
             return hearing;
         }
     }

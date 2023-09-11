@@ -9,8 +9,8 @@ public class AddParticipantsToHearingV2Tests : ApiTest
     public async Task should_add_participant_to_hearing_and_return_200()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options => { options.Case = new Case("Case1 Num", "Case1 Name"); }
-            ,false, BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearing(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
         
         var request = BuildRequestObject();
 
@@ -27,8 +27,8 @@ public class AddParticipantsToHearingV2Tests : ApiTest
     public async Task should_add_participant_to_hearing_without_case_role_and_return_200()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options => { options.Case = new Case("Case1 Num", "Case1 Name"); }
-            ,false, BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearing(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
         
         var request = BuildRequestObject();
         request.Participants.ForEach(x =>
