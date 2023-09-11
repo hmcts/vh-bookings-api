@@ -662,12 +662,6 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
-            hearing.Participants
-                .Where(x => x.HearingRole.Name.ToLower().Contains("representative", StringComparison.Ordinal))
-                .Select(x => x.Id).ToList();
-
-            hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
-                new GetHearingByIdQuery(videoHearing.Id));
             _seededHearings.Add(hearing.Id);
             return hearing;
         }
@@ -726,11 +720,6 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             var hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
-                new GetHearingByIdQuery(videoHearing.Id));
-            hearing.Participants
-                .Where(x => x.HearingRole.UserRole.IsRepresentative).Select(x => x.Id).ToList();
-
-            hearing = await new GetHearingByIdQueryHandler(new BookingsDbContext(_dbContextOptions)).Handle(
                 new GetHearingByIdQuery(videoHearing.Id));
             _seededHearings.Add(hearing.Id);
             return hearing;
