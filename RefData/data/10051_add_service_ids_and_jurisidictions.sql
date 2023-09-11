@@ -6,9 +6,9 @@ AS
 BEGIN
     IF NOT EXISTS(SELECT TOP 1 1 FROM Jurisdiction WHERE Name = @name)
         BEGIN
-            SET IDENTITY_INSERT dbo.HearingType ON
+            SET IDENTITY_INSERT Jurisdiction ON
             INSERT INTO Jurisdiction (Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES (@name, @name, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            SET IDENTITY_INSERT dbo.HearingType OFF
+            SET IDENTITY_INSERT Jurisdiction OFF
         END
 END
 GO

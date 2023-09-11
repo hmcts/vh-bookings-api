@@ -9,9 +9,9 @@ BEGIN
     IF NOT EXISTS(SELECT * FROM VhBookings.dbo.HearingRole WHERE Name = @hearingRoleName AND UserRoleId = @userRoleId AND CaseRoleId IS NULL)
         BEGIN
             Print ('Adding new role ' + @hearingRoleName);
-            SET IDENTITY_INSERT dbo.HearingType ON
+            SET IDENTITY_INSERT VhBookings.dbo.HearingRole ON
             INSERT INTO VhBookings.dbo.HearingRole (Id, Name, UserRoleId, CaseRoleId, Live, CreatedDate, UpdatedDate) VALUES (@id, @hearingRoleName, @userRoleId, NULL, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-            SET IDENTITY_INSERT dbo.HearingType OFF
+            SET IDENTITY_INSERT VhBookings.dbo.HearingRole OFF
             Print ('NEW ID IS ' + CAST(@id AS VARCHAR));
         END
 END
