@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +14,9 @@ using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Validations.Common;
 using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace BookingsApi
 {
@@ -67,6 +69,7 @@ namespace BookingsApi
 
             RegisterAuth(services);
 
+            services.AddVhHealthChecks(Configuration);
             services.AddMvc(options =>
             {
                 // globally add a [ProducesResponseType] to all endpoints for a consistent swagger doc and API client.
@@ -157,8 +160,32 @@ namespace BookingsApi
 
             app.UseMiddleware<RequestBodyLoggingMiddleware>();
             app.UseMiddleware<ExceptionMiddleware>();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
 
-            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
+
+                endpoints.MapHealthChecks("/healthz", new HealthCheckOptions()
+                {
+                    ResponseWriter = async (context, report) =>
+                    {
+                        var result = JsonConvert.SerializeObject(
+                            new
+                            {
+                                status = report.Status.ToString(),
+                                details = report.Entries.Select(e => new
+                                {
+                                    key = e.Key, 
+                                    value = Enum.GetName(typeof(HealthStatus), e.Value.Status),
+                                    error = e.Value.Exception?.Message
+                                })
+                            });
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(result);
+                    }
+                });
+            });
         }
     }
 }

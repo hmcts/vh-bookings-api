@@ -1,5 +1,7 @@
 ﻿using BookingsApi.Common.Security;
+using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +10,7 @@ using NSwag;
 using NSwag.Generation.Processors.Security;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 using ZymLabs.NSwag.FluentValidation;
@@ -158,5 +161,19 @@ namespace BookingsApi
 
             return serviceCollection;
         }
+        
+        public static IServiceCollection AddVhHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            var serviceBusSettings = new ServiceBusSettings();
+            configuration.GetSection("ServiceBusQueue").Bind(serviceBusSettings);
+            services.AddHealthChecks()
+                .AddDbContextCheck<BookingsDbContext>("Database VhBookings")
+                .AddAzureServiceBusQueue(serviceBusSettings!.ConnectionString, serviceBusSettings.QueueName,
+                    name: "Booking Service Bus Queue");
+            
+            return services;
+        }
+        
+        
     }
 }
