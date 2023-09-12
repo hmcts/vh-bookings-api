@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace BookingsApi.Validations.V2;
 
-public class UpdateHearingParticipantsRequestDataValidationV2 : AbstractValidator<UpdateHearingParticipantsRequestV2>
+public class UpdateHearingParticipantsRequestRefDataValidationV2 : RefDataInputValidatorValidator<UpdateHearingParticipantsRequestV2>
 {
-    public UpdateHearingParticipantsRequestDataValidationV2(CaseType caseType, List<HearingRole> hearingRoles)
+    public UpdateHearingParticipantsRequestRefDataValidationV2(CaseType caseType, List<HearingRole> hearingRoles)
     {
         RuleForEach(x=> x.NewParticipants).Custom((participant, context) =>
         {

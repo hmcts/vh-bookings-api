@@ -17,7 +17,7 @@ namespace BookingsApi.Mappings.V2
                 foreach (var request in requests)
                 {
                     var dto = new LinkedParticipantDto(request.ParticipantContactEmail,
-                        request.LinkedParticipantContactEmail, request.TypeV2.MapToDomainEnum());
+                        request.LinkedParticipantContactEmail, request.Type.MapToDomainEnum());
                     listOfDtos.Add(dto);
                 }
             }

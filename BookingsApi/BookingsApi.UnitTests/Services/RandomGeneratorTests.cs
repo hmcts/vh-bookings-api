@@ -33,6 +33,7 @@ namespace BookingsApi.UnitTests.Services
         [TestCase("637330171125319309", 13u, 4u, "3373")]
         [TestCase("607330171125309309", 13u, 4u, "3370")]
         public void Should_return_correct_ticks(string source, uint skip, uint take, string expected)
+        
         {
             var result = _randomGenerator.GetWeakDeterministic(long.Parse(source), skip, take);
 

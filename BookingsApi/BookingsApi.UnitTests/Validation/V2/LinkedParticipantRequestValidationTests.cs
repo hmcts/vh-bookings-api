@@ -34,7 +34,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidationV2.NoParticipantEmail)
+            result.Errors.Exists(x => x.ErrorMessage == LinkedParticipantRequestValidationV2.NoParticipantEmail)
                 .Should().BeTrue();
         }
         
@@ -47,20 +47,20 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidationV2.NoLinkedParticipantEmail)
+            result.Errors.Exists(x => x.ErrorMessage == LinkedParticipantRequestValidationV2.NoLinkedParticipantEmail)
                 .Should().BeTrue();
         }
         
         [Test]
         public async Task Should_Return_Invalid_LinkedParticipant_Type_Error()
         {
-            _requestV2.TypeV2 = (LinkedParticipantTypeV2)456789;
+            _requestV2.Type = (LinkedParticipantTypeV2)456789;
 
             var result = await _validator.ValidateAsync(_requestV2);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == LinkedParticipantRequestValidationV2.InvalidType)
+            result.Errors.Exists(x => x.ErrorMessage == LinkedParticipantRequestValidationV2.InvalidType)
                 .Should().BeTrue();
         }
         
@@ -69,7 +69,7 @@ namespace BookingsApi.UnitTests.Validation.V2
             return Builder<LinkedParticipantRequestV2>.CreateNew()
                 .With(x => x.ParticipantContactEmail = "interpretee@hmcts.net")
                 .With(x => x.LinkedParticipantContactEmail = "interpreter@hmcts.net")
-                .With(x => x.TypeV2 = LinkedParticipantTypeV2.Interpreter)
+                .With(x => x.Type = LinkedParticipantTypeV2.Interpreter)
                 .Build();
         }
     }

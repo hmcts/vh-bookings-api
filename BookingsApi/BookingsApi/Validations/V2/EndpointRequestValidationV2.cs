@@ -13,7 +13,7 @@ public class EndpointRequestValidationV2 : AbstractValidator<EndpointRequestV2>
         // regex where only alphanumeric and underscore are allowed and maximum 255 characters
         var regex = "^([-A-Za-z0-9 ',._]){1,255}$";
             
-        RuleFor(x => x.DisplayName).Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
+        RuleFor(x => x.DisplayName).NotEmpty().Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
         RuleFor(x => x.DefenceAdvocateContactEmail).Must(x => x.IsValidEmail()).When(x => x.DefenceAdvocateContactEmail != null)
             .WithMessage(InvalidDefenceAdvocateContactEmailError);
     }

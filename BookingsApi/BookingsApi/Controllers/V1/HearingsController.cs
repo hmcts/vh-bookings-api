@@ -92,7 +92,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> GetHearingsByUsernameForToday([FromQuery] string username)
+        public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
         {
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
             var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
@@ -409,7 +409,16 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
             
-            var result = new UpdateHearingRequestValidation(videoHearing).Validate(request);
+            var result = new UpdateHearingRequestValidation().Validate(request);
+
+            if (videoHearing.ScheduledDateTime != request.ScheduledDateTime &&
+                request.ScheduledDateTime < DateTime.UtcNow) // ignore if the scheduled date time has not changed
+            {
+                ModelState.AddModelError(nameof(request.ScheduledDateTime),
+                    UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage);
+
+            }
+
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);

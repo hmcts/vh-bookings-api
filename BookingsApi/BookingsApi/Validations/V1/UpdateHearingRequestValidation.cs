@@ -10,20 +10,19 @@ namespace BookingsApi.Validations.V1
         public static readonly string NoScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
         public static readonly string NoUpdatedByErrorMessage = "UpdatedBy is missing";
 
-        public UpdateHearingRequestValidation(VideoHearing videoHearing)
+        public UpdateHearingRequestValidation()
         {
             RuleFor(x => x.HearingVenueName)
                 .NotEmpty().WithMessage(NoHearingVenueNameErrorMessage);
 
             RuleFor(x => x.ScheduledDateTime).Custom((dateTime, context) =>
             {
-                if(videoHearing.ScheduledDateTime == dateTime) return; // ignore if the scheduled date time has not changed
-                if (dateTime < DateTime.UtcNow)
+                if (dateTime <= DateTime.MinValue)
                 {
                     context.AddFailure(ScheduleDateTimeInPastErrorMessage);
                 }
             });
-
+            
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
 

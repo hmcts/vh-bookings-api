@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
+using ZymLabs.NSwag.FluentValidation;
 
 
 namespace BookingsApi
@@ -35,30 +36,38 @@ namespace BookingsApi
         }
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
+            services.AddScoped(provider =>
+            {
+                var validationRules = provider.GetService<IEnumerable<FluentValidationRule>>();
+                var loggerFactory = provider.GetService<ILoggerFactory>();
+
+                return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
+            });
+            
             var apiVersionDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
             foreach (var groupName in  apiVersionDescription.ApiVersionDescriptions.Select(x=> x.GroupName))
             {
-                services.AddOpenApiDocument((configure) =>
+                services.AddOpenApiDocument((configure, servicesProvider) =>
                 {
-                    ConfigureSwaggerForVersion(configure, groupName, new[] { groupName });
+                    ConfigureSwaggerForVersion(configure, groupName, new[] { groupName }, servicesProvider);
                 });
             }
             
             // to build a single a client for all versions of the api, create one document with all the groups
             var groupNames = apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName).ToArray();
-            services.AddOpenApiDocument((configure) =>
+            services.AddOpenApiDocument((configure, servicesProvider) =>
             {
-                ConfigureSwaggerForVersion(configure, "all", groupNames);
+                ConfigureSwaggerForVersion(configure, "all", groupNames, servicesProvider);
             });
             return services;
         }
 
-        private static void ConfigureSwaggerForVersion(AspNetCoreOpenApiDocumentGeneratorSettings configure,
-             string documentName, string[] apiGroupNames)
+        private static void ConfigureSwaggerForVersion(AspNetCoreOpenApiDocumentGeneratorSettings settings,
+            string documentName, string[] apiGroupNames, IServiceProvider serviceProvider)
         {
-            configure.DocumentName = documentName;
-            configure.ApiGroupNames = apiGroupNames;
-            configure.AddSecurity("JWT", Enumerable.Empty<string>(),
+            settings.DocumentName = documentName;
+            settings.ApiGroupNames = apiGroupNames;
+            settings.AddSecurity("JWT", Enumerable.Empty<string>(),
                 new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.ApiKey,
@@ -67,9 +76,15 @@ namespace BookingsApi
                     Description = "Type into the textbox: Bearer {your JWT token}.",
                     Scheme = "bearer"
                 });
-            configure.Title = "Bookings API";
-            configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
-            configure.OperationProcessors.Add(new AuthResponseOperationProcessor());
+            settings.Title = "Bookings API";
+            settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            settings.OperationProcessors.Add(new AuthResponseOperationProcessor());
+            
+            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
+
+            // Add the fluent validations schema processor
+            settings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+            
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
