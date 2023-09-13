@@ -55,12 +55,6 @@
       <DesignTime>true</DesignTime>
       <Visible>true</Visible>
     </Compile>
-    <Compile Update="Features\V1\HealthCheck.feature.cs">
-      <DependentUpon>HealthCheck.feature</DependentUpon>
-      <AutoGen>true</AutoGen>
-      <DesignTime>true</DesignTime>
-      <Visible>true</Visible>
-    </Compile>
     <Compile Update="Features\V1\Hearings.feature.cs">
       <DependentUpon>Hearings.feature</DependentUpon>
       <AutoGen>true</AutoGen>
