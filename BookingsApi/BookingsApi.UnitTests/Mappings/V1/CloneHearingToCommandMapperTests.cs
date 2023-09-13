@@ -81,8 +81,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
                     x.DisplayName == ep.DisplayName &&
                     x.DefenceAdvocate?.Person?.ContactEmail == ep.ContactEmail).Should().NotBeNull();
             }
-
-            command.QuestionnaireNotRequired.Should().BeTrue();
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
         }
     }

@@ -25,7 +25,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController.Helpers
                 .With(x => x.LinkedParticipants = linkedParticipants)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
-                .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.Endpoints = new List<EndpointRequest> { new EndpointRequest { DisplayName = "Cool endpoint 1" } })
                 .Build();
 

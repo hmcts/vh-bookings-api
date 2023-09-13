@@ -456,67 +456,6 @@ namespace BookingsApi.Controllers.V1
             return Ok(response);
         }
 
-        /// <summary>
-        /// Updates suitability answers for the participant
-        /// </summary>
-        /// <param name="hearingId">Id of hearing</param>
-        /// <param name="participantId">Id of participant</param>
-        /// <param name="answers">A list of suitability answers to update</param>
-        /// <returns>Http status</returns>
-        [HttpPut("{hearingId}/participants/{participantId}/suitability-answers")]
-        [OpenApiOperation("UpdateSuitabilityAnswers")]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [MapToApiVersion("1.0")]
-        public async Task<IActionResult> UpdateSuitabilityAnswers(Guid hearingId, Guid participantId, [FromBody]List<SuitabilityAnswersRequest> answers)
-        {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-
-            if (participantId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
-                return BadRequest(ModelState);
-            }
-
-            // Reject any requests with duplicate keys
-            var duplicateKeyFound = answers.GroupBy(x => x.Key).Any(g => g.Count() > 1);
-            if (duplicateKeyFound)
-            {
-                ModelState.AddModelError(nameof(participantId), $"Request '{nameof(answers)}' cannot contain duplicate keys.");
-                return BadRequest(ModelState);
-            }
-
-            var suitabilityAnswers = answers.Select(answer => new SuitabilityAnswer(answer.Key, answer.Answer, answer.ExtendedAnswer))
-                                .ToList();
-
-            var command = new UpdateSuitabilityAnswersCommand(hearingId, participantId, suitabilityAnswers);
-
-            try
-            {
-                await _commandHandler.Handle(command);
-            }
-            catch (DomainRuleException e)
-            {
-                ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
-            }
-            catch (HearingNotFoundException)
-            {
-                return NotFound("Hearing not found");
-            }
-            catch (ParticipantNotFoundException)
-            {
-                return NotFound("Participant not found");
-            }
-
-            return NoContent();
-        }
-
         private static List<ParticipantResponse> CreateParticipantResponseList(IEnumerable<Participant> participants)
         {
             if (participants.Any())

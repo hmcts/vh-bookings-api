@@ -54,7 +54,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("Case1 Num", "Case1 Name"); },false, BookingStatus.Created);
+            => { options.Case = new Case("Case1 Num", "Case1 Name"); }, BookingStatus.Created);
         
         var participantToUpdate = hearing.Participants.First(e => e.HearingRole.UserRole.IsIndividual);
         var request = new UpdateHearingParticipantsRequestV2
@@ -83,7 +83,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     {
         // arrange
         var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("Case1 Num", "Case1 Name"); },false, BookingStatus.Created);
+            => { options.Case = new Case("Case1 Num", "Case1 Name"); }, BookingStatus.Created);
         
         var participantToUpdate = hearing.Participants.First(e => e.HearingRole.UserRole.IsIndividual);
         var request = new UpdateHearingParticipantsRequestV2
@@ -165,7 +165,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // arrange
         var caseRoleName = "Invalid Role";
         var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); },false, BookingStatus.Created);
+            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
         
         var request = new UpdateHearingParticipantsRequestV2
         {
@@ -207,7 +207,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // arrange
         var hearingRoleName = "Invalid Role";
         var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); },false, BookingStatus.Created);
+            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
         
         var request = new UpdateHearingParticipantsRequestV2
         {
@@ -249,7 +249,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // arrange
         var hearingRoleName = "Invalid Role";
         var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); },false, BookingStatus.Created);
+            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
         
         var request = new UpdateHearingParticipantsRequestV2
         {

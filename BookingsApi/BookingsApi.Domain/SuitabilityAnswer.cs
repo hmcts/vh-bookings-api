@@ -3,6 +3,7 @@ using BookingsApi.Domain.Ddd;
 
 namespace BookingsApi.Domain
 {
+    [Obsolete("This class is no longer used.")]
     public class SuitabilityAnswer : Entity<long>
     {
         public SuitabilityAnswer(string key, string data, string extendedData)

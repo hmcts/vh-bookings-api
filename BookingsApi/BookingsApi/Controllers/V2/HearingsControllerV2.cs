@@ -154,7 +154,7 @@ namespace BookingsApi.Controllers.V2
 
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, false, request.AudioRecordingRequired.Value);
+                request.UpdatedBy, cases, request.AudioRecordingRequired.Value);
 
             var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
             var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);

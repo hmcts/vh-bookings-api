@@ -27,7 +27,6 @@ namespace BookingsApi.DAL.Queries
                 .Include(x => x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x => x.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)
                 .Include("HearingCases.Case")
-                .Include(x=>x.Participants).ThenInclude(x=>x.Questionnaire).ThenInclude(x=> x.SuitabilityAnswers)
                 .Include(x => x.CaseType)
                 .ThenInclude(x => x.CaseRoles)
                 .ThenInclude(x => x.HearingRoles)

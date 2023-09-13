@@ -24,28 +24,28 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a hearing with endpoints")]
         public async Task GivenIHaveAHearingWithEndpoints()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, BookingStatus.Booked, 3);
             PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing with endpoints for cloning")]
         public async Task GivenIHaveAHearingWithEndpointsForCloning()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, isMultiDayFirstHearing: true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null,  BookingStatus.Booked, 3, isMultiDayFirstHearing: true);
             PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing with linked participants")]
         public async Task GivenIHaveAHearingWithLinkedParticipants()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, false, true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null,  BookingStatus.Booked, 3, false, true);
             PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing with linked participants for cloning")]
         public async Task GivenIHaveAHearingWithLinkedParticipantsForCloning()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, false, BookingStatus.Booked, 3, false, true, isMultiDayFirstHearing: true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null,  BookingStatus.Booked, 3, false, true, isMultiDayFirstHearing: true);
             PersistTestHearingData(seededHearing);
         }
 
@@ -75,14 +75,14 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             var hearing = GetHearingFromDb();
             Context.HttpMethod = HttpMethod.Delete;
-            Context.Uri = RemoveEndPointFromHearing(_hearingId, hearing.Endpoints.First().Id);
+            Context.Uri = RemoveEndPointFromHearing(_hearingId, hearing.Endpoints[0].Id);
         }
 
         [Given(@"I have update display name of an endpoint request")]
         public void GivenIHaveUpdateDisplayNameOfAnEndpointRequest()
         {
             var hearing = GetHearingFromDb();
-            var updatedEndPointId = hearing.Endpoints.First().Id;
+            var updatedEndPointId = hearing.Endpoints[0].Id;
             PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
             {
                 DisplayName = "UpdatedDisplayName",
@@ -95,7 +95,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveUpdateEndpointWithDefenceAdvocateRequest()
         {
             var hearing = GetHearingFromDb();
-            var updatedEndPointId = hearing.Endpoints.First().Id;
+            var updatedEndPointId = hearing.Endpoints[0].Id;
             var rep = hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
             PrepareUpdateEndpointRequest(_hearingId, updatedEndPointId, new UpdateEndpointRequest()
             {

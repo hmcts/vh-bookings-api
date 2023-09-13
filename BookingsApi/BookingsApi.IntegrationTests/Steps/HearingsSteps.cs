@@ -140,7 +140,6 @@ namespace BookingsApi.IntegrationTests.Steps
                 Context.TestData.UpdateHearingRequest.HearingVenueName = string.Empty;
                 Context.TestData.UpdateHearingRequest.ScheduledDuration = 0;
                 Context.TestData.UpdateHearingRequest.ScheduledDateTime = DateTime.Now.AddDays(-5);
-                Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired = false;
                 Context.TestData.UpdateHearingRequest.AudioRecordingRequired = true;
             }
 
@@ -198,7 +197,7 @@ namespace BookingsApi.IntegrationTests.Steps
             _hearingId = seededHearing.Id;
             var username = scenario switch
             {
-                Scenario.Valid => seededHearing.GetParticipants().First().Person.Username,
+                Scenario.Valid => seededHearing.GetParticipants()[0].Person.Username,
                 Scenario.Nonexistent => "madeupusername@hmcts.net",
                 _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null)
             };
@@ -362,15 +361,13 @@ namespace BookingsApi.IntegrationTests.Steps
                 .Be(Context.TestData.UpdateHearingRequest.ScheduledDateTime.ToUniversalTime());
             model.HearingRoomName.Should().Be(Context.TestData.UpdateHearingRequest.HearingRoomName);
             model.OtherInformation.Should().Be(Context.TestData.UpdateHearingRequest.OtherInformation);
-            model.QuestionnaireNotRequired.Should()
-                .Be(Context.TestData.UpdateHearingRequest.QuestionnaireNotRequired.GetValueOrDefault());
             model.AudioRecordingRequired.Should()
                 .Be(Context.TestData.UpdateHearingRequest.AudioRecordingRequired.GetValueOrDefault());
 
             var updatedCases = model.Cases;
             var caseRequest = Context.TestData.UpdateHearingRequest.Cases.FirstOrDefault();
-            updatedCases.First().Name.Should().Be(caseRequest?.Name);
-            updatedCases.First().Number.Should().Be(caseRequest?.Number);
+            updatedCases[0].Name.Should().Be(caseRequest?.Name);
+            updatedCases[0].Number.Should().Be(caseRequest?.Number);
         }
 
         [Then(@"the hearing should be removed")]
@@ -388,7 +385,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var model = RequestHelper.Deserialise<BookingsResponse>(json);
             model.Hearings.Count.Should().BeGreaterThan(0);
 
-            var aHearing = model.Hearings.First().Hearings.First();
+            var aHearing = model.Hearings[0].Hearings[0];
             aHearing.HearingNumber.Should().NotBeNullOrEmpty();
             aHearing.HearingName.Should().NotBeNullOrEmpty();
         }
@@ -425,23 +422,6 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             var json = await Context.Response.Content.ReadAsStringAsync();
             json.Should().BeEquivalentTo("[]");
-        }
-
-        [Then(@"hearing suitability answers should be retrieved")]
-        public async Task ThenHearingSuitabilityAnswersShouldBeRetrieved()
-        {
-            var json = await Context.Response.Content.ReadAsStringAsync();
-            var model = RequestHelper.Deserialise<List<HearingSuitabilityAnswerResponse>>(json);
-            model[0].Should().NotBeNull();
-            model[0].ParticipantId.Should().NotBeEmpty();
-            model[0].ScheduledAt.Should().BeAfter(DateTime.MinValue);
-            model[0].UpdatedAt.Should().BeAfter(DateTime.MinValue);
-            model[0].CreatedAt.Should().BeAfter(DateTime.MinValue);
-            model[0].Answers.Should().NotBeNull();
-            var firstAnswer = model[0].Answers.First();
-            firstAnswer.Key.Should().NotBeEmpty();
-            firstAnswer.Answer.Should().NotBeEmpty();
-            firstAnswer.ExtendedAnswer.Should().NotBeEmpty();
         }
 
         [Then(@"the service bus should have been queued with a new bookings message")]
@@ -550,7 +530,6 @@ namespace BookingsApi.IntegrationTests.Steps
             model.HearingRoomName.Should().NotBeNullOrEmpty();
             model.OtherInformation.Should().NotBeNullOrEmpty();
             model.CreatedBy.Should().NotBeNullOrEmpty();
-            model.QuestionnaireNotRequired.Should().BeFalse();
             model.AudioRecordingRequired.Should().BeTrue();
             model.Endpoints.Should().NotBeNullOrEmpty();
             foreach (var endpointResponse in model.Endpoints)
@@ -621,7 +600,6 @@ namespace BookingsApi.IntegrationTests.Steps
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
                 .With(x => x.AudioRecordingRequired = true)
-                .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.Endpoints = endpoints)
                 .Build();
         }
@@ -642,7 +620,6 @@ namespace BookingsApi.IntegrationTests.Steps
                 ScheduledDuration = 100,
                 HearingVenueName = "Manchester County and Family Court",
                 OtherInformation = "OtherInfo",
-                QuestionnaireNotRequired = false,
                 AudioRecordingRequired = true,
                 HearingRoomName = "20",
                 UpdatedBy = $"admin{usernameStem}",
@@ -697,7 +674,7 @@ namespace BookingsApi.IntegrationTests.Steps
             {
                 case Scenario.Valid:
                     {
-                        var seededHearing = await Context.TestDataManager.SeedVideoHearing(addSuitabilityAnswer: true);
+                        var seededHearing = await Context.TestDataManager.SeedVideoHearing();
                         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
                         _hearingId = seededHearing.Id;
                         Context.TestData.NewHearingId = seededHearing.Id;

@@ -78,7 +78,7 @@ public class AddEndPointToHearingTests : ApiTest
     public async Task should_add_endpoint_with_a_defence_advocate_and_publish_message_when_hearing_is_created()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Created);
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
         var rep = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
         var hearingId = seededHearing.Id;
         var request = new AddEndpointRequest()
@@ -119,7 +119,7 @@ public class AddEndPointToHearingTests : ApiTest
     public async Task should_add_endpoint_with_a_defence_advocate_and_not_publish_message_when_hearing_is_not_created()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Booked);
+        var seededHearing = await Hooks.SeedVideoHearing(status: BookingStatus.Booked);
         var rep = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
         var hearingId = seededHearing.Id;
         var request = new AddEndpointRequest()

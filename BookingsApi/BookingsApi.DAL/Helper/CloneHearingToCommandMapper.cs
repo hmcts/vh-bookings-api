@@ -51,15 +51,11 @@ namespace BookingsApi.DAL.Helper
             var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
 
             var duration = 480;
-            var command = new CreateVideoHearingCommand(hearing.CaseType, hearing.HearingType, newDate,
-                duration, hearing.HearingVenue, participants, cases, true,
-                hearing.AudioRecordingRequired, newEndpoints, linkedParticipantDtos, false)
-            {
-                HearingRoomName = hearing.HearingRoomName,
-                OtherInformation = hearing.OtherInformation,
-                CreatedBy = hearing.CreatedBy,
-                SourceId = hearing.Id
-            };
+            var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
+                    hearing.CaseType, hearing.HearingType, newDate, duration, hearing.HearingVenue, cases),
+                new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,
+                    hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, null, linkedParticipantDtos,
+                    new List<NewJudiciaryParticipant>(), false, hearing.Id));
 
             return command;
         }
@@ -73,7 +69,7 @@ namespace BookingsApi.DAL.Helper
                 do
                 {
                     sip = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
-                } while (newEndpoints.Any(x => x.Sip.StartsWith(sip)));
+                } while (newEndpoints.Exists(x => x.Sip.StartsWith(sip)));
                 var pin = randomGenerator.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
                 var newEndpoint =  new NewEndpoint
                 {

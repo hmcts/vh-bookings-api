@@ -437,13 +437,12 @@ namespace BookingsApi.Controllers.V1
 
             // use existing video hearing values here when request properties are null
             request.AudioRecordingRequired ??= videoHearing.AudioRecordingRequired;
-            request.QuestionnaireNotRequired = false;
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
             var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, request.QuestionnaireNotRequired.Value, request.AudioRecordingRequired.Value);
+                request.UpdatedBy, cases, request.AudioRecordingRequired.Value);
         
             var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
             var response = HearingToDetailsResponseMapper.Map(updatedHearing);

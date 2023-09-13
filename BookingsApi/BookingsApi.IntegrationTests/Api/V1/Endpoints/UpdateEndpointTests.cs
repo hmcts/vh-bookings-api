@@ -77,7 +77,7 @@ public class UpdateEndpointTests : ApiTest
     public async Task should_return_not_found_when_updating_an_endpoint_that_does_not_exist()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Created);
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
         var hearingId = seededHearing.Id;
         var endpointId = Guid.NewGuid();
         var request = new UpdateEndpointRequest()
@@ -100,7 +100,7 @@ public class UpdateEndpointTests : ApiTest
     public async Task should_return_no_content_when_endpoint_display_name_and_defence_advocate_is_updated()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(null, false, BookingStatus.Created, 1);
+        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created, 1);
         var ep = seededHearing.Endpoints[0];
         var rep = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
         var hearingId = seededHearing.Id;

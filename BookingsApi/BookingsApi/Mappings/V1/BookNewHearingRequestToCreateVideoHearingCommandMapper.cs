@@ -17,14 +17,13 @@ namespace BookingsApi.Mappings.V1
             var newEndpoints = MapEndpoints(request, randomGenerator, sipAddressStem);
             var linkedParticipants = MapLinkedParticipants(request);
 
-            return new CreateVideoHearingCommand(caseType, hearingType,
-                request.ScheduledDateTime, request.ScheduledDuration, venue, newParticipants, cases,
-                request.QuestionnaireNotRequired, request.AudioRecordingRequired, newEndpoints, linkedParticipants, request.IsMultiDayHearing)
-            {
-                HearingRoomName = request.HearingRoomName,
-                OtherInformation = request.OtherInformation,
-                CreatedBy = request.CreatedBy
-            };
+           return new CreateVideoHearingCommand(
+                new CreateVideoHearingRequiredDto(caseType, hearingType, request.ScheduledDateTime,
+                    request.ScheduledDuration, venue, cases),
+                new CreateVideoHearingOptionalDto(newParticipants, request.HearingRoomName, request.OtherInformation, request.CreatedBy,
+                    request.AudioRecordingRequired, newEndpoints, null, linkedParticipants,
+                    new List<NewJudiciaryParticipant>(), request.IsMultiDayHearing, null)
+            );
         }
 
         private static List<NewParticipant> MapParticipants(BookNewHearingRequest request, CaseType caseType)

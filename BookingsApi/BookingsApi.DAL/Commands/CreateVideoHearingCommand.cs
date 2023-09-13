@@ -6,23 +6,30 @@ namespace BookingsApi.DAL.Commands
 {
     public class CreateVideoHearingCommand : ICommand
     {
-        public CreateVideoHearingCommand(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue venue, List<NewParticipant> participants, List<Case> cases,
-            bool questionnaireNotRequired, bool audioRecordingRequired, List<NewEndpoint> endpoints,
-            List<LinkedParticipantDto> linkedParticipants, bool isMultiDayFirstHearing)
+        public CreateVideoHearingCommand(CreateVideoHearingRequiredDto requiredDto,
+            CreateVideoHearingOptionalDto optionalDto)
         {
-            CaseType = caseType;
-            HearingType = hearingType;
-            ScheduledDateTime = scheduledDateTime;
-            ScheduledDuration = scheduledDuration;
-            Venue = venue;
-            Participants = participants;
-            Cases = cases;
-            QuestionnaireNotRequired = questionnaireNotRequired;
-            AudioRecordingRequired = audioRecordingRequired;
-            Endpoints = endpoints;
-            LinkedParticipants = linkedParticipants;
-            IsMultiDayFirstHearing = isMultiDayFirstHearing;
+            CaseType = requiredDto.CaseType;
+            HearingType = requiredDto.HearingType;
+            ScheduledDateTime = requiredDto.ScheduledDateTime;
+            ScheduledDuration = requiredDto.ScheduledDuration;
+            Venue = requiredDto.Venue;
+            Cases = requiredDto.Cases;
+            
+            Participants = optionalDto.Participants ?? new List<NewParticipant>();
+            HearingRoomName = optionalDto.HearingRoomName;
+            OtherInformation = optionalDto.OtherInformation;
+            CreatedBy = optionalDto.CreatedBy;
+            
+            AudioRecordingRequired = optionalDto.AudioRecordingRequired;
+            Endpoints = optionalDto.Endpoints;
+            CancelReason = optionalDto.CancelReason;
+            
+            LinkedParticipants = optionalDto.LinkedParticipants ?? new List<LinkedParticipantDto>();
+            JudiciaryParticipants = optionalDto.JudiciaryParticipants ?? new List<NewJudiciaryParticipant>();
+            IsMultiDayFirstHearing = optionalDto.IsMultiDayFirstHearing;
+
+            SourceId = optionalDto.SourceId;
         }
 
         public Guid NewHearingId { get; set; }
@@ -33,16 +40,15 @@ namespace BookingsApi.DAL.Commands
         public HearingVenue Venue { get; }
         public List<NewParticipant> Participants { get; }
         public List<Case> Cases { get; }
-        public string HearingRoomName { get; set; }
-        public string OtherInformation { get; set; }
-        public string CreatedBy { get; set; }
-        public bool QuestionnaireNotRequired { get; set; }
-        public bool AudioRecordingRequired { get; set; }
+        public string HearingRoomName { get; }
+        public string OtherInformation { get; }
+        public string CreatedBy { get; }
+        public bool AudioRecordingRequired { get; }
         public List<NewEndpoint> Endpoints { get; }
-        public string CancelReason { get; set; }
-        public Guid? SourceId { get; set; }
+        public string CancelReason { get; }
+        public Guid? SourceId { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
-        public List<NewJudiciaryParticipant> JudiciaryParticipants { get; set; } = new();
+        public List<NewJudiciaryParticipant> JudiciaryParticipants { get; }
         public bool IsMultiDayFirstHearing { get; }
     }
 
@@ -61,8 +67,7 @@ namespace BookingsApi.DAL.Commands
         {
             var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
                 command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.QuestionnaireNotRequired,
-                command.AudioRecordingRequired, command.CancelReason);
+                command.OtherInformation, command.CreatedBy, command.AudioRecordingRequired, command.CancelReason);
 
             // Ideally, the domain object would implement the clone method and so this change is a work around.
             videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;

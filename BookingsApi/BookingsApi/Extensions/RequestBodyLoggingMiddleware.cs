@@ -22,7 +22,7 @@ public class RequestBodyLoggingMiddleware
         context.Request.EnableBuffering();
 
         // Only if we are dealing with POST or PUT, GET and others shouldn't have a body
-        if (context.Request.Body.CanRead && (method == HttpMethods.Post || method == HttpMethods.Put))
+        if (context.Request.Body.CanRead && (method == HttpMethods.Post || method == HttpMethods.Put || method == HttpMethods.Patch))
         {
             // Leave stream open so next middleware can read it
             using var reader = new StreamReader(

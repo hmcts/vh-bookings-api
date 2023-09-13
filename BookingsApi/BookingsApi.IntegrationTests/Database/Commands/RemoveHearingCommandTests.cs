@@ -9,7 +9,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
     {
         private RemoveHearingCommandHandler _commandHandler;
         private GetHearingByIdQueryHandler _getHearingByIdQueryHandler;
-        private Guid _newHearingId;
 
         [SetUp]
         public void Setup()
@@ -17,7 +16,6 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _commandHandler = new RemoveHearingCommandHandler(context);
             _getHearingByIdQueryHandler = new GetHearingByIdQueryHandler(context);
-            _newHearingId = Guid.Empty;
         }
 
         [Test]
@@ -33,31 +31,25 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));
                 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().BeNull();
-
-            _newHearingId = Guid.Empty;
         }
         
         [Test]
         public async Task Should_remove_hearing_containing_interpreter()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(null, false,BookingStatus.Booked,0,false,true);
+            var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Booked, 0, false, true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            _newHearingId = seededHearing.Id;
 
             await _commandHandler.Handle(new RemoveHearingCommand(seededHearing.Id));
                 
             var returnedVideoHearing =
                 await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
             returnedVideoHearing.Should().BeNull();
-
-            _newHearingId = Guid.Empty;
         }
     }
 }

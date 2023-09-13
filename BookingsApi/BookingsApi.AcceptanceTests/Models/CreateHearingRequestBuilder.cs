@@ -93,7 +93,6 @@ namespace BookingsApi.AcceptanceTests.Models
                 .With(x => x.Endpoints = endpoints)
                 .With(x => x.Cases = cases)
                 .With(x => x.CreatedBy = createdBy)
-                .With(x => x.QuestionnaireNotRequired = false)
                 .With(x => x.AudioRecordingRequired = true)
                 .With(x => x.Endpoints = new List<EndpointRequest> {new EndpointRequest{ DisplayName = "New Endpoint"}})
                 .Build();

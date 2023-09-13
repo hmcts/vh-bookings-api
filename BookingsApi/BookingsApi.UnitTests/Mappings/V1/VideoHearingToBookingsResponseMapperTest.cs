@@ -26,7 +26,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var firstGroup = mappedHearings[0];
             firstGroup.ScheduledDate.Should().Be(hearings[0].ScheduledDateTime.Date);
             firstGroup.Hearings.Count.Should().Be(1);
-            firstGroup.Hearings[0].QuestionnaireNotRequired.Should().BeFalse();
             firstGroup.Hearings[0].AudioRecordingRequired.Should().BeTrue();
             firstGroup.Hearings[0].CancelReason.Should().Be(hearings[0].CancelReason);
             firstGroup.Hearings[0].GroupId.Should().Be(hearings[0].Id);
@@ -51,7 +50,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 mockedHearing.OtherInformation,
                 "admin@hmcts.net",
                 updatedCases,
-                false,
                 audioRecordingRequired
             );
             mockedHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;

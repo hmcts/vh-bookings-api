@@ -27,12 +27,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             hearing2.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
             hearing2.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
-                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
+                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true);
 
             var hearing3 = GetHearing("1232", caseNames);
             hearing3.UpdateStatus(BookingStatus.Created, "administrator", string.Empty);
             hearing2.UpdateHearingDetails(new HearingVenue(1, "venue1"), DateTime.Now.AddDays(2),
-                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true, true);
+                15, "123", "note", "administrator", new List<Case> { new Case("123", "name") }, true);
 
             var hearingList = new List<VideoHearing> { hearing1, hearing2, hearing3 };
 

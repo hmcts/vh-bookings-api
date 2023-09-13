@@ -31,11 +31,10 @@ namespace BookingsApi.UnitTests.DAL.Queries
             var hearingRoomName = "Roome03";
             var otherInformation = "OtherInformation03";
             var createdBy = "User03";
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
             _hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
-                        otherInformation, createdBy, questionnaireNotRequired, audioRecordingRequired, cancelReason);
+                        otherInformation, createdBy, audioRecordingRequired, cancelReason);
             _context.VideoHearings.Add(_hearing);
             _context.SaveChangesAsync();
         }

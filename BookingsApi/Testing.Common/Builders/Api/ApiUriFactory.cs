@@ -83,7 +83,6 @@ namespace Testing.Common.Builders.Api
             public static string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
             public static string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
             public static string UpdateParticipantDetails(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
-            public static string UpdateSuitabilityAnswers(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}/suitability-answers";
         }
 
         public static class PersonEndpoints
@@ -92,20 +91,12 @@ namespace Testing.Common.Builders.Api
             public static string GetPersonByUsername(string username) => $"{ApiRoot}/username/{username}";
             public static string GetPersonByContactEmail(string contactEmail) => $"{ApiRoot}/contactEmail/{contactEmail}";
             public static string PostPersonBySearchTerm => $"{ApiRoot}";
-            public static string GetPersonSuitabilityAnswers(string username) => $"{ApiRoot}/username/{username}/suitability-answers";
             public static string GetPersonByClosedHearings() => $"{ApiRoot}/userswithclosedhearings";
             public static string GetHearingsByUsernameForDeletion(string username) => $"{ApiRoot}/username/hearings?username={username}";
             public static string AnonymisePerson(string username) => $"{ApiRoot}/username/{username}/anonymise";
             public static string SearchForNonJudicialPersonsByContactEmail(string contactEmail) => $"{ApiRoot}/?contactEmail={contactEmail}";
             public static string UpdatePersonDetails(Guid personId) => $"{ApiRoot}/{personId}";
             public static string UpdatePersonUsername(string contactEmail, string username) => $"{ApiRoot}/user/{contactEmail}?username={username}";
-        }
-
-        public static class SuitabilityAnswerEndpoints
-        {
-            private const string ApiRoot = "suitability-answers";
-            public static string GetSuitabilityAnswers(string cursor) => $"{ApiRoot}/{cursor}";
-            public static string GetSuitabilityAnswerWithLimit(string cursor = "", int limit = 100) => $"{ApiRoot}/?cursor={cursor}&limit={limit}";
         }
             
         public static class JVEndPointEndpoints

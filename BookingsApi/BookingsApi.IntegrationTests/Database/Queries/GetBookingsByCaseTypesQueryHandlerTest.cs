@@ -60,12 +60,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
             { 
-                CaseNumber = Hooks.CaseNumber 
+                CaseNumber = TestDataManager.CaseNumber 
             };
 
             var result = await _handler.Handle(query);
 
-            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == Hooks.CaseNumber)).Should().BeTrue();
+            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == TestDataManager.CaseNumber)).Should().BeTrue();
         }
 
         [Test(Description = "With AdminSearchToggle On")]
@@ -172,13 +172,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             var query = new GetBookingsByCaseTypesQuery
             {
-                CaseNumber = Hooks.CaseNumber,
+                CaseNumber = TestDataManager.CaseNumber,
                 VenueIds = venueIdsToFilterOn
             };
             
             var result = await _handler.Handle(query);
 
-            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == Hooks.CaseNumber)).Should().BeTrue();
+            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == TestDataManager.CaseNumber)).Should().BeTrue();
             AssertHearingsAreFilteredByVenueIds(result, venueIdsToFilterOn);
         }
         

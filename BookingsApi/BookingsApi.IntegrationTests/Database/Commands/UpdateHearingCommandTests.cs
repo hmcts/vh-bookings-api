@@ -51,12 +51,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var caseName = "CaseName Update";
             var caseNumber = "CaseNumber Update";
             casesToUpdate.Add(new Case(caseNumber, caseName));
-            const bool questionnaireNotRequired = false;
             const bool audioRecordingRequired = true;
 
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, newDuration, 
-                        newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate,
-                        questionnaireNotRequired, audioRecordingRequired));
+                        newVenue, newHearingRoomName, newOtherInformation, updatedBy, casesToUpdate, audioRecordingRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -100,8 +98,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var casesToUpdate = new List<Case>();
             
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, seededHearing.ScheduledDuration, 
-                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate,
-                seededHearing.QuestionnaireNotRequired, seededHearing.AudioRecordingRequired));
+                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate, seededHearing.AudioRecordingRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -133,8 +130,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var casesToUpdate = new List<Case>();
             
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, seededHearing.ScheduledDuration, 
-                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate,
-                seededHearing.QuestionnaireNotRequired, seededHearing.AudioRecordingRequired));
+                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate, seededHearing.AudioRecordingRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -173,8 +169,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var casesToUpdate = new List<Case>();
             
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, newDateTime, seededHearing.ScheduledDuration, 
-                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate,
-                seededHearing.QuestionnaireNotRequired, seededHearing.AudioRecordingRequired));
+                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate, seededHearing.AudioRecordingRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
@@ -200,8 +195,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var casesToUpdate = new List<Case>();
             
             await _commandHandler.Handle(new UpdateHearingCommand(_newHearingId, seededHearing.ScheduledDateTime, seededHearing.ScheduledDuration, 
-                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate,
-                seededHearing.QuestionnaireNotRequired, seededHearing.AudioRecordingRequired));
+                newVenue, seededHearing.HearingRoomName, seededHearing.OtherInformation, updatedBy, casesToUpdate, seededHearing.AudioRecordingRequired));
             
             var returnedVideoHearing = await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(seededHearing.Id));
 
