@@ -119,7 +119,7 @@ namespace BookingsApi
         private static void RegisterCommandHandlers(IServiceCollection serviceCollection)
         {
             var commandHandlers = typeof(ICommand).Assembly.GetTypes().Where(t =>
-                t.GetInterfaces().Any(x =>
+                Array.Exists(t.GetInterfaces(), x =>
                     x.IsGenericType &&
                     x.GetGenericTypeDefinition() == typeof(ICommandHandler<>)));
 
@@ -133,7 +133,7 @@ namespace BookingsApi
         private static void RegisterQueryHandlers(IServiceCollection serviceCollection)
         {
             var queryHandlers = typeof(IQuery).Assembly.GetTypes().Where(t =>
-                t.GetInterfaces().Any(x =>
+                Array.Exists(t.GetInterfaces(), x =>
                     x.IsGenericType &&
                     x.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
 

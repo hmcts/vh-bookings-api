@@ -164,9 +164,8 @@ namespace BookingsApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-
-
-                endpoints.MapHealthChecks("/healthz", new HealthCheckOptions()
+                
+                endpoints.MapHealthChecks("/healthcheck/health", new HealthCheckOptions()
                 {
                     ResponseWriter = async (context, report) =>
                     {
