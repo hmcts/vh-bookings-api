@@ -184,6 +184,8 @@ namespace BookingsApi
                         await context.Response.WriteAsync(result);
                     }
                 });
+
+                endpoints.MapHealthChecks("health/liveness");
             });
         }
     }
