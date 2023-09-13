@@ -427,7 +427,7 @@ namespace BookingsApi.Client
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConfirmedHearingsTodayResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -436,7 +436,7 @@ namespace BookingsApi.Client
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConfirmedHearingsTodayResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Anonymise participant and case from expired hearing
@@ -3976,7 +3976,7 @@ namespace BookingsApi.Client
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConfirmedHearingsTodayResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username)
         {
             return GetConfirmedHearingsByUsernameForTodayAsync(username, System.Threading.CancellationToken.None);
         }
@@ -3988,7 +3988,7 @@ namespace BookingsApi.Client
         /// <param name="username">username of person to search against</param>
         /// <returns>Hearing details</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ConfirmedHearingsTodayResponse>> GetConfirmedHearingsByUsernameForTodayAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/today/username?");
@@ -4040,7 +4040,7 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingDetailsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<ConfirmedHearingsTodayResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -4050,12 +4050,12 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 404)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<string>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new BookingsApiException<ProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
