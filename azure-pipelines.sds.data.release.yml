@@ -34,6 +34,11 @@ stages:
               workingPath: $(System.DefaultWorkingDirectory)/RefData
               migrationsPath: RefData/Migrations
               projectName: ${{ variables.efDataProjectName }}
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.SourcesDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
       # - job: Run_Entity_Framework_Dev
       #   displayName: Run Entity Framework Dev
       #   steps:
