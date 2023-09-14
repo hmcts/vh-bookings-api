@@ -151,6 +151,10 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
+            if (hearingRole.IsInterpreter() && IsHearingCloseToScheduledStartTime())
+            {
+                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
+            }
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
                 throw new DomainRuleException(nameof(person), $"Participant {person.ContactEmail} already exists in the hearing");
@@ -248,6 +252,7 @@ namespace BookingsApi.Domain
 
         public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
         {
+            ValidateChangeAllowed();
             if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryParticipantPersonalCode),
@@ -340,6 +345,7 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipant(Participant participant, bool validateParticipantCount=true)
         {
+            ValidateChangeAllowed();
             if (!DoesParticipantExistByContactEmail(participant.Person.ContactEmail))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
@@ -349,11 +355,8 @@ namespace BookingsApi.Domain
 
             var existingParticipant = Participants.Single(x => x.Person.ContactEmail == participant.Person.ContactEmail);
             var endpoint = Endpoints.SingleOrDefault(e => e.DefenceAdvocate != null && e.DefenceAdvocate.Id == participant.Id);
-            if (endpoint != null)
-            {
-                endpoint.AssignDefenceAdvocate(null);
-            }
-            
+            endpoint?.AssignDefenceAdvocate(null);
+
             participant.LinkedParticipants.Clear();
 
             Participants.Remove(existingParticipant);
@@ -362,6 +365,7 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
         {
+            ValidateChangeAllowed();
             var participant = GetParticipants().Single(x => x.Id == participantId);
             RemoveParticipant(participant, validateParticipantCount);
         }
@@ -603,6 +607,30 @@ namespace BookingsApi.Domain
                 _validationFailures.AddFailure(nameof(ScheduledDateTime), "Schedule datetime cannot be set in the past");
             }
         }
+        
+        /// <summary>
+        /// Validates if the hearing can be changed if it meets the criteria:
+        /// <list type="bullet">
+        ///     <item>Not cancelled</item>
+        ///     <item>Booked Or Failed</item>
+        ///     <item>Created and not scheduled to start in 30 minutes</item>
+        /// </list>
+        /// </summary>
+        /// <exception cref="DomainRuleException">Offending validation rule</exception>
+        public void ValidateChangeAllowed()
+        {
+            if(Status == BookingStatus.Cancelled)
+            {
+                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+            }
+            
+            if (Status == BookingStatus.Created && IsHearingCloseToScheduledStartTime())
+            {
+                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditAHearingCloseToStartTime);
+            }
+        }
+        
+        
 
         public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
@@ -648,5 +676,7 @@ namespace BookingsApi.Domain
 
             return (ParticipantBase)judge ?? judiciaryJudge;
         }
+        
+        private bool IsHearingCloseToScheduledStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow;
     }
 }
