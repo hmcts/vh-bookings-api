@@ -643,10 +643,22 @@ namespace BookingsApi.Domain
 
         public ParticipantBase GetJudge()
         {
-            var judge = Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var judge = Participants?.FirstOrDefault(p => p.HearingRole?.UserRole?.IsJudge ?? false);
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
             return (ParticipantBase)judge ?? judiciaryJudge;
+        }
+        
+        public void UpdateBookingStatusJudgeRequirement()
+        {
+            if (Status == BookingStatus.Booked && GetJudge() == null)
+                Status = BookingStatus.BookedWithoutJudge;
+        }
+                
+        public void UpdateConfirmedStatusJudgeRequirement()
+        {
+            if (Status == BookingStatus.Created && GetJudge() == null)
+                Status = BookingStatus.ConfirmedWithoutJudge;
         }
     }
 }

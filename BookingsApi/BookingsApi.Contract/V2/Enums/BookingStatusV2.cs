@@ -17,6 +17,14 @@
         /// <summary>
         /// Failed
         /// </summary>
-        Failed = 4
+        Failed = 4,
+        /// <summary>
+        /// Booked without judge
+        /// </summary>
+        BookedWithoutJudge = 5,
+        /// <summary>
+        /// Confirmed without judge
+        /// </summary>
+        ConfirmedWithoutJudge = 6
     }
 }

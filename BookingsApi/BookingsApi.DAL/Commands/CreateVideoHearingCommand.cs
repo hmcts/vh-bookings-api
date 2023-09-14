@@ -73,9 +73,7 @@ namespace BookingsApi.DAL.Commands
             videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)
-            {
                 videoHearing.SourceId = command.SourceId;
-            }
 
             await _context.VideoHearings.AddAsync(videoHearing);
 
@@ -84,10 +82,8 @@ namespace BookingsApi.DAL.Commands
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
 
             foreach (var newJudiciaryParticipant in command.JudiciaryParticipants)
-            {
                 await _hearingService.AddJudiciaryParticipantToVideoHearing(videoHearing, newJudiciaryParticipant);
-            }
-
+            
             videoHearing.AddCases(command.Cases);
 
             if (command.Endpoints != null && command.Endpoints.Count > 0)
@@ -95,13 +91,14 @@ namespace BookingsApi.DAL.Commands
                 var dtos = command.Endpoints;
                 var newEndpoints = (from dto in dtos
                     let defenceAdvocate =
-                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail,
-                            videoHearing.GetParticipants())
+                        DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, videoHearing.GetParticipants())
                     select new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate)).ToList();
 
                 videoHearing.AddEndpoints(newEndpoints);
             }
-
+            
+            videoHearing.UpdateBookingStatusJudgeRequirement();
+            
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
         }
