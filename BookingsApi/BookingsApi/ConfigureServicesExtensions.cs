@@ -1,7 +1,5 @@
 ﻿using BookingsApi.Common.Security;
-using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
-using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Swagger;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +8,6 @@ using NSwag;
 using NSwag.Generation.Processors.Security;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 using ZymLabs.NSwag.FluentValidation;
@@ -26,7 +23,8 @@ namespace BookingsApi
             {
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
                 opt.AssumeDefaultVersionWhenUnspecified = true;
-                opt.ReportApiVersions = true; // keep this true for backwards-compatibility with the old routes (i.e. the non versioned)
+                opt.ReportApiVersions =
+                    true; // keep this true for backwards-compatibility with the old routes (i.e. the non versioned)
                 opt.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader()
                 );
@@ -37,6 +35,7 @@ namespace BookingsApi
             });
             return services;
         }
+
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
             services.AddScoped(provider =>
@@ -46,16 +45,16 @@ namespace BookingsApi
 
                 return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
             });
-            
+
             var apiVersionDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
-            foreach (var groupName in  apiVersionDescription.ApiVersionDescriptions.Select(x=> x.GroupName))
+            foreach (var groupName in apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName))
             {
                 services.AddOpenApiDocument((configure, servicesProvider) =>
                 {
-                    ConfigureSwaggerForVersion(configure, groupName, new[] { groupName }, servicesProvider);
+                    ConfigureSwaggerForVersion(configure, groupName, new[] {groupName}, servicesProvider);
                 });
             }
-            
+
             // to build a single a client for all versions of the api, create one document with all the groups
             var groupNames = apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName).ToArray();
             services.AddOpenApiDocument((configure, servicesProvider) =>
@@ -82,12 +81,13 @@ namespace BookingsApi
             settings.Title = "Bookings API";
             settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             settings.OperationProcessors.Add(new AuthResponseOperationProcessor());
-            
-            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
+
+            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider
+                .GetService<FluentValidationSchemaProcessor>();
 
             // Add the fluent validations schema processor
             settings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
-            
+
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
@@ -161,19 +161,5 @@ namespace BookingsApi
 
             return serviceCollection;
         }
-        
-        public static IServiceCollection AddVhHealthChecks(this IServiceCollection services, IConfiguration configuration)
-        {
-            var serviceBusSettings = new ServiceBusSettings();
-            configuration.GetSection("ServiceBusQueue").Bind(serviceBusSettings);
-            services.AddHealthChecks()
-                .AddDbContextCheck<BookingsDbContext>("Database VhBookings")
-                .AddAzureServiceBusQueue(serviceBusSettings!.ConnectionString, serviceBusSettings.QueueName,
-                    name: "Booking Service Bus Queue");
-            
-            return services;
-        }
-        
-        
     }
 }
