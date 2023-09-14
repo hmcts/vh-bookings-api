@@ -153,15 +153,6 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks": "6.0.10"
         }
       },
-      "AspNetCore.HealthChecks.SqlServer": {
-        "type": "Transitive",
-        "resolved": "6.0.2",
-        "contentHash": "Af7ws27DnZZ4bKCiEREm7emSAKEtIiYirEAkI0ixFgK1fwJ99jmMnPC+kU01zfqn3FyCO/gZOUO7WbyVvTPpFg==",
-        "dependencies": {
-          "Microsoft.Data.SqlClient": "3.0.1",
-          "Microsoft.Extensions.Diagnostics.HealthChecks": "6.0.0"
-        }
-      },
       "Azure.Core": {
         "type": "Transitive",
         "resolved": "1.25.0",
@@ -3538,7 +3529,6 @@
         "type": "Project",
         "dependencies": {
           "AspNetCore.HealthChecks.AzureServiceBus": "[6.1.0, )",
-          "AspNetCore.HealthChecks.SqlServer": "[6.0.2, )",
           "BookingsApi.Common": "[1.0.0, )",
           "BookingsApi.Contract": "[1.0.0, )",
           "BookingsApi.DAL": "[1.0.0, )",

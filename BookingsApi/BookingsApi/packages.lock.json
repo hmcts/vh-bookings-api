@@ -13,16 +13,6 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks": "6.0.10"
         }
       },
-      "AspNetCore.HealthChecks.SqlServer": {
-        "type": "Direct",
-        "requested": "[6.0.2, )",
-        "resolved": "6.0.2",
-        "contentHash": "Af7ws27DnZZ4bKCiEREm7emSAKEtIiYirEAkI0ixFgK1fwJ99jmMnPC+kU01zfqn3FyCO/gZOUO7WbyVvTPpFg==",
-        "dependencies": {
-          "Microsoft.Data.SqlClient": "3.0.1",
-          "Microsoft.Extensions.Diagnostics.HealthChecks": "6.0.0"
-        }
-      },
       "FluentValidation": {
         "type": "Direct",
         "requested": "[11.5.1, )",
