@@ -26,6 +26,7 @@ namespace BookingsApi.Controllers.V2
         
         /// <summary>
         /// Add participant(s) to a hearing
+        /// NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param> 
         /// <param name="request">The participant information to add</param>
@@ -155,8 +156,7 @@ namespace BookingsApi.Controllers.V2
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-            await _hearingParticipantService
-                .PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+            await _hearingParticipantService.PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
@@ -187,8 +187,7 @@ namespace BookingsApi.Controllers.V2
                     OrganisationName = existingParticipantRequest.OrganisationName,
                     ParticipantId = existingParticipantRequest.ParticipantId,
                     Person = existingParticipant.Person,
-                    RepresentativeInformation = new RepresentativeInformation
-                        {Representee = existingParticipantRequest.Representee},
+                    RepresentativeInformation = new RepresentativeInformation {Representee = existingParticipantRequest.Representee},
                     TelephoneNumber = existingParticipantRequest.TelephoneNumber,
                     Title = existingParticipantRequest.Title
                 };

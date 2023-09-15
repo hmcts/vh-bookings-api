@@ -651,14 +651,20 @@ namespace BookingsApi.Domain
         
         public void UpdateBookingStatusJudgeRequirement()
         {
-            if (Status == BookingStatus.Booked && GetJudge() == null)
-                Status = BookingStatus.BookedWithoutJudge;
-        }
-                
-        public void UpdateConfirmedStatusJudgeRequirement()
-        {
-            if (Status == BookingStatus.Created && GetJudge() == null)
-                Status = BookingStatus.ConfirmedWithoutJudge;
+            if (GetJudge() == null)
+                Status = Status switch
+                {
+                    BookingStatus.Booked => BookingStatus.BookedWithoutJudge,
+                    BookingStatus.Created => BookingStatus.ConfirmedWithoutJudge,
+                    _ => Status
+                };
+            else
+                Status = Status switch
+                {
+                    BookingStatus.BookedWithoutJudge => BookingStatus.Booked,
+                    BookingStatus.ConfirmedWithoutJudge => BookingStatus.Created,
+                    _ => Status 
+                };
         }
     }
 }

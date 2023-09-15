@@ -1,4 +1,6 @@
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Validations.V2;
 
@@ -48,6 +50,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.NotFound, result.Content.ReadAsStringAsync().Result);
     }
+    
     
     [Test]
     public async Task should_return_not_found_when_video_hearing_is_not_found()
@@ -283,5 +286,49 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[$"{nameof(request.NewParticipants )}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleName}]");
+    }
+    
+    [Test]
+    public async Task should_remove_a_participant_from_the_confirmed_hearing()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
+        var participantBeingRemoved = hearing.Participants[0];
+        var request = new UpdateHearingParticipantsRequestV2 { RemovedParticipantIds = new List<Guid>{ participantBeingRemoved.Id } };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        var updatedHearing = await client
+            .GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        hearingResponse.Participants.Should().NotContain(p => p.Id == participantBeingRemoved.Id);
+        hearingResponse.Status.Should().Be(BookingStatusV2.Created);
+    }
+    
+        
+    [Test]
+    public async Task should_remove_a_judge_from_the_confirmed_hearing()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
+        var judge = hearing.Participants.First(e => e.HearingRole.IsJudge());
+        var request = new UpdateHearingParticipantsRequestV2 { RemovedParticipantIds = new List<Guid>{ judge.Id } };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
+        hearingResponse.Status.Should().Be(BookingStatusV2.ConfirmedWithoutJudge);
     }
 }

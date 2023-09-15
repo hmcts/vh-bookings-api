@@ -6,8 +6,7 @@ namespace BookingsApi.DAL.Commands
 {
     public class CreateVideoHearingCommand : ICommand
     {
-        public CreateVideoHearingCommand(CreateVideoHearingRequiredDto requiredDto,
-            CreateVideoHearingOptionalDto optionalDto)
+        public CreateVideoHearingCommand(CreateVideoHearingRequiredDto requiredDto, CreateVideoHearingOptionalDto optionalDto)
         {
             CaseType = requiredDto.CaseType;
             HearingType = requiredDto.HearingType;
@@ -101,6 +100,15 @@ namespace BookingsApi.DAL.Commands
             
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
+            
+            var createdHearing = await _context.VideoHearings
+                .Include(h => h.Participants)
+                    .ThenInclude(p => p.HearingRole)
+                    .ThenInclude(hr => hr.UserRole)
+                .FirstAsync(x => x.Id == command.NewHearingId);
+            
+            createdHearing.UpdateBookingStatusJudgeRequirement();
+            await _context.SaveChangesAsync();
         }
     }
 }

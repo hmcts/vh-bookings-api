@@ -77,9 +77,8 @@ namespace BookingsApi.DAL.Commands
                         newExistingParticipantDetails.RepresentativeInformation.Representee);
                 }
             }
-            
+            hearing.UpdateBookingStatusJudgeRequirement();
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
-            
             await _context.SaveChangesAsync();
         }
     }
