@@ -6,19 +6,16 @@ namespace BookingsApi.Domain
 {
     public class BookingStatusTransition
     {
-        private readonly List<KeyValuePair<BookingStatus, BookingStatus>> _permissibleTransitions;
-
-        public BookingStatusTransition()
+        private readonly List<KeyValuePair<BookingStatus, BookingStatus>> _permissibleTransitions = new()
         {
-            _permissibleTransitions = new List<KeyValuePair<BookingStatus, BookingStatus>>
-            {
-                new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Created),
-                new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Cancelled),
-                new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Created, BookingStatus.Cancelled),
-                new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Failed),
-                new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Failed, BookingStatus.Created)
-            };
-        }
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Created),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.BookedWithoutJudge),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Cancelled),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Created, BookingStatus.Cancelled),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Created, BookingStatus.ConfirmedWithoutJudge),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Failed),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Failed, BookingStatus.Created)
+        };
 
         public bool IsValid(StatusChangedEvent statusChangedEvent)
         {

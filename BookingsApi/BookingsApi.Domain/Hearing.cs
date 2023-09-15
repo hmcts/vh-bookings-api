@@ -29,9 +29,16 @@ namespace BookingsApi.Domain
             JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool audioRecordingRequired, string cancelReason)
+        protected Hearing(CaseType caseType, 
+            HearingType hearingType, 
+            DateTime scheduledDateTime, 
+            int scheduledDuration, 
+            HearingVenue hearingVenue, 
+            string hearingRoomName, 
+            string otherInformation, 
+            string createdBy, 
+            bool audioRecordingRequired, 
+            string cancelReason)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
