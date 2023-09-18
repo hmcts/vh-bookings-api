@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using BookingsApi.Common.Helpers;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BookingsApi.Extensions
 {
@@ -21,6 +22,17 @@ namespace BookingsApi.Extensions
             try
             {
                 await _next(httpContext);
+            }
+            catch (DomainRuleException ex)
+            {
+                var modelState = new ModelStateDictionary();
+                modelState.AddDomainRuleErrors(ex.ValidationFailures);
+                var problemDetails = new ValidationProblemDetails(modelState);
+                
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+
+                await httpContext.Response.WriteAsJsonAsync(problemDetails);
             }
             catch (BadRequestException ex)
             {
