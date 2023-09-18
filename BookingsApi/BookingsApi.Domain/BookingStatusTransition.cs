@@ -19,7 +19,7 @@ namespace BookingsApi.Domain
 
         public bool IsValid(StatusChangedEvent statusChangedEvent)
         {
-            return _permissibleTransitions.Any(x => x.Key == statusChangedEvent.CurrentStatus && x.Value == statusChangedEvent.NewStatus);
+            return _permissibleTransitions.Exists(x => x.Key == statusChangedEvent.CurrentStatus && x.Value == statusChangedEvent.NewStatus);
         }
     }
 }
