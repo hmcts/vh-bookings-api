@@ -298,6 +298,7 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
             JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
+            ValidateChangeAllowed();
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
@@ -397,6 +398,7 @@ namespace BookingsApi.Domain
 
         public void RemoveEndpoint(Endpoint endpoint)
         {
+            ValidateChangeAllowed();
             endpoint.AssignDefenceAdvocate(null);
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
@@ -404,6 +406,7 @@ namespace BookingsApi.Domain
 
         public virtual void UpdateCase(Case @case)
         {
+            ValidateChangeAllowed();
             //It has been assumed that only one case exists for a given hearing, for now.
             var existingCase = GetCases().FirstOrDefault();
             if (existingCase == null) return;
@@ -415,6 +418,7 @@ namespace BookingsApi.Domain
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
             List<Case> cases, bool audioRecordingRequired)
         {
+            ValidateChangeAllowed();
             ValidateScheduledDate(scheduledDateTime);
 
             if (scheduledDuration <= 0)
