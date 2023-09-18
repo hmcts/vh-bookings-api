@@ -10,6 +10,7 @@ namespace BookingsApi.Domain
         {
             new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Created),
             new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.BookedWithoutJudge),
+            new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.ConfirmedWithoutJudge),
             new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Booked, BookingStatus.Cancelled),
             new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Created, BookingStatus.Cancelled),
             new KeyValuePair<BookingStatus, BookingStatus>(BookingStatus.Created, BookingStatus.ConfirmedWithoutJudge),
