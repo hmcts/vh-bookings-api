@@ -127,7 +127,7 @@ namespace BookingsApi.Controllers.V1
         [HttpGet("{groupId}/hearings")]
         [OpenApiOperation("GetHearingsByGroupId")]
         [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         public async Task<IActionResult> GetHearingsByGroupId(Guid groupId)
         {
             var query = new GetHearingsByGroupIdQuery(groupId);

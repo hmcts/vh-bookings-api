@@ -33,6 +33,7 @@ namespace BookingsApi.Controllers.V2
         [HttpPost("{hearingId}/participants")]
         [OpenApiOperation("AddParticipantsToHearing")]
         [ProducesResponseType(typeof(List<ParticipantResponseV2>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]
@@ -50,7 +51,7 @@ namespace BookingsApi.Controllers.V2
 
             if (videoHearing == null)
             {
-                return NotFound();
+                return NotFound("Video hearing not found");
             }
             
             var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
@@ -92,6 +93,70 @@ namespace BookingsApi.Controllers.V2
             return Ok(response);
         }
 
+        /// <summary>
+        /// Update participant details
+        /// </summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns></returns>
+        [HttpPatch("{hearingId}/participants/{participantId}")]
+        [OpenApiOperation("UpdateParticipantDetailsV2")]
+        [ProducesResponseType(typeof(ParticipantResponseV2),(int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> UpdateParticipantDetailsV2(Guid hearingId, Guid participantId, [FromBody]UpdateParticipantRequestV2 request)
+        {
+            var requestValidationResult = await new UpdateParticipantRequestValidationV2().ValidateAsync(request);
+            if (!requestValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(requestValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
+            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+            if (videoHearing == null)
+            {
+                return NotFound($"Video hearing {hearingId} not found");
+            }
+            
+            var participant = videoHearing.GetParticipants().SingleOrDefault(x => x.Id.Equals(participantId));
+
+            if (participant == null)
+            {
+                return NotFound($"Participant {participantId} not found for hearing {hearingId}");
+            }
+
+            if (participant.HearingRole.UserRole.IsRepresentative)
+            {
+                var repValidationResult = await _hearingParticipantService.ValidateRepresentativeInformationAsync(request);
+                if (!repValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(repValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
+            }
+
+            var representative = new RepresentativeInformation
+            {
+                Representee = request.Representee
+            };
+
+            var linkedParticipants =
+                LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+            
+            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
+                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative, linkedParticipants);
+
+            var updatedParticipant = await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
+            
+            var response = new ParticipantToResponseV2Mapper().MapParticipantToResponse(updatedParticipant);
+            return Ok(response);
+        }
+        
         /// <summary>
         /// Updates a hearings participants
         /// </summary>
