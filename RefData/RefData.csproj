@@ -26,10 +26,9 @@
     <None Update="data\*.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Update="appsettings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
 </Project>
