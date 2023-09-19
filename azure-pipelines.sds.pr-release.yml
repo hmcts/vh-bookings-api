@@ -184,6 +184,7 @@ stages:
         pool:
           vmImage: "windows-latest" # This Job Must be Run on Windows
         displayName: Run Entity Framework Ref Data Dev
+        dependsOn: Run_Entity_Framework_Dev
         steps:
           - download: current
             displayName: Download Sql Artifact
