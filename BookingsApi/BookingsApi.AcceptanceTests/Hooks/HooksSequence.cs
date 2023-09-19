@@ -3,8 +3,7 @@
     internal enum HooksSequence
     {
         ConfigHooks = 1,
-        HealthCheckHooks = 2,
-        RemoveDataHooks = 3,
-        RemoveAllDataHooks = 4
+        RemoveDataHooks = 2,
+        RemoveAllDataHooks = 3
     }
 }
