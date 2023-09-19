@@ -1,12 +1,12 @@
 ---
 java:
-  image: 'sdshmctspublic.azurecr.io/vh/bookings-api:latest'
+  image: "sdshmctspublic.azurecr.io/vh/bookings-api:latest"
   applicationPort: 8080
   ingressHost: vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-bookings-api
-  livenessPath: /healthcheck/liveness
-  readinessPath: /healthcheck/readiness
-  startupPath: /healthcheck/startup
+  livenessPath: /health/liveness
+  readinessPath: /health/readiness
+  startupPath: /health/startup
   replicas: 2
   aadIdentityName: vh-aad-identity
   keyVaults:
