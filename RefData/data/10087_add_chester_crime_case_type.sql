@@ -1,7 +1,7 @@
 SET XACT_ABORT ON
 GO
 
-CREATE PROC #HearingType_Create @id int, @name nvarchar(max), @caseTypeId int, @code nvarchar(max), @welshName nvarchar(max)
+CREATE PROCEDURE #HearingType_Create @id int, @name nvarchar(max), @caseTypeId int, @code nvarchar(max), @welshName nvarchar(max)
 AS
 BEGIN
     SET IDENTITY_INSERT HearingType ON
@@ -10,7 +10,7 @@ BEGIN
 END
 GO
 
-CREATE PROC #CaseRole_Create @id int, @name nvarchar(max), @group int, @caseTypeId int
+CREATE PROCEDURE #CaseRole_Create @id int, @name nvarchar(max), @group int, @caseTypeId int
 AS
 BEGIN
     SET IDENTITY_INSERT CaseRole ON
@@ -19,7 +19,7 @@ BEGIN
 END
 GO
 
-CREATE PROC #HearingRole_Create @id int, @name nvarchar(max), @userRoleId int, @caseRoleId int
+CREATE PROCEDURE #HearingRole_Create @id int, @name nvarchar(max), @userRoleId int, @caseRoleId int
 AS
 BEGIN
     SET IDENTITY_INSERT HearingRole ON

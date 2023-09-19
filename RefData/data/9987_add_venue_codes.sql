@@ -2,7 +2,7 @@ USE VhBookings;
 
 SET XACT_ABORT ON
 GO;
-CREATE PROC #HearingVenue_CreateIfNotExist @id int, @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
+CREATE PROCEDURE #HearingVenue_CreateIfNotExist @id int, @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
 As
 BEGIN
     IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = @venueName)
@@ -12,7 +12,7 @@ BEGIN
 END
 GO;
 
-CREATE PROC #HearingVenue_UpdateVenueCode @venueName nvarchar(max), @venueCode varchar(450)
+CREATE PROCEDURE #HearingVenue_UpdateVenueCode @venueName nvarchar(max), @venueCode varchar(450)
 As
 BEGIN
     IF EXISTS (SELECT * FROM dbo.HearingVenue WHERE Name = @venueName)
