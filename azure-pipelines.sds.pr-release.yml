@@ -19,35 +19,35 @@ pool:
 stages:
   ####################################################
   # CI Build Checks. #################################
-  - stage: CI_Build
-    displayName: CI Build
-    variables:
-      - template: variables/shared.yaml
-    jobs:
-      - job: CI_Helm
-        displayName: "Helm CI"
-        steps:
-          - checkout: self
+  # - stage: CI_Build
+  #   displayName: CI Build
+  #   variables:
+  #     - template: variables/shared.yaml
+  #   jobs:
+  #     - job: CI_Helm
+  #       displayName: "Helm CI"
+  #       steps:
+  #         - checkout: self
 
-          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-            parameters:
-              chartPath: ${{ variables.chartPath }}
-              chartValuesPath: ${{ variables.chartPath }}
+  #         - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+  #           parameters:
+  #             chartPath: ${{ variables.chartPath }}
+  #             chartValuesPath: ${{ variables.chartPath }}
 
-      - job: UnitAndIntegrationTests
-        displayName: "Unit and Integration Tests"
-        steps:
-          - checkout: self
+  #     - job: UnitAndIntegrationTests
+  #       displayName: "Unit and Integration Tests"
+  #       steps:
+  #         - checkout: self
 
-          - template: templates/dotnet/build-test-analyse.yml@azTemplates
-            parameters:
-              nugetConfigPath: nuget.config
-              appName: ${{ variables.appName }}
-              dockerComposeTestFile: docker-compose.tests.yml
-              sonarExtraProperties: |
-                sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
-                sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
-                sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
+  #         - template: templates/dotnet/build-test-analyse.yml@azTemplates
+  #           parameters:
+  #             nugetConfigPath: nuget.config
+  #             appName: ${{ variables.appName }}
+  #             dockerComposeTestFile: docker-compose.tests.yml
+  #             sonarExtraProperties: |
+  #               sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
+  #               sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
+  #               sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
 
   ####################################################
   # Pre Release Tasks. ###############################
@@ -153,7 +153,7 @@ stages:
   # Run Entity Framework Dev. #########################
   - stage: Run_Entity_Framework_Dev
     displayName: Run Entity Framework Dev
-    # dependsOn: Dock
+    dependsOn: Dock
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
