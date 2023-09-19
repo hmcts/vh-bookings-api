@@ -1,4 +1,6 @@
-﻿namespace RefData
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace RefData
 {
     [ExcludeFromCodeCoverage]
     public class DesignTimeHearingsRefDataContextFactory : IDesignTimeDbContextFactory<RefDataContext>
@@ -12,9 +14,37 @@
                 .Build();
             var builder = new DbContextOptionsBuilder<RefDataContext>();
             builder.UseSqlServer(config.GetConnectionString("VhBookings"));
+            builder.ReplaceService<IRelationalCommandBuilderFactory, DynamicSqlRelationalCommandBuilderFactory>();
             var context = new RefDataContext(builder.Options);
             return context;
         }
     }
 
+    [ExcludeFromCodeCoverage]
+    public class DynamicSqlRelationalCommandBuilder : RelationalCommandBuilder
+    {
+        public DynamicSqlRelationalCommandBuilder(RelationalCommandBuilderDependencies dependencies) : base(dependencies)
+        {
+        }
+
+        public override IRelationalCommand Build()
+        {
+            var commandText = base.Build().CommandText;
+            commandText = "EXECUTE ('" + commandText.Replace("'", "''") + "')";
+            return new RelationalCommand(Dependencies, commandText, Parameters);
+        }
+    }
+    
+    [ExcludeFromCodeCoverage]
+    public class DynamicSqlRelationalCommandBuilderFactory : RelationalCommandBuilderFactory
+    {
+        public DynamicSqlRelationalCommandBuilderFactory(RelationalCommandBuilderDependencies dependencies) : base(dependencies)
+        {
+        }
+
+        public override IRelationalCommandBuilder Create()
+        {
+            return new DynamicSqlRelationalCommandBuilder(Dependencies);
+        }
+    }
 }
