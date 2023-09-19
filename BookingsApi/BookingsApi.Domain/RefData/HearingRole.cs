@@ -28,5 +28,8 @@ namespace BookingsApi.Domain.RefData
         
         public bool IsJudge() => 
             string.Equals(Name, "Judge", StringComparison.InvariantCultureIgnoreCase);
+        
+        public bool IsInterpreter () => 
+            string.Equals(Name, "Interpreter", StringComparison.InvariantCultureIgnoreCase);
     }
 }

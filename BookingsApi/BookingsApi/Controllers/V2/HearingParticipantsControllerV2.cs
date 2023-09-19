@@ -79,7 +79,7 @@ namespace BookingsApi.Controllers.V2
             catch (DomainRuleException e)
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
@@ -152,7 +152,7 @@ namespace BookingsApi.Controllers.V2
             catch (DomainRuleException e)
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
