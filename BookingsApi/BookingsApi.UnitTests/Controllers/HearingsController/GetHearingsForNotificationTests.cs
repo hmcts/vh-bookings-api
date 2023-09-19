@@ -5,7 +5,6 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
@@ -66,7 +65,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var hearing = new VideoHearingBuilder().Build();
 
-            if (!caseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(caseNumber))
             {
                 foreach (var caseName in caseNames)
                 {

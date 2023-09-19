@@ -2,7 +2,6 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
-using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.Controllers.V1
@@ -371,28 +370,16 @@ namespace BookingsApi.Controllers.V1
         [OpenApiOperation("UpdateParticipantDetails")]
         [ProducesResponseType(typeof(ParticipantResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId,
             [FromBody] UpdateParticipantRequest request)
         {
-            if (hearingId == Guid.Empty)
+            var requestValidationResult = await new UpdateParticipantRequestValidation().ValidateAsync(request);
+            if (!requestValidationResult.IsValid)
             {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
-            }
-
-            if (participantId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
-                return BadRequest(ModelState);
-            }
-
-            var result = await new UpdateParticipantRequestValidation().ValidateAsync(request);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                ModelState.AddFluentValidationErrors(requestValidationResult.Errors);
+                return ValidationProblem(ModelState);
             }
 
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -400,7 +387,7 @@ namespace BookingsApi.Controllers.V1
 
             if (videoHearing == null)
             {
-                return NotFound();
+                return NotFound($"Video hearing {hearingId} not found");
             }
 
             Participant participant = null;
@@ -412,7 +399,7 @@ namespace BookingsApi.Controllers.V1
 
             if (participant == null)
             {
-                return NotFound();
+                return NotFound($"Participant {participantId} not found for hearing {hearingId}");
             }
 
             if (participant.HearingRole.UserRole.IsRepresentative)
@@ -421,8 +408,8 @@ namespace BookingsApi.Controllers.V1
                     await _hearingParticipantService.ValidateRepresentativeInformationAsync(request);
                 if (!repValidationResult.IsValid)
                 {
-                    ModelState.AddFluentValidationErrors(result.Errors);
-                    return BadRequest(ModelState);
+                    ModelState.AddFluentValidationErrors(repValidationResult.Errors);
+                    return ValidationProblem(ModelState);
                 }
             }
 
