@@ -66,7 +66,6 @@ stages:
               workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
               migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
               projectName: ${{ variables.efProjectName }}
-              includeRefDataProject: true
 
       - job: Generate_RefData_Entity_Framework_Script
         displayName: "Generate RefData Entity Framework Script"
