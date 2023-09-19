@@ -30,6 +30,16 @@ namespace RefData
         public override IRelationalCommand Build()
         {
             var commandText = base.Build().CommandText;
+            commandText = commandText.Replace("SET XACT_ABORT ON;", string.Empty);
+            commandText = commandText.Replace("SET XACT_ABORT ON", string.Empty);
+            commandText = commandText.Replace("SET XACT_ABORT OFF;", string.Empty);
+            commandText = commandText.Replace("SET XACT_ABORT OFF", string.Empty);
+            commandText = commandText.Replace("BEGIN TRANSACTION;", string.Empty);
+            commandText = commandText.Replace("BEGIN TRANSACTION", string.Empty);
+            
+            commandText = commandText.Replace("COMMIT TRANSACTION;", string.Empty);
+            commandText = commandText.Replace("COMMIT;", string.Empty);
+            commandText = commandText.Replace("COMMIT", string.Empty);
             commandText = "EXECUTE ('" + commandText.Replace("'", "''") + "')";
             return new RelationalCommand(Dependencies, commandText, Parameters);
         }

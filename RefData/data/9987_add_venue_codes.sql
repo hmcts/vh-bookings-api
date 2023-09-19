@@ -1,13 +1,11 @@
-USE VhBookings;
-
 SET XACT_ABORT ON
 GO;
 CREATE PROCEDURE #HearingVenue_CreateIfNotExist @id int, @venueName nvarchar(max), @venueCode varchar(450), @isScottish int,  @isWorkAllocationEnabled int
 As
 BEGIN
-    IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = @venueName)
+    IF NOT EXISTS(SELECT * FROM VhBookings.dbo.HearingVenue WHERE Name = @venueName)
         BEGIN
-            Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, @id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
+            Insert Into VhBookings.dbo.HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES (@venueName, @id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @venueCode, @isScottish, @isWorkAllocationEnabled)
         END
 END
 GO;
@@ -15,9 +13,9 @@ GO;
 CREATE PROCEDURE #HearingVenue_UpdateVenueCode @venueName nvarchar(max), @venueCode varchar(450)
 As
 BEGIN
-    IF EXISTS (SELECT * FROM dbo.HearingVenue WHERE Name = @venueName)
+    IF EXISTS (SELECT * FROM VhBookings.dbo.HearingVenue WHERE Name = @venueName)
         BEGIN
-            UPDATE HearingVenue
+            UPDATE dbo.HearingVenue
             SET VenueCode = @venueCode,
                 UpdatedDate = CURRENT_TIMESTAMP
             WHERE Name = @venueName;
@@ -385,8 +383,6 @@ EXEC #HearingVenue_UpdateVenueCode @venueName = 'Wrexham Magistrates Court', @ve
 DROP PROC #HearingVenue_UpdateVenueCode;
 GO;
 
-SELECT * FROM HearingVenue
-SELECT * FROM VhBookings.dbo.HearingVenue WHERE VenueCode IS NULL
 -- Change the next line to commit
 COMMIT;
 SET XACT_ABORT OFF
