@@ -153,7 +153,7 @@ stages:
   # Run Entity Framework Dev. #########################
   - stage: Run_Entity_Framework_Dev
     displayName: Run Entity Framework Dev
-    dependsOn: Dock
+    # dependsOn: Dock
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
