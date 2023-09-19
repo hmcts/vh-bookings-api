@@ -78,9 +78,6 @@ EXEC #HearingRole_Update 'Judge', 'JUDG', 'Barnwr'
 EXEC #HearingRole_Update 'Panel Member', 'PANL', 'Aelod o''r Panel'
 EXEC #HearingRole_Update 'Staff Member', 'STAF', 'Aelod o staff'
 
--- Update incorrect roles
-
-
 COMMIT
 
 SET XACT_ABORT OFF
