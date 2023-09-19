@@ -13,7 +13,7 @@ GO;
 -- update all hearings where venueName = <old name> to 'TempMigrationVenue'
 -- update venue details
 -- update all hearings where venueName = 'TempMigrationVenue' to <new name>
-CREATE OR ALTER PROC #HearingVenue_UpdateVenueCodeAndName @oldVenueName nvarchar(max), @venueCode varchar(450), @newVenueName nvarchar(max)
+CREATE PROC #HearingVenue_UpdateVenueCodeAndName @oldVenueName nvarchar(max), @venueCode varchar(450), @newVenueName nvarchar(max)
 As
 BEGIN
     IF EXISTS (SELECT * FROM dbo.HearingVenue WHERE Name = TRIM(@oldVenueName))

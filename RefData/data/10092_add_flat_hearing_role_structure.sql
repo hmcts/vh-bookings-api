@@ -3,7 +3,7 @@ GO;
 
 
 
-CREATE OR ALTER PROC #HearingRole_CreateIfNotExist @id int, @hearingRoleName nvarchar(max), @userRoleId varchar(450)
+CREATE PROC #HearingRole_CreateIfNotExist @id int, @hearingRoleName nvarchar(max), @userRoleId varchar(450)
 As
 BEGIN
     IF NOT EXISTS(SELECT * FROM VhBookings.dbo.HearingRole WHERE Name = @hearingRoleName AND UserRoleId = @userRoleId AND CaseRoleId IS NULL)

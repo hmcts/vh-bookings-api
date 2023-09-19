@@ -18,7 +18,7 @@ UPDATE dbo.CaseType SET ServiceId = 'ABA5', JurisdictionId = @familyJurisdiction
 GO;
 
 
-CREATE OR ALTER PROC #Upsert_PrivateLawHearingTypes @id int, @hearingTypeName nvarchar(max), @hearingTypeCode varchar(450), @welshName nvarchar(max), @privateLawCaseTypeId int
+CREATE PROC #Upsert_PrivateLawHearingTypes @id int, @hearingTypeName nvarchar(max), @hearingTypeCode varchar(450), @welshName nvarchar(max), @privateLawCaseTypeId int
 As
 BEGIN
     IF EXISTS (SELECT * FROM dbo.HearingType WHERE Name = @hearingTypeName AND CaseTypeId = @privateLawCaseTypeId)
