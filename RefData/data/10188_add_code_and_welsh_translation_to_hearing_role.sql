@@ -74,9 +74,9 @@ EXEC #HearingRole_Update 'Support', 'SUPP', 'Cefnogaeth', @Individual
 EXEC #HearingRole_Update 'Victim', 'VICT', 'Dioddefwr', @Individual
 EXEC #HearingRole_Update 'Welfare Representative', 'WERP', 'Cynrychiolydd Lles', @Representative
 EXEC #HearingRole_Update 'Witness', 'WITN', 'Tyst', @Individual
-EXEC #HearingRole_Update 'Judge', 'JUDG', 'Barnwr'
-EXEC #HearingRole_Update 'Panel Member', 'PANL', 'Aelod o''r Panel'
-EXEC #HearingRole_Update 'Staff Member', 'STAF', 'Aelod o staff'
+EXEC #HearingRole_Update 'Judge', 'JUDG', 'Barnwr', @Judge
+EXEC #HearingRole_Update 'Panel Member', 'PANL', 'Aelod o''r Panel', @JOH
+EXEC #HearingRole_Update 'Staff Member', 'STAF', 'Aelod o staff', @StaffMember
 
 COMMIT
 
