@@ -67,9 +67,6 @@ stages:
               migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
               projectName: ${{ variables.efProjectName }}
               includeRefDataProject: true
-              workingPathRefData: $(System.DefaultWorkingDirectory)/RefData
-              outputPathRefData: RefData/Migrations
-              projectNameRefData: ${{ variables.efProjectNameRefData }}
 
       - job: package_nuget
         displayName: "Package NuGet Packages"

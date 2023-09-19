@@ -1,7 +1,7 @@
 ﻿namespace RefData
 {
     [ExcludeFromCodeCoverage]
-    public class DesignTimeHearingsContextFactory : IDesignTimeDbContextFactory<RefDataContext>
+    public class DesignTimeHearingsRefDataContextFactory : IDesignTimeDbContextFactory<RefDataContext>
     {
         public RefDataContext CreateDbContext(string[] args)
         {
