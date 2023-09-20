@@ -30,7 +30,7 @@ stages:
           - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
             parameters:
               outputPath: $(Build.StagingDirectory)
-              contextName: ${{ variables.efDataContextName }}
+              contextName: ${{ variables.efContextNameRefData }}
               workingPath: $(System.DefaultWorkingDirectory)/RefData
               migrationsPath: RefData/Migrations
-              projectName: ${{ variables.efDataProjectName }}
+              projectName: ${{ variables.efProjectNameRefData }}
