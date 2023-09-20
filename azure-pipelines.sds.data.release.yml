@@ -23,10 +23,10 @@ pool:
   vmImage: windows-latest
 
 stages:
-- stage: Generate_Entity_Framework
+- stage: Generate_EF
   displayName: "Generate Entity Framework"
   jobs:
-  - job: Generate_Entity_Framework_Script
+  - job: Generate_EF
     variables:
     - template: variables/shared.yaml
     displayName: "Generate Entity Framework Script"
@@ -40,26 +40,27 @@ stages:
           projectName: ${{ variables.efProjectNameRefData }}
 
 - ${{each env in parameters.environments}}:
-  - stage: Run_Entity_Framework_Script_${{ env }}
-    dependsOn: Generate_Entity_Framework
+  - stage: Run_EF_${{ env }}
+    dependsOn: Generate_EF
     jobs:
-    - job: Approve_EF_${{ env }}
-      displayName: "Approve EF to ${{ env }}"
-      pool: server
-      timeoutInMinutes: 10080 # 7 Days
-      steps:
-      - task: ManualValidation@0
+    - ${{ if ne(variables['env'], 'dev') }}: 
+      - job: Approve_EF_${{ env }}
+        displayName: "Approve EF to ${{ env }}"
+        pool: server
         timeoutInMinutes: 10080 # 7 Days
-        inputs:
-          instructions: 'Please Approve EF run to ${{ env }}'
-          onTimeout: 'reject'
-    - job: Run_Entity_Framework_RefData_Dev
+        steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 10080 # 7 Days
+          inputs:
+            instructions: 'Please Approve EF run to ${{ env }}'
+            onTimeout: 'reject'
+    - job: Run_EF_RefData_${{ env }}
       variables:
       - template: variables/shared.yaml
         parameters:
           env: ${{ env }}
       pool:
-        vmImage: "windows-latest" # This Job Must be Run on Windows
+        vmImage: "windows-latest" # This job must be run on Windows
       displayName: "Run Entity Framework Ref Data ${{ env }}"
       dependsOn: Approve_EF_${{ env }}
       steps:
