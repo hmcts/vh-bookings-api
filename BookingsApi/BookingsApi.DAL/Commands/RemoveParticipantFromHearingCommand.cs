@@ -38,6 +38,7 @@ namespace BookingsApi.DAL.Commands
                 throw new HearingNotFoundException(command.HearingId);
             
             hearing.RemoveParticipant(command.Participant);
+            hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
         }
     }

@@ -174,7 +174,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
 
@@ -195,7 +195,7 @@ namespace BookingsApi.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
 
@@ -223,7 +223,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
 
@@ -241,7 +241,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
         
@@ -258,7 +258,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.Now;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
 
@@ -276,7 +276,7 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Remove(existingParticipant);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
         }
 
         public bool HasHost =>
@@ -295,7 +295,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
         
@@ -306,7 +306,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
 
@@ -335,7 +335,7 @@ namespace BookingsApi.Domain
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
             
-            UpdateBookingStatusJudgeRequirement();
+            
             return participant;
         }
 
@@ -378,7 +378,6 @@ namespace BookingsApi.Domain
 
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
-            UpdateBookingStatusJudgeRequirement();
         }
 
         public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
@@ -386,7 +385,6 @@ namespace BookingsApi.Domain
             ValidateChangeAllowed();
             var participant = GetParticipants().Single(x => x.Id == participantId);
             RemoveParticipant(participant, validateParticipantCount);
-            UpdateBookingStatusJudgeRequirement();
         }
         
         public virtual IList<Person> GetPersons()

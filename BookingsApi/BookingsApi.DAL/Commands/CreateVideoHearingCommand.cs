@@ -95,6 +95,8 @@ namespace BookingsApi.DAL.Commands
 
                 videoHearing.AddEndpoints(newEndpoints);
             }
+            
+            videoHearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
         }
