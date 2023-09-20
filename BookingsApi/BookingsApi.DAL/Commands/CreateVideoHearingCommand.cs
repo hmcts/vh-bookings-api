@@ -95,20 +95,8 @@ namespace BookingsApi.DAL.Commands
 
                 videoHearing.AddEndpoints(newEndpoints);
             }
-            
-            videoHearing.UpdateBookingStatusJudgeRequirement();
-            
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
-            
-            var createdHearing = await _context.VideoHearings
-                .Include(h => h.Participants)
-                    .ThenInclude(p => p.HearingRole)
-                    .ThenInclude(hr => hr.UserRole)
-                .FirstAsync(x => x.Id == command.NewHearingId);
-            
-            createdHearing.UpdateBookingStatusJudgeRequirement();
-            await _context.SaveChangesAsync();
         }
     }
 }

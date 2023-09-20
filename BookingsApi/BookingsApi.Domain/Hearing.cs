@@ -221,6 +221,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -289,6 +290,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
@@ -299,6 +301,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -327,6 +330,7 @@ namespace BookingsApi.Domain
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
             
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -369,6 +373,7 @@ namespace BookingsApi.Domain
 
             Participants.Remove(existingParticipant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
         }
 
         public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
