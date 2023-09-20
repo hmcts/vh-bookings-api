@@ -38,6 +38,7 @@ namespace Testing.Common.Builders.Api
                 $"{ApiRoot}/audiorecording/search?{QueryStringBuilder.ConvertToQueryString(query)}";
             public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
             public static string UpdateAudiorecordingZipStatus(Guid hearingId, bool? zipStatus) => $"{ApiRoot}/{hearingId}/audiorecordingzipsatus/zipStatus?zipstatus={zipStatus}";
+            public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingsEndpointsV2
