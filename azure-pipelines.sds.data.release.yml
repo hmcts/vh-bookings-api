@@ -10,6 +10,9 @@ parameters:
   default:
   - dev
   - test
+  - ithc
+  - demo
+  - prod
 
 resources:
   repositories:
