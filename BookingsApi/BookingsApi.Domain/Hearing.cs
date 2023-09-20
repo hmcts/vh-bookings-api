@@ -174,6 +174,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -194,6 +195,7 @@ namespace BookingsApi.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -239,6 +241,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
@@ -255,6 +258,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.Now;
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -272,6 +276,7 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Remove(existingParticipant);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
         }
 
         public bool HasHost =>
@@ -381,6 +386,7 @@ namespace BookingsApi.Domain
             ValidateChangeAllowed();
             var participant = GetParticipants().Single(x => x.Id == participantId);
             RemoveParticipant(participant, validateParticipantCount);
+            UpdateBookingStatusJudgeRequirement();
         }
         
         public virtual IList<Person> GetPersons()
