@@ -43,7 +43,7 @@ stages:
   - stage: Run_EF_${{ env }}
     dependsOn: Generate_EF
     jobs:
-    - ${{ if ne(variables['env'], 'dev') }}: 
+    - ${{ if ne(env, 'dev') }}: 
       - job: Approve_EF_${{ env }}
         displayName: "Approve EF to ${{ env }}"
         pool: server
