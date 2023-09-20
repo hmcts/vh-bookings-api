@@ -6,8 +6,8 @@ pr: none
 
 parameters:
 - name: environments
-  type: string
-  values:
+  type: object
+  default:
   - dev
   - test
 
