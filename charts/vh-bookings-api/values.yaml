@@ -1,13 +1,12 @@
 ---
 java:
-  image: 'sdshmctspublic.azurecr.io/vh/bookings-api:latest'
+  image: "sdshmctspublic.azurecr.io/vh/bookings-api:latest"
   applicationPort: 8080
   ingressHost: vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-bookings-api
-  readinessPath: /healthcheck/health
-  livenessPath: /healthcheck/health
-  livenessDelay: 360
-  livenessPeriod: 120
+  livenessPath: /health/liveness
+  readinessPath: /health/readiness
+  startupPath: /health/startup
   replicas: 2
   aadIdentityName: vh-aad-identity
   keyVaults:
@@ -39,9 +38,9 @@ java:
     DISABLEHTTPSREDIRECTION: true
     FEATUREFLAGS__EJUDFEATURE: false
     FEATUREFLAGS__STAFFMEMBERFEATURE: true
-    Logging__LogLevel__Default: debug
-    Logging__LogLevel__Microsoft: debug
-    Logging__LogLevel__System: debug
+    Logging__LogLevel__Default: warning
+    Logging__LogLevel__Microsoft: warning
+    Logging__LogLevel__System: warning
     SERVICEBUSQUEUE__QUEUENAME: booking
     TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
     UseServiceBusFake: false
