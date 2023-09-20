@@ -10,18 +10,18 @@
     <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
 	<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-    <PackageReference Include="coverlet.msbuild" Version="3.2.0">
+    <PackageReference Include="coverlet.msbuild" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.TestPlatform" Version="16.5.0" />
-    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="Moq" Version="4.20.69" />
     <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.8.0.76515">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.10.0.77988">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />

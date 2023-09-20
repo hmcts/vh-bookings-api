@@ -16,13 +16,11 @@ using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Testing.Common.Assertions;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
-using FluentAssertions.Common;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -583,7 +581,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var hearing = new VideoHearingBuilder().Build();
 
-            if (!caseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(caseNumber))
             {
                 hearing.AddCase(caseNumber, "Case name", true);
             }

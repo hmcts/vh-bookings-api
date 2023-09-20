@@ -1,5 +1,4 @@
 ﻿using BookingsApi.Contract.V1.Responses;
-using Castle.Core.Internal;
 
 namespace BookingsApi.Mappings.V1
 {
@@ -25,7 +24,7 @@ namespace BookingsApi.Mappings.V1
                     ? judgeParticipant.Person.Username 
                     : string.Empty;
 
-                var @case = caseNumber.IsNullOrEmpty()
+                var @case = string.IsNullOrEmpty(caseNumber)
                     ? hearing.GetCases().FirstOrDefault()
                     : hearing.GetCases()
                         .FirstOrDefault(c => c.Number.ToLower().Trim().Contains(caseNumber.ToLower().Trim()));

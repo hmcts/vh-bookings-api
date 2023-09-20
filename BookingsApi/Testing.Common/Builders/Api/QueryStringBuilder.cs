@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Castle.Core.Internal;
 using Newtonsoft.Json;
 
 namespace Testing.Common.Builders.Api
@@ -14,7 +13,7 @@ namespace Testing.Common.Builders.Api
 
             var step2 = JsonConvert.DeserializeObject<IDictionary<string, string>>(step1);
 
-            var step3 = step2.Where(x => !x.Value.IsNullOrEmpty())
+            var step3 = step2.Where(x => !string.IsNullOrEmpty(x.Value))
                 .Select(x => HttpUtility.UrlEncode(x.Key) + "=" + HttpUtility.UrlEncode(x.Value));
 
             return string.Join("&", step3);

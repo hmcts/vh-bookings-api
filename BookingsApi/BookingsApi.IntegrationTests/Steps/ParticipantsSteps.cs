@@ -151,10 +151,10 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
             Context.TestData.NewHearingId = seededHearing.Id;
-            Context.TestData.Participant = seededHearing.GetParticipants().First();
+            Context.TestData.Participant = seededHearing.GetParticipants()[0];
             Context.HttpMethod = HttpMethod.Delete;
 
-            var participantToRemove = seededHearing.GetParticipants().First();
+            var participantToRemove = seededHearing.GetParticipants()[0];
             var participantId = participantToRemove.Id;
             Context.TestData.RemovedPersons.Add(participantToRemove.Person.ContactEmail);
             Guid hearingId;
@@ -267,57 +267,6 @@ namespace BookingsApi.IntegrationTests.Steps
                 hearingFromDb.GetParticipants().Any(x => x.Id == Context.TestData.Participant.Id).Should().BeFalse();
             }
         }
-
-        [Given(@"I have an update participant in a hearing request with a (.*) hearing id")]
-        [Given(@"I have an update participant in a hearing request with an (.*) hearing id")]
-        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithANonexistentHearingId(Scenario scenario)
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.TestData.NewHearingId = seededHearing.Id;
-            var participantId = seededHearing.GetParticipants().First().Id;
-            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
-            Guid hearingId;
-
-            var jsonBody = RequestHelper.Serialise(updateParticipantRequest);
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            switch (scenario)
-            {
-                case Scenario.Valid:
-                    {
-                        hearingId = Context.TestData.NewHearingId;
-                        NUnit.Framework.TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-                        break;
-                    }
-                case Scenario.Nonexistent:
-                    hearingId = Guid.NewGuid();
-                    break;
-                case Scenario.Invalid:
-                    hearingId = Guid.Empty;
-                    break;
-                default: throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null);
-            }
-            Context.Uri = UpdateParticipantDetails(hearingId,participantId);
-            Context.HttpMethod = HttpMethod.Put;
-        }
-
-        [Given(@"I have an update participant in a hearing request with a invalid representee")]
-        public async Task GivenIHaveAnUpdateParticipantInAHearingRequestWithAInvalidReference()
-        {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing();
-            Context.TestData.NewHearingId = seededHearing.Id;
-            var participantId = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.IsRepresentative).Id;
-
-            var updateParticipantRequest = new UpdateParticipantRequestBuilder().Build();
-            updateParticipantRequest.Representee = string.Empty;
-            var hearingId = seededHearing.Id;
-            var jsonBody = RequestHelper.Serialise(updateParticipantRequest);
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            Context.Uri = UpdateParticipantDetails(hearingId, participantId);
-            Context.HttpMethod = HttpMethod.Put;
-        }
-
 
         private static AddParticipantsToHearingRequest BuildRequest()
         {

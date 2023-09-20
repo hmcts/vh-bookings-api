@@ -5,7 +5,6 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.RefData;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
@@ -82,7 +81,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         {
             var hearing = new VideoHearingBuilder().Build();
 
-            if (!caseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(caseNumber))
             {
                 foreach (var caseName in caseNames)
                 {
@@ -106,7 +105,7 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
         {
             var hearing = new VideoHearingBuilder().Build();
 
-            if (!caseNumber.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(caseNumber))
             {
                 hearing.AddCase(caseNumber, "Case name", true);
             }
