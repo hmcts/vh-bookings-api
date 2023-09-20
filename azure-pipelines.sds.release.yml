@@ -35,17 +35,6 @@ stages:
         projectName: ${{ variables.efProjectName }}
         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
   
-  - job: Generate_RefData_Entity_Framework_Script
-    displayName: "Generate RefData Entity Framework Script"
-    steps:
-      - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-        parameters:
-          outputPath: $(Build.StagingDirectory)
-          contextName: ${{ variables.efContextNameRefData }}
-          workingPath: $(System.DefaultWorkingDirectory)/RefData
-          migrationsPath: RefData/Migrations
-          projectName: ${{ variables.efProjectNameRefData }}
-
   - job: PublishAcceptanceTests
     displayName: Publish Acceptance Tests
     variables:
@@ -91,19 +80,6 @@ stages:
         databaseName: ${{ variables.BookingsApiDbName }}
         azureSubscription: ${{ variables.subscriptionName }}
         sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
-        kvfirewallRequired: false
-        kvName: ${{ variables.vhKeyVault }}
-        kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
-        kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
-
-    - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
-      displayName: Run Ref Data Migrations
-      parameters:
-        sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
-        sqlServerName: ${{ variables.vhSQLServerName }}
-        databaseName: ${{ variables.BookingsApiDbName }}
-        azureSubscription: ${{ variables.subscriptionName }}
-        sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextNameRefData }}-$(Build.BuildId)/${{ variables.efContextNameRefData }}.sql"
         kvfirewallRequired: false
         kvName: ${{ variables.vhKeyVault }}
         kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}

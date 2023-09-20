@@ -1,0 +1,36 @@
+name: $(Date:yyyyMMddHHmm)-$(Rev:r)
+
+trigger: none
+
+pr: none
+
+resources:
+  repositories:
+    - repository: azTemplates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: master
+      endpoint: hmcts
+
+pool: 
+  vmImage: windows-latest
+
+stages:
+  - stage: Entity_Framework
+    displayName: Entity Framework
+    variables:
+      - template: variables/dev.yaml
+      - template: variables/shared.yaml
+        parameters:
+          env: ${{ variables.env }}
+    jobs:
+      - job: Generate_Entity_Framework_Script
+        displayName: "Generate Entity Framework Script"
+        steps:
+          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+            parameters:
+              outputPath: $(Build.StagingDirectory)
+              contextName: ${{ variables.efDataContextName }}
+              workingPath: $(System.DefaultWorkingDirectory)/RefData
+              migrationsPath: RefData/Migrations
+              projectName: ${{ variables.efDataProjectName }}
