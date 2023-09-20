@@ -63,7 +63,9 @@ stages:
         vmImage: "windows-latest" # This job must be run on Windows
       displayName: "Run Entity Framework Ref Data ${{ env }}"
       ${{ if ne(env, 'dev') }}: 
-        dependsOn: Approve_EF_${{ env }}
+        dependsOn:
+        - Approve_EF_${{ env }}
+        - Approve_EF_dev
       steps:
       - download: current
         displayName: Download Sql Artifact
