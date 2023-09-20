@@ -65,7 +65,7 @@ stages:
       ${{ if ne(env, 'dev') }}: 
         dependsOn:
         - Approve_EF_${{ env }}
-        - Approve_EF_dev
+        - Run_EF_RefData_dev
       steps:
       - download: current
         displayName: Download Sql Artifact
