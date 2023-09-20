@@ -45,18 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Api\V1\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Features\V1\EndPoints.feature.cs">
       <DependentUpon>EndPoints.feature</DependentUpon>
-      <AutoGen>true</AutoGen>
-      <DesignTime>true</DesignTime>
-      <Visible>true</Visible>
-    </Compile>
-    <Compile Update="Features\V1\HealthCheck.feature.cs">
-      <DependentUpon>HealthCheck.feature</DependentUpon>
       <AutoGen>true</AutoGen>
       <DesignTime>true</DesignTime>
       <Visible>true</Visible>
@@ -69,12 +59,6 @@
     </Compile>
     <Compile Update="Features\V1\Participants.feature.cs">
       <DependentUpon>Participants.feature</DependentUpon>
-      <AutoGen>true</AutoGen>
-      <DesignTime>true</DesignTime>
-      <Visible>true</Visible>
-    </Compile>
-    <Compile Update="Features\V1\Persons.feature.cs">
-      <DependentUpon>Persons.feature</DependentUpon>
       <AutoGen>true</AutoGen>
       <DesignTime>true</DesignTime>
       <Visible>true</Visible>
