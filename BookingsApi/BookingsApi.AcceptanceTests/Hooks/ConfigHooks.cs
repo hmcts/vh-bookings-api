@@ -8,7 +8,6 @@ using BookingsApi.AcceptanceTests.Contexts;
 using BookingsApi.Contract.V1.Responses;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using ConfigurationManager = AcceptanceTests.Common.Configuration.ConfigurationManager;
