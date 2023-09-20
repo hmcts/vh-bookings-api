@@ -41,8 +41,8 @@ stages:
 
 - ${{each env in parameters.environments}}:
   - stage: Run_Entity_Framework_Script_${{ env }}
+    dependsOn: Generate_Entity_Framework
     jobs:
-
     - job: Approve_EF_${{ env }}
       displayName: "Approve EF to ${{ env }}"
       pool: server
@@ -53,7 +53,6 @@ stages:
         inputs:
           instructions: 'Please Approve EF run to ${{ env }}'
           onTimeout: 'reject'
-
     - job: Run_Entity_Framework_RefData_Dev
       variables:
       - template: variables/shared.yaml
