@@ -41,6 +41,17 @@ stages:
         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
         projectName: ${{ variables.efProjectName }}
         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+  
+  - job: Generate_RefData_Entity_Framework_Script
+    displayName: "Generate RefData Entity Framework Script"
+    steps:
+      - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+        parameters:
+          outputPath: $(Build.StagingDirectory)
+          contextName: ${{ variables.efContextNameRefData }}
+          workingPath: $(System.DefaultWorkingDirectory)/RefData
+          migrationsPath: RefData/Migrations
+          projectName: ${{ variables.efProjectNameRefData }}
 
   - job: package_nuget
     displayName: "Package Nuget Packages"
@@ -83,12 +94,34 @@ stages:
           kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
           kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
 
+    - job: Run_Entity_Framework_RefData_${{ env }}
+      pool:
+        vmImage: "windows-latest" # This Job Must be Run on Windows
+      displayName: Run Entity Framework Ref Data ${{ env }}
+      dependsOn: Run_Entity_Framework_${{ env }}
+      steps:
+        - download: current
+          displayName: Download Sql Artifact
+
+        - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+          parameters:
+            sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+            sqlServerName: ${{ variables.vhSQLServerName }}
+            databaseName: ${{ variables.BookingsApiDbName }}
+            azureSubscription: ${{ variables.subscriptionName }}
+            sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextNameRefData }}-$(Build.BuildId)/${{ variables.efContextNameRefData }}.sql"
+            kvfirewallRequired: false
+            kvName: ${{ variables.vhKeyVault }}
+            kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+            kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+
 #####################################################
 # Build Docker Image & Push. ########################
 - stage: Docker_Build_Push
   displayName: Docker Build & Push Image
   dependsOn:
     - Run_Entity_Framework_Dev
+    - Run_Entity_Framework_RefData_Dev
   variables:
     - template: variables/dev.yaml
     - template: variables/shared.yaml
