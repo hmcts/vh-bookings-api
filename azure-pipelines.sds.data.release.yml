@@ -24,16 +24,16 @@ pool:
 
 
 stages:
-- ${{each env in parameters.environments}}:
-  - stage: Entity_Framework_${{ env }}
-    displayName: "Entity Framework ${{ env }}"
-    variables:
-      - template: variables/dev.yaml
-      - template: variables/shared.yaml
-        parameters:
-          env: ${{ env }}
-    jobs:
+- stage: Generate_Entity_Framework
+  displayName: "Generate Entity Framework"
+  jobs:
+    - ${{each env in parameters.environments}}:
       - job: Generate_Entity_Framework_Script_${{ env }}
+        variables:
+          - template: variables/dev.yaml
+          - template: variables/shared.yaml
+            parameters:
+              env: ${{ env }}
         displayName: "Generate Entity Framework Script ${{ env }}"
         steps:
           - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
