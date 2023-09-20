@@ -4,6 +4,13 @@ trigger: none
 
 pr: none
 
+parameters:
+- name: environments
+  type: string
+  values:
+  - dev
+  - test
+
 resources:
   repositories:
     - repository: azTemplates
@@ -15,14 +22,16 @@ resources:
 pool: 
   vmImage: windows-latest
 
+
 stages:
+- ${{each env in parameters.environments}}:
   - stage: Entity_Framework
     displayName: Entity Framework
     variables:
       - template: variables/dev.yaml
       - template: variables/shared.yaml
         parameters:
-          env: ${{ variables.env }}
+          env: ${{ env }}
     jobs:
       - job: Generate_Entity_Framework_Script
         displayName: "Generate Entity Framework Script"
