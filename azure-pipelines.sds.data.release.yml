@@ -62,7 +62,7 @@ stages:
       pool:
         vmImage: "windows-latest" # This job must be run on Windows
       displayName: "Run Entity Framework Ref Data ${{ env }}"
-      - ${{ if ne(env, 'dev') }}: 
+      ${{ if ne(env, 'dev') }}: 
         dependsOn: Approve_EF_${{ env }}
       steps:
       - download: current
