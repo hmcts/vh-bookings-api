@@ -38,6 +38,7 @@ namespace Testing.Common.Builders.Api
                 $"{ApiRoot}/audiorecording/search?{QueryStringBuilder.ConvertToQueryString(query)}";
             public static string AnonymiseHearings() =>  $"{ApiRoot}/anonymisehearings";
             public static string UpdateAudiorecordingZipStatus(Guid hearingId, bool? zipStatus) => $"{ApiRoot}/{hearingId}/audiorecordingzipsatus/zipStatus?zipstatus={zipStatus}";
+            public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingsEndpointsV2
@@ -46,6 +47,8 @@ namespace Testing.Common.Builders.Api
             public static string BookNewHearing => $"{ApiRoot}";
             public static string GetHearingDetailsById(string hearingId) => $"{ApiRoot}/{hearingId}";
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+
+            public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingParticipantsEndpoints
@@ -59,6 +62,7 @@ namespace Testing.Common.Builders.Api
             private const string ApiRoot = "v2/hearings";
             public static string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
             public static string UpdateHearingParticipants(Guid hearingId) => $"{ApiRoot}/{hearingId}/updateParticipants";
+            public static string UpdateParticipantDetails(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
         }
         
         public static class HearingRolesEndpoints

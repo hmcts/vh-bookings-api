@@ -3,7 +3,6 @@ using BookingsApi.Domain;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
-using Castle.Core.Internal;
 
 namespace BookingsApi.UnitTests.Mappings.V1
 {
@@ -27,7 +26,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [TestCase(null)]
         public void Should_map_all_properties(string caseNumber)
         {
-            var @case = caseNumber.IsNullOrEmpty() ? hearingsByCaseNumber[0].GetCases().FirstOrDefault():
+            var @case = string.IsNullOrEmpty(caseNumber) ? hearingsByCaseNumber[0].GetCases().FirstOrDefault():
                                                         hearingsByCaseNumber[0].GetCases().FirstOrDefault(c => c.Number.ToLower().Trim() == caseNumber.ToLower().Trim());
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, caseNumber);
