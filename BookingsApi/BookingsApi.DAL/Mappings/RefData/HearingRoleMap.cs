@@ -13,6 +13,7 @@ namespace BookingsApi.DAL.Mappings.RefData
 
             builder.HasOne(x => x.UserRole);
             builder.Property(x => x.Live).HasDefaultValue(true);
+            builder.HasIndex(x => x.Code).IsUnique();
         }
     }
 }

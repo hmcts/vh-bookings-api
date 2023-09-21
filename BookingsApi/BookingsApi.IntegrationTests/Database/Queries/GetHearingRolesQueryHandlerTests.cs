@@ -22,13 +22,14 @@ public class GetHearingRolesQueryHandlerTests : DatabaseTestsBase
         // assert
         var expected = new List<string>()
         {
-            "Applicant",
             "Appellant",
+            "Applicant",
+            "Appointee",
             "Barrister",
             "Claimant",
+            "Defence Counsel",
             "Defendant",
             "Expert",
-            "Welfare Representative",
             "Intermediaries",
             "Interpreter",
             "Joint Party",
@@ -36,11 +37,17 @@ public class GetHearingRolesQueryHandlerTests : DatabaseTestsBase
             "Litigation Friend",
             "Observer",
             "Other Party",
+            "Party",
             "Police",
+            "Prosecution Counsel",
+            "Prosecutor",
+            "Representative",
             "Respondent",
             "Support",
-            "Panel Member",
+            "Victim",
+            "Welfare Representative",
             "Witness",
+            "Panel Member",
             "Judge",
             "Staff Member"
         };
