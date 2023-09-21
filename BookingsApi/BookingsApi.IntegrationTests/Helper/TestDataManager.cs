@@ -199,8 +199,9 @@ namespace BookingsApi.IntegrationTests.Helper
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
+            var videoHearing = new VideoHearing(caseType, scheduledDate, duration,
                 venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            videoHearing.SetHearingType(hearingType);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -351,9 +352,9 @@ namespace BookingsApi.IntegrationTests.Helper
             const bool audioRecordingRequired = true;
             const string cancelReason = "Online abandonment (incomplete registration)";
 
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
-
+            var videoHearing = new VideoHearing(caseType, scheduledDate, duration, venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            videoHearing.SetHearingType(hearingType);
+            
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 
@@ -624,8 +625,8 @@ namespace BookingsApi.IntegrationTests.Helper
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues[0], hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            var videoHearing = new VideoHearing(caseType, scheduledDate, duration, venues[0], hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            videoHearing.SetHearingType(hearingType);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -697,9 +698,9 @@ namespace BookingsApi.IntegrationTests.Helper
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venues[0], hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
-
+            var videoHearing = new VideoHearing(caseType, scheduledDate, duration, venues[0], hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            videoHearing.SetHearingType(hearingType);
+            
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
 

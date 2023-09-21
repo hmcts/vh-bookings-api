@@ -6,16 +6,15 @@ namespace BookingsApi.DAL.Commands
 {
     public class CreateVideoHearingCommand : ICommand
     {
-        public CreateVideoHearingCommand(CreateVideoHearingRequiredDto requiredDto,
-            CreateVideoHearingOptionalDto optionalDto)
+        public CreateVideoHearingCommand(CreateVideoHearingRequiredDto requiredDto, CreateVideoHearingOptionalDto optionalDto)
         {
             CaseType = requiredDto.CaseType;
-            HearingType = requiredDto.HearingType;
             ScheduledDateTime = requiredDto.ScheduledDateTime;
             ScheduledDuration = requiredDto.ScheduledDuration;
             Venue = requiredDto.Venue;
             Cases = requiredDto.Cases;
             
+            HearingType = optionalDto.HearingType;
             Participants = optionalDto.Participants ?? new List<NewParticipant>();
             HearingRoomName = optionalDto.HearingRoomName;
             OtherInformation = optionalDto.OtherInformation;
@@ -65,11 +64,18 @@ namespace BookingsApi.DAL.Commands
 
         public async Task Handle(CreateVideoHearingCommand command)
         {
-            var videoHearing = new VideoHearing(command.CaseType, command.HearingType, command.ScheduledDateTime,
-                command.ScheduledDuration, command.Venue, command.HearingRoomName,
-                command.OtherInformation, command.CreatedBy, command.AudioRecordingRequired, command.CancelReason);
+            var videoHearing = new VideoHearing(command.CaseType, 
+                command.ScheduledDateTime,
+                command.ScheduledDuration, 
+                command.Venue, 
+                command.HearingRoomName,
+                command.OtherInformation, 
+                command.CreatedBy, 
+                command.AudioRecordingRequired, 
+                command.CancelReason);
 
             // Ideally, the domain object would implement the clone method and so this change is a work around.
+            videoHearing.SetHearingType(command.HearingType);
             videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)

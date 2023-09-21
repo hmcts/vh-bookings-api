@@ -27,5 +27,7 @@
   <ItemGroup>
     <Compile Remove="Migrations\20230904180612_DisableIdGenerationForRefData.cs" />
     <Compile Remove="Migrations\20230904180612_DisableIdGenerationForRefData.Designer.cs" />
+    <Compile Remove="Migrations\20230921142734_spike10144.cs" />
+    <Compile Remove="Migrations\20230921142734_spike10144.Designer.cs" />
   </ItemGroup>
 </Project>

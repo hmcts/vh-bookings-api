@@ -12,7 +12,7 @@ namespace BookingsApi.Domain
 {
     public abstract class Hearing : AggregateRoot<Guid>
     {
-        private readonly ValidationFailures _validationFailures = new ValidationFailures();
+        private readonly ValidationFailures _validationFailures = new ();
         private readonly DateTime _currentUTC = DateTime.UtcNow;
         private bool _isFirstDayOfMultiDayHearing;
 
@@ -29,17 +29,23 @@ namespace BookingsApi.Domain
             JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool audioRecordingRequired, string cancelReason)
+        protected Hearing(
+            CaseType caseType, 
+            DateTime scheduledDateTime,
+            int scheduledDuration, 
+            HearingVenue hearingVenue, 
+            string hearingRoomName,
+            string otherInformation, 
+            string createdBy, 
+            bool audioRecordingRequired, 
+            string cancelReason)
             : this()
         {
-            ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
+            ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue);
 
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             CaseTypeId = caseType.Id;
-            HearingTypeId = hearingType.Id;
             HearingVenueName = hearingVenue.Name;
 
             Status = BookingStatus.Booked;
@@ -55,7 +61,7 @@ namespace BookingsApi.Domain
         public virtual string HearingVenueName { get; set; }
         public int CaseTypeId { get; set; }
         public virtual CaseType CaseType { get; set; }
-        public int HearingTypeId { get; set; }
+        public int? HearingTypeId { get; set; }
         public virtual HearingType HearingType { get; protected set; }
         protected virtual IList<Case> Cases { get; set; }
         public DateTime ScheduledDateTime { get; protected set; }
@@ -575,8 +581,7 @@ namespace BookingsApi.Domain
             return Participants.Any(x => x is Judge) || judiciaryJudges.Any();
         }
 
-        private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
-            HearingType hearingType)
+        private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -588,10 +593,6 @@ namespace BookingsApi.Domain
             if (hearingVenue == null || hearingVenue.Id <= 0)
             {
                 _validationFailures.AddFailure("HearingVenue", "HearingVenue must have a valid value");
-            }
-            if (hearingType == null || hearingType.Id <= 0)
-            {
-                _validationFailures.AddFailure("HearingType", "HearingType must have a valid value");
             }
 
             if (_validationFailures.Any())
@@ -680,6 +681,8 @@ namespace BookingsApi.Domain
 
             return (ParticipantBase)judge ?? judiciaryJudge;
         }
+        
+        public void SetHearingType(HearingType hearingType) => HearingTypeId = hearingType?.Id;
         
         private bool IsHearingCloseToScheduledStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow;
     }
