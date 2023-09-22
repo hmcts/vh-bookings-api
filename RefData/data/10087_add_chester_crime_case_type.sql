@@ -1,30 +1,38 @@
+USE vhbookings;
+GO;
 SET XACT_ABORT ON
 GO
 
 CREATE PROCEDURE #HearingType_Create @id int, @name nvarchar(max), @caseTypeId int, @code nvarchar(max), @welshName nvarchar(max)
 AS
-BEGIN
-    SET IDENTITY_INSERT HearingType ON
-    INSERT INTO HearingType (Id, Name, CaseTypeId, Live, CreatedDate, UpdatedDate, Code, WelshName) VALUES (@id, @name, @caseTypeId, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @code, @welshName)
-    SET IDENTITY_INSERT HearingType OFF
+BEGIN IF NOT EXISTS(SELECT TOP 1 1 FROM dbo.HearingType WHERE Id = @id)
+    BEGIN
+        SET IDENTITY_INSERT HearingType ON
+        INSERT INTO HearingType (Id, Name, CaseTypeId, Live, CreatedDate, UpdatedDate, Code, WelshName) VALUES (@id, @name, @caseTypeId, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @code, @welshName)
+        SET IDENTITY_INSERT HearingType OFF
+    END
 END
 GO
 
 CREATE PROCEDURE #CaseRole_Create @id int, @name nvarchar(max), @group int, @caseTypeId int
 AS
-BEGIN
-    SET IDENTITY_INSERT CaseRole ON
-    INSERT INTO CaseRole (Id, Name, [Group], CaseTypeId, CreatedDate, UpdatedDate) VALUES (@id, @name, @group, @caseTypeId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    SET IDENTITY_INSERT CaseRole OFF
+BEGIN IF NOT EXISTS(SELECT TOP 1 1 FROM dbo.CaseRole WHERE Id = @id)
+    BEGIN
+        SET IDENTITY_INSERT CaseRole ON
+        INSERT INTO CaseRole (Id, Name, [Group], CaseTypeId, CreatedDate, UpdatedDate) VALUES (@id, @name, @group, @caseTypeId, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        SET IDENTITY_INSERT CaseRole OFF
+    END
 END
 GO
 
 CREATE PROCEDURE #HearingRole_Create @id int, @name nvarchar(max), @userRoleId int, @caseRoleId int
 AS
-BEGIN
-    SET IDENTITY_INSERT HearingRole ON
-    INSERT INTO HearingRole (Id, Name, UserRoleId, CaseRoleId, Live, CreatedDate, UpdatedDate) VALUES (@id, @name, @userRoleId, @caseRoleId, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    SET IDENTITY_INSERT HearingRole OFF
+BEGIN IF NOT EXISTS(SELECT TOP 1 1 FROM dbo.HearingRole WHERE Id = @id)
+    BEGIN
+        SET IDENTITY_INSERT HearingRole ON
+        INSERT INTO HearingRole (Id, Name, UserRoleId, CaseRoleId, Live, CreatedDate, UpdatedDate) VALUES (@id, @name, @userRoleId, @caseRoleId, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        SET IDENTITY_INSERT HearingRole OFF
+    END
 END
 GO
 
@@ -32,15 +40,23 @@ BEGIN TRANSACTION
 
 -- Jursidiction
 DECLARE @JurisdictionId INT = 14
-SET IDENTITY_INSERT Jurisdiction ON
-INSERT INTO Jurisdiction (Id, Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES (@JurisdictionId, 'Crime', 'Crime', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-SET IDENTITY_INSERT Jurisdiction OFF
+BEGIN IF NOT EXISTS(SELECT TOP 1 1 FROM dbo.Jurisdiction WHERE Id = @JurisdictionId)
+    BEGIN
+        SET IDENTITY_INSERT Jurisdiction ON
+        INSERT INTO Jurisdiction (Id, Code, Name, IsLive, CreatedDate, UpdatedDate) VALUES (@JurisdictionId, 'Crime', 'Crime', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        SET IDENTITY_INSERT Jurisdiction OFF
+    END
+END
 
 -- Case Type
 DECLARE @CaseTypeId INT = 55
-SET IDENTITY_INSERT CaseType ON
-INSERT INTO CaseType (Id, Name, CreatedDate, UpdatedDate, JurisdictionId, Live) VALUES (@CaseTypeId, 'Crime Crown Court', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @JurisdictionId, 1)
-SET IDENTITY_INSERT CaseType OFF
+BEGIN IF NOT EXISTS(SELECT TOP 1 1 FROM dbo.CaseType WHERE Id = @CaseTypeId)
+    BEGIN
+        SET IDENTITY_INSERT CaseType ON
+        INSERT INTO CaseType (Id, Name, CreatedDate, UpdatedDate, JurisdictionId, Live) VALUES (@CaseTypeId, 'Crime Crown Court', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, @JurisdictionId, 1)
+        SET IDENTITY_INSERT CaseType OFF
+    END
+END
 
 -- Hearing Types
 EXEC #HearingType_Create 332, 'ASS Appeal against Sentence', @CaseTypeId, 'ASS', 'Apêl yn erbyn Dedfryd'
