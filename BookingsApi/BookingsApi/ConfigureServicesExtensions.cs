@@ -23,7 +23,8 @@ namespace BookingsApi
             {
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
                 opt.AssumeDefaultVersionWhenUnspecified = true;
-                opt.ReportApiVersions = true; // keep this true for backwards-compatibility with the old routes (i.e. the non versioned)
+                opt.ReportApiVersions =
+                    true; // keep this true for backwards-compatibility with the old routes (i.e. the non versioned)
                 opt.ApiVersionReader = ApiVersionReader.Combine(
                     new UrlSegmentApiVersionReader()
                 );
@@ -34,6 +35,7 @@ namespace BookingsApi
             });
             return services;
         }
+
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
             services.AddScoped(provider =>
@@ -43,16 +45,16 @@ namespace BookingsApi
 
                 return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
             });
-            
+
             var apiVersionDescription = services.BuildServiceProvider().GetService<IApiVersionDescriptionProvider>();
-            foreach (var groupName in  apiVersionDescription.ApiVersionDescriptions.Select(x=> x.GroupName))
+            foreach (var groupName in apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName))
             {
                 services.AddOpenApiDocument((configure, servicesProvider) =>
                 {
-                    ConfigureSwaggerForVersion(configure, groupName, new[] { groupName }, servicesProvider);
+                    ConfigureSwaggerForVersion(configure, groupName, new[] {groupName}, servicesProvider);
                 });
             }
-            
+
             // to build a single a client for all versions of the api, create one document with all the groups
             var groupNames = apiVersionDescription.ApiVersionDescriptions.Select(x => x.GroupName).ToArray();
             services.AddOpenApiDocument((configure, servicesProvider) =>
@@ -79,12 +81,13 @@ namespace BookingsApi
             settings.Title = "Bookings API";
             settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             settings.OperationProcessors.Add(new AuthResponseOperationProcessor());
-            
-            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
+
+            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider
+                .GetService<FluentValidationSchemaProcessor>();
 
             // Add the fluent validations schema processor
             settings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
-            
+
         }
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
@@ -116,7 +119,7 @@ namespace BookingsApi
         private static void RegisterCommandHandlers(IServiceCollection serviceCollection)
         {
             var commandHandlers = typeof(ICommand).Assembly.GetTypes().Where(t =>
-                t.GetInterfaces().Any(x =>
+                Array.Exists(t.GetInterfaces(), x =>
                     x.IsGenericType &&
                     x.GetGenericTypeDefinition() == typeof(ICommandHandler<>)));
 
@@ -130,7 +133,7 @@ namespace BookingsApi
         private static void RegisterQueryHandlers(IServiceCollection serviceCollection)
         {
             var queryHandlers = typeof(IQuery).Assembly.GetTypes().Where(t =>
-                t.GetInterfaces().Any(x =>
+                Array.Exists(t.GetInterfaces(), x =>
                     x.IsGenericType &&
                     x.GetGenericTypeDefinition() == typeof(IQueryHandler<,>)));
 

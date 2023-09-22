@@ -30,7 +30,7 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         {
             var queueClient = new QueueClient(_serviceBusSettings.ConnectionString, _serviceBusSettings.QueueName);
             var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
-
+            
             var messageBytes = Encoding.UTF8.GetBytes(jsonObjectString);
             await queueClient.SendAsync(new Message(messageBytes)).ConfigureAwait(false);
         }

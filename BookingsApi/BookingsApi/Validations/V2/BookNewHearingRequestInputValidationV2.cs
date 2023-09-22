@@ -1,7 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V1;
-using Castle.Core.Internal;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V2
@@ -55,7 +53,7 @@ namespace BookingsApi.Validations.V2
 
             RuleForEach(x => x.LinkedParticipants)
                 .SetValidator(new LinkedParticipantRequestValidationV2())
-                .When(x => !x.LinkedParticipants.IsNullOrEmpty());
+                .When(x => !x.LinkedParticipants.Any());
 
             RuleForEach(x => x.Endpoints)
                 .SetValidator(new EndpointRequestValidationV2())
