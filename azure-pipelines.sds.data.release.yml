@@ -10,7 +10,7 @@ parameters:
     type: object
     default:
       - dev
-      - staging
+      - stg
       - test
       - ithc
       - demo
