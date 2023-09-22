@@ -21,29 +21,35 @@ public class GetHearingRolesTests : ApiTest
         
         var expectedIndividuals = new List<string>()
         {
-            "Applicant",
             "Appellant",
+            "Applicant",
+            "Appointee",
             "Claimant",
             "Defendant",
             "Expert",
-            "Welfare Representative",
-            "Intermediaries",
             "Interpreter",
             "Joint Party",
             "Litigation Friend",
             "Observer",
             "Other Party",
+            "Party",
             "Police",
             "Respondent",
             "Support",
-            "Witness",
-            
+            "Victim",
+            "Witness"
         };
         
         var expectedRepresentatives = new List<string>()
         {
             "Barrister",
+            "Defence Counsel",
+            "Intermediaries",
             "Legal Representative",
+            "Prosecution Counsel",
+            "Prosecutor",
+            "Representative",
+            "Welfare Representative"
         };
         
         var expectedJudicialOfficeHolders = new List<string>()

@@ -1,3 +1,7 @@
+using BookingsApi.Contract.Interfaces.Requests;
+using BookingsApi.Validations.Common;
+using FluentValidation.Results;
+
 namespace BookingsApi.Services;
 
 public interface IHearingParticipantService
@@ -11,6 +15,9 @@ public interface IHearingParticipantService
         List<LinkedParticipantDto> linkedParticipants);
     public Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants);
     public Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
+    
+    public Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request);
+    public Task<Participant> UpdateParticipantAndPublishEventAsync(Hearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
 }
 
 public class HearingParticipantService : IHearingParticipantService
@@ -81,6 +88,28 @@ public class HearingParticipantService : IHearingParticipantService
             .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == updatedJudiciaryParticipant.PersonalCode);
         
         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
+    }
+
+    public async Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request)
+    {
+        var test = new RepresentativeValidation();
+        await test.ValidateAsync(request);
+        return await new RepresentativeValidation().ValidateAsync(request);
+    }
+
+    public async Task<Participant> UpdateParticipantAndPublishEventAsync(Hearing videoHearing, UpdateParticipantCommand updateParticipantCommand)
+    {
+        await _commandHandler.Handle(updateParticipantCommand);
+
+        var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
+        
+        // ONLY publish this event when Hearing is set for ready for video
+        if (videoHearing.Status == BookingStatus.Created)
+        { 
+            await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
+        }
+
+        return updatedParticipant;
     }
 
     private async Task ProcessParticipantListChange(Hearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
