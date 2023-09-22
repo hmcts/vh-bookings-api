@@ -72,7 +72,7 @@ public class BookingService : IBookingService
     
     public async Task PublishNewHearing(VideoHearing videoHearing, bool isMultiDay)
     {
-        if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
+        if (videoHearing.Participants.Any(x => x is Judge))
         {
             // The event below handles creating users, sending the hearing notifications to the participants if the hearing is not a multi day
             await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));

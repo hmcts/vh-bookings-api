@@ -66,7 +66,8 @@ public class BookMultiDayHearingTests : ApiTest
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var allMessages = serviceBusStub!.ReadAllMessagesFromQueue();
-        allMessages.Count(x=> x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(4);
+        allMessages.Count(x=> x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(1);
+        allMessages.Count(x=> x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent).Should().Be(4);
         allMessages.Count(x=> x.IntegrationEvent is MultiDayHearingIntegrationEvent).Should().Be(1);
         allMessages.Should().NotBeEmpty();
     }
