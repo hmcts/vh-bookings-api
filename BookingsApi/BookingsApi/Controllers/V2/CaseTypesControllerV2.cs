@@ -67,8 +67,7 @@ public class CaseTypesController : Controller
             {
                 Name = x.Name, 
                 UserRole = x.UserRole?.Name.ToString(), 
-                Code = x.Code,
-                WelshName = x.WelshName
+                Code = x.Code
             })
             .ToList();
 
