@@ -15,6 +15,8 @@ namespace BookingsApi.Domain.RefData
         public int? CaseRoleId { get; set; }
         public UserRole UserRole { get; set; }
         public bool Live { get; set; }
+        public string Code { get; set; }
+        public string WelshName { get; set; }
 
         public int CompareTo(HearingRole other)
         {
