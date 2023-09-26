@@ -24,6 +24,11 @@ namespace BookingsApi.Contract.V2.Responses
         ///     The name of the participant's hearing role
         /// </summary>
         public string HearingRoleName { get; set; }
+
+        /// <summary>
+        ///     The code of the participant's hearing role
+        /// </summary>
+        public string HearingRoleCode { get; set; }
         
         /// <summary>
         ///     The name of the participant's user role
