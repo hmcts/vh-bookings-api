@@ -33,8 +33,7 @@ public class HearingRolesController : ControllerBase
             {
                 Name = x.Name, 
                 UserRole = x.UserRole.Name,
-                Code = x.Code,
-                WelshName = x.WelshName
+                Code = x.Code
             })
             .ToList();
 
