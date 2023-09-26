@@ -81,7 +81,7 @@ namespace BookingsApi.Controllers.V1
             var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
             return Ok(response);
         }
-        
+
         /// <summary>
         /// Get list of all confirmed hearings for a given username for today
         /// </summary>
@@ -89,18 +89,20 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Hearing details</returns>
         [HttpGet("today/username")]
         [OpenApiOperation("GetConfirmedHearingsByUsernameForToday")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(List<ConfirmedHearingsTodayResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetConfirmedHearingsByUsernameForToday([FromQuery] string username)
         {
             var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
-            var hearings = await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
+            var hearings =
+                await _queryHandler.Handle<GetConfirmedHearingsByUsernameForTodayQuery, List<VideoHearing>>(query);
             if (!hearings.Any())
             {
-                return NotFound();
+                return NotFound($"{username.Trim().ToLower()} does not have any confirmed hearings today");
             }
-            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
+
+            var response = hearings.Select(ConfirmedHearingsTodayResponseMapper.Map).ToList();
             return Ok(response);
         }
 

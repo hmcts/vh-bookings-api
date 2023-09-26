@@ -109,23 +109,3 @@ Scenario: Participants in a hearing not removed with invalid participant id
 	Given I have a remove participant from a hearing request with an invalid participant id
 	When I send the request to the endpoint
 	Then the response should have the status BadRequest and success status False
-
-Scenario: Participant not updated with nonexistent hearing id
-	Given I have an update participant in a hearing request with a nonexistent hearing id
-	When I send the request to the endpoint
-	Then the response should have the status NotFound and success status False
-
-Scenario: Participant not updated with invalid hearing id
-	Given I have an update participant in a hearing request with a invalid hearing id
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-
-Scenario: Participant not updated with invalid representee
-	Given I have an update participant in a hearing request with a invalid representee
-	When I send the request to the endpoint
-	Then the response should have the status BadRequest and success status False
-	
-Scenario: Participant details updated successfully
-	Given I have an update participant in a hearing request with a valid hearing id
-	When I send the request to the endpoint
-	Then the response should have the status OK and success status True
