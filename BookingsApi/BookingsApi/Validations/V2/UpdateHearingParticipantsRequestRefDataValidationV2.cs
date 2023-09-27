@@ -24,9 +24,9 @@ public class UpdateHearingParticipantsRequestRefDataValidationV2 : RefDataInputV
         // if no case role is provided, this request is using the flat structure
         if (string.IsNullOrEmpty(participant.CaseRoleName))
         {
-            if (!hearingRoles.Exists(x => x.Name == participant.HearingRoleName))
+            if (!hearingRoles.Exists(x => x.Code == participant.HearingRoleCode))
             {
-                context.AddFailure($"Invalid hearing role [{participant.HearingRoleName}]");
+                context.AddFailure($"Invalid hearing role [{participant.HearingRoleCode}]");
             }
         }
         else
