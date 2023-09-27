@@ -46,7 +46,7 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
     public async Task should_return_a_hearing_when_matched_with_a_given_id()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+        var hearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
         {
             options.AddJudiciaryPanelMember = true;
         }, BookingStatus.Booked, 1, false);

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Domain.Constants;
 using FizzWare.NBuilder;
 using Testing.Common.Data;
 
@@ -20,8 +21,7 @@ public class SimpleBookNewHearingRequestV2
             .Build().ToList();
 
         var participant0 = new TestUser(TestUsers.ApplicantLitigant1.FirstName, TestUsers.ApplicantLitigant1.LastName);
-        participants[0].CaseRoleName = "Applicant";
-        participants[0].HearingRoleName = "Litigant in person";
+        participants[0].HearingRoleCode = HearingRoleCodes.Applicant;
         participants[0].Representee = null;
         participants[0].FirstName = participant0.FirstName;
         participants[0].LastName = participant0.LastName;
@@ -30,8 +30,7 @@ public class SimpleBookNewHearingRequestV2
         participants[0].DisplayName = participant0.DisplayName;
 
         var participant1 = new TestUser(TestUsers.ApplicantRepresentative1.FirstName, TestUsers.ApplicantRepresentative1.LastName);
-        participants[1].CaseRoleName = "Applicant";
-        participants[1].HearingRoleName = "Representative";
+        participants[1].HearingRoleCode = HearingRoleCodes.Representative;
         participants[1].Representee = participant0.DisplayName;
         participants[1].FirstName = participant1.FirstName;
         participants[1].LastName = participant1.LastName;
@@ -40,8 +39,7 @@ public class SimpleBookNewHearingRequestV2
         participants[1].DisplayName = participant1.DisplayName;
 
         var participant2 = new TestUser(TestUsers.RespondentLitigant1.FirstName, TestUsers.RespondentLitigant1.LastName);
-        participants[2].CaseRoleName = "Respondent";
-        participants[2].HearingRoleName = "Litigant in person";
+        participants[2].HearingRoleCode = HearingRoleCodes.Intermediary;
         participants[2].Representee = null;
         participants[2].FirstName = participant2.FirstName;
         participants[2].LastName = participant2.LastName;
@@ -50,8 +48,7 @@ public class SimpleBookNewHearingRequestV2
         participants[2].DisplayName = participant2.DisplayName;
 
         var participant3 = new TestUser(TestUsers.RespondentRepresentative1.FirstName, TestUsers.RespondentRepresentative1.LastName);
-        participants[3].CaseRoleName = "Respondent";
-        participants[3].HearingRoleName = "Representative";
+        participants[3].HearingRoleCode = HearingRoleCodes.WelfareRepresentative;
         participants[3].Representee = participant2.DisplayName;
         participants[3].FirstName = participant3.FirstName;
         participants[3].LastName = participant3.LastName;
@@ -60,8 +57,7 @@ public class SimpleBookNewHearingRequestV2
         participants[3].DisplayName = participant3.DisplayName;
 
         var participant4 = new TestUser(TestUsers.Judge1.FirstName, TestUsers.Judge1.LastName);
-        participants[4].CaseRoleName = "Judge";
-        participants[4].HearingRoleName = "Judge";
+        participants[4].HearingRoleCode = HearingRoleCodes.Judge;
         participants[4].Representee = null;
         participants[4].FirstName = participant4.FirstName;
         participants[4].LastName = participant4.LastName;

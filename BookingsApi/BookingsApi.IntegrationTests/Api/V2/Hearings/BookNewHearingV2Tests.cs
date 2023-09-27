@@ -3,6 +3,7 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
@@ -55,7 +56,7 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.Participants = request.Participants.Where(x => x.HearingRoleName != HearingRoles.Judge).ToList();
+        request.Participants = request.Participants.Where(x => x.HearingRoleCode != HearingRoleCodes.Judge).ToList();
         var judiciaryPerson = await Hooks.AddJudiciaryPerson();
         var judiciaryJudgeRequest = new JudiciaryParticipantRequest()
         {
@@ -91,14 +92,6 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.Participants.ForEach(x =>
-        {
-            x.CaseRoleName = null;
-            if(x.HearingRoleName == "Litigant in person")
-                x.HearingRoleName = "Applicant";
-            if (x.HearingRoleName == "Representative")
-                x.HearingRoleName = "Legal Representative";
-        });
 
         // act
         using var client = Application.CreateClient();
@@ -121,11 +114,10 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        var hearingRoleName = "Invalid Role";
+        var hearingRoleCode = "Invalid Code";
         request.Participants.ForEach(x =>
         {
-            x.CaseRoleName = null;
-            x.HearingRoleName = hearingRoleName;
+            x.HearingRoleCode = hearingRoleCode;
         });
 
         // act
@@ -136,7 +128,7 @@ public class BookNewHearingV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[$"{nameof(request.Participants)}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleName}]");
+        validationProblemDetails.Errors[$"{nameof(request.Participants)}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleCode}]");
     }
     
     [Test]
