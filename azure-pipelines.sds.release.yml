@@ -34,7 +34,7 @@ stages:
         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
         projectName: ${{ variables.efProjectName }}
         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-
+  
   - job: PublishAcceptanceTests
     displayName: Publish Acceptance Tests
     variables:
@@ -73,6 +73,7 @@ stages:
         azureSubscription: ${{ variables.subscriptionName }}
 
     - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+      displayName: Run EF Migrations
       parameters:
         sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
         sqlServerName: ${{ variables.vhSQLServerName }}

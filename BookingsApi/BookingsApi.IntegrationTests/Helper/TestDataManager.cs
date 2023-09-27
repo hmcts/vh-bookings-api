@@ -170,8 +170,11 @@ namespace BookingsApi.IntegrationTests.Helper
         /// Use when testing V1 endpoints
         /// </summary>
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
-            BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
-            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
+            BookingStatus status = BookingStatus.Booked, 
+            int endPointsToAdd = 0,
+            bool addJoh = false, 
+            bool withLinkedParticipants = false, 
+            bool isMultiDayFirstHearing = false)
         {
             return await SeedVideoHearing(false, configureOptions, status, endPointsToAdd, addJoh, withLinkedParticipants, isMultiDayFirstHearing);
         }
@@ -261,8 +264,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             if (options.AddJudge)
             {
-                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
-                    $"{judgePerson.FirstName} {judgePerson.LastName}");
+                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
             }
 
             if (addJoh)
@@ -371,8 +373,7 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.VideoHearings.AddAsync(videoHearing);
             await db.SaveChangesAsync();
 
-            var hearing = await new GetHearingByIdQueryHandler(db).Handle(
-                new GetHearingByIdQuery(videoHearing.Id));
+            var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(videoHearing.Id));
             
             _seededHearings.Add(hearing.Id);
             return hearing;

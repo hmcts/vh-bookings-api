@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
+using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.DAL.Helper;
@@ -255,6 +256,32 @@ public class BookNewHearingV2Tests : ApiTest
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors["judiciaryPerson"][0].Should()
             .Be(DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
+    }
+            
+    [Test]
+    public async Task should_book_a_hearing_without_a_judge()
+    {
+        // arrange
+        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var judge = request.Participants.Find(p => p.HearingRoleName == "Judge"); 
+        request.Participants.Remove(judge);
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        hearingResponse.Status.Should().Be(BookingStatusV2.BookedWithoutJudge);
+        _hearingIds.Add(hearingResponse.Id);
+        
     }
     
     private static BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()

@@ -50,7 +50,10 @@
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
                 .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser)
                 .Where(x 
-                    => (x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked) 
+                    => (x.Status == BookingStatus.Created || 
+                        x.Status == BookingStatus.Booked ||
+                        x.Status == BookingStatus.ConfirmedWithoutJudge || 
+                        x.Status == BookingStatus.BookedWithoutJudge) 
                          && x.Status != BookingStatus.Cancelled
                          && x.HearingVenue.IsWorkAllocationEnabled)
                 .AsSplitQuery()

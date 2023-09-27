@@ -70,5 +70,5 @@ GO;
 
 SELECT * FROM VhBookings.dbo.HearingVenue WHERE HearingVenue.ExpirationDate IS NOT NULL
 
-COMMIT TRANSACTION ;
+COMMIT TRANSACTION;
 SET XACT_ABORT OFF

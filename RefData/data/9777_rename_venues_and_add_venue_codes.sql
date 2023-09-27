@@ -2,9 +2,9 @@ SET XACT_ABORT ON;
 BEGIN TRANSACTION;
 
 BEGIN
-    IF NOT EXISTS(SELECT * FROM HearingVenue WHERE Name = 'TempMigrationVenue')
+    IF NOT EXISTS(SELECT * FROM VhBookings.dbo.HearingVenue WHERE Name = 'TempMigrationVenue')
         BEGIN
-            Insert Into HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES ('TempMigrationVenue', 9999, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'xxxxxx', 0, 0)
+            Insert Into VhBookings.dbo.HearingVenue (Name, Id, CreatedDate, UpdatedDate, VenueCode, IsScottish, IsWorkAllocationEnabled)  VALUES ('TempMigrationVenue', 9999, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'xxxxxx', 0, 0)
         END
 END
 GO;
@@ -13,16 +13,16 @@ GO;
 -- update all hearings where venueName = <old name> to 'TempMigrationVenue'
 -- update venue details
 -- update all hearings where venueName = 'TempMigrationVenue' to <new name>
-CREATE OR ALTER PROC #HearingVenue_UpdateVenueCodeAndName @oldVenueName nvarchar(max), @venueCode varchar(450), @newVenueName nvarchar(max)
+CREATE PROCEDURE #HearingVenue_UpdateVenueCodeAndName @oldVenueName nvarchar(max), @venueCode varchar(450), @newVenueName nvarchar(max)
 As
 BEGIN
-    IF EXISTS (SELECT * FROM dbo.HearingVenue WHERE Name = TRIM(@oldVenueName))
+    IF EXISTS (SELECT * FROM VhBookings.dbo.HearingVenue WHERE Name = TRIM(@oldVenueName))
         BEGIN
             -- insert into the temp table where ids do not already exist
             Print ('FOUND venue with the name: ' + @oldVenueName);
-            Update Hearing SET HearingVenueName = 'TempMigrationVenue' WHERE HearingVenueName = @oldVenueName;
-            UPDATE HearingVenue SET Name = TRIM(@newVenueName), VenueCode = TRIM(@venueCode), UpdatedDate = CURRENT_TIMESTAMP WHERE Name = TRIM(@oldVenueName);
-            Update Hearing SET HearingVenueName = @newVenueName WHERE HearingVenueName = 'TempMigrationVenue';
+            Update VhBookings.dbo.Hearing SET HearingVenueName = 'TempMigrationVenue' WHERE HearingVenueName = @oldVenueName;
+            UPDATE VhBookings.dbo.HearingVenue SET Name = TRIM(@newVenueName), VenueCode = TRIM(@venueCode), UpdatedDate = CURRENT_TIMESTAMP WHERE Name = TRIM(@oldVenueName);
+            Update VhBookings.dbo.Hearing SET HearingVenueName = @newVenueName WHERE HearingVenueName = 'TempMigrationVenue';
         END
     ELSE
         BEGIN
@@ -31,8 +31,6 @@ BEGIN
 END
 GO;
 
-SELECT * FROM HearingVenue;
-GO;
 
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Ayr', @venueCode = '206150', @newVenueName='Ayr Social Security and Child Support Tribunal';
 EXEC #HearingVenue_UpdateVenueCodeAndName @oldVenueName='Bath Law Courts (Civil and Family)', @venueCode = '411234', @newVenueName='Bath Magistrates Court and Family Court';
@@ -95,9 +93,6 @@ GO
 
 Delete from HearingVenue Where Name = 'TempMigrationVenue' AND Id = 9999 and VenueCode = 'xxxxxx';
 GO
-
-SELECT * FROM HearingVenue;
-GO;
 
 DROP PROC #HearingVenue_UpdateVenueCodeAndName;
 GO;
