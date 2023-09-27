@@ -36,7 +36,9 @@ namespace BookingsApi.DAL.Queries
                     .Where(x => query.HearingVenueNames.Contains(x.HearingVenueName))
                     .OrderBy(x => x.HearingVenueName).ThenBy(x => x.ScheduledDateTime);
                 
-            return await hearingQuery.ToListAsync();
+            return await hearingQuery
+                .Where(x => x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked)
+                .ToListAsync();
         }
     }
 }

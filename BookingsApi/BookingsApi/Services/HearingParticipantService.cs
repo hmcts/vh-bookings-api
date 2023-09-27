@@ -37,14 +37,10 @@ public class HearingParticipantService : IHearingParticipantService
                     .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
         if (participants.Any())
         {
-            if(hearing.Status == BookingStatus.Created) 
-            {
+            if(hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge) 
                 await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
-            }
             else if (participants.Exists(x => x.HearingRole.UserRole.Name == "Judge"))
-            {
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, participants));
-            }
             else
             {
                 await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(hearing, participants));
@@ -115,11 +111,12 @@ public class HearingParticipantService : IHearingParticipantService
     private async Task ProcessParticipantListChange(Hearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
         List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants)
     {
-        if (hearing.Status == BookingStatus.Created)
-        {
-            await PublishHearingParticipantListUpdatedEvent(hearing, removedParticipantIds, linkedParticipants,
-                eventExistingParticipants, eventNewParticipants);
-        }
+        if (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge)
+            await PublishHearingParticipantListUpdatedEvent(hearing, 
+                removedParticipantIds, 
+                linkedParticipants, 
+                eventExistingParticipants, 
+                eventNewParticipants);
         else if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge"))
         {
             await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
@@ -179,8 +176,7 @@ public class HearingParticipantService : IHearingParticipantService
                 await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(hearing.Id, participant));
         }
     }
-
-
+    
     private async Task UpdateHearingStatusAsync(Guid hearingId, BookingStatus bookingStatus, string updatedBy, string cancelReason)
     {
         var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);

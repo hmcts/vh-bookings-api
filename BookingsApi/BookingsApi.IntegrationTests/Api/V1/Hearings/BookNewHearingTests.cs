@@ -1,3 +1,4 @@
+using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -184,7 +185,33 @@ public class BookNewHearingTests : ApiTest
         validationProblemDetails.Errors[nameof(request.HearingVenueName)][0].Should()
             .Be("Hearing venue does not exist");
     }
+            
+    [Test]
+    public async Task should_book_a_hearing_without_a_judge()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        var judge = request.Participants.Find(p => p.HearingRoleName == "Judge"); 
+        request.Participants.Remove(judge);
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
 
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        hearingResponse.Status.Should().Be(BookingStatus.BookedWithoutJudge);
+        _hearingIds.Add(hearingResponse.Id);
+        
+    }
+    
     private BookNewHearingRequest CreateBookingRequest()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);

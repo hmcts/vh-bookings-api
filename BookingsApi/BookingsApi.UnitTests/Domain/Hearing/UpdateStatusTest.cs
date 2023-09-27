@@ -117,5 +117,43 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.ConfirmedBy.Should().Be(updatedBy);
             hearing.ConfirmedDate.Should().NotBeNull();
         }
+        
+        
+        [TestCase (BookingStatus.Booked, BookingStatus.BookedWithoutJudge)]
+        [TestCase (BookingStatus.BookedWithoutJudge, BookingStatus.Booked)]
+        public void Should_update_hearing_status_when_judge_added_or_removed_BookedHearing(BookingStatus currentStatus, BookingStatus expectedStatus)
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var judge = hearing.Participants.First(e => e.HearingRole.UserRole.IsJudge);
+            if(currentStatus == BookingStatus.Booked)
+                hearing.Participants.Remove(judge);
+            else
+                hearing.UpdateStatus(BookingStatus.BookedWithoutJudge, "testuser", "");
+            hearing.UpdateBookingStatusJudgeRequirement();
+            hearing.Status.Should().Be(expectedStatus);
+        }
+        
+        [TestCase (BookingStatus.ConfirmedWithoutJudge, BookingStatus.Created)]
+        [TestCase (BookingStatus.Created, BookingStatus.ConfirmedWithoutJudge)]
+        public void Should_update_hearing_status_when_judge_added_or_removed_ConfirmedHearing(BookingStatus currentStatus, BookingStatus expectedStatus)
+        {
+            var hearing = new VideoHearingBuilder().Build();
+            var judge = hearing.Participants.First(e => e.HearingRole.UserRole.IsJudge);
+            if (currentStatus == BookingStatus.Created)
+            {
+                hearing.UpdateStatus(BookingStatus.Created, "testuser", "");
+                hearing.Participants.Remove(judge);
+            }
+            else
+            {
+                //Workaround for status to status transition validation rules
+                hearing.UpdateStatus(BookingStatus.Created, "testuser", "");
+                hearing.UpdateStatus(BookingStatus.ConfirmedWithoutJudge, "testuser", "");
+            }
+            hearing.UpdateBookingStatusJudgeRequirement();
+            hearing.Status.Should().Be(expectedStatus);
+        }
+
+        
     }
 }

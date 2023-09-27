@@ -35,11 +35,10 @@ namespace BookingsApi.DAL.Commands
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
             
             if (hearing == null)
-            {
                 throw new HearingNotFoundException(command.HearingId);
-            }
-
+            
             hearing.RemoveParticipant(command.Participant);
+            hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
         }
     }

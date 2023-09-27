@@ -1265,6 +1265,7 @@ namespace BookingsApi.Client
 
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -1275,6 +1276,7 @@ namespace BookingsApi.Client
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -9992,6 +9994,7 @@ namespace BookingsApi.Client
 
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -10005,6 +10008,7 @@ namespace BookingsApi.Client
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
