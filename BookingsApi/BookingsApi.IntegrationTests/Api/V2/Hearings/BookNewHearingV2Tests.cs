@@ -263,7 +263,7 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        var judge = request.Participants.Find(p => p.HearingRoleName == "Judge"); 
+        var judge = request.Participants.Find(p => p.HearingRoleCode == HearingRoleCodes.Judge); 
         request.Participants.Remove(judge);
         
         // act
