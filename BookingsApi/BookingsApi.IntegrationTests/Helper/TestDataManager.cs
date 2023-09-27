@@ -193,15 +193,17 @@ namespace BookingsApi.IntegrationTests.Helper
             HearingRole respondentRepresentativeHearingRole;
             HearingRole respondentLipHearingRole;
             HearingRole judgeHearingRole;
-            
+
+            List<HearingRole> flatHearingRoles = new List<HearingRole>();
+
             if (useFlatHearingRoles)
             {
-                var flatHearingRoles = GetFlatHearingRolesFromDb();
+                flatHearingRoles = GetFlatHearingRolesFromDb();
                 
-                applicantLipHearingRole = flatHearingRoles.First(x => x.Code == "APPL");
-                applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == "RPTT");
-                respondentRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == "WERP");
-                respondentLipHearingRole = flatHearingRoles.First(x => x.Code == "RESP");
+                applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
+                applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
+                respondentRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
+                respondentLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Respondent);
                 judgeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Judge);
             }
             else
@@ -269,9 +271,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 HearingRole johHearingRole;
                 if (useFlatHearingRoles)
                 {
-                    var flatHearingRoles = GetFlatHearingRolesFromDb();
-
-                    johHearingRole = flatHearingRoles.First(x => x.Code == "PANL");
+                    johHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.PanelMember);
                 }
                 else
                 {
@@ -358,9 +358,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 
                 if (useFlatHearingRoles)
                 {
-                    var flatHearingRoles = GetFlatHearingRolesFromDb();
-                    
-                    staffMemberHearingRole = flatHearingRoles.First(x => x.Code == "STAF");
+                    staffMemberHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.StaffMember);
                 }
                 else
                 {
