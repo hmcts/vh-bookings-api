@@ -1,8 +1,7 @@
-USE VhBookings;
 SET XACT_ABORT ON
 GO
 
-CREATE OR ALTER PROC #Jurisdiction_CreateIfNotExist @id int, @name varchar(max)
+CREATE PROCEDURE #Jurisdiction_CreateIfNotExist @id int, @name varchar(max)
 AS
 BEGIN
     IF NOT EXISTS(SELECT TOP 1 1 FROM Jurisdiction WHERE Name = @name)
@@ -15,7 +14,7 @@ BEGIN
 END
 GO
 
-CREATE OR ALTER PROC #CaseType_Update @name varchar(max), @serviceId nvarchar(max), @jurisdictionName nvarchar(max)
+CREATE PROCEDURE #CaseType_Update @name varchar(max), @serviceId nvarchar(max), @jurisdictionName nvarchar(max)
 AS
 BEGIN
     DECLARE @jurisdictionId int = (SELECT Id FROM Jurisdiction WHERE Name = @jurisdictionName)
