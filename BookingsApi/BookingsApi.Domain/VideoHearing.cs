@@ -7,12 +7,17 @@ namespace BookingsApi.Domain
     public class VideoHearing : Hearing
     {
         protected VideoHearing() { }
-
-        public VideoHearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName, string otherInformation,
-            string createdBy, bool audioRecordingRequired, string cancelReason) : base(caseType, hearingType,
-            scheduledDateTime, scheduledDuration, hearingVenue, hearingRoomName, otherInformation, createdBy,
-            audioRecordingRequired, cancelReason)
+        
+        public VideoHearing(CaseType caseType,
+            DateTime scheduledDateTime,
+            int scheduledDuration, 
+            HearingVenue hearingVenue,
+            string hearingRoomName,
+            string otherInformation,
+            string createdBy,
+            bool audioRecordingRequired, 
+            string cancelReason) 
+            : base(caseType, scheduledDateTime, scheduledDuration, hearingVenue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason)
         {
         }
 

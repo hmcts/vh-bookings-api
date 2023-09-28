@@ -10,15 +10,6 @@ namespace BookingsApi.Contract.V2.Requests
     /// </summary>
     public class BookNewHearingRequestV2
     {
-        public BookNewHearingRequestV2()
-        {
-            Cases = new List<CaseRequestV2>();
-            Participants = new List<ParticipantRequestV2>();
-            LinkedParticipants = new List<LinkedParticipantRequestV2>();
-            Endpoints = new List<EndpointRequestV2>();
-            JudiciaryParticipants = new List<JudiciaryParticipantRequest>();
-        }
-
         /// <summary>
         ///     The date and time for a hearing
         /// </summary>
@@ -47,12 +38,12 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
-        public List<CaseRequestV2> Cases { get; set; }
+        public List<CaseRequestV2> Cases { get; set; } = new();
 
         /// <summary>
         ///     List of participants in hearing
         /// </summary>
-        public List<ParticipantRequestV2> Participants { get; set; }
+        public List<ParticipantRequestV2> Participants { get; set; } = new();
 
         /// <summary>
         ///     The hearing room name at the hearing venue
@@ -81,10 +72,10 @@ namespace BookingsApi.Contract.V2.Requests
         [DefaultValue(false)]
         public bool IsMultiDayHearing { get; set; } = false;
 
-        public List<EndpointRequestV2> Endpoints { get; set; }
-        
-        public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; }
-        
-        public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; }
+        public List<EndpointRequestV2> Endpoints { get; set; } = new();
+
+        public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; } = new();
+
+        public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; } = new();
     }
 }

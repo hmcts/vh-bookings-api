@@ -33,8 +33,9 @@ namespace BookingsApi.UnitTests.DAL.Queries
             var createdBy = "User03";
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
-            _hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
+            _hearing = new VideoHearing(caseType, scheduledDateTime, duration, venue, hearingRoomName,
                         otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            _hearing.SetHearingType(hearingType);
             _context.VideoHearings.Add(_hearing);
             _context.SaveChangesAsync();
         }

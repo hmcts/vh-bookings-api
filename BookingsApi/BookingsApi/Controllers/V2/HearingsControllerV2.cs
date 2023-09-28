@@ -59,8 +59,11 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var hearingType = caseType.HearingTypes.Find(x =>
-                string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
+            HearingType hearingType = null;
+            if(!String.IsNullOrEmpty(request.HearingTypeCode))
+                hearingType = caseType?.HearingTypes?
+                    .Find(x => string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
+            
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
@@ -68,9 +71,8 @@ namespace BookingsApi.Controllers.V2
 
             try
             {
-                var queriedVideoHearing =
-                    await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand,
-                        request.IsMultiDayHearing);
+                var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
+                
                 var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
                 return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
             }
