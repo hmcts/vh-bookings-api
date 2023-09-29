@@ -33,7 +33,6 @@ stages:
             parameters:
               chartPath: ${{ variables.chartPath }}
               chartValuesPath: ${{ variables.chartPath }}
-              helmVersion: '3.12.3'
 
       - job: UnitAndIntegrationTests
         displayName: "Unit and Integration Tests"
