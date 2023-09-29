@@ -83,6 +83,7 @@ namespace BookingsApi.DAL.Commands
                     command.RepresentativeInformation.Representee);
             }
 
+            hearing.UpdateBookingStatusJudgeRequirement();
             await _context.SaveChangesAsync();
 
             command.UpdatedParticipant = participant;

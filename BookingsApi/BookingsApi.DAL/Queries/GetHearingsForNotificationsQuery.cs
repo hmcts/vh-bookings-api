@@ -27,8 +27,10 @@ namespace BookingsApi.DAL.Queries
             var endDate = DateTime.Today.AddDays(3);    // 3 days is 72 hrs.
 
             return await videoHearing.Where(x =>
-                        (x.Status == Domain.Enumerations.BookingStatus.Created ||
-                         x.Status == Domain.Enumerations.BookingStatus.Booked)
+                    (x.Status == BookingStatus.Created ||
+                     x.Status == Domain.Enumerations.BookingStatus.ConfirmedWithoutJudge ||
+                     x.Status == Domain.Enumerations.BookingStatus.BookedWithoutJudge ||
+                     x.Status == Domain.Enumerations.BookingStatus.Booked)
                      && x.ScheduledDateTime >= startDate
                      && x.ScheduledDateTime < endDate)
                 .ToListAsync();

@@ -107,12 +107,17 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
 
 
         hearingFromDb.GetJudiciaryParticipants()
-            .Any(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode).Should()
+            .Any(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode)
+            .Should()
             .BeFalse();
-        var serviceBusStub =
-            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
-        message.IntegrationEvent.Should()
+        
+        var serviceBusStub = Application.Services
+            .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!
+            .ReadMessageFromQueue();
+        
+        message.IntegrationEvent
+            .Should()
             .BeEquivalentTo(new ParticipantRemovedIntegrationEvent(hearingId, judiciaryParticipant.Id));
     }
 }

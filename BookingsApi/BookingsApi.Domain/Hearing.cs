@@ -29,9 +29,16 @@ namespace BookingsApi.Domain
             JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool audioRecordingRequired, string cancelReason)
+        protected Hearing(CaseType caseType, 
+            HearingType hearingType, 
+            DateTime scheduledDateTime, 
+            int scheduledDuration, 
+            HearingVenue hearingVenue, 
+            string hearingRoomName, 
+            string otherInformation, 
+            string createdBy, 
+            bool audioRecordingRequired, 
+            string cancelReason)
             : this()
         {
             ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
@@ -167,6 +174,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -187,6 +195,7 @@ namespace BookingsApi.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -214,6 +223,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -231,6 +241,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
         
@@ -247,6 +258,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.Now;
+            
             return participant;
         }
 
@@ -264,6 +276,7 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Remove(existingParticipant);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
+            
         }
 
         public bool HasHost =>
@@ -282,6 +295,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
         
@@ -292,6 +306,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -319,6 +334,7 @@ namespace BookingsApi.Domain
             participant.UpdateHearingRoleCode(newHearingRoleCode);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
+            
             
             return participant;
         }
@@ -675,12 +691,32 @@ namespace BookingsApi.Domain
 
         public ParticipantBase GetJudge()
         {
-            var judge = Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var judge = Participants?.FirstOrDefault(p => p.HearingRole?.UserRole?.IsJudge ?? false);
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
             return (ParticipantBase)judge ?? judiciaryJudge;
         }
         
+
+        public void UpdateBookingStatusJudgeRequirement()
+        {
+            if (GetJudge() == null)
+                Status = Status switch
+                {
+                    BookingStatus.Booked => BookingStatus.BookedWithoutJudge,
+                    BookingStatus.Created => BookingStatus.ConfirmedWithoutJudge,
+                    _ => Status
+                };
+            else
+                Status = Status switch
+                {
+                    BookingStatus.BookedWithoutJudge => BookingStatus.Booked,
+                    BookingStatus.ConfirmedWithoutJudge => BookingStatus.Created,
+                    _ => Status 
+                };
+        }
+
         private bool IsHearingCloseToScheduledStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow;
+
     }
 }
