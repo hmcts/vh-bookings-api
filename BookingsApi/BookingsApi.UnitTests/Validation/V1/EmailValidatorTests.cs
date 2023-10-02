@@ -41,6 +41,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         
         [TestCase("very.common@example.com")]
         [TestCase("x@example.com")]
+        [TestCase("x.x@example.com")]
         [TestCase("long.email-address-with-hyphens@and.subdomains.example.com")]
         [TestCase("name/surname@example.com")]
         public void should_pass_validation_with_all_valid_samples(string email)
@@ -49,6 +50,8 @@ namespace BookingsApi.UnitTests.Validation.V1
         }
         
         [TestCase("abc.example.com")]
+        [TestCase("x.@example.com")]
+        [TestCase("x.x.@example.com")]
         [TestCase("a@b@c@example.com")]
         [TestCase($"this\\ still\\\"not\\\\allowed@example.com")]
         [TestCase("i.like.underscores@but_they_are_not_allowed_in_this_part")]
