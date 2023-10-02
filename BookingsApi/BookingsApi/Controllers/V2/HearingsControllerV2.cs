@@ -100,9 +100,7 @@ namespace BookingsApi.Controllers.V2
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
-            {
                 return NotFound();
-            }
 
             var response = HearingToDetailsResponseV2Mapper.Map(videoHearing);
             return Ok(response);

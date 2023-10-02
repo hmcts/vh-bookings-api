@@ -9,16 +9,17 @@ namespace BookingsApi.IntegrationTests.Helper
             AddJudiciaryPanelMember = false;
             AddJudiciaryJudge = false;
             AddStaffMember = false;
+            HearingTypeName = 
+                CaseTypeName == Generic
+                    ? "Automated Test"
+                    : "First Directions Appointment";
         }
 
         private const string Generic = "Generic";
 
         public string CaseTypeName { get; set; }
 
-        public string HearingTypeName =>
-            CaseTypeName == Generic
-                ? "Automated Test"
-                : "First Directions Appointment";
+        public string HearingTypeName { get; set; }
 
         public string ApplicantRole = "Applicant";
 
