@@ -26,19 +26,38 @@ namespace BookingsApi.UnitTests.Validation.V1
         }
 
         [Test]
-        public void should_pass_validation_when_email_has_ampersand()
+        public void should_not_pass_validation_when_email_has_ampersand()
         {
             var email = "test&more@foo.com";
             email.IsValidEmail().Should().BeFalse();
         }
         
         [Test]
-        public void should_pass_validation_when_email_has_singal_char_preceeding_a_fullstop()
+        public void should_pass_validation_when_email_has_single_char_preceding_a_fullstop()
         {
-            var email = "w.craig@email.co.uk";
+            var email = "w.c@email.co.uk";
+            email.IsValidEmail().Should().BeTrue();
+        }        
+        
+        [TestCase("very.common@example.com")]
+        [TestCase("x@example.com")]
+        [TestCase("long.email-address-with-hyphens@and.subdomains.example.com")]
+        [TestCase("name/surname@example.com")]
+        public void should_pass_validation_with_all_valid_samples(string email)
+        {
             email.IsValidEmail().Should().BeTrue();
         }
+        
+        [TestCase("abc.example.com")]
+        [TestCase("a@b@c@example.com")]
+        [TestCase($"this\\ still\\\"not\\\\allowed@example.com")]
+        [TestCase("i.like.underscores@but_they_are_not_allowed_in_this_part")]
+        public void should_fail_validation_with_all_invalid_samples(string email)
+        {
+            email.IsValidEmail().Should().BeFalse();
+        } 
 
+        
         public static string GetInvalidEmail()
         {
             const string firstName = "Automatically";
