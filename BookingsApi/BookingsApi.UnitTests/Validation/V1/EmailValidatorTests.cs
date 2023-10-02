@@ -31,6 +31,13 @@ namespace BookingsApi.UnitTests.Validation.V1
             var email = "test&more@foo.com";
             email.IsValidEmail().Should().BeFalse();
         }
+        
+        [Test]
+        public void should_pass_validation_when_email_has_singal_char_preceeding_a_fullstop()
+        {
+            var email = "w.craig@email.co.uk";
+            email.IsValidEmail().Should().BeTrue();
+        }
 
         public static string GetInvalidEmail()
         {
