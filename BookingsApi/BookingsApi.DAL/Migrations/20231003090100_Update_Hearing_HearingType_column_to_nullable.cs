@@ -4,7 +4,7 @@
 
 namespace BookingsApi.DAL.Migrations
 {
-    public partial class spike10144 : Migration
+    public partial class Update_Hearing_HearingType_column_to_nullable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

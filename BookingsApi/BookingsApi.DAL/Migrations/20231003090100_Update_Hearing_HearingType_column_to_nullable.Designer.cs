@@ -12,10 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingsApi.DAL.Migrations
 {
     [DbContext(typeof(BookingsDbContext))]
-    [Migration("20230921143837_spike10144")]
-    partial class spike10144
+    [Migration("20231003090100_Update_Hearing_HearingType_column_to_nullable")]
+    partial class Update_Hearing_HearingType_column_to_nullable
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+          protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
