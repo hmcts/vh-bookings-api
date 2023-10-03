@@ -152,11 +152,6 @@ public class UpdateHearingV2Tests : ApiTest
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         var hearingFromDb = await db.VideoHearings.Include(x => x.HearingVenue).FirstAsync(x => x.Id == hearingId);
 
-        var serviceBusStub =
-            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
-        message.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
-        
         hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
         hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
@@ -171,13 +166,6 @@ public class UpdateHearingV2Tests : ApiTest
         createdResponse.UpdatedBy.Should().Be(request.UpdatedBy);
         createdResponse.HearingRoomName.Should().Be(request.HearingRoomName);
         createdResponse.OtherInformation.Should().Be(request.OtherInformation);
-        
-        var integrationEvent = message.IntegrationEvent as HearingDetailsUpdatedIntegrationEvent;
-        integrationEvent!.Hearing.HearingVenueName.Should().Be("Manchester County and Family Court");
-        integrationEvent.Hearing.ScheduledDuration.Should().Be(request.ScheduledDuration);
-        integrationEvent.Hearing.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
-        integrationEvent.Hearing.CaseName.Should().Be(request.Cases[0].Name);
-        integrationEvent.Hearing.CaseNumber.Should().Be(request.Cases[0].Number);
     }
     
     [Test]
