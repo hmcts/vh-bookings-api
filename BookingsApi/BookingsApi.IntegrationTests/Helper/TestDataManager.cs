@@ -177,7 +177,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
             var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-            var hearingType = options.HearingTypeName != null ? caseType.HearingTypes.First(x => x.Name == options.HearingTypeName) : null;
+            var hearingType = caseType.HearingTypes.FirstOrDefault(x => x.Name == options.HearingTypeName);
             var venue = options.HearingVenue;
             if (venue == null)
             {

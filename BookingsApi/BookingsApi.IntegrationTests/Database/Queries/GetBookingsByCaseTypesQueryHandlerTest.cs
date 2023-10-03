@@ -39,7 +39,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_only_return_filtered_case_types()
         {
             await Hooks.SeedVideoHearing();
-            var financialRemedyHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+            var financialRemedyHearing = await Hooks.SeedVideoHearing(opt
+                =>
+            {
+                opt.CaseTypeName = FinancialRemedy;
+                opt.HearingTypeName = "First Directions Appointment";
+            });
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { financialRemedyHearing.CaseTypeId });
             var result = await _handler.Handle(query);
