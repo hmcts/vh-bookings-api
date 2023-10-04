@@ -158,6 +158,24 @@ namespace BookingsApi.UnitTests.Mappings.V1
             response.LinkedParticipants.Select(x => x.LinkedId).First().Should().Be(linkedId);
         }
 
+        [Test]
+        public void Should_handle_null_case_role()
+        {
+            var hearingRole = new HearingRole(1, "Litigant in person") { UserRole = new UserRole(5, "Individual")};
+
+            var person = new PersonBuilder().WithOrganisation().Build();
+            var individual = new Individual(person, hearingRole, null)
+            {
+                DisplayName = "I. Vidual",
+                CreatedBy = "unit@hmcts.net"
+            };
+            individual.SetProtected(nameof(individual.HearingRole), hearingRole);
+
+            var response = _mapper.MapParticipantToResponse(individual);
+
+            response.CaseRoleName.Should().BeNull();
+        }
+
         private static void AssertParticipantCommonDetails(ParticipantResponse response, Participant participant,
             CaseRole caseRole, HearingRole hearingRole)
         {
