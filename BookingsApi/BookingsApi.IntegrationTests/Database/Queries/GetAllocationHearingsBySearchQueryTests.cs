@@ -266,7 +266,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     {
         _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
         {
-            options.HearingVenue = new HearingVenue(338, "Teesside Combined Court Centre");
+            options.HearingVenue = new HearingVenue(474, "Dolgellau");
         });
         _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
         {
