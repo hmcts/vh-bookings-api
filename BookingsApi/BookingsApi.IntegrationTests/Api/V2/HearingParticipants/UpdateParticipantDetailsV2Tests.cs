@@ -44,8 +44,8 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var errorMessages = validationProblemDetails.Errors.SelectMany(e => e.Value).ToList();
         errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.NoDisplayNameErrorMessage));
         errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.NoParticipantIdErrorMessage));
-        errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.NoFirstNameErrorMessage));
-        errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.NoLastNameErrorMessage));
+        errorMessages.Should().Contain(x => x.Contains(ParticipantValidationV2.NoFirstNameErrorMessage));
+        errorMessages.Should().Contain(x => x.Contains(ParticipantValidationV2.NoLastNameErrorMessage));
     }
     
     [Test]
@@ -191,8 +191,8 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             var errorMessages = validationProblemDetails.Errors.SelectMany(e => e.Value).ToList();
-            errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.FirstNameDoesntMatchRegex));
-            errorMessages.Should().Contain(x => x.Contains(UpdateParticipantRequestValidationV2.LastNameDoesntMatchRegex));
+            errorMessages.Should().Contain(x => x.Contains(ParticipantValidationV2.FirstNameDoesntMatchRegex));
+            errorMessages.Should().Contain(x => x.Contains(ParticipantValidationV2.LastNameDoesntMatchRegex));
         }
         else
         {
