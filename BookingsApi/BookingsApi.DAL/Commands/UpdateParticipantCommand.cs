@@ -78,7 +78,7 @@ namespace BookingsApi.DAL.Commands
 
             var participants = hearing.GetParticipants().ToList();
 
-            var participant = participants.FirstOrDefault(x => x.Id == command.ParticipantId);
+            var participant = participants.Find(x => x.Id == command.ParticipantId);
 
             if (participant == null)
             {
