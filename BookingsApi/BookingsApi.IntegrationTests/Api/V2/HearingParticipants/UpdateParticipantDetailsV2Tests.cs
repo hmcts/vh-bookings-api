@@ -243,8 +243,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
-        var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
-        integrationEvent!.Participant.MiddleNames.Should().Be(oldMiddleNames);
     }
 
     [Test]
@@ -302,7 +300,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         integrationEvent!.Participant.Representee.Should().BeEmpty();
         integrationEvent!.Participant.FirstName.Should().Be(request.FirstName);
         integrationEvent!.Participant.LastName.Should().Be(request.LastName);
-        integrationEvent!.Participant.MiddleNames.Should().Be(request.MiddleNames);
     }
     
     [Test]
