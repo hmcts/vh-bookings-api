@@ -38,6 +38,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Username.Should().Be(participant.Person.Username);
             result.FirstName.Should().Be(participant.Person.FirstName);
             result.LastName.Should().Be(participant.Person.LastName);
+            result.MiddleNames.Should().Be(participant.Person.MiddleNames);
             result.ContactEmail.Should().Be(participant.Person.ContactEmail);
             result.ContactTelephone.Should().Be(participant.Person.TelephoneNumber);
             result.DisplayName.Should().Be(participant.DisplayName);
@@ -61,6 +62,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Username.Should().Be(participant.Person.Username);
             result.FirstName.Should().Be(participant.Person.FirstName);
             result.LastName.Should().Be(participant.Person.LastName);
+            result.MiddleNames.Should().Be(participant.Person.MiddleNames);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be(participant.HearingRole.Name);
             result.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
@@ -81,6 +83,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Username.Should().Be(participant.JudiciaryPerson.Email);
             result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
             result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
+            result.MiddleNames.Should().BeNull();
             result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be("Judge");
@@ -100,6 +103,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.Username.Should().Be(participant.JudiciaryPerson.Email);
             result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
             result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
+            result.MiddleNames.Should().BeNull();
             result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be("Panel Member");

@@ -148,9 +148,15 @@ namespace BookingsApi.Controllers.V2
 
             var linkedParticipants =
                 LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+
+            var additionalInformation = new AdditionalInformation(request.FirstName, request.LastName)
+            {
+                MiddleNames = request.MiddleNames
+            };
             
             var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
-                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative, linkedParticipants);
+                request.DisplayName, request.TelephoneNumber, request.OrganisationName, representative, linkedParticipants,
+                additionalInformation: additionalInformation);
 
             var updatedParticipant = await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             

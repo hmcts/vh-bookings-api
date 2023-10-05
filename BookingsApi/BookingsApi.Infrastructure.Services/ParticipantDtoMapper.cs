@@ -24,6 +24,7 @@ namespace BookingsApi.Infrastructure.Services
                     Username = participant.Person.Username,
                     FirstName = participant.Person.FirstName,
                     LastName = participant.Person.LastName,
+                    MiddleNames = participant.Person.MiddleNames,
                     ContactEmail = participant.Person.ContactEmail,
                     ContactTelephone = participant.Person.TelephoneNumber,
                     DisplayName = participant.DisplayName,

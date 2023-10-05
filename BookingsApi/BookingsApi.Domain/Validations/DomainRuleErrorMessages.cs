@@ -8,4 +8,6 @@ public static class DomainRuleErrorMessages
     public const string CannotEditACancelledHearing = "Cannot edit a cancelled hearing";
     public const string CannotEditAHearingCloseToStartTime = "Cannot edit a hearing close to the scheduled start time";
     public const string CannotAddInterpreterToHearingCloseToStartTime = "Cannot add an interpreter to a hearing close to the scheduled start time";
+    public const string FirstNameRequired = "FirstName cannot be empty";
+    public const string LastNameRequired = "LastName cannot be empty";
 }

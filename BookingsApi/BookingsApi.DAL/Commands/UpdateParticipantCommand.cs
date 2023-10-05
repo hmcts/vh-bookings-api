@@ -8,6 +8,20 @@ namespace BookingsApi.DAL.Commands
     {
         public string Representee { get; set; }
     }
+
+    public class AdditionalInformation
+    {
+        public string FirstName { get; private set; }
+        public string MiddleNames { get; set; }
+        public string LastName { get; private set; }
+
+        public AdditionalInformation(string firstName, string lastName)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+        }
+    }
+    
     public class UpdateParticipantCommand : ICommand
     {
         public Guid HearingId { get; }
@@ -18,10 +32,12 @@ namespace BookingsApi.DAL.Commands
         public string OrganisationName { get; }
         public Participant UpdatedParticipant { get; set; }
         public RepresentativeInformation RepresentativeInformation { get; }
+        public AdditionalInformation AdditionalInformation { get; }
         public List<LinkedParticipantDto> LinkedParticipants { get; }
 
         public UpdateParticipantCommand(Guid hearingId, Guid participantId, string title, string displayName, string telephoneNumber,
-            string organisationName, RepresentativeInformation representativeInformation, List<LinkedParticipantDto> linkedParticipants)
+            string organisationName, RepresentativeInformation representativeInformation, List<LinkedParticipantDto> linkedParticipants,
+            AdditionalInformation additionalInformation = null)
         {
             HearingId = hearingId;
             ParticipantId = participantId;
@@ -30,6 +46,7 @@ namespace BookingsApi.DAL.Commands
             TelephoneNumber = telephoneNumber;
             OrganisationName = organisationName;
             RepresentativeInformation = representativeInformation;
+            AdditionalInformation = additionalInformation;
             LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
         }
     }
@@ -76,6 +93,14 @@ namespace BookingsApi.DAL.Commands
 
             participant.UpdateParticipantDetails(command.Title, command.DisplayName, command.TelephoneNumber,
                 command.OrganisationName);
+
+            if (command.AdditionalInformation != null)
+            {
+                participant.UpdateParticipantDetails(
+                    command.AdditionalInformation.FirstName, 
+                    command.AdditionalInformation.LastName, 
+                    middleNames: command.AdditionalInformation.MiddleNames);
+            }
 
             if (participant.HearingRole.UserRole.IsRepresentative)
             {

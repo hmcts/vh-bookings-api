@@ -149,6 +149,62 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             updatedRepresentative.GetLinkedParticipants().Should().NotBeEmpty();
         }
 
+        [Test]
+        public async Task Should_update_additional_information_when_passed_in()
+        {
+            var editPrefix = " _Edit";
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+
+            var title = individualParticipant.Person.Title;
+            var displayName = individualParticipant.DisplayName;
+            var telephoneNumber = individualParticipant.Person.TelephoneNumber;
+            var organisationName = individualParticipant.Person.Organisation?.Name;
+            var firstName = individualParticipant.Person.FirstName + editPrefix;
+            var middleNames = individualParticipant.Person.MiddleNames + editPrefix;
+            var lastName = individualParticipant.Person.LastName + editPrefix;
+            var additionalInformation = new AdditionalInformation(firstName, lastName)
+            {
+                MiddleNames = middleNames
+            };
+
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null, null, additionalInformation: additionalInformation);
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
+
+            updatedIndividual.Should().NotBeNull();
+            updatedIndividual.Person.FirstName.Should().Be(firstName);
+            updatedIndividual.Person.MiddleNames.Should().Be(middleNames);
+            updatedIndividual.Person.LastName.Should().Be(lastName);
+        }
+        
+        [Test]
+        public async Task Should_not_update_additional_information_when_not_passed_in()
+        {
+            var seededHearing = await Hooks.SeedVideoHearing();
+            TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
+            _newHearingId = seededHearing.Id;
+            var individualParticipant = seededHearing.GetParticipants().First(x=>x.HearingRole.UserRole.Name.Equals("Individual"));
+
+            var title = individualParticipant.Person.Title;
+            var displayName = individualParticipant.DisplayName;
+            var telephoneNumber = individualParticipant.Person.TelephoneNumber;
+            var organisationName = individualParticipant.Person.Organisation?.Name;
+
+            var updateParticipantCommand = new UpdateParticipantCommand(_newHearingId, individualParticipant.Id, title, displayName, telephoneNumber, organisationName, null, null, additionalInformation: null);
+            await _commandHandler.Handle(updateParticipantCommand);
+
+            var updatedIndividual = (Individual)updateParticipantCommand.UpdatedParticipant;
+
+            updatedIndividual.Should().NotBeNull();
+            updatedIndividual.Person.FirstName.Should().Be(individualParticipant.Person.FirstName);
+            updatedIndividual.Person.MiddleNames.Should().Be(individualParticipant.Person.MiddleNames);
+            updatedIndividual.Person.LastName.Should().Be(individualParticipant.Person.LastName);
+        }
+
         [TearDown]
         public new async Task TearDown()
         {
