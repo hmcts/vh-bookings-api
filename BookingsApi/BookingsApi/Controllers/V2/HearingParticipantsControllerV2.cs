@@ -262,8 +262,7 @@ namespace BookingsApi.Controllers.V2
                     TelephoneNumber = existingParticipantRequest.TelephoneNumber,
                     Title = existingParticipantRequest.Title
                 };
-                existingParticipantDetail.Person.ContactEmail =
-                    existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
+                existingParticipantDetail.Person.ContactEmail = existingParticipant.Person.ContactEmail;
                 existingParticipantDetails.Add(existingParticipantDetail);
             }
 

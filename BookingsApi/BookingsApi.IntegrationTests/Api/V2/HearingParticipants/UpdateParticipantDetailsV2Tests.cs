@@ -20,7 +20,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = Guid.Empty,
-            ContactEmail = null,
             DisplayName = null,
             OrganisationName = null,
             Representee = null,
@@ -58,7 +57,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = "random@test.com",
             DisplayName = "Foo",
             OrganisationName = "Bar",
             Representee = null,
@@ -91,7 +89,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = "random@test.com",
             DisplayName = "Foo",
             OrganisationName = "Bar",
             Representee = null,
@@ -125,7 +122,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = participant.Person.ContactEmail,
             DisplayName = "Foo",
             OrganisationName = null,
             Representee = null,
@@ -172,7 +168,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = participant.Person.ContactEmail,
             DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
@@ -217,7 +212,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = participant.Person.ContactEmail,
             DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
@@ -255,7 +249,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = participant.Person.ContactEmail,
             DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
@@ -279,7 +272,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
         participantResponse.Id.Should().Be(participantId);
         participantResponse.DisplayName.Should().Be(request.DisplayName);
-        participantResponse.ContactEmail.Should().Be(request.ContactEmail);
+        participantResponse.ContactEmail.Should().Be(participant.Person.ContactEmail);
         participantResponse.TelephoneNumber.Should().Be(request.TelephoneNumber);
         participantResponse.Title.Should().Be(request.Title);
         participantResponse.Representee.Should().BeNull();
@@ -295,7 +288,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
         integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
         integrationEvent!.Participant.DisplayName.Should().Be(request.DisplayName);
-        integrationEvent!.Participant.ContactEmail.Should().Be(request.ContactEmail);
+        integrationEvent!.Participant.ContactEmail.Should().Be(participant.Person.ContactEmail);
         integrationEvent!.Participant.ContactTelephone.Should().Be(request.TelephoneNumber);
         integrationEvent!.Participant.Representee.Should().BeEmpty();
         integrationEvent!.Participant.FirstName.Should().Be(request.FirstName);
@@ -312,7 +305,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,
-            ContactEmail = participant.Person.ContactEmail,
             DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
@@ -336,7 +328,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponseV2>(result.Content);
         participantResponse.Id.Should().Be(participantId);
         participantResponse.DisplayName.Should().Be(request.DisplayName);
-        participantResponse.ContactEmail.Should().Be(request.ContactEmail);
+        participantResponse.ContactEmail.Should().Be(participant.Person.ContactEmail);
         participantResponse.TelephoneNumber.Should().Be(request.TelephoneNumber);
         participantResponse.Title.Should().Be(request.Title);
         participantResponse.Representee.Should().BeNull();
