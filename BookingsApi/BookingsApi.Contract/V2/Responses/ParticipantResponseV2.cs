@@ -16,15 +16,15 @@ namespace BookingsApi.Contract.V2.Responses
         public string DisplayName { get; set; }
         
         /// <summary>
-        ///     The name of the participant's case role
+        ///     The code of the participant's hearing role
         /// </summary>
-        public string CaseRoleName { get; set; }
-        
+        public string HearingRoleCode { get; set; }
+
         /// <summary>
         ///     The name of the participant's hearing role
         /// </summary>
         public string HearingRoleName { get; set; }
-        
+
         /// <summary>
         ///     The name of the participant's user role
         /// </summary>
@@ -60,11 +60,6 @@ namespace BookingsApi.Contract.V2.Responses
         /// </summary>
         public string TelephoneNumber { get; set; }
 
-        /// <summary>
-        ///     Participant username
-        /// </summary>
-        public string Username { get; set; }
-        
         /// <summary>
         ///    Gets or sets the organisation name.
         /// </summary>
