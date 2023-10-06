@@ -75,6 +75,11 @@ namespace BookingsApi.Domain.Participants
             }
         }
 
+        public void UpdateParticipantDetails(string firstName, string lastName, string middleNames = null)
+        {
+            Person.UpdatePersonNames(firstName, lastName, middleNames: middleNames);
+        }
+
         public void AddLink(Guid linkedId, LinkedParticipantType linkType)
         {
             var existingLink = LinkedParticipants.SingleOrDefault(x => x.LinkedId == linkedId && x.Type == linkType);
