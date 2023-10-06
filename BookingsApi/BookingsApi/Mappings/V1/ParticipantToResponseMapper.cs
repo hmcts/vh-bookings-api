@@ -11,7 +11,7 @@ namespace BookingsApi.Mappings.V1
             {
                 Id = participant.Id,
                 DisplayName = participant.DisplayName,
-                CaseRoleName = participant.CaseRole.Name,
+                CaseRoleName = participant.CaseRole?.Name,
                 HearingRoleName = participant.HearingRole.Name,
                 UserRoleName = participant.HearingRole.UserRole.Name,
                 Title = participant.Person.Title,
