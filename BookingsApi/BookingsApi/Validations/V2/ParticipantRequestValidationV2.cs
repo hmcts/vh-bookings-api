@@ -21,6 +21,10 @@ namespace BookingsApi.Validations.V2
 
         public ParticipantRequestValidationV2()
         {
+            RuleFor(x => x.FirstName).NotEmpty().WithMessage(ParticipantValidationV2.NoFirstNameErrorMessage);
+            RuleFor(x => x.FirstName).Matches(ParticipantValidationV2.NameRegex).WithMessage(ParticipantValidationV2.FirstNameDoesntMatchRegex);
+            RuleFor(x => x.LastName).NotEmpty().WithMessage(ParticipantValidationV2.NoLastNameErrorMessage);
+            RuleFor(x => x.LastName).Matches(ParticipantValidationV2.NameRegex).WithMessage(ParticipantValidationV2.LastNameDoesntMatchRegex);
             RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
             RuleFor(x => x.FirstName).Matches(NameRegex).WithMessage(FirstNameDoesntMatchRegex);
             RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);

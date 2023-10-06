@@ -21,6 +21,8 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                     ParticipantId = Guid.NewGuid(),
                     DisplayName = "DisplayName",
                     Title = "New Title",
+                    FirstName = "New First Name",
+                    LastName = "New Last Name"
                 },
             },
             NewParticipants = new List<ParticipantRequestV2>()
@@ -67,6 +69,8 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                     ParticipantId = participantToUpdate.Id,
                     DisplayName = participantToUpdate.DisplayName,
                     Title = participantToUpdate.Person.Title,
+                    FirstName = participantToUpdate.Person.FirstName,
+                    LastName = participantToUpdate.Person.LastName
                 }
             }
         };
@@ -96,6 +100,8 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                     ParticipantId = participantToUpdate.Id,
                     DisplayName = participantToUpdate.DisplayName,
                     Title = participantToUpdate.Person.Title,
+                    FirstName = participantToUpdate.Person.FirstName,
+                    LastName = participantToUpdate.Person.LastName
                 }
             },
             NewParticipants = new List<ParticipantRequestV2>
