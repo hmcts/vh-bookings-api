@@ -12,9 +12,9 @@ public class AddParticipantsToHearingRequestRefDataValidationV2 : RefDataInputVa
         {
             return;
         }
-            
+        // Should we be using hearing roles directly as there is no link between case type and the roles
         var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-        RuleForEach(request => request.Participants).Where(x => representativeRoles.Contains(x.HearingRoleName))
+        RuleForEach(request => request.Participants).Where(x => representativeRoles.Contains(x.HearingRoleCode))
             .SetValidator(new RepresentativeValidation());
     }
 }

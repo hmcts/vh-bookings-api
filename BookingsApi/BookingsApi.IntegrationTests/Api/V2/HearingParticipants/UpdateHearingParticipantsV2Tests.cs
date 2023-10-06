@@ -27,11 +27,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "newusername@test.email.com",
-                    CaseRoleName = "Applicant",
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
-                    HearingRoleName = "Applicant LIP",
+                    HearingRoleCode = "APPL",
                     LastName = "NewLastName",
                     MiddleNames = "NewMiddleNames",
                     OrganisationName = "OrganisationName",
@@ -104,11 +102,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "username@test.email.com",
-                    CaseRoleName = null,
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
-                    HearingRoleName = "Applicant",
+                    HearingRoleCode = "APPL",
                     LastName = "LastName",
                     MiddleNames = "MiddleNames",
                     OrganisationName = "OrganisationName",
@@ -163,52 +159,10 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     }
     
     [Test]
-    public async Task should_return_validation_errors_when_case_role_not_found()
-    {
-        // arrange
-        var caseRoleName = "Invalid Role";
-        var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
-        
-        var request = new UpdateHearingParticipantsRequestV2
-        {
-            NewParticipants = new List<ParticipantRequestV2>
-            {
-                new ()
-                {
-                    Username = "newusername@test.email.com",
-                    CaseRoleName = caseRoleName,
-                    DisplayName = "DisplayName",
-                    FirstName = "NewFirstName",
-                    HearingRoleName = "Applicant LIP",
-                    LastName = "NewLastName",
-                    MiddleNames = "NewMiddleNames",
-                    OrganisationName = "OrganisationName",
-                    ContactEmail = "newcontact@test.email.com",
-                    TelephoneNumber = "0123456789",
-                    Title = "Title",
-                    Representee = "Representee"
-                }
-            }
-        };
-
-        // act
-        using var client = Application.CreateClient();
-        var result = await client
-            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
-
-        // assert
-        result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[$"{nameof(request.NewParticipants )}[0]"].Should().Contain($"Invalid case role [{caseRoleName}]");
-    }
-    
-    [Test]
     public async Task should_return_validation_errors_when_hearing_role_not_found_from_case_role()
     {
         // arrange
-        var hearingRoleName = "Invalid Role";
+        var hearingRoleCode = "Invalid Role";
         var hearing = await Hooks.SeedVideoHearing(options
             => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
         
@@ -218,11 +172,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "newusername@test.email.com",
-                    CaseRoleName = "Applicant",
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
-                    HearingRoleName = hearingRoleName,
+                    HearingRoleCode = hearingRoleCode,
                     LastName = "NewLastName",
                     MiddleNames = "NewMiddleNames",
                     OrganisationName = "OrganisationName",
@@ -243,14 +195,14 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[$"{nameof(request.NewParticipants )}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleName}]");
+        validationProblemDetails.Errors[$"{nameof(request.NewParticipants )}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleCode}]");
     }
 
     [Test]
     public async Task should_return_validation_errors_when_flat_structure_hearing_role_not_found()
     {
         // arrange
-        var hearingRoleName = "Invalid Role";
+        var hearingRoleCode = "Invalid Role";
         var hearing = await Hooks.SeedVideoHearing(options
             => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
         
@@ -260,11 +212,9 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "username@test.email.com",
-                    CaseRoleName = null,
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
-                    HearingRoleName = hearingRoleName,
+                    HearingRoleCode = hearingRoleCode,
                     LastName = "LastName",
                     MiddleNames = "MiddleNames",
                     OrganisationName = "OrganisationName",
@@ -285,7 +235,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[$"{nameof(request.NewParticipants )}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleName}]");
+        validationProblemDetails.Errors[$"{nameof(request.NewParticipants )}[0]"].Should().Contain($"Invalid hearing role [{hearingRoleCode}]");
     }
     
     [Test]

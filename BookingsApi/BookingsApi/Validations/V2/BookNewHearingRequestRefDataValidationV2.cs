@@ -42,38 +42,9 @@ public class BookNewHearingRequestRefDataValidationV2 : RefDataInputValidatorVal
 
     private static void ValidateHearingRole(ParticipantRequestV2 participant, CaseType caseType, List<HearingRole> hearingRoles, ValidationContext<BookNewHearingRequestV2> context)
     {
-        // if no case role is provided, this request is using the flat structure
-        if (string.IsNullOrEmpty(participant.CaseRoleName))
+        if (!hearingRoles.Exists(x => x.Code == participant.HearingRoleCode))
         {
-            if (!hearingRoles.Exists(x => x.Name == participant.HearingRoleName))
-            {
-                context.AddFailure($"Invalid hearing role [{participant.HearingRoleName}]");
-            }
-        }
-        else
-        {
-            ValidateRoleFromCaseType(participant, caseType, context);
-        }
-    }
-
-    private static void ValidateRoleFromCaseType(ParticipantRequestV2 participant, CaseType caseType,
-        ValidationContext<BookNewHearingRequestV2> context)
-    {
-        if (caseType == null)
-        {
-            return;
-        }
-
-        var caseRole = caseType.CaseRoles.Find(x => x.Name == participant.CaseRoleName);
-        if (caseRole == null)
-        {
-            context.AddFailure($"Invalid case role [{participant.CaseRoleName}]");
-            return;
-        }
-
-        if (!caseRole.HearingRoles.Exists(x => x.Name == participant.HearingRoleName))
-        {
-            context.AddFailure($"Invalid hearing role [{participant.HearingRoleName}]");
+            context.AddFailure($"Invalid hearing role [{participant.HearingRoleCode}]");
         }
     }
 }

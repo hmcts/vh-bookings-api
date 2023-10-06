@@ -36,11 +36,10 @@ public class AddParticipantsToHearingV2Tests : ApiTest
         var request = BuildRequestObject();
         request.Participants.ForEach(x =>
         {
-            x.CaseRoleName = null;
-            if (x.HearingRoleName.Contains("LIP"))
-                x.HearingRoleName = "Applicant";
-            if (x.HearingRoleName == "Representative")
-                x.HearingRoleName = "Legal Representative";
+            if (x.HearingRoleCode.Contains("APPL"))
+                x.HearingRoleCode = "APPL";
+            if (x.HearingRoleCode == "RPTT")
+                x.HearingRoleCode = "RPTT";
         });
 
         // act
@@ -65,7 +64,7 @@ public class AddParticipantsToHearingV2Tests : ApiTest
         
         var request = BuildRequestObject();
         var participant = hearing.Participants.First(x => x is Individual);
-        request.Participants[0].HearingRoleName = "Interpreter";
+        request.Participants[0].HearingRoleCode = "INTP";
         request.LinkedParticipants = new List<LinkedParticipantRequestV2>
         {
             new ()
@@ -97,11 +96,9 @@ public class AddParticipantsToHearingV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "username@test.email.com",
-                    CaseRoleName = "Applicant",
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
-                    HearingRoleName = "Applicant LIP",
+                    HearingRoleCode = "APPL",
                     LastName = "LastName",
                     MiddleNames = "MiddleNames",
                     OrganisationName = "OrganisationName",

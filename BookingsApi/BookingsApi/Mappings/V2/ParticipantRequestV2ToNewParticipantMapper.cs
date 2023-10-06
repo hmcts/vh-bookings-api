@@ -8,28 +8,15 @@ namespace BookingsApi.Mappings.V2
     /// </summary>
     public static class ParticipantRequestV2ToNewParticipantMapper
     {
-        public static NewParticipant Map(ParticipantRequestV2 requestV2Participant, CaseType caseType, List<HearingRole> hearingRoles)
+        public static NewParticipant Map(ParticipantRequestV2 requestV2Participant, List<HearingRole> hearingRoles)
         {
             HearingRole hearingRole;
             CaseRole caseRole = null;
-            // if no case role is provided, this request is using the flat structure
-            if (string.IsNullOrEmpty(requestV2Participant.CaseRoleName))
-            {
-                hearingRole = hearingRoles.Find(x => x.Name == requestV2Participant.HearingRoleName);
-            }
-            else
-            {
-                caseRole = caseType.CaseRoles.Find(x => x.Name == requestV2Participant.CaseRoleName);
-                hearingRole = caseRole.HearingRoles.Find(x => x.Name == requestV2Participant.HearingRoleName);
-            }
 
-            if (string.IsNullOrEmpty(requestV2Participant.Username))
-            {
-                requestV2Participant.Username = requestV2Participant.ContactEmail;
-            }
-            
+            hearingRole = hearingRoles.Find(x => string.Compare(x.Code, requestV2Participant.HearingRoleCode, StringComparison.InvariantCultureIgnoreCase) == 0);
+
             var person = new Person(requestV2Participant.Title, requestV2Participant.FirstName, requestV2Participant.LastName,
-                requestV2Participant.ContactEmail, requestV2Participant.Username)
+                requestV2Participant.ContactEmail, requestV2Participant.ContactEmail)
             {
                 MiddleNames = requestV2Participant.MiddleNames,
                 ContactEmail = requestV2Participant.ContactEmail,
