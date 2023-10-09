@@ -4,6 +4,7 @@ using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Helper;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Services;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
@@ -155,12 +156,32 @@ namespace BookingsApi.IntegrationTests.Helper
             await context.AddRangeAsync(entities);
         }
 
+        /// <summary>
+        /// Use when testing V2 endpoints, which use a flat hearing role structure
+        /// </summary>
+        public async Task<VideoHearing> SeedVideoHearingV2(Action<SeedVideoHearingOptions> configureOptions = null,
+            BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
+            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
+        {
+            return await SeedVideoHearing(true, configureOptions, status, endPointsToAdd, addJoh, withLinkedParticipants, isMultiDayFirstHearing);
+        }
+
+        /// <summary>
+        /// Use when testing V1 endpoints
+        /// </summary>
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
             BookingStatus status = BookingStatus.Booked, 
             int endPointsToAdd = 0,
             bool addJoh = false, 
             bool withLinkedParticipants = false, 
             bool isMultiDayFirstHearing = false)
+        {
+            return await SeedVideoHearing(false, configureOptions, status, endPointsToAdd, addJoh, withLinkedParticipants, isMultiDayFirstHearing);
+        }
+
+        private async Task<VideoHearing> SeedVideoHearing(bool useFlatHearingRoles, Action<SeedVideoHearingOptions> configureOptions = null,
+            BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
+            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
@@ -170,13 +191,34 @@ namespace BookingsApi.IntegrationTests.Helper
             var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
             var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
 
-            var applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-            var applicantRepresentativeHearingRole =
-                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
-            var respondentRepresentativeHearingRole =
-                respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
-            var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+            HearingRole applicantLipHearingRole;
+            HearingRole applicantRepresentativeHearingRole;
+            HearingRole respondentRepresentativeHearingRole;
+            HearingRole respondentLipHearingRole;
+            HearingRole judgeHearingRole;
+
+            List<HearingRole> flatHearingRoles = new List<HearingRole>();
+
+            if (useFlatHearingRoles)
+            {
+                flatHearingRoles = GetFlatHearingRolesFromDb();
+                
+                applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
+                applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
+                respondentRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
+                respondentLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Respondent);
+                judgeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Judge);
+            }
+            else
+            {
+                applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+                applicantRepresentativeHearingRole =
+                    applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+                respondentRepresentativeHearingRole =
+                    respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
+                respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+                judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+            }
 
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
@@ -228,7 +270,15 @@ namespace BookingsApi.IntegrationTests.Helper
             if (addJoh)
             {
                 var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Judicial Office Holder");
-                var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Judicial Office Holder");
+                HearingRole johHearingRole;
+                if (useFlatHearingRoles)
+                {
+                    johHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.PanelMember);
+                }
+                else
+                {
+                    johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Judicial Office Holder");
+                }
                 videoHearing.AddJudicialOfficeHolder(johPerson, johHearingRole, johCaseRole,
                     $"{johPerson.FirstName} {johPerson.LastName}");
             }
@@ -305,7 +355,17 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 var staffMemberPerson = new PersonBuilder(true).Build();
                 var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
-                var staffMemberHearingRole = staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
+
+                HearingRole staffMemberHearingRole;
+                
+                if (useFlatHearingRoles)
+                {
+                    staffMemberHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.StaffMember);
+                }
+                else
+                {
+                    staffMemberHearingRole = staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
+                }
 
                 videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole, "Staff Member 1");
             }
@@ -433,6 +493,16 @@ namespace BookingsApi.IntegrationTests.Helper
             }
 
             return caseType;
+        }
+
+        private List<HearingRole> GetFlatHearingRolesFromDb()
+        {
+            using var db = new BookingsDbContext(_dbContextOptions);
+            var hearingRoles = db.HearingRoles
+                .Where(x => x.CaseRoleId == null)
+                .ToList();
+
+            return hearingRoles;
         }
 
         private static void CreateParticipantLinks(Participant interpretee, Participant interpreter)

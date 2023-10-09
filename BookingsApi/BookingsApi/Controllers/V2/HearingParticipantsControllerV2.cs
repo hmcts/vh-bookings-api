@@ -55,19 +55,17 @@ namespace BookingsApi.Controllers.V2
                 return NotFound("Video hearing not found");
             }
             
-            var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
-            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
 
-            var dataValidationResult = await new AddParticipantsToHearingRequestRefDataValidationV2(caseType).ValidateAsync(request);
+            var dataValidationResult = await new AddParticipantsToHearingRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
-
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            
             var participants = request.Participants
-                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType, hearingRoles)).ToList();
+                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
             var linkedParticipants =
                 LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
@@ -193,10 +191,8 @@ namespace BookingsApi.Controllers.V2
                 return NotFound();
             }
             
-            var caseTypeQuery = new GetCaseRolesForCaseServiceQuery(videoHearing.CaseType.ServiceId);
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-            var caseType = await _queryHandler.Handle<GetCaseRolesForCaseServiceQuery, CaseType>(caseTypeQuery);
-            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(caseType, hearingRoles).ValidateAsync(request);
+            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
@@ -204,7 +200,7 @@ namespace BookingsApi.Controllers.V2
             }
             
             var newParticipants = request.NewParticipants
-                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, videoHearing.CaseType, hearingRoles)).ToList();
+                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
 
             var existingParticipants = videoHearing.Participants
                 .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();

@@ -44,7 +44,7 @@ public class GetHearingRolesTests : ApiTest
         {
             "Barrister",
             "Defence Counsel",
-            "Intermediaries",
+            "Intermediary",
             "Legal Representative",
             "Prosecution Counsel",
             "Prosecutor",

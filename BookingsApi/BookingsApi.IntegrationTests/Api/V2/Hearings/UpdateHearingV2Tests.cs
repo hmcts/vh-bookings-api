@@ -59,7 +59,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_return_bad_request_and_validation_errors_when_venue_does_not_exist()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing();
+        var hearing = await Hooks.SeedVideoHearingV2();
         var hearingId = hearing.Id;
         var request = BuildRequest();
         request.HearingVenueCode = "ShouldNotExist";
@@ -80,7 +80,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_update_hearing_and_publish_when_hearing_status_is_created()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.Case = new Case("Case1 Num", "Case1 Name");
         }, BookingStatus.Created);
@@ -131,7 +131,7 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_update_hearing_and_not_publish_when_hearing_status_is_not_created()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing();
+        var hearing = await Hooks.SeedVideoHearingV2();
         var hearingId = hearing.Id;
         var request = BuildRequest();
 

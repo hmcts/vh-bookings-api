@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
 
@@ -42,16 +43,16 @@ namespace BookingsApi.UnitTests.Validation.V2
         }
 
         [Test]
-        public async Task Should_return_missing_hearing_role_name_error()
+        public async Task Should_return_missing_hearing_role_code_error()
         {
             var request = BuildRequest();
-            request.HearingRoleName = string.Empty;
+            request.HearingRoleCode = string.Empty;
 
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoHearingRoleNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoHearingRoleCodeErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -87,7 +88,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_missing_username_error()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Judge";
+            request.HearingRoleCode = HearingRoleCodes.Judge;
             request.ContactEmail = "test@T.com";
             request.Username = string.Empty;
 
@@ -131,7 +132,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_invalid_judge_username_error()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Judge";
+            request.HearingRoleCode = HearingRoleCodes.Judge;
             request.Username = "gsdgdsgfs";
 
             var result = await _validator.ValidateAsync(request);
@@ -146,7 +147,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         public async Task Should_return_valid_judge_username()
         {
             var request = BuildRequest();
-            request.HearingRoleName = "Judge";
+            request.HearingRoleCode = HearingRoleCodes.Judge;
             request.Username = "judge.one@ejudiciary.net";
 
             var result = await _validator.ValidateAsync(request);
@@ -170,7 +171,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         {
             var request = BuildRequest();
             request.TelephoneNumber = string.Empty;
-            request.HearingRoleName = "Representative";
+            request.HearingRoleCode = "RPTT";
 
             var result = await _validator.ValidateAsync(request);
 
@@ -185,7 +186,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         {
             var request = BuildRequest();
             request.TelephoneNumber = string.Empty;
-            request.HearingRoleName = "Judge";
+            request.HearingRoleCode = HearingRoleCodes.Judge;
             request.Username = "judge.one@ejudiciary.net";
             
             var result = await _validator.ValidateAsync(request);
@@ -227,8 +228,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         private static ParticipantRequestV2 BuildRequest()
         {
             return Builder<ParticipantRequestV2>.CreateNew()
-                 .With(x => x.CaseRoleName = "Applicant")
-                 .With(x => x.HearingRoleName = "Representative")
+                 .With(x => x.HearingRoleCode = "RPTT")
                  .With(x => x.TelephoneNumber = "020 7946 0101")
                  .With(x => x.ContactEmail = "mm@mm.com")
                  .Build();
