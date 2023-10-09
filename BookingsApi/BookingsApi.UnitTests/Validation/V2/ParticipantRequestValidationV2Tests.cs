@@ -65,7 +65,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoFirstNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantValidationV2.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -79,7 +79,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoLastNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantValidationV2.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -217,9 +217,9 @@ namespace BookingsApi.UnitTests.Validation.V2
             if (!expectedResult)
             {
                 result.Errors.Count.Should().Be(2);
-                result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.FirstNameDoesntMatchRegex)
+                result.Errors.Exists(x => x.ErrorMessage == ParticipantValidationV2.FirstNameDoesntMatchRegex)
                     .Should().BeTrue();
-                result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.LastNameDoesntMatchRegex)
+                result.Errors.Exists(x => x.ErrorMessage == ParticipantValidationV2.LastNameDoesntMatchRegex)
                     .Should().BeTrue();
             }
         }
