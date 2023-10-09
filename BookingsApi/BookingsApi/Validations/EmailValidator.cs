@@ -5,7 +5,7 @@ namespace BookingsApi.Validations
     /// <summary>Simple validator to check email formats</summary>
     public static class EmailValidator
     {
-        private const string RegexPattern = @"^([!#-'*/-9=?A-Z^-~-][^&@.]+(\.[!#-'*/-9=?A-Z^-~-][^&@.]+)*)@([!#-'*/-9=?A-Z^-~-][^&]*(\.[!#-'*/-9=?A-Z^-~-][^&]+)+)$";
+        private const string RegexPattern = @"^[!#$%'*/-9=?A-Z^-~-]+(?:\.[!#$%'*/-9=?A-Z^-~-]+)*@[a-zA-Z0-9]+([a-zA-Z0-9-]+)*(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$";
         
         /// <summary>
         /// Test if the given string is specified and a valid email address
