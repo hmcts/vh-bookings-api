@@ -1,12 +1,14 @@
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Extensions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
+using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
+
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
     public class UpdateJudiciaryParticipantTests : ApiTest
@@ -193,6 +195,41 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["DisplayName"][0].Should().Be(UpdateJudiciaryParticipantRequestValidation.NoDisplayNameErrorMessage);
+        }
+        
+        [Test]
+        public async Task Should_return_bad_request_when_request_is_close_to_start_time_and_created()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            {
+                options.ScheduledDate = DateTime.UtcNow.AddMinutes(5);
+                options.AddJudge = false;
+                options.AddJudiciaryPanelMember = true;
+                options.AddStaffMember = true;
+            }, BookingStatus.Created);
+            var judiciaryPanelMember = seededHearing.JudiciaryParticipants
+                .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
+            var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
+            var newDisplayName = "New Display Name";
+
+            var request = new UpdateJudiciaryParticipantRequest
+            {
+                DisplayName = newDisplayName,
+                HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge
+            };
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PatchAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.UpdateJudiciaryParticipant(seededHearing.Id, personalCode), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearing"].Should().Contain(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
         }
 
         [Test]

@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Domain.Constants;
 using FluentValidation;
 
 namespace BookingsApi.Validations.V2
@@ -27,7 +28,7 @@ namespace BookingsApi.Validations.V2
                 .NotEmpty().WithMessage(NoDisplayNameErrorMessage)
                 .Matches(regex).WithMessage(InvalidDisplayNameErrorMessage);
             RuleFor(x => x.HearingRoleCode).NotEmpty().WithMessage(NoHearingRoleCodeErrorMessage);
-            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleCode != "Judge").WithMessage(NoTelephoneNumberErrorMessage);
+            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleCode != HearingRoleCodes.Judge).WithMessage(NoTelephoneNumberErrorMessage);
         }
     }
 }

@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
@@ -12,35 +13,13 @@ public class AddParticipantsToHearingV2Tests : ApiTest
     public async Task should_add_participant_to_hearing_and_return_200()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+            {
+                options.Case = new Case("Case1 Num", "Case1 Name");
+            },
             BookingStatus.Created);
         
         var request = BuildRequestObject();
-
-        // act
-        using var client = Application.CreateClient();
-        var result = await client
-            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.AddParticipantsToHearing(hearing.Id),RequestBody.Set(request));
-
-        // assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
-    }
-
-    [Test]
-    public async Task should_add_participant_to_hearing_without_case_role_and_return_200()
-    {
-        // arrange
-        var hearing = await Hooks.SeedVideoHearing(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
-            BookingStatus.Created);
-        
-        var request = BuildRequestObject();
-        request.Participants.ForEach(x =>
-        {
-            if (x.HearingRoleCode.Contains("APPL"))
-                x.HearingRoleCode = "APPL";
-            if (x.HearingRoleCode == "RPTT")
-                x.HearingRoleCode = "RPTT";
-        });
 
         // act
         using var client = Application.CreateClient();
@@ -55,7 +34,7 @@ public class AddParticipantsToHearingV2Tests : ApiTest
     public async Task should_fail_to_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_400()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options =>
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
             {
                 options.Case = new Case("Case1 Num", "Case1 Name");
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(25);
@@ -98,7 +77,7 @@ public class AddParticipantsToHearingV2Tests : ApiTest
                 {
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
-                    HearingRoleCode = "APPL",
+                    HearingRoleCode = HearingRoleCodes.Applicant,
                     LastName = "LastName",
                     MiddleNames = "MiddleNames",
                     OrganisationName = "OrganisationName",

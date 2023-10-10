@@ -6,5 +6,6 @@ namespace BookingsApi.Contract.V2.Responses
     {
         public string Name { get; set; }
         public string UserRole { get; set; }
+        public string Code { get; set; }
     }
 }

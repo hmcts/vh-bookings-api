@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Validations.V2;
 
@@ -31,7 +32,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
                 {
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
-                    HearingRoleCode = "APPL",
+                    HearingRoleCode = HearingRoleCodes.Applicant,
                     LastName = "NewLastName",
                     MiddleNames = "NewMiddleNames",
                     OrganisationName = "OrganisationName",
@@ -51,13 +52,14 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.NotFound, result.Content.ReadAsStringAsync().Result);
     }
     
-    
     [Test]
     public async Task should_return_not_found_when_video_hearing_is_not_found()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("Case1 Num", "Case1 Name"); }, BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+        {
+            options.Case = new Case("Case1 Num", "Case1 Name");
+        }, BookingStatus.Created);
         
         var participantToUpdate = hearing.Participants.First(e => e.HearingRole.UserRole.IsIndividual);
         var request = new UpdateHearingParticipantsRequestV2
@@ -87,8 +89,10 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_update_individual_participant_and_add_a_new_individual_without_a_case_role_in_a_hearing_and_return_200()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("Case1 Num", "Case1 Name"); }, BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+        {
+            options.Case = new Case("Case1 Num", "Case1 Name");
+        }, BookingStatus.Created);
         
         var participantToUpdate = hearing.Participants.First(e => e.HearingRole.UserRole.IsIndividual);
         var request = new UpdateHearingParticipantsRequestV2
@@ -169,8 +173,10 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     {
         // arrange
         var hearingRoleCode = "Invalid Role";
-        var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+        {
+            options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); 
+        }, BookingStatus.Created);
         
         var request = new UpdateHearingParticipantsRequestV2
         {
@@ -208,9 +214,11 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
     public async Task should_return_validation_errors_when_flat_structure_hearing_role_not_found()
     {
         // arrange
-        var hearingRoleCode = "Invalid Role";
-        var hearing = await Hooks.SeedVideoHearing(options
-            => { options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure"); }, BookingStatus.Created);
+        var hearingRoleCode = "Invalid Code";
+        var hearing = await Hooks.SeedVideoHearingV2(options =>
+        {
+            options.Case = new Case("UpdateParticipantDataValidationFailure", "UpdateParticipantDataValidationFailure");
+        }, BookingStatus.Created);
         
         var request = new UpdateHearingParticipantsRequestV2
         {

@@ -3,7 +3,7 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.DAL.Helper;
+using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
@@ -56,7 +56,7 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.Participants = request.Participants.Where(x => x.HearingRoleCode != HearingRoles.Judge).ToList();
+        request.Participants = request.Participants.Where(x => x.HearingRoleCode != HearingRoleCodes.Judge).ToList();
         var judiciaryPerson = await Hooks.AddJudiciaryPerson();
         var judiciaryJudgeRequest = new JudiciaryParticipantRequest()
         {
@@ -88,11 +88,33 @@ public class BookNewHearingV2Tests : ApiTest
     }
 
     [Test]
+    public async Task should_book_a_hearing_without_case_roles()
+    {
+        // arrange
+        var request = CreateBookingRequestWithServiceIdsAndCodes();
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        _hearingIds.Add(createdResponse.Id);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+    }
+    
+    [Test]
     public async Task should_return_validation_error_when_flat_structure_hearing_role_not_found()
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        var hearingRoleCode = "Invalid Role";
+        var hearingRoleCode = "Invalid Code";
         request.Participants.ForEach(x =>
         {
             x.HearingRoleCode = hearingRoleCode;
@@ -203,7 +225,7 @@ public class BookNewHearingV2Tests : ApiTest
     {
         // arrange
         var request = CreateBookingRequestWithServiceIdsAndCodes();
-        var judge = request.Participants.Find(p => p.HearingRoleCode == "Judge"); 
+        var judge = request.Participants.Find(p => p.HearingRoleCode == HearingRoleCodes.Judge); 
         request.Participants.Remove(judge);
         
         // act

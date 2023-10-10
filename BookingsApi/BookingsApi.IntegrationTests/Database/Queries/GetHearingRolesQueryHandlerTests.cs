@@ -30,7 +30,7 @@ public class GetHearingRolesQueryHandlerTests : DatabaseTestsBase
             "Defence Counsel",
             "Defendant",
             "Expert",
-            "Intermediaries",
+            "Intermediary",
             "Interpreter",
             "Joint Party",
             "Legal Representative",

@@ -12,6 +12,11 @@ public class UpdateHearingParticipantsRequestRefDataValidationV2 : RefDataInputV
         {
             ValidateHearingRole(participant, hearingRoles, context);
         });
+            
+        var representativeRoles = hearingRoles.Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
+            
+        RuleForEach(request => request.NewParticipants).Where(x => representativeRoles.Contains(x.HearingRoleCode))
+            .SetValidator(new RepresentativeValidation());
     }
 
     private static void ValidateHearingRole(ParticipantRequestV2 participant, List<HearingRole> hearingRoles, ValidationContext<UpdateHearingParticipantsRequestV2> context)

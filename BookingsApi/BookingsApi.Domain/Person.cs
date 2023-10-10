@@ -9,6 +9,9 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
+        /// <summary>
+        /// Instantiate a person when the username is known, typically used for existing persons
+        /// </summary>
         public Person(string title, string firstName, string lastName, string contactEmail, string username)
         {
             Id = Guid.NewGuid();
@@ -19,6 +22,14 @@ namespace BookingsApi.Domain
             Username = username;
             ContactEmail = contactEmail;
             CreatedDate = UpdatedDate = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Instantiate a person when the username is not known, typically used for new persons
+        /// </summary>
+        public Person(string title, string firstName, string lastName, string contactEmail) : this(title, firstName,
+            lastName, contactEmail, null)
+        {
         }
 
         public string Title { get; set; }

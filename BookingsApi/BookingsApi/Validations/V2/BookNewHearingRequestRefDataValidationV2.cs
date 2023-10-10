@@ -35,12 +35,12 @@ public class BookNewHearingRequestRefDataValidationV2 : RefDataInputValidatorVal
         
         RuleForEach(x=> x.Participants).Custom((participant, context) =>
         {
-            ValidateHearingRole(participant, caseType, hearingRoles, context);
+            ValidateHearingRole(participant, hearingRoles, context);
         });
         
     }
 
-    private static void ValidateHearingRole(ParticipantRequestV2 participant, CaseType caseType, List<HearingRole> hearingRoles, ValidationContext<BookNewHearingRequestV2> context)
+    private static void ValidateHearingRole(ParticipantRequestV2 participant, List<HearingRole> hearingRoles, ValidationContext<BookNewHearingRequestV2> context)
     {
         if (!hearingRoles.Exists(x => x.Code == participant.HearingRoleCode))
         {

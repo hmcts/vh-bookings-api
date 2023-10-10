@@ -43,7 +43,7 @@ namespace BookingsApi.Contract.V2.Requests
         [RegularExpression("^([-A-Za-z0-9 ',._])*$")]
         public string DisplayName { get; set; }
 
-         /// <summary>
+        /// <summary>
         ///     The code of the participant's hearing role
         /// </summary>
         public string HearingRoleCode { get; set; }

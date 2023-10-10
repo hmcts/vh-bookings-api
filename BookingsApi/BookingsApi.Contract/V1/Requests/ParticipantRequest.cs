@@ -3,7 +3,7 @@ using BookingsApi.Contract.Interfaces.Requests;
 
 namespace BookingsApi.Contract.V1.Requests
 {
-    public class ParticipantRequest : IRepresentativeInfoRequest
+    public class ParticipantRequest : IParticipantRequest
     {
         /// <summary>
         ///     Participant Title.

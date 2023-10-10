@@ -9,7 +9,7 @@ public class GetHearingsByGroupIdV2Tests : ApiTest
     {
         // arrange
         var startingDate = DateTime.UtcNow.AddMinutes(5);
-        var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
+        var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
         });
