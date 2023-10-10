@@ -83,7 +83,7 @@ namespace BookingsApi.DAL.Queries
             }
 
             // Add one to the limit to know whether or not we have a next page
-            var result = hearings.Take(query.Limit + 1).ToList();
+            var result = await hearings.Take(query.Limit + 1).ToListAsync();
             string nextCursor = null;
             if (result.Count > query.Limit)
             {
@@ -96,7 +96,7 @@ namespace BookingsApi.DAL.Queries
             return new CursorPagedResult<VideoHearing, string>(result, nextCursor);
         }
 
-        private IQueryable<VideoHearing> ApplyOptionalFilters(GetBookingsByCaseTypesQuery query, IQueryable<VideoHearing> hearings)
+        private static IQueryable<VideoHearing> ApplyOptionalFilters(GetBookingsByCaseTypesQuery query, IQueryable<VideoHearing> hearings)
         {
             if (query.CaseTypes.Any())
             {
@@ -107,7 +107,7 @@ namespace BookingsApi.DAL.Queries
 
             if (!string.IsNullOrWhiteSpace(query.CaseNumber))
             {
-                hearings = FilterByCaseNumber(hearings, query);
+                hearings = hearings.Where(x => x.HearingCases.Any(hc => hc.Case.Number.Contains(query.CaseNumber)));
             }
 
             if (query.VenueIds.Any())
@@ -146,41 +146,7 @@ namespace BookingsApi.DAL.Queries
 
             return hearings;
         }
-        
-        private IQueryable<VideoHearing> FilterByCaseNumber(
-            IQueryable<VideoHearing> hearings, 
-            GetBookingsByCaseTypesQuery query)
-        {
-            var cases = _context.Cases
-                .Where(x => x.Number.Contains(query.CaseNumber))
-                .AsNoTracking()
-                .ToList();
-
-            hearings = hearings
-                .Where(x => x.HearingCases
-                    .Any(y => cases.Contains(y.Case)));
-
-            var caseNumbers = cases.Select(r => r.Number);
-
-            var vhList = new List<VideoHearing>();
-
-            foreach (var item in hearings)
-            {
-                var hearingCases = item.HearingCases
-                    .Where(y => caseNumbers.Contains(y.Case.Number))
-                    .ToList();
-
-                if (hearingCases.Any())
-                {
-                    item.HearingCases = hearingCases;
-                    vhList.Add(item);
-                }
-
-            }
-
-            return vhList.AsQueryable();
-        }
-
+    
         private static void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
         {
             try
