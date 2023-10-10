@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
@@ -74,6 +75,25 @@ public class UpdateHearingV2Tests : ApiTest
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
             .Be($"Hearing venue code {request.HearingVenueCode} does not exist");
+    }
+    
+    [Test]
+    public async Task should_return_bad_request_and_validation_failure_when_editing_a_created_hearing_close_to_start_time()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.AddMinutes(5), BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var request = BuildRequest();
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["Hearing"].Should().Contain(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
     }
 
     [Test]
