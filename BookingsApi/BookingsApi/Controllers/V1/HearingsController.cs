@@ -47,7 +47,6 @@ namespace BookingsApi.Controllers.V1
         [HttpGet("{hearingId}")]
         [OpenApiOperation("GetHearingDetailsById")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
