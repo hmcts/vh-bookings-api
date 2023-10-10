@@ -29,7 +29,12 @@ public class HearingRolesController : ControllerBase
         var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(query);
 
         var response = hearingRoles
-            .Select(x => new HearingRoleResponseV2{ Name = x.Name, UserRole = x.UserRole.Name})
+            .Select(x => new HearingRoleResponseV2
+            {
+                Name = x.Name, 
+                UserRole = x.UserRole.Name,
+                Code = x.Code
+            })
             .ToList();
 
         return Ok(response);

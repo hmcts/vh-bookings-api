@@ -263,7 +263,7 @@ namespace BookingsApi.Domain
 
         public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryParticipantPersonalCode),
@@ -275,7 +275,6 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Remove(existingParticipant);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
-            
         }
 
         public bool HasHost =>
@@ -312,7 +311,7 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
             JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
@@ -361,7 +360,7 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipant(Participant participant, bool validateParticipantCount=true)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             if (!DoesParticipantExistByContactEmail(participant.Person.ContactEmail))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
@@ -381,7 +380,7 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             var participant = GetParticipants().Single(x => x.Id == participantId);
             RemoveParticipant(participant, validateParticipantCount);
         }
@@ -413,7 +412,7 @@ namespace BookingsApi.Domain
 
         public void RemoveEndpoint(Endpoint endpoint)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
             endpoint.AssignDefenceAdvocate(null);
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
@@ -421,7 +420,7 @@ namespace BookingsApi.Domain
 
         public virtual void UpdateCase(Case @case)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateACaseCloseToStartTime);
             //It has been assumed that only one case exists for a given hearing, for now.
             var existingCase = GetCases().FirstOrDefault();
             if (existingCase == null) return;
@@ -433,7 +432,7 @@ namespace BookingsApi.Domain
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
             List<Case> cases, bool audioRecordingRequired)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
             ValidateScheduledDate(scheduledDateTime);
 
             if (scheduledDuration <= 0)
@@ -631,16 +630,16 @@ namespace BookingsApi.Domain
         /// </list>
         /// </summary>
         /// <exception cref="DomainRuleException">Offending validation rule</exception>
-        public void ValidateChangeAllowed()
+        public void ValidateChangeAllowed(string errorMessage = null)
         {
             if(Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
             if (Status == BookingStatus.Created && IsHearingCloseToScheduledStartTime())
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditAHearingCloseToStartTime);
+                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
         

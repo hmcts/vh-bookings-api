@@ -83,7 +83,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     public async Task should_return_not_found_when_participant_does_not_exist()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearing();
+        var hearing = await Hooks.SeedVideoHearingV2();
         var hearingId = hearing.Id;
         var participantId = Guid.NewGuid();
         var request = new UpdateParticipantRequestV2()
@@ -115,7 +115,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     public async Task
         should_return_validation_error_when_updating_a_representative_without_representee_or_organisation_name()
     {
-        var hearing = await Hooks.SeedVideoHearing();
+        var hearing = await Hooks.SeedVideoHearingV2();
         var hearingId = hearing.Id;
         var participant = hearing.GetParticipants().First(x=> x is Representative);
         var participantId = participant.Id;
@@ -242,7 +242,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     [Test]
     public async Task should_update_a_participant_and_publish_event_when_hearing_is_confirmed()
     {
-        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(status: BookingStatus.Created);
         var hearingId = hearing.Id;
         var participant = hearing.GetParticipants().First(x=> x is Individual);
         var participantId = participant.Id;
@@ -298,7 +298,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     [Test]
     public async Task should_update_a_participant_and_not_publish_event_when_hearing_is_not_confirmed()
     {
-        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Booked);
+        var hearing = await Hooks.SeedVideoHearingV2(status:BookingStatus.Booked);
         var hearingId = hearing.Id;
         var participant = hearing.GetParticipants().First(x=> x is Individual);
         var participantId = participant.Id;
