@@ -29,6 +29,6 @@ public class RemoveParticipantFromHearingTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
         validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
-            .Contain(DomainRuleErrorMessages.CannotEditAHearingCloseToStartTime);
+            .Contain(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
     }
 }
