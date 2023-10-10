@@ -9,11 +9,9 @@ namespace BookingsApi.Validations.V2
         public static readonly string NoDisplayNameErrorMessage = "Display name is required";
         public static readonly string InvalidDisplayNameErrorMessage = "Display name will accept upto 255 alphanumeric characters, spaces, and the following special characters: ',._-";
         public static readonly string NoHearingRoleCodeErrorMessage = "Hearing role code is required";
-        public static readonly string NoUsernameErrorMessage = "Username is required";
         public static readonly string NoTelephoneNumberErrorMessage = "Telephone Number is required";
         public static readonly string NoContactEmailErrorMessage = "Contact Email is required";
         public static readonly string InvalidContactEmailErrorMessage = "Contact Email is Invalid";
-        public static readonly string InvalidJudgeUsernameErrorMessage = "Judge username is Invalid";
 
         public ParticipantRequestValidationV2()
         {
