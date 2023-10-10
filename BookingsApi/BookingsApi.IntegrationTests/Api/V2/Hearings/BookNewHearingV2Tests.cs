@@ -3,7 +3,6 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V2;
