@@ -147,6 +147,47 @@ public class UpdateHearingV2Tests : ApiTest
         integrationEvent.Hearing.CaseNumber.Should().Be(request.Cases[0].Number);
     }
 
+    
+    [Test]
+    public async Task should_update_hearing_with_no_hearing_type_and_publish_when_hearing_status_is_created()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.Case = new Case("Case1 Num", "Case1 Name");
+            options.HearingTypeName = null;
+        }, BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var request = BuildRequest();
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId),
+            RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var hearingFromDb = await db.VideoHearings.Include(x => x.HearingVenue).FirstAsync(x => x.Id == hearingId);
+
+        hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
+        hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
+        hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);
+        hearingFromDb.HearingRoomName.Should().Be(request.HearingRoomName);
+        hearingFromDb.OtherInformation.Should().Be(request.OtherInformation);
+        
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        createdResponse.HearingVenueCode.Should().Be(request.HearingVenueCode);
+        createdResponse.ScheduledDuration.Should().Be(request.ScheduledDuration);
+        createdResponse.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        createdResponse.UpdatedBy.Should().Be(request.UpdatedBy);
+        createdResponse.HearingRoomName.Should().Be(request.HearingRoomName);
+        createdResponse.OtherInformation.Should().Be(request.OtherInformation);
+    }
+    
     [Test]
     public async Task should_update_hearing_and_not_publish_when_hearing_status_is_not_created()
     {

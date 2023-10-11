@@ -1401,9 +1401,10 @@ namespace BookingsApi.UnitTests.DAL.Services
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                    new VideoHearing(_caseType, _hearingType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
+                    new VideoHearing(_caseType, scheduledDateTime, duration, _hearingVenue, hearingRoomName,
                         otherInformation, createdBy, audioRecordingRequired, cancelReason))
                 .Build();
+            videoHearing.SetHearingType(_hearingType);
 
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             videoHearing.SetProtected(nameof(videoHearing.HearingType), _hearingType);

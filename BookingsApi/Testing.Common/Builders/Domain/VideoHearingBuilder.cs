@@ -33,10 +33,18 @@ namespace Testing.Common.Builders.Domain
             var cancelReason = "Online abandonment (incomplete registration)";
 
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                    new VideoHearing(caseType, hearingType, scheduledDateTime.GetValueOrDefault(defaultDate), duration, venue, hearingRoomName,
-                        otherInformation, createdBy, audioRecordingRequired, cancelReason))
+                    new VideoHearing(caseType, 
+                        scheduledDateTime.GetValueOrDefault(defaultDate),
+                        duration, 
+                        venue, 
+                        hearingRoomName,
+                        otherInformation,
+                        createdBy, 
+                        audioRecordingRequired,
+                        cancelReason))
                 .Build();
-
+            _videoHearing.SetHearingType(hearingType);
+            
             var applicantCaseRole = new CaseRole(1, "Applicant") { Group = CaseRoleGroup.Applicant };
             var respondentCaseRole = new CaseRole(2, "Respondent") { Group = CaseRoleGroup.Respondent };
             var applicantLipHearingRole = new HearingRole((int)HearingRoleIds.LitigantInPerson, "Litigant in person") { UserRole = new UserRole(1, "Individual")};

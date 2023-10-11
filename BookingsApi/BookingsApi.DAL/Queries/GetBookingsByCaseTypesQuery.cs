@@ -107,7 +107,7 @@ namespace BookingsApi.DAL.Queries
 
             if (!string.IsNullOrWhiteSpace(query.CaseNumber))
             {
-                hearings = hearings.Where(x => x.HearingCases.Any(hc => hc.Case.Number == query.CaseNumber));
+                hearings = hearings.Where(x => x.HearingCases.Any(hc => hc.Case.Number.Contains(query.CaseNumber)));
             }
 
             if (query.VenueIds.Any())
@@ -146,7 +146,7 @@ namespace BookingsApi.DAL.Queries
 
             return hearings;
         }
-
+    
         private static void TryParseCursor(string cursor, out DateTime scheduledDateTime, out Guid id)
         {
             try

@@ -96,10 +96,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                     LinkedParticipantType.Interpreter)
             };
 
-            var requiredDto = new CreateVideoHearingRequiredDto(caseType, hearingType, scheduledDate, duration, venue, cases);
+            var requiredDto = new CreateVideoHearingRequiredDto(caseType, scheduledDate, duration, venue, cases);
             var optionalDto = new CreateVideoHearingOptionalDto(participants, hearingRoomName, otherInformation,
                 createdBy, audioRecordingRequired, endpoints, null, linkedParticipants,
-                null, false, null);
+                null, false, null, hearingType);
             var command = new CreateVideoHearingCommand(requiredDto, optionalDto);
             await _commandHandler.Handle(command);
             command.NewHearingId.Should().NotBeEmpty();

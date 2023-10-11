@@ -15,7 +15,7 @@ namespace BookingsApi.DAL.Mappings
                 .HasValue<VideoHearing>(HearingMediumType.FullyVideo);
 
             builder.Property(x => x.CaseTypeId).IsRequired();
-            builder.Property(x => x.HearingTypeId).IsRequired();
+            builder.Property(x => x.HearingTypeId);
             builder.Property(x => x.HearingVenueName);
             builder.Property(x => x.ScheduledDateTime).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.ScheduledDuration);
@@ -34,7 +34,7 @@ namespace BookingsApi.DAL.Mappings
             builder.HasMany<JudiciaryParticipant>("JudiciaryParticipants").WithOne("Hearing").HasForeignKey(x => x.HearingId);
 
             builder.HasOne(x => x.CaseType).WithMany().HasForeignKey(x => x.CaseTypeId).IsRequired();
-            builder.HasOne(x => x.HearingType).WithMany().HasForeignKey(x => x.HearingTypeId).IsRequired();
+            builder.HasOne(x => x.HearingType).WithMany().HasForeignKey(x => x.HearingTypeId);
             builder.HasOne(x => x.HearingVenue).WithMany().HasForeignKey(x => x.HearingVenueName);
         }
     }
