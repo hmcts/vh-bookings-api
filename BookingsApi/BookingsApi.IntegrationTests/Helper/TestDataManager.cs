@@ -155,17 +155,17 @@ namespace BookingsApi.IntegrationTests.Helper
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
             var caseType = GetCaseTypeFromDb(options.CaseTypeName);
-            var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
+            var hearingType = options.ExcludeHearingType
+                ? null
+                : caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
             
             var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
             var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType);
+            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType, options.Case);
 
             await AddParticipantsToVideoHearing(videoHearing, caseType, useFlatHearingRoles, options);
-            
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
-
-
+            
             if (options.EndpointsToAdd > 0)
             {
                 var r = new RandomGenerator();
@@ -326,51 +326,9 @@ namespace BookingsApi.IntegrationTests.Helper
                     $"{judgePerson.FirstName} {judgePerson.LastName}");
             }
         }
-
-        public async Task<VideoHearing> SeedVideoHearingWithNoJudge(
-            Action<SeedVideoHearingOptions> configureOptions = null)
-        {
-            var options = new SeedVideoHearingOptions();
-            configureOptions?.Invoke(options);
-            var caseType = GetCaseTypeFromDb(options.CaseTypeName);
-            var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
-
-            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
-            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType);
-            
-            var person1 = new PersonBuilder(true).WithOrganisation().Build();
-            var person2 = new PersonBuilder(true).Build();
-            var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder(true).Build();
-
-            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ApplicantRole);
-            var applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-            var applicantRepresentativeHearingRole =
-                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
-
-            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
-            var respondentRepresentativeHearingRole =
-                respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
-            var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-
-            videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
-                $"{person1.FirstName} {person1.LastName}");
-
-            videoHearing.AddRepresentative(person2, applicantRepresentativeHearingRole, applicantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", "Ms X");
-
-            videoHearing.AddRepresentative(person3, respondentRepresentativeHearingRole, respondentCaseRole,
-                $"{person3.FirstName} {person3.LastName}", "Ms Y");
-
-            videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
-                $"{person4.FirstName} {person4.LastName}");
-
-            return await SaveVideoHearing(videoHearing);
-        }
-
+        
         private VideoHearing InitVideoHearing(DateTime scheduledDate, HearingVenue venue, CaseType caseType,
-            HearingType hearingType, Case @case = null)
+            HearingType hearingType, Case @case)
         {
             const int duration = 45;
             const string hearingRoomName = "Room02";
@@ -381,12 +339,14 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var videoHearing = new VideoHearing(caseType, scheduledDate, duration,
                 venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
-            videoHearing.SetHearingType(hearingType);
-            
+            if (hearingType != null)
+            {
+                videoHearing.SetHearingType(hearingType);
+            }
+
             if (@case == null)
             {
-                videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                    $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
+                videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
             }
             else
             {

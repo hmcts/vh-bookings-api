@@ -193,7 +193,7 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_book_a_hearing_without_a_hearing_type()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes(hearingTypeCode: null);
+        var request = await CreateBookingRequestWithServiceIdsAndCodes(hearingTypeCode: null);
         // act
         using var client = Application.CreateClient();
         var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
