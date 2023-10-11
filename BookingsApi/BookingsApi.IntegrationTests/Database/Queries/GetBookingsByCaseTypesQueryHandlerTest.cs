@@ -67,6 +67,26 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             result.All(h => h.HearingCases.Any(hc => hc.Case.Number == TestDataManager.CaseNumber)).Should().BeTrue();
         }
+        
+        [Test(Description = "With AdminSearchToggle On")]
+        public async Task Should_return_video_hearings_filtered_by_case_number_on_partial_match()
+        {
+            await Hooks.SeedVideoHearing();
+            
+            var videoHearing = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
+
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { videoHearing.CaseTypeId }) 
+            { 
+                CaseNumber = TestDataManager.CaseNumber.Remove(TestDataManager.CaseNumber.Length - 3)
+            };
+
+            var result = await _handler.Handle(query);
+
+            var count = result.Count;
+            count.Should().BeGreaterThan(0);
+            
+            result.All(h => h.HearingCases.Any(hc => hc.Case.Number == TestDataManager.CaseNumber)).Should().BeTrue();  
+        }
 
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_filtered_by_lastName()
