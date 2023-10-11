@@ -47,8 +47,6 @@ public class GetHearingRolesQueryHandlerTests : DatabaseTestsBase
             "Victim",
             "Welfare Representative",
             "Witness",
-            "Panel Member",
-            "Judge",
             "Staff Member"
         };
         
