@@ -25,7 +25,14 @@ namespace BookingsApi.IntegrationTests.Helper
         private readonly List<long> _seededAllocationIds = new();
         public static string CaseNumber => "2222/3511";
         private readonly string _defaultCaseName;
+        
 
+        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
+        {
+            _dbContextOptions = dbContextOptions;
+            _defaultCaseName = defaultCaseName;
+        }
+        
         public void AddHearingForCleanup(Guid id)
         {
             _seededHearings.Add(id);
@@ -39,12 +46,6 @@ namespace BookingsApi.IntegrationTests.Helper
         public void AddJudiciaryPersonsForCleanup(params string[] ids)
         {
             JudiciaryPersons.AddRange(ids);
-        }
-
-        public TestDataManager(DbContextOptions<BookingsDbContext> dbContextOptions, string defaultCaseName)
-        {
-            _dbContextOptions = dbContextOptions;
-            _defaultCaseName = defaultCaseName;
         }
         
         public async Task<JusticeUser> SeedJusticeUser(string userName, string firstName, string lastName,
@@ -99,33 +100,6 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser;
         }
 
-        public async Task<List<JusticeUser>> SeedJusticeUserList(string userName, string firstName, string lastName,
-            bool isTeamLead = false)
-        {
-            await using var db = new BookingsDbContext(_dbContextOptions);
-
-            var userList = new List<JusticeUser>();
-            for (int i = 0; i < 10; i++)
-            {
-                var justiceUser = db.JusticeUsers.Add(new JusticeUser
-                {
-                    ContactEmail = userName + i,
-                    Username = userName + i,
-                    CreatedBy = $"integration{i}.test@test.com",
-                    CreatedDate = DateTime.Now,
-                    FirstName = firstName + i,
-                    Lastname = lastName + i,
-                });
-
-                await SeedJusticeUsersRole(db, justiceUser.Entity, isTeamLead ? (int)UserRoleId.VhTeamLead : (int)UserRoleId.Vho);
-                userList.Add(justiceUser.Entity);
-                _seededJusticeUserIds.Add(justiceUser.Entity.Id);
-            }
-
-            await db.SaveChangesAsync();
-            return userList;
-        }
-
         public async Task<JusticeUser> SeedAllocatedJusticeUser(string userName, string firstName, string lastName)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
@@ -160,10 +134,9 @@ namespace BookingsApi.IntegrationTests.Helper
         /// Use when testing V2 endpoints, which use a flat hearing role structure
         /// </summary>
         public async Task<VideoHearing> SeedVideoHearingV2(Action<SeedVideoHearingOptions> configureOptions = null,
-            BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
-            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
+            BookingStatus status = BookingStatus.Booked, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
-            return await SeedVideoHearing(true, configureOptions, status, endPointsToAdd, addJoh, withLinkedParticipants, isMultiDayFirstHearing);
+            return await SeedVideoHearing(true, configureOptions, status, withLinkedParticipants, isMultiDayFirstHearing);
         }
 
         /// <summary>
@@ -171,122 +144,33 @@ namespace BookingsApi.IntegrationTests.Helper
         /// </summary>
         public async Task<VideoHearing> SeedVideoHearing(Action<SeedVideoHearingOptions> configureOptions = null,
             BookingStatus status = BookingStatus.Booked, 
-            int endPointsToAdd = 0,
-            bool addJoh = false, 
             bool withLinkedParticipants = false, 
             bool isMultiDayFirstHearing = false)
         {
-            return await SeedVideoHearing(false, configureOptions, status, endPointsToAdd, addJoh, withLinkedParticipants, isMultiDayFirstHearing);
+            return await SeedVideoHearing(false, configureOptions, status, withLinkedParticipants, isMultiDayFirstHearing);
         }
 
         private async Task<VideoHearing> SeedVideoHearing(bool useFlatHearingRoles, Action<SeedVideoHearingOptions> configureOptions = null,
-            BookingStatus status = BookingStatus.Booked, int endPointsToAdd = 0,
-            bool addJoh = false, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
+            BookingStatus status = BookingStatus.Booked, bool withLinkedParticipants = false, bool isMultiDayFirstHearing = false)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
             var caseType = GetCaseTypeFromDb(options.CaseTypeName);
-
-            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ApplicantRole);
-            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
-            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
-
-            HearingRole applicantLipHearingRole;
-            HearingRole applicantRepresentativeHearingRole;
-            HearingRole respondentRepresentativeHearingRole;
-            HearingRole respondentLipHearingRole;
-            HearingRole judgeHearingRole;
-
-            List<HearingRole> flatHearingRoles = new List<HearingRole>();
-
-            if (useFlatHearingRoles)
-            {
-                flatHearingRoles = GetFlatHearingRolesFromDb();
-                
-                applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
-                applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
-                respondentRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
-                respondentLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Respondent);
-                judgeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Judge);
-            }
-            else
-            {
-                applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-                applicantRepresentativeHearingRole =
-                    applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
-                respondentRepresentativeHearingRole =
-                    respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
-                respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-                judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
-            }
-
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
+            
+            var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
+            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType);
 
-            var venue = options.HearingVenue;
-            if (venue == null)
-            {
-                var venues = new RefDataBuilder().HearingVenues;
-                venue = venues[0];
-            }
-
-            var person1 = new PersonBuilder(true).WithOrganisation().Build();
-            var person2 = new PersonBuilder(true).Build();
-            var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder(true).Build();
-            var person5 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
-            var judgePerson = new PersonBuilder(true).Build();
-            var johPerson = new PersonBuilder(true).Build();
-            var scheduledDate = options.ScheduledDate ?? DateTime.UtcNow.Date.AddDays(1).AddHours(10).AddMinutes(30);
-            const int duration = 45;
-            const string hearingRoomName = "Room02";
-            const string otherInformation = "OtherInformation02";
-            const string createdBy = "test@hmcts.net";
-            const bool audioRecordingRequired = true;
-            var cancelReason = "Online abandonment (incomplete registration)";
-
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            await AddParticipantsToVideoHearing(videoHearing, caseType, useFlatHearingRoles, options);
+            
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
-            videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
-                $"{person1.FirstName} {person1.LastName}");
 
-            videoHearing.AddRepresentative(person2, applicantRepresentativeHearingRole, applicantCaseRole,
-                $"{person2.FirstName} {person2.LastName}", "Ms X");
 
-            videoHearing.AddRepresentative(person3, respondentRepresentativeHearingRole, respondentCaseRole,
-                $"{person3.FirstName} {person3.LastName}", "Ms Y");
-
-            videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
-                $"{person4.FirstName} {person4.LastName}");
-
-            videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
-                $"{person5.FirstName} {person5.LastName}");
-
-            if (options.AddJudge)
-            {
-                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole, $"{judgePerson.FirstName} {judgePerson.LastName}");
-            }
-
-            if (addJoh)
-            {
-                var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Judicial Office Holder");
-                HearingRole johHearingRole;
-                if (useFlatHearingRoles)
-                {
-                    johHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.PanelMember);
-                }
-                else
-                {
-                    johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Judicial Office Holder");
-                }
-                videoHearing.AddJudicialOfficeHolder(johPerson, johHearingRole, johCaseRole,
-                    $"{johPerson.FirstName} {johPerson.LastName}");
-            }
-
-            if (endPointsToAdd > 0)
+            if (options.EndpointsToAdd > 0)
             {
                 var r = new RandomGenerator();
-                for (int i = 0; i < endPointsToAdd; i++)
+                for (int i = 0; i < options.EndpointsToAdd; i++)
                 {
                     var sip = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 10);
                     var pin = r.GetWeakDeterministic(DateTime.UtcNow.Ticks, 1, 4);
@@ -304,70 +188,32 @@ namespace BookingsApi.IntegrationTests.Helper
                 CreateParticipantLinks(interpretee, interpreter);
             }
 
-            if (options.Case == null)
-            {
-                videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                    $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
-                videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                    $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
-                videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
-            }
-            else
-            {
-                videoHearing.AddCase(options.Case.Number, options.Case.Name, true);
-            }
-            
-
-            var dA = videoHearing.Participants[1];
+            // do we need this as default if we have the above as an option?
+            var defenceAdvocate = videoHearing.Participants.First(x => x is Representative);
             videoHearing.AddEndpoints(
                 new List<Endpoint>
                 {
-                    new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", null),
-                    new Endpoint("new endpoint", Guid.NewGuid().ToString(), "pin", dA),
+                    new("new endpoint", Guid.NewGuid().ToString(), "pin", null),
+                    new("new endpoint", Guid.NewGuid().ToString(), "pin", defenceAdvocate),
                 });
 
             if (status != BookingStatus.Booked)
             {
-                videoHearing.UpdateStatus(status, createdBy, "test");
+                videoHearing.UpdateStatus(status, "automated@test.com", "test");
             }
-
+            
             await using var db = new BookingsDbContext(_dbContextOptions);
             
-            if (options.AddJudiciaryPanelMember)
+            // then add judge if requested (need to use the db same context here to avoid conflicts)
+            if (options.AddJudge)
             {
-                var personalCode = Guid.NewGuid().ToString();
-
-                var judiciaryPanelMemberPerson = await AddJudiciaryPerson(db, personalCode: personalCode);
-
-                videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Display Name");
+                await AddJudgeToVideoHearing(videoHearing, caseType, useFlatHearingRoles, db);
             }
-
-            if (options.AddJudiciaryJudge)
+            
+            // then add panel member if requested (need to use the db same context here to avoid conflicts)
+            if (options.AddPanelMember)
             {
-                var personalCode = Guid.NewGuid().ToString();
-                
-                var judiciaryJudge = await AddJudiciaryPerson(db, personalCode: personalCode);
-
-                videoHearing.AddJudiciaryJudge(judiciaryJudge, "Display Name");
-            }
-
-            if (options.AddStaffMember)
-            {
-                var staffMemberPerson = new PersonBuilder(true).Build();
-                var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
-
-                HearingRole staffMemberHearingRole;
-                
-                if (useFlatHearingRoles)
-                {
-                    staffMemberHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.StaffMember);
-                }
-                else
-                {
-                    staffMemberHearingRole = staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
-                }
-
-                videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole, "Staff Member 1");
+                await AddPanelMemberToVideoHearing(videoHearing, caseType, useFlatHearingRoles, db);
             }
             
             await db.VideoHearings.AddAsync(videoHearing);
@@ -379,41 +225,135 @@ namespace BookingsApi.IntegrationTests.Helper
             return hearing;
         }
 
+        private async Task AddParticipantsToVideoHearing(VideoHearing videoHearing, CaseType caseType, bool useFlatHearingRoles, SeedVideoHearingOptions options)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            
+            HearingRole applicantLipHearingRole;
+            HearingRole applicantRepresentativeHearingRole;
+            HearingRole respondentRepresentativeHearingRole;
+            HearingRole respondentLipHearingRole;
+            
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ApplicantRole);
+            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
+
+            var flatHearingRoles = GetFlatHearingRolesFromDb();
+            
+            if (useFlatHearingRoles)
+            {
+                applicantLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Applicant);
+                applicantRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Representative);
+                respondentRepresentativeHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.WelfareRepresentative);
+                respondentLipHearingRole = flatHearingRoles.First(x => x.Code == HearingRoleCodes.Respondent);
+            }
+            else
+            {
+                applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+                applicantRepresentativeHearingRole =
+                    applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
+                respondentRepresentativeHearingRole =
+                    respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
+                respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+            }
+            
+            var person1 = new PersonBuilder(true).WithOrganisation().Build();
+            var person2 = new PersonBuilder(true).Build();
+            var person3 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder(true).Build();
+            var person5 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
+            
+            videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
+                $"{person1.FirstName} {person1.LastName}");
+
+            videoHearing.AddRepresentative(person2, applicantRepresentativeHearingRole, applicantCaseRole,
+                $"{person2.FirstName} {person2.LastName}", "Ms X");
+
+            videoHearing.AddRepresentative(person3, respondentRepresentativeHearingRole, respondentCaseRole,
+                $"{person3.FirstName} {person3.LastName}", "Ms Y");
+
+            videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
+                $"{person4.FirstName} {person4.LastName}");
+
+            videoHearing.AddIndividual(person5, applicantLipHearingRole, applicantCaseRole,
+                $"{person5.FirstName} {person5.LastName}");
+            
+            if (options.AddStaffMember)
+            {
+                var staffMemberPerson = new PersonBuilder(true).Build();
+                var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
+
+                var staffMemberHearingRole = useFlatHearingRoles
+                    ? flatHearingRoles.First(x => x.Code == HearingRoleCodes.StaffMember)
+                    : staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
+                videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
+                    "Staff Member 1");
+            }
+        }
+
+        private async Task AddPanelMemberToVideoHearing(VideoHearing videoHearing, CaseType caseType, bool useFlatHearingRoles,
+            BookingsDbContext db)
+        {
+            if (useFlatHearingRoles)
+            {
+                var personalCode = Guid.NewGuid().ToString();
+                var judiciaryPanelMemberPerson = await AddJudiciaryPerson(db, personalCode: personalCode);
+                videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Judiciary Panel Member");
+            }
+            else
+            {
+                var johPerson = new PersonBuilder(true).Build();
+                var johCaseRole = caseType.CaseRoles.First(x => x.Name == "Panel Member");
+                var johHearingRole = johCaseRole.HearingRoles.First(x => x.Name == "Panel Member");
+                videoHearing.AddJudicialOfficeHolder(johPerson, johHearingRole, johCaseRole,
+                    $"{johPerson.FirstName} {johPerson.LastName}");
+            }
+        }
+
+        private async Task AddJudgeToVideoHearing(VideoHearing videoHearing, CaseType caseType, bool useFlatHearingRoles,
+            BookingsDbContext db)
+        {
+            if (useFlatHearingRoles)
+            {
+                var personalCode = Guid.NewGuid().ToString();
+                var judiciaryJudge = await AddJudiciaryPerson(db, personalCode: personalCode);
+                videoHearing.AddJudiciaryJudge(judiciaryJudge, "Judiciary Judge");
+            }
+            else
+            {
+                var judgePerson = new PersonBuilder(true).Build();
+                var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
+                var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+                videoHearing.AddJudge(judgePerson, judgeHearingRole, judgeCaseRole,
+                    $"{judgePerson.FirstName} {judgePerson.LastName}");
+            }
+        }
+
         public async Task<VideoHearing> SeedVideoHearingWithNoJudge(
             Action<SeedVideoHearingOptions> configureOptions = null)
         {
             var options = new SeedVideoHearingOptions();
             configureOptions?.Invoke(options);
             var caseType = GetCaseTypeFromDb(options.CaseTypeName);
-
-            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ApplicantRole);
-            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
-            var applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
-            var applicantRepresentativeHearingRole =
-                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
-            var respondentRepresentativeHearingRole =
-                respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
-            var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
             var hearingType = caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
             var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
-
+            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType);
+            
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
             var person4 = new PersonBuilder(true).Build();
 
-            var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
+            var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == options.ApplicantRole);
+            var applicantLipHearingRole = applicantCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
+            var applicantRepresentativeHearingRole =
+                applicantCaseRole.HearingRoles.First(x => x.Name == "Representative");
 
-            const int duration = 45;
-            const string hearingRoomName = "Room02";
-            const string otherInformation = "OtherInformation02";
-            const string createdBy = "test@hmcts.net";
-            const bool audioRecordingRequired = true;
-            const string cancelReason = "Online abandonment (incomplete registration)";
-
-            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
-                venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            var respondentCaseRole = caseType.CaseRoles.First(x => x.Name == options.RespondentRole);
+            var respondentRepresentativeHearingRole =
+                respondentCaseRole.HearingRoles.First(x => x.Name == "Representative");
+            var respondentLipHearingRole = respondentCaseRole.HearingRoles.First(x => x.Name == options.LipHearingRole);
 
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
@@ -427,13 +367,33 @@ namespace BookingsApi.IntegrationTests.Helper
             videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
                 $"{person4.FirstName} {person4.LastName}");
 
-            videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
-            videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
-                $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
-            videoHearing.AddCase(CaseNumber, $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", false);
-
             return await SaveVideoHearing(videoHearing);
+        }
+
+        private VideoHearing InitVideoHearing(DateTime scheduledDate, HearingVenue venue, CaseType caseType,
+            HearingType hearingType, Case @case = null)
+        {
+            const int duration = 45;
+            const string hearingRoomName = "Room02";
+            const string otherInformation = "OtherInformation02";
+            const string createdBy = "test@hmcts.net";
+            const bool audioRecordingRequired = true;
+            const string cancelReason = "Online abandonment (incomplete registration)";
+
+            var videoHearing = new VideoHearing(caseType, hearingType, scheduledDate, duration,
+                venue, hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason);
+
+            if (@case == null)
+            {
+                videoHearing.AddCase($"{RandomNumber.Next(1000, 9999)}/{RandomNumber.Next(1000, 9999)}",
+                    $"{_defaultCaseName} {RandomNumber.Next(900000, 999999)}", true);
+            }
+            else
+            {
+                videoHearing.AddCase(@case.Number, @case.Name, true);
+            }
+
+            return videoHearing;
         }
 
         public async Task<VideoHearing> SaveVideoHearing(VideoHearing videoHearing)

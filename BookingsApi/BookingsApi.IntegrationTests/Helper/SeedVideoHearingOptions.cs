@@ -6,8 +6,8 @@ namespace BookingsApi.IntegrationTests.Helper
         {
             CaseTypeName = Generic;
             AddJudge = true;
-            AddJudiciaryPanelMember = false;
-            AddJudiciaryJudge = false;
+            AddPanelMember = false;
+            EndpointsToAdd = 0;
             AddStaffMember = false;
         }
 
@@ -34,10 +34,10 @@ namespace BookingsApi.IntegrationTests.Helper
 
         public bool AddJudge { get; set; }
 
-        public bool AddJudiciaryPanelMember { get; set; }
-        
-        public bool AddJudiciaryJudge { get; set; }
+        public bool AddPanelMember { get; set; }
         
         public bool AddStaffMember { get; set; }
+
+        public int EndpointsToAdd { get; set; }
     }
 }

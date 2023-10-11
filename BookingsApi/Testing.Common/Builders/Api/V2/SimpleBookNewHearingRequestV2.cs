@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Domain.Constants;
 using FizzWare.NBuilder;
@@ -11,7 +14,7 @@ public class SimpleBookNewHearingRequestV2
 {
     private readonly BookNewHearingRequestV2 _requestV2;
 
-    public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime)
+    public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime, string judiciaryJudgePersonCode)
     {
         var hearingScheduled = scheduledDateTime;
         var participants = Builder<ParticipantRequestV2>.CreateListOfSize(4).All()
@@ -52,6 +55,14 @@ public class SimpleBookNewHearingRequestV2
         participants[3].ContactEmail = participant3.ContactEmail;
         participants[3].DisplayName = participant3.DisplayName;
 
+        var judiciaryParticipants = new List<JudiciaryParticipantRequest>();
+        judiciaryParticipants.Add(new JudiciaryParticipantRequest()
+        {
+            DisplayName = "Judiciary Judge",
+            HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge,
+            PersonalCode = judiciaryJudgePersonCode
+        });
+
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;
         cases[0].Name = $"{caseName} {Faker.RandomNumber.Next(0, 9999999)}";
@@ -66,6 +77,7 @@ public class SimpleBookNewHearingRequestV2
             .With(x => x.ScheduledDateTime = hearingScheduled)
             .With(x => x.ScheduledDuration = 5)
             .With(x => x.Participants = participants)
+            .With(x=> x.JudiciaryParticipants = judiciaryParticipants)
             .With(x => x.Cases = cases)
             .With(x => x.CreatedBy = createdBy)
             .With(x => x.AudioRecordingRequired = true)

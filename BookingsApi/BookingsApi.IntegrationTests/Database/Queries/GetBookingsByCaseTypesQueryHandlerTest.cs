@@ -111,8 +111,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             
             var bookingsWithJudiciaryJudge = await Hooks.SeedVideoHearing(configureOptions: options =>
             {
-                options.AddJudge = false;
-                options.AddJudiciaryJudge = true;
+                options.AddJudge = true;
             });
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudiciaryJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })

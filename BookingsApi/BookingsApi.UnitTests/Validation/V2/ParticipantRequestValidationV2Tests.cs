@@ -137,18 +137,7 @@ namespace BookingsApi.UnitTests.Validation.V2
             result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidationV2.NoTelephoneNumberErrorMessage)
                 .Should().BeTrue();
         }
-
-        [Test]
-        public async Task Should_not_return_missing_telephone_number_error_for_judge()
-        {
-            var request = BuildRequest();
-            request.TelephoneNumber = string.Empty;
-            request.HearingRoleCode = HearingRoleCodes.Judge;
-            
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeTrue();
-        }
+        
         [TestCase("wil.li_am." , false)]
         [TestCase("Cr.aig_1234", true)]
         [TestCase("I.", false)]

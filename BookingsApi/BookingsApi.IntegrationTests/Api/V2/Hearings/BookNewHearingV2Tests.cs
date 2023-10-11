@@ -1,10 +1,7 @@
-using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.Domain.Constants;
-using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
 
@@ -33,7 +30,7 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_book_a_hearing_with_codes_instead_of_names()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
 
         // act
         using var client = Application.CreateClient();
@@ -47,73 +44,22 @@ public class BookNewHearingV2Tests : ApiTest
         var getResponse = await client.GetAsync(getHearingUri);
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
-        createdResponse.Should().BeEquivalentTo(hearingResponse);
         _hearingIds.Add(hearingResponse.Id);
-    }
-    
-    [Test]
-    public async Task should_book_a_hearing_with_codes_and_judiciary_judge()
-    {
-        // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
-        request.Participants = request.Participants.Where(x => x.HearingRoleCode != HearingRoleCodes.Judge).ToList();
-        var judiciaryPerson = await Hooks.AddJudiciaryPerson();
-        var judiciaryJudgeRequest = new JudiciaryParticipantRequest()
-        {
-            PersonalCode = judiciaryPerson.PersonalCode,
-            HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge,
-            DisplayName = "Judiciary Judge"
-        };
-        request.JudiciaryParticipants = new List<JudiciaryParticipantRequest>() {judiciaryJudgeRequest};
-        // act
-        using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
-
-        // assert
-        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
-        result.StatusCode.Should().Be(HttpStatusCode.Created);
         
-        var getHearingUri = result.Headers.Location;
-        var getResponse = await client.GetAsync(getHearingUri);
-        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
-        _hearingIds.Add(createdResponse.Id);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        var judiciaryJudgeRequest = request.JudiciaryParticipants[0];
         createdResponse.JudiciaryParticipants.Should().Contain(x =>
             x.PersonalCode == judiciaryJudgeRequest.PersonalCode &&
             x.HearingRoleCode == judiciaryJudgeRequest.HearingRoleCode && 
             x.DisplayName == judiciaryJudgeRequest.DisplayName
-            );
-        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
-        createdResponse.Should().BeEquivalentTo(hearingResponse);
-        
-    }
-
-    [Test]
-    public async Task should_book_a_hearing_without_case_roles()
-    {
-        // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
-
-        // act
-        using var client = Application.CreateClient();
-        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
-
-        // assert
-        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
-        result.StatusCode.Should().Be(HttpStatusCode.Created);
-        
-        var getHearingUri = result.Headers.Location;
-        var getResponse = await client.GetAsync(getHearingUri);
-        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
-        _hearingIds.Add(createdResponse.Id);
-        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
-        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        );
     }
     
     [Test]
     public async Task should_return_validation_error_when_flat_structure_hearing_role_not_found()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
         var hearingRoleCode = "Invalid Code";
         request.Participants.ForEach(x =>
         {
@@ -135,7 +81,7 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_return_validation_error_when_validation_fails()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.HearingVenueCode = null;
         request.ServiceId = null;
         request.HearingTypeCode = null;
@@ -163,7 +109,7 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_return_validation_error_when_case_type_service_id_is_not_found()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.ServiceId = "999299292929";
 
         // act
@@ -182,7 +128,7 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_return_validation_error_when_hearing_type_code_is_not_found()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.HearingTypeCode = "999299292929";
 
         // act
@@ -205,7 +151,7 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_return_validation_error_when_venue_code_is_not_found()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
         request.HearingVenueCode = "999299292929";
 
         // act
@@ -224,9 +170,9 @@ public class BookNewHearingV2Tests : ApiTest
     public async Task should_book_a_hearing_without_a_judge()
     {
         // arrange
-        var request = CreateBookingRequestWithServiceIdsAndCodes();
-        var judge = request.Participants.Find(p => p.HearingRoleCode == HearingRoleCodes.Judge); 
-        request.Participants.Remove(judge);
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        var judge = request.JudiciaryParticipants.Find(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge); 
+        request.JudiciaryParticipants.Remove(judge);
         
         // act
         using var client = Application.CreateClient();
@@ -246,11 +192,13 @@ public class BookNewHearingV2Tests : ApiTest
         
     }
     
-    private static BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
+    private async Task<BookNewHearingRequestV2> CreateBookingRequestWithServiceIdsAndCodes()
     {
+        var personalCode = Guid.NewGuid().ToString();
+        await Hooks.AddJudiciaryPerson(personalCode);
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
-        var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule).Build();
+        var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule, personalCode).Build();
         request.ServiceId = "vhG1"; // intentionally incorrect case
         request.HearingTypeCode = "automatedtest"; // intentionally incorrect case
         request.HearingVenueCode = "231596";
