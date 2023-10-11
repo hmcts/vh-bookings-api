@@ -52,10 +52,10 @@ namespace BookingsApi.DAL.Helper
 
             var duration = 480;
             var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
-                    hearing.CaseType, hearing.HearingType, newDate, duration, hearing.HearingVenue, cases),
+                    hearing.CaseType, newDate, duration, hearing.HearingVenue, cases),
                 new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,
                     hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, null, linkedParticipantDtos,
-                    new List<NewJudiciaryParticipant>(), false, hearing.Id));
+                    new List<NewJudiciaryParticipant>(), false, hearing.Id, hearing.HearingType));
 
             return command;
         }

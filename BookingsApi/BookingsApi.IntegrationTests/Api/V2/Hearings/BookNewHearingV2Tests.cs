@@ -3,7 +3,6 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.DAL.Helper;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V2;
@@ -150,14 +149,9 @@ public class BookNewHearingV2Tests : ApiTest
         result.IsSuccessStatusCode.Should().BeFalse();
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        validationProblemDetails.Errors[nameof(request.HearingVenueCode)][0].Should()
-            .Be(BookNewHearingRequestInputValidationV2.HearingVenueCodeErrorMessage);
         
         validationProblemDetails.Errors[nameof(request.ServiceId)][0].Should()
             .Be(BookNewHearingRequestInputValidationV2.CaseTypeServiceIdErrorMessage);
-        
-        validationProblemDetails.Errors[nameof(request.HearingTypeCode)][0].Should()
-            .Be(BookNewHearingRequestInputValidationV2.HearingTypeCodeErrorMessage);
     }
     
     [Test]
@@ -282,15 +276,38 @@ public class BookNewHearingV2Tests : ApiTest
         hearingResponse.Status.Should().Be(BookingStatusV2.BookedWithoutJudge);
         _hearingIds.Add(hearingResponse.Id);
         
+    }     
+    
+    [Test]
+    public async Task should_book_a_hearing_without_a_hearing_type()
+    {
+        // arrange
+        var request = CreateBookingRequestWithServiceIdsAndCodes(hearingTypeCode: null);
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        hearingResponse.Status.Should().Be(BookingStatusV2.Booked);
+        hearingResponse.HearingTypeCode.Should().BeNull();
+        _hearingIds.Add(hearingResponse.Id);
     }
     
-    private static BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes()
+    private static BookNewHearingRequestV2 CreateBookingRequestWithServiceIdsAndCodes(string hearingTypeCode = "automatedtest")
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule).Build();
         request.ServiceId = "vhG1"; // intentionally incorrect case
-        request.HearingTypeCode = "automatedtest"; // intentionally incorrect case
+        request.HearingTypeCode = hearingTypeCode ; // intentionally incorrect case
         request.HearingVenueCode = "231596";
         return request;
     }

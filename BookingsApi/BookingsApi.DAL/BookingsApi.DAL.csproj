@@ -24,8 +24,4 @@
     <ProjectReference Include="..\BookingsApi.Common\BookingsApi.Common.csproj" />
     <ProjectReference Include="..\BookingsApi.Domain\BookingsApi.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Migrations\20230904180612_DisableIdGenerationForRefData.cs" />
-    <Compile Remove="Migrations\20230904180612_DisableIdGenerationForRefData.Designer.cs" />
-  </ItemGroup>
 </Project>

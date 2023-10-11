@@ -18,11 +18,11 @@ namespace BookingsApi.Mappings.V1
             var linkedParticipants = MapLinkedParticipants(request);
 
            return new CreateVideoHearingCommand(
-                new CreateVideoHearingRequiredDto(caseType, hearingType, request.ScheduledDateTime,
+                new CreateVideoHearingRequiredDto(caseType, request.ScheduledDateTime,
                     request.ScheduledDuration, venue, cases),
                 new CreateVideoHearingOptionalDto(newParticipants, request.HearingRoomName, request.OtherInformation, request.CreatedBy,
                     request.AudioRecordingRequired, newEndpoints, null, linkedParticipants,
-                    new List<NewJudiciaryParticipant>(), request.IsMultiDayHearing, null)
+                    new List<NewJudiciaryParticipant>(), request.IsMultiDayHearing, null, hearingType)
             );
         }
 

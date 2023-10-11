@@ -662,8 +662,6 @@ namespace BookingsApi.Controllers.V1
             return Ok(response);
         }
 
-        
-
         private async Task<VideoHearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -747,7 +745,6 @@ namespace BookingsApi.Controllers.V1
 
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
-        
         
         /// <summary>
         /// Return hearing details for todays hearings by venue

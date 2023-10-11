@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_list_of_hearing_venues()
         {
-            var venues = await _handler.Handle(new GetHearingVenuesQuery());
+            var venues = await _handler.Handle(new());
             venues.Should().NotBeEmpty();
             venues.Should().Contain(x => x.Name == "Manchester County and Family Court");
         }

@@ -12,15 +12,13 @@ namespace BookingsApi.Validations.V2
         public const string ParticipantsErrorMessage = "Please provide at least one participant";
         public const string CasesErrorMessage = "Please provide at least one case";
         public const string CaseDuplicationErrorMessage = "Please make sure there are no duplicated cases";
-        public const string HearingTypeCodeErrorMessage = "Please provide a hearing type code";
         public const string HearingVenueCodeErrorMessage = "Please provide a hearing venue code";
 
         public BookNewHearingRequestInputValidationV2()
         {
             RuleFor(x => x.HearingVenueCode)
                 .NotEmpty().WithMessage(HearingVenueCodeErrorMessage);
-            RuleFor(x => x.HearingTypeCode)
-                .NotEmpty().WithMessage(HearingTypeCodeErrorMessage);
+            
             RuleFor(x => x.ServiceId)
                 .NotEmpty().WithMessage(CaseTypeServiceIdErrorMessage);
             

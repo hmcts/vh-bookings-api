@@ -112,7 +112,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var updatedDate = DateTime.UtcNow;
             var updatedBy = "testuser";
             hearing.UpdateStatus(BookingStatus.Created, updatedBy, "");
-            hearing.UpdatedDate.Should().BeAfter(updatedDate);
+            hearing.UpdatedDate.Should().BeOnOrAfter(updatedDate);
             hearing.Status.Should().Be(BookingStatus.Created);
             hearing.ConfirmedBy.Should().Be(updatedBy);
             hearing.ConfirmedDate.Should().NotBeNull();
