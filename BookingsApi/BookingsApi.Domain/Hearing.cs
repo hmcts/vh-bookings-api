@@ -433,7 +433,7 @@ namespace BookingsApi.Domain
             List<Case> cases, bool audioRecordingRequired)
         {
             // all the properties are the same, so no need to update
-            if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
+            if (hearingVenue?.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
                 otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
             {
@@ -448,7 +448,7 @@ namespace BookingsApi.Domain
                 _validationFailures.AddFailure("ScheduledDuration", "ScheduledDuration is not a valid value");
             }
 
-            if (hearingVenue.Id <= 0)
+            if (hearingVenue is not {Id: > 0})
             {
                 _validationFailures.AddFailure("Venue", "Venue must have a valid value");
             }
