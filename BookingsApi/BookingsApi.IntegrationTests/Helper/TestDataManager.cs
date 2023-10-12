@@ -267,7 +267,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var person1 = new PersonBuilder(true).WithOrganisation().Build();
             var person2 = new PersonBuilder(true).Build();
             var person3 = new PersonBuilder(true).Build();
-            var person4 = new PersonBuilder(true).Build();
+            var person4 = new PersonBuilder($"Automation/{RandomNumber.Next()}@hmcts.net").Build();
 
             videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
