@@ -12,7 +12,6 @@ namespace BookingsApi.Mappings.V2
                 Id = participant.Id,
                 DisplayName = participant.DisplayName,
                 HearingRoleCode = participant.HearingRole.Code,
-                HearingRoleName = participant.HearingRole.Name,
                 UserRoleName = participant.HearingRole.UserRole.Name,
                 Title = participant.Person.Title,
                 FirstName = participant.Person.FirstName,
