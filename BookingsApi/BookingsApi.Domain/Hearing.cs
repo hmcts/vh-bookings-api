@@ -29,8 +29,12 @@ namespace BookingsApi.Domain
             JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
+        /// <summary>
+        /// Instantiate a hearing when the hearing type is known, typically used for V1
+        /// </summary>
         protected Hearing(
             CaseType caseType, 
+            HearingType hearingType,
             DateTime scheduledDateTime,
             int scheduledDuration, 
             HearingVenue hearingVenue, 
@@ -46,6 +50,7 @@ namespace BookingsApi.Domain
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             CaseTypeId = caseType.Id;
+            HearingTypeId = hearingType?.Id;
             HearingVenueName = hearingVenue.Name;
 
             Status = BookingStatus.Booked;
@@ -55,6 +60,22 @@ namespace BookingsApi.Domain
             AudioRecordingRequired = audioRecordingRequired;
             CancelReason = cancelReason;
         }
+
+        /// <summary>
+        /// Instantiate a hearing without a hearing type, typically used for V2
+        /// </summary>
+        protected Hearing(
+            CaseType caseType,
+            DateTime scheduledDateTime,
+            int scheduledDuration,
+            HearingVenue hearingVenue,
+            string hearingRoomName,
+            string otherInformation,
+            string createdBy,
+            bool audioRecordingRequired,
+            string cancelReason) : this(caseType, null, scheduledDateTime, scheduledDuration, hearingVenue,
+            hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason)
+        {}
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
         public virtual HearingVenue HearingVenue { get; protected set; }
@@ -689,8 +710,6 @@ namespace BookingsApi.Domain
 
             return (ParticipantBase)judge ?? judiciaryJudge;
         }
-        
-        public void SetHearingType(HearingType hearingType) => HearingTypeId = hearingType?.Id;
 
         public void UpdateBookingStatusJudgeRequirement()
         {
