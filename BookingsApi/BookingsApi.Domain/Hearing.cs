@@ -432,15 +432,6 @@ namespace BookingsApi.Domain
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
             List<Case> cases, bool audioRecordingRequired)
         {
-            // all the properties are the same, so no need to update
-            if (hearingVenue?.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
-                scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
-                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
-            {
-                return;
-            }
-
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
             ValidateScheduledDate(scheduledDateTime);
 
             if (scheduledDuration <= 0)
@@ -457,6 +448,17 @@ namespace BookingsApi.Domain
             {
                 throw new DomainRuleException(_validationFailures);
             }
+            
+            // all the properties are the same, so no need to update
+            if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
+                scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
+                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
+            {
+                return;
+            }
+
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
+            
 
             HearingVenue = hearingVenue;
             HearingVenueName = hearingVenue.Name;
