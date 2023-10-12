@@ -8,7 +8,6 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
     public static CreateVideoHearingCommand Map(
         BookNewHearingRequestV2 requestV2,
         CaseType caseType,
-        HearingType hearingType,
         HearingVenue venue,
         List<Case> cases,
         IRandomGenerator randomGenerator,
@@ -25,7 +24,7 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
                 requestV2.ScheduledDuration, venue, cases),
             new CreateVideoHearingOptionalDto(newParticipants, requestV2.HearingRoomName, requestV2.OtherInformation,
                 requestV2.CreatedBy, requestV2.AudioRecordingRequired, newEndpoints, null, linkedParticipants,
-                judiciaryParticipants, requestV2.IsMultiDayHearing, null, hearingType)
+                judiciaryParticipants, requestV2.IsMultiDayHearing, null, HearingType:null)
         );
     }
 

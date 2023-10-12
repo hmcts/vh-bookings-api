@@ -72,7 +72,6 @@ public class SimpleBookNewHearingRequestV2
             
         _requestV2 = Builder<BookNewHearingRequestV2>.CreateNew()
             .With(x => x.ServiceId = "AAA6") // Civil Money Claims
-            .With(x => x.HearingTypeCode = "AAA6-APP") // Application Hearings
             .With(x => x.HearingVenueCode = "231596") // Birmingham Civil and Family Justice Centre
             .With(x => x.ScheduledDateTime = hearingScheduled)
             .With(x => x.ScheduledDuration = 5)

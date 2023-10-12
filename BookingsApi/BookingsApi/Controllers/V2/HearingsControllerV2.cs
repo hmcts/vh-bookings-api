@@ -59,15 +59,10 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            HearingType hearingType = null;
-            if(!String.IsNullOrEmpty(request.HearingTypeCode))
-                hearingType = caseType?.HearingTypes?
-                    .Find(x => string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
-            
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
+                request, caseType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
 
             try
             {

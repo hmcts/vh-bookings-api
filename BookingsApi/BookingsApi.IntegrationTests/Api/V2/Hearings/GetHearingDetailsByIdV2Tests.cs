@@ -66,7 +66,6 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
         hearingResponse.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
         hearingResponse.IsHearingVenueScottish.Should().Be(hearing.HearingVenue.IsScottish);
         
-        hearingResponse.HearingTypeCode.Should().Be(hearing.HearingType.Code);
         hearingResponse.ServiceId.Should().Be(hearing.CaseType.ServiceId);
         hearingResponse.ServiceName.Should().Be(hearing.CaseType.Name);
         
