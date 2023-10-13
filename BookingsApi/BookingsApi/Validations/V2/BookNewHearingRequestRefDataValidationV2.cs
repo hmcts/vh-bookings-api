@@ -16,16 +16,6 @@ public class BookNewHearingRequestRefDataValidationV2 : RefDataInputValidatorVal
             }
         });
             
-        RuleFor(x=>x.HearingTypeCode).Custom((hearingTypeCode, context) =>
-        {
-            if (hearingTypeCode != null && 
-                (caseType?.HearingTypes == null || caseType.HearingTypes.TrueForAll(x =>
-                    !x.Code.Equals(hearingTypeCode, StringComparison.CurrentCultureIgnoreCase))))
-            {
-                context.AddFailure($"Hearing type code {hearingTypeCode} does not exist");
-            }
-        });
-            
         RuleFor(x=>x.HearingVenueCode).Custom((hearingVenueCode, context) =>
         {
             if (hearingVenue == null)

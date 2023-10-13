@@ -29,8 +29,12 @@ namespace BookingsApi.Domain
             JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
+        /// <summary>
+        /// Instantiate a hearing when the hearing type is known, typically used for V1
+        /// </summary>
         protected Hearing(
             CaseType caseType, 
+            HearingType hearingType,
             DateTime scheduledDateTime,
             int scheduledDuration, 
             HearingVenue hearingVenue, 
@@ -46,6 +50,7 @@ namespace BookingsApi.Domain
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             CaseTypeId = caseType.Id;
+            HearingTypeId = hearingType?.Id;
             HearingVenueName = hearingVenue.Name;
 
             Status = BookingStatus.Booked;
@@ -55,6 +60,22 @@ namespace BookingsApi.Domain
             AudioRecordingRequired = audioRecordingRequired;
             CancelReason = cancelReason;
         }
+
+        /// <summary>
+        /// Instantiate a hearing without a hearing type, typically used for V2
+        /// </summary>
+        protected Hearing(
+            CaseType caseType,
+            DateTime scheduledDateTime,
+            int scheduledDuration,
+            HearingVenue hearingVenue,
+            string hearingRoomName,
+            string otherInformation,
+            string createdBy,
+            bool audioRecordingRequired,
+            string cancelReason) : this(caseType, null, scheduledDateTime, scheduledDuration, hearingVenue,
+            hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason)
+        {}
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
         public virtual HearingVenue HearingVenue { get; protected set; }
@@ -432,7 +453,6 @@ namespace BookingsApi.Domain
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
             List<Case> cases, bool audioRecordingRequired)
         {
-            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
             ValidateScheduledDate(scheduledDateTime);
 
             if (scheduledDuration <= 0)
@@ -440,7 +460,7 @@ namespace BookingsApi.Domain
                 _validationFailures.AddFailure("ScheduledDuration", "ScheduledDuration is not a valid value");
             }
 
-            if (hearingVenue == null || hearingVenue.Id <= 0)
+            if (hearingVenue is not {Id: > 0})
             {
                 _validationFailures.AddFailure("Venue", "Venue must have a valid value");
             }
@@ -449,12 +469,20 @@ namespace BookingsApi.Domain
             {
                 throw new DomainRuleException(_validationFailures);
             }
-
-            if (hearingVenue != null)
+            
+            // all the properties are the same, so no need to update
+            if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
+                scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
+                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
             {
-                HearingVenue = hearingVenue;
-                HearingVenueName = hearingVenue.Name;
+                return;
             }
+
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
+            
+
+            HearingVenue = hearingVenue;
+            HearingVenueName = hearingVenue.Name;
 
             if (cases.Any())
             {
@@ -689,8 +717,6 @@ namespace BookingsApi.Domain
 
             return (ParticipantBase)judge ?? judiciaryJudge;
         }
-        
-        public void SetHearingType(HearingType hearingType) => HearingTypeId = hearingType?.Id;
 
         public void UpdateBookingStatusJudgeRequirement()
         {

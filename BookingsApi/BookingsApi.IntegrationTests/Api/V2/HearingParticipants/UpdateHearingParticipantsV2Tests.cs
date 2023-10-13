@@ -30,7 +30,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "newusername@test.email.com",
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
                     HearingRoleCode = HearingRoleCodes.Applicant,
@@ -113,7 +112,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "username@test.email.com",
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
                     HearingRoleCode = "APPL",
@@ -169,7 +167,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         validationProblemDetails.Errors["ExistingParticipants[0].DisplayName"].Should().Contain(UpdateParticipantRequestValidationV2.NoDisplayNameErrorMessage);
         
     }
- 
+    
     [Test]
     public async Task should_return_validation_errors_when_hearing_role_not_found_from_case_role()
     {
@@ -186,7 +184,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "newusername@test.email.com",
                     DisplayName = "DisplayName",
                     FirstName = "NewFirstName",
                     HearingRoleCode = hearingRoleCode,
@@ -229,7 +226,6 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "username@test.email.com",
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
                     HearingRoleCode = hearingRoleCode,
@@ -262,7 +258,7 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         // arrange
         var hearing = await Hooks.SeedVideoHearing(options
             => { options.Case = new Case("UpdateParticipantsRemoveParticipant", "UpdateParticipantsRemoveParticipant"); }, BookingStatus.Created);
-        var participantBeingRemoved = hearing.Participants[0];
+        var participantBeingRemoved = hearing.Participants.First(x=> !x.HearingRole.IsJudge());
         var request = new UpdateHearingParticipantsRequestV2 { RemovedParticipantIds = new List<Guid>{ participantBeingRemoved.Id } };
 
         // act

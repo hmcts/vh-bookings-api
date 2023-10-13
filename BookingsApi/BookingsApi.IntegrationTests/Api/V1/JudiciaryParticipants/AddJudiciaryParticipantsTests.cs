@@ -22,10 +22,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_add_judiciary_participants()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
-                options.AddJudiciaryPanelMember = true;
+                options.AddPanelMember = false;
             });
             var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
             var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
@@ -85,9 +85,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_not_found_when_judiciary_person_does_not_exist()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
+                options.AddPanelMember = false;
             });
             await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
             
@@ -154,10 +155,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_bad_request_when_participant_already_exists_in_the_hearing()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
-                options.AddJudiciaryPanelMember = true;
+                options.AddPanelMember = true;
             });
             await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
             var existingParticipant = seededHearing.JudiciaryParticipants.FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);

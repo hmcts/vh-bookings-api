@@ -65,6 +65,7 @@ namespace BookingsApi.DAL.Commands
         public async Task Handle(CreateVideoHearingCommand command)
         {
             var videoHearing = new VideoHearing(command.CaseType, 
+                command.HearingType,
                 command.ScheduledDateTime,
                 command.ScheduledDuration, 
                 command.Venue, 
@@ -75,7 +76,6 @@ namespace BookingsApi.DAL.Commands
                 command.CancelReason);
 
             // Ideally, the domain object would implement the clone method and so this change is a work around.
-            videoHearing.SetHearingType(command.HearingType);
             videoHearing.IsFirstDayOfMultiDayHearing = command.IsMultiDayFirstHearing;
             // denotes this hearing is cloned
             if (command.SourceId.HasValue)

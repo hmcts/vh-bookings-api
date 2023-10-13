@@ -36,7 +36,7 @@ public class ContractExtensionTests
     public void should_sanitize_booking_request_v2(string firstName, string lastName)
     {
         // arrange
-        var request = new SimpleBookNewHearingRequestV2("foo2", DateTime.UtcNow).Build();   
+        var request = new SimpleBookNewHearingRequestV2("foo2", DateTime.UtcNow, "RandomPersonCode").Build();   
         request.Participants[0].FirstName = firstName;
         request.Participants[0].LastName = lastName;
 
