@@ -120,11 +120,10 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         public async Task Should_Update_Participant_With_Exisiting_Links()
         {
             var editPrefix = " _Edit";
-            var seededHearing = await Hooks.SeedVideoHearingLinkedParticipants(null);
+            var seededHearing = await Hooks.SeedVideoHearing(withLinkedParticipants: true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
-            var individuals = seededHearing.GetParticipants()
-                .Where(x => x.HearingRole.UserRole.Name.Equals("Individual")).ToList();
+            var individuals = seededHearing.GetParticipants().Where(x => x is Individual).ToList();
             var interpretee = individuals[0];
             var interpreter = individuals[1];
 

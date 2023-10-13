@@ -34,6 +34,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var cancelReason = "Online abandonment (incomplete registration)";
 
             var hearing = new VideoHearing(caseType,
+                hearingType,
                 scheduledDateTime,
                 duration, 
                 venue, 
@@ -42,8 +43,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 createdBy, 
                 audioRecordingRequired, 
                 cancelReason);
-            
-            hearing.SetHearingType(hearingType); 
            
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                hearing).Build();

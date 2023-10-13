@@ -10,22 +10,18 @@ namespace BookingsApi.Mappings.V2
     {
         public static NewParticipant Map(ParticipantRequestV2 requestV2Participant, List<HearingRole> hearingRoles)
         {
-            var hearingRole = hearingRoles.Find(x => x.Code == requestV2Participant.HearingRoleCode);
+            var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, requestV2Participant.HearingRoleCode,
+                StringComparison.InvariantCultureIgnoreCase) == 0);
 
-            if (string.IsNullOrEmpty(requestV2Participant.Username))
-            {
-                requestV2Participant.Username = requestV2Participant.ContactEmail;
-            }
-            
-            var person = new Person(requestV2Participant.Title, requestV2Participant.FirstName, requestV2Participant.LastName,
-                requestV2Participant.ContactEmail, requestV2Participant.Username)
+            var person = new Person(requestV2Participant.Title, requestV2Participant.FirstName,
+                requestV2Participant.LastName, requestV2Participant.ContactEmail)
             {
                 MiddleNames = requestV2Participant.MiddleNames,
                 ContactEmail = requestV2Participant.ContactEmail,
                 TelephoneNumber = requestV2Participant.TelephoneNumber
             };
 
-            if(!string.IsNullOrEmpty(requestV2Participant.OrganisationName))
+            if (!string.IsNullOrEmpty(requestV2Participant.OrganisationName))
             {
                 person.Organisation = new Organisation(requestV2Participant.OrganisationName);
             }

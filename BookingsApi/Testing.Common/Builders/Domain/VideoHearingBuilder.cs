@@ -33,7 +33,8 @@ namespace Testing.Common.Builders.Domain
             var cancelReason = "Online abandonment (incomplete registration)";
 
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
-                    new VideoHearing(caseType, 
+                    new VideoHearing(caseType,
+                        hearingType,
                         scheduledDateTime.GetValueOrDefault(defaultDate),
                         duration, 
                         venue, 
@@ -43,7 +44,6 @@ namespace Testing.Common.Builders.Domain
                         audioRecordingRequired,
                         cancelReason))
                 .Build();
-            _videoHearing.SetHearingType(hearingType);
             
             var applicantCaseRole = new CaseRole(1, "Applicant") { Group = CaseRoleGroup.Applicant };
             var respondentCaseRole = new CaseRole(2, "Respondent") { Group = CaseRoleGroup.Respondent };
@@ -68,19 +68,19 @@ namespace Testing.Common.Builders.Domain
 
             _videoHearing.AddIndividual(person1, applicantLipHearingRole, applicantCaseRole,
                 $"{person1.FirstName} {person1.LastName}");
-            var indApplicant =_videoHearing?.Participants.Last();
+            var indApplicant =_videoHearing.Participants[^1];
             indApplicant.SetProtected(nameof(indApplicant.CaseRole), applicantCaseRole);
             indApplicant.SetProtected(nameof(indApplicant.HearingRole), applicantLipHearingRole);
 
             _videoHearing!.AddIndividual(person3, respondentLipHearingRole, respondentCaseRole,
                 $"{person3.FirstName} {person3.LastName}");
-            var indRespondent =_videoHearing?.Participants.Last();
+            var indRespondent =_videoHearing.Participants[^1];
             indRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
             indRespondent.SetProtected(nameof(indRespondent.HearingRole), respondentLipHearingRole);
             
             _videoHearing!.AddRepresentative(person2, respondentRepresentativeHearingRole, respondentCaseRole,
                 $"{person2.FirstName} {person2.LastName}", string.Empty);
-            var repRespondent =_videoHearing?.Participants.Last();
+            var repRespondent =_videoHearing.Participants[^1];
             repRespondent.SetProtected(nameof(indApplicant.CaseRole), respondentCaseRole);
             repRespondent.SetProtected(nameof(repRespondent.HearingRole), respondentRepresentativeHearingRole);
 
@@ -88,14 +88,14 @@ namespace Testing.Common.Builders.Domain
             {
                 _videoHearing!.AddJudge(_judgePerson, judgeHearingRole, judgeCaseRole,
                     $"{_judgePerson.FirstName} {_judgePerson.LastName}");
-                var judge =_videoHearing?.Participants.Last();
+                var judge =_videoHearing.Participants[^1];
                 judge.SetProtected(nameof(indApplicant.CaseRole), judgeCaseRole);
                 judge.SetProtected(nameof(judge.HearingRole), judgeHearingRole);
             }
 
             _videoHearing!.AddJudicialOfficeHolder(_johPerson, johHearingRole, johCaseRole,
                 $"{_johPerson.FirstName} {_johPerson.LastName}");
-            var joh = _videoHearing?.Participants.Last();
+            var joh = _videoHearing.Participants[^1];
             joh.SetProtected(nameof(indApplicant.CaseRole), johCaseRole);
             joh.SetProtected(nameof(joh.HearingRole), johHearingRole);
 
@@ -103,7 +103,7 @@ namespace Testing.Common.Builders.Domain
             {
                 _videoHearing!.AddStaffMember(_staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
                     $"{_staffMemberPerson.FirstName} {_staffMemberPerson.LastName}");
-                var staffMember = _videoHearing?.Participants.Last();
+                var staffMember = _videoHearing.Participants[^1];
                 staffMember.SetProtected(nameof(indApplicant.CaseRole), staffMemberCaseRole);
                 staffMember.SetProtected(nameof(staffMember.HearingRole), staffMemberHearingRole);
             }
@@ -131,8 +131,8 @@ namespace Testing.Common.Builders.Domain
                 FirstName = "test",
                 Lastname = "test"
             };
-            justiceUser.AddRoles(new[] {new UserRole((int) UserRoleId.VhTeamLead, "Video Hearings Team Lead")});
-            _videoHearing.Allocations.Add(new Allocation(){JusticeUser = justiceUser, Hearing = _videoHearing});
+            justiceUser.AddRoles(new UserRole((int) UserRoleId.VhTeamLead, "Video Hearings Team Lead"));
+            _videoHearing.Allocations.Add(new Allocation {JusticeUser = justiceUser, Hearing = _videoHearing});
             return this;
         }
 

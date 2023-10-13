@@ -155,7 +155,7 @@ public class UpdateHearingV2Tests : ApiTest
         var hearing = await Hooks.SeedVideoHearing(options =>
         {
             options.Case = new Case("Case1 Num", "Case1 Name");
-            options.HearingTypeName = null;
+            options.ExcludeHearingType = true;
         }, BookingStatus.Created);
         var hearingId = hearing.Id;
         var request = BuildRequest();

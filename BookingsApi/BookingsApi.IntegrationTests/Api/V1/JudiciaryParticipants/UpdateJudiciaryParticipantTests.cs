@@ -18,10 +18,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_update_judiciary_judge(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
-                options.AddJudge = false;
-                options.AddJudiciaryJudge = true;
+                options.AddJudge = true;
                 options.AddStaffMember = true;
             });
             var judiciaryJudge = seededHearing.JudiciaryParticipants
@@ -68,10 +67,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_update_judiciary_panel_member(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
-                options.AddJudiciaryPanelMember = true;
+                options.AddPanelMember = true;
                 options.AddStaffMember = true;
             });
             var judiciaryPanelMember = seededHearing.JudiciaryParticipants
@@ -145,7 +144,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_not_found_when_judiciary_person_does_not_exist()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var personalCode = Guid.NewGuid().ToString();
             var newDisplayName = "New Display Name";
             var newHearingRole = JudiciaryParticipantHearingRoleCode.Judge;
@@ -173,7 +172,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_bad_request_when_request_is_invalid()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing();
+            var seededHearing = await Hooks.SeedVideoHearingV2();
             var personalCode = Guid.NewGuid().ToString();
             var newDisplayName = "";
             var newHearingRole = JudiciaryParticipantHearingRoleCode.PanelMember;
@@ -201,11 +200,11 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_bad_request_when_request_is_close_to_start_time_and_created()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(5);
                 options.AddJudge = false;
-                options.AddJudiciaryPanelMember = true;
+                options.AddPanelMember = true;
                 options.AddStaffMember = true;
             }, BookingStatus.Created);
             var judiciaryPanelMember = seededHearing.JudiciaryParticipants
@@ -236,10 +235,10 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_bad_request_when_changing_panel_member_to_judge_and_judge_already_exists_in_the_hearing()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = true;
-                options.AddJudiciaryPanelMember = true;
+                options.AddPanelMember = true;
             });
             var judiciaryPanelMember = seededHearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
@@ -270,10 +269,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         public async Task Should_return_bad_request_when_changing_judge_to_panel_member_and_judge_is_only_host()
         {
             // Arrange
-            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
-                options.AddJudge = false;
-                options.AddJudiciaryJudge = true;
+                options.AddJudge = true;
             });
             var judiciaryJudge = seededHearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);

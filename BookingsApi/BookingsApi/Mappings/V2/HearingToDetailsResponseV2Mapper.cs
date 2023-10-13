@@ -33,7 +33,6 @@ namespace BookingsApi.Mappings.V2
                 Id = videoHearing.Id,
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeCode = videoHearing.HearingType?.Code,
                 ServiceId = videoHearing.CaseType.ServiceId,
                 ServiceName = videoHearing.CaseType.Name,
                 HearingVenueCode = videoHearing.HearingVenue.VenueCode,

@@ -36,11 +36,6 @@ namespace BookingsApi.Contract.V2.Requests
         public string TelephoneNumber { get; set; }
 
         /// <summary>
-        ///     Participant Username
-        /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
         ///     Participant Display Name
         /// </summary>
         ///
