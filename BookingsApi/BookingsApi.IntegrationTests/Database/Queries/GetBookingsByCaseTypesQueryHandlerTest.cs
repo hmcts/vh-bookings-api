@@ -43,7 +43,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
                 =>
             {
                 opt.CaseTypeName = FinancialRemedy;
-                opt.HearingTypeName = "First Directions Appointment";
             });
 
             var query = new GetBookingsByCaseTypesQuery(new List<int> { financialRemedyHearing.CaseTypeId });
@@ -113,41 +112,48 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_with_no_judge()
         {
-            
-            var bookingsWithNoJugde = await Hooks.SeedVideoHearingWithNoJudge();
+
+            var bookingsWithNoJudge = await Hooks.SeedVideoHearing(options =>
+            {
+                options.AddJudge = false;
+                options.AddPanelMember = false;
+            });
 
             var bookingsWithJudge = await Hooks.SeedVideoHearing(opt => opt.CaseTypeName = FinancialRemedy);
 
-            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudge.CaseTypeId, bookingsWithNoJudge.CaseTypeId })
             {
                 NoJudge = true
             };
 
             var hearings = await _handler.Handle(query);
 
-            AssertHearingsContainsNoJdge(hearings);
+            AssertHearingsContainsNoJudge(hearings.ToList());
         }
         
         [Test(Description = "With AdminSearchToggle On")]
         public async Task Should_return_video_hearings_with_no_judiciary_judge()
         {
-            
-            var bookingsWithNoJugde = await Hooks.SeedVideoHearingWithNoJudge();
+
+            var bookingsWithNoJudge = await Hooks.SeedVideoHearing(options =>
+            {
+                options.AddJudge = false;
+                options.AddPanelMember = false;
+            });
             
             var bookingsWithJudiciaryJudge = await Hooks.SeedVideoHearing(configureOptions: options =>
             {
-                options.AddJudge = false;
-                options.AddJudiciaryJudge = true;
+                options.AddJudge = true;
             });
 
-            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudiciaryJudge.CaseTypeId, bookingsWithNoJugde.CaseTypeId })
+            var query = new GetBookingsByCaseTypesQuery(new List<int> { bookingsWithJudiciaryJudge.CaseTypeId, bookingsWithNoJudge.CaseTypeId })
             {
                 NoJudge = true
             };
 
             var hearings = await _handler.Handle(query);
 
-            AssertHearingsContainsNoJdge(hearings);
+            AssertHearingsContainsNoJudge(hearings.ToList());
         }
 
         [Test(Description = "With AdminSearchToggle On")]
@@ -263,7 +269,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             AssertHearingsAreFilteredByNoAllocatedNotEmpty(result);
         }
 
-        private static void AssertHearingsContainsNoJdge(IEnumerable<VideoHearing> hearings)
+        private static void AssertHearingsContainsNoJudge(List<VideoHearing> hearings)
         {
             var containsHearingsFilteredWithNoJudge = hearings
                 .SelectMany(r => r.Participants)
@@ -278,7 +284,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             containsHearingsFilteredWithNoJudge.Should().BeTrue();
             containsHearingsFilteredWithNoJudiciaryJudge.Should().BeTrue();
 
-            hearings.Count().Should().Be(1);
+            hearings.Count.Should().Be(1);
         }
 
         private static void AssertHearingsAreFilteredByVenueIds(IEnumerable<VideoHearing> hearings, List<int> venueIds)

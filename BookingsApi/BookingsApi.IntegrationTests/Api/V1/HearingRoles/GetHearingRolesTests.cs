@@ -52,16 +52,6 @@ public class GetHearingRolesTests : ApiTest
             "Welfare Representative"
         };
         
-        var expectedJudicialOfficeHolders = new List<string>()
-        {
-            "Panel Member",
-        };
-        
-        var expectedJudge = new List<string>()
-        {
-            "Judge",
-        };
-        
         var expectedStaffMember = new List<string>()
         {
             "Staff Member"
@@ -70,8 +60,6 @@ public class GetHearingRolesTests : ApiTest
         
         hearingRoleResponses.Where(x=> x.UserRole == UserRoles.Individual).Select(x=> x.Name).Should().BeEquivalentTo(expectedIndividuals);
         hearingRoleResponses.Where(x=> x.UserRole == UserRoles.Representative).Select(x=> x.Name).Should().BeEquivalentTo(expectedRepresentatives);
-        hearingRoleResponses.Where(x=> x.UserRole == UserRoles.JudicialOfficeHolder).Select(x=> x.Name).Should().BeEquivalentTo(expectedJudicialOfficeHolders);
-        hearingRoleResponses.Where(x=> x.UserRole == UserRoles.Judge).Select(x=> x.Name).Should().BeEquivalentTo(expectedJudge);
         hearingRoleResponses.Where(x=> x.UserRole == UserRoles.StaffMember).Select(x=> x.Name).Should().BeEquivalentTo(expectedStaffMember);
     }
 }

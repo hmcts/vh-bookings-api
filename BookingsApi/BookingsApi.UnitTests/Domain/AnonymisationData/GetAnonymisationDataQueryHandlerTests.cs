@@ -71,15 +71,13 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         {
             var hearingType = _caseType1.HearingTypes[0];
 
-            var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing1.SetHearingType(hearingType);
 
-            var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing2.SetHearingType(hearingType);
             
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
@@ -112,15 +110,13 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         {
             var hearingType = _caseType1.HearingTypes[0];
 
-            var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing1.SetHearingType(hearingType);
-
-            var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing2.SetHearingType(hearingType);
             
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
@@ -155,15 +151,13 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
 
             var hearingType = _caseType1.HearingTypes[0];
 
-            var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing1.SetHearingType(hearingType);
 
-            var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing2.SetHearingType(hearingType);
 
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
@@ -194,21 +188,17 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         {
             var hearingType = _caseType1.HearingTypes[0];
 
-            var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
             
-            var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
 
-            var hearing3 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing3 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            
-            hearing1.SetHearingType(hearingType);
-            hearing2.SetHearingType(hearingType);
-            hearing3.SetHearingType(hearingType);
             
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
@@ -246,13 +236,11 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         {
             var hearingType = _caseType1.HearingTypes[0];
 
-            var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40, new HearingVenue(1, "venue 1"),
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing1.SetHearingType(hearingType);
 
-            var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40, new HearingVenue(1, "venue 1"),
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            hearing2.SetHearingType(hearingType);
             
             hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
@@ -288,16 +276,13 @@ namespace BookingsApi.UnitTests.Domain.AnonymisationData
         {
             var hearingType = _caseType1.HearingTypes[0];
 
-            var hearing1 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
 
-            var hearing2 = new VideoHearing(_caseType1, DateTime.Today, 40,
+            var hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40,
                 new HearingVenue(1, "venue 1"),
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-            
-            hearing1.SetHearingType(hearingType);
-            hearing2.SetHearingType(hearingType);
             
             var automationTestAccountPersonEntry =
                 new Person(Faker.Name.Suffix(), Faker.Name.First(), Faker.Name.Last(), Faker.Internet.Email(), username);

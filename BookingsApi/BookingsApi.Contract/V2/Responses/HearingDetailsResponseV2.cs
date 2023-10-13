@@ -49,11 +49,6 @@ public class HearingDetailsResponseV2
         public string ServiceName { get; set; }
 
         /// <summary>
-        ///     The code for the hearing type
-        /// </summary>
-        public string HearingTypeCode { get; set; }
-
-        /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseResponseV2> Cases { get; set; }

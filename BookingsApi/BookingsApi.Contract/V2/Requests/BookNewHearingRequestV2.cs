@@ -31,11 +31,6 @@ namespace BookingsApi.Contract.V2.Requests
         public string ServiceId { get; set; }
 
         /// <summary>
-        /// The code of the hearing type
-        /// </summary>
-        public string HearingTypeCode { get; set; }
-
-        /// <summary>
         ///     List of cases associated to the hearing
         /// </summary>
         public List<CaseRequestV2> Cases { get; set; } = new();
