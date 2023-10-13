@@ -73,7 +73,6 @@ stages:
         azureSubscription: ${{ variables.subscriptionName }}
 
     - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
-      displayName: Run EF Migrations
       parameters:
         sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
         sqlServerName: ${{ variables.vhSQLServerName }}
