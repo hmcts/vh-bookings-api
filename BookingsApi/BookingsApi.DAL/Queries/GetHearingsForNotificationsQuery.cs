@@ -13,7 +13,6 @@ namespace BookingsApi.DAL.Queries
     public class GetHearingsForNotificationsQueryHandler : IQueryHandler<GetHearingsForNotificationsQuery, List<HearingNotificationDto>>
     {
         private readonly BookingsDbContext _context;
-        private IQueryable<VideoHearing> _videoHearing;
 
         public GetHearingsForNotificationsQueryHandler(BookingsDbContext context)
         {
@@ -22,14 +21,14 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<HearingNotificationDto>> Handle(GetHearingsForNotificationsQuery query)
         {
-            _videoHearing = VideoHearings.Get(_context);
+            IQueryable<VideoHearing> videoHearing = VideoHearings.Get(_context);
 
             var startDate = DateTime.Today.AddDays(2);  // 2 days is 48 hrs
             var endDate = DateTime.Today.AddDays(3);    // 3 days is 72 hrs.
 
             // we are gathering all the hearings where the scheduled date and time is between 48 hrs and 72 hrs.
             // all the hearings must be single day and only the first day of the multiday.
-            var listHearings = await _videoHearing.Where(x =>
+            var listHearings = await videoHearing.Where(x =>
                     (x.Status == BookingStatus.Created ||
                      x.Status == Domain.Enumerations.BookingStatus.ConfirmedWithoutJudge ||
                      x.Status == Domain.Enumerations.BookingStatus.BookedWithoutJudge ||
