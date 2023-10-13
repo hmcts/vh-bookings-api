@@ -412,14 +412,6 @@ namespace BookingsApi.Controllers.V1
             
             var result = new UpdateHearingRequestValidation().Validate(request);
 
-            if (videoHearing.ScheduledDateTime != request.ScheduledDateTime &&
-                request.ScheduledDateTime < DateTime.UtcNow) // ignore if the scheduled date time has not changed
-            {
-                ModelState.AddModelError(nameof(request.ScheduledDateTime),
-                    UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage);
-
-            }
-
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
