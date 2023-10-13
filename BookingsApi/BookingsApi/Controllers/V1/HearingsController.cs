@@ -146,16 +146,16 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Hearing details</returns>
         [HttpGet("notifications/gethearings")]
         [OpenApiOperation("GetHearingsForNotification")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingNotificationResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingsForNotificationAsync()
         {
 
             var query = new GetHearingsForNotificationsQuery();
 
-            var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(query);
+            var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<HearingNotificationDto>>(query);
 
-            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
+            var response = hearings.Select(h=> new HearingNotificationResponse() { Hearing = HearingToDetailsResponseMapper.Map(h.Hearing), TotalDays = h.TotalDays}).ToList();
 
             return Ok(response);
         }
@@ -843,3 +843,4 @@ namespace BookingsApi.Controllers.V1
         }
     }
 }
+
