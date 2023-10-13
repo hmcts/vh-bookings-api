@@ -100,7 +100,10 @@ public class UpdateEndpointTests : ApiTest
     public async Task should_return_no_content_when_endpoint_display_name_and_defence_advocate_is_updated()
     {
         // arrange
-        var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created, 1);
+        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.EndpointsToAdd = 1;
+        }, BookingStatus.Created);
         var ep = seededHearing.Endpoints[0];
         var rep = seededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative);
         var hearingId = seededHearing.Id;

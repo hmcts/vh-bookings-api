@@ -208,7 +208,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         var hearingId = hearing.Id;
         var participant = hearing.GetParticipants().First(x=> x is Individual);
         var participantId = participant.Id;
-        var oldMiddleNames = participant.Person.MiddleNames;
         var request = new UpdateParticipantRequestV2()
         {
             ParticipantId = participantId,

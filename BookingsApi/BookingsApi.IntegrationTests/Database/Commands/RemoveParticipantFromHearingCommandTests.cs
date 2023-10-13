@@ -1,7 +1,6 @@
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
@@ -87,7 +86,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         [Test]
         public async Task Should_Remove_ParticipantLink_When_Participant_Is_Removed()
         {
-            var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Booked, 0, false, true);
+            var seededHearing = await Hooks.SeedVideoHearing(withLinkedParticipants: true);
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 
             var participantWithALink = seededHearing.Participants.First(x => x.LinkedParticipants.Any());

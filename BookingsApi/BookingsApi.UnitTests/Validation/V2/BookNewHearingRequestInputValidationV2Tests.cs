@@ -154,7 +154,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         {
             var date = DateTime.UtcNow.AddMinutes(5);
             var caseName = $"Auto Test {Guid.NewGuid():N}";
-            return new SimpleBookNewHearingRequestV2(caseName, date).Build();
+            return new SimpleBookNewHearingRequestV2(caseName, date, "RandomPersonCode").Build();
         }
     }
 }

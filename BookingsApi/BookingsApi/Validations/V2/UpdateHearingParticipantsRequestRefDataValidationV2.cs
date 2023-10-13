@@ -18,10 +18,10 @@ public class UpdateHearingParticipantsRequestRefDataValidationV2 : RefDataInputV
         RuleForEach(request => request.NewParticipants).Where(x => representativeRoles.Contains(x.HearingRoleCode))
             .SetValidator(new RepresentativeValidation());
     }
-    
+
     private static void ValidateHearingRole(ParticipantRequestV2 participant, List<HearingRole> hearingRoles, ValidationContext<UpdateHearingParticipantsRequestV2> context)
     {
-        if (!hearingRoles.Exists(x => x.Code == participant.HearingRoleCode))
+        if (!hearingRoles.Exists(x => string.Compare(x.Code, participant.HearingRoleCode, StringComparison.InvariantCultureIgnoreCase) == 0))
         {
             context.AddFailure($"Invalid hearing role [{participant.HearingRoleCode}]");
         }

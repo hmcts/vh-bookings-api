@@ -1,5 +1,4 @@
 using BookingsApi.Contract.V2.Responses;
-using BookingsApi.Domain.Enumerations;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V2;
 
@@ -48,8 +47,9 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
         // arrange
         var hearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
         {
-            options.AddJudiciaryPanelMember = true;
-        }, BookingStatus.Booked, 1, false);
+            options.AddPanelMember = true;
+            options.EndpointsToAdd = 1;
+        });
         var hearingId = hearing.Id;
 
         // act
@@ -66,7 +66,6 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
         hearingResponse.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
         hearingResponse.IsHearingVenueScottish.Should().Be(hearing.HearingVenue.IsScottish);
         
-        hearingResponse.HearingTypeCode.Should().Be(hearing.HearingType.Code);
         hearingResponse.ServiceId.Should().Be(hearing.CaseType.ServiceId);
         hearingResponse.ServiceName.Should().Be(hearing.CaseType.Name);
         

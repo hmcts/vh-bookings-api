@@ -14,7 +14,7 @@ public class SearchForAllocationHearingsTests: ApiTest
         await using var db = new BookingsDbContext(BookingsDbContextOptions);
         var venueWithWorkAllocationEnabled = await db.Venues.FirstAsync(x => x.IsWorkAllocationEnabled);
         var venueWithoutWorkAllocationEnabled = await db.Venues.FirstAsync(x => !x.IsWorkAllocationEnabled);
-        var caseNumber = "TestSearchQueryInt";
+        var caseNumber = $"TestSearchQuery_{Guid.NewGuid():N}";
         var nonGenericCaseTypeName = "Financial Remedy";
         var hearingWithWorkAllocationVenue = await Hooks.SeedVideoHearing(options =>
         {

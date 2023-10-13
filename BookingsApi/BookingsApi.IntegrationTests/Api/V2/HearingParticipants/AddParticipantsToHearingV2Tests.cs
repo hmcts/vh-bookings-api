@@ -29,27 +29,6 @@ public class AddParticipantsToHearingV2Tests : ApiTest
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
     }
-
-    [Test]
-    public async Task should_add_participant_to_hearing_without_case_role_and_return_200()
-    {
-        // arrange
-        var hearing = await Hooks.SeedVideoHearingV2(options =>
-            {
-                options.Case = new Case("Case1 Num", "Case1 Name");
-            },
-            BookingStatus.Created);
-        
-        var request = BuildRequestObject();
-
-        // act
-        using var client = Application.CreateClient();
-        var result = await client
-            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.AddParticipantsToHearing(hearing.Id),RequestBody.Set(request));
-
-        // assert
-        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
-    }
     
     [Test]
     public async Task should_fail_to_add_an_interpreter_participant_to_hearing_when_hearing_is_close_to_start_time_and_return_400()
@@ -96,7 +75,6 @@ public class AddParticipantsToHearingV2Tests : ApiTest
             {
                 new ()
                 {
-                    Username = "username@test.email.com",
                     DisplayName = "DisplayName",
                     FirstName = "FirstName",
                     HearingRoleCode = HearingRoleCodes.Applicant,

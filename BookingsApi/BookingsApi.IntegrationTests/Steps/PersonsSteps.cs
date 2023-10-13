@@ -243,7 +243,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var model = RequestHelper.Deserialise<UserWithClosedConferencesResponse>(json);
             model.Should().NotBeNull();
             model.Usernames.Should().NotBeNull();
-            model.Usernames.Count.Should().Be(4); // Individual, Representative & JOH participants
+            model.Usernames.Count.Should().Be(5); // 2 Individual & 2 Representative participants + 1 JOH participant
         }
 
         
