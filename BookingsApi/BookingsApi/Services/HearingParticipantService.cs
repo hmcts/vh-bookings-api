@@ -53,7 +53,7 @@ public class HearingParticipantService : IHearingParticipantService
     {
         var eventNewParticipants = hearing
             .GetParticipants()
-            .Where(x => newParticipants.Exists(y => y.Person.ContactEmail == x.Person.ContactEmail))
+            .Where(x => newParticipants.Exists(y => string.Equals(y.Person.ContactEmail, x.Person.ContactEmail, StringComparison.CurrentCultureIgnoreCase)))
             .ToList();
         var eventExistingParticipants = hearing
             .GetParticipants()

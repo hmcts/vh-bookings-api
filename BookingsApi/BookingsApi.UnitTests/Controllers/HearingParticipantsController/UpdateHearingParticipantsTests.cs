@@ -218,6 +218,43 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingNotificationIntegrationEvent>()), Times.Once);
         }
 
+        [TestCase("Email@email.com", "email@email.com")]
+        [TestCase("email@email.com", "Email@email.com")]
+        public async Task Should_publish_CreateAndNotifyUser_and_HearingNotification_integration_events_for_new_participants_ignoring_contact_email_case(
+            string personEmail, string newParticipantEmail)
+        {
+            // ie if the contact email for the new participant is the same as the existing person record but the case is different,
+            // we should still publish a new participant event
+            
+            // Arrange
+            var hearing = GetVideoHearing();
+            var person = hearing.Participants.First(x => x.HearingRole.Name == "Name");
+            person.Person.ContactEmail = personEmail;
+            QueryHandler.Setup(q => q.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>())).ReturnsAsync(hearing);
+            
+            _existingParticipants = new List<UpdateParticipantRequest>
+            {
+                new()
+                {
+                    DisplayName = "DisplayName",
+                    OrganisationName = "OrganisationName",
+                    ParticipantId = hearing.Participants[0].Id,
+                    Representee = "Representee",
+                    TelephoneNumber = "07123456789",
+                    Title = "Title"
+                }
+            };
+            _newParticipants[0].ContactEmail = newParticipantEmail;
+            _request = BuildRequest();
+            
+            // Act
+            await Controller.UpdateHearingParticipants(hearingId, _request);
+            
+            // Assert
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            EventPublisher.Verify(x => x.PublishAsync(It.IsAny<HearingNotificationIntegrationEvent>()), Times.Once);
+        }
+
         [Test]
         public async Task Should_publish_HearingIsReadyForVideo_integration_events_when_judge_added()
         {
