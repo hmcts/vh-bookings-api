@@ -7,5 +7,9 @@ public class HearingNotificationResponse
     /// </summary>
     public HearingDetailsResponse Hearing { get; set; }
 
+    /// <summary>
+    /// This is the total days of the multi day hearing included the first day.
+    /// If TotalDays is 1 then the hearing will be treated as single day.
+    /// </summary>
     public int TotalDays { get; set; }
 }
