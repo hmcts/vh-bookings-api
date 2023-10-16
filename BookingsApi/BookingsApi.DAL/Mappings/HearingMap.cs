@@ -16,7 +16,7 @@ namespace BookingsApi.DAL.Mappings
 
             builder.Property(x => x.CaseTypeId).IsRequired();
             builder.Property(x => x.HearingTypeId);
-            builder.Property(x => x.HearingVenueName);
+            builder.Property(x => x.HearingVenueName).HasMaxLength(450);
             builder.Property(x => x.ScheduledDateTime).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
             builder.Property(x => x.ScheduledDuration);
             builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
@@ -35,7 +35,7 @@ namespace BookingsApi.DAL.Mappings
 
             builder.HasOne(x => x.CaseType).WithMany().HasForeignKey(x => x.CaseTypeId).IsRequired();
             builder.HasOne(x => x.HearingType).WithMany().HasForeignKey(x => x.HearingTypeId);
-            builder.HasOne(x => x.HearingVenue).WithMany().HasForeignKey(x => x.HearingVenueName);
+            builder.HasOne(x => x.HearingVenue).WithMany().HasForeignKey(x => x.HearingVenueId);
         }
     }
 }
