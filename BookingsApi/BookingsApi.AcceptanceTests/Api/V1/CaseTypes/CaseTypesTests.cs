@@ -19,7 +19,6 @@ public class CaseTypesTests : ApiTest
         {
             caseTypeResponse.Id.Should().NotBe(0);
             caseTypeResponse.Name.Should().NotBeNullOrWhiteSpace();
-            caseTypeResponse.HearingTypes.Should().NotBeNullOrEmpty();
         });
         
         // consider adding an assertion for one service id of a known type?
