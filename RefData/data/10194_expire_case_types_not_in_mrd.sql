@@ -3,7 +3,7 @@ GO;
 
 BEGIN TRANSACTION;
 
-UPDATE VhBookings.dbo.CaseType SET ExpirationDate = '2024-10-31', UpdatedDate = CURRENT_TIMESTAMP WHERE Name IN
+UPDATE VhBookings.dbo.CaseType SET ExpirationDate = '2024-01-24', UpdatedDate = CURRENT_TIMESTAMP WHERE Name IN
 (
 'Business Lease Renewal',
 'Children Act',
@@ -30,7 +30,7 @@ UPDATE VhBookings.dbo.CaseType SET ExpirationDate = '2024-10-31', UpdatedDate = 
 
 GO;
 
-SELECT * FROM VhBookings.dbo.CaseType WHERE ExpirationDate = '2024-10-31'
+SELECT * FROM VhBookings.dbo.CaseType WHERE ExpirationDate = '2024-01-24'
 
 COMMIT;
 SET XACT_ABORT OFF
