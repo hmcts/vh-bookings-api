@@ -1,5 +1,6 @@
 using BookingsApi.DAL.Exceptions;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -28,9 +29,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             var result = await _handler.Handle(query);
             result.Any().Should().BeTrue();
-            result.Any(x => x.Id == hearing2.Id).Should().BeTrue();
-            result.Any(x => x.Id == hearing1.Id).Should().BeFalse();
-            result.Any(x => x.Id == hearing3.Id).Should().BeFalse();
+            result.Exists(x => x.Id == hearing2.Id).Should().BeTrue();
+            result.Exists(x => x.Id == hearing1.Id).Should().BeFalse();
+            result.Exists(x => x.Id == hearing3.Id).Should().BeFalse();
         }
         
         [Test]
@@ -40,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             await Hooks.SeedVideoHearing();
             await Hooks.SeedVideoHearing();
 
-            var username = hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsJudge).Person.Username;
+            var username = hearing.GetParticipants().First(x => x is Judge).Person.Username;
 
             var query = new GetHearingsByUsernameForDeletionQuery(username);
 
