@@ -124,7 +124,7 @@ public class UpdateHearingTests : ApiTest
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
         
-        hearingFromDb.HearingVenueName.Should().Be("Manchester County and Family Court");
+        hearingFromDb.HearingVenue.Name.Should().Be("Manchester County and Family Court");
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
         hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
         hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);

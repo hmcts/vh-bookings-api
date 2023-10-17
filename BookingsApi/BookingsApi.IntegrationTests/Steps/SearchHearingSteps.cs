@@ -118,7 +118,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var @case = seededHearing.GetCases()[0];
             model.CaseNumber.Should().Be(@case.Number);
             model.CaseName.Should().Be(@case.Name);
-            model.HearingVenueName.Should().Be(seededHearing.HearingVenueName);
+            model.HearingVenueName.Should().Be(seededHearing.HearingVenue.Name);
             model.ScheduledDateTime.Should().Be(seededHearing.ScheduledDateTime);
         }
     }

@@ -33,8 +33,8 @@ namespace BookingsApi.DAL.Queries
 
             if (query.HearingVenueNames != null && query.HearingVenueNames.Any())
                 hearingQuery = hearingQuery
-                    .Where(x => query.HearingVenueNames.Contains(x.HearingVenueName))
-                    .OrderBy(x => x.HearingVenueName).ThenBy(x => x.ScheduledDateTime);
+                    .Where(x => query.HearingVenueNames.Contains(x.HearingVenue.Name))
+                    .OrderBy(x => x.HearingVenue.Name).ThenBy(x => x.ScheduledDateTime);
                 
             return await hearingQuery
                 .Where(x => x.Status == BookingStatus.Created || x.Status == BookingStatus.Booked)

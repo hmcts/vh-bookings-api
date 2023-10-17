@@ -287,7 +287,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 var hearing = Context.TestData.SeededHearing;
                 var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases()[0];
                 result.HearingId.Should().Be(hearing.Id);
-                result.Venue.Should().Be(hearing.HearingVenueName);
+                result.Venue.Should().Be(hearing.HearingVenue.Name);
                 result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
                 result.CaseName.Should().Be(leadCase.Name);
                 result.CaseNumber.Should().Be(leadCase.Number);
