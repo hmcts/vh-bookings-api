@@ -161,19 +161,19 @@ namespace BookingsApi.Controllers.V1
         {
             try
             {
-                var list = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
+                var allocatedHearings = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
                 
-                var dtos = _hearingAllocationService.CheckForAllocationClashes(list);
+                var hearingAllocationClashResultDtos = _hearingAllocationService.CheckForAllocationClashes(allocatedHearings);
                 
                 // need to broadcast acknowledgment message for the allocation
-                await PublishAllocationsToServiceBus(list, list[0].AllocatedTo);
+                await PublishAllocationsToServiceBus(allocatedHearings, allocatedHearings[0].AllocatedTo);
                 
-                return Ok(dtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
+                return Ok(hearingAllocationClashResultDtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
             }
             catch (DomainRuleException e)
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
         }
         
