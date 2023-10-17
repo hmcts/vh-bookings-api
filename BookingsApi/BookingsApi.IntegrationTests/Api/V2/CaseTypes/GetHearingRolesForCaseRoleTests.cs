@@ -15,7 +15,7 @@ public class GetHearingRolesForCaseRoleTests : ApiTest
     public async Task should_return_hearing_roles_for_case_role()
     {
         // arrange
-        const string serviceId = "vhG1";
+        const string serviceId = "ZZY1";
         const string caseRole = "Applicant";
         using var client = Application.CreateClient();
 
@@ -49,7 +49,7 @@ public class GetHearingRolesForCaseRoleTests : ApiTest
     public async Task should_return_not_found_when_hearing_role_does_not_exist()
     {
         // arrange
-        const string serviceId = "vhG1";
+        const string serviceId = "ZZY1";
         const string caseRole = "Made up case role";
         using var client = Application.CreateClient();
 

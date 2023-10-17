@@ -8,7 +8,7 @@ public class GetCaseRolesForCaseTypeTestsV2 : ApiTest
     public async Task should_get_all_case_roles_for_case_type()
     {
         // arrange
-        const string caseType = "vhG1";
+        const string caseType = "ZZY1";
         using var client = Application.CreateClient();
 
         // act
