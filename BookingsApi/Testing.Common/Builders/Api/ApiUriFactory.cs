@@ -131,6 +131,7 @@ namespace Testing.Common.Builders.Api
                 $"{ApiRoot}/allocation/search?{QueryStringBuilder.ConvertToQueryString(query)}";
             
             public static string GetAllocationsForHearings => $"{ApiRoot}/get-allocation";
+            public static string AllocateHearingManually => $"{ApiRoot}/allocations";
 
             public static string AllocateHearingAutomatically(Guid hearingId) => $"{ApiRoot}/{hearingId}/allocations/automatic";
         }
