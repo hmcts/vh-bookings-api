@@ -165,6 +165,8 @@ namespace BookingsApi.DAL.Services
                 .Include(h => h.Allocations).ThenInclude(a => a.JusticeUser).ThenInclude(x => x.VhoWorkHours)
                 .Include(h => h.HearingCases).ThenInclude(hc => hc.Case)
                 .Include(h => h.HearingVenue)
+                .Include(h => h.Participants)
+                .Include(h=> h.JudiciaryParticipants)
                 .Where(x => hearingIds.Contains(x.Id))
                 .AsSplitQuery()
                 .AsNoTracking()

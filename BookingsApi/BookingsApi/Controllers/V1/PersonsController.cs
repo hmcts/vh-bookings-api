@@ -241,7 +241,7 @@ namespace BookingsApi.Controllers.V1
             var hearings = await _queryHandler.Handle<GetHearingsByUsernameQuery, List<VideoHearing>>(hearingsQuery);
 
             var judicialHearings = hearings.SelectMany(v => v.Participants.Where(p => p.PersonId == person.Id))
-                .Any(x => x.HearingRole.UserRole.IsJudge);
+                .Any(x => x is Judge);
 
             if (judicialHearings)
             {

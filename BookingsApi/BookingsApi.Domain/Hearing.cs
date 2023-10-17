@@ -715,7 +715,7 @@ namespace BookingsApi.Domain
 
         public ParticipantBase GetJudge()
         {
-            var judge = Participants?.FirstOrDefault(p => p.HearingRole?.UserRole?.IsJudge ?? false);
+            var judge = Participants.FirstOrDefault(p => p is Judge);
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
             return (ParticipantBase)judge ?? judiciaryJudge;

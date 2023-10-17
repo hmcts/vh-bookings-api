@@ -1,5 +1,6 @@
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services;
 
 namespace BookingsApi.UnitTests.Mappings.V1
@@ -14,7 +15,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var result = HearingAllocationDtoMapper.MapToDto(hearing);
 
             var expectedCase = hearing.GetCases()[0];
-            var expectedJudge = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var expectedJudge = hearing.Participants?.FirstOrDefault(p => p is Judge);
             
             result.HearingId.Should().Be(hearing.Id);
             result.GroupId.Should().Be(hearing.SourceId);
