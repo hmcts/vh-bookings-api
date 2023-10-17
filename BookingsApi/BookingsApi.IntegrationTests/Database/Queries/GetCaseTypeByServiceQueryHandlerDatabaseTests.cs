@@ -19,7 +19,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test] public async Task should_get_case_type_by_service_id()
         {
             var caseTypeName = "Generic";
-            var serviceId = "vhG1"; // intentionally not the same case to verify case sensitivity is ignored
+            var serviceId = "ZZY1"; // intentionally not the same case to verify case sensitivity is ignored
             var caseType = await _handler.Handle(new GetCaseRolesForCaseServiceQuery(serviceId));
             caseType.Should().NotBeNull();
             caseType.Name.Should().Be(caseTypeName);
