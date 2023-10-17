@@ -361,10 +361,9 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing,
-            BookingStatus status = BookingStatus.Booked,
-            BookingsDbContext db = null)
+            BookingStatus status = BookingStatus.Booked)
         {
-            var dbContext = db ?? new BookingsDbContext(_dbContextOptions);
+            var dbContext = new BookingsDbContext(_dbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(dbContext)
                 .Handle(new GetHearingByIdQuery(hearingId));
 
@@ -389,11 +388,6 @@ namespace BookingsApi.IntegrationTests.Helper
                     returnedHearing.UpdateStatus(status, "test", "test");
                     await dbContext.SaveChangesAsync();
                 }
-            }
-            
-            if (db == null)
-            {
-                await dbContext.DisposeAsync();
             }
         }
 
