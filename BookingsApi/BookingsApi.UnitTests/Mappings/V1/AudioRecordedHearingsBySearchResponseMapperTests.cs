@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
@@ -67,8 +68,11 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_map_all_without_judge()
         {
             var @case = hearingsByCaseNumber[0].GetCases().FirstOrDefault();
-            var newHearingRole = new HearingRole(1, "Name") { UserRole = new UserRole(1, "Winger"), };
-            hearingsByCaseNumber[0].GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole?.Name == "Judge").HearingRole = newHearingRole;
+            hearingsByCaseNumber.ForEach(h =>
+            {
+                var judge = h.GetParticipants().First(x => x is Judge);
+                h.RemoveParticipant(judge, false);
+            });
 
             var result = hearingMapper.MapHearingToDetailedResponse(hearingsByCaseNumber, string.Empty);
              

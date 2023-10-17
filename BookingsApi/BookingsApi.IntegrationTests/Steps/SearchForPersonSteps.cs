@@ -1,3 +1,4 @@
+using BookingsApi.Domain.Participants;
 using TechTalk.SpecFlow;	
 using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;
 
@@ -14,7 +15,7 @@ namespace BookingsApi.IntegrationTests.Steps
         public void GivenIHaveASearchForAIndividualRequestForAJudge()	
         {	
             var hearing = Context.TestData.SeededHearing;	
-            var participant = hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsJudge);	
+            var participant = hearing.GetParticipants().First(x => x is Judge);	
             SetupRequest(participant.Person.ContactEmail);	
         }	
 
