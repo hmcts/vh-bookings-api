@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BookingsApi.Contract.V1.Requests;
+using Newtonsoft.Json;
 
 namespace BookingsApi.Contract.V2.Requests
 {
@@ -71,6 +72,10 @@ namespace BookingsApi.Contract.V2.Requests
 
         public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; } = new();
 
+        /// <summary>
+        /// List of judiciary participants in a hearing
+        /// </summary>
+        [JsonProperty("judicial_office_holders")]
         public List<JudiciaryParticipantRequest> JudiciaryParticipants { get; set; } = new();
     }
 }
