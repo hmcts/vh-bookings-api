@@ -1,4 +1,5 @@
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
@@ -36,7 +37,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 representative.CaseRole, representative.DisplayName,
                 representative.Representee);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == "Participant already exists in the hearing").Should().BeTrue();
+                .Exists(x => x.Message == "Participant already exists in the hearing").Should().BeTrue();
 
             var afterAddCount = hearing.GetParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
@@ -56,6 +57,42 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+        }
+        
+        [Test]
+        public void Should_add_interpreter_to_hearing()
+        {
+            var dateTime = DateTime.UtcNow.AddMinutes(25);
+            var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
+            var interpreterCaseRole = new CaseRole(6, "Interpreter");
+            var interpreterHearingRole = new HearingRole(12, "Interpreter");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var beforeAddCount = hearing.GetParticipants().Count;
+
+            hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name");
+            var afterAddCount = hearing.GetParticipants().Count;
+
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
+        }
+        
+        [Test]
+        public void Should_not_add_interpreter_to_confirmed_hearing_close_to_start_time()
+        {
+            var dateTime = DateTime.UtcNow.AddMinutes(25);
+            var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
+            hearing.UpdateStatus(BookingStatus.Created, "test", null);
+            var interpreterCaseRole = new CaseRole(6, "Interpreter");
+            var interpreterHearingRole = new HearingRole(12, "Interpreter");
+
+            var newPerson = new PersonBuilder(true).Build();
+            var beforeAddCount = hearing.GetParticipants().Count;
+            
+            Assert.Throws<DomainRuleException>(() => hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name"))
+                !.ValidationFailures.Should().Contain(x => x.Message == DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
+            
+            var afterAddCount = hearing.GetParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
         }
         
         [Test]
