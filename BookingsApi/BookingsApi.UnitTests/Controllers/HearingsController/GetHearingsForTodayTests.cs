@@ -17,7 +17,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
              .Setup(x => x.Handle<GetHearingsForTodayQuery, List<VideoHearing>>(It.IsAny<GetHearingsForTodayQuery>()))
              .ReturnsAsync(hearing);
 
-            var result = await Controller.GetHearingsForTodayByVenue(hearing.Select(h => h.HearingVenueName).ToArray());
+            var result = await Controller.GetHearingsForTodayByVenue(hearing.Select(h => h.HearingVenue.Name).ToArray());
 
             result.Should().NotBeNull();
             var objectResult = (OkObjectResult)result;

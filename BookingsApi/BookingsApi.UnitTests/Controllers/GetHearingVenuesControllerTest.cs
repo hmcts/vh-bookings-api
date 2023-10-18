@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using BookingsApi.Contract.V1.Responses;
-using BookingsApi.Controllers;
 using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
@@ -24,14 +23,16 @@ public class GetHearingVenuesControllerTest
     public async Task GetHearingVenueNamesByAllocatedCso_should_return_list_of_hearing_venue_names()
     {
         //Arrange
-        var expectedResponse = new[]{"TestHearingVenueName1", "TestHearingVenueName2"};
+        var venue1 = new HearingVenue(1, "TestHearingVenueName1");
+        var venue2 = new HearingVenue(1, "TestHearingVenueName2");
+        var expectedResponse = new[]{ venue1.Name, venue2.Name };
         var queryResponse = new List<VideoHearing>
         {
             Mock.Of<VideoHearing>(),
             Mock.Of<VideoHearing>()
         };
-        queryResponse[0].HearingVenueName = expectedResponse[0];
-        queryResponse[1].HearingVenueName = expectedResponse[1];
+        queryResponse[0].SetProtected(nameof(HearingVenue), venue1);
+        queryResponse[1].SetProtected(nameof(HearingVenue), venue2);
         
         _queryHandler
             .Setup(x => x.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(
@@ -80,7 +81,7 @@ public class GetHearingVenuesControllerTest
         var mockVenue3 = new HearingVenue(100003,"MockVenue3") { ExpirationDate = DateTime.Today.AddDays(1)};
         var mockVenue4 = new HearingVenue(100004,"MockVenue4") { ExpirationDate = null};
         var mockHearing = Mock.Of<VideoHearing>();
-        mockHearing.HearingVenueName = "MockVenue1";
+        mockHearing.SetProtected(nameof(HearingVenue), mockVenue1);
 
         //Mock of hearings today
         _queryHandler

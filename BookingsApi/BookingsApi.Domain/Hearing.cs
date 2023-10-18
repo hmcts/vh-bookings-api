@@ -51,7 +51,7 @@ namespace BookingsApi.Domain
             ScheduledDuration = scheduledDuration;
             CaseTypeId = caseType.Id;
             HearingTypeId = hearingType?.Id;
-            HearingVenueName = hearingVenue.Name;
+            HearingVenueId = hearingVenue.Id;
 
             Status = BookingStatus.Booked;
             HearingRoomName = hearingRoomName;
@@ -79,7 +79,7 @@ namespace BookingsApi.Domain
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
         public virtual HearingVenue HearingVenue { get; protected set; }
-        public virtual string HearingVenueName { get; set; }
+        public int? HearingVenueId { get; set; }
         public int CaseTypeId { get; set; }
         public virtual CaseType CaseType { get; set; }
         public int? HearingTypeId { get; set; }
@@ -482,7 +482,6 @@ namespace BookingsApi.Domain
             
 
             HearingVenue = hearingVenue;
-            HearingVenueName = hearingVenue.Name;
 
             if (cases.Any())
             {

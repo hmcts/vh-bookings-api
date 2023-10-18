@@ -39,7 +39,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result[0].CaseNumber.Should().Be(@case.Number);
             result[0].Id.Should().Be(hearingsByCaseNumber[0].Id);
             result[0].ScheduledDateTime.Should().Be(hearingsByCaseNumber[0].ScheduledDateTime);
-            result[0].HearingVenueName.Should().Be(hearingsByCaseNumber[0].HearingVenueName);
+            result[0].HearingVenueName.Should().Be(hearingsByCaseNumber[0].HearingVenue.Name);
             result[0].CourtroomAccount.Should().Be(courtroomAccount);
             result[0].CourtroomAccountName.Should().Be(courtroomAccountName);
             result[0].HearingRoomName.Should().Be(hearingsByCaseNumber[0].HearingRoomName);
@@ -80,7 +80,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result[0].CaseNumber.Should().Be(@case.Number);
             result[0].Id.Should().Be(hearingsByCaseNumber[0].Id);
             result[0].ScheduledDateTime.Should().Be(hearingsByCaseNumber[0].ScheduledDateTime);
-            result[0].HearingVenueName.Should().Be(hearingsByCaseNumber[0].HearingVenueName);
+            result[0].HearingVenueName.Should().Be(hearingsByCaseNumber[0].HearingVenue.Name);
             result[0].CourtroomAccount.Should().Be(string.Empty);
             result[0].CourtroomAccountName.Should().Be(string.Empty);
             result[0].HearingRoomName.Should().Be(hearingsByCaseNumber[0].HearingRoomName);
