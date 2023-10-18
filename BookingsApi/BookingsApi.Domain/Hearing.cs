@@ -178,7 +178,7 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (hearingRole.IsInterpreter() && IsHearingCloseToScheduledStartTime())
+            if (hearingRole.IsInterpreter() && IsHearingConfirmedAndCloseToStartTime())
             {
                 throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
             }
@@ -665,7 +665,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
-            if (Status == BookingStatus.Created && IsHearingCloseToScheduledStartTime())
+            if (Status == BookingStatus.Created && IsHearingConfirmedAndCloseToStartTime())
             {
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
@@ -736,7 +736,9 @@ namespace BookingsApi.Domain
                 };
         }
 
-        private bool IsHearingCloseToScheduledStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow;
+        private bool IsHearingConfirmedAndCloseToStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow &&
+                                                                (Status == BookingStatus.Created ||
+                                                                 Status == BookingStatus.ConfirmedWithoutJudge);
 
     }
 }
