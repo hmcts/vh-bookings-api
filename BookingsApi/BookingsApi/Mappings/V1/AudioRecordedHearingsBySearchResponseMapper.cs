@@ -15,7 +15,7 @@ namespace BookingsApi.Mappings.V1
             foreach (var hearing in videoHearing)
             {
                 var judgeParticipant = hearing.GetParticipants()
-                    .FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.IsJudge);
+                    .FirstOrDefault(s => s is Judge);
 
                 var courtroomAccountName = judgeParticipant != null 
                     ? judgeParticipant.DisplayName 
@@ -35,7 +35,7 @@ namespace BookingsApi.Mappings.V1
                 {
                     Id = hearing.Id,
                     ScheduledDateTime = hearing.ScheduledDateTime,
-                    HearingVenueName = hearing.HearingVenueName,
+                    HearingVenueName = hearing.HearingVenue.Name,
                     HearingRoomName = hearing.HearingRoomName,
                     CourtroomAccount = courtroomAccount,
                     CourtroomAccountName = courtroomAccountName,

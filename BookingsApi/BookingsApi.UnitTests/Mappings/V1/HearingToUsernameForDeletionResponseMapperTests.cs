@@ -15,7 +15,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
 
             result.HearingId.Should().Be(hearing.Id);
-            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.Venue.Should().Be(hearing.HearingVenue.Name);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.CaseName.Should().Be(leadCase.Name);
             result.CaseNumber.Should().Be(leadCase.Number);
@@ -29,7 +29,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             
             var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
 
-            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.Venue.Should().Be(hearing.HearingVenue.Name);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.CaseName.Should().Be(firstCase.Name);
             result.CaseNumber.Should().Be(firstCase.Number);
@@ -42,7 +42,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
 
             var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
 
-            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.Venue.Should().Be(hearing.HearingVenue.Name);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.CaseName.Should().BeNullOrEmpty();
             result.CaseNumber.Should().BeNullOrEmpty();
@@ -58,7 +58,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
 
             var result = HearingToUsernameForDeletionResponseMapper.MapToDeletionResponse(hearing);
 
-            result.Venue.Should().Be(hearing.HearingVenueName);
+            result.Venue.Should().Be(hearing.HearingVenue.Name);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.CaseName.Should().Be(firstCase.Name);
             result.CaseNumber.Should().Be(firstCase.Number);

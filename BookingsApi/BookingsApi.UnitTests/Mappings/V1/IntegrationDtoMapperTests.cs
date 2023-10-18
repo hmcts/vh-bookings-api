@@ -23,7 +23,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             result.ScheduledDuration.Should().Be(hearing.ScheduledDuration);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
-            result.HearingVenueName.Should().Be(hearing.HearingVenueName);
+            result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
         }
         
         [Test]

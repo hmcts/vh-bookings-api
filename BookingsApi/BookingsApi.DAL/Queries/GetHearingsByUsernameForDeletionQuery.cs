@@ -1,3 +1,5 @@
+using BookingsApi.Domain.Participants;
+
 namespace BookingsApi.DAL.Queries
 {
     public class GetHearingsByUsernameForDeletionQuery : IQuery
@@ -52,7 +54,7 @@ namespace BookingsApi.DAL.Queries
             {
                 var p = hearing.GetParticipants().First(x =>
                     x.Person.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
-                if (p.HearingRole.UserRole.IsJudge)
+                if (p is Judge)
                 {
                     throw new PersonIsAJudgeException(username);
                 }
