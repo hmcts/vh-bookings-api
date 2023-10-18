@@ -165,9 +165,12 @@ namespace BookingsApi.IntegrationTests.Helper
                 ? null
                 : caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            
             var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
+            var hearingVenue = await db.Venues.FirstOrDefaultAsync(x => x.Id == venue.Id);
             var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType, options.Case);
+            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case);
 
             await AddParticipantsToVideoHearing(videoHearing, caseType, useFlatHearingRoles, options);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
@@ -206,9 +209,7 @@ namespace BookingsApi.IntegrationTests.Helper
             {
                 videoHearing.UpdateStatus(status, "automated@test.com", "test");
             }
-
-            await using var db = new BookingsDbContext(_dbContextOptions);
-
+            
             // then add judge if requested (need to use the db same context here to avoid conflicts)
             if (options.AddJudge)
             {
@@ -584,11 +585,14 @@ namespace BookingsApi.IntegrationTests.Helper
                 ? null
                 : caseType.HearingTypes.First(x => x.Name == options.HearingTypeName);
 
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            
             var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
+            var hearingVenue = await db.Venues.FirstOrDefaultAsync(x => x.Id == venue.Id);
 
             // create a hearing in the future to avoid validation failures and use reflection to update the scheduled date
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, venue, caseType, hearingType, options.Case);
+            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case);
             var videoHearingType = typeof(VideoHearing);
             videoHearingType.GetProperty("ScheduledDateTime")?.SetValue(videoHearing, pastScheduledDate);
 
@@ -599,7 +603,6 @@ namespace BookingsApi.IntegrationTests.Helper
                 videoHearing.UpdateStatus(BookingStatus.Created, "automated@test.com", null);
             }
 
-            await using var db = new BookingsDbContext(_dbContextOptions);
             // then add judge if requested (need to use the db same context here to avoid conflicts)
             if (options.AddJudge)
             {

@@ -2,6 +2,7 @@ using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Domain.Participants;
 using Faker;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.PersonEndpoints;
@@ -103,14 +104,14 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a search for hearings using a judge username request")]
         public void GivenIHaveASearchForHearingsUsingAJudgeUsernameRequest()
         {
-            var judge = Context.TestData.SeededHearing.GetParticipants().First(x => x.HearingRole.UserRole.IsJudge);
+            var judge = Context.TestData.SeededHearing.GetParticipants().First(x => x is Judge);
             SetupGetHearingsByUsernameForDeletionRequest(judge.Person.Username);
         }
         
         [Given(@"I have a search for hearings using a non-judge username request")]
         public void GivenIHaveASearchForHearingsUsingANonJudgeUsernameRequest()
         {
-            var nonJudge = Context.TestData.SeededHearing.GetParticipants().First(x => !x.HearingRole.UserRole.IsJudge);
+            var nonJudge = Context.TestData.SeededHearing.GetParticipants().First(x => x is not Judge);
             SetupGetHearingsByUsernameForDeletionRequest(nonJudge.Person.Username);
         }
 
@@ -123,7 +124,7 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a valid anonymise person request")]
         public void GivenIHaveAValidAnonymisePersonRequest()
         {
-            var participant = Context.TestData.SeededHearing.GetParticipants().First(x => !x.HearingRole.UserRole.IsJudge);
+            var participant = Context.TestData.SeededHearing.GetParticipants().First(x => x is not Judge);
             SetupAnonymisePersonRequest(participant.Person.Username);
         }
         
@@ -287,7 +288,7 @@ namespace BookingsApi.IntegrationTests.Steps
                 var hearing = Context.TestData.SeededHearing;
                 var leadCase = hearing.GetCases().FirstOrDefault(x => x.IsLeadCase) ?? hearing.GetCases()[0];
                 result.HearingId.Should().Be(hearing.Id);
-                result.Venue.Should().Be(hearing.HearingVenueName);
+                result.Venue.Should().Be(hearing.HearingVenue.Name);
                 result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
                 result.CaseName.Should().Be(leadCase.Name);
                 result.CaseNumber.Should().Be(leadCase.Number);

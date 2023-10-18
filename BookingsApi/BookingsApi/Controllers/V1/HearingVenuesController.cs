@@ -52,7 +52,7 @@ namespace BookingsApi.Controllers.V1
             var hearingVenues = await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(new GetHearingVenuesQuery());
 
             var response = hearingVenues.Where(e =>
-                e.ExpirationDate == null || e.ExpirationDate > DateTime.Today || hearingsToday.Exists(h => h.HearingVenueName == e.Name));
+                e.ExpirationDate == null || e.ExpirationDate > DateTime.Today || hearingsToday.Exists(h => h.HearingVenue.Name == e.Name));
 
             return Ok(response.Select(x => new HearingVenueResponse { Id = x.Id, Name = x.Name }).ToList());
         }
@@ -71,7 +71,7 @@ namespace BookingsApi.Controllers.V1
             var hearings = await _queryHandler.Handle<GetAllocationHearingsBySearchQuery, List<VideoHearing>>(query);
             if (hearings == null || !hearings.Any())
                 return Ok(new List<string>());
-            return Ok(hearings.Select(vh => vh.HearingVenueName));
+            return Ok(hearings.Select(vh => vh.HearingVenue.Name));
         }
     }
 }
