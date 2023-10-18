@@ -79,10 +79,6 @@ namespace BookingsApi.Domain
 
         public abstract HearingMediumType HearingMediumType { get; protected set; }
         public virtual HearingVenue HearingVenue { get; protected set; }
-        
-        [Obsolete("Use HearingVenue.Name instead")]
-        public virtual string HearingVenueName { get; set; }
-        
         public int? HearingVenueId { get; set; }
         public int CaseTypeId { get; set; }
         public virtual CaseType CaseType { get; set; }
