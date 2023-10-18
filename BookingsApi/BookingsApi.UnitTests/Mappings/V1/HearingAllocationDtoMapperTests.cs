@@ -24,7 +24,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.CaseType.Should().Be(hearing.CaseType.Name);
             result.CaseNumber.Should().Be(expectedCase.Number);
             result.CaseName.Should().Be(expectedCase.Name);
-            result.HearingVenueName.Should().Be(hearing.HearingVenueName);
+            result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
             result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             result.HearingType.Should().Be(hearing.HearingType.Name);
             result.JudgeDisplayName.Should().Be(expectedJudge?.DisplayName);
@@ -47,7 +47,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.CaseType.Should().Be(hearing.CaseType.Name);
             result.CaseNumber.Should().Be(expectedCase.Number);
             result.CaseName.Should().Be(expectedCase.Name);
-            result.HearingVenueName.Should().Be(hearing.HearingVenueName);
+            result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
             result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             result.HearingType.Should().Be(hearing.HearingType.Name);
             result.JudgeDisplayName.Should().Be(expectedJudge?.DisplayName);

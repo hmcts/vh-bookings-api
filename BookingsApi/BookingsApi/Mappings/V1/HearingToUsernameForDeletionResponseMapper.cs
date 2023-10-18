@@ -13,7 +13,7 @@ namespace BookingsApi.Mappings.V1
                 CaseName = leadCase?.Name,
                 CaseNumber = leadCase?.Number,
                 ScheduledDateTime = hearing.ScheduledDateTime,
-                Venue = hearing.HearingVenueName
+                Venue = hearing.HearingVenue.Name
             };
 
         }

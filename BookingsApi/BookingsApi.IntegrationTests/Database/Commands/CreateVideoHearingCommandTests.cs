@@ -13,14 +13,15 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         private GetHearingByIdQueryHandler _queryHandler;
         private CreateVideoHearingCommandHandler _commandHandler;
         private Guid _newHearingId;
+        private BookingsDbContext _context;
 
         [SetUp]
         public void Setup()
         {
-            var context = new BookingsDbContext(BookingsDbContextOptions);
-            _queryHandler = new GetHearingByIdQueryHandler(context);
-            var hearingService = new HearingService(context);
-            _commandHandler = new CreateVideoHearingCommandHandler(context, hearingService);
+            _context = new BookingsDbContext(BookingsDbContextOptions);
+            _queryHandler = new GetHearingByIdQueryHandler(_context);
+            var hearingService = new HearingService(_context);
+            _commandHandler = new CreateVideoHearingCommandHandler(_context, hearingService);
             _newHearingId = Guid.Empty;
         }
 
@@ -34,6 +35,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var scheduledDate = DateTime.Today.AddHours(10).AddMinutes(30);
             var duration = 45;
             var venue = new RefDataBuilder().HearingVenues[0];
+            var hearingVenue = await _context.Venues.FirstOrDefaultAsync(x => x.Id == venue.Id);
 
             var applicantCaseRole = caseType.CaseRoles.First(x => x.Name == "Applicant");
             var applicantRepresentativeHearingRole =
@@ -96,7 +98,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
                     LinkedParticipantType.Interpreter)
             };
 
-            var requiredDto = new CreateVideoHearingRequiredDto(caseType, scheduledDate, duration, venue, cases);
+            var requiredDto = new CreateVideoHearingRequiredDto(caseType, scheduledDate, duration, hearingVenue, cases);
             var optionalDto = new CreateVideoHearingOptionalDto(participants, hearingRoomName, otherInformation,
                 createdBy, audioRecordingRequired, endpoints, null, linkedParticipants,
                 null, false, null, hearingType);

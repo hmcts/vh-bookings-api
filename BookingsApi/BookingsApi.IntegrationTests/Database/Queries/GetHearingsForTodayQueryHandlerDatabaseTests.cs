@@ -29,7 +29,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_return_list_of_hearing_for_today_by_venue()
         {
             _seededHearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.Date);
-            var query = new GetHearingsForTodayQuery(new string[] { _seededHearing.HearingVenueName });
+            var query = new GetHearingsForTodayQuery(new string[] { _seededHearing.HearingVenue.Name });
             var venues = await _handler.Handle(query);
             venues.Should().Contain(x=> x.Id == _seededHearing.Id);
         }

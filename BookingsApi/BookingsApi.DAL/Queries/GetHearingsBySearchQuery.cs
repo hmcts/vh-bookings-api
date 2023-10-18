@@ -29,6 +29,7 @@
                 .Include(x=> x.Participants).ThenInclude(x=> x.HearingRole).ThenInclude(x=> x.UserRole)
                 .Include(x=> x.HearingCases).ThenInclude(x=> x.Case)
                 .Include(x => x.CaseType)
+                .Include(x => x.HearingVenue)
                 .Where(x => x.AudioRecordingRequired && x.Status == BookingStatus.Created);
 
             if (!string.IsNullOrWhiteSpace(query.CaseNumber))

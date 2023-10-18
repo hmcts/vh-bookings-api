@@ -35,7 +35,7 @@ namespace BookingsApi.Mappings.V1
                 {
                     Id = hearing.Id,
                     ScheduledDateTime = hearing.ScheduledDateTime,
-                    HearingVenueName = hearing.HearingVenueName,
+                    HearingVenueName = hearing.HearingVenue.Name,
                     HearingRoomName = hearing.HearingRoomName,
                     CourtroomAccount = courtroomAccount,
                     CourtroomAccountName = courtroomAccountName,

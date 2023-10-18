@@ -24,6 +24,8 @@ namespace BookingsApi.DAL.Queries
             
             if(query.ExcludeExpiredVenue)
                 venues = venues.Where(venue => venue.ExpirationDate == null || venue.ExpirationDate.Value.Date > DateTime.Today);
+
+            venues = venues.OrderBy(x => x.Name);
             
             return await venues.ToListAsync();
         }
