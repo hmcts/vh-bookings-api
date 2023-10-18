@@ -51,7 +51,7 @@ namespace BookingsApi.Domain
             ScheduledDuration = scheduledDuration;
             CaseTypeId = caseType.Id;
             HearingTypeId = hearingType?.Id;
-            HearingVenueId = hearingVenue?.Id;
+            HearingVenueId = hearingVenue.Id;
 
             Status = BookingStatus.Booked;
             HearingRoomName = hearingRoomName;
