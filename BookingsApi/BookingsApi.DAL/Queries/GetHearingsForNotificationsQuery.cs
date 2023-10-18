@@ -22,7 +22,7 @@ namespace BookingsApi.DAL.Queries
 
         public async Task<List<HearingNotificationDto>> Handle(GetHearingsForNotificationsQuery query)
         {
-            IQueryable<VideoHearing> videoHearing = VideoHearings.Get(_context);
+            var videoHearing = VideoHearings.Get(_context);
 
             var startDate = DateTime.Today.AddDays(2);  // 2 days is 48 hrs
             var endDate = DateTime.Today.AddDays(3);    // 3 days is 72 hrs.
