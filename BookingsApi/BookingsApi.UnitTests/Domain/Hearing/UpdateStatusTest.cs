@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
@@ -37,7 +38,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newStatus = BookingStatus.Booked;
             Action action = () => hearing.UpdateStatus(newStatus, "testuser", null);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}")
+                .Exists(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}")
                 .Should().BeTrue();
             hearing.Status.Should().Be(BookingStatus.Booked);
             hearing.UpdatedDate.Should().Be(updatedDate);
@@ -53,7 +54,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var newStatus = BookingStatus.Booked;
             Action action = () => hearing.UpdateStatus(newStatus, "testuser", null);
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Any(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}")
+                .Exists(x => x.Message == $"Cannot change the booking status from {hearing.Status} to {newStatus}")
                 .Should().BeTrue();
             hearing.Status.Should().Be(BookingStatus.Cancelled);
             hearing.UpdatedDate.Should().Be(updatedDate);
@@ -124,7 +125,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_update_hearing_status_when_judge_added_or_removed_BookedHearing(BookingStatus currentStatus, BookingStatus expectedStatus)
         {
             var hearing = new VideoHearingBuilder().Build();
-            var judge = hearing.Participants.First(e => e.HearingRole.UserRole.IsJudge);
+            var judge = hearing.Participants.First(e => e is Judge);
             if(currentStatus == BookingStatus.Booked)
                 hearing.Participants.Remove(judge);
             else
@@ -138,7 +139,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         public void Should_update_hearing_status_when_judge_added_or_removed_ConfirmedHearing(BookingStatus currentStatus, BookingStatus expectedStatus)
         {
             var hearing = new VideoHearingBuilder().Build();
-            var judge = hearing.Participants.First(e => e.HearingRole.UserRole.IsJudge);
+            var judge = hearing.Participants.First(e => e is Judge);
             if (currentStatus == BookingStatus.Created)
             {
                 hearing.UpdateStatus(BookingStatus.Created, "testuser", "");

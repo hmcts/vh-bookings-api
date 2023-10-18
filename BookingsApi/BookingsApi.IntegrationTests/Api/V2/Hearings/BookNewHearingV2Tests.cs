@@ -171,7 +171,7 @@ public class BookNewHearingV2Tests : ApiTest
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule, personalCode).Build();
-        request.ServiceId = "vhG1"; // intentionally incorrect case
+        request.ServiceId = "ZZY1"; // intentionally incorrect case
         request.HearingVenueCode = "231596";
         return request;
     }
