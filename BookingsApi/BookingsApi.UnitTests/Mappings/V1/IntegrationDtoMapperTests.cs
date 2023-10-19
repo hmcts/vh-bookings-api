@@ -24,7 +24,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.ScheduledDuration.Should().Be(hearing.ScheduledDuration);
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
-            result.ServiceId.Should().Be(hearing.CaseType.ServiceId);
+            result.CaseTypeServiceId.Should().Be(hearing.CaseType.ServiceId);
         }
         
         [Test]
