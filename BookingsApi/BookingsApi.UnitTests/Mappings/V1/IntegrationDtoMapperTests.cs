@@ -124,6 +124,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 Assert.Fail("Not enough individuals in test hearing to link participants");
             }
             individuals[0].AddLink(individuals[1].Id, LinkedParticipantType.Interpreter);
+            hearing.CaseType.ServiceId = "ZZY1";
 
             return hearing;
         }
