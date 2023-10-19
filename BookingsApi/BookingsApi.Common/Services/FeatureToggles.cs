@@ -23,7 +23,6 @@ namespace BookingsApi.Common.Services
             var config = LaunchDarkly.Sdk.Server.Configuration.Builder(sdkKey)
                 .Logging(Components.Logging(Logs.ToWriter(Console.Out)).Level(LogLevel.Warn)).Build();
             _context = Context.Builder(LdUser).Name(environmentName).Build();
-            Console.WriteLine($"Feature toggles initialized for user {LdUser} in environment {environmentName}");
             _ldClient = new LdClient(config);
         }
 
