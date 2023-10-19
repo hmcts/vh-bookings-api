@@ -8,7 +8,7 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static HearingDto MapToDto(Hearing hearing)
         {
-            var @case = hearing.GetCases().First();
+            var @case = hearing.GetCases()[0];
             return new HearingDto
             {
                 HearingId = hearing.Id,
