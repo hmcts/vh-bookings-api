@@ -71,7 +71,9 @@ public class GetHearingsForNotificationTest: ApiTest
         var hearingsForNotification = await ApiClientResponse.GetResponses<List<HearingNotificationResponse>>(result.Content);
         hearingsForNotification.Count.Should().Be(2);
         hearingsForNotification[1].Hearing.GroupId.Should().Be(hearing3.Id);
+        hearingsForNotification[1].TotalDays.Should().Be(3);
         hearingsForNotification[0].Hearing.GroupId.Should().NotHaveValue();
+        hearingsForNotification[0].TotalDays.Should().Be(1);
     }
     
 }
