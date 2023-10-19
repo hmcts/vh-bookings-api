@@ -20,7 +20,8 @@ namespace BookingsApi.Infrastructure.Services
                 CaseName= @case.Name,
                 HearingVenueName = hearing.HearingVenue.Name,
                 RecordAudio = hearing.AudioRecordingRequired,
-                HearingType = hearing.HearingType?.Name
+                HearingType = hearing.HearingType?.Name,
+                ServiceId = hearing.CaseType.ServiceId
             };
         }
         

@@ -23,7 +23,10 @@ namespace Testing.Common.Builders.Domain
             var defaultDate = DateTime.Today.AddDays(1).AddHours(11).AddMinutes(45);
             var refDataBuilder = new RefDataBuilder();
             var venue = refDataBuilder.HearingVenues.First( x=> x.Name == _hearingVenueName);
-            var caseType = new CaseType(1, _caseTypeName);
+            var caseType = new CaseType(1, _caseTypeName)
+            {
+                ServiceId = "ZZY1"
+            };
             var hearingType = Builder<HearingType>.CreateNew().WithFactory(() => new HearingType(_hearingTypeName)).Build();
             var duration = 80;
             var hearingRoomName = "Roome03";
