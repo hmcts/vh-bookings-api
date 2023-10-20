@@ -1,6 +1,6 @@
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Dtos;
+using BookingsApi.Domain.Constants;
 
 namespace BookingsApi.Infrastructure.Services
 {
@@ -21,7 +21,7 @@ namespace BookingsApi.Infrastructure.Services
                 HearingVenueName = hearing.HearingVenue.Name,
                 RecordAudio = hearing.AudioRecordingRequired,
                 HearingType = hearing.HearingType?.Name,
-                CaseTypeServiceId = hearing.CaseType.ServiceId
+                CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId
             };
         }
         

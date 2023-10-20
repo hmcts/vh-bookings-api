@@ -3,6 +3,7 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Infrastructure.Services;
+using BookingsApi.Domain.Constants;
 
 namespace BookingsApi.UnitTests.Mappings.V1
 {
@@ -14,7 +15,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var hearing = GetHearing();
             var result = HearingDtoMapper.MapToDto(hearing);
 
-            var @case = hearing.GetCases().First();
+            var @case = hearing.GetCases()[0];
             result.CaseName.Should().Be(@case.Name);
             result.CaseNumber.Should().Be(@case.Number);
             result.CaseType.Should().Be(hearing.CaseType.Name);
@@ -25,6 +26,26 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
             result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
             result.CaseTypeServiceId.Should().Be(hearing.CaseType.ServiceId);
+        }
+        
+        [Test]
+        public void should_map_hearing_using_default_case_type_service_id_when_case_type_service_id_is_null()
+        {
+            var hearing = GetHearing();
+            hearing.CaseType.ServiceId = null;
+            var result = HearingDtoMapper.MapToDto(hearing);
+
+            var @case = hearing.GetCases()[0];
+            result.CaseName.Should().Be(@case.Name);
+            result.CaseNumber.Should().Be(@case.Number);
+            result.CaseType.Should().Be(hearing.CaseType.Name);
+            result.HearingId.Should().Be(hearing.Id);
+            result.GroupId.Should().Be(hearing.SourceId.GetValueOrDefault());
+            result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
+            result.ScheduledDuration.Should().Be(hearing.ScheduledDuration);
+            result.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+            result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
+            result.CaseTypeServiceId.Should().Be(RefData.DefaultCaseTypeServiceId);
         }
         
         [Test]
