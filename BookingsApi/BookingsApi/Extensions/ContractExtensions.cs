@@ -20,6 +20,9 @@ public static class ContractExtensions
     /// <param name="obj"></param>
     public static void TrimAllStringsRecursively(this object obj)
     {
+        if(obj == null)
+            return;
+        
         // if obj is a list
         if (obj is IEnumerable<object> list)
         {
