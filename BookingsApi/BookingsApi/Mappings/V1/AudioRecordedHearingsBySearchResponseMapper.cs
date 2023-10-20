@@ -43,6 +43,7 @@ namespace BookingsApi.Mappings.V1
                     CaseNumber = @case.Number,
                     GroupId = hearing.SourceId
                 };
+                hearingByCaseNumber.TrimAllStringsRecursively();
                 response.Add(hearingByCaseNumber);
             }
 

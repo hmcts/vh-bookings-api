@@ -6,7 +6,6 @@ public static class ContractExtensions
 {
     public static void SanitizeRequest(this BookNewHearingRequest request)
     {
-        // trim all strings
         TrimAllStringsRecursively(request);
     }
     
@@ -19,7 +18,7 @@ public static class ContractExtensions
     /// Trim all strings in an object recursively
     /// </summary>
     /// <param name="obj"></param>
-    private static void TrimAllStringsRecursively(object obj)
+    public static void TrimAllStringsRecursively(this object obj)
     {
         // if obj is a list
         if (obj is IEnumerable<object> list)

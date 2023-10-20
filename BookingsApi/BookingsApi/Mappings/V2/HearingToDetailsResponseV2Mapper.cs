@@ -55,7 +55,8 @@ namespace BookingsApi.Mappings.V2
                 Endpoints = endpoints,
                 JudiciaryParticipants = judiciaryParticipants
             };
-
+            
+            response.TrimAllStringsRecursively();
             return response;
         }
     }
