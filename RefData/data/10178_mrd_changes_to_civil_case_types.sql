@@ -22,8 +22,6 @@ EXEC #CREATE_CASE_TYPES_V10178 57, 'Insolvency', 'AAA2';
 EXEC #CREATE_CASE_TYPES_V10178 58, 'Mortgage and Landlord Possession Claims', 'AAA3';
 EXEC #CREATE_CASE_TYPES_V10178 59, 'Non-money Claims', 'AAA4';
 EXEC #CREATE_CASE_TYPES_V10178 60, 'Return of Goods Claims', 'AAA5';
-EXEC #CREATE_CASE_TYPES_V10178 61, 'Specified Money Claims', 'AAA6';
-EXEC #CREATE_CASE_TYPES_V10178 62, 'Damages', 'AAA7';
 UPDATE CaseType SET Name = 'Specified Money Claims' WHERE Name = 'Civil Money Claims';
 
 SET IDENTITY_INSERT CaseType OFF
