@@ -20,14 +20,14 @@ UPDATE CaseType SET Name = 'Family Public Law', JurisdictionId = @JurisdictionId
 UPDATE CaseType SET Name = 'Family Private Law', JurisdictionId = @JurisdictionId, ServiceId = 'ABA5' WHERE Name = 'Private Law'
 
 SET IDENTITY_INSERT CaseType ON
-EXEC #CREATE_CASE_TYPES_V10181 63, 'Probate', 'ABA6', @JurisdictionId;
-EXEC #CREATE_CASE_TYPES_V10181 64, 'Court of Protections', 'ABA7', @JurisdictionId;
-EXEC #CREATE_CASE_TYPES_V10181 65, 'REMO', 'ABA8', @JurisdictionId;
-EXEC #CREATE_CASE_TYPES_V10181 66, 'Maintenance Enforcement', 'ABA9', @JurisdictionId;
+EXEC #CREATE_CASE_TYPES_V10181 61, 'Probate', 'ABA6', @JurisdictionId;
+EXEC #CREATE_CASE_TYPES_V10181 62, 'Court of Protections', 'ABA7', @JurisdictionId;
+EXEC #CREATE_CASE_TYPES_V10181 63, 'REMO', 'ABA8', @JurisdictionId;
+EXEC #CREATE_CASE_TYPES_V10181 64, 'Maintenance Enforcement', 'ABA9', @JurisdictionId;
 SET IDENTITY_INSERT CaseType OFF
             
 SELECT * FROM CaseType WHERE ServiceId = 'ABA3' OR ServiceId <= 'ABA5'
-SELECT * FROM CaseType WHERE ID >= 63 AND ID <= 66
+SELECT * FROM CaseType WHERE ID >= 61 AND ID <= 64
 
 COMMIT
 SET XACT_ABORT OFF
