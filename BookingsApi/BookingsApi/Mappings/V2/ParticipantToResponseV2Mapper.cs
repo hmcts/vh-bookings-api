@@ -37,6 +37,7 @@ namespace BookingsApi.Mappings.V2
                     break;
             }
 
+            participantResponse.TrimAllStringsRecursively();
             return participantResponse;
         }
     }

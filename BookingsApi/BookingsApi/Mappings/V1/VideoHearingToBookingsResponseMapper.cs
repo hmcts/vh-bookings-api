@@ -27,7 +27,6 @@ namespace BookingsApi.Mappings.V1
             if (@case == null) throw new ArgumentException("Hearing is missing case");
             
             if (videoHearing.CaseType == null) throw new ArgumentException("Hearing is missing case type");
-            if (videoHearing.HearingType == null) throw new ArgumentException("Hearing is missing hearing type");
             
             var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
             var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
@@ -41,7 +40,7 @@ namespace BookingsApi.Mappings.V1
                 HearingName = @case.Name,
                 ScheduledDuration = videoHearing.ScheduledDuration,
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
-                HearingTypeName = videoHearing.HearingType.Name,
+                HearingTypeName = videoHearing.HearingType?.Name,
                 CaseTypeName = videoHearing.CaseType.Name,
                 CourtAddress = videoHearing.HearingVenue.Name,
                 CourtRoom = videoHearing.HearingRoomName,
