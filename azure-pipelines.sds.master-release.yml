@@ -56,8 +56,8 @@ stages:
         variables:
           - template: variables/${{ lower(env) }}.yaml
           - template: variables/shared.yaml
-        parameters:
-          env: dev
+            parameters:
+              env: dev
         displayName: Run Entity Framework Dev
         pool:
           vmImage: "windows-latest" # MUST BE RUN ON WINDOWS
