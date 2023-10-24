@@ -54,7 +54,7 @@ stages:
       # Dev
       - job: Run_Entity_Framework_Dev
         variables:
-          - template: variables/${{ lower(env) }}.yaml
+          - template: variables/dev.yaml
           - template: variables/shared.yaml
             parameters:
               env: dev
