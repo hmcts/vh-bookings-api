@@ -362,7 +362,7 @@ namespace BookingsApi.Controllers.V1
             if (!validationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var orderedDates = request.Dates.OrderBy(x => x).ToList();
