@@ -31,7 +31,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
 
             hearing[0].ScheduledDateTime.Should().Be(seededHearing1.ScheduledDateTime);
             hearing[0].HearingRoomName.Should().Be(seededHearing1.HearingRoomName);
-            hearing[0].HearingVenueName.Should().Be(seededHearing1.HearingVenueName);
+            hearing[0].HearingVenue.Name.Should().Be(seededHearing1.HearingVenue.Name);
         }
         
         [Test]
@@ -53,7 +53,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var hearing = hearings.Single(x => x.Id == seededHearing1.Id);
             hearing.ScheduledDateTime.Should().Be(seededHearing1.ScheduledDateTime);
             hearing.HearingRoomName.Should().Be(seededHearing1.HearingRoomName);
-            hearing.HearingVenueName.Should().Be(seededHearing1.HearingVenueName);
+            hearing.HearingVenue.Name.Should().Be(seededHearing1.HearingVenue.Name);
         }
         
         [Test]
@@ -75,7 +75,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var hearing = hearings.Single(x => x.Id == seededHearing1.Id);
             hearing.ScheduledDateTime.Should().Be(seededHearing1.ScheduledDateTime);
             hearing.HearingRoomName.Should().Be(seededHearing1.HearingRoomName);
-            hearing.HearingVenueName.Should().Be(seededHearing1.HearingVenueName);
+            hearing.HearingVenue.Name.Should().Be(seededHearing1.HearingVenue.Name);
         }
         
         [Test]
@@ -95,7 +95,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var hearing = hearings.Single(x => x.Id == seededHearing1.Id);
             hearing.ScheduledDateTime.Should().Be(seededHearing1.ScheduledDateTime);
             hearing.HearingRoomName.Should().Be(seededHearing1.HearingRoomName);
-            hearing.HearingVenueName.Should().Be(seededHearing1.HearingVenueName);
+            hearing.HearingVenue.Name.Should().Be(seededHearing1.HearingVenue.Name);
         }
         
         [Test]

@@ -162,9 +162,8 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var response = await Controller.AllocateHearingManually(request);
 
             // Assert
-            var objectResult = (BadRequestObjectResult)response;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Error", "Error Description");
+            var objectResult = (ObjectResult)response;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Error", "Error Description");
             ServiceBus.Count.Should().Be(0);
         }
         

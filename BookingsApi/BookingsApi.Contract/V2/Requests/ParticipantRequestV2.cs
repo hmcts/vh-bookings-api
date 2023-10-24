@@ -3,7 +3,7 @@ using BookingsApi.Contract.Interfaces.Requests;
 
 namespace BookingsApi.Contract.V2.Requests
 {
-    public class ParticipantRequestV2 : IRepresentativeInfoRequest
+    public class ParticipantRequestV2 : IParticipantRequest
     {
         /// <summary>
         ///     Participant Title.
@@ -36,11 +36,6 @@ namespace BookingsApi.Contract.V2.Requests
         public string TelephoneNumber { get; set; }
 
         /// <summary>
-        ///     Participant Username
-        /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
         ///     Participant Display Name
         /// </summary>
         ///
@@ -49,14 +44,9 @@ namespace BookingsApi.Contract.V2.Requests
         public string DisplayName { get; set; }
 
         /// <summary>
-        ///     The name of the participant's case role (optional)
+        ///     The code of the participant's hearing role
         /// </summary>
-        public string CaseRoleName { get; set; }
-
-        /// <summary>
-        ///     The name of the participant's hearing role
-        /// </summary>
-        public string HearingRoleName { get; set; }
+        public string HearingRoleCode { get; set; }
 
         /// <summary>
         ///     The representee of a representative

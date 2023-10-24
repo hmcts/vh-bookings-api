@@ -182,10 +182,14 @@ namespace BookingsApi.DAL.Migrations
                     b.Property<string>("HearingRoomName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HearingTypeId")
+                    b.Property<int?>("HearingTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HearingVenueId")
                         .HasColumnType("int");
 
                     b.Property<string>("HearingVenueName")
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("OtherInformation")
@@ -221,7 +225,7 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasIndex("HearingTypeId");
 
-                    b.HasIndex("HearingVenueName");
+                    b.HasIndex("HearingVenueId");
 
                     b.ToTable("Hearing", (string)null);
 
@@ -260,17 +264,14 @@ namespace BookingsApi.DAL.Migrations
 
             modelBuilder.Entity("BookingsApi.Domain.HearingVenue", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsScottish")
                         .ValueGeneratedOnAdd()
@@ -282,13 +283,20 @@ namespace BookingsApi.DAL.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("VenueCode")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Name");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[Name] IS NOT NULL");
 
                     b.HasIndex("VenueCode")
                         .IsUnique()
@@ -1106,13 +1114,11 @@ namespace BookingsApi.DAL.Migrations
 
                     b.HasOne("BookingsApi.Domain.RefData.HearingType", "HearingType")
                         .WithMany()
-                        .HasForeignKey("HearingTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HearingTypeId");
 
                     b.HasOne("BookingsApi.Domain.HearingVenue", "HearingVenue")
                         .WithMany()
-                        .HasForeignKey("HearingVenueName");
+                        .HasForeignKey("HearingVenueId");
 
                     b.Navigation("CaseType");
 

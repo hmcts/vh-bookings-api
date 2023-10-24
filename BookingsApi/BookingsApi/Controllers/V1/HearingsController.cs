@@ -47,7 +47,6 @@ namespace BookingsApi.Controllers.V1
         [HttpGet("{hearingId}")]
         [OpenApiOperation("GetHearingDetailsById")]
         [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
@@ -413,14 +412,6 @@ namespace BookingsApi.Controllers.V1
             
             var result = new UpdateHearingRequestValidation().Validate(request);
 
-            if (videoHearing.ScheduledDateTime != request.ScheduledDateTime &&
-                request.ScheduledDateTime < DateTime.UtcNow) // ignore if the scheduled date time has not changed
-            {
-                ModelState.AddModelError(nameof(request.ScheduledDateTime),
-                    UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage);
-
-            }
-
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
@@ -662,8 +653,6 @@ namespace BookingsApi.Controllers.V1
             return Ok(response);
         }
 
-        
-
         private async Task<VideoHearing> GetHearingAsync(Guid hearingId)
         {
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -747,7 +736,6 @@ namespace BookingsApi.Controllers.V1
 
             return Ok(videoHearings.Select(HearingToDetailsResponseMapper.Map).ToList());
         }
-        
         
         /// <summary>
         /// Return hearing details for todays hearings by venue

@@ -52,6 +52,6 @@ public class CanHearingBeUpdatedTests
         
         //Act/Assert
         Assert.Throws<DomainRuleException>(() => hearing.ValidateChangeAllowed())!.ValidationFailures.Should()
-            .Contain(x => x.Message == DomainRuleErrorMessages.CannotEditAHearingCloseToStartTime);
+            .Contain(x => x.Message == DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
     }
 }

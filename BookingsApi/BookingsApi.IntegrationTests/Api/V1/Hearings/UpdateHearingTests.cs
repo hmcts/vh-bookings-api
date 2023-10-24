@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
@@ -77,6 +78,25 @@ public class UpdateHearingTests : ApiTest
     }
 
     [Test]
+    public async Task should_return_bad_request_and_validation_failure_when_editing_a_created_hearing_close_to_start_time()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options => options.ScheduledDate = DateTime.UtcNow.AddMinutes(5), BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var request = BuildRequest();
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpoints.UpdateHearingDetails(hearingId), RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors["Hearing"].Should().Contain(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
+    }
+
+    [Test]
     public async Task should_update_hearing_and_publish_when_hearing_status_is_created()
     {
         // arrange
@@ -104,7 +124,7 @@ public class UpdateHearingTests : ApiTest
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
         
-        hearingFromDb.HearingVenueName.Should().Be("Manchester County and Family Court");
+        hearingFromDb.HearingVenue.Name.Should().Be("Manchester County and Family Court");
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
         hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
         hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);

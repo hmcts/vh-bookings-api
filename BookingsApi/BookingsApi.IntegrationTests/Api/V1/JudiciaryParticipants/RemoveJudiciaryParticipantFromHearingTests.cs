@@ -54,10 +54,9 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
     public async Task should_return_bad_request_when_removing_only_host()
     {
         // Arrange
-        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
-            options.AddJudiciaryJudge = true;
-            options.AddJudge = false;
+            options.AddJudge = true;
             options.AddStaffMember = false;
         });
         var hearingId = seededHearing.Id;
@@ -81,10 +80,9 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
     public async Task should_remove_judiciary_participant()
     {
         // Arrange
-        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
-            options.AddJudiciaryJudge = true;
-            options.AddJudge = false;
+            options.AddJudge = true;
             options.AddStaffMember = true;
         }, status:BookingStatus.Created);
         var hearingId = seededHearing.Id;
@@ -107,12 +105,17 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
 
 
         hearingFromDb.GetJudiciaryParticipants()
-            .Any(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode).Should()
+            .Any(p => p.JudiciaryPerson.PersonalCode == judiciaryParticipant.JudiciaryPerson.PersonalCode)
+            .Should()
             .BeFalse();
-        var serviceBusStub =
-            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
-        message.IntegrationEvent.Should()
+        
+        var serviceBusStub = Application.Services
+            .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!
+            .ReadMessageFromQueue();
+        
+        message.IntegrationEvent
+            .Should()
             .BeEquivalentTo(new ParticipantRemovedIntegrationEvent(hearingId, judiciaryParticipant.Id));
     }
 }

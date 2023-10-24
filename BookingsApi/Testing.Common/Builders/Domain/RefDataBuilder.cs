@@ -20,9 +20,9 @@ namespace Testing.Common.Builders.Domain
         {
             HearingVenues = new List<HearingVenue>()
             {
-                new HearingVenue(1, "Birmingham Civil and Family Justice Centre"),
-                new HearingVenue(2, "Manchester Civil and Family Justice Centre"),
-                new HearingVenue(3, "Taylor House Tribunal Hearing Centre"),
+                new HearingVenue(1, "Birmingham Civil and Family Justice Centre", false, true, "1"),
+                new HearingVenue(2, "Manchester Civil and Family Justice Centre", false, true, "2"),
+                new HearingVenue(3, "Taylor House Tribunal Hearing Centre", false, true, "3"),
             };
         }
         

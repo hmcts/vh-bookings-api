@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using BookingsApi.Common.Services;
 using BookingsApi.DAL;
 using BookingsApi.DAL.Services;
@@ -163,7 +164,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 new OptionsWrapper<AllocateHearingConfiguration>(configuration),
                 _logger.Object);
             var hearing1 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc), duration: 60);
-            var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime);
+            var hearingStartTimeTimespan = TimeSpan.Parse(hearingStartTime, new CultureInfo("en-GB"));
             var hearing2 = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, hearingStartTimeTimespan.Hours, hearingStartTimeTimespan.Minutes, 0, DateTimeKind.Utc));
             
             var cso = SeedCso("user1@email.com", "User", "1");
@@ -469,8 +470,8 @@ namespace BookingsApi.UnitTests.DAL.Services
                     justiceUser.VhoWorkHours.Add(new VhoWorkHours
                     {
                         DayOfWeekId = i, 
-                        StartTime = TimeSpan.Parse(workHourStartTime), 
-                        EndTime = TimeSpan.Parse(workHourEndTime)
+                        StartTime = TimeSpan.Parse(workHourStartTime, new CultureInfo("en-GB")), 
+                        EndTime = TimeSpan.Parse(workHourEndTime, new CultureInfo("en-GB"))
                     });
                 }
             }
@@ -507,9 +508,9 @@ namespace BookingsApi.UnitTests.DAL.Services
                 justiceUser.VhoNonAvailability.Add(new VhoNonAvailability
                 {
                     StartTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 0, 0, 0, DateTimeKind.Utc)
-                        .Add(TimeSpan.Parse(nonAvailabilityStartTime)),
+                        .Add(TimeSpan.Parse(nonAvailabilityStartTime, new CultureInfo("en-GB"))),
                     EndTime = new DateTime(hearing.ScheduledDateTime.Year, hearing.ScheduledDateTime.Month, hearing.ScheduledDateTime.Day, 0, 0, 0, DateTimeKind.Utc)
-                        .Add(TimeSpan.Parse(nonAvailabilityEndTime))
+                        .Add(TimeSpan.Parse(nonAvailabilityEndTime, new CultureInfo("en-GB")))
                 });
             }
             
@@ -581,7 +582,7 @@ namespace BookingsApi.UnitTests.DAL.Services
             var hearing = CreateHearing(new DateTime(DateTime.Today.Year + 1, 3, 1, 15, 0, 0, DateTimeKind.Utc));
 
             var justiceUsers = SeedJusticeUsers();
-            var availableCso = justiceUsers.First();
+            var availableCso = justiceUsers[0];
             for (var i = 1; i <= 7; i++)
             {
                 availableCso.VhoWorkHours.Add(new VhoWorkHours
@@ -627,7 +628,7 @@ namespace BookingsApi.UnitTests.DAL.Services
                 });
             }
 
-            var availableCso = justiceUsers.First();
+            var availableCso = justiceUsers[0];
             availableCso.VhoNonAvailability.Clear();
             
             await _context.SaveChangesAsync();
@@ -1125,8 +1126,8 @@ namespace BookingsApi.UnitTests.DAL.Services
             foundHearing.AllocatedTo.Id.Should().Be(cso.Id);
             foreach (var workHour in cso.VhoWorkHours)
             {
-                workHour.StartTime = TimeSpan.Parse(workHoursStartTime);
-                workHour.EndTime = TimeSpan.Parse(workHoursEndTime);
+                workHour.StartTime = TimeSpan.Parse(workHoursStartTime, new CultureInfo("en-GB"));
+                workHour.EndTime = TimeSpan.Parse(workHoursEndTime, new CultureInfo("en-GB"));
             }
             await _context.SaveChangesAsync();
 

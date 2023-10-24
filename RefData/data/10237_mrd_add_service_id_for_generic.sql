@@ -1,0 +1,13 @@
+USE vhbookings
+GO
+SET XACT_ABORT ON
+GO
+
+BEGIN TRANSACTION
+
+UPDATE CaseType SET ServiceId = 'ZZY1' WHERE Name = 'Generic'
+
+SELECT * FROM CaseType WHERE Name = 'Generic'
+
+COMMIT
+SET XACT_ABORT OFF

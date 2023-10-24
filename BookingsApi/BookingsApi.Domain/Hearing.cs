@@ -12,7 +12,7 @@ namespace BookingsApi.Domain
 {
     public abstract class Hearing : AggregateRoot<Guid>
     {
-        private readonly ValidationFailures _validationFailures = new ValidationFailures();
+        private readonly ValidationFailures _validationFailures = new ();
         private readonly DateTime _currentUTC = DateTime.UtcNow;
         private bool _isFirstDayOfMultiDayHearing;
 
@@ -29,18 +29,29 @@ namespace BookingsApi.Domain
             JudiciaryParticipants = new List<JudiciaryParticipant>();
         }
 
-        protected Hearing(CaseType caseType, HearingType hearingType, DateTime scheduledDateTime,
-            int scheduledDuration, HearingVenue hearingVenue, string hearingRoomName,
-            string otherInformation, string createdBy, bool audioRecordingRequired, string cancelReason)
+        /// <summary>
+        /// Instantiate a hearing when the hearing type is known, typically used for V1
+        /// </summary>
+        protected Hearing(
+            CaseType caseType, 
+            HearingType hearingType,
+            DateTime scheduledDateTime,
+            int scheduledDuration, 
+            HearingVenue hearingVenue, 
+            string hearingRoomName,
+            string otherInformation, 
+            string createdBy, 
+            bool audioRecordingRequired, 
+            string cancelReason)
             : this()
         {
-            ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue, hearingType);
+            ValidateArguments(scheduledDateTime, scheduledDuration, hearingVenue);
 
             ScheduledDateTime = scheduledDateTime;
             ScheduledDuration = scheduledDuration;
             CaseTypeId = caseType.Id;
-            HearingTypeId = hearingType.Id;
-            HearingVenueName = hearingVenue.Name;
+            HearingTypeId = hearingType?.Id;
+            HearingVenueId = hearingVenue.Id;
 
             Status = BookingStatus.Booked;
             HearingRoomName = hearingRoomName;
@@ -50,12 +61,28 @@ namespace BookingsApi.Domain
             CancelReason = cancelReason;
         }
 
+        /// <summary>
+        /// Instantiate a hearing without a hearing type, typically used for V2
+        /// </summary>
+        protected Hearing(
+            CaseType caseType,
+            DateTime scheduledDateTime,
+            int scheduledDuration,
+            HearingVenue hearingVenue,
+            string hearingRoomName,
+            string otherInformation,
+            string createdBy,
+            bool audioRecordingRequired,
+            string cancelReason) : this(caseType, null, scheduledDateTime, scheduledDuration, hearingVenue,
+            hearingRoomName, otherInformation, createdBy, audioRecordingRequired, cancelReason)
+        {}
+
         public abstract HearingMediumType HearingMediumType { get; protected set; }
         public virtual HearingVenue HearingVenue { get; protected set; }
-        public virtual string HearingVenueName { get; set; }
+        public int? HearingVenueId { get; set; }
         public int CaseTypeId { get; set; }
         public virtual CaseType CaseType { get; set; }
-        public int HearingTypeId { get; set; }
+        public int? HearingTypeId { get; set; }
         public virtual HearingType HearingType { get; protected set; }
         protected virtual IList<Case> Cases { get; set; }
         public DateTime ScheduledDateTime { get; protected set; }
@@ -151,7 +178,7 @@ namespace BookingsApi.Domain
 
         public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
-            if (hearingRole.IsInterpreter() && IsHearingCloseToScheduledStartTime())
+            if (hearingRole.IsInterpreter() && IsHearingConfirmedAndCloseToStartTime())
             {
                 throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotAddInterpreterToHearingCloseToStartTime);
             }
@@ -167,6 +194,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -187,6 +215,7 @@ namespace BookingsApi.Domain
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -214,6 +243,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
@@ -231,6 +261,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
         
@@ -247,12 +278,13 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.Now;
+            
             return participant;
         }
 
         public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryParticipantPersonalCode),
@@ -282,6 +314,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
         
@@ -292,13 +325,14 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
+            
             return participant;
         }
 
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
             JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
             {
                 throw new DomainRuleException(nameof(personalCode), DomainRuleErrorMessages.JudiciaryParticipantNotFound);
@@ -319,6 +353,7 @@ namespace BookingsApi.Domain
             participant.UpdateHearingRoleCode(newHearingRoleCode);
             ValidateHostCount();
             UpdatedDate = DateTime.UtcNow;
+            
             
             return participant;
         }
@@ -346,7 +381,7 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipant(Participant participant, bool validateParticipantCount=true)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             if (!DoesParticipantExistByContactEmail(participant.Person.ContactEmail))
             {
                 throw new DomainRuleException("Participant", "Participant does not exist on the hearing");
@@ -366,7 +401,7 @@ namespace BookingsApi.Domain
 
         public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             var participant = GetParticipants().Single(x => x.Id == participantId);
             RemoveParticipant(participant, validateParticipantCount);
         }
@@ -398,7 +433,7 @@ namespace BookingsApi.Domain
 
         public void RemoveEndpoint(Endpoint endpoint)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
             endpoint.AssignDefenceAdvocate(null);
             Endpoints.Remove(endpoint);
             UpdatedDate = DateTime.UtcNow;
@@ -406,7 +441,7 @@ namespace BookingsApi.Domain
 
         public virtual void UpdateCase(Case @case)
         {
-            ValidateChangeAllowed();
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateACaseCloseToStartTime);
             //It has been assumed that only one case exists for a given hearing, for now.
             var existingCase = GetCases().FirstOrDefault();
             if (existingCase == null) return;
@@ -418,7 +453,6 @@ namespace BookingsApi.Domain
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
             List<Case> cases, bool audioRecordingRequired)
         {
-            ValidateChangeAllowed();
             ValidateScheduledDate(scheduledDateTime);
 
             if (scheduledDuration <= 0)
@@ -426,7 +460,7 @@ namespace BookingsApi.Domain
                 _validationFailures.AddFailure("ScheduledDuration", "ScheduledDuration is not a valid value");
             }
 
-            if (hearingVenue == null || hearingVenue.Id <= 0)
+            if (hearingVenue is not {Id: > 0})
             {
                 _validationFailures.AddFailure("Venue", "Venue must have a valid value");
             }
@@ -435,12 +469,19 @@ namespace BookingsApi.Domain
             {
                 throw new DomainRuleException(_validationFailures);
             }
-
-            if (hearingVenue != null)
+            
+            // all the properties are the same, so no need to update
+            if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
+                scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
+                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
             {
-                HearingVenue = hearingVenue;
-                HearingVenueName = hearingVenue.Name;
+                return;
             }
+
+            ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateHearingDetailsCloseToStartTime);
+            
+
+            HearingVenue = hearingVenue;
 
             if (cases.Any())
             {
@@ -575,8 +616,7 @@ namespace BookingsApi.Domain
             return Participants.Any(x => x is Judge) || judiciaryJudges.Any();
         }
 
-        private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue,
-            HearingType hearingType)
+        private void ValidateArguments(DateTime scheduledDateTime, int scheduledDuration, HearingVenue hearingVenue)
         {
             ValidateScheduledDate(scheduledDateTime);
 
@@ -588,10 +628,6 @@ namespace BookingsApi.Domain
             if (hearingVenue == null || hearingVenue.Id <= 0)
             {
                 _validationFailures.AddFailure("HearingVenue", "HearingVenue must have a valid value");
-            }
-            if (hearingType == null || hearingType.Id <= 0)
-            {
-                _validationFailures.AddFailure("HearingType", "HearingType must have a valid value");
             }
 
             if (_validationFailures.Any())
@@ -621,16 +657,16 @@ namespace BookingsApi.Domain
         /// </list>
         /// </summary>
         /// <exception cref="DomainRuleException">Offending validation rule</exception>
-        public void ValidateChangeAllowed()
+        public void ValidateChangeAllowed(string errorMessage = null)
         {
             if(Status == BookingStatus.Cancelled)
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
-            if (Status == BookingStatus.Created && IsHearingCloseToScheduledStartTime())
+            if (Status == BookingStatus.Created && IsHearingConfirmedAndCloseToStartTime())
             {
-                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditAHearingCloseToStartTime);
+                throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
         
@@ -675,12 +711,33 @@ namespace BookingsApi.Domain
 
         public ParticipantBase GetJudge()
         {
-            var judge = Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var judge = Participants.FirstOrDefault(p => p is Judge);
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
             return (ParticipantBase)judge ?? judiciaryJudge;
         }
-        
-        private bool IsHearingCloseToScheduledStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow;
+
+        public void UpdateBookingStatusJudgeRequirement()
+        {
+            if (GetJudge() == null)
+                Status = Status switch
+                {
+                    BookingStatus.Booked => BookingStatus.BookedWithoutJudge,
+                    BookingStatus.Created => BookingStatus.ConfirmedWithoutJudge,
+                    _ => Status
+                };
+            else
+                Status = Status switch
+                {
+                    BookingStatus.BookedWithoutJudge => BookingStatus.Booked,
+                    BookingStatus.ConfirmedWithoutJudge => BookingStatus.Created,
+                    _ => Status 
+                };
+        }
+
+        private bool IsHearingConfirmedAndCloseToStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow &&
+                                                                (Status == BookingStatus.Created ||
+                                                                 Status == BookingStatus.ConfirmedWithoutJudge);
+
     }
 }

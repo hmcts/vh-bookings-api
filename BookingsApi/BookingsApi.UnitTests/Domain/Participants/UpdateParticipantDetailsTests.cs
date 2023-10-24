@@ -121,6 +121,72 @@ namespace BookingsApi.UnitTests.Domain.Participants
 
             individualParticipant.Person.TelephoneNumber.Should().Be(telephoneNumber);
         }
+        
+        #region Second Overload
+        
+        [Test]
+        public void Should_update_participant_with_name_details()
+        {
+            // Arrange
+            var participant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var newFirstName = "First Name Edited";
+            var newLastName = "Last Name Edited";
+            var newMiddleNames = "Middle Names Edited";
+            
+            // Act
+            participant.UpdateParticipantDetails(newFirstName, newLastName, newMiddleNames);
+            
+            // Assert
+            participant.Person.FirstName.Should().Be(newFirstName);
+            participant.Person.LastName.Should().Be(newLastName);
+        }
 
+        [Test]
+        public void Should_not_update_middle_names_when_not_specified()
+        {
+            // Arrange
+            var participant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var newFirstName = "First Name Edited";
+            var newLastName = "Last Name Edited";
+            var oldMiddleNames = participant.Person.MiddleNames;
+            
+            // Act
+            participant.UpdateParticipantDetails(newFirstName, newLastName);
+            
+            // Assert
+            participant.Person.MiddleNames.Should().Be(oldMiddleNames);
+        }
+
+        [Test]
+        public void Should_throw_exception_when_first_name_is_invalid()
+        {
+            // Arrange
+            var participant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var newFirstName = "";
+            var newLastName = "Last Name Edited";
+            
+            // Act & Assert
+            Action action = () => participant.UpdateParticipantDetails(newFirstName, newLastName);
+            action.Should().Throw<DomainRuleException>()
+                .And.ValidationFailures.Should()
+                .Contain(x => x.Name == "FirstName");
+        }
+        
+        [Test]
+        public void Should_throw_exception_when_last_name_is_invalid()
+        {
+            // Arrange
+            var participant = new ParticipantBuilder().IndividualParticipantApplicant;
+            var newFirstName = "First Name Edited";
+            var newLastName = "";
+            
+            // Act & Assert
+            Action action = () => participant.UpdateParticipantDetails(newFirstName, newLastName);
+            action.Should().Throw<DomainRuleException>()
+                .And.ValidationFailures.Should()
+                .Contain(x => x.Name == "LastName");
+        }
+        
+        #endregion Second Overload
     }
 }

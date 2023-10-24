@@ -8,24 +8,23 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
     public static CreateVideoHearingCommand Map(
         BookNewHearingRequestV2 requestV2,
         CaseType caseType,
-        HearingType hearingType,
         HearingVenue venue,
         List<Case> cases,
         IRandomGenerator randomGenerator,
         string sipAddressStem,
         List<HearingRole> hearingRoles)
     {
-        var newParticipants = MapParticipants(requestV2, caseType, hearingRoles);
+        var newParticipants = MapParticipants(requestV2, hearingRoles);
         var newEndpoints = MapEndpoints(requestV2, randomGenerator, sipAddressStem);
         var linkedParticipants = MapLinkedParticipants(requestV2);
         var judiciaryParticipants = MapJudiciaryParticipants(requestV2);
 
         return new CreateVideoHearingCommand(
-            new CreateVideoHearingRequiredDto(caseType, hearingType, requestV2.ScheduledDateTime,
+            new CreateVideoHearingRequiredDto(caseType, requestV2.ScheduledDateTime,
                 requestV2.ScheduledDuration, venue, cases),
             new CreateVideoHearingOptionalDto(newParticipants, requestV2.HearingRoomName, requestV2.OtherInformation,
                 requestV2.CreatedBy, requestV2.AudioRecordingRequired, newEndpoints, null, linkedParticipants,
-                judiciaryParticipants, requestV2.IsMultiDayHearing, null)
+                judiciaryParticipants, requestV2.IsMultiDayHearing, null, HearingType:null)
         );
     }
 
@@ -34,10 +33,10 @@ public static class BookNewHearingRequestV2ToCreateVideoHearingCommandMapper
         return requestV2.JudiciaryParticipants.Select(JudiciaryParticipantRequestToNewJudiciaryParticipantMapper.Map).ToList();
     }
 
-    private static List<NewParticipant> MapParticipants(BookNewHearingRequestV2 requestV2, CaseType caseType, List<HearingRole> hearingRoles)
+    private static List<NewParticipant> MapParticipants(BookNewHearingRequestV2 requestV2, List<HearingRole> hearingRoles)
     {
         var newParticipants = requestV2.Participants.Select(
-            x => ParticipantRequestV2ToNewParticipantMapper.Map(x, caseType, hearingRoles)).ToList();
+            x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
         return newParticipants;
     }
 

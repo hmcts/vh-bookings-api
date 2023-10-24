@@ -19,9 +19,13 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         [Test]
         public async Task Should_return_list_of_hearing_venues()
         {
-            var venues = await _handler.Handle(new GetHearingVenuesQuery());
+            var sortedVenues = await _context.Venues.OrderBy(x => x.Name).ToListAsync();
+            
+            var venues = await _handler.Handle(new());
             venues.Should().NotBeEmpty();
             venues.Should().Contain(x => x.Name == "Manchester County and Family Court");
+            venues[0].Id.Should().Be(sortedVenues[0].Id);
+            venues[1].Id.Should().Be(sortedVenues[1].Id);
         }
         
         [Test]
@@ -46,7 +50,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             venues.Should().NotContain(v => _testVenues[1].Id == v.Id);
             venues.Should().NotContain(v => _testVenues[2].Id == v.Id);
             venues.Should().Contain(v => _testVenues[3].Id == v.Id);
-        }      
+        }
         
         [TearDown]
         public async Task VenueTearDown()

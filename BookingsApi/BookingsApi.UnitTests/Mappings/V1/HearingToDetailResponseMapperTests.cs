@@ -33,8 +33,16 @@ namespace BookingsApi.UnitTests.Mappings.V1
             const bool audioRecordingRequired = true;
             var cancelReason = "Online abandonment (incomplete registration)";
 
-            var hearing = new VideoHearing(caseType, hearingType, scheduledDateTime, duration, venue, hearingRoomName,
-                   otherInformation, createdBy, audioRecordingRequired, cancelReason);
+            var hearing = new VideoHearing(caseType,
+                hearingType,
+                scheduledDateTime,
+                duration, 
+                venue, 
+                hearingRoomName,
+                otherInformation,
+                createdBy, 
+                audioRecordingRequired, 
+                cancelReason);
            
             _videoHearing = Builder<VideoHearing>.CreateNew().WithFactory(() =>
                hearing).Build();

@@ -44,7 +44,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             persons[0].Title.Should().NotBeEmpty();
             var cases = hearing.GetCases();
             hearing.GetCases().Any(x => x.IsLeadCase).Should().BeTrue();
-            cases.Count.Should().Be(3);
+            cases.Count.Should().Be(1);
             cases[0].Name.Should().NotBeEmpty();
             hearing.HearingRoomName.Should().NotBeEmpty();
             hearing.OtherInformation.Should().NotBeEmpty();

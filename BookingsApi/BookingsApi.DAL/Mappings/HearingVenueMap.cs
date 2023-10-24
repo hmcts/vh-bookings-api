@@ -5,8 +5,10 @@ namespace BookingsApi.DAL.Mappings
         public void Configure(EntityTypeBuilder<HearingVenue> builder)
         {
             builder.ToTable(nameof(HearingVenue));
-            builder.Property(x => x.Id);
-            builder.HasKey(x => x.Name);
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
+            builder.Property(x => x.Name);
+            builder.HasIndex(x => x.Name).IsUnique();
             builder.HasIndex(x => x.VenueCode).IsUnique();
             builder.Property(x => x.IsScottish).HasDefaultValue(false);
             builder.Property(x => x.IsWorkAllocationEnabled).HasDefaultValue(true);

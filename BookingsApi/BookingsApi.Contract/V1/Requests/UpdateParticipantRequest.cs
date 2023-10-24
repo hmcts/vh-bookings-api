@@ -23,7 +23,7 @@ namespace BookingsApi.Contract.V1.Requests
         public string Username { get; set; }
     }
     
-    public class UpdateParticipantRequest : IRepresentativeInfoRequest
+    public class UpdateParticipantRequest : IUpdateParticipantRequest
     {
         /// <summary>
         ///     Participant Id.

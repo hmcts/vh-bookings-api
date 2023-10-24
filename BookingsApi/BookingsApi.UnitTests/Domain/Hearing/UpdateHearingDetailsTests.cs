@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
@@ -12,7 +13,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddCase("0875", "Test Case Add", false);
             var beforeUpdatedDate = hearing.UpdatedDate;
-            var newVenue = new RefDataBuilder().HearingVenues.Last();
+            var newVenue = new RefDataBuilder().HearingVenues[^1];
             var newDateTime = DateTime.Today.AddDays(10).AddHours(14);
             var newDuration = 150;
             var hearingRoomName = "Room03 Edit";
@@ -58,6 +59,22 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .And.Contain(x => x.Name == "Venue");
 
             hearing.UpdatedDate.Should().Be(beforeUpdatedDate);
+        }
+
+        [Test]
+        public void Should_skip_update_if_no_change_requested()
+        {
+            // arrange
+            var dateTime = DateTime.UtcNow.AddMinutes(25);
+            var hearing = new VideoHearingBuilder(dateTime).Build();
+            hearing.UpdateStatus(BookingStatus.Created, "test@test.com", null);
+            
+            // act
+           var action = () =>  hearing.UpdateHearingDetails(hearing.HearingVenue, hearing.ScheduledDateTime, hearing.ScheduledDuration,
+                hearing.HearingRoomName, hearing.OtherInformation, hearing.UpdatedBy, hearing.GetCases().ToList(),
+                hearing.AudioRecordingRequired);
+
+           action.Should().NotThrow<DomainRuleException>();
         }
     }
 }

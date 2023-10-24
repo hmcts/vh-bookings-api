@@ -21,7 +21,7 @@ public class GetAllocationsForHearingsByVenueTests : WorkAllocationsControllerTe
             .ReturnsAsync(new List<VideoHearing> { hearing });
 
         //ACT
-        var result = await Controller.GetAllocationsForHearingsByVenue(new [] {hearing.HearingVenueName}) as OkObjectResult;
+        var result = await Controller.GetAllocationsForHearingsByVenue(new [] {hearing.HearingVenue.Name}) as OkObjectResult;
 
         //ASSERT
         result.StatusCode.Should().NotBeNull().And.Be((int)HttpStatusCode.OK);

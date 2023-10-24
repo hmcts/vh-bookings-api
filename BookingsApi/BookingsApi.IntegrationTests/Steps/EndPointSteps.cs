@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Domain.Enumerations;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.JVEndPointEndpoints;
 
@@ -24,28 +23,39 @@ namespace BookingsApi.IntegrationTests.Steps
         [Given(@"I have a hearing with endpoints")]
         public async Task GivenIHaveAHearingWithEndpoints()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null, BookingStatus.Booked, 3);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(options =>
+            {
+                options.EndpointsToAdd = 3;
+            });
             PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing with endpoints for cloning")]
         public async Task GivenIHaveAHearingWithEndpointsForCloning()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null,  BookingStatus.Booked, 3, isMultiDayFirstHearing: true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(options =>
+            {
+                options.EndpointsToAdd = 3;
+                options.AddPanelMember = true;
+            }, isMultiDayFirstHearing:true);
             PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing with linked participants")]
         public async Task GivenIHaveAHearingWithLinkedParticipants()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null,  BookingStatus.Booked, 3, false, true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(options =>
+            {
+                options.EndpointsToAdd = 3;
+            }, withLinkedParticipants: true);
             PersistTestHearingData(seededHearing);
         }
 
         [Given(@"I have a hearing with linked participants for cloning")]
         public async Task GivenIHaveAHearingWithLinkedParticipantsForCloning()
         {
-            var seededHearing = await Context.TestDataManager.SeedVideoHearing(null,  BookingStatus.Booked, 3, false, true, isMultiDayFirstHearing: true);
+            var seededHearing = await Context.TestDataManager.SeedVideoHearing(
+                options => { options.EndpointsToAdd = 3; }, withLinkedParticipants: true, isMultiDayFirstHearing: true);
             PersistTestHearingData(seededHearing);
         }
 

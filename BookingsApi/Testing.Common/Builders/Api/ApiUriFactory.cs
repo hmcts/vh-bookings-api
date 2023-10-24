@@ -51,6 +51,12 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
+        public static class HearingParticipantsEndpoints
+        {
+            private const string ApiRoot = "hearings";
+            public static string UpdateHearingParticipants(Guid hearingId) => $"{ApiRoot}/{hearingId}/updateParticipants";
+        }
+        
         public static class HearingParticipantsEndpointsV2
         {
             private const string ApiRoot = "v2/hearings";
@@ -58,7 +64,7 @@ namespace Testing.Common.Builders.Api
             public static string UpdateHearingParticipants(Guid hearingId) => $"{ApiRoot}/{hearingId}/updateParticipants";
             public static string UpdateParticipantDetails(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
         }
-
+        
         public static class HearingRolesEndpoints
         {
             private const string ApiRoot = "hearingroles";
@@ -125,6 +131,7 @@ namespace Testing.Common.Builders.Api
                 $"{ApiRoot}/allocation/search?{QueryStringBuilder.ConvertToQueryString(query)}";
             
             public static string GetAllocationsForHearings => $"{ApiRoot}/get-allocation";
+            public static string AllocateHearingManually => $"{ApiRoot}/allocations";
 
             public static string AllocateHearingAutomatically(Guid hearingId) => $"{ApiRoot}/{hearingId}/allocations/automatic";
         }

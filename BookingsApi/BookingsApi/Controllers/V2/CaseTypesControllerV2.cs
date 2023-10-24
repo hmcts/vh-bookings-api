@@ -63,7 +63,12 @@ public class CaseTypesController : Controller
 
         var response = caseRole.HearingRoles
             .Where(hr => hr.Live)
-            .Select(x => new HearingRoleResponseV2 { Name = x.Name, UserRole = x.UserRole?.Name.ToString() })
+            .Select(x => new HearingRoleResponseV2
+            {
+                Name = x.Name, 
+                UserRole = x.UserRole?.Name.ToString(), 
+                Code = x.Code
+            })
             .ToList();
 
         return Ok(response);

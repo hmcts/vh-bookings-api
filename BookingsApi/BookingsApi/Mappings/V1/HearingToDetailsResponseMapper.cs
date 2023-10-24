@@ -29,7 +29,7 @@ namespace BookingsApi.Mappings.V1
                 ScheduledDateTime = videoHearing.ScheduledDateTime,
                 HearingTypeName = videoHearing.HearingType?.Name,
                 CaseTypeName = videoHearing.CaseType.Name,
-                HearingVenueName = videoHearing.HearingVenueName,
+                HearingVenueName = videoHearing.HearingVenue.Name,
                 Cases = cases,
                 Participants = participants,
                 HearingRoomName = videoHearing.HearingRoomName,
@@ -46,7 +46,7 @@ namespace BookingsApi.Mappings.V1
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints
             };
-
+            response.TrimAllStringsRecursively();
             return response;
         }
     }

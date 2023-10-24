@@ -40,20 +40,6 @@ namespace BookingsApi.UnitTests.Validation.V2
         }
         
         [Test]
-        public async Task Should_return_missing_hearing_type_code_error()
-        {
-            var request = BuildRequest();
-            request.HearingTypeCode = string.Empty;
-           
-            var result = await _validator.ValidateAsync(request);
-
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.HearingTypeCodeErrorMessage)
-                .Should().BeTrue();
-        }
-        
-        [Test]
         public async Task Should_return_hearing_schedule_date_time_in_past_error()
         {
             var request = BuildRequest();
@@ -168,7 +154,7 @@ namespace BookingsApi.UnitTests.Validation.V2
         {
             var date = DateTime.UtcNow.AddMinutes(5);
             var caseName = $"Auto Test {Guid.NewGuid():N}";
-            return new SimpleBookNewHearingRequestV2(caseName, date).Build();
+            return new SimpleBookNewHearingRequestV2(caseName, date, "RandomPersonCode").Build();
         }
     }
 }

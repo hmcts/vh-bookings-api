@@ -38,9 +38,6 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         {
             options.ScheduledDate = _testDate1;
         });
-       
-       
-
     }
     
     [Test]
@@ -49,19 +46,19 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         //ACT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(caseType: new[]{TestCaseType}));
         //ASSERT
-        hearings.All(x => x.CaseType.Name == TestCaseType).Should().BeTrue();
+        hearings.TrueForAll(x => x.CaseType.Name == TestCaseType).Should().BeTrue();
     }
     
     [Test]
     public async Task Should_get_hearing_details_by_case_number()
     {
         //ARRANGE
-        var hearing = _seededHearing1.HearingCases.First();
+        var hearing = _seededHearing1.HearingCases[0];
         //AAT
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(caseNumber:hearing.Case.Number));
         //ASSERT
-        hearings.Count.Should().Be(1);
-        hearings.First().HearingCases.First().Case.Number.Should().Be(hearing.Case.Number);
+        hearings.Count.Should().Be(3);
+        hearings[0].HearingCases[0].Case.Number.Should().Be(hearing.Case.Number);
     }
     
     [Test]
@@ -74,8 +71,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
         //ASSERT
         hearings.Count.Should().Be(1);
-        hearings.First().HearingCases.First().Case.Number.Should().Be(_seededHearing3.HearingCases.First().Case.Number);
-        hearings.First().AllocatedTo.Username.Should().Be(justiceUser.Username);
+        hearings[0].HearingCases[0].Case.Number.Should().Be(_seededHearing3.HearingCases[0].Case.Number);
+        hearings[0].AllocatedTo.Username.Should().Be(justiceUser.Username);
     }   
     
     [Test]
@@ -101,8 +98,8 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         //ARRANGE
         hearings.Count.Should().Be(1);
-        hearings.First().HearingCases.First().Case.Number.Should().Be(_seededHearing2.HearingCases.First().Case.Number);
-        hearings.First().ScheduledDateTime.Should().Be(_seededHearing2.ScheduledDateTime);
+        hearings[0].HearingCases[0].Case.Number.Should().Be(_seededHearing2.HearingCases[0].Case.Number);
+        hearings[0].ScheduledDateTime.Should().Be(_seededHearing2.ScheduledDateTime);
     }
     
     [Test]
@@ -116,9 +113,9 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         //ASSERT
         hearings.Should().Contain(e =>
-            e.HearingCases.First().Case.Number == _seededHearing1.HearingCases.First().Case.Number);
+            e.HearingCases[0].Case.Number == _seededHearing1.HearingCases[0].Case.Number);
         hearings.Should().Contain(e => 
-            e.HearingCases.First().Case.Number == _seededHearing3.HearingCases.First().Case.Number);
+            e.HearingCases[0].Case.Number == _seededHearing3.HearingCases[0].Case.Number);
 
         hearings.Should().NotContain(e => e.Id == _seededHearing2.Id);
     }
@@ -171,7 +168,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
                  new GetAllocationHearingsBySearchQuery(cso: new[] {justiceUser.Id}, includeWorkHours: true));
          //ASSERT
          hearings.Count.Should().Be(1);
-         var allocatedCso = hearings.First().AllocatedTo;
+         var allocatedCso = hearings[0].AllocatedTo;
 
          allocatedCso.Username.Should().Be(justiceUser.Username);
          allocatedCso.VhoWorkHours.Should().NotBeNullOrEmpty();
@@ -208,10 +205,10 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         //ASSERT
         hearings.Count.Should().Be(1);
-        hearings.First().HearingCases.First().Case.Number.Should().Be(_seededHearing1.HearingCases.First().Case.Number);
-        hearings.First().ScheduledDateTime.Should().Be(_seededHearing1.ScheduledDateTime);
-        hearings.First().CaseType.Name.Should().Be(_seededHearing1.CaseType.Name);
-        hearings.First().AllocatedTo.Username.Should().Be(justiceUser.Username);
+        hearings[0].HearingCases[0].Case.Number.Should().Be(_seededHearing1.HearingCases[0].Case.Number);
+        hearings[0].ScheduledDateTime.Should().Be(_seededHearing1.ScheduledDateTime);
+        hearings[0].CaseType.Name.Should().Be(_seededHearing1.CaseType.Name);
+        hearings[0].AllocatedTo.Username.Should().Be(justiceUser.Username);
     }
 
     [Test]
@@ -231,7 +228,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
 
         await _context.SaveChangesAsync();
         
-        justiceUser = _context.JusticeUsers.First(x => x.Id == justiceUser.Id);
+        justiceUser = _context.JusticeUsers.Include(ju => ju.VhoWorkHours).First(x => x.Id == justiceUser.Id);
         
         justiceUser.Delete();
         
@@ -256,9 +253,9 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         
         // Assert
         hearings.Count.Should().Be(1);
-        hearings.First().AllocatedTo.Id.Should().Be(justiceUser.Id);
-        var resultingWorkHours = hearings.First().Allocations.First().JusticeUser.VhoWorkHours;
-        hearings.First().Allocations.First().JusticeUser.VhoWorkHours.Count.Should().Be(nonDeletedWorkHours.Count);
+        hearings[0].AllocatedTo.Id.Should().Be(justiceUser.Id);
+        var resultingWorkHours = hearings[0].Allocations[0].JusticeUser.VhoWorkHours;
+        hearings[0].Allocations[0].JusticeUser.VhoWorkHours.Count.Should().Be(nonDeletedWorkHours.Count);
         CollectionAssert.AreEquivalent(resultingWorkHours.Select(wh => wh.Id), nonDeletedWorkHours.Select(wh => wh.Id));
     }
     [Test]
@@ -266,7 +263,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
     {
         _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
         {
-            options.HearingVenue = new HearingVenue(338, "Teesside Combined Court Centre");
+            options.HearingVenue = new HearingVenue(474, "Dolgellau");
         });
         _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
         {

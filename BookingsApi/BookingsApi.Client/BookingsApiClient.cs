@@ -1265,6 +1265,7 @@ namespace BookingsApi.Client
 
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -1275,6 +1276,7 @@ namespace BookingsApi.Client
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -3188,16 +3190,6 @@ namespace BookingsApi.Client
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 400)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ValidationProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<ValidationProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 404)
@@ -9992,6 +9984,7 @@ namespace BookingsApi.Client
 
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -10005,6 +9998,7 @@ namespace BookingsApi.Client
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Add participant(s) to a hearing
+        /// <br/>NOT USED BY ADMIN WEB
         /// </summary>
         /// <param name="hearingId">The Id of the hearing</param>
         /// <param name="request">The participant information to add</param>
@@ -10547,16 +10541,6 @@ namespace BookingsApi.Client
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == 400)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ValidationProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            throw new BookingsApiException<ValidationProblemDetails>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 404)

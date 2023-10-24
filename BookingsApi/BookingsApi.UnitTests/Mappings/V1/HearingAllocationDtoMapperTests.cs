@@ -1,5 +1,6 @@
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services;
 
 namespace BookingsApi.UnitTests.Mappings.V1
@@ -14,7 +15,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var result = HearingAllocationDtoMapper.MapToDto(hearing);
 
             var expectedCase = hearing.GetCases()[0];
-            var expectedJudge = hearing.Participants?.FirstOrDefault(p => p.HearingRole.UserRole.IsJudge);
+            var expectedJudge = hearing.Participants?.FirstOrDefault(p => p is Judge);
             
             result.HearingId.Should().Be(hearing.Id);
             result.GroupId.Should().Be(hearing.SourceId);
@@ -23,7 +24,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.CaseType.Should().Be(hearing.CaseType.Name);
             result.CaseNumber.Should().Be(expectedCase.Number);
             result.CaseName.Should().Be(expectedCase.Name);
-            result.HearingVenueName.Should().Be(hearing.HearingVenueName);
+            result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
             result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             result.HearingType.Should().Be(hearing.HearingType.Name);
             result.JudgeDisplayName.Should().Be(expectedJudge?.DisplayName);
@@ -46,7 +47,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.CaseType.Should().Be(hearing.CaseType.Name);
             result.CaseNumber.Should().Be(expectedCase.Number);
             result.CaseName.Should().Be(expectedCase.Name);
-            result.HearingVenueName.Should().Be(hearing.HearingVenueName);
+            result.HearingVenueName.Should().Be(hearing.HearingVenue.Name);
             result.RecordAudio.Should().Be(hearing.AudioRecordingRequired);
             result.HearingType.Should().Be(hearing.HearingType.Name);
             result.JudgeDisplayName.Should().Be(expectedJudge?.DisplayName);

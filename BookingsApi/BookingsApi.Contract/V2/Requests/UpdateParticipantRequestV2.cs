@@ -5,25 +5,7 @@ using BookingsApi.Contract.Interfaces.Requests;
 
 namespace BookingsApi.Contract.V2.Requests
 {
-    public class UpdatePersonDetailsRequestV2
-    {
-        /// <summary>
-        ///     Participant first name.
-        /// </summary>
-        public string FirstName { get; set; }
-
-        /// <summary>
-        ///     Participant last name.
-        /// </summary>
-        public string LastName { get; set; }
-        
-        /// <summary>
-        ///     Participant Username
-        /// </summary>
-        public string Username { get; set; }
-    }
-    
-    public class UpdateParticipantRequestV2 : IRepresentativeInfoRequest
+    public class UpdateParticipantRequestV2 : IUpdateParticipantRequest
     {
         /// <summary>
         ///     Participant Id.
@@ -39,11 +21,6 @@ namespace BookingsApi.Contract.V2.Requests
         ///     Participant Telephone number
         /// </summary>
         public string TelephoneNumber { get; set; }
-        
-        /// <summary>
-        ///     Participant Contact email
-        /// </summary>
-        public string ContactEmail { get; set; }
 
         /// <summary>
         ///     Participant Display Name
@@ -62,6 +39,21 @@ namespace BookingsApi.Contract.V2.Requests
         ///     Representee
         /// </summary>
         public string Representee { get; set; }
+        
+        /// <summary>
+        ///     Participant first name.
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        ///     Participant middle name.
+        /// </summary>
+        public string MiddleNames { get; set; }
+
+        /// <summary>
+        ///     Participant last name.
+        /// </summary>
+        public string LastName { get; set; }
         
         /// <summary>
         ///     List of linked participants

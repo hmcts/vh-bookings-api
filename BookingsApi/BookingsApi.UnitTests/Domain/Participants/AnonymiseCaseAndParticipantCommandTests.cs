@@ -18,6 +18,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
         private UserRole _userRole1, _userRole2;
         private CaseRole _judgeCaseRole, _individualCaseRole, _repCaseRole;
         private HearingRole _hearingRole1, _hearingRole2;
+        private HearingVenue _hearingVenue1;
         
         [SetUp]
         public async Task SetUp()
@@ -29,6 +30,7 @@ namespace BookingsApi.UnitTests.Domain.Participants
             
             // seed roles
             await SeedRefData();
+            await SeedHearingVenues();
             await SeedHearings();
 
             _command = new AnonymiseCaseAndParticipantCommandHandler(_context);
@@ -222,21 +224,15 @@ namespace BookingsApi.UnitTests.Domain.Participants
 
             var hearingType = _caseType1.HearingTypes[0];
 
-            _hearing1 = new VideoHearing(_caseType1,
-                hearingType, DateTime.Today, 40,
-                new HearingVenue(1, "venue 1"),
+            _hearing1 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, _hearingVenue1, 
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-
-            _hearing2 = new VideoHearing(_caseType1,
-                hearingType, DateTime.Today, 40,
-                new HearingVenue(1, "venue 1"),
+            
+            _hearing2 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, _hearingVenue1, 
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-
-            _hearing3 = new VideoHearing(_caseType1,
-                hearingType, DateTime.Today, 40,
-                new HearingVenue(1, "venue 1"),
+            
+            _hearing3 = new VideoHearing(_caseType1, hearingType, DateTime.Today, 40, _hearingVenue1, 
                 Faker.Name.First(), Faker.Name.First(), null, false, null);
-
+            
             _hearing1.AddJudge(_person1, _hearingRole1, _judgeCaseRole, "Judge 123");
             _hearing1.AddIndividual(_person2, _hearingRole2, _individualCaseRole, "Individual 123");
 
@@ -251,5 +247,12 @@ namespace BookingsApi.UnitTests.Domain.Participants
             await _context.SaveChangesAsync();
         }
 
+        private async Task SeedHearingVenues()
+        {
+            _hearingVenue1 = new HearingVenue(1, "venue 1");
+
+            await _context.Venues.AddAsync(_hearingVenue1);
+            await _context.SaveChangesAsync();
+        }
     }
 }

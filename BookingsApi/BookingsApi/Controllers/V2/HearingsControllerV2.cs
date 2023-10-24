@@ -59,18 +59,15 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var hearingType = caseType.HearingTypes.Find(x =>
-                string.Equals(x.Code, request.HearingTypeCode, StringComparison.CurrentCultureIgnoreCase));
             var cases = request.Cases.Select(x => new Case(x.Number, x.Name)).ToList();
             
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
-                request, caseType, hearingType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
+                request, caseType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
 
             try
             {
-                var queriedVideoHearing =
-                    await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand,
-                        request.IsMultiDayHearing);
+                var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
+                
                 var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
                 return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
             }
@@ -89,7 +86,6 @@ namespace BookingsApi.Controllers.V2
         [HttpGet("{hearingId}")]
         [OpenApiOperation("GetHearingDetailsByIdV2")]
         [ProducesResponseType(typeof(HearingDetailsResponseV2), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> GetHearingDetailsById(Guid hearingId)
@@ -98,9 +94,7 @@ namespace BookingsApi.Controllers.V2
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
-            {
                 return NotFound();
-            }
 
             var response = HearingToDetailsResponseV2Mapper.Map(videoHearing);
             return Ok(response);

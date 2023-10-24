@@ -96,9 +96,10 @@ namespace BookingsApi.DAL.Services
                         }
                     case "Judge":
                         {
-                            var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person,
-                                participantToAdd.HearingRole,
-                                participantToAdd.CaseRole, participantToAdd.DisplayName);
+                            var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person, 
+                                    participantToAdd.HearingRole, 
+                                    participantToAdd.CaseRole, 
+                                    participantToAdd.DisplayName);
 
                             participantList.Add(judge);
                             break;
@@ -117,10 +118,20 @@ namespace BookingsApi.DAL.Services
                             $"Role {participantToAdd.HearingRole.UserRole.Name} not recognised");
                 }
             }
-
+            await LoadHearingRoles(participantList);
             return participantList;
         }
 
+        private async Task LoadHearingRoles(List<Participant> participantList)
+        {
+            foreach (var participant in participantList)
+            {
+                participant.HearingRole = await _context.HearingRoles
+                    .Include(h => h.UserRole)
+                    .FirstOrDefaultAsync(x => x.Id == participant.HearingRoleId);
+            }
+        }
+        
         public async Task UpdateHearingCaseName(Guid hearingId, string caseName)
         {
             var hearing = await _context.VideoHearings.Include(x => x.HearingCases).ThenInclude(h => h.Case)

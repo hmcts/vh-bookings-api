@@ -9,6 +9,9 @@ namespace BookingsApi.Domain
     {
         private readonly ValidationFailures _validationFailures = new ValidationFailures();
 
+        /// <summary>
+        /// Instantiate a person when the username is known, typically used for existing persons
+        /// </summary>
         public Person(string title, string firstName, string lastName, string contactEmail, string username)
         {
             Id = Guid.NewGuid();
@@ -19,6 +22,14 @@ namespace BookingsApi.Domain
             Username = username;
             ContactEmail = contactEmail;
             CreatedDate = UpdatedDate = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Instantiate a person when the username is not known, typically used for new persons
+        /// </summary>
+        public Person(string title, string firstName, string lastName, string contactEmail) : this(title, firstName,
+            lastName, contactEmail, null)
+        {
         }
 
         public string Title { get; set; }
@@ -64,6 +75,17 @@ namespace BookingsApi.Domain
             }
             Username = username;
         }
+
+        public void UpdatePersonNames(string firstName, string lastName, string middleNames = null)
+        {
+            ValidateArguments(firstName, lastName);
+            FirstName = firstName;
+            LastName = lastName;
+            if (!string.IsNullOrEmpty(middleNames))
+                MiddleNames = middleNames;
+            UpdatedDate = DateTime.UtcNow;
+        }
+        
         public void AnonymisePerson()
         {
             var firstname = RandomStringGenerator.GenerateRandomString(10);
@@ -98,17 +120,33 @@ namespace BookingsApi.Domain
         {
             if (string.IsNullOrEmpty(firstName))
             {
-                _validationFailures.AddFailure("FirstName", "FirstName cannot be empty");
+                _validationFailures.AddFailure("FirstName", DomainRuleErrorMessages.FirstNameRequired);
             }
             if (string.IsNullOrEmpty(lastName))
             {
-                _validationFailures.AddFailure("LastName", "LastName cannot be empty");
+                _validationFailures.AddFailure("LastName", DomainRuleErrorMessages.LastNameRequired);
             }
             if (string.IsNullOrEmpty(contactEmail))
             {
                 _validationFailures.AddFailure("ContactEmail", "ContactEmail cannot be empty");
             }
 
+            if (_validationFailures.Any())
+            {
+                throw new DomainRuleException(_validationFailures);
+            }
+        }
+
+        private void ValidateArguments(string firstName, string lastName)
+        {
+            if (string.IsNullOrEmpty(firstName))
+            {
+                _validationFailures.AddFailure("FirstName", DomainRuleErrorMessages.FirstNameRequired);
+            }
+            if (string.IsNullOrEmpty(lastName))
+            {
+                _validationFailures.AddFailure("LastName", DomainRuleErrorMessages.LastNameRequired);
+            }
             if (_validationFailures.Any())
             {
                 throw new DomainRuleException(_validationFailures);

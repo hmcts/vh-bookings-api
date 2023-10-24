@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Helper;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Mappings.V1;
 using BookingsApi.UnitTests.Utilities;
@@ -111,18 +112,13 @@ namespace BookingsApi.UnitTests.Mappings.V1
             hearingWithoutCaseType.SetProtected(nameof(hearingWithoutCaseType.CaseType), null);
             When(() => _mapper.MapHearingResponse(hearingWithoutCaseType))
                 .Should().Throw<ArgumentException>().WithMessage("Hearing is missing case type");
-
-            var hearingWithoutHearingType = MockHearingWithCase();
-            hearingWithoutHearingType.SetProtected(nameof(hearingWithoutCaseType.HearingType), null);
-            When(() => _mapper.MapHearingResponse(hearingWithoutHearingType))
-                .Should().Throw<ArgumentException>().WithMessage("Hearing is missing hearing type");
         }
 
         [Test]
         public void Should_set_judge_name_to_missing_if_empty()
         {
             var mockedHearing = MockHearingWithCase();
-            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            var judge = mockedHearing.Participants.First(x => x is Judge);
             judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(1, "Generic");
 
@@ -135,7 +131,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_set_allocatedVHO_to_Not_Allocated()
         {
             var mockedHearing = MockHearingWithCase();
-            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            var judge = mockedHearing.Participants.First(x => x is Judge);
             judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(1, "Generic");
             
@@ -150,7 +146,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         public void Should_set_allocatedVHO_to_Not_Required()
         {
             var mockedHearing = MockHearingWithCase();
-            var judge = mockedHearing.Participants.First(x => x.HearingRole.UserRole.IsJudge);
+            var judge = mockedHearing.Participants.First(x => x is Judge);
             judge.DisplayName = "";
             mockedHearing.CaseType = new CaseType(3, "Generic");
             mockedHearing.CaseTypeId = 3;

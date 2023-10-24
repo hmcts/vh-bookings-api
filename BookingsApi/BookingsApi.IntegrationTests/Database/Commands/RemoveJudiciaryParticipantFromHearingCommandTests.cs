@@ -50,10 +50,9 @@ public class RemoveJudiciaryParticipantFromHearingCommandTests : DatabaseTestsBa
     [Test]
     public async Task Should_remove_judiciary_judge_from_hearing()
     {
-        var seededHearing = await Hooks.SeedVideoHearing(options =>
+        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
-            options.AddJudiciaryJudge = true;
-            options.AddJudge = false;
+            options.AddJudge = true;
             options.AddStaffMember = true;
         });
         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
