@@ -47,8 +47,8 @@ stages:
 
   #####################################################
   # Run Entity Framework. #############################
-  - stage: Run_Entity_Framework_Dev
-    displayName: Dev EF Release
+  - stage: Run_Entity_Framework
+    displayName: EF Release
     dependsOn: Pre_Run_Tasks
     jobs:
       # Dev
