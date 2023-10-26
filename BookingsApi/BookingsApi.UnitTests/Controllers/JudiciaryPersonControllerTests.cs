@@ -1,15 +1,13 @@
-using BookingsApi.Controllers;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
-using BookingsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
-using BookingsApi.Contract.V1.Configuration;
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Controllers.V1;
@@ -22,7 +20,7 @@ namespace BookingsApi.UnitTests.Controllers
         private Mock<IQueryHandler> _queryHandlerMock;
         private Mock<ICommandHandler> _commandHandlerMock;
         private Mock<ILogger<JudiciaryPersonController>> _loggerMock;
-        private Mock<IFeatureFlagService> _featureFlagsService;
+        private Mock<IFeatureToggles> _featureFlagsService;
 
         [SetUp]
         public void Setup()
@@ -30,7 +28,7 @@ namespace BookingsApi.UnitTests.Controllers
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
             _loggerMock = new Mock<ILogger<JudiciaryPersonController>>();
-            _featureFlagsService = new Mock<IFeatureFlagService>();
+            _featureFlagsService = new Mock<IFeatureToggles>();
    
             _controller = new JudiciaryPersonController(_queryHandlerMock.Object, _commandHandlerMock.Object, _loggerMock.Object, _featureFlagsService.Object);
         }
@@ -476,7 +474,7 @@ namespace BookingsApi.UnitTests.Controllers
            .Setup(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()))
            .ReturnsAsync(persons);
 
-            _featureFlagsService.Setup(p => p.GetFeatureFlag(It.Is<string>(p => p == nameof(FeatureFlags.EJudFeature)))).Returns(true);
+            _featureFlagsService.Setup(p => p.EJudFeature()).Returns(true);
             var result = await _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
@@ -490,7 +488,7 @@ namespace BookingsApi.UnitTests.Controllers
         public void PostJudiciaryPersonBySearchTerm_Should_Return_EmptyList_When_EJudFlag_Is_False()
         {
             var searchTermRequest = new SearchTermRequest("test");
-            _featureFlagsService.Setup(p => p.GetFeatureFlag(It.Is<string>(p => p == nameof(FeatureFlags.EJudFeature)))).Returns(false);
+            _featureFlagsService.Setup(p => p.EJudFeature()).Returns(false);
             var result = _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
