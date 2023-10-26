@@ -46,7 +46,7 @@ namespace BookingsApi.Mappings.V1
                 GroupId = videoHearing.SourceId,
                 Endpoints = endpoints
             };
-
+            response.TrimAllStringsRecursively();
             return response;
         }
     }

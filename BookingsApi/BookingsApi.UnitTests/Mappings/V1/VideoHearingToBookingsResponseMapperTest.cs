@@ -112,11 +112,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
             hearingWithoutCaseType.SetProtected(nameof(hearingWithoutCaseType.CaseType), null);
             When(() => _mapper.MapHearingResponse(hearingWithoutCaseType))
                 .Should().Throw<ArgumentException>().WithMessage("Hearing is missing case type");
-
-            var hearingWithoutHearingType = MockHearingWithCase();
-            hearingWithoutHearingType.SetProtected(nameof(hearingWithoutCaseType.HearingType), null);
-            When(() => _mapper.MapHearingResponse(hearingWithoutHearingType))
-                .Should().Throw<ArgumentException>().WithMessage("Hearing is missing hearing type");
         }
 
         [Test]

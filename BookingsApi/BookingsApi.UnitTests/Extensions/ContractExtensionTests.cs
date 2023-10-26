@@ -14,7 +14,8 @@ public class ContractExtensionTests
     public void should_sanitize_booking_request(string firstName, string lastName)
     {
         // arrange
-        var request = new SimpleBookNewHearingRequest("foo2", DateTime.UtcNow).Build();   
+        var request = new SimpleBookNewHearingRequest("foo2", DateTime.UtcNow).Build();  
+        request.HearingVenueName += " ";
         request.Participants[0].FirstName = firstName;
         request.Participants[0].LastName = lastName;
 
@@ -27,6 +28,7 @@ public class ContractExtensionTests
         var regex = new Regex(@"^\S(.*\S)?$");
         request.Participants[0].FirstName.Should().MatchRegex(regex);
         request.Participants[0].LastName.Should().MatchRegex(regex);
+        request.HearingVenueName.Should().MatchRegex(regex);
     }
     
     [TestCase("FirstNameWithSpaces ", "LastNameWithSpaces ")]
