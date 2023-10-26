@@ -1,4 +1,3 @@
-using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
@@ -15,10 +14,10 @@ namespace BookingsApi.Controllers.V1
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
-        private readonly IFeatureFlagService _flagsService;
+        private readonly IFeatureToggles _flagsService;
 
         public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            ILogger<JudiciaryPersonController> logger, IFeatureFlagService flagsService)
+            ILogger<JudiciaryPersonController> logger, IFeatureToggles flagsService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -167,7 +166,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
+            if (_flagsService.EJudFeature())
             {
                 var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
                 var personList =

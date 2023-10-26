@@ -1,28 +1,21 @@
 using BookingsApi.DAL.Queries;
-using Microsoft.Extensions.Options;
 using Moq;
 using BookingsApi.Common.Services;
-using BookingsApi.Contract.V1.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
     public class GetPersonBySearchTermQueryHandlerTests : DatabaseTestsBase
     {
         private GetPersonBySearchTermQueryHandler _handler;
-        private Mock<IOptions<FeatureFlagConfiguration>> _configOptions;
         private Mock<IFeatureToggles> _featureToggles;
 
 
         [SetUp]
         public void Setup()
         {
-            _configOptions = new Mock<IOptions<FeatureFlagConfiguration>>();
             _featureToggles = new Mock<IFeatureToggles>();
             var context = new BookingsDbContext(BookingsDbContextOptions);
-            _configOptions.Setup(opt => opt.Value).Returns(new FeatureFlagConfiguration()
-            {
-                StaffMemberFeature = true
-            });
+            
             _featureToggles.Setup(toggle => toggle.EJudFeature()).Returns(false);
             _handler = new GetPersonBySearchTermQueryHandler(context, _featureToggles.Object);
         }

@@ -10,7 +10,6 @@ using BookingsApi.DAL;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Hosting;
-using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Health;
 using BookingsApi.Validations.Common;
@@ -90,7 +89,6 @@ namespace BookingsApi
             services.Configure<ServiceBusSettings>(options => Configuration.Bind("ServiceBusQueue", options));
             services.Configure<ServicesConfiguration>(options => Configuration.Bind("Services", options));
             services.Configure<KinlyConfiguration>(options => Configuration.Bind("KinlyConfiguration", options));
-            services.Configure<FeatureFlagConfiguration>(featureFlagConfigurationOptions => Configuration.Bind("FeatureFlags", featureFlagConfigurationOptions));
             services.Configure<AllocateHearingConfiguration>(options => Configuration.Bind("AllocateHearing", options));
         }
 
