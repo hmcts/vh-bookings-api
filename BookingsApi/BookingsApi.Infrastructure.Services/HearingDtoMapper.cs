@@ -1,6 +1,6 @@
-using System.Linq;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Dtos;
+using BookingsApi.Domain.Constants;
 
 namespace BookingsApi.Infrastructure.Services
 {
@@ -8,7 +8,7 @@ namespace BookingsApi.Infrastructure.Services
     {
         public static HearingDto MapToDto(Hearing hearing)
         {
-            var @case = hearing.GetCases().First();
+            var @case = hearing.GetCases()[0];
             return new HearingDto
             {
                 HearingId = hearing.Id,
@@ -20,7 +20,8 @@ namespace BookingsApi.Infrastructure.Services
                 CaseName= @case.Name,
                 HearingVenueName = hearing.HearingVenue.Name,
                 RecordAudio = hearing.AudioRecordingRequired,
-                HearingType = hearing.HearingType?.Name
+                HearingType = hearing.HearingType?.Name,
+                CaseTypeServiceId = hearing.CaseType.ServiceId ?? RefData.DefaultCaseTypeServiceId
             };
         }
         
