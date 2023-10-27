@@ -20,7 +20,6 @@ namespace BookingsApi.UnitTests.Controllers
         private Mock<IQueryHandler> _queryHandlerMock;
         private Mock<ICommandHandler> _commandHandlerMock;
         private Mock<ILogger<JudiciaryPersonController>> _loggerMock;
-        private Mock<IFeatureToggles> _featureFlagsService;
 
         [SetUp]
         public void Setup()
@@ -28,9 +27,8 @@ namespace BookingsApi.UnitTests.Controllers
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
             _loggerMock = new Mock<ILogger<JudiciaryPersonController>>();
-            _featureFlagsService = new Mock<IFeatureToggles>();
    
-            _controller = new JudiciaryPersonController(_queryHandlerMock.Object, _commandHandlerMock.Object, _loggerMock.Object, _featureFlagsService.Object);
+            _controller = new JudiciaryPersonController(_queryHandlerMock.Object, _commandHandlerMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -474,7 +472,6 @@ namespace BookingsApi.UnitTests.Controllers
            .Setup(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()))
            .ReturnsAsync(persons);
 
-            _featureFlagsService.Setup(p => p.EJudFeature()).Returns(true);
             var result = await _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
 
             result.Should().NotBeNull();
@@ -482,20 +479,6 @@ namespace BookingsApi.UnitTests.Controllers
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var personResponses = (List<PersonResponse>)objectResult.Value;
             personResponses.Count.Should().Be(2);
-        }
-
-        [Test]
-        public void PostJudiciaryPersonBySearchTerm_Should_Return_EmptyList_When_EJudFlag_Is_False()
-        {
-            var searchTermRequest = new SearchTermRequest("test");
-            _featureFlagsService.Setup(p => p.EJudFeature()).Returns(false);
-            var result = _controller.PostJudiciaryPersonBySearchTerm(searchTermRequest);
-
-            result.Should().NotBeNull();
-            var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var personResponses = (List<PersonResponse>)objectResult.Value;
-            personResponses.Count.Should().Be(0);
         }
         
         private static void AssertErrorMessageContainsIdentifier(string errorMessage, string identifier)
