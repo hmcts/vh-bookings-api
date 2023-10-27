@@ -49,4 +49,36 @@ namespace BookingsApi.Contract.V1.Responses
         /// </summary>
         public string Organisation { get; set; }
     }
+
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public class JudiciaryPersonResponse
+    {
+        /// <summary>
+        ///     Participant Title.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        ///     Participant first name.
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        ///     Participant last name.
+        /// </summary>
+        public string LastName { get; set; }
+        
+        /// <summary>
+        ///     Participant contact email
+        /// </summary>
+        public string Email { get; set; }
+        
+        /// <summary>
+        /// The judiciary unique personal code
+        /// </summary>
+        public string PersonalCode { get; set; }
+    }
 }

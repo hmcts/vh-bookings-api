@@ -729,7 +729,7 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryPersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -738,7 +738,7 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryPersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken);
 
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RemoveAllJudiciaryPersonsStagingAsync();
@@ -6154,7 +6154,7 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryPersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term)
         {
             return PostJudiciaryPersonBySearchTermAsync(term, System.Threading.CancellationToken.None);
         }
@@ -6166,7 +6166,7 @@ namespace BookingsApi.Client
         /// <param name="term">Partial string to match email with, case-insensitive.</param>
         /// <returns>Person list</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<JudiciaryPersonResponse>> PostJudiciaryPersonBySearchTermAsync(SearchTermRequest term, System.Threading.CancellationToken cancellationToken)
         {
             if (term == null)
                 throw new System.ArgumentNullException("term");
@@ -6220,7 +6220,7 @@ namespace BookingsApi.Client
                         else
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<PersonResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<JudiciaryPersonResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

@@ -479,7 +479,7 @@ namespace BookingsApi.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-            var personResponses = (List<PersonResponse>)objectResult.Value;
+            var personResponses = (List<JudiciaryPersonResponse>)objectResult.Value;
             personResponses.Count.Should().Be(2);
         }
         

@@ -160,17 +160,17 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Person list</returns>
         [HttpPost("search")]
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
-        [ProducesResponseType(typeof(IList<PersonResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<JudiciaryPersonResponse>), (int) HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-                var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
-                var personList =
-                    await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
-                var mapper = new JudiciaryPersonToResponseMapper();
-                var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username)
-                    .ToList();
-                return Ok(response);
+            var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
+            var personList =
+                await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
+            var mapper = new JudiciaryPersonToResponseMapper();
+            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Email)
+                .ToList();
+            return Ok(response);
         }
     }
 }
