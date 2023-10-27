@@ -11,6 +11,7 @@ namespace BookingsApi.Mappings.V1
                 Title = person.Title,
                 FirstName = person.KnownAs,
                 LastName = person.Surname,
+                FullName = person.Fullname,
                 PersonalCode = person.PersonalCode,
                 Email = person.Email.ToLower(),
             };
