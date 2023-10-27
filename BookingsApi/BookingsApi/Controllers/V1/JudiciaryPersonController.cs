@@ -15,15 +15,13 @@ namespace BookingsApi.Controllers.V1
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly ILogger<JudiciaryPersonController> _logger;
-        private readonly IFeatureFlagService _flagsService;
 
         public JudiciaryPersonController(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            ILogger<JudiciaryPersonController> logger, IFeatureFlagService flagsService)
+            ILogger<JudiciaryPersonController> logger)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _logger = logger;
-            _flagsService = flagsService;
         }
 
         [HttpPost("BulkJudiciaryPersons")]
@@ -163,12 +161,9 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("search")]
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
         [ProducesResponseType(typeof(IList<PersonResponse>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-            if (_flagsService.GetFeatureFlag(nameof(FeatureFlags.EJudFeature)))
-            {
                 var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
                 var personList =
                     await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
@@ -176,11 +171,6 @@ namespace BookingsApi.Controllers.V1
                 var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username)
                     .ToList();
                 return Ok(response);
-            }
-            else
-            {
-                return Ok(new List<PersonResponse>());
-            }
         }
     }
 }
