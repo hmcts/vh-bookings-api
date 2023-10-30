@@ -107,8 +107,13 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task Should_return_ok_result_updating_leaver_item()
         {
             var id = Guid.NewGuid().ToString();
-            var judiciaryPerson = new JudiciaryPerson(id, "some@email.com", "a", "b", "c", "d", "123", "nom1", false, false, string.Empty);
-            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString(), PersonalCode = "some@email.com" };
+            var judiciaryPerson = new JudiciaryPerson(id, "some@email.com", "a", "b", "c", "d", "123", "nom1",
+                "01234567890", false, false, string.Empty);
+            var item1 = new JudiciaryLeaverRequest
+            {
+                Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString(),
+                PersonalCode = "some@email.com"
+            };
 
             var request = new List<JudiciaryLeaverRequest> { item1 };
 
@@ -218,21 +223,25 @@ namespace BookingsApi.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Should_return_an_errored_RequestCount_One_on_When__record_not_in_DB() {
+        public async Task Should_return_an_errored_RequestCount_One_on_When__record_not_in_DB()
+        {
             var id = Guid.NewGuid();
-            var item1 = new JudiciaryLeaverRequest { Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
-            var request = new List<JudiciaryLeaverRequest> { item1 };
+            var item1 = new JudiciaryLeaverRequest
+                {Id = id.ToString(), Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString()};
+            var request = new List<JudiciaryLeaverRequest> {item1};
 
             _queryHandlerMock
-               .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
-               .ReturnsAsync(null as JudiciaryPerson);
+                .Setup(x =>
+                    x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(
+                        It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
+                .ReturnsAsync(null as JudiciaryPerson);
 
             var result = await _controller.BulkJudiciaryLeaversAsync(request);
 
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             var data = objectResult.Value as BulkJudiciaryLeaverResponse;
             data.Should().NotBeNull();
             data.ErroredRequests.Count.Should().Be(1);
@@ -241,12 +250,20 @@ namespace BookingsApi.UnitTests.Controllers
         [Test]
         public async Task Should_return_ok_result_updating_item()
         {
-            var item1 = new JudiciaryPersonRequest { Id = Guid.NewGuid().ToString(), Email = "some@email.com", Fullname = "a", Surname = "b", Title = "c", KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", HasLeft = true };
-            var retrievedPerson1 = new JudiciaryPerson(item1.Id, item1.PersonalCode, item1.Title, item1.KnownAs, item1.Surname, item1.Fullname, item1.PostNominals, item1.Email, false, false, string.Empty);
-            var request = new List<JudiciaryPersonRequest> { item1 };
+            var item1 = new JudiciaryPersonRequest
+            {
+                Id = Guid.NewGuid().ToString(), Email = "some@email.com", Fullname = "a", Surname = "b", Title = "c",
+                KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", HasLeft = true
+            };
+            var retrievedPerson1 = new JudiciaryPerson(item1.Id, item1.PersonalCode, item1.Title, item1.KnownAs,
+                item1.Surname, item1.Fullname, item1.PostNominals, item1.Email, "01234567890", false, false,
+                string.Empty);
+            var request = new List<JudiciaryPersonRequest> {item1};
 
             _queryHandlerMock
-                .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
+                .Setup(x =>
+                    x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(
+                        It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
                 .ReturnsAsync(retrievedPerson1);
 
             var result = await _controller.BulkJudiciaryPersonsAsync(request);
@@ -254,7 +271,7 @@ namespace BookingsApi.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             var data = objectResult.Value as BulkJudiciaryPersonResponse;
             data.Should().NotBeNull();
             data.ErroredRequests.Count.Should().Be(0);
@@ -272,7 +289,7 @@ namespace BookingsApi.UnitTests.Controllers
         {
             var item1 = new JudiciaryPersonRequest { Id = Guid.NewGuid().ToString(), Email = "some@email.com", Fullname = "a", Surname = "b", Title = "c", KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", HasLeft = false };
             var item2 = new JudiciaryPersonRequest { Id = Guid.NewGuid().ToString(), Email = "some2@email.com", Fullname = "a2", Surname = "b2", Title = "c2", KnownAs = "d2", PersonalCode = "456", PostNominals = "nom2", HasLeft = true };
-            var retrievedPerson1 = new JudiciaryPerson(item2.Id, item2.PersonalCode, item2.Title, item2.KnownAs, item2.Surname, item2.Fullname, item2.PostNominals, item2.Email, false, false, string.Empty);
+            var retrievedPerson1 = new JudiciaryPerson(item2.Id, item2.PersonalCode, item2.Title, item2.KnownAs, item2.Surname, item2.Fullname, item2.PostNominals, item2.Email, "01234567890", false, false, string.Empty);
             var request = new List<JudiciaryPersonRequest> { item1, item2 };
 
             _queryHandlerMock
@@ -437,15 +454,21 @@ namespace BookingsApi.UnitTests.Controllers
 
             _commandHandlerMock.Verify(c => c.Handle(It.IsAny<AddJudiciaryPersonCommand>()), Times.Never);
         }
-        
+
         [Test]
         public async Task Should_return_error_items_in_request_exception_for_leavers()
         {
-            var item1 = new JudiciaryLeaverRequest { Id = Guid.NewGuid().ToString(), PersonalCode = "PersonalCode", Leaver = true, LeftOn = DateTime.Now.AddDays(-100).ToLongDateString() };
-            var request = new List<JudiciaryLeaverRequest> { item1 };
+            var item1 = new JudiciaryLeaverRequest
+            {
+                Id = Guid.NewGuid().ToString(), PersonalCode = "PersonalCode", Leaver = true,
+                LeftOn = DateTime.Now.AddDays(-100).ToLongDateString()
+            };
+            var request = new List<JudiciaryLeaverRequest> {item1};
 
             _queryHandlerMock
-                .Setup(x => x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
+                .Setup(x =>
+                    x.Handle<GetJudiciaryPersonByPersonalCodeQuery, JudiciaryPerson>(
+                        It.IsAny<GetJudiciaryPersonByPersonalCodeQuery>()))
                 .ThrowsAsync(new Exception("Error"));
 
             var result = await _controller.BulkJudiciaryLeaversAsync(request);
@@ -453,7 +476,7 @@ namespace BookingsApi.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             var data = objectResult.Value as BulkJudiciaryLeaverResponse;
             data.Should().NotBeNull();
             data.ErroredRequests.Count.Should().Be(1);
@@ -466,9 +489,12 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task Should_return_list_of_PersonResponse_matching_serch_term_successfully()
         {
             var searchTermRequest = new SearchTermRequest("test");
-            var persons = new List<JudiciaryPerson> {
-                                new JudiciaryPerson(Guid.NewGuid().ToString(),"CODE1","Mr", "Test", "Tester", "T Tester", "N", "test@hmcts.net", false, false, string.Empty),
-                                new JudiciaryPerson(Guid.NewGuid().ToString(), "CODE", "Mr", "Tester", "Test", "T Test", "n1", "atest@hmcts.net", false, false, string.Empty)
+            var persons = new List<JudiciaryPerson>
+            {
+                new JudiciaryPerson(Guid.NewGuid().ToString(), "CODE1", "Mr", "Test", "Tester", "T Tester", "N",
+                    "test@hmcts.net", "01234567890", false, false, string.Empty),
+                new JudiciaryPerson(Guid.NewGuid().ToString(), "CODE", "Mr", "Tester", "Test", "T Test", "n1",
+                    "atest@hmcts.net", "01234567890", false, false, string.Empty)
             };
             _queryHandlerMock
            .Setup(x => x.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(It.IsAny<GetJudiciaryPersonBySearchTermQuery>()))
