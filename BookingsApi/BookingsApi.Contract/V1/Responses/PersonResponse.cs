@@ -71,6 +71,9 @@ namespace BookingsApi.Contract.V1.Responses
         /// </summary>
         public string LastName { get; set; }
         
+        /// <summary>
+        ///     Participant full name.
+        /// </summary>
         public string FullName { get; set; }
         
         /// <summary>
