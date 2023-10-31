@@ -16,8 +16,7 @@ namespace BookingsApi.Mappings.Common
                 FirstName = judiciaryParticipant.JudiciaryPerson.KnownAs,
                 LastName = judiciaryParticipant.JudiciaryPerson.Surname,
                 FullName = judiciaryParticipant.JudiciaryPerson.Fullname,
-                WorkPhone = judiciaryParticipant.JudiciaryPerson.ph
-                
+                WorkPhone = judiciaryParticipant.JudiciaryPerson.WorkPhone
             };
 
             return response;

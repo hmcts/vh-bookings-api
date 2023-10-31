@@ -54,8 +54,21 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants[1].DisplayName.Should().Be(request[1].DisplayName);
             judiciaryParticipants[1].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             
-            var response = await ApiClientResponse.GetResponses<IList<JudiciaryParticipantResponse>>(result.Content);
+            var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
             response.Should().BeEquivalentTo(request);
+
+            var judgeResponse = response.Find(x => x.PersonalCode == _personalCodeJudge);
+            judgeResponse.DisplayName.Should().Be(request[0].DisplayName);
+            judgeResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge);
+            judgeResponse.Email.Should().Be(judiciaryPersonJudge.Email);
+            judgeResponse.FirstName.Should().Be(judiciaryPersonJudge.KnownAs);
+            judgeResponse.LastName.Should().Be(judiciaryPersonJudge.Surname);
+            judgeResponse.FullName.Should().Be(judiciaryPersonJudge.Fullname);
+            judgeResponse.WorkPhone.Should().Be(judiciaryPersonJudge.WorkPhone);
+            
+            var panelMemberResponse = response.Find(x => x.PersonalCode == _personalCodePanelMember);
+            panelMemberResponse.DisplayName.Should().Be(request[1].DisplayName);
+            panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
         }
 
         [Test]
