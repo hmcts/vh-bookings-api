@@ -67,7 +67,7 @@ namespace BookingsApi.Controllers.V1
                     {
                         await _commandHandler.Handle(new AddJudiciaryPersonByPersonalCodeCommand(item.Id,
                             item.PersonalCode, item.Title, item.KnownAs, item.Surname,
-                            item.Fullname, item.PostNominals, item.Email, item.HasLeft, item.Leaver, item.LeftOn));
+                            item.Fullname, item.PostNominals, item.Email, item.WorkPhone, item.HasLeft, item.Leaver, item.LeftOn));
                     }
                     else
                     {

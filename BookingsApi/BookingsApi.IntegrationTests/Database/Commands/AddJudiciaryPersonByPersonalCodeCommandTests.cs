@@ -22,7 +22,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var externalRefId = Guid.NewGuid().ToString();
             var personalCode = Guid.NewGuid().ToString();
 
-            var insertCommand = new AddJudiciaryPersonByPersonalCodeCommand(externalRefId, personalCode, "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", true, true, "2022-06-08");
+            var insertCommand = new AddJudiciaryPersonByPersonalCodeCommand(externalRefId, personalCode, "Title",
+                "KnownAs", "Surname", "FullName", "PostNominals", "Email", "01234567890", true, true, "2022-06-08");
             await _commandHandler.Handle(insertCommand);
 
             var judiciaryPerson = await _getJudiciaryPersonByPersonalCodeQueryHandler.Handle(new GetJudiciaryPersonByPersonalCodeQuery(personalCode));
