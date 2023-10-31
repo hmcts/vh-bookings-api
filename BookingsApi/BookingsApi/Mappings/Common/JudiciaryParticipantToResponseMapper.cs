@@ -11,7 +11,13 @@ namespace BookingsApi.Mappings.Common
             {
                 PersonalCode = judiciaryParticipant.JudiciaryPerson.PersonalCode,
                 DisplayName = judiciaryParticipant.DisplayName,
-                HearingRoleCode = MapHearingRoleCode(judiciaryParticipant.HearingRoleCode)
+                HearingRoleCode = MapHearingRoleCode(judiciaryParticipant.HearingRoleCode),
+                Email = judiciaryParticipant.JudiciaryPerson.Email,
+                FirstName = judiciaryParticipant.JudiciaryPerson.KnownAs,
+                LastName = judiciaryParticipant.JudiciaryPerson.Surname,
+                FullName = judiciaryParticipant.JudiciaryPerson.Fullname,
+                WorkPhone = judiciaryParticipant.JudiciaryPerson.ph
+                
             };
 
             return response;
