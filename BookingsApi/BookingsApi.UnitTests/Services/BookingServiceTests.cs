@@ -34,7 +34,7 @@ namespace BookingsApi.UnitTests.Services
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
                 _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess);
         }
-        
+
         [Test]
         public async Task Should_publish_messages_for_single_day_booking()
         {
@@ -45,7 +45,7 @@ namespace BookingsApi.UnitTests.Services
 
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
             await _bookingService.PublishNewHearing(hearing, false);
-            
+
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue();
             messages.Length.Should().Be(totalMessages);
 
@@ -94,3 +94,4 @@ namespace BookingsApi.UnitTests.Services
             messages.Count(x => x.IntegrationEvent is ExistingParticipantMultidayHearingConfirmationEvent).Should().Be(0);
         }
     }
+}
