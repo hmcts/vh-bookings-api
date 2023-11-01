@@ -4,7 +4,6 @@ using BookingsApi.Domain.RefData;
 using Microsoft.Extensions.Options;
 using Moq;
 using BookingsApi.Common.Services;
-using BookingsApi.Contract.V1.Configuration;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -15,7 +14,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         private Person IndividualPerson, JudgePerson, JudicialOfficeHolderPerson, StaffMemberPerson;
         private Participant IndividualParticipant, JudgeParticipant, JudicialOfficeHolderParticipant, StaffMemberParticipant;
         private Organisation organisation;
-        private Mock<IOptions<FeatureFlagConfiguration>> _configOptions;
         private Mock<IFeatureToggles> _featureToggles;
 
         [OneTimeSetUp]
@@ -23,7 +21,6 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         {
             var contextOptions = new DbContextOptionsBuilder<BookingsDbContext>().UseInMemoryDatabase(databaseName: "VhBookings").Options;
             _context = new BookingsDbContext(contextOptions);
-            _configOptions = new Mock<IOptions<FeatureFlagConfiguration>>();
             _featureToggles = new Mock<IFeatureToggles>();
         }
 
