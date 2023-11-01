@@ -20,7 +20,7 @@ namespace BookingsApi.Infrastructure.Services
                 {
                     ParticipantId = participant.Id,
                     Fullname =
-                        $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}",
+                        $"{participant.Person.Title} {participant.Person.FirstName} {participant.Person.LastName}".Trim(),
                     Username = participant.Person.Username,
                     FirstName = participant.Person.FirstName,
                     LastName = participant.Person.LastName,
