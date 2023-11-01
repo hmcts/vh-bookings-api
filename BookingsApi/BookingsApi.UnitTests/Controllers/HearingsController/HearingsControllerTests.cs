@@ -21,6 +21,7 @@ using Microsoft.Extensions.Options;
 using Testing.Common.Assertions;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
+using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -38,6 +39,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected Mock<IEventPublisher> EventPublisherMock;
         protected ServiceBusQueueClientFake SbQueueClient;
 
+        protected IBookingAsynchronousProcess BookingAsynchronousProcess;
+        protected IFirstdayOfMultidayBookingAsynchronousProcess FirstdayOfMultidayBookingAsyncProcess;
+        protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
+
         [SetUp]
         public void Setup()
         {
@@ -51,13 +56,18 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<IVhLogger>();
 
+            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(EventPublisherMock.Object);
+            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(EventPublisherMock.Object);
+            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(EventPublisherMock.Object);
             Controller = GetControllerObject(false);
         }
 
         protected BookingsApi.Controllers.V1.HearingsController GetControllerObject(bool withQueueClient)
         {
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
-            var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object);
+            var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
+                BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess);
+
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
                 HearingServiceMock.Object, Logger.Object);

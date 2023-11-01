@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
 
@@ -113,5 +114,11 @@ namespace BookingsApi.Domain.Participants
                 _validationFailures.AddFailure("DisplayName", "DisplayName is required");
             }
         }
+
+        public bool DoesPersonAlreadyExist()
+        {
+            return Person?.CreatedDate.TrimMilliseconds() != CreatedDate.TrimMilliseconds();
+        }
+
     }
 }

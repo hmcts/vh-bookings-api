@@ -1,3 +1,5 @@
+using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+
 namespace BookingsApi.Services;
 
 /// <summary>
@@ -48,15 +50,23 @@ public interface IBookingService
 
 public class BookingService : IBookingService
 {
+    private readonly IEventPublisher _eventPublisher;
     private readonly ICommandHandler _commandHandler;
     private readonly IQueryHandler _queryHandler;
-    private readonly IEventPublisher _eventPublisher;
-
-    public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler)
+    private readonly IBookingAsynchronousProcess _bookingAsynchronousProcess;
+    private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
+    private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
+    public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler,
+        IBookingAsynchronousProcess bookingAsynchronousProcess,
+        IFirstdayOfMultidayBookingAsynchronousProcess firstdayOfMultidayBookingAsyncProcess,
+        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess)
     {
         _eventPublisher = eventPublisher;
         _commandHandler = commandHandler;
         _queryHandler = queryHandler;
+        _bookingAsynchronousProcess = bookingAsynchronousProcess;
+        _firstdayOfMultidayBookingAsyncProcess = firstdayOfMultidayBookingAsyncProcess;
+        _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
     }
 
     public async Task<VideoHearing> SaveNewHearingAndPublish(CreateVideoHearingCommand command, bool isMultiDay)
@@ -72,24 +82,19 @@ public class BookingService : IBookingService
     
     public async Task PublishNewHearing(VideoHearing videoHearing, bool isMultiDay)
     {
-        if (videoHearing.Participants.Any(x => x.HearingRole.Name == "Judge"))
+        if (isMultiDay)
         {
-            // The event below handles creating users, sending the hearing notifications to the participants if the hearing is not a multi day
-            await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(videoHearing, videoHearing.Participants));
+            await _firstdayOfMultidayBookingAsyncProcess.Start(videoHearing);
         }
-        else
+        else 
         {
-            await _eventPublisher.PublishAsync(new CreateAndNotifyUserIntegrationEvent(videoHearing, videoHearing.Participants));
-            if (!isMultiDay)
-            {
-                await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(videoHearing, videoHearing.Participants));
-            }
+            await _bookingAsynchronousProcess.Start(videoHearing);
         }
     }
 
     public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays)
     {
-        await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(videoHearing, totalDays));
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)

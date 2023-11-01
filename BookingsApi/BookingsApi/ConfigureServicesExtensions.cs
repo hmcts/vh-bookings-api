@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 using ZymLabs.NSwag.FluentValidation;
-
+using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 
 namespace BookingsApi
 {
@@ -110,6 +110,9 @@ namespace BookingsApi
             services.AddScoped<IHearingAllocationService, HearingAllocationService>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
             services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();
+            services.AddScoped<IBookingAsynchronousProcess, SingledayHearingAsynchronousProcess>();
+            services.AddScoped<IClonedBookingAsynchronousProcess, ClonedMultidaysAsynchronousProcess>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

@@ -91,7 +91,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
                 && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
 
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantWelcomeEmailEvent>()), Times.Exactly(_videoHearing.Participants.Count));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
         
@@ -144,7 +145,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
                 && c.Endpoints[0].DisplayName == request.Endpoints[0].DisplayName
                 && c.Endpoints[0].Sip == "@WhereAreYou.com")), Times.Once);
 
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<CreateAndNotifyUserIntegrationEvent>()), Times.Once);
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantWelcomeEmailEvent>()), Times.Exactly(_videoHearing.Participants.Count));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Once);
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
 
