@@ -61,6 +61,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judgeResponse.DisplayName.Should().Be(request[0].DisplayName);
             judgeResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge);
             judgeResponse.Email.Should().Be(judiciaryPersonJudge.Email);
+            judgeResponse.Title.Should().Be(judiciaryPersonJudge.Title);
             judgeResponse.FirstName.Should().Be(judiciaryPersonJudge.KnownAs);
             judgeResponse.LastName.Should().Be(judiciaryPersonJudge.Surname);
             judgeResponse.FullName.Should().Be(judiciaryPersonJudge.Fullname);

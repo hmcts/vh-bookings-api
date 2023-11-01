@@ -13,6 +13,7 @@ namespace BookingsApi.Mappings.Common
                 DisplayName = judiciaryParticipant.DisplayName,
                 HearingRoleCode = MapHearingRoleCode(judiciaryParticipant.HearingRoleCode),
                 Email = judiciaryParticipant.JudiciaryPerson.Email,
+                Title = judiciaryParticipant.JudiciaryPerson.Title,
                 FirstName = judiciaryParticipant.JudiciaryPerson.KnownAs,
                 LastName = judiciaryParticipant.JudiciaryPerson.Surname,
                 FullName = judiciaryParticipant.JudiciaryPerson.Fullname,

@@ -15,6 +15,11 @@ namespace BookingsApi.Contract.V1.Responses
         public string DisplayName { get; set; }
         
         /// <summary>
+        /// The Judiciary person's title.
+        /// </summary>
+        public string Title { get; set; }
+        
+        /// <summary>
         ///     Judiciary person's first name.
         /// </summary>
         public string FirstName { get; set; }
@@ -43,5 +48,7 @@ namespace BookingsApi.Contract.V1.Responses
         /// The participant's hearing role code
         /// </summary>
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
+
+        
     }
 }
