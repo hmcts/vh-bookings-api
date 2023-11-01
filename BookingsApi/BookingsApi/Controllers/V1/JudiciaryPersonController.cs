@@ -1,4 +1,3 @@
-using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
