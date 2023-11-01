@@ -92,6 +92,16 @@ namespace BookingsApi.UnitTests.Mappings.V1
         }
 
         [Test]
+        public void should_map_participant_with_no_title()
+        {
+            var participant = (Individual) GetHearing().GetParticipants().First(x => x is Individual);
+            participant.Person.Title = string.Empty;
+            var result = ParticipantDtoMapper.MapToDto(participant);
+            var fullName = $"{participant.Person.FirstName} {participant.Person.LastName}";
+            result.Fullname.Should().Be(fullName);
+        }
+
+        [Test]
         public void should_map_judge_judiciary_participant_to_dto()
         {
             var hearing = GetHearingWithJudiciaryParticipants();
