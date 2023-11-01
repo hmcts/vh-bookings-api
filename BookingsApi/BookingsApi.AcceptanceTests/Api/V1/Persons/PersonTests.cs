@@ -58,7 +58,7 @@ public class PersonTests : ApiTest
         var participant = _hearing.Participants[0];
 
         // act
-        var result = await BookingsApiClient.PostPersonBySearchTermAsync(new SearchTermRequest(participant.Username[..5]));
+        var result = await BookingsApiClient.PostPersonBySearchTermAsync(new SearchTermRequest(participant.Username[..13]));
 
         // assert
         result.Should().NotBeNullOrEmpty();
