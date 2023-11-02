@@ -41,10 +41,7 @@ public class PersonTests : ApiTest
     {
         // arrange
         await BookHearing();
-        // new user's will not have an email address (set this by hand)
         var participant = _hearing.Participants.Find(x=> x.Username is not null);
-        // BookingsApiClient.UpdateParticipantDetailsAsync()
-        
 
         // act
         var result = await BookingsApiClient.GetPersonByUsernameAsync(participant.Username);

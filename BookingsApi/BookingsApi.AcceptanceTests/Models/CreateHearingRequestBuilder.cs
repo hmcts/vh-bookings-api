@@ -18,6 +18,7 @@ namespace BookingsApi.AcceptanceTests.Models
         {
             var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
                 .With(x => x.Title = "Mrs")
+                .With(x => x.MiddleNames = "MiddleName1")
                 .With(x => x.TelephoneNumber = "01234567890")
                 .With(x => x.OrganisationName = TestUsers.Organisation1)
                 .Build().ToList();
@@ -130,8 +131,8 @@ namespace BookingsApi.AcceptanceTests.Models
 
         public CreateHearingRequestBuilder WithLinkedParticipants()
         {
-            var individualEmail = _request.Participants.FirstOrDefault(p => p.HearingRoleName == "Litigant in person").ContactEmail;
-            var interpreterEmail = _request.Participants.FirstOrDefault(p => p.HearingRoleName == "Interpreter").ContactEmail;
+            var individualEmail = _request.Participants.Find(p => p.HearingRoleName == "Litigant in person").ContactEmail;
+            var interpreterEmail = _request.Participants.Find(p => p.HearingRoleName == "Interpreter").ContactEmail;
 
             _request.LinkedParticipants = new List<LinkedParticipantRequest>();
             _request.LinkedParticipants.Add(AddLinkedParticipant(individualEmail, interpreterEmail));
