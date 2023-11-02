@@ -36,8 +36,6 @@ java:
   environment:
     ASPNETCORE_URLS: http://+:8080
     DISABLEHTTPSREDIRECTION: true
-    FEATUREFLAGS__EJUDFEATURE: false
-    FEATUREFLAGS__STAFFMEMBERFEATURE: true
     Logging__LogLevel__Default: warning
     Logging__LogLevel__Microsoft: warning
     Logging__LogLevel__System: warning

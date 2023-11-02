@@ -1,4 +1,3 @@
-using BookingsApi.Contract.V1.Configuration;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Mappings.V1;
@@ -164,13 +163,13 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
-                var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
-                var personList =
-                    await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
-                var mapper = new JudiciaryPersonToResponseMapper();
-                var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username)
-                    .ToList();
-                return Ok(response);
+            var query = new GetJudiciaryPersonBySearchTermQuery(term.Term);
+            var personList =
+                await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
+            var mapper = new JudiciaryPersonToResponseMapper();
+            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username)
+                .ToList();
+            return Ok(response);
         }
     }
 }
