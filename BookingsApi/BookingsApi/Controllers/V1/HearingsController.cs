@@ -110,11 +110,11 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="hearingIds">hearing ids to anonymise data with</param>
         /// <returns></returns>
-        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case")]
+        [HttpPatch("anonymise-participant-and-case")]
         [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
+        public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId([FromBody] List<Guid> hearingIds)
         {
             await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIds });
             return Ok();
