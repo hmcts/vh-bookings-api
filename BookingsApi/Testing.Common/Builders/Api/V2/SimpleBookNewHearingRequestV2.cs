@@ -55,13 +55,15 @@ public class SimpleBookNewHearingRequestV2
         participants[3].ContactEmail = participant3.ContactEmail;
         participants[3].DisplayName = participant3.DisplayName;
 
-        var judiciaryParticipants = new List<JudiciaryParticipantRequest>();
-        judiciaryParticipants.Add(new JudiciaryParticipantRequest()
+        var judiciaryParticipants = new List<JudiciaryParticipantRequest>
         {
-            DisplayName = "Judiciary Judge",
-            HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge,
-            PersonalCode = judiciaryJudgePersonCode
-        });
+            new()
+            {
+                DisplayName = "Judiciary Judge",
+                HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge,
+                PersonalCode = judiciaryJudgePersonCode
+            }
+        };
 
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;

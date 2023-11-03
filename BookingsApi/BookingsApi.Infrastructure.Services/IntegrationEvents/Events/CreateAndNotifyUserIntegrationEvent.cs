@@ -13,10 +13,12 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
             Hearing = HearingDtoMapper.MapToDto(hearing);
 
             Participants = participants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            var judiciaryParticipants = hearing.JudiciaryParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            Participants.AddRange(judiciaryParticipants);
         }
 
         public HearingDto Hearing { get; }
-        public IList<ParticipantDto> Participants { get; }
+        public List<ParticipantDto> Participants { get; }
     }
 }
 
