@@ -34,7 +34,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
         private async Task SendWelcomeEmailForNewParticipants(VideoHearing videoHearing)
         {
-            var newParticipants = videoHearing.Participants.Where(x => x is Representative && !x.DoesPersonAlreadyExist());
+            var newParticipants = videoHearing.Participants.Where(x => x is Individual && !x.DoesPersonAlreadyExist());
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

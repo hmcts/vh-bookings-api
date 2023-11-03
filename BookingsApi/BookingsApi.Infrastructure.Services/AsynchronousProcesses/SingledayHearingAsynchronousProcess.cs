@@ -1,5 +1,4 @@
-﻿using BookingsApi.Common;
-using BookingsApi.Domain;
+﻿using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -8,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
+    public interface IBookingAsynchronousProcess
+    {
+        Task Start(VideoHearing videoHearing);
+    }
+
     public class SingledayHearingAsynchronousProcess : IBookingAsynchronousProcess
     {
         private readonly IEventPublisher _eventPublisher;
@@ -38,7 +42,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
         private async Task HearingConfirmationforNewParticipants(VideoHearing videoHearing)
         {
-            var newParticipants = videoHearing.Participants.Where(x => !x.DoesPersonAlreadyExist());
+            var newParticipants = videoHearing.Participants.Where(x => x is not Judge && !x.DoesPersonAlreadyExist());
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)
@@ -55,7 +59,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
         private async Task SendWelcomeEmailForNewParticipants(VideoHearing videoHearing)
         {
-            var newParticipants = videoHearing.Participants.Where(x => x is Representative && !x.DoesPersonAlreadyExist());
+            var newParticipants = videoHearing.Participants.Where(x => x is Individual && !x.DoesPersonAlreadyExist());
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

@@ -12,8 +12,8 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string DisplayName { get; set; }
-        public string ContactEmail { get; set; } // For Judge GetContactEmailForNonEJudJudgeUser
-        public string ContactTelephone { get; set; } // For Judge GetContactPhoneForNonEJudJudgeUser
+        public string ContactEmail { get; set; }
+        public string ContactTelephone { get; set; }
         public string UserRole { get; set; }
         public string Username { get; set; }
         public string Representee { get; set; }
