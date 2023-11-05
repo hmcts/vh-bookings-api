@@ -1,7 +1,9 @@
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using System.Collections.Generic;
 
 namespace BookingsApi.UnitTests.Services
 {
@@ -11,13 +13,20 @@ namespace BookingsApi.UnitTests.Services
         private readonly ClonedMultidaysAsynchronousProcess _clonedMultidaysAsynchronousProcess;
         private readonly IEventPublisher _eventPublisher;
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
+        private readonly IEventPublisherFactory _eventPublisherFactory;
 
         public ClonedMultidaysAsynchronousProcessTests()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
-
-            _clonedMultidaysAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisher);
+            _eventPublisherFactory = new EventPublisherFactory(new List<IPublishEvent> {
+                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
+                new CreateConferencePublisher(_eventPublisher),
+                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
+                new HearingConfirmationforExistingParticipantsPublisher(_eventPublisher),
+                new MultidayHearingConfirmationforNewParticipantsPublisher(_eventPublisher),
+                new MultidayHearingConfirmationforExistingParticipantsPublisher(_eventPublisher)});
+            _clonedMultidaysAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory);
         }
         
         [Test]

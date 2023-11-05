@@ -12,6 +12,7 @@ using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 using ZymLabs.NSwag.FluentValidation;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+using BookingsApi.Infrastructure.Services.Publishers;
 
 namespace BookingsApi
 {
@@ -113,9 +114,11 @@ namespace BookingsApi
             services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();
             services.AddScoped<IBookingAsynchronousProcess, SingledayHearingAsynchronousProcess>();
             services.AddScoped<IClonedBookingAsynchronousProcess, ClonedMultidaysAsynchronousProcess>();
+            services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
+            services.AddScoped<IPublishEvent>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
-
+            RegisterEventPublishers(services);
             return services;
         }
 
@@ -164,5 +167,23 @@ namespace BookingsApi
 
             return serviceCollection;
         }
+
+        private static void RegisterEventPublishers(IServiceCollection serviceCollection)
+        {
+            var eventPublishers = GetAllTypesOf(typeof(IPublishEvent)).ToList();
+            foreach (var eventPublisher in eventPublishers)
+            {
+                var serviceType = eventPublisher.GetInterfaces()[0];
+                serviceCollection.AddScoped(serviceType, eventPublisher);
+            }
+        }
+
+        private static IEnumerable<Type> GetAllTypesOf(Type i)
+        {
+            return i.Assembly.GetTypes().Where(t =>
+                t.GetInterfaces().ToList().Exists(x =>
+                    x.GetGenericTypeDefinition() == i));
+        }
+
     }
 }

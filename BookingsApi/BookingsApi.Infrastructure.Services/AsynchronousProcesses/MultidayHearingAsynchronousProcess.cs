@@ -2,6 +2,7 @@
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.Publishers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +16,10 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
     public class ClonedMultidaysAsynchronousProcess: IClonedBookingAsynchronousProcess
     {
-        private readonly IEventPublisher _eventPublisher;
-        public ClonedMultidaysAsynchronousProcess(IEventPublisher eventPublisher)
+        private readonly IEventPublisherFactory _publisherFactory;
+        public ClonedMultidaysAsynchronousProcess(IEventPublisherFactory publisherFactory)
         {
-            _eventPublisher = eventPublisher;
+            _publisherFactory = publisherFactory;
         }
 
         public async Task Start(VideoHearing videoHearing, int totalDays)
@@ -27,31 +28,13 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             {
                 throw new ArgumentOutOfRangeException(nameof(totalDays));
             }
+            var publisherForNewParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultidayHearingConfirmationforNewParticipantEvent);
+            publisherForNewParticipant.TotalDays = totalDays;
+            await publisherForNewParticipant.PublishAsync(videoHearing);
 
-            await MultidayHearingConfirmationforNewParticipants(videoHearing, totalDays);
-            await MultidayHearingConfirmationforExistingParticipants(videoHearing, totalDays);
-        }
-
-        private async Task MultidayHearingConfirmationforExistingParticipants(VideoHearing videoHearing, int totaldays)
-        {
-            var existingParticipants = videoHearing.Participants.Where(x => x.DoesPersonAlreadyExist());
-            var @case = videoHearing.GetCases()[0];
-            foreach (var participant in existingParticipants)
-            {
-                await _eventPublisher.PublishAsync(new ExistingParticipantMultidayHearingConfirmationEvent(EventDtoMappers.MapToHearingConfirmationDto(
-                    videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case), totaldays));
-            }
-        }
-
-        private async Task MultidayHearingConfirmationforNewParticipants(VideoHearing videoHearing, int totaldays)
-        {
-            var newParticipants = videoHearing.Participants.Where(x => !x.DoesPersonAlreadyExist());
-            var @case = videoHearing.GetCases()[0];
-            foreach (var participant in newParticipants)
-            {
-                await _eventPublisher.PublishAsync(new NewParticipantMultidayHearingConfirmationEvent(EventDtoMappers.MapToHearingConfirmationDto(
-                    videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case), totaldays));
-            }
+            var publisherForExistingParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultidayHearingConfirmationforExistingParticipantEvent);
+            publisherForExistingParticipant.TotalDays = totalDays;
+            await publisherForExistingParticipant.PublishAsync(videoHearing);
         }
     }
 }

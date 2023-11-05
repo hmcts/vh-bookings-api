@@ -22,6 +22,7 @@ using Testing.Common.Assertions;
 using BookingsApi.DAL.Services;
 using BookingsApi.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+using BookingsApi.Infrastructure.Services.Publishers;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -42,6 +43,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected IBookingAsynchronousProcess BookingAsynchronousProcess;
         protected IFirstdayOfMultidayBookingAsynchronousProcess FirstdayOfMultidayBookingAsyncProcess;
         protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
+        protected Mock<IEventPublisherFactory> PublisherFactoryMock;
 
         [SetUp]
         public void Setup()
@@ -55,10 +57,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<IVhLogger>();
+            PublisherFactoryMock = new Mock<IEventPublisherFactory>();
 
-            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(EventPublisherMock.Object);
-            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(EventPublisherMock.Object);
-            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(EventPublisherMock.Object);
+            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactoryMock.Object);
+            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactoryMock.Object);
+            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactoryMock.Object);
             Controller = GetControllerObject(false);
         }
 

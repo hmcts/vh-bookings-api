@@ -1,11 +1,13 @@
-using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Services;
+using System.Collections.Generic;
 
 namespace BookingsApi.UnitTests.Services
 {
@@ -20,6 +22,7 @@ namespace BookingsApi.UnitTests.Services
         private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
         private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsynchronousProcess;
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
+        private readonly IEventPublisherFactory _eventPublisherFactory;
 
         public BookingServiceTests()
         {
@@ -27,9 +30,17 @@ namespace BookingsApi.UnitTests.Services
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
-            _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisher);
-            _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisher);
-            _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisher);
+            _eventPublisherFactory = new EventPublisherFactory(new List<IPublishEvent> {
+                new WelcomeEmailForNewParticipantsPublisher(_eventPublisher),
+                new CreateConferencePublisher(_eventPublisher),
+                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
+                new HearingConfirmationforExistingParticipantsPublisher(_eventPublisher),
+                new MultidayHearingConfirmationforNewParticipantsPublisher(_eventPublisher),
+                new MultidayHearingConfirmationforExistingParticipantsPublisher(_eventPublisher)});
+
+            _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory);
+            _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory);
+            _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory);
 
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
                 _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess);
@@ -40,8 +51,8 @@ namespace BookingsApi.UnitTests.Services
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var createConfereceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = hearing.Participants.Count;
-            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count;
+            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is Individual);
+            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge);
 
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
             await _bookingService.PublishNewHearing(hearing, false);
@@ -61,7 +72,7 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
             var createConfereceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = hearing.Participants.Count;
+            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is Individual);
             var hearingConfirmationForNewParticipantsMessageCount = 0;
 
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
@@ -82,7 +93,7 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
             var newParticipantWelcomeMessageCount = 0;
-            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count;
+            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is Individual);
 
             var totalMessages = newParticipantWelcomeMessageCount + hearingConfirmationForNewParticipantsMessageCount;
             await _bookingService.PublishMultiDayHearing(hearing, 2);
