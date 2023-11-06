@@ -21,7 +21,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing);
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing).Where(x => x is Individual);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)
