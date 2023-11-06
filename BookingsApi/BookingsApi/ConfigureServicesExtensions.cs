@@ -101,7 +101,6 @@ namespace BookingsApi
 
             services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
             services.AddScoped<IQueryHandler, QueryHandler>();
-            services.AddScoped<IFeatureFlagService, FeatureFlagService>();
 
             services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
             services.AddScoped<ICommandHandler, CommandHandler>();
