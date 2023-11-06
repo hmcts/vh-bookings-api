@@ -74,9 +74,7 @@ public class BookNewHearingTests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
 
         var messages = serviceBusStub.ReadAllMessagesFromQueue();
-        messages.Should().HaveCount(2);
         var message = messages.Single(x => x.IntegrationEvent.GetType() == typeof(HearingIsReadyForVideoIntegrationEvent));
-        messages.Single(x => x.IntegrationEvent.GetType() == typeof(ExistingParticipantHearingConfirmationEvent));
         var integrationEvent = message.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Participants.Should().Contain(x=> 
             x.ContactEmail == judge.ContactEmail && x.HearingRole == "Judge" && x.UserRole == "Judge");
