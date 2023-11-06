@@ -19,12 +19,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public EventType EventType => EventType.HearingConfirmationForNewParticipantEvent;
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var newParticipants = videoHearing.Participants.Where(x => x is not Judge && !x.DoesPersonAlreadyExist());
-            var isUpdatedHearing = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
-            if (isUpdatedHearing)
-            {
-                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds()); 
-            }
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)

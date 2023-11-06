@@ -1,9 +1,6 @@
-﻿using BookingsApi.Common;
-using BookingsApi.Domain;
-using BookingsApi.Domain.Participants;
+﻿using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
@@ -20,12 +17,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var newParticipants = videoHearing.Participants.Where(x => x is Individual && !x.DoesPersonAlreadyExist());
-            var isUpdatedHearing = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
-            if (isUpdatedHearing)
-            {
-                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
-            }
+            var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing);
 
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)
