@@ -20,7 +20,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public async Task PublishAsync(VideoHearing videoHearing)
         {
             var newParticipants = videoHearing.Participants.Where(x => x is not Judge && !x.DoesPersonAlreadyExist());
-            var isUpdatedHearing = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+            var isUpdatedHearing = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
             if (isUpdatedHearing)
             {
                 newParticipants = newParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds()); 
