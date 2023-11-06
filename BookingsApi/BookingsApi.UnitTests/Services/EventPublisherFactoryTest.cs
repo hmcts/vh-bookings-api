@@ -17,17 +17,7 @@ namespace BookingsApi.UnitTests.Services
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
 
-            var publishers = new List<IPublishEvent>
-            {
-                new WelcomeEmailForNewParticipantsPublisher(_eventPublisher),
-                new CreateConferencePublisher(_eventPublisher),
-                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new HearingConfirmationforExistingParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforExistingParticipantsPublisher(_eventPublisher)
-            };
-
-            var eventPublisherFactory = new EventPublisherFactory(publishers);
+            var eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
             eventPublisherFactory.Get(EventType.WelcomeMessageForNewParticipantEvent).Should().NotBeNull();
             eventPublisherFactory.Get(EventType.CreateConferenceEvent).Should().NotBeNull();
             eventPublisherFactory.Get(EventType.HearingConfirmationForNewParticipantEvent).Should().NotBeNull();

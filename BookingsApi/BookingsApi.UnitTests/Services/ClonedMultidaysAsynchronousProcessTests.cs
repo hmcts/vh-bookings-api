@@ -1,9 +1,9 @@
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
-using System.Collections.Generic;
 
 namespace BookingsApi.UnitTests.Services
 {
@@ -19,13 +19,7 @@ namespace BookingsApi.UnitTests.Services
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
-            _eventPublisherFactory = new EventPublisherFactory(new List<IPublishEvent> {
-                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new CreateConferencePublisher(_eventPublisher),
-                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new HearingConfirmationforExistingParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforExistingParticipantsPublisher(_eventPublisher)});
+            _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
             _clonedMultidaysAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory);
         }
         
@@ -40,7 +34,7 @@ namespace BookingsApi.UnitTests.Services
 
             var createConfereceMessageCount = 0;
             var newParticipantWelcomeMessageCount = 0;
-            var multidayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
+            var multidayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is Individual) - 2;
             var mulitdayHearingConfirmationForExistingParticipantsMessageCount = 2;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + multidayHearingConfirmationForNewParticipantsMessageCount
                 + mulitdayHearingConfirmationForExistingParticipantsMessageCount;

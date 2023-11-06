@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain;
+﻿using BookingsApi.Common;
+using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -15,12 +16,18 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             _eventPublisher = eventPublisher;
         }
 
-        public EventType EventType => EventType.MultidayHearingConfirmationforNewParticipantEvent; 
+        public EventType EventType => EventType.MultidayHearingConfirmationforNewParticipantEvent;
         public int TotalDays { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
             var newParticipants = videoHearing.Participants.Where(x => x is Individual && !x.DoesPersonAlreadyExist());
+            var isUpdatedHearing = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+            if (isUpdatedHearing)
+            {
+                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
+            }
+
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in newParticipants)
             {

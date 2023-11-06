@@ -110,15 +110,23 @@ namespace BookingsApi
             services.AddScoped<IVhLogger, VhLogger>();
             services.AddScoped<IHearingAllocationService, HearingAllocationService>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
+
+            RegisterEventPublishers(services);
+
+            services.AddScoped<IList<IPublishEvent>>(p => { 
+                var list = p.GetServices<IPublishEvent>().ToList(); 
+                list.AddRange(p.GetServices<IPublishMultidayEvent>().ToList());
+                return list; });
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();
             services.AddScoped<IBookingAsynchronousProcess, SingledayHearingAsynchronousProcess>();
             services.AddScoped<IClonedBookingAsynchronousProcess, ClonedMultidaysAsynchronousProcess>();
             services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
-            services.AddScoped<IPublishEvent>();
+            services.AddScoped<IHearingParticipantService, HearingParticipantService>();
+            services.AddScoped<IParticipantAddedToHearingAsynchronousProcess, ParticipantAddedToHearingAsynchronousProcess>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
-            RegisterEventPublishers(services);
+
             return services;
         }
 
@@ -170,20 +178,14 @@ namespace BookingsApi
 
         private static void RegisterEventPublishers(IServiceCollection serviceCollection)
         {
-            var eventPublishers = GetAllTypesOf(typeof(IPublishEvent)).ToList();
-            foreach (var eventPublisher in eventPublishers)
+            var type = typeof(IPublishEvent);
+            var derivedTypes = typeof(IPublishEvent).Assembly.GetTypes().Where(p => type.IsAssignableFrom(p));
+            var derivedTypesExcludingInterfaces = derivedTypes.Where(x => !x.IsInterface);
+            foreach (var eventPublisher in derivedTypesExcludingInterfaces)
             {
                 var serviceType = eventPublisher.GetInterfaces()[0];
                 serviceCollection.AddScoped(serviceType, eventPublisher);
             }
         }
-
-        private static IEnumerable<Type> GetAllTypesOf(Type i)
-        {
-            return i.Assembly.GetTypes().Where(t =>
-                t.GetInterfaces().ToList().Exists(x =>
-                    x.GetGenericTypeDefinition() == i));
-        }
-
     }
 }

@@ -7,6 +7,7 @@ using BookingsApi.DAL.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -64,7 +65,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[1] && c.Cases[0].Name == "Case name Day 3 of 3")), Times.Once);
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count(x => x is Individual)));
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<ExistingParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(0));
         }
 
@@ -91,7 +92,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Exactly(request.Dates.Count));
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count(x => x is Individual)));
 
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }

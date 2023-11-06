@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
-    public interface IBookingAsynchronousProcess
+    public interface IParticipantAddedToHearingAsynchronousProcess
     {
         Task Start(VideoHearing videoHearing);
     }
 
-    public class SingledayHearingAsynchronousProcess : IBookingAsynchronousProcess
+    public class ParticipantAddedToHearingAsynchronousProcess : IParticipantAddedToHearingAsynchronousProcess
     {
         private readonly IEventPublisherFactory _publisherFactory;
 
-        public SingledayHearingAsynchronousProcess(IEventPublisherFactory publisherFactory)
+        public ParticipantAddedToHearingAsynchronousProcess(IEventPublisherFactory publisherFactory)
         {
             _publisherFactory = publisherFactory;
         }
@@ -21,9 +21,8 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
         public async Task Start(VideoHearing videoHearing)
         {
             await _publisherFactory.Get(EventType.WelcomeMessageForNewParticipantEvent).PublishAsync(videoHearing);
-            await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(videoHearing);
+            await _publisherFactory.Get(EventType.ParticipantAddedEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.HearingConfirmationForNewParticipantEvent).PublishAsync(videoHearing);
-            await _publisherFactory.Get(EventType.HearingConfirmationForExistingParticipantEvent).PublishAsync(videoHearing);
         }
     }
 }

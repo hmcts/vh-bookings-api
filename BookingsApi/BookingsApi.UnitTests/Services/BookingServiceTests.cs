@@ -30,13 +30,7 @@ namespace BookingsApi.UnitTests.Services
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
-            _eventPublisherFactory = new EventPublisherFactory(new List<IPublishEvent> {
-                new WelcomeEmailForNewParticipantsPublisher(_eventPublisher),
-                new CreateConferencePublisher(_eventPublisher),
-                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new HearingConfirmationforExistingParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforExistingParticipantsPublisher(_eventPublisher)});
+            _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
 
             _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory);
             _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory);

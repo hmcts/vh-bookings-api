@@ -295,7 +295,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
     }
     
     [Test]
-    public async Task should_update_a_participant_and_not_publish_event_when_hearing_is_not_confirmed()
+    public async Task should_update_a_participant_and_publish_event_when_hearing_is_not_confirmed()
     {
         var hearing = await Hooks.SeedVideoHearingV2(status:BookingStatus.Booked);
         var hearingId = hearing.Id;
@@ -338,6 +338,6 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         participantResponse.LinkedParticipants.Should().BeEmpty();
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        serviceBusStub!.Count.Should().Be(0);
+        serviceBusStub!.Count.Should().Be(1);
     }
 }

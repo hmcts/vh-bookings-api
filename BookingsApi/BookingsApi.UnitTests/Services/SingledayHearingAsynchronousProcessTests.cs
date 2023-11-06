@@ -1,3 +1,4 @@
+using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -18,13 +19,7 @@ namespace BookingsApi.UnitTests.Services
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
-            _eventPublisherFactory = new EventPublisherFactory(new List<IPublishEvent> {
-                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new CreateConferencePublisher(_eventPublisher),
-                new HearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new HearingConfirmationforExistingParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforNewParticipantsPublisher(_eventPublisher),
-                new MultidayHearingConfirmationforExistingParticipantsPublisher(_eventPublisher)});
+            _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
 
             _singledayHearingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory);
         }
@@ -37,8 +32,8 @@ namespace BookingsApi.UnitTests.Services
                 hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
 
             var createConfereceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = hearing.Participants.Count - 1;
-            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 1;
+            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is Individual) - 1;
+            var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
             var hearingConfirmationForExistingParticipantsMessageCount = 1;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount
                 + hearingConfirmationForExistingParticipantsMessageCount;

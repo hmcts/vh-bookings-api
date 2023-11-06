@@ -30,7 +30,9 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         }
         public EventMessage[] ReadAllMessagesFromQueue()
         {
-            return _eventMessages.ToArray();
+            var messages = _eventMessages.ToArray();
+            _eventMessages.Clear();
+            return messages;
         }
         public int Count => _eventMessages.Count;
     }

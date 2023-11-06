@@ -7,6 +7,7 @@
         HearingConfirmationForNewParticipantEvent,
         CreateConferenceEvent,
         MultidayHearingConfirmationforNewParticipantEvent,
-        MultidayHearingConfirmationforExistingParticipantEvent
+        MultidayHearingConfirmationforExistingParticipantEvent,
+        ParticipantAddedEvent
     }
 }
