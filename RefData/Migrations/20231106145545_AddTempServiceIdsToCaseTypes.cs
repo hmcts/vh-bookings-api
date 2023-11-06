@@ -8,7 +8,7 @@ namespace RefData.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            SqlFileHelper.RunSqlFile("data/VIH-10303_add_temp_service_ids.sql", migrationBuilder);
+            SqlFileHelper.RunSqlFile("data/10303_add_temp_service_ids.sql", migrationBuilder);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
