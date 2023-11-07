@@ -48,7 +48,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I remove a participant with interpreter from a hearing with a valid hearing id")]
         public void GivenIRemoveAParticipantWithInterpreterFromAHearingWithAValidHearingId()
         {            
-            _removedParticipantId = _removedParticipantId = _context.TestData.ParticipantsResponses.FirstOrDefault(p => p.HearingRoleName != "Interpreter" && p.LinkedParticipants.Any()).Id;
+            _removedParticipantId = _removedParticipantId = _context.TestData.ParticipantsResponses.Find(p => p.HearingRoleName != "Interpreter" && p.LinkedParticipants.Any()).Id;
             _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId)); _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId));
            
         }
@@ -56,7 +56,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I remove an interpreter from a hearing with a valid hearing id")]
         public void GivenIRemoveAnInterpreterFromAHearingWithAValidHearingId()
         {
-            _removedParticipantId = _context.TestData.ParticipantsResponses.FirstOrDefault(p => p.HearingRoleName == "Interpreter" && p.LinkedParticipants.Any()).Id;
+            _removedParticipantId = _context.TestData.ParticipantsResponses.Find(p => p.HearingRoleName == "Interpreter" && p.LinkedParticipants.Any()).Id;
             _context.Request = _context.Delete(RemoveParticipantFromHearing(_context.TestData.Hearing.Id, _removedParticipantId));
         }
 
@@ -140,13 +140,13 @@ namespace BookingsApi.AcceptanceTests.Steps
         {
             var participantResponses = _context.TestData.ParticipantsResponses;
             var isIndividual = role == "Individual";
-            var participant = isIndividual ? participantResponses.FirstOrDefault(x => x.UserRoleName.Equals(role) && !x.LinkedParticipants.Any())
-                                    : participantResponses.FirstOrDefault(x => x.UserRoleName.Equals(role));
+            var participant = isIndividual ? participantResponses.Find(x => x.UserRoleName.Equals(role) && !x.LinkedParticipants.Any())
+                : participantResponses.Find(x => x.UserRoleName.Equals(role));
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest(); 
             _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, participant.Id), updateParticipantRequest); 
             if (isIndividual)
             {
-                var interpreter = participantResponses.FirstOrDefault(x => x.HearingRoleName.Equals("Interpreter"));
+                var interpreter = participantResponses.Find(x => x.HearingRoleName.Equals("Interpreter"));
                 updateParticipantRequest.WithLinkedParticipants(participant.ContactEmail, interpreter.ContactEmail);
             }
             _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, participant.Id), updateParticipantRequest);
