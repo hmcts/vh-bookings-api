@@ -278,7 +278,6 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.Now;
-            
             return participant;
         }
 
@@ -295,6 +294,7 @@ namespace BookingsApi.Domain
                 x.JudiciaryPerson.PersonalCode == judiciaryParticipantPersonalCode);
             JudiciaryParticipants.Remove(existingParticipant);
             ValidateHostCount();
+            UpdateBookingStatusJudgeRequirement();
             UpdatedDate = DateTime.UtcNow;
         }
 
@@ -314,7 +314,7 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
