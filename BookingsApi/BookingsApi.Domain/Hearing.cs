@@ -373,7 +373,7 @@ namespace BookingsApi.Domain
 
         public void ValidateHostCount()
         {
-            if (!HasHost)
+            if (!HasHost && Status is BookingStatus.Booked or BookingStatus.Created)
             {
                 throw new DomainRuleException("Host", DomainRuleErrorMessages.HearingNeedsAHost);
             }
