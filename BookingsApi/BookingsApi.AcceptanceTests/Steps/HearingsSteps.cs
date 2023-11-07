@@ -57,7 +57,8 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have a valid get hearing by username request")]
         public void GivenIHaveAValidGetHearingByUsernameRequest()
         {
-            _context.Request = _context.Get(GetHearingsByUsername(_context.TestData.ParticipantsResponses.First().Username));
+            _context.Request = _context.Get(GetHearingsByUsername(_context.TestData.ParticipantsResponses
+                .First(x => x.Username is not null).Username));
         }
 
         [Given(@"I have a remove hearing request with a valid hearing id")]
@@ -250,7 +251,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             model.Should().NotBeNull();
             _context.TestData.Hearing.Id = model.OrderByDescending(h => h.ScheduledDateTime).First().Id;
 
-            var hearing = model.FirstOrDefault(h => h.Id == _context.TestData.Hearing.Id);
+            var hearing = model.Find(h => h.Id == _context.TestData.Hearing.Id);
             hearing.Should().NotBeNull();
             if (hearing == null) return;
 
@@ -319,7 +320,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have a valid search for recorded hearings by case number request")]
         public void GivenIHaveAValidSearchForHearingByCaseNumberRequest()
         {
-            var caseResponse = _context.TestData.Hearing.Cases.First();
+            var caseResponse = _context.TestData.Hearing.Cases[0];
             var query = new SearchForHearingsQuery
             {
                 CaseNumber = caseResponse.Number
@@ -330,7 +331,7 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have an invalid search for recorded hearings by case number request")]
         public void GivenIHaveAnInvalidSearchForHearingByCaseNumberRequest()
         {
-            var caseResponse = _context.TestData.Hearing.Cases.First();
+            var caseResponse = _context.TestData.Hearing.Cases[0];
             var query = new SearchForHearingsQuery
             {
                 CaseNumber = caseResponse.Number + "01"
