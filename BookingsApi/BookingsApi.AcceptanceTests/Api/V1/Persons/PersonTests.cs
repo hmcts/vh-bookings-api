@@ -41,7 +41,7 @@ public class PersonTests : ApiTest
     {
         // arrange
         await BookHearing();
-        var participant = _hearing.Participants[0];
+        var participant = _hearing.Participants.Find(x=> x.Username is not null);
 
         // act
         var result = await BookingsApiClient.GetPersonByUsernameAsync(participant.Username);
@@ -58,11 +58,11 @@ public class PersonTests : ApiTest
         var participant = _hearing.Participants[0];
 
         // act
-        var result = await BookingsApiClient.PostPersonBySearchTermAsync(new SearchTermRequest(participant.Username[..13]));
+        var result = (await BookingsApiClient.PostPersonBySearchTermAsync(new SearchTermRequest(participant.ContactEmail[..5])));
 
         // assert
         result.Should().NotBeNullOrEmpty();
-        result.First(x => x.Username == participant.Username)
+        result.First(x => x.ContactEmail == participant.ContactEmail)
             .Should().BeEquivalentTo(participant, options => options.ExcludingMissingMembers().Excluding(p => p.Id));
     }
 
