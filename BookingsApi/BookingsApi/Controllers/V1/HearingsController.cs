@@ -104,22 +104,7 @@ namespace BookingsApi.Controllers.V1
             var response = hearings.Select(ConfirmedHearingsTodayResponseMapper.Map).ToList();
             return Ok(response);
         }
-
-        /// <summary>
-        /// Anonymise participant and case from expired hearing
-        /// </summary>
-        /// <param name="hearingIds">hearing ids to anonymise data with</param>
-        /// <returns></returns>
-        [HttpPatch("hearingids/{hearingIds}/anonymise-participant-and-case")]
-        [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [MapToApiVersion("1.0")]
-        public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
-        {
-            await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIds });
-            return Ok();
-        }
-
+        
         /// <summary>
         /// Get list of all hearings in a group
         /// </summary>
@@ -138,6 +123,20 @@ namespace BookingsApi.Controllers.V1
 
             return Ok(response);
         }
+        /// <summary>
+        /// Anonymise participant and case from expired hearing
+        /// </summary>
+        /// <param name="hearingIds">hearing ids to anonymise data with</param>
+        /// <returns></returns>
+        [HttpPatch("anonymise-participant-and-case")]
+        [OpenApiOperation("AnonymiseParticipantAndCaseByHearingId")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> AnonymiseParticipantAndCaseByHearingId(List<Guid> hearingIds)
+        {
+            await _commandHandler.Handle(new AnonymiseCaseAndParticipantCommand { HearingIds = hearingIds });
+            return Ok();
+        }
 
         /// <summary>
         /// Get list of all hearings for notification between next 48 to 72 hrs. 
@@ -145,16 +144,16 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Hearing details</returns>
         [HttpGet("notifications/gethearings")]
         [OpenApiOperation("GetHearingsForNotification")]
-        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<HearingNotificationResponse>), (int)HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHearingsForNotificationAsync()
         {
 
             var query = new GetHearingsForNotificationsQuery();
 
-            var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<VideoHearing>>(query);
+            var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<HearingNotificationDto>>(query);
 
-            var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
+            var response = hearings.Select(h=> new HearingNotificationResponse() { Hearing = HearingToDetailsResponseMapper.Map(h.Hearing), TotalDays = h.TotalDays}).ToList();
 
             return Ok(response);
         }
@@ -834,3 +833,4 @@ namespace BookingsApi.Controllers.V1
         }
     }
 }
+
