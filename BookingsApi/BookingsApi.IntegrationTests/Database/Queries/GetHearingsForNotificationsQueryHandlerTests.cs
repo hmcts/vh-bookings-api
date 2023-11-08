@@ -28,9 +28,9 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var query = new GetHearingsForNotificationsQuery();
             var result = await _handler.Handle(query);
 
-            var resulthearing1 = result.Find(x => x.Id == hearing1.Id);
-            var resulthearing2 = result.Find(x => x.Id == hearing2.Id);
-            var resulthearing3 = result.Find(x => x.Id == hearing3.Id);
+            var resulthearing1 = result.Find(x => x.Hearing.Id == hearing1.Id);
+            var resulthearing2 = result.Find(x => x.Hearing.Id == hearing2.Id);
+            var resulthearing3 = result.Find(x => x.Hearing.Id == hearing3.Id);
 
             resulthearing1.Should().NotBeNull();
             resulthearing2.Should().NotBeNull();
@@ -61,12 +61,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var returnedHearing2 = groupResults[1];
             var returnedHearing3 = groupResults[2];
 
-            var resulthearing1 = result.Find(x => x.Id == returnedHearing1.Id);
-            var resulthearing2 = result.Find(x => x.Id == returnedHearing2.Id);
-            var resulthearing3 = result.Find(x => x.Id == returnedHearing3.Id);
+            var resulthearing1 = result.Find(x => x.Hearing.Id == returnedHearing1.Id);
+            var resulthearing2 = result.Find(x => x.Hearing.Id == returnedHearing2.Id);
+            var resulthearing3 = result.Find(x => x.Hearing.Id == returnedHearing3.Id);
 
             resulthearing1.Should().NotBeNull();
-            resulthearing2.Should().NotBeNull();
+            resulthearing2.Should().BeNull();
             resulthearing3.Should().BeNull();
 
         }
