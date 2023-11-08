@@ -8,6 +8,9 @@
         CreateConferenceEvent,
         MultidayHearingConfirmationforNewParticipantEvent,
         MultidayHearingConfirmationforExistingParticipantEvent,
-        ParticipantAddedEvent
+        ParticipantAddedEvent,
+        CreateAndNotifyUserEvent,
+        HearingNotificationIntegrationEvent,
+        MultiDayHearingIntegrationEvent
     }
 }

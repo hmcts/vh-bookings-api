@@ -1,3 +1,4 @@
+using BookingsApi.Common.Services;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain.Participants;
@@ -8,6 +9,7 @@ using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Services;
 using System.Collections.Generic;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.UnitTests.Services
 {
@@ -23,6 +25,7 @@ namespace BookingsApi.UnitTests.Services
         private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsynchronousProcess;
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
         private readonly IEventPublisherFactory _eventPublisherFactory;
+        private readonly IFeatureToggles _featureToggles;
 
         public BookingServiceTests()
         {
@@ -31,10 +34,11 @@ namespace BookingsApi.UnitTests.Services
             _queryHandlerMock = new Mock<IQueryHandler>();
             _commandHandlerMock = new Mock<ICommandHandler>();
             _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
+            _featureToggles = new FeatureTogglesStub();
 
-            _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory);
-            _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory);
-            _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory);
+            _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
+            _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory, _featureToggles);
+            _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
 
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
                 _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess);

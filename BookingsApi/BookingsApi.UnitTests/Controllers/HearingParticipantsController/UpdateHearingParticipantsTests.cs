@@ -9,6 +9,8 @@ using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Domain.Participants;
 using Testing.Common.Assertions;
+using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 {
     public class UpdateHearingParticipantsTests : HearingParticipantsControllerTest
@@ -211,7 +213,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
                 }
             };
             _request = BuildRequest();
-
+            
             //Act
             await Controller.UpdateHearingParticipants(hearingId, _request);
 

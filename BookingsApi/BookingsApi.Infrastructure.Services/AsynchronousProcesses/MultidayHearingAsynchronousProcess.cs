@@ -1,4 +1,5 @@
 ﻿using BookingsApi.Common;
+using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -17,9 +18,11 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
     public class ClonedMultidaysAsynchronousProcess: IClonedBookingAsynchronousProcess
     {
         private readonly IEventPublisherFactory _publisherFactory;
-        public ClonedMultidaysAsynchronousProcess(IEventPublisherFactory publisherFactory)
+        private readonly IFeatureToggles _featureToggles;
+        public ClonedMultidaysAsynchronousProcess(IEventPublisherFactory publisherFactory, IFeatureToggles featureToggles)
         {
             _publisherFactory = publisherFactory;
+            _featureToggles = featureToggles;
         }
 
         public async Task Start(VideoHearing videoHearing, int totalDays)
@@ -28,6 +31,13 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             {
                 throw new ArgumentOutOfRangeException(nameof(totalDays));
             }
+            if (!_featureToggles.UsePostMay2023Template())
+            {
+                await _publisherFactory.Get(EventType.MultiDayHearingIntegrationEvent).PublishAsync(videoHearing);
+
+                return;
+            }
+
             var publisherForNewParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultidayHearingConfirmationforNewParticipantEvent);
             publisherForNewParticipant.TotalDays = totalDays;
             await publisherForNewParticipant.PublishAsync(videoHearing);

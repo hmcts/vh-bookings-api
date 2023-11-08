@@ -1,3 +1,4 @@
+using BookingsApi.Common.Services;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
@@ -5,6 +6,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using System.Collections.Generic;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.UnitTests.Services
 {
@@ -15,13 +17,15 @@ namespace BookingsApi.UnitTests.Services
         private readonly IEventPublisher _eventPublisher;
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
         private readonly IEventPublisherFactory _eventPublisherFactory;
+        private readonly IFeatureToggles _featureToggles;
         public SingledayHearingAsynchronousProcessTests()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
             _eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
+            _featureToggles = new FeatureTogglesStub();
 
-            _singledayHearingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory);
+            _singledayHearingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
         }
         
         [Test]

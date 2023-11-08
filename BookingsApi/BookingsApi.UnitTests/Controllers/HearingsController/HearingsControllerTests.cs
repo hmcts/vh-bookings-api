@@ -23,6 +23,7 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 using BookingsApi.Infrastructure.Services.Publishers;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
 {
@@ -45,6 +46,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
         protected IEventPublisherFactory PublisherFactory;
         protected Mock<IEventPublisherFactory> PublisherFactoryMock;
+        protected IFeatureToggles FeatureToggles;
 
         [SetUp]
         public void Setup()
@@ -60,10 +62,10 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             Logger = new Mock<IVhLogger>();
             PublisherFactoryMock = new Mock<IEventPublisherFactory>();
             PublisherFactory = EventPublisherFactoryInstance.Get(EventPublisherMock.Object);
-
-            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory);
-            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactory);
-            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactory);
+            FeatureToggles = new FeatureTogglesStub();
+            BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
+            FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
+            ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactory, FeatureToggles);
             Controller = GetControllerObject(false);
         }
 

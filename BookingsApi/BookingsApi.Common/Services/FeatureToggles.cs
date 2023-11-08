@@ -9,6 +9,7 @@ namespace BookingsApi.Common.Services
     public interface IFeatureToggles
     {
         public bool EJudFeature();
+        bool UsePostMay2023Template();
     }
 
     public class FeatureToggles : IFeatureToggles
@@ -17,6 +18,7 @@ namespace BookingsApi.Common.Services
         private readonly Context _context;
         private const string LdUser = "vh-booking-api";
         private const string EJudFeatureKey = "ejud-feature";
+        private const string NewNotifyTemplatesToggleKey = "notify-post-may-2023-templates";
 
         public FeatureToggles(string sdkKey, string environmentName)
         {
@@ -35,6 +37,16 @@ namespace BookingsApi.Common.Services
                 throw new InvalidOperationException("LaunchDarkly client not initialized");
             }
             return _ldClient.BoolVariation(key, _context);
+        }
+
+        public bool UsePostMay2023Template()
+        {
+            if (!_ldClient.Initialized)
+            {
+                throw new InvalidOperationException("LaunchDarkly client not initialized");
+            }
+
+            return _ldClient.BoolVariation(NewNotifyTemplatesToggleKey, _context);
         }
     }
 }
