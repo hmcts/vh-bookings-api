@@ -29,9 +29,9 @@ namespace BookingsApi.Domain.Participants
         public int? CaseRoleId { get; set; }
         public virtual CaseRole CaseRole { get; set; }
         public int HearingRoleId { get; set; }
-        public virtual HearingRole HearingRole { get; set; }
+        public HearingRole HearingRole { get; set; }
         public Guid PersonId { get; protected set; }
-        public virtual Person Person { get; protected set; }
+        public Person Person { get; protected set; }
         public Guid HearingId { get; set; }
         public virtual Hearing Hearing { get; protected set; }
         public DateTime CreatedDate { get; set; }
@@ -39,7 +39,7 @@ namespace BookingsApi.Domain.Participants
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public string Discriminator { get; set; }
-        public virtual IList<LinkedParticipant> LinkedParticipants { get; set; }
+        public IList<LinkedParticipant> LinkedParticipants { get; set; }
 
 
         protected virtual void ValidatePartipantDetails(string title, string displayName, string telephoneNumber, string organisationName)

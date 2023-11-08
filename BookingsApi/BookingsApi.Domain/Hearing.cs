@@ -94,10 +94,10 @@ namespace BookingsApi.Domain
         public DateTime UpdatedDate { get; protected set; }
         public string ConfirmedBy { get; set; }
         public DateTime? ConfirmedDate { get; protected set; }
-        public virtual IList<Participant> Participants { get; }
-        public virtual IList<Endpoint> Endpoints { get; }
-        public virtual IList<HearingCase> HearingCases { get; set; }
-        public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
+        public IList<Participant> Participants { get; }
+        public IList<Endpoint> Endpoints { get; }
+        public IList<HearingCase> HearingCases { get; set; }
+        public IList<JudiciaryParticipant> JudiciaryParticipants { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool AudioRecordingRequired { get; set; }
