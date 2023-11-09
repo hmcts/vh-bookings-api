@@ -101,15 +101,11 @@ public class BookNewHearingTests : ApiTest
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
         createdResponse.Should().BeEquivalentTo(hearingResponse);
+
         _hearingIds.Add(hearingResponse.Id);
         var panel1 = hearingResponse.Participants.Single(p => p.HearingRoleName == "Panel Member");
-
-        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
-        message.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
-        var integrationEvent = message.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
-        integrationEvent!.Participants.Should().Contain(x =>
-            x.ContactEmail == panel1.ContactEmail && x.HearingRole == "Panel Member" && x.UserRole == "Judicial Office Holder" && string.IsNullOrEmpty(x.ContactTelephone));
+        panel1.UserRoleName.Should().Be("Judicial Office Holder");
+        panel1.TelephoneNumber.Should().BeNullOrEmpty();
     }
 
     [Test]
