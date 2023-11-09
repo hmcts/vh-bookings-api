@@ -27,14 +27,15 @@ namespace BookingsApi.Validations.V1
             RuleFor(x => x.LastName).Matches(_nameRegex).WithMessage(LastNameDoesntMatchRegex);
             RuleFor(x => x.ContactEmail).NotEmpty().WithMessage(NoContactEmailErrorMessage).Must(x => x.IsValidEmail()).WithMessage(InvalidContactEmailErrorMessage);
 
-            RuleFor(x => x.Username).NotEmpty().When(x => x.HearingRoleName == "Judge").WithMessage(NoUsernameErrorMessage);
-            RuleFor(x => x.Username).Must(x => x.IsValidEmail()).When(x => x.HearingRoleName == "Judge" && !string.IsNullOrEmpty(x.Username))
+            RuleFor(x => x.Username).NotEmpty().When(x => x.HearingRoleName.ToLowerInvariant() == "Judge".ToLowerInvariant()).WithMessage(NoUsernameErrorMessage);
+            RuleFor(x => x.Username).Must(x => x.IsValidEmail()).When(x => x.HearingRoleName.ToLowerInvariant() == "Judge".ToLowerInvariant() && !string.IsNullOrEmpty(x.Username))
                 .WithMessage(InvalidJudgeUsernameErrorMessage);
 
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);
-            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleName != "Judge" && x.HearingRoleName != "Panel Member").WithMessage(NoTelephoneNumberErrorMessage);
+            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleName.ToLowerInvariant() != "Judge".ToLowerInvariant() && 
+                x.HearingRoleName.ToLowerInvariant() != "Panel Member".ToLowerInvariant()).WithMessage(NoTelephoneNumberErrorMessage);
         }
     }
 }

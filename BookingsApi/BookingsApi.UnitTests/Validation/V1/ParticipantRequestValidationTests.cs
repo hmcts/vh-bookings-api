@@ -208,12 +208,16 @@ namespace BookingsApi.UnitTests.Validation.V1
         }
 
         [TestCase("Judge")]
+        [TestCase("judge")]
         [TestCase("Panel Member")]
+        [TestCase("Panel member")]
+        [TestCase("panel member")]
+        [TestCase("panel Member")]
         public async Task Should_not_return_missing_telephone_number_error_for(string role)
         {
             var request = BuildRequest();
             request.TelephoneNumber = string.Empty;
-            request.HearingRoleName = "Judge";
+            request.HearingRoleName = role;
             request.Username = "judge.one@ejudiciary.net";
             
             var result = await _validator.ValidateAsync(request);
