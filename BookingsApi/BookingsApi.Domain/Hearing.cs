@@ -293,7 +293,6 @@ namespace BookingsApi.Domain
             var existingParticipant = JudiciaryParticipants.Single(x =>
                 x.JudiciaryPerson.PersonalCode == judiciaryParticipantPersonalCode);
             JudiciaryParticipants.Remove(existingParticipant);
-            ValidateHostCount();
             UpdateBookingStatusJudgeRequirement();
             UpdatedDate = DateTime.UtcNow;
         }
@@ -305,7 +304,6 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
-            
             if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
@@ -321,7 +319,10 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
-            
+            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), $"Judiciary Person {judiciaryPerson.PersonalCode} already exists in the hearing");
+            }
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
@@ -362,7 +363,7 @@ namespace BookingsApi.Domain
         {
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.JudiciaryPersonAlreadyExists(judiciaryPerson.PersonalCode));
             }
 
             if (judiciaryPerson.IsALeaver())

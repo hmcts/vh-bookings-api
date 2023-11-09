@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
@@ -191,7 +192,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("Judiciary participant already exists in the hearing");
+            validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be(DomainRuleErrorMessages.JudiciaryPersonAlreadyExists(existingParticipant.JudiciaryPerson.PersonalCode));
         }
 
         [Test]
