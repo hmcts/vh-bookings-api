@@ -207,8 +207,9 @@ namespace BookingsApi.UnitTests.Validation.V1
                 .Should().BeTrue();
         }
 
-        [Test]
-        public async Task Should_not_return_missing_telephone_number_error_for_judge()
+        [TestCase("Judge")]
+        [TestCase("Panel Member")]
+        public async Task Should_not_return_missing_telephone_number_error_for(string role)
         {
             var request = BuildRequest();
             request.TelephoneNumber = string.Empty;

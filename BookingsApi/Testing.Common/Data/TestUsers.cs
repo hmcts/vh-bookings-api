@@ -40,5 +40,12 @@ namespace Testing.Common.Data
             public const string FirstName = "Judge";
             public const string LastName = "Judge_1";
         }
+
+        public static class PanelMember1
+        {
+            public const string FirstName = "Panel";
+            public const string LastName = "Member_1";
+        }
+
     }
 }

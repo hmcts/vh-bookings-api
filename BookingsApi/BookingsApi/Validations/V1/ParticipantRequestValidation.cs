@@ -34,7 +34,7 @@ namespace BookingsApi.Validations.V1
             RuleFor(x => x.DisplayName).NotEmpty().WithMessage(NoDisplayNameErrorMessage);
             RuleFor(x => x.CaseRoleName).NotEmpty().WithMessage(NoCaseRoleNameErrorMessage);
             RuleFor(x => x.HearingRoleName).NotEmpty().WithMessage(NoHearingRoleNameErrorMessage);
-            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleName != "Judge").WithMessage(NoTelephoneNumberErrorMessage);
+            RuleFor(x => x.TelephoneNumber).NotEmpty().When(x => x.HearingRoleName != "Judge" && x.HearingRoleName != "Panel Member").WithMessage(NoTelephoneNumberErrorMessage);
         }
     }
 }
