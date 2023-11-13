@@ -10,10 +10,10 @@ namespace BookingsApi.Mappings.V1
     {
         public static NewParticipant Map(ParticipantRequest requestParticipant, CaseType caseType)
         {
-            var caseRole = caseType.CaseRoles.Find(x => x.Name == requestParticipant.CaseRoleName);
+            var caseRole = caseType.CaseRoles.Find(x => x.Name.ToLowerInvariant() == requestParticipant.CaseRoleName.ToLowerInvariant());
             if (caseRole == null) throw new BadRequestException($"Invalid case role [{requestParticipant.CaseRoleName}]");
 
-            var hearingRole = caseRole.HearingRoles.Find(x => x.Name == requestParticipant.HearingRoleName);
+            var hearingRole = caseRole.HearingRoles.Find(x => x.Name.ToLowerInvariant() == requestParticipant.HearingRoleName.ToLowerInvariant());
             if (hearingRole == null) throw new BadRequestException($"Invalid hearing role [{requestParticipant.HearingRoleName}]");
 
             if (string.IsNullOrEmpty(requestParticipant.Username))
