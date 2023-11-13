@@ -17,7 +17,7 @@ public class UpdateHearingV2Tests : ApiTest
     {
         // arrange
         var hearingId = Guid.NewGuid();
-        var request = new UpdateHearingRequestV2();
+        var request = new UpdateHearingRequestV2 {ScheduledDateTime = DateTime.UtcNow.AddMinutes(-5)};
 
         // act
         using var client = Application.CreateClient();
@@ -126,7 +126,7 @@ public class UpdateHearingV2Tests : ApiTest
         
         hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
-        hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);
         hearingFromDb.HearingRoomName.Should().Be(request.HearingRoomName);
         hearingFromDb.OtherInformation.Should().Be(request.OtherInformation);
@@ -134,7 +134,7 @@ public class UpdateHearingV2Tests : ApiTest
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
         createdResponse.HearingVenueCode.Should().Be(request.HearingVenueCode);
         createdResponse.ScheduledDuration.Should().Be(request.ScheduledDuration);
-        createdResponse.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        createdResponse.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         createdResponse.UpdatedBy.Should().Be(request.UpdatedBy);
         createdResponse.HearingRoomName.Should().Be(request.HearingRoomName);
         createdResponse.OtherInformation.Should().Be(request.OtherInformation);
@@ -142,7 +142,7 @@ public class UpdateHearingV2Tests : ApiTest
         var integrationEvent = message.IntegrationEvent as HearingDetailsUpdatedIntegrationEvent;
         integrationEvent!.Hearing.HearingVenueName.Should().Be("Manchester County and Family Court");
         integrationEvent.Hearing.ScheduledDuration.Should().Be(request.ScheduledDuration);
-        integrationEvent.Hearing.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        integrationEvent.Hearing.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         integrationEvent.Hearing.CaseName.Should().Be(request.Cases[0].Name);
         integrationEvent.Hearing.CaseNumber.Should().Be(request.Cases[0].Number);
     }
@@ -174,7 +174,7 @@ public class UpdateHearingV2Tests : ApiTest
 
         hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
-        hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);
         hearingFromDb.HearingRoomName.Should().Be(request.HearingRoomName);
         hearingFromDb.OtherInformation.Should().Be(request.OtherInformation);
@@ -182,7 +182,7 @@ public class UpdateHearingV2Tests : ApiTest
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
         createdResponse.HearingVenueCode.Should().Be(request.HearingVenueCode);
         createdResponse.ScheduledDuration.Should().Be(request.ScheduledDuration);
-        createdResponse.ScheduledDateTime.Should().Be(request.ScheduledDateTime.ToUniversalTime());
+        createdResponse.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         createdResponse.UpdatedBy.Should().Be(request.UpdatedBy);
         createdResponse.HearingRoomName.Should().Be(request.HearingRoomName);
         createdResponse.OtherInformation.Should().Be(request.OtherInformation);
