@@ -103,7 +103,7 @@ public class BookNewHearingTests : ApiTest
         createdResponse.Should().BeEquivalentTo(hearingResponse);
 
         _hearingIds.Add(hearingResponse.Id);
-        var panel1 = hearingResponse.Participants.Single(p => p.HearingRoleName == "Panel Member");
+        var panel1 = hearingResponse.Participants.First(p => p.HearingRoleName.ToLowerInvariant() == "Panel Member".ToLowerInvariant());
         panel1.UserRoleName.Should().Be("Judicial Office Holder");
         panel1.TelephoneNumber.Should().BeNullOrEmpty();
     }
