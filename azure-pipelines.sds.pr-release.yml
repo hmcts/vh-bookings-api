@@ -69,6 +69,7 @@ stages:
               workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
               migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
               projectName: ${{ variables.efProjectName }}
+              dotnetVersion: 6.0
 
       - job: Generate_RefData_Entity_Framework_Script
         displayName: "Generate RefData Entity Framework Script"
@@ -80,6 +81,7 @@ stages:
               workingPath: $(System.DefaultWorkingDirectory)/RefData
               migrationsPath: RefData/Migrations
               projectName: ${{ variables.efProjectNameRefData }}
+              dotnetVersion: 6.0
 
       - job: package_nuget
         displayName: "Package NuGet Packages"

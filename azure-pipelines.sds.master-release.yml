@@ -35,6 +35,7 @@ stages:
               workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
               projectName: ${{ variables.efProjectName }}
               migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+              dotnetVersion: 6.0
 
       - job: package_nuget
         displayName: "Package Nuget Packages"
