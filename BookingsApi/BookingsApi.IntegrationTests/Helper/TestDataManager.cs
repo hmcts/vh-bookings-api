@@ -170,7 +170,8 @@ namespace BookingsApi.IntegrationTests.Helper
             var venue = options.HearingVenue ?? new RefDataBuilder().HearingVenues[0];
             var hearingVenue = await db.Venues.FirstOrDefaultAsync(x => x.Id == venue.Id);
             var scheduledDate = options.ScheduledDate ?? DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case);
+            
+            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case, options.ScheduledDuration);
 
             await AddParticipantsToVideoHearing(videoHearing, caseType, useFlatHearingRoles, options);
             videoHearing.IsFirstDayOfMultiDayHearing = isMultiDayFirstHearing;
@@ -336,9 +337,8 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         private VideoHearing InitVideoHearing(DateTime scheduledDate, HearingVenue venue, CaseType caseType,
-            HearingType hearingType, Case @case)
+            HearingType hearingType, Case @case, int duration)
         {
-            const int duration = 45;
             const string hearingRoomName = "Room02";
             const string otherInformation = "OtherInformation02";
             const string createdBy = "test@hmcts.net";
@@ -592,7 +592,7 @@ namespace BookingsApi.IntegrationTests.Helper
 
             // create a hearing in the future to avoid validation failures and use reflection to update the scheduled date
             var scheduledDate = DateTime.Today.AddDays(1).AddHours(10).AddMinutes(30);
-            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case);
+            var videoHearing = InitVideoHearing(scheduledDate, hearingVenue, caseType, hearingType, options.Case, options.ScheduledDuration);
             var videoHearingType = typeof(VideoHearing);
             videoHearingType.GetProperty("ScheduledDateTime")?.SetValue(videoHearing, pastScheduledDate);
 

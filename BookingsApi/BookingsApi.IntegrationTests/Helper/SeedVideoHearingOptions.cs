@@ -19,5 +19,6 @@ namespace BookingsApi.IntegrationTests.Helper
         public bool AddPanelMember { get; set; } = false;
         public bool AddStaffMember { get; set; } = false;
         public int EndpointsToAdd { get; set; } = 0;
+        public int ScheduledDuration { get; set; } = 45;
     }
 }
