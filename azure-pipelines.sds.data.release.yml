@@ -43,7 +43,6 @@ stages:
               workingPath: $(System.DefaultWorkingDirectory)/RefData
               migrationsPath: RefData/Migrations
               projectName: ${{ variables.efProjectNameRefData }}
-              dotnetVersion: 6.x
 
   - ${{each env in parameters.environments}}:
       - stage: Run_EF_${{ env }}

@@ -34,7 +34,6 @@ stages:
         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
         projectName: ${{ variables.efProjectName }}
         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-        dotnetVersion: 6.x
   
   - job: PublishAcceptanceTests
     displayName: Publish Acceptance Tests
