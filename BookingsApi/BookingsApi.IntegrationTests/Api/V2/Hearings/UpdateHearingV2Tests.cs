@@ -17,7 +17,7 @@ public class UpdateHearingV2Tests : ApiTest
     {
         // arrange
         var hearingId = Guid.NewGuid();
-        var request = new UpdateHearingRequestV2 {ScheduledDateTime = DateTime.UtcNow.AddMinutes(-5)};
+        var request = new UpdateHearingRequestV2 {ScheduledDateTime = DateTime.MinValue};
 
         // act
         using var client = Application.CreateClient();
