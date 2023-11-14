@@ -44,7 +44,7 @@ namespace BookingsApi.UnitTests.Validation.V1
         public async Task Should_return_hearing_schedule_date_time_in_past_error()
         {
             var request = BuildRequest();
-            request.ScheduledDateTime = DateTime.MinValue;
+            request.ScheduledDateTime = DateTime.UtcNow.AddHours(-2);
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
