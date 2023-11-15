@@ -1,5 +1,11 @@
 mode: Mainline
-branches: {}
+branches:
+  master:
+    mode: ContinuousDelivery
+    tag: ""
+    increment: Minor
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
 ignore:
   sha: []
 merge-message-formats: {}
