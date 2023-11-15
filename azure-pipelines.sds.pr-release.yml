@@ -23,16 +23,16 @@ stages:
     displayName: CI Build
     variables:
       - template: variables/shared.yaml
-    # jobs:
-    # - job: CI_Helm
-    #   displayName: "Helm CI"
-    #   steps:
-    #     - checkout: self
+    jobs:
+      - job: CI_Helm
+        displayName: "Helm CI"
+        steps:
+          - checkout: self
 
-    #     - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-    #       parameters:
-    #         chartPath: ${{ variables.chartPath }}
-    #         chartValuesPath: ${{ variables.chartPath }}
+          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+            parameters:
+              chartPath: ${{ variables.chartPath }}
+              chartValuesPath: ${{ variables.chartPath }}
 
     # - job: UnitAndIntegrationTests
     #   displayName: "Unit and Integration Tests"
