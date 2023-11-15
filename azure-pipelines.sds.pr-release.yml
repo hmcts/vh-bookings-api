@@ -23,34 +23,34 @@ stages:
     displayName: CI Build
     variables:
       - template: variables/shared.yaml
-    jobs:
-      # - job: CI_Helm
-      #   displayName: "Helm CI"
-      #   steps:
-      #     - checkout: self
+    # jobs:
+    # - job: CI_Helm
+    #   displayName: "Helm CI"
+    #   steps:
+    #     - checkout: self
 
-      #     - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-      #       parameters:
-      #         chartPath: ${{ variables.chartPath }}
-      #         chartValuesPath: ${{ variables.chartPath }}
+    #     - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+    #       parameters:
+    #         chartPath: ${{ variables.chartPath }}
+    #         chartValuesPath: ${{ variables.chartPath }}
 
-      # - job: UnitAndIntegrationTests
-      #   displayName: "Unit and Integration Tests"
-      #   steps:
-      #     - checkout: self
+    # - job: UnitAndIntegrationTests
+    #   displayName: "Unit and Integration Tests"
+    #   steps:
+    #     - checkout: self
 
-      #     - template: templates/dotnet/build-test-analyse.yml@azTemplates
-      #       parameters:
-      #         nugetConfigPath: nuget.config
-      #         appName: ${{ variables.appName }}
-      #         dockerComposeTestFile: docker-compose.tests.yml
-      #         sonarExtraProperties: |
-      #           sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
-      #           sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
-      #           sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
-      #           sonar.issue.ignore.multicriteria=e1
-      #           sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
-      #           sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
+    #     - template: templates/dotnet/build-test-analyse.yml@azTemplates
+    #       parameters:
+    #         nugetConfigPath: nuget.config
+    #         appName: ${{ variables.appName }}
+    #         dockerComposeTestFile: docker-compose.tests.yml
+    #         sonarExtraProperties: |
+    #           sonar.cs.opencover.reportsPaths=$(System.DefaultWorkingDirectory)/coverage.opencover.xml
+    #           sonar.exclusions=**/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi/Swagger/**/*, **/BookingsApi.DAL/Migrations/*
+    #           sonar.coverage.exclusions=**/BookingsApi/Swagger/**/*, **/Program.cs, **/Startup.cs, **/Testing.Common/**/*, **/BookingsApi.Common/**/*, **/BookingsApi.IntegrationTests/**/*, **/BookingsApi.UnitTests/**/*, **/BookingsApi/Extensions/*, **/BookingsApi.DAL/Migrations/**/*
+    #           sonar.issue.ignore.multicriteria=e1
+    #           sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S107
+    #           sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
 
   ####################################################
   # Pre Release Tasks. ###############################
