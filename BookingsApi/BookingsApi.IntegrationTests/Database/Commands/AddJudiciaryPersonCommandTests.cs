@@ -21,7 +21,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var externalRefId = Guid.NewGuid().ToString();
             var personalCode = Guid.NewGuid().ToString();
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, personalCode, "Title", "KnownAs", "Surname", "FullName", "PostNominals", "Email", false, false, string.Empty);
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, personalCode, "Title", "KnownAs", "Surname",
+                "FullName", "PostNominals", "Email", "01234567890", false, false, string.Empty);
             
             await _commandHandler.Handle(addCommand);
             Hooks.AddJudiciaryPersonsForCleanup(externalRefId);
@@ -36,6 +37,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             addedPerson.Fullname.Should().Be("FullName");
             addedPerson.PostNominals.Should().Be("PostNominals");
             addedPerson.Email.Should().Be("Email");
+            addedPerson.WorkPhone.Should().Be("01234567890");
             addedPerson.HasLeft.Should().BeFalse();
             addedPerson.Leaver.Should().BeFalse();
             addedPerson.LeftOn.Should().Be(string.Empty);
@@ -46,7 +48,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var externalRefId = Guid.NewGuid().ToString();
             var personalCode = Guid.NewGuid().ToString();
-            var addCommand = new AddJudiciaryPersonCommand(externalRefId, personalCode, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false, true, "2022-06-08");
+            var addCommand = new AddJudiciaryPersonCommand(externalRefId, personalCode, string.Empty, string.Empty,
+                string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, false, true, "2022-06-08");
             
             await _commandHandler.Handle(addCommand);
             Hooks.AddJudiciaryPersonsForCleanup(externalRefId);

@@ -94,10 +94,10 @@ namespace BookingsApi.Domain
         public DateTime UpdatedDate { get; protected set; }
         public string ConfirmedBy { get; set; }
         public DateTime? ConfirmedDate { get; protected set; }
-        public virtual IList<Participant> Participants { get; }
-        public virtual IList<Endpoint> Endpoints { get; }
-        public virtual IList<HearingCase> HearingCases { get; set; }
-        public virtual IList<JudiciaryParticipant> JudiciaryParticipants { get; }
+        public IList<Participant> Participants { get; }
+        public IList<Endpoint> Endpoints { get; }
+        public IList<HearingCase> HearingCases { get; set; }
+        public IList<JudiciaryParticipant> JudiciaryParticipants { get; }
         public string HearingRoomName { get; set; }
         public string OtherInformation { get; set; }
         public bool AudioRecordingRequired { get; set; }
@@ -278,7 +278,6 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.Now;
-            
             return participant;
         }
 
@@ -294,7 +293,7 @@ namespace BookingsApi.Domain
             var existingParticipant = JudiciaryParticipants.Single(x =>
                 x.JudiciaryPerson.PersonalCode == judiciaryParticipantPersonalCode);
             JudiciaryParticipants.Remove(existingParticipant);
-            ValidateHostCount();
+            UpdateBookingStatusJudgeRequirement();
             UpdatedDate = DateTime.UtcNow;
         }
 
@@ -305,7 +304,6 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
-            
             if (DoesJudgeExist())
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
@@ -314,14 +312,17 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
         public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
-            
+            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
+            {
+                throw new DomainRuleException(nameof(judiciaryPerson), $"Judiciary Person {judiciaryPerson.PersonalCode} already exists in the hearing");
+            }
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
@@ -362,7 +363,7 @@ namespace BookingsApi.Domain
         {
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
-                throw new DomainRuleException(nameof(judiciaryPerson), "Judiciary participant already exists in the hearing");
+                throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.JudiciaryPersonAlreadyExists(judiciaryPerson.PersonalCode));
             }
 
             if (judiciaryPerson.IsALeaver())
@@ -373,7 +374,7 @@ namespace BookingsApi.Domain
 
         public void ValidateHostCount()
         {
-            if (!HasHost)
+            if (!HasHost && Status is BookingStatus.Booked or BookingStatus.Created)
             {
                 throw new DomainRuleException("Host", DomainRuleErrorMessages.HearingNeedsAHost);
             }

@@ -56,7 +56,7 @@ namespace BookingsApi.UnitTests.Controllers
             var item1 = new JudiciaryPersonStagingRequest
             {
                 Id = Guid.NewGuid().ToString(), Email = "some@email.com", Fullname = "a", Surname = "b", Title = "c",
-                KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", Leaver = "leaver", LeftOn = "leftOn"
+                KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", Leaver = "leaver", LeftOn = "leftOn", WorkPhone = "01234567890"
             };
             var request = new List<JudiciaryPersonStagingRequest> {item1, new JudiciaryPersonStagingRequest()};
 
@@ -74,6 +74,7 @@ namespace BookingsApi.UnitTests.Controllers
                 c => c.Email == item1.Email && c.Fullname == item1.Fullname && c.Surname == item1.Surname &&
                      c.Title == item1.Title && c.KnownAs == item1.KnownAs && c.PersonalCode == item1.PersonalCode &&
                      c.PostNominals == item1.PostNominals && c.ExternalRefId == item1.Id && c.Leaver == item1.Leaver && c.LeftOn == item1.LeftOn
+                     && c.WorkPhone == item1.WorkPhone
             )));
         }
 
@@ -83,7 +84,7 @@ namespace BookingsApi.UnitTests.Controllers
             var item1 = new JudiciaryPersonStagingRequest
             {
                 Id = Guid.NewGuid().ToString(), Email = "some@email.com", Fullname = "a", Surname = "b", Title = "c",
-                KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", Leaver = "leaver", LeftOn = "leftOn"
+                KnownAs = "d", PersonalCode = "123", PostNominals = "nom1", Leaver = "leaver", LeftOn = "leftOn", WorkPhone = "01234567890"
             };
             _commandHandlerMock.Setup(x => x.Handle(It.IsAny<AddJudiciaryPersonStagingCommand>()))
                 .ThrowsAsync(new Exception());

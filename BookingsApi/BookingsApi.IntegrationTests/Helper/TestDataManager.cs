@@ -634,16 +634,17 @@ namespace BookingsApi.IntegrationTests.Helper
 
             var judiciaryPersonStaging =
                 new JudiciaryPersonStaging(
+                    Guid.NewGuid().ToString(),
+                    Guid.NewGuid().ToString(),
+                    Name.Prefix(),
                     Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First(),
-                    Name.First());
+                    Name.Last(),
+                    Name.FullName(),
+                    Name.Suffix(),
+                    Internet.Email(),
+                    Phone.Number(),
+                    "Yes",
+                    "No");
             await db.JudiciaryPersonsStaging.AddAsync(judiciaryPersonStaging);
 
             await db.SaveChangesAsync();

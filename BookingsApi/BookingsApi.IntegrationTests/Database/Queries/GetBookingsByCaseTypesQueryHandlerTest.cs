@@ -1,4 +1,5 @@
 ﻿using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Participants;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
@@ -274,7 +275,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             var containsHearingsFilteredWithNoJudge = hearings
                 .SelectMany(r => r.Participants)
                 .Distinct()
-                .All(r => !r.Discriminator.Equals("judge", StringComparison.InvariantCultureIgnoreCase));
+                .All(r => r is not Judge);
             
             var containsHearingsFilteredWithNoJudiciaryJudge = hearings
                 .SelectMany(r => r.JudiciaryParticipants)

@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
+using BookingsApi.Domain.Validations;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
@@ -54,8 +55,22 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants[1].DisplayName.Should().Be(request[1].DisplayName);
             judiciaryParticipants[1].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             
-            var response = await ApiClientResponse.GetResponses<IList<JudiciaryParticipantResponse>>(result.Content);
+            var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
             response.Should().BeEquivalentTo(request);
+
+            var judgeResponse = response.Find(x => x.PersonalCode == _personalCodeJudge);
+            judgeResponse.DisplayName.Should().Be(request[0].DisplayName);
+            judgeResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge);
+            judgeResponse.Email.Should().Be(judiciaryPersonJudge.Email);
+            judgeResponse.Title.Should().Be(judiciaryPersonJudge.Title);
+            judgeResponse.FirstName.Should().Be(judiciaryPersonJudge.KnownAs);
+            judgeResponse.LastName.Should().Be(judiciaryPersonJudge.Surname);
+            judgeResponse.FullName.Should().Be(judiciaryPersonJudge.Fullname);
+            judgeResponse.WorkPhone.Should().Be(judiciaryPersonJudge.WorkPhone);
+            
+            var panelMemberResponse = response.Find(x => x.PersonalCode == _personalCodePanelMember);
+            panelMemberResponse.DisplayName.Should().Be(request[1].DisplayName);
+            panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
         }
 
         [Test]
@@ -177,7 +192,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("Judiciary participant already exists in the hearing");
+            validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be(DomainRuleErrorMessages.JudiciaryPersonAlreadyExists(existingParticipant.JudiciaryPerson.PersonalCode));
         }
 
         [Test]

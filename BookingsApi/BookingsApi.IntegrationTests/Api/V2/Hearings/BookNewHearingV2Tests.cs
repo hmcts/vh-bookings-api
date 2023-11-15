@@ -2,6 +2,8 @@ using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
 
@@ -53,6 +55,11 @@ public class BookNewHearingV2Tests : ApiTest
             x.HearingRoleCode == judiciaryJudgeRequest.HearingRoleCode &&
             x.DisplayName == judiciaryJudgeRequest.DisplayName
         );
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!.ReadMessageFromQueue();
+        message.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
     }
 
     [Test]

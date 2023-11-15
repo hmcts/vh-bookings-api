@@ -6,9 +6,9 @@ namespace BookingsApi.Contract.V2.Requests
     public class UpdateHearingRequestV2
     {
         /// <summary>
-        ///     Hearing Schedule Date and Time
+        ///     Hearing Schedule Date and Time (if changed)
         /// </summary>
-        public DateTime ScheduledDateTime { get; set; }
+        public DateTime? ScheduledDateTime { get; set; }
 
         /// <summary>
         ///     Duration of the hearing

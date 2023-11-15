@@ -69,15 +69,15 @@ namespace BookingsApi.UnitTests.Validation.V1
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoFirstNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoFirstNameErrorMessage)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoLastNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoLastNameErrorMessage)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoUsernameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoUsernameErrorMessage)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoCreatedByErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoCreatedByErrorMessage)
                 .Should().BeTrue();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoContactEmailErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -112,7 +112,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             var result = await _validator.ValidateAsync(request);
             
             result.IsValid.Should().BeFalse();
-            result.Errors.Any(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoRoleErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == AddJusticeUserRequestValidation.NoRoleErrorMessage)
                 .Should().BeTrue();
         }
     }
