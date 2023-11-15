@@ -24,15 +24,15 @@ stages:
     variables:
       - template: variables/shared.yaml
     jobs:
-      - job: CI_Helm
-        displayName: "Helm CI"
-        steps:
-          - checkout: self
+      # - job: CI_Helm
+      #   displayName: "Helm CI"
+      #   steps:
+      #     - checkout: self
 
-          - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
-            parameters:
-              chartPath: ${{ variables.chartPath }}
-              chartValuesPath: ${{ variables.chartPath }}
+      #     - template: templates\Containerisation\helm\helm-lint.yaml@azTemplates
+      #       parameters:
+      #         chartPath: ${{ variables.chartPath }}
+      #         chartValuesPath: ${{ variables.chartPath }}
 
       # - job: UnitAndIntegrationTests
       #   displayName: "Unit and Integration Tests"
@@ -59,27 +59,27 @@ stages:
     variables:
       - template: variables/shared.yaml
     jobs:
-      - job: Generate_Entity_Framework_Script
-        displayName: "Generate Entity Framework Script"
-        steps:
-          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-            parameters:
-              outputPath: $(Build.StagingDirectory)
-              contextName: ${{ variables.efContextName }}
-              workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
-              migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
-              projectName: ${{ variables.efProjectName }}
+      # - job: Generate_Entity_Framework_Script
+      #   displayName: "Generate Entity Framework Script"
+      #   steps:
+      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+      #       parameters:
+      #         outputPath: $(Build.StagingDirectory)
+      #         contextName: ${{ variables.efContextName }}
+      #         workingPath: $(System.DefaultWorkingDirectory)/${{ variables.appName }}/${{ variables.appName }}
+      #         migrationsPath: ${{ variables.appName }}/${{ variables.appName }}.DAL/Migrations
+      #         projectName: ${{ variables.efProjectName }}
 
-      - job: Generate_RefData_Entity_Framework_Script
-        displayName: "Generate RefData Entity Framework Script"
-        steps:
-          - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
-            parameters:
-              outputPath: $(Build.StagingDirectory)
-              contextName: ${{ variables.efContextNameRefData }}
-              workingPath: $(System.DefaultWorkingDirectory)/RefData
-              migrationsPath: RefData/Migrations
-              projectName: ${{ variables.efProjectNameRefData }}
+      # - job: Generate_RefData_Entity_Framework_Script
+      #   displayName: "Generate RefData Entity Framework Script"
+      #   steps:
+      #     - template: templates/Database/EntityFramework/generate-script.yaml@azTemplates
+      #       parameters:
+      #         outputPath: $(Build.StagingDirectory)
+      #         contextName: ${{ variables.efContextNameRefData }}
+      #         workingPath: $(System.DefaultWorkingDirectory)/RefData
+      #         migrationsPath: RefData/Migrations
+      #         projectName: ${{ variables.efProjectNameRefData }}
 
       - job: package_nuget
         displayName: "Package NuGet Packages"
