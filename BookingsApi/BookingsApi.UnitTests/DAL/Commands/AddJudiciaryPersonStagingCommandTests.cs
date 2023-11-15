@@ -42,6 +42,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
                 Fullname = Faker.Name.First(),
                 PostNominals = Faker.Name.First(),
                 Email = Faker.Name.First(),
+                WorkPhone = Faker.Phone.Number(),
                 Leaver = Faker.Name.First(),
                 LeftOn = Faker.Name.First()
             };
@@ -60,6 +61,7 @@ namespace BookingsApi.UnitTests.DAL.Commands
             newEntry.Fullname.Should().Be(command.Fullname);
             newEntry.PostNominals.Should().Be(command.PostNominals);
             newEntry.Email.Should().Be(command.Email);
+            newEntry.WorkPhone.Should().Be(command.WorkPhone);
             newEntry.Leaver.Should().Be(command.Leaver);
             newEntry.LeftOn.Should().Be(command.LeftOn);
             newEntry.CreatedDate.Should().BeAfter(DateTime.Now.AddDays(-1));

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
@@ -80,17 +81,29 @@ namespace BookingsApi.UnitTests.Validation.V2
         }
 
         [Test]
-        public async Task Should_return_missing_participants_error()
+        public async Task Should_return_missing_participants_error_when_no_judiciary_participants_are_given()
+        {
+            var request = BuildRequest();
+            request.JudiciaryParticipants = Enumerable.Empty<JudiciaryParticipantRequest>().ToList();
+            request.Participants = Enumerable.Empty<ParticipantRequestV2>().ToList();
+           
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.ParticipantsErrorMessage)
+                .Should().BeTrue();
+        }
+        
+        [Test]
+        public async Task Should_not_return_missing_participants_error_when_judiciary_participants_are_given()
         {
             var request = BuildRequest();
             request.Participants = Enumerable.Empty<ParticipantRequestV2>().ToList();
            
             var result = await _validator.ValidateAsync(request);
 
-            result.IsValid.Should().BeFalse();
-            result.Errors.Count.Should().Be(2);
-            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestInputValidationV2.ParticipantsErrorMessage)
-                .Should().BeTrue();
+            result.IsValid.Should().BeTrue();
         }
 
         [Test]

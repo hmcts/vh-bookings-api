@@ -10,6 +10,7 @@
         public string Surname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
+        public string WorkPhone { get; set; }
         public string Leaver { get; set; }
         public string LeftOn { get; set; }
     }
@@ -26,7 +27,7 @@
         {
             await _context.JudiciaryPersonsStaging.AddAsync(new JudiciaryPersonStaging(command.ExternalRefId,
                 command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname,
-                command.PostNominals, command.Email, command.Leaver, command.LeftOn));
+                command.PostNominals, command.Email, command.WorkPhone, command.Leaver, command.LeftOn));
 
             await _context.SaveChangesAsync();
         }

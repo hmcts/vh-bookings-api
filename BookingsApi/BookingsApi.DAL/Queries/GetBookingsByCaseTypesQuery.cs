@@ -58,6 +58,7 @@ namespace BookingsApi.DAL.Queries
                 .Include("Participants.Person")
                 .Include("Participants.HearingRole.UserRole")
                 .Include("HearingCases.Case")
+                .Include(x => x.JudiciaryParticipants).ThenInclude(x => x.JudiciaryPerson)
                 .Include(x => x.HearingType)
                 .Include(x => x.CaseType)
                 .Include(x => x.HearingVenue)

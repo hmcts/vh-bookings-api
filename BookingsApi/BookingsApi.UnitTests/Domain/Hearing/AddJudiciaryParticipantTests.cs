@@ -22,7 +22,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         }
         
         [Test]
-        public void Should_raise_exception_if_judiciary_judge_already_exists()
+        public void Should_raise_exception_when_adding_a_judge_and_a_judiciary_person_already_exists()
         {
             var hearing = new VideoHearingBuilder(addJudge: false).Build();
             var existingJudiciaryPerson = new JudiciaryPersonBuilder("Personal Code 1").Build();
@@ -35,6 +35,23 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "A participant with Judge role already exists in the hearing").Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+        
+        [Test]
+        public void Should_raise_exception_when_adding_a_judiciary_person_already_exists()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var existingJudiciaryPerson = new JudiciaryPersonBuilder("Personal Code 1").Build();
+            hearing.AddJudiciaryJudge(existingJudiciaryPerson, "Display Name 1");
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+
+            var action = () => 
+                hearing.AddJudiciaryJudge(existingJudiciaryPerson, "Display Name 2");
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.JudiciaryPersonAlreadyExists(existingJudiciaryPerson.PersonalCode)).Should().BeTrue();
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
         }
@@ -105,23 +122,6 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-        }
-        
-        [Test]
-        public void Should_raise_exception_if_judiciary_panel_member_already_exists()
-        {
-            var hearing = new VideoHearingBuilder(addJudge: false).Build();
-            var existingJudiciaryPerson = new JudiciaryPersonBuilder().Build();
-            hearing.AddJudiciaryJudge(existingJudiciaryPerson, "Display Name");
-            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
-
-            var action = () => 
-                hearing.AddJudiciaryPanelMember(existingJudiciaryPerson, "Display Name");
-            
-            action.Should().Throw<DomainRuleException>().And.ValidationFailures
-                .Exists(x => x.Message == "Judiciary participant already exists in the hearing").Should().BeTrue();
-            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
-            afterAddCount.Should().Be(beforeAddCount);
         }
         
         [TestCase(true, true)]

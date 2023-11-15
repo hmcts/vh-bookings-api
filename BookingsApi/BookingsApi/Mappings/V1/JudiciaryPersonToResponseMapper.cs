@@ -4,15 +4,16 @@ namespace BookingsApi.Mappings.V1
 {
     public class JudiciaryPersonToResponseMapper
     {
-        public PersonResponse MapJudiciaryPersonToResponse(JudiciaryPerson person)
+        public JudiciaryPersonResponse MapJudiciaryPersonToResponse(JudiciaryPerson person)
         {
-            return new PersonResponse
+            return new JudiciaryPersonResponse()
             {
-                Id = person.Id,
                 Title = person.Title,
                 FirstName = person.KnownAs,
                 LastName = person.Surname,
-                Username = person.Email,
+                FullName = person.Fullname,
+                PersonalCode = person.PersonalCode,
+                Email = person.Email.ToLower(),
             };
         }
     }

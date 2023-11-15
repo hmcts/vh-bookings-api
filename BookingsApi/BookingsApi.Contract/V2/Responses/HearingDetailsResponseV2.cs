@@ -8,7 +8,7 @@ namespace BookingsApi.Contract.V2.Responses;
 
 public class HearingDetailsResponseV2
 {
-    /// <summary>
+        /// <summary>
         ///     Hearing Id
         /// </summary>
         public Guid Id { get; set; }
