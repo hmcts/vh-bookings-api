@@ -272,6 +272,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         participantResponse.Id.Should().Be(participantId);
         participantResponse.DisplayName.Should().Be(request.DisplayName);
         participantResponse.ContactEmail.Should().Be(participant.Person.ContactEmail);
+        participantResponse.Username.Should().Be(participant.Person.Username);
         participantResponse.TelephoneNumber.Should().Be(request.TelephoneNumber);
         participantResponse.Title.Should().Be(request.Title);
         participantResponse.Representee.Should().BeNull();
@@ -328,6 +329,7 @@ public class UpdateParticipantDetailsV2Tests : ApiTest
         participantResponse.Id.Should().Be(participantId);
         participantResponse.DisplayName.Should().Be(request.DisplayName);
         participantResponse.ContactEmail.Should().Be(participant.Person.ContactEmail);
+        participantResponse.Username.Should().Be(participant.Person.Username);
         participantResponse.TelephoneNumber.Should().Be(request.TelephoneNumber);
         participantResponse.Title.Should().Be(request.Title);
         participantResponse.Representee.Should().BeNull();

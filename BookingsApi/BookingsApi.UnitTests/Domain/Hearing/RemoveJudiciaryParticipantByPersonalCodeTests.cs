@@ -50,24 +50,4 @@ public class RemoveJudiciaryParticipantByPersonalCodeTests
         var afterRemoveCount = hearing.GetJudiciaryParticipants().Count;
         afterRemoveCount.Should().Be(beforeRemoveCount);
     }
-
-    [Test]
-    public void Should_raise_exception_removing_judiciary_participant_results_in_no_host()
-    {
-        // arrange
-        var hearing = new VideoHearingBuilder(addJudge: false, addStaffMember: false).Build();
-        var newJudiciaryPerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
-        const string displayName = "Judiciary To Remove";
-        hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName);
-
-        var judiciaryParticipants = hearing.GetJudiciaryParticipants();
-        var judgeToRemove = judiciaryParticipants[0];
-        
-        // act
-        var action = () => hearing.RemoveJudiciaryParticipantByPersonalCode(judgeToRemove.JudiciaryPerson.PersonalCode);
-
-        // assert
-        action.Should().Throw<DomainRuleException>().And.ValidationFailures
-            .Exists(x => x.Message == "A hearing must have at least one host").Should().BeTrue();
-    }
 }

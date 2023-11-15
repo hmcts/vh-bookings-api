@@ -22,6 +22,9 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
                     participant.SendHearingNotificationIfNew = true;
                 }
             }
+            
+            var judiciaryParticipants = hearing.JudiciaryParticipants.Select(ParticipantDtoMapper.MapToDto).ToList();
+            Participants.AddRange(judiciaryParticipants);
 
             Participants.SingleOrDefault(x => x.UserRole == "Judge")?.SetOtherFieldsForNonEJudJudgeUser(hearing.OtherInformation);
             var hearingEndpoints = hearing.GetEndpoints();
@@ -29,8 +32,8 @@ namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
         }
 
         public HearingDto Hearing { get; }
-        public IList<ParticipantDto> Participants { get; }
-        public IList<EndpointDto> Endpoints { get; set; }
+        public List<ParticipantDto> Participants { get; }
+        public List<EndpointDto> Endpoints { get; set; }
     }
 }
 

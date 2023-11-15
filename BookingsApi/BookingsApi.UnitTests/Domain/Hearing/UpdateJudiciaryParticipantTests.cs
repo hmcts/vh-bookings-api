@@ -20,9 +20,28 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
 
             var updatedJudiciaryJudge = hearing.GetJudiciaryParticipants()
-                .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == judiciaryJudge.JudiciaryPerson.PersonalCode);
+                .First(x => x.JudiciaryPerson.PersonalCode == judiciaryJudge.JudiciaryPerson.PersonalCode);
             updatedJudiciaryJudge.DisplayName.Should().Be(newDisplayName);
             updatedJudiciaryJudge.HearingRoleCode.Should().Be(newHearingRoleCode);
+        }
+
+        [Test]
+        public void should_update_panel_member_when_no_host_is_set()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false, addStaffMember: false)
+                .WithJudiciaryPanelMember()
+                .Build();
+            hearing.UpdateBookingStatusJudgeRequirement(); // need to find a better home for this. shouldn't have to be after instantiating
+            
+            var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
+                .First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+
+            hearing.UpdateJudiciaryParticipantByPersonalCode(judiciaryPanelMember.JudiciaryPerson.PersonalCode,
+                "New Display Name", JudiciaryParticipantHearingRoleCode.PanelMember);
+
+            hearing.JudiciaryParticipants
+                .First(x => x.JudiciaryPerson.PersonalCode == judiciaryPanelMember.JudiciaryPerson.PersonalCode)
+                .DisplayName.Should().Be("New Display Name");
         }
         
         [Test]

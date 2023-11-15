@@ -10,6 +10,7 @@
         public string Fullname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
+        public string WorkPhone { get; set; }
         public string Leaver { get; set; }
         public string LeftOn { get; set; }
     }
