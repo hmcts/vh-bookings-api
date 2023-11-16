@@ -40,7 +40,7 @@ namespace BookingsApi.Contract.V1.Responses
         public string Email { get; set; }
         
         /// <summary>
-        ///     Judiciary person participant's work phone
+        ///     Judiciary person or participant's work phone
         /// </summary>
         public string WorkPhone { get; set; }
         
