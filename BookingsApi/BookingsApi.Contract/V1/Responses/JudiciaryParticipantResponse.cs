@@ -35,12 +35,12 @@ namespace BookingsApi.Contract.V1.Responses
         public string FullName { get; set; }
         
         /// <summary>
-        ///     Judiciary person's contact email
+        ///     Judiciary person or participant's contact email
         /// </summary>
         public string Email { get; set; }
         
         /// <summary>
-        ///     Judiciary person's work phone
+        ///     Judiciary person participant's work phone
         /// </summary>
         public string WorkPhone { get; set; }
         

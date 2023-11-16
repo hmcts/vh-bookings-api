@@ -8,7 +8,12 @@ namespace BookingsApi.Domain
     {
         private readonly DateTime _currentUTC = DateTime.UtcNow;
 
-        public JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        public JudiciaryParticipant(
+            string displayName, 
+            JudiciaryPerson judiciaryPerson, 
+            JudiciaryParticipantHearingRoleCode hearingRoleCode, 
+            string contactTelephone = null, 
+            string contactEmail = null)
         {
             Id = Guid.NewGuid();
             UpdateDisplayName(displayName);
@@ -16,6 +21,8 @@ namespace BookingsApi.Domain
             UpdateHearingRoleCode(hearingRoleCode);
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;
+            ContactTelephone = contactTelephone;
+            ContactEmail = contactEmail;
         }
         
         protected JudiciaryParticipant()
@@ -32,6 +39,8 @@ namespace BookingsApi.Domain
         public virtual Hearing Hearing { get; private set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public string ContactTelephone { get; private set; }
+        public string ContactEmail { get; private set; }
 
         public void UpdateDisplayName(string displayName)
         {
@@ -51,5 +60,9 @@ namespace BookingsApi.Domain
             
             UpdatedDate = _currentUTC;
         }
+
+        public string GetEmail() => JudiciaryPerson.IsGeneric ? ContactEmail : JudiciaryPerson.Email;
+
+        public string GetTelephone() => JudiciaryPerson.IsGeneric ? ContactTelephone : JudiciaryPerson.WorkPhone;
     }
 }

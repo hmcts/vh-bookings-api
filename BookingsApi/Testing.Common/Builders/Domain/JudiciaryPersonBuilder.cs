@@ -9,7 +9,7 @@ namespace Testing.Common.Builders.Domain
     {
         private readonly JudiciaryPerson _judiciaryPerson;
 
-        public JudiciaryPersonBuilder(string personalCode = null)
+        public JudiciaryPersonBuilder(string personalCode = null, bool isGeneric = false)
         {
             var settings = new BuilderSettings();
             _judiciaryPerson = new Builder(settings).CreateNew<JudiciaryPerson>().WithFactory(() =>
@@ -25,7 +25,8 @@ namespace Testing.Common.Builders.Domain
                         Phone.Number(),
                         false,
                         false,
-                        string.Empty))
+                        string.Empty,
+                        isGeneric: isGeneric))
                 .Build();
         }
 

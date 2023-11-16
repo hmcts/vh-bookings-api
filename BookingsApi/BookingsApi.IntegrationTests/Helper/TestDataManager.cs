@@ -677,6 +677,19 @@ namespace BookingsApi.IntegrationTests.Helper
             return person;
         }
 
+        public async Task<JudiciaryPerson> AddGenericJudiciaryPerson(string personalCode)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode: personalCode, isGeneric: true).Build();
+            await db.JudiciaryPersons.AddAsync(judiciaryPerson);
+
+            await db.SaveChangesAsync();
+            AddJudiciaryPersonsForCleanup(judiciaryPerson.PersonalCode);
+
+            return judiciaryPerson;
+        }
+
         public async Task RemoveJudiciaryPersonAsync(JudiciaryPerson judiciaryPerson)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);

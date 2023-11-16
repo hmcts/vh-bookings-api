@@ -14,7 +14,12 @@ public class SimpleBookNewHearingRequestV2
 {
     private readonly BookNewHearingRequestV2 _requestV2;
 
-    public SimpleBookNewHearingRequestV2(string caseName, DateTime scheduledDateTime, string judiciaryJudgePersonCode)
+    public SimpleBookNewHearingRequestV2(
+        string caseName, 
+        DateTime scheduledDateTime, 
+        string judiciaryJudgePersonCode, 
+        List<string> judiciaryPanelMemberPersonCodes = null, 
+        bool useGenericParticipants = false)
     {
         var hearingScheduled = scheduledDateTime;
         var participants = Builder<ParticipantRequestV2>.CreateListOfSize(4).All()
@@ -61,9 +66,30 @@ public class SimpleBookNewHearingRequestV2
             {
                 DisplayName = "Judiciary Judge",
                 HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge,
-                PersonalCode = judiciaryJudgePersonCode
+                PersonalCode = judiciaryJudgePersonCode,
+                OptionalContactTelephone = useGenericParticipants ? Faker.Phone.Number() : null,
+                OptionalContactEmail = useGenericParticipants ? $"Automation_{Faker.RandomNumber.Next()}@hmcts.net" : null
             }
         };
+
+        if (judiciaryPanelMemberPersonCodes != null)
+        {
+            var i = 1;
+            
+            foreach (var personCode in judiciaryPanelMemberPersonCodes)
+            {
+                judiciaryParticipants.Add(new JudiciaryParticipantRequest
+                {
+                    DisplayName = $"Judiciary Panel Member {i}",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember,
+                    PersonalCode = personCode,
+                    OptionalContactTelephone = useGenericParticipants ? Faker.Phone.Number() : null,
+                    OptionalContactEmail = useGenericParticipants ? $"Automation_{Faker.RandomNumber.Next()}@hmcts.net" : null
+                });
+
+                i++;
+            }
+        }
 
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;

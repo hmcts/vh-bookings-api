@@ -11,12 +11,14 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
     {
         private string _personalCodeJudge;
         private string _personalCodePanelMember;
+        private string _personalCodeGenericPanelMember;
 
         [SetUp]
         public void Setup()
         {
             _personalCodeJudge = Guid.NewGuid().ToString();
             _personalCodePanelMember = Guid.NewGuid().ToString();
+            _personalCodeGenericPanelMember = Guid.NewGuid().ToString();
         }
         
         [Test]
@@ -30,6 +32,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             });
             var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
             var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+            var judiciaryPersonGenericPanelMember = await Hooks.AddGenericJudiciaryPerson(personalCode: _personalCodeGenericPanelMember);
             var judiciaryParticipantsCountBefore = seededHearing.JudiciaryParticipants.Count;
             
             var request = BuildValidAddJudiciaryParticipantsRequest();
@@ -48,15 +51,13 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
             var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
             judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
-            judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryPersonJudge.Id);
-            judiciaryParticipants[0].DisplayName.Should().Be(request[0].DisplayName);
-            judiciaryParticipants[0].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
-            judiciaryParticipants[1].JudiciaryPersonId.Should().Be(judiciaryPersonPanelMember.Id);
-            judiciaryParticipants[1].DisplayName.Should().Be(request[1].DisplayName);
-            judiciaryParticipants[1].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             
+            AssertJudiciaryJudgeParticipant(judiciaryParticipants[0], request[0], judiciaryPersonJudge.Id);
+            AssertJudiciaryPanelMemberParticipant(judiciaryParticipants[1], request[1], judiciaryPersonPanelMember.Id);
+            AssertJudiciaryPanelMemberParticipant(judiciaryParticipants[2], request[2], judiciaryPersonGenericPanelMember.Id);
+
             var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
-            response.Should().BeEquivalentTo(request);
+            response.Count.Should().Be(request.Count);
 
             var judgeResponse = response.Find(x => x.PersonalCode == _personalCodeJudge);
             judgeResponse.DisplayName.Should().Be(request[0].DisplayName);
@@ -71,6 +72,42 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var panelMemberResponse = response.Find(x => x.PersonalCode == _personalCodePanelMember);
             panelMemberResponse.DisplayName.Should().Be(request[1].DisplayName);
             panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
+            panelMemberResponse.Email.Should().Be(judiciaryPersonPanelMember.Email);
+            panelMemberResponse.Title.Should().Be(judiciaryPersonPanelMember.Title);
+            panelMemberResponse.FirstName.Should().Be(judiciaryPersonPanelMember.KnownAs);
+            panelMemberResponse.LastName.Should().Be(judiciaryPersonPanelMember.Surname);
+            panelMemberResponse.FullName.Should().Be(judiciaryPersonPanelMember.Fullname);
+            panelMemberResponse.WorkPhone.Should().Be(judiciaryPersonPanelMember.WorkPhone);
+            
+            var genericPanelMemberResponse = response.Find(x => x.PersonalCode == _personalCodeGenericPanelMember);
+            genericPanelMemberResponse.DisplayName.Should().Be(request[2].DisplayName);
+            genericPanelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
+            genericPanelMemberResponse.Email.Should().Be(request[2].OptionalContactEmail);
+            genericPanelMemberResponse.Title.Should().Be(judiciaryPersonGenericPanelMember.Title);
+            genericPanelMemberResponse.FirstName.Should().Be(judiciaryPersonGenericPanelMember.KnownAs);
+            genericPanelMemberResponse.LastName.Should().Be(judiciaryPersonGenericPanelMember.Surname);
+            genericPanelMemberResponse.FullName.Should().Be(judiciaryPersonGenericPanelMember.Fullname);
+            genericPanelMemberResponse.WorkPhone.Should().Be(request[2].OptionalContactTelephone);
+        }
+
+        private void AssertJudiciaryJudgeParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
+        {
+            AssertJudiciaryParticipant(judiciaryParticipant, request, id);
+            judiciaryParticipant.HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
+        }
+        
+        private void AssertJudiciaryPanelMemberParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
+        {
+            AssertJudiciaryParticipant(judiciaryParticipant, request, id);
+            judiciaryParticipant.HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
+        }
+        
+        private void AssertJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
+        {
+            judiciaryParticipant.JudiciaryPersonId.Should().Be(id);
+            judiciaryParticipant.DisplayName.Should().Be(request.DisplayName);
+            judiciaryParticipant.ContactTelephone.Should().Be(request.OptionalContactTelephone);
+            judiciaryParticipant.ContactEmail.Should().Be(request.OptionalContactEmail);
         }
 
         [Test]
@@ -236,6 +273,14 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                     PersonalCode = _personalCodePanelMember,
                     DisplayName = "B Panel Member",
                     HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                },
+                new()
+                {
+                    PersonalCode = _personalCodeGenericPanelMember,
+                    DisplayName = "Generic Panel Member",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember,
+                    OptionalContactTelephone = "0123456789",
+                    OptionalContactEmail = "generic-panel-member@email.com"
                 }
             };
         }

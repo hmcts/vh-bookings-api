@@ -114,6 +114,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
             result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
             result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
+            result.ContactTelephone.Should().Be(participant.JudiciaryPerson.WorkPhone);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be("Judge");
             result.UserRole.Should().Be("Judge");
@@ -133,6 +134,47 @@ namespace BookingsApi.UnitTests.Mappings.V1
             result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
             result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
             result.ContactEmail.Should().Be(participant.JudiciaryPerson.Email);
+            result.ContactTelephone.Should().Be(participant.JudiciaryPerson.WorkPhone);
+            result.DisplayName.Should().Be(participant.DisplayName);
+            result.HearingRole.Should().Be("Panel Member");
+            result.UserRole.Should().Be("Judicial Office Holder");
+            result.CaseGroupType.Should().Be(CaseRoleGroup.PanelMember);
+        }
+
+        [Test]
+        public void should_map_generic_judge_judiciary_participant_to_dto()
+        {
+            var hearing = GetHearingWithGenericJudiciaryParticipants();
+            var participant = hearing.GetJudiciaryParticipants().First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            var result = ParticipantDtoMapper.MapToDto(participant);
+
+            result.ParticipantId.Should().Be(participant.Id);
+            result.Fullname.Should().Be(participant.JudiciaryPerson.Fullname);
+            result.Username.Should().Be(participant.JudiciaryPerson.Email);
+            result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
+            result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
+            result.ContactEmail.Should().Be(participant.ContactEmail);
+            result.ContactTelephone.Should().Be(participant.ContactTelephone);
+            result.DisplayName.Should().Be(participant.DisplayName);
+            result.HearingRole.Should().Be("Judge");
+            result.UserRole.Should().Be("Judge");
+            result.CaseGroupType.Should().Be(CaseRoleGroup.Judge);
+        }
+        
+        [Test]
+        public void should_map_generic_panel_member_judiciary_participant_to_dto()
+        {
+            var hearing = GetHearingWithGenericJudiciaryParticipants();
+            var participant = hearing.GetJudiciaryParticipants().First(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
+            var result = ParticipantDtoMapper.MapToDto(participant);
+
+            result.ParticipantId.Should().Be(participant.Id);
+            result.Fullname.Should().Be(participant.JudiciaryPerson.Fullname);
+            result.Username.Should().Be(participant.JudiciaryPerson.Email);
+            result.FirstName.Should().Be(participant.JudiciaryPerson.KnownAs);
+            result.LastName.Should().Be(participant.JudiciaryPerson.Surname);
+            result.ContactEmail.Should().Be(participant.ContactEmail);
+            result.ContactTelephone.Should().Be(participant.ContactTelephone);
             result.DisplayName.Should().Be(participant.DisplayName);
             result.HearingRole.Should().Be("Panel Member");
             result.UserRole.Should().Be("Judicial Office Holder");
@@ -165,6 +207,16 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
                 .WithJudiciaryPanelMember()
+                .Build();
+            
+            return hearing;
+        }
+
+        private static VideoHearing GetHearingWithGenericJudiciaryParticipants()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithGenericJudiciaryJudge()
+                .WithGenericJudiciaryPanelMember()
                 .Build();
             
             return hearing;

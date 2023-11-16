@@ -163,6 +163,30 @@ namespace Testing.Common.Builders.Domain
             _videoHearing.AddJudiciaryPanelMember(judiciaryPerson, "PanelMember Test");
             return this;
         }
+
+        public VideoHearingBuilder WithGenericJudiciaryJudge()
+        {
+            var personalCode = Guid.NewGuid().ToString();
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode: personalCode, isGeneric: true).Build();
+            _videoHearing.AddJudiciaryJudge(
+                judiciaryPerson, 
+                "Generic Judge Test",
+                contactTelephone: "01234567890",
+                contactEmail: "generic-email@email.com");
+            return this;
+        }
+        
+        public VideoHearingBuilder WithGenericJudiciaryPanelMember()
+        {
+            var personalCode = Guid.NewGuid().ToString();
+            var judiciaryPerson = new JudiciaryPersonBuilder(personalCode: personalCode, isGeneric: true).Build();
+            _videoHearing.AddJudiciaryPanelMember(
+                judiciaryPerson, 
+                "Generic PanelMember Test",
+                contactTelephone: "01234567890",
+                contactEmail: "generic-email@email.com");
+            return this;
+        }
         
         public Person Judge => _judgePerson;
 

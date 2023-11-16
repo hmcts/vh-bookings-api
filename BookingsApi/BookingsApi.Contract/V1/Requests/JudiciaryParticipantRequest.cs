@@ -18,5 +18,15 @@ namespace BookingsApi.Contract.V1.Requests
         /// The participant's hearing role code
         /// </summary>
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
+        
+        /// <summary>
+        /// The contact telephone for the generic participant
+        /// </summary>
+        public string OptionalContactTelephone { get; set; }
+        
+        /// <summary>
+        /// The contact email for the generic participant
+        /// </summary>
+        public string OptionalContactEmail { get; set; }
     }
 }

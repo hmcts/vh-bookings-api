@@ -171,6 +171,46 @@ public class BookNewHearingV2Tests : ApiTest
 
     }
 
+    [Test]
+    public async Task should_book_a_hearing_with_generic_judiciary_participants()
+    {
+        // arrange
+        var request = await CreateBookingRequestWithGenericJudiciaryParticipants();
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        createdResponse.JudiciaryParticipants.Count.Should().Be(request.JudiciaryParticipants.Count);
+        foreach (var requestParticipant in request.JudiciaryParticipants)
+        {
+            var responseParticipant = createdResponse.JudiciaryParticipants.Find(x => x.PersonalCode == requestParticipant.PersonalCode);
+            responseParticipant.Should().NotBeNull();
+
+            responseParticipant.PersonalCode.Should().Be(requestParticipant.PersonalCode);
+            responseParticipant.HearingRoleCode.Should().Be(requestParticipant.HearingRoleCode);
+            responseParticipant.DisplayName.Should().Be(requestParticipant.DisplayName);
+            responseParticipant.Email.Should().Be(requestParticipant.OptionalContactEmail);
+            responseParticipant.WorkPhone.Should().Be(requestParticipant.OptionalContactTelephone);
+        }
+
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!.ReadMessageFromQueue();
+        message.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+    }
+
     private async Task<BookNewHearingRequestV2> CreateBookingRequestWithServiceIdsAndCodes()
     {
         var personalCode = Guid.NewGuid().ToString();
@@ -178,6 +218,37 @@ public class BookNewHearingV2Tests : ApiTest
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
         var request = new SimpleBookNewHearingRequestV2(caseName, hearingSchedule, personalCode).Build();
+        request.ServiceId = "ZZY1"; // intentionally incorrect case
+        request.HearingVenueCode = "231596";
+        return request;
+    }
+
+    private async Task<BookNewHearingRequestV2> CreateBookingRequestWithGenericJudiciaryParticipants()
+    {
+        // Generic Judge
+        var judgePersonalCode = Guid.NewGuid().ToString();
+        await Hooks.AddGenericJudiciaryPerson(judgePersonalCode);
+        
+        // Generic Panel Members
+        var panelMemberPersonalCodes = new List<string>
+        {
+            Guid.NewGuid().ToString(),
+            Guid.NewGuid().ToString()
+        };
+        foreach (var personalCode in panelMemberPersonalCodes)
+        {
+            await Hooks.AddGenericJudiciaryPerson(personalCode);
+        }
+        
+        var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
+        var caseName = "Bookings Api Integration Automated";
+        var request = new SimpleBookNewHearingRequestV2(
+                caseName, 
+                hearingSchedule, 
+                judgePersonalCode, 
+                panelMemberPersonalCodes, 
+                useGenericParticipants: true)
+            .Build();
         request.ServiceId = "ZZY1"; // intentionally incorrect case
         request.HearingVenueCode = "231596";
         return request;

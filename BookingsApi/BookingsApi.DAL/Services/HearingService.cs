@@ -201,10 +201,12 @@ namespace BookingsApi.DAL.Services
             switch (participant.HearingRoleCode)
             {
                 case JudiciaryParticipantHearingRoleCode.Judge:
-                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName);
+                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName, 
+                        contactTelephone: participant.OptionalContactTelephone, contactEmail: participant.OptionalContactEmail);
                     break;
                 case JudiciaryParticipantHearingRoleCode.PanelMember:
-                    videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);
+                    videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName,
+                        contactTelephone: participant.OptionalContactTelephone, contactEmail: participant.OptionalContactEmail);
                     break;
                 default:
                     throw new ArgumentException($"Role {participant.HearingRoleCode} not recognised");
