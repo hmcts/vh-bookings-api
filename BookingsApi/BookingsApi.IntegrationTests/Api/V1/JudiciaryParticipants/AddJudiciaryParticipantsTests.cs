@@ -52,9 +52,14 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var judiciaryParticipants = hearing.JudiciaryParticipants.OrderBy(x => x.DisplayName).ToList();
             judiciaryParticipants.Count.Should().Be(request.Count + judiciaryParticipantsCountBefore);
             
-            AssertJudiciaryJudgeParticipant(judiciaryParticipants[0], request[0], judiciaryPersonJudge.Id);
-            AssertJudiciaryPanelMemberParticipant(judiciaryParticipants[1], request[1], judiciaryPersonPanelMember.Id);
-            AssertJudiciaryPanelMemberParticipant(judiciaryParticipants[2], request[2], judiciaryPersonGenericPanelMember.Id);
+            judiciaryParticipants[0].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
+            AssertJudiciaryParticipant(judiciaryParticipants[0], request[0], judiciaryPersonJudge.Id);
+            
+            judiciaryParticipants[1].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
+            AssertJudiciaryParticipant(judiciaryParticipants[1], request[1], judiciaryPersonPanelMember.Id);
+            
+            judiciaryParticipants[2].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
+            AssertJudiciaryParticipant(judiciaryParticipants[2], request[2], judiciaryPersonGenericPanelMember.Id);
 
             var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
             response.Count.Should().Be(request.Count);
@@ -63,51 +68,39 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judgeResponse.DisplayName.Should().Be(request[0].DisplayName);
             judgeResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge);
             judgeResponse.Email.Should().Be(judiciaryPersonJudge.Email);
-            judgeResponse.Title.Should().Be(judiciaryPersonJudge.Title);
-            judgeResponse.FirstName.Should().Be(judiciaryPersonJudge.KnownAs);
-            judgeResponse.LastName.Should().Be(judiciaryPersonJudge.Surname);
-            judgeResponse.FullName.Should().Be(judiciaryPersonJudge.Fullname);
             judgeResponse.WorkPhone.Should().Be(judiciaryPersonJudge.WorkPhone);
+            AssertJudiciaryParticipantResponse(judgeResponse, judiciaryPersonJudge);
             
             var panelMemberResponse = response.Find(x => x.PersonalCode == _personalCodePanelMember);
             panelMemberResponse.DisplayName.Should().Be(request[1].DisplayName);
             panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
             panelMemberResponse.Email.Should().Be(judiciaryPersonPanelMember.Email);
-            panelMemberResponse.Title.Should().Be(judiciaryPersonPanelMember.Title);
-            panelMemberResponse.FirstName.Should().Be(judiciaryPersonPanelMember.KnownAs);
-            panelMemberResponse.LastName.Should().Be(judiciaryPersonPanelMember.Surname);
-            panelMemberResponse.FullName.Should().Be(judiciaryPersonPanelMember.Fullname);
             panelMemberResponse.WorkPhone.Should().Be(judiciaryPersonPanelMember.WorkPhone);
+            AssertJudiciaryParticipantResponse(panelMemberResponse, judiciaryPersonPanelMember);
             
             var genericPanelMemberResponse = response.Find(x => x.PersonalCode == _personalCodeGenericPanelMember);
             genericPanelMemberResponse.DisplayName.Should().Be(request[2].DisplayName);
             genericPanelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
             genericPanelMemberResponse.Email.Should().Be(request[2].OptionalContactEmail);
-            genericPanelMemberResponse.Title.Should().Be(judiciaryPersonGenericPanelMember.Title);
-            genericPanelMemberResponse.FirstName.Should().Be(judiciaryPersonGenericPanelMember.KnownAs);
-            genericPanelMemberResponse.LastName.Should().Be(judiciaryPersonGenericPanelMember.Surname);
-            genericPanelMemberResponse.FullName.Should().Be(judiciaryPersonGenericPanelMember.Fullname);
             genericPanelMemberResponse.WorkPhone.Should().Be(request[2].OptionalContactTelephone);
-        }
-
-        private void AssertJudiciaryJudgeParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
-        {
-            AssertJudiciaryParticipant(judiciaryParticipant, request, id);
-            judiciaryParticipant.HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
+            AssertJudiciaryParticipantResponse(genericPanelMemberResponse, judiciaryPersonGenericPanelMember);
+            
         }
         
-        private void AssertJudiciaryPanelMemberParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
-        {
-            AssertJudiciaryParticipant(judiciaryParticipant, request, id);
-            judiciaryParticipant.HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
-        }
-        
-        private void AssertJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
+        private static void AssertJudiciaryParticipant(JudiciaryParticipant judiciaryParticipant, JudiciaryParticipantRequest request, Guid id)
         {
             judiciaryParticipant.JudiciaryPersonId.Should().Be(id);
             judiciaryParticipant.DisplayName.Should().Be(request.DisplayName);
             judiciaryParticipant.ContactTelephone.Should().Be(request.OptionalContactTelephone);
             judiciaryParticipant.ContactEmail.Should().Be(request.OptionalContactEmail);
+        }
+
+        private static void AssertJudiciaryParticipantResponse(JudiciaryParticipantResponse response, JudiciaryPerson person)
+        {
+            response.Title.Should().Be(person.Title);
+            response.FirstName.Should().Be(person.KnownAs);
+            response.LastName.Should().Be(person.Surname);
+            response.FullName.Should().Be(person.Fullname);
         }
 
         [Test]
