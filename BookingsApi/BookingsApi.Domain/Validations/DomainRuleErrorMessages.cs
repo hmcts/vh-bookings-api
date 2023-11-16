@@ -23,4 +23,6 @@ public static class DomainRuleErrorMessages
     public const string CannotAddInterpreterToHearingCloseToStartTime = "Cannot add an interpreter to a hearing close to the scheduled start time";
     public const string FirstNameRequired = "FirstName cannot be empty";
     public const string LastNameRequired = "LastName cannot be empty";
+    public const string ContactTelephoneForNonGenericJudiciaryPerson = "Contact telephone can only be specified for generic judiciary persons";
+    public const string ContactEmailForNonGenericJudiciaryPerson = "Contact email can only be specified for generic judiciary persons";
 }

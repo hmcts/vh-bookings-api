@@ -1,4 +1,5 @@
-using System;
+using BookingsApi.Domain;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
@@ -159,6 +160,100 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             action.Should().Throw<DomainRuleException>().And.ValidationFailures
                 .Exists(x => x.Message == "Display name cannot be empty").Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+        
+        [Test]
+        public void Should_add_new_generic_judiciary_judge_to_hearing()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder(isGeneric: true).Build();
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            const string displayName = "Generic Judge Display Name";
+            const string contactTelephone = "0123456789";
+            const string contactEmail = "email@email.com";
+
+            hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName, contactTelephone: contactTelephone, contactEmail: contactEmail);
+
+            var judiciaryParticipants = hearing.GetJudiciaryParticipants();
+            var afterAddCount = judiciaryParticipants.Count;
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            judiciaryParticipants.Should().Contain(x => 
+                x.DisplayName == displayName && 
+                x.ContactTelephone == contactTelephone && 
+                x.ContactEmail == contactEmail);
+        }
+        
+        [Test]
+        public void Should_add_new_generic_judiciary_panel_member_to_hearing()
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder(isGeneric: true).Build();
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            const string displayName = "Generic Panel Member Display Name";
+            const string contactTelephone = "0123456789";
+            const string contactEmail = "email@email.com";
+
+            hearing.AddJudiciaryPanelMember(newJudiciaryPerson, displayName, contactTelephone: contactTelephone, contactEmail: contactEmail);
+            
+            var judiciaryParticipants = hearing.GetJudiciaryParticipants();
+            var afterAddCount = judiciaryParticipants.Count;
+            afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            judiciaryParticipants.Should().Contain(x => 
+                x.DisplayName == displayName && 
+                x.ContactTelephone == contactTelephone && 
+                x.ContactEmail == contactEmail);
+        }
+
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
+        public void Should_raise_exception_if_contact_telephone_specified_and_judiciary_person_is_not_generic(JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder(isGeneric: false).Build();
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+
+            Func<JudiciaryParticipant> action;
+            if (hearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge)
+            {
+                action = () => 
+                    hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name", contactTelephone: "0123456789");
+            }
+            else
+            {
+                action = () => 
+                    hearing.AddJudiciaryPanelMember(newJudiciaryPerson, "Display Name", contactTelephone: "0123456789");
+            }
+
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.ContactTelephoneForNonGenericJudiciaryPerson).Should().BeTrue();
+            var afterAddCount = hearing.GetJudiciaryParticipants().Count;
+            afterAddCount.Should().Be(beforeAddCount);
+        }
+        
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
+        public void Should_raise_exception_if_contact_email_specified_and_judiciary_person_is_not_generic(JudiciaryParticipantHearingRoleCode hearingRoleCode)
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder(isGeneric: false).Build();
+            var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            
+            Func<JudiciaryParticipant> action;
+            if (hearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge)
+            {
+                action = () => 
+                    hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name", contactEmail: "email@email.com");
+            }
+            else
+            {
+                action = () => 
+                    hearing.AddJudiciaryPanelMember(newJudiciaryPerson, "Display Name", contactEmail: "email@email.com");
+            }
+            
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.ContactEmailForNonGenericJudiciaryPerson).Should().BeTrue();
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().Be(beforeAddCount);
         }

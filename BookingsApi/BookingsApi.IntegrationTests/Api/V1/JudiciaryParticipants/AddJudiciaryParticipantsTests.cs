@@ -35,7 +35,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var judiciaryPersonGenericPanelMember = await Hooks.AddGenericJudiciaryPerson(personalCode: _personalCodeGenericPanelMember);
             var judiciaryParticipantsCountBefore = seededHearing.JudiciaryParticipants.Count;
             
-            var request = BuildValidAddJudiciaryParticipantsRequest();
+            var request = BuildValidAddGenericJudiciaryParticipantsRequest();
 
             // Act
             using var client = Application.CreateClient();
@@ -251,7 +251,80 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             validationProblemDetails.Errors["judiciaryPerson"][0].Should().Be("A participant with Judge role already exists in the hearing");
         }
 
+        [Test]
+        public async Task Should_return_bad_request_when_contact_telephone_specified_for_non_generic_judiciary_person()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            {
+                options.AddJudge = false;
+            });
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+            request[0].OptionalContactTelephone = "0123456789";
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["contactTelephone"][0].Should().Be(DomainRuleErrorMessages.ContactTelephoneForNonGenericJudiciaryPerson);
+        }
+        
+        [Test]
+        public async Task Should_return_bad_request_when_contact_email_specified_for_non_generic_judiciary_person()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
+            {
+                options.AddJudge = false;
+            });
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+
+            var request = BuildValidAddGenericJudiciaryParticipantsRequest();
+            request[0].OptionalContactEmail = "email@email.com";
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["contactEmail"][0].Should().Be(DomainRuleErrorMessages.ContactEmailForNonGenericJudiciaryPerson);
+        }
+
         private List<JudiciaryParticipantRequest> BuildValidAddJudiciaryParticipantsRequest()
+        {
+            return new List<JudiciaryParticipantRequest>
+            {
+                new()
+                {
+                    PersonalCode = _personalCodeJudge,
+                    DisplayName = "A Judge",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge
+                },
+                new()
+                {
+                    PersonalCode = _personalCodePanelMember,
+                    DisplayName = "B Panel Member",
+                    HearingRoleCode = JudiciaryParticipantHearingRoleCode.PanelMember
+                }
+            };
+        }
+        
+        private List<JudiciaryParticipantRequest> BuildValidAddGenericJudiciaryParticipantsRequest()
         {
             return new List<JudiciaryParticipantRequest>
             {

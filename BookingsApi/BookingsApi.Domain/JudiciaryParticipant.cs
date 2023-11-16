@@ -21,6 +21,13 @@ namespace BookingsApi.Domain
             UpdateHearingRoleCode(hearingRoleCode);
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;
+            
+            if (!string.IsNullOrEmpty(contactTelephone) && !judiciaryPerson.IsGeneric)
+                throw new DomainRuleException(nameof(contactTelephone), DomainRuleErrorMessages.ContactTelephoneForNonGenericJudiciaryPerson);
+            
+            if (!string.IsNullOrEmpty(contactEmail) && !judiciaryPerson.IsGeneric)
+                throw new DomainRuleException(nameof(contactEmail), DomainRuleErrorMessages.ContactEmailForNonGenericJudiciaryPerson);
+            
             ContactTelephone = contactTelephone;
             ContactEmail = contactEmail;
         }
