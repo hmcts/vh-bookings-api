@@ -86,7 +86,7 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
             int[] userRoleIds = request.Roles?.Select(x => (int) x).ToArray();
-            var command = new EditJusticeUserCommand(request.Id, request.Username, userRoleIds);
+            var command = new EditJusticeUserCommand(request.Id, request.Username, request.FirstName, request.LastName, request.ContactNumber, userRoleIds);
             try
             {
                 await _commandHandler.Handle(command);
