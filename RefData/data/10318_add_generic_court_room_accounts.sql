@@ -9,6 +9,8 @@ INSERT INTO JudiciaryPerson
 (
     Id,
     PersonalCode,
+    KnownAs,
+    Surname,
     Fullname,
     Email,
     CreatedDate,
@@ -19,6 +21,8 @@ VALUES
 (
     @Id,
     'VH-GENERIC-ACCOUNT-1',
+    'CourtRoom',
+    'Account1',
     'CourtRoom1',
     'genericcourtroom@hearings.reform.hmcts.net',
     CURRENT_TIMESTAMP,
