@@ -27,10 +27,14 @@ namespace BookingsApi.Mappings.V1
             if (@case == null) throw new ArgumentException("Hearing is missing case");
             
             if (videoHearing.CaseType == null) throw new ArgumentException("Hearing is missing case type");
-            
-            var judgeParticipant = videoHearing.GetParticipants().FirstOrDefault(s => s.HearingRole?.UserRole != null && s.HearingRole.UserRole.Name == "Judge");
-            var judgeName = judgeParticipant != null ? judgeParticipant.DisplayName : string.Empty;
-            var courtRoomAccount = judgeParticipant != null ? judgeParticipant.Person.Username : string.Empty;
+
+            var judge = videoHearing.GetJudge();
+            var courtRoomAccount = string.Empty;
+            if (judge is Judge judgeParticipant)
+            {
+                courtRoomAccount = judgeParticipant.Person.Username;
+            }
+            var judgeName = judge?.DisplayName ?? string.Empty;
             var allocatedVho = VideoHearingHelper.AllocatedVho(videoHearing);
 
             var response = new BookingsHearingResponse

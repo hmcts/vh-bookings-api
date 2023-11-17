@@ -22,6 +22,7 @@ namespace Testing.Common.Builders.Domain
                         Name.FullName(),
                         $"{RandomNumber.Next(1000, 100000)}",
                         $"Automation_{RandomNumber.Next()}@hmcts.net", 
+                        Phone.Number(),
                         false,
                         false,
                         string.Empty))

@@ -131,7 +131,6 @@ namespace BookingsApi.AcceptanceTests.Steps
                 participant.TelephoneNumber.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.UserRoleName.Should().NotBeNullOrEmpty();
-                participant.Username.Should().NotBeNullOrEmpty();
             }
         }
       
@@ -141,7 +140,7 @@ namespace BookingsApi.AcceptanceTests.Steps
             var participantResponses = _context.TestData.ParticipantsResponses;
             var isIndividual = role == "Individual";
             var participant = isIndividual ? participantResponses.Find(x => x.UserRoleName.Equals(role) && !x.LinkedParticipants.Any())
-                : participantResponses.Find(x => x.UserRoleName.Equals(role));
+                                    : participantResponses.Find(x => x.UserRoleName.Equals(role));
             var updateParticipantRequest = UpdateParticipantRequest.BuildRequest(); 
             _context.Request = _context.Put(UpdateParticipantDetails(_context.TestData.Hearing.Id, participant.Id), updateParticipantRequest); 
             if (isIndividual)

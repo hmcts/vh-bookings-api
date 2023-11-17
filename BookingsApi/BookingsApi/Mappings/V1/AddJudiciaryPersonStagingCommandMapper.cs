@@ -17,6 +17,7 @@ namespace BookingsApi.Mappings.V1
                 Fullname = judiciaryPersonStagingRequest.Fullname,
                 PostNominals = judiciaryPersonStagingRequest.PostNominals,
                 Email = judiciaryPersonStagingRequest.Email,
+                WorkPhone = judiciaryPersonStagingRequest.WorkPhone,
                 Leaver = judiciaryPersonStagingRequest.Leaver,
                 LeftOn = judiciaryPersonStagingRequest.LeftOn
             };

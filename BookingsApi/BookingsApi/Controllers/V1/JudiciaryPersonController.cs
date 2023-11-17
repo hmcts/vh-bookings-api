@@ -66,7 +66,7 @@ namespace BookingsApi.Controllers.V1
                     {
                         await _commandHandler.Handle(new AddJudiciaryPersonByPersonalCodeCommand(item.Id,
                             item.PersonalCode, item.Title, item.KnownAs, item.Surname,
-                            item.Fullname, item.PostNominals, item.Email, item.HasLeft, item.Leaver, item.LeftOn));
+                            item.Fullname, item.PostNominals, item.Email, item.WorkPhone, item.HasLeft, item.Leaver, item.LeftOn));
                     }
                     else
                     {
@@ -159,7 +159,7 @@ namespace BookingsApi.Controllers.V1
         /// <returns>Person list</returns>
         [HttpPost("search")]
         [OpenApiOperation("PostJudiciaryPersonBySearchTerm")]
-        [ProducesResponseType(typeof(IList<PersonResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<JudiciaryPersonResponse>), (int) HttpStatusCode.OK)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> PostJudiciaryPersonBySearchTerm(SearchTermRequest term)
         {
@@ -167,7 +167,7 @@ namespace BookingsApi.Controllers.V1
             var personList =
                 await _queryHandler.Handle<GetJudiciaryPersonBySearchTermQuery, List<JudiciaryPerson>>(query);
             var mapper = new JudiciaryPersonToResponseMapper();
-            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Username)
+            var response = personList.Select(x => mapper.MapJudiciaryPersonToResponse(x)).OrderBy(o => o.Email)
                 .ToList();
             return Ok(response);
         }

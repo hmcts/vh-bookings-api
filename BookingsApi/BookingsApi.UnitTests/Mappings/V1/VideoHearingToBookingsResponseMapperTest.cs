@@ -78,11 +78,12 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [Test]
         public void Should_map_properties_without_judge()
         {
-            var mockedHearing = MockHearingWithCase();
-            mockedHearing.CaseType = new CaseType(1, "Generic");
-            mockedHearing.GetParticipants()[3].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
+            var hearing = new VideoHearingBuilder(addJudge:false, addStaffMember:false).Build();
+            hearing.AddCase("234", "X vs Y", true);
+            hearing.CaseType = new CaseType(1, "Generic");
+            hearing.GetParticipants()[3].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };
 
-            var mapped = _mapper.MapHearingResponse(mockedHearing);
+            var mapped = _mapper.MapHearingResponse(hearing);
             mapped.Should().NotBeNull();
             mapped.ScheduledDuration.Should().Be(80);
             mapped.JudgeName.Should().BeNullOrEmpty();

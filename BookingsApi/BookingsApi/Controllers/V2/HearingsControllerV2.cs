@@ -146,7 +146,7 @@ namespace BookingsApi.Controllers.V2
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
-            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
+            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime.GetValueOrDefault(videoHearing.ScheduledDateTime),
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
                 request.UpdatedBy, cases, request.AudioRecordingRequired.Value);
 

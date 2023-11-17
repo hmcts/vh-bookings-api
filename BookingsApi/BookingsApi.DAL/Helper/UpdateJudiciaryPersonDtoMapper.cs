@@ -17,6 +17,7 @@ namespace BookingsApi.DAL.Helper
                 Surname = command.Surname,
                 PostNominals = command.PostNominals,
                 Email = command.Email,
+                WorkPhone = command.WorkPhone,
                 Leaver = command.Leaver,
                 LeftOn = command.LeftOn,
                 HasLeft = command.HasLeft

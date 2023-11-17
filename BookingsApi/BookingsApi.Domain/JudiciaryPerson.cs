@@ -8,7 +8,7 @@ namespace BookingsApi.Domain
     {
         private readonly DateTime _currentUTC = DateTime.UtcNow;
         public JudiciaryPerson(string externalRefId, string personalCode, string title, string knownAs, string surname,
-            string fullname, string postNominals, string email, bool hasLeft, bool leaver, string leftOn)
+            string fullname, string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn)
         {
             Id = Guid.NewGuid();
             ExternalRefId = externalRefId;
@@ -19,6 +19,7 @@ namespace BookingsApi.Domain
             Fullname = fullname;
             PostNominals = postNominals;
             Email = email;
+            WorkPhone = workPhone;
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;
             HasLeft = hasLeft;
@@ -34,6 +35,7 @@ namespace BookingsApi.Domain
         public string Fullname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
+        public string WorkPhone { get; set; }
         public DateTime CreatedDate { get; }
         public DateTime UpdatedDate { get; private set; }
         public bool HasLeft { get; set; }
@@ -41,7 +43,7 @@ namespace BookingsApi.Domain
         public string LeftOn { get; set; }
 
         public void Update(string personalCode, string title, string knownAs, string surname, string fullname, 
-            string postNominals, string email, bool hasLeft, bool leaver, string leftOn)
+            string postNominals, string email, string workPhone, bool hasLeft, bool leaver, string leftOn)
         {
             PersonalCode = personalCode;
             Title = title;
@@ -50,6 +52,7 @@ namespace BookingsApi.Domain
             Fullname = fullname;
             PostNominals = postNominals;
             Email = email;
+            WorkPhone = workPhone;
             UpdatedDate = DateTime.UtcNow;
             HasLeft = hasLeft;
             Leaver = leaver;
@@ -66,6 +69,7 @@ namespace BookingsApi.Domain
             Fullname = command.Fullname;
             PostNominals = command.PostNominals;
             Email = command.Email;
+            WorkPhone = command.WorkPhone;
             UpdatedDate = DateTime.UtcNow;
             HasLeft = command.HasLeft;
             Leaver = command.Leaver;
@@ -84,6 +88,7 @@ namespace BookingsApi.Domain
                 Surname = null;
                 Email = null;
                 Title = null;
+                WorkPhone = null;
                 PostNominals = null;
             }
             

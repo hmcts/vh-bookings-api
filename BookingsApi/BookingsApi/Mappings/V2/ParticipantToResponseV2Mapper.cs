@@ -18,6 +18,7 @@ namespace BookingsApi.Mappings.V2
                 LastName = participant.Person.LastName,
                 MiddleNames = participant.Person.MiddleNames,
                 ContactEmail = participant.Person.ContactEmail,
+                Username = participant.Person.Username,
                 TelephoneNumber = participant.Person.TelephoneNumber,
                 Organisation = participant.Person.Organisation?.Name,
                 LinkedParticipants = participant.LinkedParticipants.Select(x => new LinkedParticipantResponseV2

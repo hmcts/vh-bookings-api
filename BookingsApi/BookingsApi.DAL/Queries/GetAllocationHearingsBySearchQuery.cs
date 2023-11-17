@@ -9,6 +9,7 @@
         public Guid[] Cso { get;}
         public bool IsUnallocated { get; }
         public bool IncludeWorkHours { get; }
+        public bool ExcludeDurationsThatSpanMultipleDays { get; }
 
         public GetAllocationHearingsBySearchQuery(
             string caseNumber = null, 
@@ -17,7 +18,8 @@
             DateTime? toDate = null, 
             IEnumerable<Guid> cso = null,
             bool isUnallocated = false,
-            bool includeWorkHours = false)
+            bool includeWorkHours = false,
+            bool excludeDurationsThatSpanMultipleDays = false)
         {
             CaseNumber = caseNumber?.ToLower().Trim();
             CaseType = caseType?.Select(s => s.ToLower().Trim()).ToArray() ?? Array.Empty<string>();
@@ -26,6 +28,7 @@
             Cso = cso?.ToArray() ?? Array.Empty<Guid>();
             IsUnallocated = isUnallocated;
             IncludeWorkHours = includeWorkHours;
+            ExcludeDurationsThatSpanMultipleDays = excludeDurationsThatSpanMultipleDays;
         }
 
     }
@@ -93,6 +96,9 @@
                     : hearings.Where(h6 => h6.ScheduledDateTime.Date == query.FromDate.Value.Date);
             }
 
+            if (query.ExcludeDurationsThatSpanMultipleDays)
+                hearings = hearings.Where(x => x.ScheduledDateTime.AddMinutes(x.ScheduledDuration).Date == x.ScheduledDateTime.Date);
+            
             return await hearings.OrderBy(x=>x.ScheduledDateTime).AsNoTracking().AsSplitQuery().ToListAsync();
         }
     }
