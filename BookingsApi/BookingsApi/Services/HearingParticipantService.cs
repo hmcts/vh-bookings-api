@@ -71,7 +71,16 @@ public class HearingParticipantService : IHearingParticipantService
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
             .ToList();
         
-        await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+
+        switch (hearing.Status)
+        {
+            case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
+                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+                break;
+            case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
+                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
+                break;
+        }
     }
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {

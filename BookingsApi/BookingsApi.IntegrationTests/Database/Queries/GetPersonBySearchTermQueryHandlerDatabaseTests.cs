@@ -1,6 +1,7 @@
 using BookingsApi.DAL.Queries;
 using Moq;
 using BookingsApi.Common.Services;
+using BookingsApi.Domain.Participants;
 
 namespace BookingsApi.IntegrationTests.Database.Queries
 {
@@ -24,7 +25,8 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_find_contact_by_email_case_insensitive()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
-            var person = seededHearing.GetPersons().First(x => seededHearing.Participants.Any(p => p.PersonId == x.Id && !GetPersonBySearchTermQueryHandler.excludedRoles.Contains(p.Discriminator)));
+            
+            var person = seededHearing.GetParticipants().First(x => x is Individual).Person;
             var contactEmail = person.ContactEmail;
             
             // Build a search term based on lower and upper case of the expected email
@@ -40,7 +42,7 @@ namespace BookingsApi.IntegrationTests.Database.Queries
         public async Task Should_find_contact_by_email_when_searched_from_middle_of_string()
         {
             var seededHearing = await Hooks.SeedVideoHearing();
-            var person = seededHearing.GetPersons().First(x => seededHearing.Participants.Any(p => p.PersonId == x.Id && !GetPersonBySearchTermQueryHandler.excludedRoles.Contains(p.Discriminator)));
+            var person = seededHearing.GetParticipants().First(x => x is Individual).Person;
             var contactEmail = person.ContactEmail;
             
             var searchTerm = contactEmail.Substring(2, 3);

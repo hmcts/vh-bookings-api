@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoDisplayNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -49,7 +49,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoCaseRoleNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoCaseRoleNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoHearingRoleNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoHearingRoleNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -77,7 +77,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoFirstNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoFirstNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoLastNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoLastNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -107,7 +107,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoUsernameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoUsernameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -121,7 +121,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -135,7 +135,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -150,7 +150,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.InvalidContactEmailErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -165,7 +165,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.InvalidJudgeUsernameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.InvalidJudgeUsernameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -203,16 +203,21 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.NoTelephoneNumberErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.NoTelephoneNumberErrorMessage)
                 .Should().BeTrue();
         }
 
-        [Test]
-        public async Task Should_not_return_missing_telephone_number_error_for_judge()
+        [TestCase("Judge")]
+        [TestCase("judge")]
+        [TestCase("Panel Member")]
+        [TestCase("Panel member")]
+        [TestCase("panel member")]
+        [TestCase("panel Member")]
+        public async Task Should_not_return_missing_telephone_number_error_for(string role)
         {
             var request = BuildRequest();
             request.TelephoneNumber = string.Empty;
-            request.HearingRoleName = "Judge";
+            request.HearingRoleName = role;
             request.Username = "judge.one@ejudiciary.net";
             
             var result = await _validator.ValidateAsync(request);
@@ -244,9 +249,9 @@ namespace BookingsApi.UnitTests.Validation.V1
             if (!expectedResult)
             {
                 result.Errors.Count.Should().Be(2);
-                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.FirstNameDoesntMatchRegex)
+                result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.FirstNameDoesntMatchRegex)
                     .Should().BeTrue();
-                result.Errors.Any(x => x.ErrorMessage == ParticipantRequestValidation.LastNameDoesntMatchRegex)
+                result.Errors.Exists(x => x.ErrorMessage == ParticipantRequestValidation.LastNameDoesntMatchRegex)
                     .Should().BeTrue();
             }
         }

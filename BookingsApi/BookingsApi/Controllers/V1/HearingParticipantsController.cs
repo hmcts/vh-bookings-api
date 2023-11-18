@@ -373,8 +373,7 @@ namespace BookingsApi.Controllers.V1
         [ProducesResponseType(typeof(ValidationProblemDetails), (int) HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId,
-            [FromBody] UpdateParticipantRequest request)
+        public async Task<IActionResult> UpdateParticipantDetails(Guid hearingId, Guid participantId, [FromBody] UpdateParticipantRequest request)
         {
             var requestValidationResult = await new UpdateParticipantRequestValidation().ValidateAsync(request);
             if (!requestValidationResult.IsValid)
@@ -387,10 +386,8 @@ namespace BookingsApi.Controllers.V1
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
 
             if (videoHearing == null)
-            {
                 return NotFound($"Video hearing {hearingId} not found");
-            }
-
+            
             Participant participant = null;
             var participants = videoHearing.GetParticipants();
             if (participants != null)
@@ -413,20 +410,33 @@ namespace BookingsApi.Controllers.V1
                     return ValidationProblem(ModelState);
                 }
             }
-
+            
+            AdditionalInformation additionalInfo = null;
+            if (request.FirstName != null && request.LastName != null)
+                additionalInfo = new AdditionalInformation(request.FirstName, request.LastName)
+                {
+                    MiddleNames = request.MiddleName
+                };
+            
             var representative =
                 UpdateParticipantRequestToNewRepresentativeMapper.MapRequestToNewRepresentativeInfo(request);
 
             var linkedParticipants =
                 LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
-            var updateParticipantCommand = new UpdateParticipantCommand(hearingId, participantId, request.Title,
-                request.DisplayName, request.TelephoneNumber,
-                request.OrganisationName, representative, linkedParticipants);
+            var updateParticipantCommand = new UpdateParticipantCommand(
+                hearingId, 
+                participantId, 
+                request.Title, 
+                request.DisplayName, 
+                request.TelephoneNumber, 
+                request.OrganisationName, 
+                representative, 
+                linkedParticipants,
+                additionalInfo);
             
             var updatedParticipant =
-                await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing,
-                    updateParticipantCommand);
+                await _hearingParticipantService.UpdateParticipantAndPublishEventAsync(videoHearing, updateParticipantCommand);
             
             var response = new ParticipantToResponseMapper().MapParticipantToResponse(updatedParticipant);
 

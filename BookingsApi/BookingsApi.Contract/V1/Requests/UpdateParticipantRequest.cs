@@ -67,5 +67,20 @@ namespace BookingsApi.Contract.V1.Requests
         ///     List of linked participants
         /// </summary>
         public List<LinkedParticipantRequest> LinkedParticipants { get; set; }
+        
+        /// <summary>
+        /// First Name of the participant
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// Middle Name of the participant
+        /// </summary>
+        public string MiddleName { get; set; }
+        
+        /// <summary>
+        /// Last Name of the participant
+        /// </summary>
+        public string LastName { get; set; }
     }
 }

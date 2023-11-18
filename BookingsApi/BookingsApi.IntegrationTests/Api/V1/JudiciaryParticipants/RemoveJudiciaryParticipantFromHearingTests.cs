@@ -49,32 +49,6 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
         var response = await ApiClientResponse.GetResponses<string>(result.Content);
         response.Should().Be(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
     }
-    
-    [Test]
-    public async Task should_return_bad_request_when_removing_only_host()
-    {
-        // Arrange
-        var seededHearing = await Hooks.SeedVideoHearingV2(options =>
-        {
-            options.AddJudge = true;
-            options.AddStaffMember = false;
-        });
-        var hearingId = seededHearing.Id;
-        var personalCode = seededHearing.JudiciaryParticipants[0].JudiciaryPerson.PersonalCode;
-
-        // Act
-        using var client = Application.CreateClient();
-        var result =
-            await client.DeleteAsync(
-                ApiUriFactory.JudiciaryParticipantEndpoints.RemoveJudiciaryParticipantFromHearing(hearingId,
-                    personalCode));
-            
-        // Assert
-        result.IsSuccessStatusCode.Should().BeFalse();
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var response = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-        response.Errors["Host"].Should().Contain(DomainRuleErrorMessages.HearingNeedsAHost);
-    }
 
     [Test]
     public async Task should_remove_judiciary_participant()

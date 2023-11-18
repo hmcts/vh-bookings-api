@@ -54,6 +54,8 @@ public class BookNewHearingTests : ApiTest
     {
         // arrange
         var request = CreateBookingRequest();
+        var panelMember = request.Participants.SingleOrDefault(x => x.HearingRoleName == "Panel Member");
+        request.Participants.Remove(panelMember);
         request.Participants = request.Participants.Where(x=> x.HearingRoleName == "Judge").ToList();
         var judge = request.Participants[0];
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -78,6 +80,32 @@ public class BookNewHearingTests : ApiTest
         var integrationEvent = message.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Participants.Should().Contain(x=> 
             x.ContactEmail == judge.ContactEmail && x.HearingRole == "Judge" && x.UserRole == "Judge");
+    }
+
+    [Test]
+    public async Task should_book_a_hearing_with_a_panelmember_with_no_telepehone_number()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+
+        _hearingIds.Add(hearingResponse.Id);
+        var panel1 = hearingResponse.Participants.First(p => p.HearingRoleName.ToLowerInvariant() == "Panel Member".ToLowerInvariant());
+        panel1.UserRoleName.Should().Be("Judicial Office Holder");
+        panel1.TelephoneNumber.Should().BeNullOrEmpty();
     }
 
     [Test]

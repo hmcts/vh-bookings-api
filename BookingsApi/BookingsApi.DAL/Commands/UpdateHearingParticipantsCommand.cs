@@ -38,6 +38,7 @@ namespace BookingsApi.DAL.Commands
         {
             var hearing = await _context.VideoHearings
                 .Include(x => x.Participants).ThenInclude(x=> x.Person.Organisation)
+                .Include(x => x.JudiciaryParticipants).ThenInclude(x=> x.JudiciaryPerson)
                 .Include(x => x.Participants).ThenInclude(x => x.HearingRole.UserRole)
                 .Include(x => x.Participants).ThenInclude(x => x.CaseRole)
                 .Include(x => x.Participants).ThenInclude(x => x.LinkedParticipants)

@@ -8,7 +8,7 @@ namespace BookingsApi.Domain
         private readonly DateTime _currentUTC = DateTime.UtcNow;
         
         public JudiciaryPersonStaging(string externalRefId, string personalCode, string title, string knownAs, string surname,
-            string fullname, string postNominals, string email, string leaver, string leftOn)
+            string fullname, string postNominals, string email, string workPhone, string leaver, string leftOn)
         {
             Id = Guid.NewGuid();
             ExternalRefId = externalRefId;
@@ -19,6 +19,7 @@ namespace BookingsApi.Domain
             Fullname = fullname;
             PostNominals = postNominals;
             Email = email;
+            WorkPhone = workPhone;
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;
             Leaver = leaver;
@@ -33,6 +34,7 @@ namespace BookingsApi.Domain
         public string Surname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
+        public string WorkPhone { get; set; }
         public string Leaver { get; set; }
         public string LeftOn { get; set; }
         public DateTime CreatedDate { get; set; }

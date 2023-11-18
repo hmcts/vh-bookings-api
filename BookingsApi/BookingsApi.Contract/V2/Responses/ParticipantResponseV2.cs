@@ -54,6 +54,11 @@ namespace BookingsApi.Contract.V2.Responses
         ///     Participant telephone number
         /// </summary>
         public string TelephoneNumber { get; set; }
+        
+        /// <summary>
+        ///     Participant username
+        /// </summary>
+        public string Username { get; set; }
 
         /// <summary>
         ///    Gets or sets the organisation name.

@@ -16,6 +16,7 @@ namespace BookingsApi.Mappings.V1
                 Surname = request.Surname,
                 PostNominals = request.PostNominals,
                 Email = request.Email,
+                WorkPhone = request.WorkPhone,
                 Leaver = request.Leaver,
                 LeftOn = request.LeftOn,
             };

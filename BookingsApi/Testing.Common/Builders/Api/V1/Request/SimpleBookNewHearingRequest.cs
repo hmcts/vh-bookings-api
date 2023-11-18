@@ -13,7 +13,7 @@ public class SimpleBookNewHearingRequest
     public SimpleBookNewHearingRequest(string caseName, DateTime scheduledDateTime)
     {
         var hearingScheduled = scheduledDateTime;
-        var participants = Builder<ParticipantRequest>.CreateListOfSize(5).All()
+        var participants = Builder<ParticipantRequest>.CreateListOfSize(7).All()
             .With(x => x.Title = "Mrs")
             .With(x => x.TelephoneNumber = "01234567890")
             .With(x => x.OrganisationName = TestUsers.Organisation1)
@@ -68,6 +68,28 @@ public class SimpleBookNewHearingRequest
         participants[4].ContactEmail = participant4.ContactEmail;
         participants[4].Username = participant4.Username;
         participants[4].DisplayName = participant4.DisplayName;
+
+        var participant5 = new TestUser(TestUsers.PanelMember1.FirstName, TestUsers.PanelMember1.LastName);
+        participants[5].CaseRoleName = "Panel Member";
+        participants[5].HearingRoleName = "Panel Member";
+        participants[5].Representee = null;
+        participants[5].TelephoneNumber = null;
+        participants[5].FirstName = participant5.FirstName;
+        participants[5].LastName = participant5.LastName;
+        participants[5].ContactEmail = participant5.ContactEmail;
+        participants[5].Username = participant5.Username;
+        participants[5].DisplayName = participant5.DisplayName;
+
+        var participant6 = new TestUser("Panel_2", "Member_2");
+        participants[6].CaseRoleName = "Panel member";
+        participants[6].HearingRoleName = "Panel member";
+        participants[6].Representee = null;
+        participants[6].TelephoneNumber = null;
+        participants[6].FirstName = participant6.FirstName;
+        participants[6].LastName = participant6.LastName;
+        participants[6].ContactEmail = participant6.ContactEmail;
+        participants[6].Username = participant6.Username;
+        participants[6].DisplayName = participant6.DisplayName;
 
         var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
         cases[0].IsLeadCase = false;

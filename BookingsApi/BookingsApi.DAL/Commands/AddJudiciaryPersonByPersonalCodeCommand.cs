@@ -3,8 +3,10 @@ namespace BookingsApi.DAL.Commands
     public class AddJudiciaryPersonByPersonalCodeCommand : JudiciaryPersonCommandBase
     {
         public AddJudiciaryPersonByPersonalCodeCommand(string externalRefId, string personalCode, string title,
-            string knownAs, string surname, string fullname, string postNominals, string email, bool hasLeft, bool leaver, string leftOn) :
-            base(externalRefId, personalCode, title, knownAs, surname, fullname, postNominals, email, hasLeft, leaver, leftOn)
+            string knownAs, string surname, string fullname, string postNominals, string email, string workPhone,
+            bool hasLeft, bool leaver, string leftOn) :
+            base(externalRefId, personalCode, title, knownAs, surname, fullname, postNominals, email, workPhone,
+                hasLeft, leaver, leftOn)
         {
         }
     }
@@ -20,7 +22,7 @@ namespace BookingsApi.DAL.Commands
         
         public async Task Handle(AddJudiciaryPersonByPersonalCodeCommand command)
         {
-            var judiciaryPerson = new JudiciaryPerson(command.ExternalRefId, command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname, command.PostNominals, command.Email, command.HasLeft, command.Leaver, command.LeftOn);
+            var judiciaryPerson = new JudiciaryPerson(command.ExternalRefId, command.PersonalCode, command.Title, command.KnownAs, command.Surname, command.Fullname, command.PostNominals, command.Email, command.WorkPhone, command.HasLeft, command.Leaver, command.LeftOn);
 
             await _context.JudiciaryPersons.AddAsync(judiciaryPerson);
 

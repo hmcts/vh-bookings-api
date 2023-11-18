@@ -34,7 +34,8 @@ namespace BookingsApi.Validations.V2
                 .GreaterThan(0).WithMessage(ScheduleDurationErrorMessage);
 
             RuleFor(x => x.Participants).NotEmpty()
-                .NotEmpty().WithMessage(ParticipantsErrorMessage);
+                .When(x => x.JudiciaryParticipants == null || !x.JudiciaryParticipants.Any())
+                .WithMessage(ParticipantsErrorMessage);
 
             RuleFor(x => x.Cases).NotEmpty()
                 .NotEmpty().WithMessage(CasesErrorMessage);

@@ -258,6 +258,7 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         hearings[0].Allocations[0].JusticeUser.VhoWorkHours.Count.Should().Be(nonDeletedWorkHours.Count);
         CollectionAssert.AreEquivalent(resultingWorkHours.Select(wh => wh.Id), nonDeletedWorkHours.Select(wh => wh.Id));
     }
+    
     [Test]
     public async Task should_not_return_excluded_venues()
     {
@@ -278,6 +279,25 @@ public class GetAllocationHearingsBySearchQueryTests : DatabaseTestsBase
         var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(cso:new[] {justiceUser.Id}));
         //ASSERT
         hearings.Count.Should().Be(1);
-        
+    }   
+    
+    [Test]
+    public async Task should_not_return_hearings_with_a_duration_that_crosses_multiple_days()
+    {
+        //ARRANGE
+        _seededHearing4 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        {
+            options.ScheduledDate = DateTime.Today.AddDays(1).AddHours(18);
+            options.ScheduledDuration = 420; //7 hours (crosses midnight)
+        });
+        _seededHearing5 = await Hooks.SeedVideoHearing(status: BookingStatus.Booked, configureOptions: options =>
+        {
+            options.ScheduledDate = DateTime.Today.AddDays(1).AddHours(18);
+            options.ScheduledDuration = 300; //5 hours (does not pass midnight)
+        });
+        //ACT
+        var hearings = await _handler.Handle(new GetAllocationHearingsBySearchQuery(isUnallocated:true, excludeDurationsThatSpanMultipleDays:true));
+        //ASSERT
+        hearings.Should().NotContain(e => e.Id == _seededHearing4.Id);
     }   
 }

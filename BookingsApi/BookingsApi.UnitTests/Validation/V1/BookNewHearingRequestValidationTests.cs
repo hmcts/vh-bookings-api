@@ -35,7 +35,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -48,7 +48,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDateTimeInPastErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDateTimeInPastErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -61,7 +61,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDurationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.ScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -75,7 +75,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseTypeNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseTypeNameErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -92,7 +92,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
 
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeNameErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingTypeNameErrorMessage)
                 .Should().BeTrue();
 
         }
@@ -111,7 +111,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
 
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.HearingVenueErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -125,7 +125,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.ParticipantsErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.ParticipantsErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -139,7 +139,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(2);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CasesErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.CasesErrorMessage)
                 .Should().BeTrue();
         }
         
@@ -153,7 +153,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == CaseRequestValidation.CaseNameMessage)
+            result.Errors.Exists(x => x.ErrorMessage == CaseRequestValidation.CaseNameMessage)
                 .Should().BeTrue();
         }
         
@@ -171,7 +171,7 @@ namespace BookingsApi.UnitTests.Validation.V1
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Any(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseDuplicationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == BookNewHearingRequestValidation.CaseDuplicationErrorMessage)
                 .Should().BeTrue();
         }
 

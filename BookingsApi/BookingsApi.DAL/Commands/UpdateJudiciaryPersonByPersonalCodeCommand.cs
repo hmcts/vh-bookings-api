@@ -12,11 +12,12 @@ namespace BookingsApi.DAL.Commands
         public string Surname { get; set; }
         public string PostNominals { get; set; }
         public string Email { get; set; }
+        public string WorkPhone { get; set; }
         public bool Leaver { get; set; }
 
         public bool HasLeft => Leaver;
-
         public string LeftOn { get; set; }
+        
     }
 
     public class UpdateJudiciaryPersonByPersonalCodeHandler : ICommandHandler<UpdateJudiciaryPersonByPersonalCodeCommand>
