@@ -120,7 +120,7 @@ public class BookingService : IBookingService
             var @case = originalHearing.GetCases()[0];
             foreach (var participant in originalHearing.Participants)
             {
-                await _eventPublisher.PublishAsync(new HearingAmendementNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
+                await _eventPublisher.PublishAsync(new HearingAmendmentNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
                         originalHearing.ScheduledDateTime, participant, @case),  updatedHearing.ScheduledDateTime));
             }
         }

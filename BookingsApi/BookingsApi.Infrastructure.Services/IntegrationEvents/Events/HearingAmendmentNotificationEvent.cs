@@ -3,9 +3,9 @@ using System;
 
 namespace BookingsApi.Infrastructure.Services.IntegrationEvents.Events
 {
-    public class HearingAmendementNotificationEvent : IIntegrationEvent
+    public class HearingAmendmentNotificationEvent : IIntegrationEvent
     {
-        public HearingAmendementNotificationEvent(HearingConfirmationForParticipantDto dto, DateTime newScheduledDateTime)
+        public HearingAmendmentNotificationEvent(HearingConfirmationForParticipantDto dto, DateTime newScheduledDateTime)
         {
             HearingConfirmationForParticipant = dto;
             NewScheduledDateTime = newScheduledDateTime;
