@@ -1,3 +1,4 @@
+using BookingsApi.Infrastructure.Services;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
 
 namespace BookingsApi.Services;
@@ -113,10 +114,15 @@ public class BookingService : IBookingService
         if (updatedHearing.Status != BookingStatus.Created) return updatedHearing;
 
         await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
+
         if (updatedHearing.ScheduledDateTime.Ticks != originalHearing.ScheduledDateTime.Ticks)
         {
-            await _eventPublisher.PublishAsync(
-                new HearingDateTimeChangedIntegrationEvent(updatedHearing, originalHearing.ScheduledDateTime));
+            var @case = originalHearing.GetCases()[0];
+            foreach (var participant in originalHearing.Participants)
+            {
+                await _eventPublisher.PublishAsync(new HearingAmendementNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
+                        originalHearing.ScheduledDateTime, participant, @case),  updatedHearing.ScheduledDateTime));
+            }
         }
 
         return updatedHearing;

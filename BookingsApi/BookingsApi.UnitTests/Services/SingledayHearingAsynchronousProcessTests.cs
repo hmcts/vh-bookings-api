@@ -36,7 +36,7 @@ namespace BookingsApi.UnitTests.Services
                 hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
 
             var createConfereceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is Individual) - 1;
+            var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
             var hearingConfirmationForExistingParticipantsMessageCount = 1;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount
@@ -44,7 +44,7 @@ namespace BookingsApi.UnitTests.Services
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
-            var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue();
+            var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent).Should().Be(newParticipantWelcomeMessageCount);

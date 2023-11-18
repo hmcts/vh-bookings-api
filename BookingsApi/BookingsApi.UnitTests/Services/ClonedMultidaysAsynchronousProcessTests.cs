@@ -37,14 +37,14 @@ namespace BookingsApi.UnitTests.Services
 
             var createConfereceMessageCount = 0;
             var newParticipantWelcomeMessageCount = 0;
-            var multidayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is Individual) - 2;
+            var multidayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge) - 2;
             var mulitdayHearingConfirmationForExistingParticipantsMessageCount = 2;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + multidayHearingConfirmationForNewParticipantsMessageCount
                 + mulitdayHearingConfirmationForExistingParticipantsMessageCount;
 
             await _clonedMultidaysAsynchronousProcess.Start(hearing, 2);
             
-            var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue();
+            var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent).Should().Be(newParticipantWelcomeMessageCount);

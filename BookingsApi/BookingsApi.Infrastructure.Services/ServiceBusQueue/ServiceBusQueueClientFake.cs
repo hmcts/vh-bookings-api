@@ -1,4 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BookingsApi.Common.Helpers;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
@@ -18,7 +21,6 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
         
         public Task PublishMessageAsync(EventMessage eventMessage)
         {
-            var jsonObjectString = JsonConvert.SerializeObject(eventMessage, SerializerSettings);
             _eventMessages.Enqueue(eventMessage);
             return Task.CompletedTask;
         }
@@ -28,11 +30,12 @@ namespace BookingsApi.Infrastructure.Services.ServiceBusQueue
             _eventMessages.TryDequeue(out var message);
             return message;
         }
-        public EventMessage[] ReadAllMessagesFromQueue()
+        public EventMessage[] ReadAllMessagesFromQueue(Guid hearingId)
         {
-            var messages = _eventMessages.ToArray();
-            _eventMessages.Clear();
-            return messages;
+            var list = (from message in _eventMessages
+                        where JsonConvert.SerializeObject(message, SerializerSettings).Contains(hearingId.ToString())
+                        select message).ToList();
+            return list.ToArray();
         }
         public int Count => _eventMessages.Count;
     }

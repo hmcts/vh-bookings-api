@@ -57,7 +57,7 @@ public class BookNewHearingTests : ApiTest
         request.Participants = request.Participants.Where(x=> x.HearingRoleName == "Judge").ToList();
         var judge = request.Participants[0];
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        serviceBusStub.ReadAllMessagesFromQueue(); // clear any messages in the queue
+        //serviceBusStub.ReadAllMessagesFromQueue(); // clear any messages in the queue
         // act
         using var client = Application.CreateClient();
         var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
@@ -73,7 +73,7 @@ public class BookNewHearingTests : ApiTest
         createdResponse.Should().BeEquivalentTo(hearingResponse);
         _hearingIds.Add(hearingResponse.Id);
 
-        var messages = serviceBusStub.ReadAllMessagesFromQueue();
+        var messages = serviceBusStub.ReadAllMessagesFromQueue(hearingResponse.Id);
         var message = messages.Single(x => x.IntegrationEvent.GetType() == typeof(HearingIsReadyForVideoIntegrationEvent));
         var integrationEvent = message.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Participants.Should().Contain(x=> 
