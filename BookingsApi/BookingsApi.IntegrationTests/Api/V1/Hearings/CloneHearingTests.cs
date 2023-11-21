@@ -26,6 +26,9 @@ public class CloneHearingTests : ApiTest
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         var clonedHearingsList = await ApiClientResponse.GetResponses<List<HearingDetailsResponse>>(result.Content);
+        clonedHearingsList.Count.Should().Be(dates.Count);
+        clonedHearingsList.Single(x => x.ScheduledDateTime == dates[0]);
+        clonedHearingsList.Single(x => x.ScheduledDateTime == dates[1]);
         clonedHearingsList.TrueForAll(x => x.GroupId == groupId).Should().BeTrue();
     }
 }
