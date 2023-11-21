@@ -344,7 +344,7 @@ namespace BookingsApi.Controllers.V1
         /// <returns></returns>
         [HttpPost("{hearingId}/clone")]
         [OpenApiOperation("CloneHearing")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(List<HearingDetailsResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> CloneHearing([FromRoute] Guid hearingId,
@@ -376,17 +376,19 @@ namespace BookingsApi.Controllers.V1
 
             var existingCase = videoHearing.GetCases()[0];
             await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
-
+            var hearingsList = new List<VideoHearing>();
             foreach (var command in commands)
             {
                 // dbcontext is not thread safe. loop one at a time
-                await _bookingService.SaveNewHearingAndPublish(command, true);
+                var hearing = await _bookingService.SaveNewHearingAndPublish(command, true);
+                hearingsList.Add(hearing);
             }
             
             // publish multi day hearing notification event
             await _bookingService.PublishMultiDayHearing(videoHearing, totalDays);
+            var response = hearingsList.Select(HearingToDetailsResponseMapper.Map).ToList();
 
-            return NoContent();
+            return Ok(response);
         }
 
         /// <summary>
