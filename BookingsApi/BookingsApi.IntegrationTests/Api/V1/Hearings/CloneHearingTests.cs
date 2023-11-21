@@ -27,8 +27,10 @@ public class CloneHearingTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         var clonedHearingsList = await ApiClientResponse.GetResponses<List<HearingDetailsResponse>>(result.Content);
         clonedHearingsList.Count.Should().Be(dates.Count);
-        clonedHearingsList.Single(x => x.ScheduledDateTime == dates[0]);
-        clonedHearingsList.Single(x => x.ScheduledDateTime == dates[1]);
+        var first = clonedHearingsList.Single(x => x.ScheduledDateTime == dates[0]);
+        var second = clonedHearingsList.Single(x => x.ScheduledDateTime == dates[1]);
+        first.Endpoints.Should().NotBeEquivalentTo(second.Endpoints);
+        
         clonedHearingsList.TrueForAll(x => x.GroupId == groupId).Should().BeTrue();
     }
 }
