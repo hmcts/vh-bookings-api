@@ -240,7 +240,7 @@ public class UpdateParticipantDetailsTests : ApiTest
         participantResponse.LinkedParticipants.Should().BeEmpty();
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId).FirstOrDefault();
         message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
         var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
         integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
