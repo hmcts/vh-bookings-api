@@ -462,7 +462,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -471,7 +471,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Cancels the booking
@@ -4175,7 +4175,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request)
         {
             return CloneHearingAsync(hearingId, request, System.Threading.CancellationToken.None);
         }
@@ -4187,7 +4187,7 @@ namespace BookingsApi.Client
         /// <param name="hearingId">Original hearing to clone</param>
         /// <param name="request">List of dates to create a new hearing on</param>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -4210,6 +4210,7 @@ namespace BookingsApi.Client
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -4242,9 +4243,14 @@ namespace BookingsApi.Client
                             throw new BookingsApiException<string>("A server side error occurred.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
-                        if (status_ == 204)
+                        if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<HearingDetailsResponse>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new BookingsApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)
