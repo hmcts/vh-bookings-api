@@ -15,7 +15,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             _eventPublisher = eventPublisher;
         }
 
-        public EventType EventType => EventType.MultidayHearingConfirmationforExistingParticipantEvent;
+        public EventType EventType => EventType.ExistingParticipantMultidayHearingConfirmationEvent;
         public int TotalDays { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)

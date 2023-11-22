@@ -18,12 +18,12 @@ namespace BookingsApi.UnitTests.Services
             _eventPublisher = new EventPublisher(_serviceBusQueueClient);
 
             var eventPublisherFactory = EventPublisherFactoryInstance.Get(_eventPublisher);
-            eventPublisherFactory.Get(EventType.WelcomeMessageForNewParticipantEvent).Should().NotBeNull();
+            eventPublisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).Should().NotBeNull();
             eventPublisherFactory.Get(EventType.CreateConferenceEvent).Should().NotBeNull();
-            eventPublisherFactory.Get(EventType.HearingConfirmationForNewParticipantEvent).Should().NotBeNull();
-            eventPublisherFactory.Get(EventType.HearingConfirmationForExistingParticipantEvent).Should().NotBeNull();
-            eventPublisherFactory.Get(EventType.MultidayHearingConfirmationforExistingParticipantEvent).Should().NotBeNull();
-            eventPublisherFactory.Get(EventType.MultidayHearingConfirmationforNewParticipantEvent).Should().NotBeNull();
+            eventPublisherFactory.Get(EventType.NewParticipantHearingConfirmationEvent).Should().NotBeNull();
+            eventPublisherFactory.Get(EventType.ExistingParticipantHearingConfirmationEvent).Should().NotBeNull();
+            eventPublisherFactory.Get(EventType.ExistingParticipantMultidayHearingConfirmationEvent).Should().NotBeNull();
+            eventPublisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent).Should().NotBeNull();
         }
     }
 }

@@ -26,13 +26,13 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             if (!_featureToggles.UsePostMay2023Template())
             {
                 await _publisherFactory.Get(EventType.CreateAndNotifyUserEvent).PublishAsync(videoHearing);
-                await _publisherFactory.Get(EventType.HearingNotificationIntegrationEvent).PublishAsync(videoHearing);
+                await _publisherFactory.Get(EventType.HearingNotificationEvent).PublishAsync(videoHearing);
                 return;
             }
 
-            await _publisherFactory.Get(EventType.WelcomeMessageForNewParticipantEvent).PublishAsync(videoHearing);
+            await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.ParticipantAddedEvent).PublishAsync(videoHearing);
-            await _publisherFactory.Get(EventType.HearingConfirmationForNewParticipantEvent).PublishAsync(videoHearing);
+            await _publisherFactory.Get(EventType.NewParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
         }
     }
 }

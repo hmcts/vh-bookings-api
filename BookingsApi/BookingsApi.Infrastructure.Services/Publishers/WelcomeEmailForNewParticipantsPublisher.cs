@@ -15,7 +15,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             _eventPublisher = eventPublisher;
         }
 
-        public EventType EventType => EventType.WelcomeMessageForNewParticipantEvent;
+        public EventType EventType => EventType.NewParticipantWelcomeEmailEvent;
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {

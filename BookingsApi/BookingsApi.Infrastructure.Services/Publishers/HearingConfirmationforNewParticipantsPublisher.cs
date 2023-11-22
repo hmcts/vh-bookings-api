@@ -16,7 +16,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             _eventPublisher = eventPublisher;
         }
 
-        public EventType EventType => EventType.HearingConfirmationForNewParticipantEvent;
+        public EventType EventType => EventType.NewParticipantHearingConfirmationEvent;
         public async Task PublishAsync(VideoHearing videoHearing)
         {
             var newParticipants = PublisherHelper.GetNewParticipantsSinceLastUpdate(videoHearing);

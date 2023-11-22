@@ -38,11 +38,11 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
                 return;
             }
 
-            var publisherForNewParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultidayHearingConfirmationforNewParticipantEvent);
+            var publisherForNewParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent);
             publisherForNewParticipant.TotalDays = totalDays;
             await publisherForNewParticipant.PublishAsync(videoHearing);
 
-            var publisherForExistingParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultidayHearingConfirmationforExistingParticipantEvent);
+            var publisherForExistingParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.ExistingParticipantMultidayHearingConfirmationEvent);
             publisherForExistingParticipant.TotalDays = totalDays;
             await publisherForExistingParticipant.PublishAsync(videoHearing);
         }

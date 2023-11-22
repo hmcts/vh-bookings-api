@@ -2,15 +2,15 @@
 {
     public enum EventType
     {
-        WelcomeMessageForNewParticipantEvent,
-        HearingConfirmationForExistingParticipantEvent,
-        HearingConfirmationForNewParticipantEvent,
+        NewParticipantWelcomeEmailEvent,
+        ExistingParticipantHearingConfirmationEvent,
+        NewParticipantHearingConfirmationEvent,
         CreateConferenceEvent,
-        MultidayHearingConfirmationforNewParticipantEvent,
-        MultidayHearingConfirmationforExistingParticipantEvent,
+        NewParticipantMultidayHearingConfirmationEvent,
+        ExistingParticipantMultidayHearingConfirmationEvent,
         ParticipantAddedEvent,
         CreateAndNotifyUserEvent,
-        HearingNotificationIntegrationEvent,
+        HearingNotificationEvent,
         MultiDayHearingIntegrationEvent
     }
 }
