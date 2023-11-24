@@ -67,7 +67,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
         {
             // arrange
             _request = Builder<EditJusticeUserRequest>.CreateNew().Build();
-            
+            _request.ContactNumber = "1234567890";
             using var client = Application.CreateClient();
             
             // act
