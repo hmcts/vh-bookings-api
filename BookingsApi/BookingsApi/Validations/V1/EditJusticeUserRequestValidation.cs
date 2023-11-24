@@ -24,8 +24,8 @@ public class EditJusticeUserRequestValidation : AbstractValidator<EditJusticeUse
 
         RuleFor(x => x.FirstName).NotEmpty().WithMessage(NoFirstNameErrorMessage);
         RuleFor(x => x.LastName).NotEmpty().WithMessage(NoLastNameErrorMessage);
-        RuleFor(x => x.ContactNumber).Must((_, telephoneNumber) => IsPhone(telephoneNumber))
-            .When(x => !string.IsNullOrWhiteSpace(x.ContactNumber));
+        RuleFor(x => x.ContactTelephone).Must((_, telephoneNumber) => IsPhone(telephoneNumber))
+            .When(x => !string.IsNullOrWhiteSpace(x.ContactTelephone));
         RuleFor(x => x.Id).NotNull().WithMessage(NoIdErrorMessage);
         RuleFor(x => x.Username).NotEmpty().WithMessage(NoUsernameErrorMessage);
         RuleForEach(x => x.Roles).IsInEnum().WithMessage(NoRoleErrorMessage);

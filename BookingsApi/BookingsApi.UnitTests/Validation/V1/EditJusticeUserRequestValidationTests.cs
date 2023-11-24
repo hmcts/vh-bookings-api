@@ -20,7 +20,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             var request = Builder<EditJusticeUserRequest>.CreateNew().Build();
             request.FirstName = "William";
             request.LastName = "Craig";
-            request.ContactNumber = "01234546789";
+            request.ContactTelephone = "01234546789";
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeTrue();
@@ -33,7 +33,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             request.Username = null;
             request.FirstName = "Wil'liam";
             request.LastName = "Cra ig";
-            request.ContactNumber = "01234546789101112131415";
+            request.ContactTelephone = "01234546789101112131415";
             var result = await _validator.ValidateAsync(request);
 
             result.IsValid.Should().BeFalse();

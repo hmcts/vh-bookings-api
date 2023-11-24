@@ -37,5 +37,5 @@ public class EditJusticeUserRequest
     /// <summary>
     /// The Users Contact Number
     /// </summary>
-    public string ContactNumber { get; set; }
+    public string ContactTelephone { get; set; }
 }
