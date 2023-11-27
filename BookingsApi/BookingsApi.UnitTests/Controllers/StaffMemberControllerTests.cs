@@ -51,6 +51,7 @@ namespace BookingsApi.UnitTests.Controllers
         {
             var result = await _controller.GetStaffMemberBySearchTerm("hh");
             var objectResult = (ObjectResult)result;
+            objectResult.Should().NotBeNull();
             ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("term", "Search term must be at least 3 characters.");
         }
 
