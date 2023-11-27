@@ -23,9 +23,12 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     {
         // Arrange
         _hearing = await Hooks.SeedVideoHearing();
+        var fName = "First";
+        var lName = "Last";
+        var number = "12345";
         var userToEdit = await SeedJusticeUser(_hearing.Id, "testuser@hmcts.net");
         
-        var command = new EditJusticeUserCommand(userToEdit.Id, userToEdit.Username, (int)roleId);
+        var command = new EditJusticeUserCommand(userToEdit.Id, userToEdit.Username,fName, lName, number, (int)roleId);
         
         // Act
         await _commandHandler.Handle(command);
@@ -37,6 +40,36 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
         // Assert
         justiceUser.Should().NotBeNull();
         justiceUser.JusticeUserRoles.Select(e => e.UserRole.Id).Should().Contain((int)roleId);
+        justiceUser.FirstName.Should().Be(fName);
+        justiceUser.Lastname.Should().Be(lName);
+        justiceUser.Telephone.Should().Be(number);
+    }
+    
+    [TestCase(UserRoleId.Vho)]
+    [TestCase(UserRoleId.VhTeamLead)]
+    public async Task should_edit_a_justice_user_not_update_first_last_name(UserRoleId roleId)
+    {
+        // Arrange
+        _hearing = await Hooks.SeedVideoHearing();
+        var userToEdit = await SeedJusticeUser(_hearing.Id, "testuser@hmcts.net");
+        var fName = userToEdit.FirstName;
+        var lName = userToEdit.Lastname;
+        var number = userToEdit.Telephone;
+        var command = new EditJusticeUserCommand(userToEdit.Id, userToEdit.Username, null, null, null, (int)roleId);
+        
+        // Act
+        await _commandHandler.Handle(command);
+        await using var db = new BookingsDbContext(BookingsDbContextOptions);
+        var justiceUser = db.JusticeUsers
+            .Include(ju => ju.JusticeUserRoles).ThenInclude(jur => jur.UserRole)
+            .FirstOrDefault(ju => ju.Username == command.Username);
+        Hooks.AddJusticeUserForCleanup(justiceUser.Id);
+        // Assert
+        justiceUser.Should().NotBeNull();
+        justiceUser.JusticeUserRoles.Select(e => e.UserRole.Id).Should().Contain((int)roleId);
+        justiceUser.FirstName.Should().Be(fName);
+        justiceUser.Lastname.Should().Be(lName);
+        justiceUser.Telephone.Should().Be(number);
     }
 
     [Test]
@@ -44,7 +77,7 @@ public class EditJusticeUserCommandTests : DatabaseTestsBase
     {
         // Arrange
         var id = Guid.NewGuid();
-        var command = new EditJusticeUserCommand(id, "testuser2@hmcts.net", (int)UserRole.VideoHearingsOfficer);
+        var command = new EditJusticeUserCommand(id, "testuser2@hmcts.net", null, null, null, (int)UserRole.VideoHearingsOfficer);
 
         // Act & Assert
         Assert.ThrowsAsync<JusticeUserNotFoundException>(async () =>
