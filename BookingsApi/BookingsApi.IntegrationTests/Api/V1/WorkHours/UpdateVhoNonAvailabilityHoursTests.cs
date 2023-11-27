@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.WorkHours;
 
@@ -38,5 +39,31 @@ public class UpdateVhoNonAvailabilityHoursTests : ApiTest
             .FirstAsync(x => x.Username == justiceUser.Username);
         updatedJusticeUser.VhoNonAvailability.Should().Contain(x =>
             x.StartTime == request.Hours[0].StartTime && x.EndTime == request.Hours[0].EndTime);
+    }
+
+    [Test]
+    public async Task should_return_bad_request_when_hours_are_empty()
+    {
+        // arrange
+        var justiceUser = await Hooks.SeedJusticeUser($"{Guid.NewGuid():N}@test.com", "Saving", "Work Hours",
+            initWorkHours: false);
+
+        var request = new UpdateNonWorkingHoursRequest
+        {
+            Hours = new List<NonWorkingHours>()
+        };
+
+        // act
+        using var client = Application.CreateClient();
+        var result =
+            await client.PatchAsync(ApiUriFactory.WorkHoursEndpoints.UpdateVhoNonAvailabilityHours(justiceUser.Username),
+                RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
+            .Contain(UpdateNonWorkingHoursRequestValidation.HoursEmptyErrorMessage);
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
+using UpdateBookingStatus = BookingsApi.Contract.V1.Requests.Enums.UpdateBookingStatus;
 
 namespace BookingsApi.IntegrationTests.Steps
 {

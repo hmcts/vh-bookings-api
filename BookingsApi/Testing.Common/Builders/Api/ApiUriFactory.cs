@@ -40,6 +40,9 @@ namespace Testing.Common.Builders.Api
             public static string UpdateAudiorecordingZipStatus(Guid hearingId, bool? zipStatus) => $"{ApiRoot}/{hearingId}/audiorecordingzipsatus/zipStatus?zipstatus={zipStatus}";
             public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
             public static string GetHearingsForNotification() => $"{ApiRoot}/notifications/gethearings";
+            public static string RebookHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/conferences";
+            public static string UpdateBookingStatus(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+            public static string GetBookingStatusById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
         }
         
         public static class HearingsEndpointsV2
@@ -94,6 +97,7 @@ namespace Testing.Common.Builders.Api
             public static string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
             public static string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
             public static string UpdateParticipantDetails(Guid hearingId, Guid participantId) => $"{ApiRoot}/{hearingId}/participants/{participantId}";
+            public static string GetParticipantByUsername(string username) => $"participants/username/{username}";
         }
 
         public static class PersonEndpoints
@@ -146,6 +150,8 @@ namespace Testing.Common.Builders.Api
 
             public static string DeleteVhoNonAvailabilityHours(string username, long id) =>
                 $"/NonAvailability/VHO/{username}/{id}";
+            public static string GetVhoWorkAvailabilityHours(string username) => $"{ApiRoot}/VHO?username={username}";
+            public static string GetVhoNonAvailabilityHours(string username) => $"NonAvailability/VHO?username={username}";
         }
         
         public static class JusticeUserEndpoints
@@ -165,6 +171,12 @@ namespace Testing.Common.Builders.Api
             public static string AddJudiciaryParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/joh";
             public static string RemoveJudiciaryParticipantFromHearing(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
             public static string UpdateJudiciaryParticipant(Guid hearingId, string personalCode) => $"{ApiRoot}/{hearingId}/joh/{personalCode}";
+        }
+
+        public static class StaffMemberEndpoints
+        {
+            private const string ApiRoot = "staffmember";
+            public static string GetStaffMemberBySearchTerm(string term) => $"{ApiRoot}?term={term}";
         }
     }
 }
