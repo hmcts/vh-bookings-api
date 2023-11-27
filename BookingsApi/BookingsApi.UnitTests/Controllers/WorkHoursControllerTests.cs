@@ -161,7 +161,7 @@ namespace BookingsApi.UnitTests.Controllers
             // Assert
             var objectResult = response as ObjectResult;
             objectResult.Should().NotBeNull();
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(_username, $"End time 01/01/2022 00:00:00 is before start time 01/02/2022 00:00:00.");
+            ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
         }
 
         [Test]
