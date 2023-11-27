@@ -35,8 +35,7 @@ namespace BookingsApi.UnitTests.Controllers
             result.Should().NotBeNull();
             var objectResult = result as ObjectResult;
             objectResult.Should().NotBeNull();
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(username), $"Please provide a valid {nameof(username)}");
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(username), $"Please provide a valid {nameof(username)}");
         }
 
         [Test]

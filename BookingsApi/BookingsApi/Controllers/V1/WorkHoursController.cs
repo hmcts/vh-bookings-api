@@ -78,7 +78,7 @@ namespace BookingsApi.Controllers.V1
             if (!validationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var dto = uploadNonWorkingHoursRequests.Select(request =>
@@ -105,7 +105,7 @@ namespace BookingsApi.Controllers.V1
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             
             var results = await _queryHandler.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(new GetVhoWorkHoursQuery(username));
@@ -131,7 +131,7 @@ namespace BookingsApi.Controllers.V1
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var results = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(new GetVhoNonAvailableWorkHoursQuery(username));
@@ -170,7 +170,7 @@ namespace BookingsApi.Controllers.V1
             if (!validationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             var getNonWorkHoursQuery = new GetVhoNonAvailableWorkHoursQuery(username);
             var existingHours = await _queryHandler.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(getNonWorkHoursQuery);
@@ -189,7 +189,7 @@ namespace BookingsApi.Controllers.V1
                 }
                 
                 ModelState.AddFluentValidationErrors(hourValidationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             
             var dto = request.Hours.Select(r => new NonWorkHoursDto(r.Id, r.StartTime, r.EndTime)).ToList();

@@ -54,9 +54,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var result = await Controller.RemoveParticipantFromHearing(hearingId, participantId);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
 
         [Test]
@@ -93,9 +92,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var result = await Controller.RemoveParticipantFromHearing(hearingId, participantId);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
         }
     }
 }

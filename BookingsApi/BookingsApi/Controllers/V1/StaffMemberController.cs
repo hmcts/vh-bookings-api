@@ -31,7 +31,8 @@ namespace BookingsApi.Controllers.V1
         {
             if(term.Length < 3)
             {
-                return BadRequest("Search term must be atleast 3 charecters.");
+                ModelState.AddModelError(nameof(term), "Search term must be at least 3 characters.");
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetStaffMemberBySearchTermQuery(term);

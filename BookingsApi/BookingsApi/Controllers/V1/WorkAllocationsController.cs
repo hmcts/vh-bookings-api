@@ -33,7 +33,7 @@ namespace BookingsApi.Controllers.V1
         [HttpPost("{hearingId}/allocations/automatic")]
         [OpenApiOperation("AllocateHearingAutomatically")]
         [ProducesResponseType(typeof(JusticeUserResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(SerializableError), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
@@ -52,7 +52,7 @@ namespace BookingsApi.Controllers.V1
             catch (DomainRuleException e)
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
         }
         

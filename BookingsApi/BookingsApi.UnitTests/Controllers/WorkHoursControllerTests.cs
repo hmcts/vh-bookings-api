@@ -81,7 +81,9 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoWorkAvailabilityHours(userName);
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoWorkHoursQuery, List<VhoWorkHours>>(It.IsAny<GetVhoWorkHoursQuery>()), Times.Never);
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+            var objectResult = response as ObjectResult;
+            objectResult.Should().NotBeNull();
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("username", $"Please provide a valid username");
         }
         
                         
@@ -125,7 +127,9 @@ namespace BookingsApi.UnitTests.Controllers
             var response = await _controller.GetVhoNonAvailabilityHours(userName);
             // Assert
             _queryHandlerMock.Verify(x => x.Handle<GetVhoNonAvailableWorkHoursQuery, List<VhoNonAvailability>>(It.IsAny<GetVhoNonAvailableWorkHoursQuery>()), Times.Never);
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+            var objectResult = response as ObjectResult;
+            objectResult.Should().NotBeNull();
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("username", $"Please provide a valid username");
         }
         
                         
@@ -152,10 +156,12 @@ namespace BookingsApi.UnitTests.Controllers
             };
 
             // Act
-            var response = (await _controller.SaveNonWorkingHours(uploadNonWorkingHoursRequests)) as BadRequestObjectResult;
+            var response = await _controller.SaveNonWorkingHours(uploadNonWorkingHoursRequests);
 
             // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+            var objectResult = response as ObjectResult;
+            objectResult.Should().NotBeNull();
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(_username, $"End time 01/01/2022 00:00:00 is before start time 01/02/2022 00:00:00.");
         }
 
         [Test]
