@@ -30,7 +30,9 @@ namespace BookingsApi.DAL.Queries
                 .Where(x =>
                     x.ScheduledDateTime.Date == System.DateTime.UtcNow.Date &&
                     x.Status == Domain.Enumerations.BookingStatus.Created && // Only Confirmed
-                    x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username))
+                    (x.Participants.Any(p => p.Person.Username.ToLower().Trim() == username)
+                        || x.JudiciaryParticipants.Any(p => p.JudiciaryPerson.Email.ToLower().Trim() == username)
+                    ))
                 .OrderBy(x=> x.ScheduledDateTime)
                 .ToListAsync();
         }
