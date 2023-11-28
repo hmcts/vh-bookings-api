@@ -145,9 +145,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var result = await Controller.AddParticipantsToHearing(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
 
         [Test]
@@ -156,9 +155,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var result = await Controller.AddParticipantsToHearing(hearingId, new AddParticipantsToHearingRequest());
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Participants", "Please provide at least one participant");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Participants", "Please provide at least one participant");
         }
 
         [Test]
@@ -182,9 +180,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             var result = await Controller.AddParticipantsToHearing(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Representee", "Representee is required");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Representee", "Representee is required");
         }
 
         [Test]

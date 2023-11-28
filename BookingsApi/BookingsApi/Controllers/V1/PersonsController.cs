@@ -227,7 +227,7 @@ namespace BookingsApi.Controllers.V1
             if (!contactEmail.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var personQuery = new GetPersonByContactEmailQuery(contactEmail);
@@ -270,7 +270,7 @@ namespace BookingsApi.Controllers.V1
             if (!validation.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validation.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             try
@@ -322,12 +322,12 @@ namespace BookingsApi.Controllers.V1
             if (!contactEmail.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(contactEmail), $"Please provide a valid {nameof(contactEmail)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             var query = new GetPersonByContactEmailQuery(contactEmail);
             var person = await _queryHandler.Handle<GetPersonByContactEmailQuery, Person>(query);

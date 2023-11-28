@@ -33,7 +33,7 @@ namespace BookingsApi.Controllers.V1
             if (!username.IsValidEmail())
             {
                 ModelState.AddModelError(nameof(username), $"Please provide a valid {nameof(username)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetParticipantsByUsernameQuery(username);

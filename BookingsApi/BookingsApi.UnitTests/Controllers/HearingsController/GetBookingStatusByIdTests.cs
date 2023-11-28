@@ -36,9 +36,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.GetBookingStatusById(hearingId);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
             QueryHandlerMock.Verify(x => x.Handle<GetHearingShellByIdQuery, VideoHearing>(It.IsAny<GetHearingShellByIdQuery>()), Times.Never);
         }
 

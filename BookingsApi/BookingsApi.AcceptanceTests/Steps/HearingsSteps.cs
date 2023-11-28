@@ -18,6 +18,7 @@ using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
+using UpdateBookingStatus = BookingsApi.Contract.V1.Requests.Enums.UpdateBookingStatus;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
