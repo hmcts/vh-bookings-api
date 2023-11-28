@@ -67,7 +67,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
         {
             // arrange
             _request = Builder<EditJusticeUserRequest>.CreateNew().Build();
-            
+            _request.ContactTelephone = "1234567890";
             using var client = Application.CreateClient();
             
             // act
@@ -84,6 +84,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JusticeUsers
         {
             return Builder<EditJusticeUserRequest>.CreateNew()
                 .With(x=> x.Username, justiceUser.Username)
+                .With(x=> x.FirstName, justiceUser.FirstName)
+                .With(x=> x.LastName, justiceUser.Lastname)
+                .With(x=> x.ContactTelephone, justiceUser.Telephone)
                 .With(x=> x.Id, justiceUser.Id)
                 .With(x => x.Roles = new List<JusticeUserRole>() { JusticeUserRole.VhTeamLead })
                 .Build();
