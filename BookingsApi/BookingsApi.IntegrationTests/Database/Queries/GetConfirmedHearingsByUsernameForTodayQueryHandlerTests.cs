@@ -45,5 +45,50 @@ namespace BookingsApi.IntegrationTests.Database.Queries
             result.Any().Should().BeFalse();
             result.Count.Should().Be(0);
         }
+
+        [Test]
+        public async Task Should_return_confirmed_hearings_for_judiciary_participant_judge_username_for_today()
+        {
+            var hearing = await Hooks.SeedVideoHearingV2(
+                status: BookingStatus.Created,
+                configureOptions: options =>
+                {
+                    options.AddJudge = true;
+                    options.ScheduledDate = DateTime.UtcNow;
+                });
+            
+            var username = hearing.GetJudiciaryParticipants()
+                .First(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge)
+                .JudiciaryPerson
+                .Email;
+
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            
+            var result = await _handler.Handle(query);
+            result.Count.Should().Be(1);
+        }
+        
+        [Test]
+        public async Task Should_return_confirmed_hearings_for_judiciary_participant_panel_member_username_for_today()
+        {
+            var hearing = await Hooks.SeedVideoHearingV2(
+                status: BookingStatus.Created,
+                configureOptions: options =>
+                {
+                    options.AddJudge = true;
+                    options.AddPanelMember = true;
+                    options.ScheduledDate = DateTime.UtcNow;
+                });
+            
+            var username = hearing.GetJudiciaryParticipants()
+                .First(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember)
+                .JudiciaryPerson
+                .Email;
+
+            var query = new GetConfirmedHearingsByUsernameForTodayQuery(username);
+            
+            var result = await _handler.Handle(query);
+            result.Count.Should().Be(1);
+        }
     }
 }
