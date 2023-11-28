@@ -131,8 +131,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types",
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Hearing types",
                 "Invalid value for hearing types");
         }
 
@@ -235,9 +234,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.UpdateBookingStatus(hearingId, request);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
                 $"Please provide a valid {nameof(hearingId)}");
         }
 
@@ -272,9 +270,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.RemoveHearing(hearingId);
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId),
                 $"Please provide a valid {nameof(hearingId)}");
         }
 
@@ -440,8 +437,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             result.Should().NotBeNull();
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Venue ids",
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Venue ids",
                 "Invalid value for venue ids");
         }
 
@@ -572,9 +568,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.RebookHearing(hearing.Id);
             
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsValue($"Hearing must have a status of {nameof(BookingStatus.Failed)}");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("hearingId", $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
         }
   
         protected static VideoHearing GetHearing(string caseNumber)

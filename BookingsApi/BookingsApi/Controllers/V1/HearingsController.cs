@@ -314,7 +314,7 @@ namespace BookingsApi.Controllers.V1
             if (hearing.Status != BookingStatus.Failed)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Hearing must have a status of {nameof(BookingStatus.Failed)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             await _bookingService.PublishNewHearing(hearing, false);
@@ -362,7 +362,7 @@ namespace BookingsApi.Controllers.V1
             if (!validationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var orderedDates = request.Dates.OrderBy(x => x).ToList();
@@ -461,7 +461,7 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -498,14 +498,14 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = new UpdateBookingStatusRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             if (videoHearing == null)
@@ -616,14 +616,14 @@ namespace BookingsApi.Controllers.V1
             if (!await ValidateCaseTypes(request.Types))
             {
                 ModelState.AddModelError("Hearing types", "Invalid value for hearing types");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             request.VenueIds ??= new List<int>();
             if (!await ValidateVenueIds(request.VenueIds))
             {
                 ModelState.AddModelError("Venue ids", "Invalid value for venue ids");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetBookingsByCaseTypesQuery(request.Types)
@@ -708,7 +708,7 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetHearingShellByIdQuery(hearingId);
