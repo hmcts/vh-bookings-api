@@ -59,7 +59,7 @@ public class BookNewHearingTests : ApiTest
         request.Participants = request.Participants.Where(x=> x.HearingRoleName == "Judge").ToList();
         var judge = request.Participants[0];
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        //serviceBusStub.ReadAllMessagesFromQueue(); // clear any messages in the queue
+
         // act
         using var client = Application.CreateClient();
         var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));

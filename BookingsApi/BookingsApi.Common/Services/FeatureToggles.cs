@@ -30,6 +30,8 @@ namespace BookingsApi.Common.Services
 
         public bool EJudFeature() => GetBoolToggle(EJudFeatureKey);
         
+        public bool UsePostMay2023Template() => GetBoolToggle(NewNotifyTemplatesToggleKey);
+        
         private bool GetBoolToggle(string key)
         {
             if (!_ldClient.Initialized)
@@ -37,16 +39,6 @@ namespace BookingsApi.Common.Services
                 throw new InvalidOperationException("LaunchDarkly client not initialized");
             }
             return _ldClient.BoolVariation(key, _context);
-        }
-
-        public bool UsePostMay2023Template()
-        {
-            if (!_ldClient.Initialized)
-            {
-                throw new InvalidOperationException("LaunchDarkly client not initialized");
-            }
-
-            return _ldClient.BoolVariation(NewNotifyTemplatesToggleKey, _context);
         }
     }
 }

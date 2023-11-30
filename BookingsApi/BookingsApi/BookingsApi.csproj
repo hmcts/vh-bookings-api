@@ -82,7 +82,7 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
     </Exec>
     <Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
-    <!--<Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />-->
+    <Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
     <RemoveDir Directories="$(OutDir)References" />
   </Target>
 </Project>
