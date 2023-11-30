@@ -18,6 +18,6 @@ namespace BookingsApi.Contract.V1.Requests
         /// <summary>
         /// Scheduled duration of the hearing in minutes, defaults to 480
         /// </summary>
-        public int ScheduledDuration { get; set; } = 480;
+        public int ScheduledDuration { get; set; } = Constants.CloneHearings.DefaultScheduledDuration;
     }
 }

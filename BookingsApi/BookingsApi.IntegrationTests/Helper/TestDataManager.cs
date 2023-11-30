@@ -361,7 +361,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing,
-            BookingStatus status = BookingStatus.Booked, int duration = 480)
+            BookingStatus status = BookingStatus.Booked, int duration = Contract.V1.Constants.CloneHearings.DefaultScheduledDuration)
         {
             var dbContext = new BookingsDbContext(_dbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(dbContext)

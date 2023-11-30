@@ -1,12 +1,11 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using Constants = BookingsApi.Contract.V1.Constants;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
 public class CloneHearingTests : ApiTest
 {
-    private const int DefaultDuration = 480;
-    
     [Test]
     public async Task should_return_all_cloned_hearings_for_the_dates_with_unspecified_duration()
     {
@@ -35,8 +34,8 @@ public class CloneHearingTests : ApiTest
         
         clonedHearingsList.TrueForAll(x => x.GroupId == groupId).Should().BeTrue();
 
-        first.ScheduledDuration.Should().Be(DefaultDuration);
-        second.ScheduledDuration.Should().Be(DefaultDuration);
+        first.ScheduledDuration.Should().Be(Constants.CloneHearings.DefaultScheduledDuration);
+        second.ScheduledDuration.Should().Be(Constants.CloneHearings.DefaultScheduledDuration);
     }
 
     [Test]

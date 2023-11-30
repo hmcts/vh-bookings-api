@@ -3,6 +3,7 @@ using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using Constants = BookingsApi.Contract.V1.Constants;
 
 namespace BookingsApi.UnitTests.Mappings.V1
 {
@@ -22,7 +23,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         {
             var totalDays = 5;
             var hearingDay = 2;
-            const int duration = 480;
+            const int duration = Constants.CloneHearings.DefaultScheduledDuration;
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
             hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
@@ -48,7 +49,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             command.ScheduledDateTime.Should().Be(newDate);
             command.ScheduledDateTime.Hour.Should().Be(hearing.ScheduledDateTime.Hour);
             command.ScheduledDateTime.Minute.Should().Be(hearing.ScheduledDateTime.Minute);
-            command.ScheduledDuration.Should().Be(480);
+            command.ScheduledDuration.Should().Be(duration);
 
             command.Venue.Should().Be(hearing.HearingVenue);
 
