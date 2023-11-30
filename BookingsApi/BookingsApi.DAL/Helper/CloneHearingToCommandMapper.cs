@@ -16,9 +16,10 @@ namespace BookingsApi.DAL.Helper
         /// <param name="sipAddressStem">sip address stem</param>
         /// <param name="totalDays">Total number of days of multi-booking hearing</param>
         /// <param name="hearingDay">Day number of multi-booking hearing</param>
+        /// <param name="duration">Duration of the multi-booking hearing</param>
         /// <returns>command to create a new video hearing</returns>
         public static CreateVideoHearingCommand CloneToCommand(Hearing hearing, DateTime newDate,
-            IRandomGenerator randomGenerator, string sipAddressStem, int totalDays, int hearingDay)
+            IRandomGenerator randomGenerator, string sipAddressStem, int totalDays, int hearingDay, int duration)
         {
             var reps = hearing.GetParticipants().Where(x => x.HearingRole.UserRole.IsRepresentative)
                 .Cast<Representative>().ToList();
@@ -50,7 +51,6 @@ namespace BookingsApi.DAL.Helper
 
             var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
 
-            var duration = 480;
             var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
                     hearing.CaseType, newDate, duration, hearing.HearingVenue, cases),
                 new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,

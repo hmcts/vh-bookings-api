@@ -361,7 +361,7 @@ namespace BookingsApi.IntegrationTests.Helper
         }
 
         public async Task CloneVideoHearing(Guid hearingId, IList<DateTime> datesOfHearing,
-            BookingStatus status = BookingStatus.Booked)
+            BookingStatus status = BookingStatus.Booked, int duration = 480)
         {
             var dbContext = new BookingsDbContext(_dbContextOptions);
             var hearing = await new GetHearingByIdQueryHandler(dbContext)
@@ -374,7 +374,7 @@ namespace BookingsApi.IntegrationTests.Helper
                 var config = ConfigRootBuilder.Build();
                 var hearingDay = index + 2;
                 return CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, new RandomGenerator(),
-                    config.GetValue<string>("KinlyConfiguration:SipAddressStem"), totalDays, hearingDay);
+                    config.GetValue<string>("KinlyConfiguration:SipAddressStem"), totalDays, hearingDay, duration);
             }).ToList();
 
             foreach (var command in commands)

@@ -22,6 +22,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         {
             var totalDays = 5;
             var hearingDay = 2;
+            const int duration = 480;
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
             hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
@@ -35,7 +36,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var newDate = hearing.ScheduledDateTime.AddDays(1);
 
             var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator,
-                _sipAddressStem, totalDays, hearingDay);
+                _sipAddressStem, totalDays, hearingDay, duration);
 
             command.HearingRoomName.Should().Be(hearing.HearingRoomName);
             command.OtherInformation.Should().Be(hearing.OtherInformation);

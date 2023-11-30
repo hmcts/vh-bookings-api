@@ -371,7 +371,7 @@ namespace BookingsApi.Controllers.V1
             {
                 var hearingDay = index + 2; // zero index including original hearing
                 return CloneHearingToCommandMapper.CloneToCommand(videoHearing, newDate, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem, totalDays, hearingDay);
+                    _kinlyConfiguration.SipAddressStem, totalDays, hearingDay, request.ScheduledDuration);
             }).ToList();
 
             var existingCase = videoHearing.GetCases()[0];
