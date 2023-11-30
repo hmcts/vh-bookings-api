@@ -1,5 +1,4 @@
-﻿using BookingsApi.Controllers;
-using BookingsApi.DAL.Queries;
+﻿using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Controllers.V1;
+using Testing.Common.Assertions;
 
 namespace BookingsApi.UnitTests.Controllers
 {
@@ -50,7 +50,9 @@ namespace BookingsApi.UnitTests.Controllers
         public async Task GetStaffMemberBySearchTerm_Return_BadRequest_When_SearchTerm_LessThan_3_Char()
         {
             var result = await _controller.GetStaffMemberBySearchTerm("hh");
-            result.Should().BeOfType<BadRequestObjectResult>();
+            var objectResult = (ObjectResult)result;
+            objectResult.Should().NotBeNull();
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("term", "Search term must be at least 3 characters.");
         }
 
         [Test]

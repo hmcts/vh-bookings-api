@@ -17,7 +17,9 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var contactEmail = string.Empty;
             var username = "me@me.com";
             var result = await Controller.UpdatePersonUsername(contactEmail, username);
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().NotBeNull();
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
         }
 
         [Test]
@@ -26,7 +28,9 @@ namespace BookingsApi.UnitTests.Controllers.Persons
             var contactEmail = "me@me.com";
             var username = "me";
             var result = await Controller.UpdatePersonUsername(contactEmail, username);
-            result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().NotBeNull();
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
         }
 
         [Test]

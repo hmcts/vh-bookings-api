@@ -78,11 +78,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             _request = BuildRequest();
 
             //Act
-            var response = await Controller.UpdateHearingParticipants(Guid.Empty, _request) as BadRequestObjectResult;
+            var response = await Controller.UpdateHearingParticipants(Guid.Empty, _request);
 
             //Assert
-            response.Should().BeOfType<BadRequestObjectResult>();
-            ((SerializableError)response.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
+            response.Should().NotBeNull();
+            var objectResult = (ObjectResult)response;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
         }
 
         [Test]
@@ -91,10 +92,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             //Arrange
 
             //Act
-            var response = await Controller.UpdateHearingParticipants(hearingId, new UpdateHearingParticipantsRequest()) as BadRequestObjectResult;
+            var response = await Controller.UpdateHearingParticipants(hearingId, new UpdateHearingParticipantsRequest());
 
             //Assert
-            response.Should().BeOfType<BadRequestObjectResult>();
+            response.Should().NotBeNull();
+            var objectResult = (ObjectResult)response;
+            ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
         }
 
         [Test]
@@ -106,11 +109,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             _request.NewParticipants[0].Representee = string.Empty;
 
             //Act
-            var response = await Controller.UpdateHearingParticipants(hearingId, _request) as BadRequestObjectResult;
+            var response = await Controller.UpdateHearingParticipants(hearingId, _request);
 
             response.Should().NotBeNull();
-            response.Should().BeOfType<BadRequestObjectResult>();
-            ((SerializableError)response.Value).ContainsKeyAndErrorMessage("Representee", "Representee is required");
+            var objectResult = (ObjectResult)response;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Representee", "Representee is required");
         }
 
         [Test]

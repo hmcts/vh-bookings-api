@@ -12,7 +12,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder().Build();
             var updatedDate = DateTime.UtcNow;
             hearing.UpdateStatus(BookingStatus.Cancelled, "testuser", "cancel reason");
-            hearing.UpdatedDate.Should().BeAfter(updatedDate);
+            hearing.UpdatedDate.Should().BeOnOrAfter(updatedDate);
             hearing.Status.Should().Be(BookingStatus.Cancelled);
         }
 

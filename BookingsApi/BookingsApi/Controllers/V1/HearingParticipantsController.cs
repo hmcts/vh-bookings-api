@@ -44,7 +44,7 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetParticipantsInHearingQuery(hearingId);
@@ -81,13 +81,13 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             if (participantId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetParticipantsInHearingQuery(hearingId);
@@ -130,14 +130,14 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = new AddParticipantsToHearingRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetHearingByIdQuery(hearingId);
@@ -159,7 +159,7 @@ namespace BookingsApi.Controllers.V1
             if (!representativeValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var participants = request.Participants
@@ -176,7 +176,7 @@ namespace BookingsApi.Controllers.V1
             catch (DomainRuleException e)
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
@@ -207,14 +207,14 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var result = new UpdateHearingParticipantsRequestValidation().Validate(request);
             if (!result.IsValid)
             {
                 ModelState.AddFluentValidationErrors(result.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var query = new GetHearingByIdQuery(hearingId);
@@ -236,7 +236,7 @@ namespace BookingsApi.Controllers.V1
             if (!representativeValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var newParticipants = request.NewParticipants
@@ -282,7 +282,7 @@ namespace BookingsApi.Controllers.V1
             catch (DomainRuleException e)
             {
                 ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
@@ -314,7 +314,7 @@ namespace BookingsApi.Controllers.V1
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             var getHearingByIdQuery = new GetHearingByIdQuery(hearingId);
@@ -328,7 +328,7 @@ namespace BookingsApi.Controllers.V1
             if (participantId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(participantId), $"Please provide a valid {nameof(participantId)}");
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
             }
 
             List<Participant> participants;

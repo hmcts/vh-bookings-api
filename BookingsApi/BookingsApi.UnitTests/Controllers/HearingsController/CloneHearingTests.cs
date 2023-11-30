@@ -40,9 +40,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var result = await Controller.CloneHearing(Guid.NewGuid(), new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddYears(-1) } });
 
             result.Should().NotBeNull();
-            var objectResult = (BadRequestObjectResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            ((SerializableError)objectResult.Value).ContainsKeyAndErrorMessage("Dates", "Dates cannot be before original hearing");
+            var objectResult = (ObjectResult)result;
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Dates", "Dates cannot be before original hearing");
         }
 
         [Test]

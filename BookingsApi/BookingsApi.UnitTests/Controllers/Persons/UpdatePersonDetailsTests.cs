@@ -23,7 +23,9 @@ namespace BookingsApi.UnitTests.Controllers.Persons
                 LastName = "Me"
             };
             var result = await Controller.UpdatePersonDetails(personId, payload);
-            result.Result.Should().BeOfType<BadRequestObjectResult>();
+            result.Should().NotBeNull();
+            var objectResult = (ObjectResult)result.Result;
+            ((ValidationProblemDetails)objectResult.Value).Should().NotBeNull();
         }
 
         [Test]
