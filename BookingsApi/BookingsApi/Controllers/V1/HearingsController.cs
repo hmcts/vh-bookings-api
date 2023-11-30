@@ -356,12 +356,19 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var validationResult =
-                new CloneHearingRequestValidation(videoHearing)
-                    .ValidateDates(request);
+            var validationResult = await new CloneHearingRequestValidation().ValidateAsync(request);
             if (!validationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(validationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            var datesValidationResult =
+                new CloneHearingRequestValidation(videoHearing)
+                    .ValidateDates(request);
+            if (!datesValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(datesValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
 

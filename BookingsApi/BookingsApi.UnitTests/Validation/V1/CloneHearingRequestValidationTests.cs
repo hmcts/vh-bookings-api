@@ -18,7 +18,7 @@ namespace BookingsApi.UnitTests.Validation.V1
             {
                 date1,
                 date2,
-                date3
+                date3,
             };
             var request = new CloneHearingRequest {Dates = dates};
 
@@ -91,6 +91,44 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
             result.Errors.Any(x => x.ErrorMessage == CloneHearingRequestValidation.DuplicateDateErrorMessage)
+                .Should().BeTrue();
+        }
+
+        [Test]
+        public void should_pass_validation_when_scheduled_duration_is_valid()
+        {
+            var originalHearing = new VideoHearingBuilder().Build();
+            var date = originalHearing.ScheduledDateTime.GetNextWorkingDay();
+            var request = new CloneHearingRequest
+            {
+                Dates = new List<DateTime> { date },
+                ScheduledDuration = 480
+            };
+            
+            var validator = new CloneHearingRequestValidation();
+            var result = validator.Validate(request);
+
+            result.IsValid.Should().BeTrue();
+        }
+        
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void should_fail_validation_when_scheduled_duration_is_invalid(int scheduledDuration)
+        {
+            var originalHearing = new VideoHearingBuilder().Build();
+            var date = originalHearing.ScheduledDateTime.GetNextWorkingDay();
+            var request = new CloneHearingRequest
+            {
+                Dates = new List<DateTime> { date },
+                ScheduledDuration = scheduledDuration
+            };
+            
+            var validator = new CloneHearingRequestValidation();
+            var result = validator.Validate(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Any(x => x.ErrorMessage == CloneHearingRequestValidation.InvalidScheduledDuration)
                 .Should().BeTrue();
         }
     }
