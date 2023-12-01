@@ -17,11 +17,12 @@ namespace BookingsApi.Controllers.V2
 
         public HearingParticipantsControllerV2(IQueryHandler queryHandler,
             ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            IHearingParticipantService hearingParticipantService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _hearingParticipantService = new HearingParticipantService(commandHandler, eventPublisher);
+            _hearingParticipantService = hearingParticipantService;
         }
         
         /// <summary>

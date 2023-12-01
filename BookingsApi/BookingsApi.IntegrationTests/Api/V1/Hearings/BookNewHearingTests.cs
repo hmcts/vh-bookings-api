@@ -58,6 +58,7 @@ public class BookNewHearingTests : ApiTest
         request.Participants.Remove(panelMember);
         request.Participants = request.Participants.Where(x=> x.HearingRoleName == "Judge").ToList();
         var judge = request.Participants[0];
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
 
         // act
         using var client = Application.CreateClient();
@@ -73,10 +74,9 @@ public class BookNewHearingTests : ApiTest
         var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
         createdResponse.Should().BeEquivalentTo(hearingResponse);
         _hearingIds.Add(hearingResponse.Id);
-        
-        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
-        message.IntegrationEvent.Should().BeOfType<HearingIsReadyForVideoIntegrationEvent>();
+
+        var messages = serviceBusStub.ReadAllMessagesFromQueue(hearingResponse.Id);
+        var message = messages.Single(x => x.IntegrationEvent.GetType() == typeof(HearingIsReadyForVideoIntegrationEvent));
         var integrationEvent = message.IntegrationEvent as HearingIsReadyForVideoIntegrationEvent;
         integrationEvent!.Participants.Should().Contain(x=> 
             x.ContactEmail == judge.ContactEmail && x.HearingRole == "Judge" && x.UserRole == "Judge");

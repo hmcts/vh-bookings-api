@@ -20,12 +20,13 @@ namespace BookingsApi.Controllers.V1
         public JudiciaryParticipantsController(
             IQueryHandler queryHandler, 
             ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            IHearingParticipantService hearingParticipantService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
-            _hearingParticipantService = new HearingParticipantService(commandHandler, eventPublisher);
+            _hearingParticipantService = hearingParticipantService;
         }
         
         /// <summary>
