@@ -66,11 +66,6 @@ namespace BookingsApi.Controllers.V1
             {
                 return NotFound(exception.Message);
             }
-            catch (DomainRuleException exception)
-            {
-                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
-                return ValidationProblem(ModelState);
-            }
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             await _hearingParticipantService.PublishEventForNewJudiciaryParticipantsAsync(hearing, participants);
@@ -111,8 +106,7 @@ namespace BookingsApi.Controllers.V1
                     return NotFound(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
                 }
 
-                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
-                return ValidationProblem(ModelState);
+                throw;
             }
 
             // ONLY publish this event when Hearing is set for ready for video
@@ -167,9 +161,7 @@ namespace BookingsApi.Controllers.V1
                 {
                     return NotFound(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
                 }
-
-                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
-                return ValidationProblem(ModelState);
+                throw;
             }
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));

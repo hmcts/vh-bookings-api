@@ -38,22 +38,14 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AllocateHearingAutomatically(Guid hearingId)
         {
-            try
-            {
-                var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);
-                
-                if (justiceUser == null)
-                    return NotFound();
+            var justiceUser = await _hearingAllocationService.AllocateAutomatically(hearingId);
+            
+            if (justiceUser == null)
+                return NotFound();
 
-                var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
+            var justiceUserResponse = JusticeUserToResponseMapper.Map(justiceUser);
 
-                return Ok(justiceUserResponse);
-            }
-            catch (DomainRuleException e)
-            {
-                ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return BadRequest(ModelState);
-            }
+            return Ok(justiceUserResponse);
         }
         
         /// <summary>
@@ -159,22 +151,14 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> AllocateHearingManually([FromBody] UpdateHearingAllocationToCsoRequest postRequest)
         {
-            try
-            {
-                var allocatedHearings = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
-                
-                var hearingAllocationClashResultDtos = _hearingAllocationService.CheckForAllocationClashes(allocatedHearings);
-                
-                // need to broadcast acknowledgment message for the allocation
-                await PublishAllocationsToServiceBus(allocatedHearings, allocatedHearings[0].AllocatedTo);
-                
-                return Ok(hearingAllocationClashResultDtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
-            }
-            catch (DomainRuleException e)
-            {
-                ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return ValidationProblem(ModelState);
-            }
+            var allocatedHearings = await _hearingAllocationService.AllocateHearingsToCso(postRequest.Hearings, postRequest.CsoId);
+            
+            var hearingAllocationClashResultDtos = _hearingAllocationService.CheckForAllocationClashes(allocatedHearings);
+            
+            // need to broadcast acknowledgment message for the allocation
+            await PublishAllocationsToServiceBus(allocatedHearings, allocatedHearings[0].AllocatedTo);
+            
+            return Ok(hearingAllocationClashResultDtos.Select(HearingAllocationResultDtoToAllocationResponseMapper.Map).ToList());
         }
         
         private async Task PublishAllocationsToServiceBus(List<VideoHearing> hearings, JusticeUser justiceUser)

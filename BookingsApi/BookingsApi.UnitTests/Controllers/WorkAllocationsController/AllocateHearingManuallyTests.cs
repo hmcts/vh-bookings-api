@@ -143,29 +143,5 @@ namespace BookingsApi.UnitTests.Controllers.WorkAllocationsController
             var message = ServiceBus.ReadMessageFromQueue();
             message.Should().BeNull();
         }
-        
-        [Test]
-        public async Task Should_Return_Bad_Request_When_Domain_Rule_Exception_Thrown()
-        {
-            var userId = Guid.NewGuid();
-            // Arrange
-            HearingAllocationServiceMock
-                .Setup(x => x.AllocateHearingsToCso(It.IsAny<List<Guid>>(), It.IsAny<Guid>()))
-                .ThrowsAsync(new DomainRuleException("Error", "Error Description"));
-            
-            UpdateHearingAllocationToCsoRequest request = new UpdateHearingAllocationToCsoRequest
-            {
-                Hearings = _hearings.Select(h => h.Id).ToList(),
-                CsoId = userId
-            };
-            // Act
-            var response = await Controller.AllocateHearingManually(request);
-
-            // Assert
-            var objectResult = (ObjectResult)response;
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Error", "Error Description");
-            ServiceBus.Count.Should().Be(0);
-        }
-        
     }
 }

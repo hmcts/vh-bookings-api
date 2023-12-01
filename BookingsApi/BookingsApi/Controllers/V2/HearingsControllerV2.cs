@@ -64,18 +64,10 @@ namespace BookingsApi.Controllers.V2
             var createVideoHearingCommand = BookNewHearingRequestV2ToCreateVideoHearingCommandMapper.Map(
                 request, caseType, hearingVenue, cases, _randomGenerator, _kinlyConfiguration.SipAddressStem, hearingRoles);
 
-            try
-            {
-                var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
-                
-                var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
-                return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
-            }
-            catch (DomainRuleException domainRuleException)
-            {
-                ModelState.AddDomainRuleErrors(domainRuleException.ValidationFailures);
-                return ValidationProblem(ModelState);
-            }
+            var queriedVideoHearing = await _bookingService.SaveNewHearingAndPublish(createVideoHearingCommand, request.IsMultiDayHearing);
+            
+            var response = HearingToDetailsResponseV2Mapper.Map(queriedVideoHearing);
+            return CreatedAtAction(nameof(GetHearingDetailsById), new {hearingId = response.Id}, response);
         }
 
         /// <summary>
