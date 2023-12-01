@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using BookingsApi.Controllers;
 using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
