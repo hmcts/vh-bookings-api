@@ -1,11 +1,9 @@
-using System.Net;
 using BookingsApi.Controllers.V1;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Domain.Validations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BookingsApi.UnitTests.Controllers;
 
@@ -26,7 +24,7 @@ public class JudiciaryParticipantsControllerTests
     }
     
     [Test]
-    public async Task Should_throw_domain_rule_exception_when_calling_RemoveJudiciaryParticipantFromHearingCommand_handler()
+    public void Should_throw_domain_rule_exception_when_calling_RemoveJudiciaryParticipantFromHearingCommand_handler()
     {
         _mockCommandHandler
             .Setup(x => x.Handle(It.IsAny<RemoveJudiciaryParticipantFromHearingCommand>()))
