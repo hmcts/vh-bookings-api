@@ -240,7 +240,7 @@ public class UpdateParticipantDetailsTests : ApiTest
         participantResponse.LinkedParticipants.Should().BeEmpty();
         
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        var message = serviceBusStub!.ReadMessageFromQueue();
+        var message = serviceBusStub!.ReadAllMessagesFromQueue(hearingId).FirstOrDefault();
         message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
         var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
         integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
@@ -254,7 +254,7 @@ public class UpdateParticipantDetailsTests : ApiTest
     }
     
     [Test]
-    public async Task should_update_a_participant_and_not_publish_event_when_hearing_is_not_confirmed()
+    public async Task should_update_a_participant_and_publish_event_when_hearing_is_not_confirmed()
     {
         var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Booked);
         var hearingId = hearing.Id;
@@ -296,6 +296,6 @@ public class UpdateParticipantDetailsTests : ApiTest
         participantResponse.LastName.Should().Be(participantPersonalDetails.LastName);
         participantResponse.MiddleNames.Should().Be(participantPersonalDetails.MiddleNames);
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-        serviceBusStub!.Count.Should().Be(0);
+        serviceBusStub!.Count.Should().Be(1);
     }
 }

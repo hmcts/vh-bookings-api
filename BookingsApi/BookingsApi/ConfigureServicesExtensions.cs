@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Newtonsoft.Json.Converters;
 using NSwag.Generation.AspNetCore;
 using ZymLabs.NSwag.FluentValidation;
-
+using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+using BookingsApi.Infrastructure.Services.Publishers;
 
 namespace BookingsApi
 {
@@ -108,7 +109,20 @@ namespace BookingsApi
             services.AddScoped<IVhLogger, VhLogger>();
             services.AddScoped<IHearingAllocationService, HearingAllocationService>();
             services.AddScoped<IRandomNumberGenerator, RandomNumberGenerator>();
+
+            RegisterEventPublishers(services);
+
+            services.AddScoped<IList<IPublishEvent>>(p => { 
+                var list = p.GetServices<IPublishEvent>().ToList(); 
+                list.AddRange(p.GetServices<IPublishMultidayEvent>().ToList());
+                return list; });
             services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();
+            services.AddScoped<IBookingAsynchronousProcess, SingledayHearingAsynchronousProcess>();
+            services.AddScoped<IClonedBookingAsynchronousProcess, ClonedMultidaysAsynchronousProcess>();
+            services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
+            services.AddScoped<IHearingParticipantService, HearingParticipantService>();
+            services.AddScoped<IParticipantAddedToHearingAsynchronousProcess, ParticipantAddedToHearingAsynchronousProcess>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 
@@ -159,6 +173,18 @@ namespace BookingsApi
                 });
 
             return serviceCollection;
+        }
+
+        private static void RegisterEventPublishers(IServiceCollection serviceCollection)
+        {
+            var type = typeof(IPublishEvent);
+            var derivedTypes = typeof(IPublishEvent).Assembly.GetTypes().Where(p => type.IsAssignableFrom(p));
+            var derivedTypesExcludingInterfaces = derivedTypes.Where(x => !x.IsInterface);
+            foreach (var eventPublisher in derivedTypesExcludingInterfaces)
+            {
+                var serviceType = eventPublisher.GetInterfaces()[0];
+                serviceCollection.AddScoped(serviceType, eventPublisher);
+            }
         }
     }
 }
