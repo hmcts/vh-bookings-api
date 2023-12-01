@@ -49,6 +49,28 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
         var response = await ApiClientResponse.GetResponses<string>(result.Content);
         response.Should().Be(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
     }
+    
+    [Test]
+    public async Task should_return_bad_request_when_editing_a_cancelled_hearing()
+    {
+        // Arrange
+        var seededHearing = await Hooks.SeedVideoHearing(status: BookingStatus.Cancelled);
+        var hearingId = seededHearing.Id;
+        var personalCode = Guid.NewGuid().ToString();
+
+        // Act
+        using var client = Application.CreateClient();
+        var result =
+            await client.DeleteAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.RemoveJudiciaryParticipantFromHearing(hearingId,
+                    personalCode));
+            
+        // Assert
+        result.IsSuccessStatusCode.Should().BeFalse();
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var response = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        response.Errors["Hearing"][0].Should().Be(DomainRuleErrorMessages.CannotRemoveJudiciaryParticipantCloseToStartTime);
+    }
 
     [Test]
     public async Task should_remove_judiciary_participant()

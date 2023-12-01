@@ -34,8 +34,9 @@ public class AllocateHearingAutomaticallyTests : ApiTest
 
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var response = await ApiClientResponse.GetResponses<SerializableError>(result.Content);
-        response.ContainsKeyAndErrorMessageFromApi("NoCsosAvailable", $"Unable to allocate to hearing {hearing.Id}, no CSOs available");
+        var response = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        response.Errors.SelectMany(x => x.Value).Should()
+            .Contain($"Unable to allocate to hearing {hearing.Id}, no CSOs available");
     }
     
     [Test]
@@ -51,8 +52,9 @@ public class AllocateHearingAutomaticallyTests : ApiTest
 
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var response = await ApiClientResponse.GetResponses<SerializableError>(result.Content);
-        response.ContainsKeyAndErrorMessageFromApi("HearingNotFound", $"Hearing {hearingId} not found");
+        var response = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        response.Errors.SelectMany(x => x.Value).Should()
+            .Contain($"Hearing {hearingId} not found");
     }
 
     [Test]
@@ -76,8 +78,9 @@ public class AllocateHearingAutomaticallyTests : ApiTest
         
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var response = await ApiClientResponse.GetResponses<SerializableError>(result.Content);
-        response.ContainsKeyAndErrorMessageFromApi("HearingAlreadyAllocated", $"Hearing {hearing.Id} has already been allocated");
+        var response = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+        response.Errors.SelectMany(x => x.Value).Should()
+            .Contain($"Hearing {hearing.Id} has already been allocated");
     }
 
     [Test]
