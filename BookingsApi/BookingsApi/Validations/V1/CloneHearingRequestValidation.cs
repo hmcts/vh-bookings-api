@@ -1,15 +1,21 @@
 using BookingsApi.Contract.V1.Requests;
+using FluentValidation;
 using FluentValidation.Results;
 using ValidationFailure = FluentValidation.Results.ValidationFailure;
 
 namespace BookingsApi.Validations.V1
 {
-    public class CloneHearingRequestValidation 
+    public class CloneHearingRequestValidation : AbstractValidator<CloneHearingRequest>
     {
         private readonly Hearing _originalHearing;
         public const string InvalidDateRangeErrorMessage = "Dates cannot be before original hearing";
         public const string DuplicateDateErrorMessage = "Dates must be unique";
+        public const string InvalidScheduledDuration = "Scheduled duration must be greater than 0";
 
+        public CloneHearingRequestValidation()
+        {
+            RuleFor(x => x.ScheduledDuration).GreaterThan(0).WithMessage(InvalidScheduledDuration);
+        }
         
         public CloneHearingRequestValidation(Hearing originalHearing)
         {
