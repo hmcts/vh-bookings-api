@@ -12,4 +12,9 @@ public class HearingNotificationResponse
     /// If TotalDays is 1 then the hearing will be treated as single day.
     /// </summary>
     public int TotalDays { get; set; }
+    
+    /// <summary>
+    /// The first day of the multi day hearing, only applicable to subsequent multi day hearings
+    /// </summary>
+    public HearingDetailsResponse SourceHearing { get; set; }
 }
