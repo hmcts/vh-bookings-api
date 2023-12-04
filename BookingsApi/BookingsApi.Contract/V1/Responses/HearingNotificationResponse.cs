@@ -14,7 +14,7 @@ public class HearingNotificationResponse
     public int TotalDays { get; set; }
     
     /// <summary>
-    /// The first day of the multi day hearing, only applicable to subsequent multi day hearings
+    /// The first day of the multi day hearing, only applicable to multi day hearings
     /// </summary>
     public HearingDetailsResponse SourceHearing { get; set; }
 }
