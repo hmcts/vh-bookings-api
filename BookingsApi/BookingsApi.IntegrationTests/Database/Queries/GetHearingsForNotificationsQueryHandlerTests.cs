@@ -6,14 +6,12 @@ namespace BookingsApi.IntegrationTests.Database.Queries
     public class GetHearingsForNotificationsQueryHandlerTests : DatabaseTestsBase
     {
         private GetHearingsForNotificationsQueryHandler _handler;
-        private GetHearingsByGroupIdQueryHandler _groupByHandler;
 
         [SetUp]
         public void Setup()
         {
             var context = new BookingsDbContext(BookingsDbContextOptions);
             _handler = new GetHearingsForNotificationsQueryHandler(context);
-            _groupByHandler = new GetHearingsByGroupIdQueryHandler(context);
         }
 
         [Test]
