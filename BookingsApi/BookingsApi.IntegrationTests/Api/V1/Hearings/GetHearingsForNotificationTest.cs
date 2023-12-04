@@ -39,7 +39,7 @@ public class GetHearingsForNotificationTest: ApiTest
             options.ScheduledDate = multiDayHearingDates[0];
         }, isMultiDayFirstHearing: true);
         var datesToCloneFor = multiDayHearingDates.Skip(1).ToList();
-        await Hooks.CloneVideoHearing(multiDayHearingDay1.Id, datesToCloneFor);
+        await Hooks.CloneVideoHearing(multiDayHearingDay1.Id, datesToCloneFor, duration: 45);
         
         // Act
         using var client = Application.CreateClient();
@@ -99,7 +99,7 @@ public class GetHearingsForNotificationTest: ApiTest
             options.ScheduledDate = multiDayHearingDates[0];
         }, isMultiDayFirstHearing: true);
         var datesToCloneFor = multiDayHearingDates.Skip(1).ToList();
-        await Hooks.CloneVideoHearing(multiDayHearingDay1.Id, datesToCloneFor);
+        await Hooks.CloneVideoHearing(multiDayHearingDay1.Id, datesToCloneFor, duration: 45);
         
         // Act
         using var client = Application.CreateClient();
