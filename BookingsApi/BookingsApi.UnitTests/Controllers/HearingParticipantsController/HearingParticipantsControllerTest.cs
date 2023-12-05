@@ -6,6 +6,7 @@ using BookingsApi.DAL.Commands.Core;
 using BookingsApi.DAL.Queries;
 using BookingsApi.DAL.Queries.Core;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
+using BookingsApi.Services;
 
 namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 {
@@ -14,6 +15,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
         protected Mock<IQueryHandler> QueryHandler;
         protected Mock<ICommandHandler> CommandHandler;
         protected Mock<IEventPublisher> EventPublisher;
+        protected Mock<IHearingParticipantService> HearingParticipantService;
         private List<Participant> participants;
 
         protected List<Participant> Participants
@@ -76,11 +78,12 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             QueryHandler = new Mock<IQueryHandler>();
             CommandHandler = new Mock<ICommandHandler>();
             EventPublisher = new Mock<IEventPublisher>();
-
+            HearingParticipantService = new Mock<IHearingParticipantService>();
             hearingId = Guid.NewGuid();
             participantId = Guid.NewGuid();
             videoHearing = GetVideoHearing();
-            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, EventPublisher.Object);
+            Controller = new BookingsApi.Controllers.V1.HearingParticipantsController(QueryHandler.Object, CommandHandler.Object, 
+                EventPublisher.Object, HearingParticipantService.Object);
             
             QueryHandler.Setup(q => q.Handle<GetParticipantsInHearingQuery, List<Participant>>(It.IsAny<GetParticipantsInHearingQuery>()))
                 .ReturnsAsync(Participants);

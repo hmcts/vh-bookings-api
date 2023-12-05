@@ -20,12 +20,13 @@ namespace BookingsApi.Controllers.V1
         public JudiciaryParticipantsController(
             IQueryHandler queryHandler, 
             ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            IHearingParticipantService hearingParticipantService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _eventPublisher = eventPublisher;
-            _hearingParticipantService = new HearingParticipantService(commandHandler, eventPublisher);
+            _hearingParticipantService = hearingParticipantService;
         }
         
         /// <summary>
@@ -65,11 +66,6 @@ namespace BookingsApi.Controllers.V1
             catch (JudiciaryPersonNotFoundException exception)
             {
                 return NotFound(exception.Message);
-            }
-            catch (DomainRuleException exception)
-            {
-                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
-                return ValidationProblem(ModelState);
             }
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
@@ -111,8 +107,7 @@ namespace BookingsApi.Controllers.V1
                     return NotFound(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
                 }
 
-                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
-                return ValidationProblem(ModelState);
+                throw;
             }
 
             // ONLY publish this event when Hearing is set for ready for video
@@ -167,9 +162,7 @@ namespace BookingsApi.Controllers.V1
                 {
                     return NotFound(DomainRuleErrorMessages.JudiciaryParticipantNotFound);
                 }
-
-                ModelState.AddDomainRuleErrors(exception.ValidationFailures);
-                return ValidationProblem(ModelState);
+                throw;
             }
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));

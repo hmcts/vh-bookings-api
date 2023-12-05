@@ -17,11 +17,12 @@ namespace BookingsApi.Controllers.V2
 
         public HearingParticipantsControllerV2(IQueryHandler queryHandler,
             ICommandHandler commandHandler,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+            IHearingParticipantService hearingParticipantService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
-            _hearingParticipantService = new HearingParticipantService(commandHandler, eventPublisher);
+            _hearingParticipantService = hearingParticipantService;
         }
         
         /// <summary>
@@ -70,16 +71,8 @@ namespace BookingsApi.Controllers.V2
                 LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
             
             var command = new AddParticipantsToVideoHearingCommand(hearingId, participants, linkedParticipants);
-
-            try
-            {
-                await _commandHandler.Handle(command);
-            }
-            catch (DomainRuleException e)
-            {
-                ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return ValidationProblem(ModelState);
-            }
+            
+            await _commandHandler.Handle(command);
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
             await _hearingParticipantService
@@ -212,15 +205,7 @@ namespace BookingsApi.Controllers.V2
 
             var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
-            try
-            {
-                await _commandHandler.Handle(command);
-            }
-            catch (DomainRuleException e)
-            {
-                ModelState.AddDomainRuleErrors(e.ValidationFailures);
-                return ValidationProblem(ModelState);
-            }
+            await _commandHandler.Handle(command);
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
             await _hearingParticipantService.PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);

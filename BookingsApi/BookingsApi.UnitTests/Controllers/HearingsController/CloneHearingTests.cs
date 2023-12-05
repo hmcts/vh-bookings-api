@@ -7,6 +7,7 @@ using BookingsApi.DAL.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Testing.Common.Assertions;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Domain.Participants;
 using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.UnitTests.Controllers.HearingsController
@@ -49,13 +50,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var hearingId = Guid.NewGuid();
             var request = new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) } };
             var hearing = GetHearing("123");
+            
             var caseName = $"{hearing.GetCases().First().Name} Day {1} of 3";
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
 
             var result = await Controller.CloneHearing(hearingId, request);
-
+            
             result.Should().NotBeNull();
             var objectResult = (OkObjectResult)result;
             objectResult.Should().NotBeNull();
@@ -64,8 +66,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[1] && c.Cases[0].Name == "Case name Day 3 of 3")), Times.Once);
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Exactly(request.Dates.Count));
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<MultiDayHearingIntegrationEvent>()), Times.Once);
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count(x => x is not JudicialOfficeHolder)));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<ExistingParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(0));
         }
 
         [Test]
@@ -91,8 +93,9 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[1] && c.Cases[0].Name == "Case name Day 3 of 3")), Times.Once);
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Never);
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<MultiDayHearingIntegrationEvent>()), Times.Once);
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Exactly(request.Dates.Count));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(
+                    hearing.Participants.Count(x => x is not Judge)));
 
             CommandHandlerMock.Verify(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Never);
         }
