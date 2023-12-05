@@ -155,7 +155,14 @@ namespace BookingsApi.Controllers.V1
 
             var hearings = await _queryHandler.Handle<GetHearingsForNotificationsQuery, List<HearingNotificationDto>>(query);
 
-            var response = hearings.Select(h=> new HearingNotificationResponse() { Hearing = HearingToDetailsResponseMapper.Map(h.Hearing), TotalDays = h.TotalDays}).ToList();
+            var response = hearings
+                .Select(h=> new HearingNotificationResponse
+                {
+                    Hearing = HearingToDetailsResponseMapper.Map(h.Hearing), 
+                    TotalDays = h.TotalDays,
+                    SourceHearing = h.SourceHearing != null ? HearingToDetailsResponseMapper.Map(h.SourceHearing) : null
+                })
+                .ToList();
 
             return Ok(response);
         }

@@ -28,35 +28,31 @@ namespace BookingsApi.DAL.Queries
             var endDate = DateTime.Today.AddDays(3);    // 3 days is 72 hrs.
 
             // we are gathering all the hearings where the scheduled date and time is between 48 hrs and 72 hrs.
-            // all the hearings must be single day and only the first day of the multiday.
             var listHearings = await videoHearing.Where(x =>
                     (x.Status == BookingStatus.Created ||
-                     x.Status == Domain.Enumerations.BookingStatus.ConfirmedWithoutJudge ||
-                     x.Status == Domain.Enumerations.BookingStatus.BookedWithoutJudge ||
-                     x.Status == Domain.Enumerations.BookingStatus.Booked)
+                     x.Status == BookingStatus.ConfirmedWithoutJudge ||
+                     x.Status == BookingStatus.BookedWithoutJudge ||
+                     x.Status == BookingStatus.Booked)
                     && x.ScheduledDateTime >= startDate
-                    && x.ScheduledDateTime < endDate
-                    && (x.SourceId == x.Id || x.SourceId == null))
+                    && x.ScheduledDateTime < endDate)
                 .ToListAsync();
+
+            var sourceIds = listHearings.Select(x => x.SourceId).Where(x => x != null).Distinct().ToList();
+            var sourceHearings = await videoHearing.Where(x => sourceIds.Contains(x.SourceId) && x.SourceId == x.Id).ToListAsync();
 
             // map all singleday hearings to dto with total day set to 1
             var singleDayHearings = listHearings.Where(x => x.SourceId == null).ToList();
             var singleDayHearingsDto = singleDayHearings.Select(hearing => new HearingNotificationDto(hearing, 1)).ToList();
 
             var multipleDayHearings = listHearings.Where(x => x.SourceId != null).ToList();
-            var multiDayIds = multipleDayHearings.Select(x => x.Id).ToList();
-
-            var multiDayHearingList = await _context.VideoHearings
-                .Where(x => x.SourceId != null && multiDayIds.Contains(x.SourceId.Value))
-                .ToListAsync();
-    
-            // map all multiday hearings to dto with total day set to group count
-            var groupedHearings = multiDayHearingList
-                .GroupBy(x => x.SourceId).Select(grouping =>
-                    new HearingNotificationDto(listHearings.Find(x => x.SourceId == grouping.Key), grouping.Count()))
+            var multiDayHearingDtos = multipleDayHearings
+                .Select(hearing => new HearingNotificationDto(
+                    hearing,
+                    TotalDays: _context.VideoHearings.Count(x => x.SourceId == hearing.SourceId), 
+                    SourceHearing: sourceHearings.Find(x => x.Id == hearing.SourceId)))
                 .ToList();
 
-            return singleDayHearingsDto.Concat(groupedHearings).ToList();
+            return singleDayHearingsDto.Concat(multiDayHearingDtos).ToList();
         }
     }
 }
