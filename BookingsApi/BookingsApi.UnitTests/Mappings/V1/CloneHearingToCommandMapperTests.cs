@@ -1,4 +1,5 @@
 using BookingsApi.Common.Services;
+using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Helper;
 using BookingsApi.Domain;
 using BookingsApi.Domain.Enumerations;
@@ -10,7 +11,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
     public class CloneHearingToCommandMapperTests
     {
         private IRandomGenerator _randomGenerator;
-        private readonly string _sipAddressStem = "@WhereAreYou.com";
+        private const string _sipAddressStem = "@WhereAreYou.com";
 
         [SetUp]
         public void Setup()
@@ -21,10 +22,13 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [Test]
         public void should_map_hearing_to_command()
         {
-            var totalDays = 5;
-            var hearingDay = 2;
+            const int totalDays = 5;
+            const int hearingDay = 2;
             const int duration = Constants.CloneHearings.DefaultScheduledDuration;
-            var hearing = new VideoHearingBuilder().Build();
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithJudiciaryJudge()
+                .WithJudiciaryPanelMember()
+                .Build();
             hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
             hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
                 hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative)));
@@ -84,6 +88,27 @@ namespace BookingsApi.UnitTests.Mappings.V1
                     x.DefenceAdvocate?.Person?.ContactEmail == ep.ContactEmail).Should().NotBeNull();
             }
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
+            
+            AssertMappedJudiciaryParticipants(command, hearing);
+        }
+
+        private static void AssertMappedJudiciaryParticipants(CreateVideoHearingCommand command, Hearing hearing)
+        {
+            var judiciaryParticipants = hearing.GetJudiciaryParticipants();
+            var mappedJudiciaryParticipants = command.JudiciaryParticipants;
+            
+            mappedJudiciaryParticipants.Count.Should().Be(judiciaryParticipants.Count);
+
+            foreach (var mappedJudiciaryParticipant in mappedJudiciaryParticipants)
+            {
+                mappedJudiciaryParticipant.PersonalCode.Should().NotBeNullOrEmpty();
+                var judiciaryParticipant = judiciaryParticipants.FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == mappedJudiciaryParticipant.PersonalCode);
+
+                judiciaryParticipant.Should().NotBeNull();
+                mappedJudiciaryParticipant.PersonalCode.Should().Be(judiciaryParticipant.JudiciaryPerson.PersonalCode);
+                mappedJudiciaryParticipant.DisplayName.Should().Be(judiciaryParticipant.DisplayName);
+                mappedJudiciaryParticipant.HearingRoleCode.Should().Be(judiciaryParticipant.HearingRoleCode);
+            }
         }
     }
 }

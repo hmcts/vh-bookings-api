@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V1.Extensions;
 
 namespace BookingsApi.Mappings.V1
@@ -9,6 +10,7 @@ namespace BookingsApi.Mappings.V1
         {
             var caseMapper = new CaseToResponseMapper();
             var participantMapper = new ParticipantToResponseMapper();
+            var judiciaryParticipantMapper = new JudiciaryParticipantToResponseMapper();
             
             var cases = videoHearing.GetCases()
                 .Select(x => caseMapper.MapCaseToResponse(x))
@@ -20,6 +22,10 @@ namespace BookingsApi.Mappings.V1
 
             var endpoints = videoHearing.GetEndpoints()
                 .Select(EndpointToResponseMapper.MapEndpointToResponse)
+                .ToList();
+
+            var judiciaryParticipants = videoHearing.GetJudiciaryParticipants()
+                .Select(x => judiciaryParticipantMapper.MapJudiciaryParticipantToResponse(x))
                 .ToList();
             
             var response = new HearingDetailsResponse
@@ -44,7 +50,8 @@ namespace BookingsApi.Mappings.V1
                 AudioRecordingRequired = videoHearing.AudioRecordingRequired,
                 CancelReason = videoHearing.CancelReason,
                 GroupId = videoHearing.SourceId,
-                Endpoints = endpoints
+                Endpoints = endpoints,
+                JudiciaryParticipants = judiciaryParticipants
             };
             response.TrimAllStringsRecursively();
             return response;

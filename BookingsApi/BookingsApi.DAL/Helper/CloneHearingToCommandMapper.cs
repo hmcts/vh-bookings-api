@@ -50,12 +50,14 @@ namespace BookingsApi.DAL.Helper
             var newEndpoints = GetNewEndpointsDtos(hearing, randomGenerator, sipAddressStem);
 
             var linkedParticipantDtos = GetLinkedParticipantDtos(hearing);
+            
+            var newJudiciaryParticipants = GetNewJudiciaryParticipants(hearing);
 
             var command = new CreateVideoHearingCommand(new CreateVideoHearingRequiredDto(
                     hearing.CaseType, newDate, duration, hearing.HearingVenue, cases),
                 new CreateVideoHearingOptionalDto(participants, hearing.HearingRoomName, hearing.OtherInformation,
                     hearing.CreatedBy, hearing.AudioRecordingRequired, newEndpoints, null, linkedParticipantDtos,
-                    new List<NewJudiciaryParticipant>(), false, hearing.Id, hearing.HearingType));
+                    newJudiciaryParticipants, false, hearing.Id, hearing.HearingType));
 
             return command;
         }
@@ -111,6 +113,19 @@ namespace BookingsApi.DAL.Helper
             }
 
             return linkedParticipantDtos;
+        }
+
+        private static List<NewJudiciaryParticipant> GetNewJudiciaryParticipants(Hearing hearing)
+        {
+            return hearing
+                .GetJudiciaryParticipants()
+                .Select(x => new NewJudiciaryParticipant
+                {
+                    DisplayName = x.DisplayName,
+                    PersonalCode = x.JudiciaryPerson.PersonalCode,
+                    HearingRoleCode = x.HearingRoleCode
+                })
+                .ToList();
         }
     }
 }

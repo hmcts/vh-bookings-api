@@ -2,7 +2,9 @@
 using BookingsApi.Domain;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V1;
+using BookingsApi.Mappings.V1.Extensions;
 using BookingsApi.UnitTests.Utilities;
 using FizzWare.NBuilder;
 
@@ -62,15 +64,57 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var endpoints = new Endpoint("displayName", "333", "200", null);
             _videoHearing.AddEndpoint(endpoints);
 
+            var judiciaryJudgePerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
+            _videoHearing.AddJudiciaryJudge(judiciaryJudgePerson, "Judiciary Judge");
+            
+            var judiciaryPanelMemberPerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
+            _videoHearing.AddJudiciaryPanelMember(judiciaryPanelMemberPerson, "Judiciary Panel Member");
+            
             // Set the navigation properties as well since these would've been set if we got the hearing from DB
             _videoHearing.SetProtected(nameof(_videoHearing.HearingType), hearingType);
             _videoHearing.SetProtected(nameof(_videoHearing.CaseType), caseType);
             _videoHearing.SetProtected(nameof(_videoHearing.HearingVenue), venue);
 
             var response = HearingToDetailsResponseMapper.Map(_videoHearing);
-            response.Should().BeEquivalentTo(response, options => options
-                .Excluding(v => v.Id)
-            );
+            
+            var caseMapper = new CaseToResponseMapper();
+            var participantMapper = new ParticipantToResponseMapper();
+            var judiciaryParticipantMapper = new JudiciaryParticipantToResponseMapper();
+            
+            response.Id.Should().Be(_videoHearing.Id);
+            response.ScheduledDuration.Should().Be(_videoHearing.ScheduledDuration);
+            response.ScheduledDateTime.Should().Be(_videoHearing.ScheduledDateTime);
+            response.HearingTypeName.Should().Be(_videoHearing.HearingType.Name);
+            response.CaseTypeName.Should().Be(_videoHearing.CaseType.Name);
+            response.HearingVenueName.Should().Be(_videoHearing.HearingVenue.Name);
+            response.Cases.Should().BeEquivalentTo(_videoHearing
+                .GetCases()
+                .Select(caseMapper.MapCaseToResponse)
+                .ToList());
+            response.Participants.Should().BeEquivalentTo(_videoHearing
+                .GetParticipants()
+                .Select(participantMapper.MapParticipantToResponse)
+                .ToList());
+            response.HearingRoomName.Should().Be(_videoHearing.HearingRoomName);
+            response.OtherInformation.Should().Be(_videoHearing.OtherInformation);
+            response.CreatedBy.Should().Be(_videoHearing.CreatedBy);
+            response.CreatedDate.Should().Be(_videoHearing.CreatedDate);
+            response.UpdatedBy.Should().Be(_videoHearing.UpdatedBy);
+            response.UpdatedDate.Should().Be(_videoHearing.UpdatedDate);
+            response.ConfirmedBy.Should().Be(_videoHearing.ConfirmedBy);
+            response.ConfirmedDate.Should().Be(_videoHearing.ConfirmedDate);
+            response.Status.Should().Be(_videoHearing.Status.MapToContractEnum());
+            response.AudioRecordingRequired.Should().Be(_videoHearing.AudioRecordingRequired);
+            response.CancelReason.Should().Be(_videoHearing.CancelReason);
+            response.GroupId.Should().Be(_videoHearing.SourceId);
+            response.Endpoints.Should().BeEquivalentTo(_videoHearing
+                .GetEndpoints()
+                .Select(EndpointToResponseMapper.MapEndpointToResponse)
+                .ToList());
+            response.JudiciaryParticipants.Should().BeEquivalentTo(_videoHearing
+                .GetJudiciaryParticipants()
+                .Select(judiciaryParticipantMapper.MapJudiciaryParticipantToResponse)
+                .ToList());
         }
     }
 }
