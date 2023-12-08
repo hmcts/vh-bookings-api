@@ -50,6 +50,11 @@ namespace BookingsApi.Contract.V1.Responses
         public List<ParticipantResponse> Participants { get; set; }
         
         /// <summary>
+        ///     List of judiciary participants in hearing
+        /// </summary>
+        public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
+        
+        /// <summary>
         ///     The hearing room name at the hearing venue
         /// </summary>
         public string HearingRoomName { get; set; }
