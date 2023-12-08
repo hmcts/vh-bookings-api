@@ -11,7 +11,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
     public class CloneHearingToCommandMapperTests
     {
         private IRandomGenerator _randomGenerator;
-        private readonly string _sipAddressStem = "@WhereAreYou.com";
+        private const string _sipAddressStem = "@WhereAreYou.com";
 
         [SetUp]
         public void Setup()
@@ -22,10 +22,13 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [Test]
         public void should_map_hearing_to_command()
         {
-            var totalDays = 5;
-            var hearingDay = 2;
+            const int totalDays = 5;
+            const int hearingDay = 2;
             const int duration = Constants.CloneHearings.DefaultScheduledDuration;
-            var hearing = new VideoHearingBuilder().Build();
+            var hearing = new VideoHearingBuilder(addJudge: false)
+                .WithJudiciaryJudge()
+                .WithJudiciaryPanelMember()
+                .Build();
             hearing.AddEndpoint(new Endpoint("Endpoint1", $"{Guid.NewGuid():N}@hmcts.net", "1234", null));
             hearing.AddEndpoint(new Endpoint("Endpoint2", $"{Guid.NewGuid():N}@hmcts.net", "2345",
                 hearing.GetParticipants().First(x => x.HearingRole.UserRole.IsRepresentative)));
@@ -40,7 +43,19 @@ namespace BookingsApi.UnitTests.Mappings.V1
             var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator,
                 _sipAddressStem, totalDays, hearingDay, duration);
 
-            AssertMappedHearing(command, hearing, newDate, duration, hearingDay, totalDays);
+            command.HearingRoomName.Should().Be(hearing.HearingRoomName);
+            command.OtherInformation.Should().Be(hearing.OtherInformation);
+            command.CreatedBy.Should().Be(hearing.CreatedBy);
+            
+            command.CaseType.Should().Be(hearing.CaseType);
+            command.HearingType.Should().Be(hearing.HearingType);
+
+            command.ScheduledDateTime.Should().Be(newDate);
+            command.ScheduledDateTime.Hour.Should().Be(hearing.ScheduledDateTime.Hour);
+            command.ScheduledDateTime.Minute.Should().Be(hearing.ScheduledDateTime.Minute);
+            command.ScheduledDuration.Should().Be(duration);
+
+            command.Venue.Should().Be(hearing.HearingVenue);
 
             command.Participants.Count.Should().Be(hearing.GetParticipants().Count);
             foreach (var newParticipant in command.Participants)
@@ -56,58 +71,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
                 var rep = (Representative) existingPat; 
                 newParticipant.Representee.Should().Be(rep.Representee);
             }
-   
-            command.Endpoints.Count.Should().Be(hearing.GetEndpoints().Count);
-            foreach (var ep in command.Endpoints)
-            {
-                hearing.GetEndpoints().SingleOrDefault(x =>
-                    x.DisplayName == ep.DisplayName &&
-                    x.DefenceAdvocate?.Person?.ContactEmail == ep.ContactEmail).Should().NotBeNull();
-            }
-        }
-
-        [Test]
-        public void should_map_hearing_with_judiciary_participants_to_command()
-        {
-            var totalDays = 5;
-            var hearingDay = 2;
-            const int duration = Constants.CloneHearings.DefaultScheduledDuration;
-            var hearing = new VideoHearingBuilder(addJudge: false)
-                .WithJudiciaryJudge()
-                .WithJudiciaryPanelMember()
-                .Build();
-            hearing.AddCase("HBS/1234","Case 1 Test", true);
-            var newDate = hearing.ScheduledDateTime.AddDays(1);
             
-            var command = CloneHearingToCommandMapper.CloneToCommand(hearing, newDate, _randomGenerator,
-                _sipAddressStem, totalDays, hearingDay, duration);
-            
-            AssertMappedHearing(command, hearing, newDate, duration, hearingDay, totalDays);
-            AssertMappedJudiciaryParticipants(command, hearing);
-        }
-
-        private static void AssertMappedHearing(
-            CreateVideoHearingCommand command, 
-            Hearing hearing,
-            DateTime expectedScheduledDateTime,
-            int expectedDuration,
-            int hearingDay,
-            int totalDays)
-        {
-            command.HearingRoomName.Should().Be(hearing.HearingRoomName);
-            command.OtherInformation.Should().Be(hearing.OtherInformation);
-            command.CreatedBy.Should().Be(hearing.CreatedBy);
-            
-            command.CaseType.Should().Be(hearing.CaseType);
-            command.HearingType.Should().Be(hearing.HearingType);
-
-            command.ScheduledDateTime.Should().Be(expectedScheduledDateTime);
-            command.ScheduledDateTime.Hour.Should().Be(hearing.ScheduledDateTime.Hour);
-            command.ScheduledDateTime.Minute.Should().Be(hearing.ScheduledDateTime.Minute);
-            command.ScheduledDuration.Should().Be(expectedDuration);
-
-            command.Venue.Should().Be(hearing.HearingVenue);
-
             command.Cases.Count.Should().Be(hearing.GetCases().Count);
             foreach (var @case in command.Cases)
             {
@@ -124,6 +88,8 @@ namespace BookingsApi.UnitTests.Mappings.V1
                     x.DefenceAdvocate?.Person?.ContactEmail == ep.ContactEmail).Should().NotBeNull();
             }
             command.AudioRecordingRequired.Should().Be(hearing.AudioRecordingRequired);
+            
+            AssertMappedJudiciaryParticipants(command, hearing);
         }
 
         private static void AssertMappedJudiciaryParticipants(CreateVideoHearingCommand command, Hearing hearing)
