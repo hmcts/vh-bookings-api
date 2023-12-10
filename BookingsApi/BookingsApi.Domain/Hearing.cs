@@ -665,7 +665,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
-            if (Status == BookingStatus.Created && IsHearingConfirmedAndCloseToStartTime())
+            if (Status is BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge  && IsHearingConfirmedAndCloseToStartTime())
             {
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
@@ -685,6 +685,7 @@ namespace BookingsApi.Domain
                 throw new ArgumentNullException(nameof(cancelReason));
             }
 
+            newStatus = newStatus == BookingStatus.Created && GetJudge() == null ? BookingStatus.ConfirmedWithoutJudge : newStatus;
             var bookingStatusTransition = new BookingStatusTransition();
             var statusChangedEvent = new StatusChangedEvent(Status, newStatus);
 

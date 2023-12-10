@@ -20,7 +20,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            var newBookingStatus = BookingStatus.Created;
+            var newBookingStatus = BookingStatus.ConfirmedWithoutJudge;
 
             var command = new UpdateHearingStatusCommand(seededHearing.Id, newBookingStatus, "test", null);
             await _commandHandler.Handle(command);
@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            var expectedFinalStatus = BookingStatus.Created;
+            var expectedFinalStatus = BookingStatus.ConfirmedWithoutJudge;
 
             await _commandHandler.Handle(new UpdateHearingStatusCommand(seededHearing.Id, BookingStatus.Failed, "test",
                 null));
