@@ -62,11 +62,10 @@ namespace BookingsApi.UnitTests.Services
            
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 
-            var createConfereceMessageCount = 1;
+            var createConferenceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge);
             var judiciaryPersons = hearing.JudiciaryParticipants.Count;
             var totalMessages = 12;
-            var totalConfimationHearingMessage = judiciaryPersons + hearing.Participants.Count;
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
@@ -74,8 +73,8 @@ namespace BookingsApi.UnitTests.Services
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent).Should().Be(newParticipantWelcomeMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(totalConfimationHearingMessage);
+            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(judiciaryPersons + hearing.Participants.Count);
         }
     }
 }
