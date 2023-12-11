@@ -64,10 +64,9 @@ namespace BookingsApi.UnitTests.Services
 
             var createConfereceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge);
-            var hearingConfirmationForExistingParticipantsMessageCount = 1;
-            var judiciaryPersons = hearing.JudiciaryParticipants.Count();
+            var judiciaryPersons = hearing.JudiciaryParticipants.Count;
             var totalMessages = 12;
-            var totalConfimationHearingMessage = judiciaryPersons + hearing.Participants.Count();
+            var totalConfimationHearingMessage = judiciaryPersons + hearing.Participants.Count;
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
