@@ -2,6 +2,7 @@
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Dtos;
 using System;
+using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Infrastructure.Services
 {
@@ -60,10 +61,22 @@ namespace BookingsApi.Infrastructure.Services
                 FirstName = participant.JudiciaryPerson.KnownAs,
                 LastName = participant.JudiciaryPerson.Surname,
                 ParticipnatId = participant.Id,
-                UserRole =  participant.HearingRoleCode.ToString()
+                UserRole =  GetUserRole(participant.HearingRoleCode)
             };
         }
 
+        private static string GetUserRole(JudiciaryParticipantHearingRoleCode participantHearingRoleCode)
+        {
+            switch (participantHearingRoleCode)
+            {
+                case JudiciaryParticipantHearingRoleCode.Judge:
+                    return "Judge";
+                case JudiciaryParticipantHearingRoleCode.PanelMember:
+                    return "Judicial Office Holder"; // Panel Member is a JudicialOfficeHolder Rolenames enum in Notification Api
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(participantHearingRoleCode));
+            }
+        }
     }
 
 }
