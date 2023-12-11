@@ -6,7 +6,7 @@ using BookingsApi.Domain.Enumerations;
 
 namespace BookingsApi.Infrastructure.Services
 {
-    public class EventDtoMappers
+    public static class EventDtoMappers
     {
         public static WelcomeEmailDto MapToWelcomeEmailDto(Guid hearingId, Participant participant, Case @case)
         {
