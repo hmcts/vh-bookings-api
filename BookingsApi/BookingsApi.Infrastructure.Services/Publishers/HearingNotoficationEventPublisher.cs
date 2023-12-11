@@ -25,6 +25,11 @@ namespace BookingsApi.Infrastructure.Services.Publishers
                 await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case)));
             }
+            foreach (var participant in videoHearing.JudiciaryParticipants)
+            {
+                await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
+                    videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case)));
+            }
         }
     }
 }
