@@ -41,6 +41,8 @@ namespace BookingsApi.DAL.Services
         Task RemoveParticipantLinks(List<Participant> participants, Participant participant);
 
         Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
+
+        void ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
     }
     public class HearingService : IHearingService
     {
@@ -120,6 +122,12 @@ namespace BookingsApi.DAL.Services
             }
             await LoadHearingRoles(participantList);
             return participantList;
+        }
+
+        public void ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
+        {
+            var judge = new Judge(newJudgeParticipant.Person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole);
+            hearing.ReassignJudge(judge);
         }
 
         private async Task LoadHearingRoles(List<Participant> participantList)

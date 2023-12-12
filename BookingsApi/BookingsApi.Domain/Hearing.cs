@@ -736,6 +736,19 @@ namespace BookingsApi.Domain
                 };
         }
 
+        public void ReassignJudge(Judge newJudge)
+        {
+            var existingJudge = Participants.FirstOrDefault(p => p is Judge);
+            if (existingJudge != null)
+            {
+                Participants.Remove(existingJudge);
+            }
+            
+            Participants.Add(newJudge);
+            
+            UpdatedDate = DateTime.UtcNow;
+        }
+
         private bool IsHearingConfirmedAndCloseToStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow &&
                                                                 (Status == BookingStatus.Created ||
                                                                  Status == BookingStatus.ConfirmedWithoutJudge);
