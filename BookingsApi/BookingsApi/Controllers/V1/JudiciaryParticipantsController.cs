@@ -182,6 +182,8 @@ namespace BookingsApi.Controllers.V1
         [HttpPut("{hearingId}/joh/judge")]
         [OpenApiOperation("ReassignJudiciaryJudge")]
         [ProducesResponseType(typeof(JudiciaryParticipantResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ReassignJudiciaryJudge(Guid hearingId, [FromBody] ReassignJudiciaryJudgeRequest request)
         {
             var validation = await new ReassignJudiciaryJudgeRequestValidation().ValidateAsync(request);
