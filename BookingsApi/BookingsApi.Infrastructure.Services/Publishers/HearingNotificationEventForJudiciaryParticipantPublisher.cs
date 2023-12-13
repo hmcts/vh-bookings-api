@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {
-    public class HearingNotoficationEventForJudiciaryParticipantPublisher : IPublishEvent
+    public class HearingNotificationEventForJudiciaryParticipantPublisher : IPublishEvent
     {
         private readonly IEventPublisher _eventPublisher;
-        public HearingNotoficationEventForJudiciaryParticipantPublisher(IEventPublisher eventPublisher)
+        public HearingNotificationEventForJudiciaryParticipantPublisher(IEventPublisher eventPublisher)
         {
             _eventPublisher = eventPublisher;
         }
