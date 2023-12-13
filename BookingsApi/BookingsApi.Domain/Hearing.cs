@@ -671,8 +671,6 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
-        
-        
 
         public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
@@ -739,6 +737,8 @@ namespace BookingsApi.Domain
 
         public void ReassignJudge(Judge newJudge)
         {
+            ValidateReassignJudgeAllowed();
+            
             var existingJudge = Participants.FirstOrDefault(p => p is Judge);
             if (existingJudge != null)
             {
@@ -752,6 +752,8 @@ namespace BookingsApi.Domain
 
         public void ReassignJudiciaryJudge(JudiciaryJudge newJudge)
         {
+            ValidateReassignJudgeAllowed();
+            
             var existingJudge = JudiciaryParticipants.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             if (existingJudge != null)
             {
@@ -761,6 +763,14 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Add(newJudge);
             
             UpdatedDate = DateTime.UtcNow;
+        }
+        
+        private void ValidateReassignJudgeAllowed()
+        {
+            if (Status == BookingStatus.Cancelled)
+            {
+                throw new DomainRuleException("Hearing", DomainRuleErrorMessages.CannotEditACancelledHearing);
+            }
         }
 
         private bool IsHearingConfirmedAndCloseToStartTime() => ScheduledDateTime.AddMinutes(-30) <= DateTime.UtcNow &&

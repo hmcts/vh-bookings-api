@@ -1,4 +1,6 @@
+using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Domain.JudiciaryParticipants;
+using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
@@ -34,6 +36,22 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             // Assert
             hearing.GetJudge().Should().Be(newJudiciaryJudge);
+        }
+        
+        [Test]
+        public void should_throw_exception_when_reassigning_judiciary_judge_to_cancelled_hearing()
+        {
+            // Arrange
+            var hearing = new VideoHearingBuilder().Build();
+            hearing.SetProtected(nameof(hearing.Status), BookingStatus.Cancelled);
+            var newJudge = new JudgeBuilder().Build();
+            
+            // Act
+            var action = () => hearing.ReassignJudge(newJudge);
+            
+            // Assert
+            action.Should().Throw<DomainRuleException>().And.ValidationFailures
+                .Exists(x => x.Message == DomainRuleErrorMessages.CannotEditACancelledHearing).Should().BeTrue();
         }
     }
 }
