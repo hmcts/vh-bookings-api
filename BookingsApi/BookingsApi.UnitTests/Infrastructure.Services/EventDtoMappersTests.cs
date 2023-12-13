@@ -12,7 +12,7 @@ public class EventDtoMappersTests
     
     [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
     [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
-    public void should_map_judiciary_participant_to_dto(JudiciaryParticipantHearingRoleCode hearingRoleCode)
+    public void should_map_hearing_confirmation_dto_with_judiciary_participant(JudiciaryParticipantHearingRoleCode hearingRoleCode)
     {
         var @case = new Case("case number", "case name")
         {
@@ -50,7 +50,7 @@ public class EventDtoMappersTests
     
     [TestCase(CaseRoleGroup.Judge)]
     [TestCase(CaseRoleGroup.StaffMember)]
-    public void should_map_participant_to_dto(CaseRoleGroup hearingRoleCode)
+    public void should_map_hearing_confirmation_dto_with_participant(CaseRoleGroup hearingRoleCode)
     {
         var @case = new Case("case number", "case name")
         {
