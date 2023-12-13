@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {
-    public class HearingNotoficationEventPublisher : IPublishEvent
+    public class HearingNotoficationEventForJudiciaryParticipantPublisher : IPublishEvent
     {
         private readonly IEventPublisher _eventPublisher;
-        public HearingNotoficationEventPublisher(IEventPublisher eventPublisher)
+        public HearingNotoficationEventForJudiciaryParticipantPublisher(IEventPublisher eventPublisher)
         {
             _eventPublisher = eventPublisher;
         }
 
-        public EventType EventType => EventType.HearingNotificationEvent;
+        public EventType EventType => EventType.HearingNotificationForJudiciaryParticipantEvent;
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
             var @case = videoHearing.GetCases()[0];
-            foreach (var participant in videoHearing.Participants)
+            foreach (var participant in videoHearing.JudiciaryParticipants)
             {
                 await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case)));

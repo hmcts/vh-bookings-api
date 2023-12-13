@@ -19,7 +19,8 @@ namespace BookingsApi.UnitTests
                 new MultidayHearingConfirmationforExistingParticipantsPublisher(eventPublisher),
                 new CreateAndNotifyUserPublisher(eventPublisher),
                 new HearingNotoficationEventPublisher(eventPublisher),
-                new MultidayHearingNotoficationEventPublisher(eventPublisher)
+                new MultidayHearingNotoficationEventPublisher(eventPublisher),
+                new HearingNotoficationEventForJudiciaryParticipantPublisher(eventPublisher)
             });
         }
     }

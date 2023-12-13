@@ -27,13 +27,14 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
                 await _publisherFactory.Get(EventType.CreateAndNotifyUserEvent).PublishAsync(videoHearing);
                 await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(videoHearing);
                 await _publisherFactory.Get(EventType.HearingNotificationEvent).PublishAsync(videoHearing);
-
+                await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent).PublishAsync(videoHearing);
                 return;
             }
             await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.NewParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.ExistingParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
+            await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent).PublishAsync(videoHearing);
         }
     }
 }
