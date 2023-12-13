@@ -4,6 +4,7 @@ using System.Linq;
 using BookingsApi.Domain.Configuration;
 using BookingsApi.Domain.Ddd;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Domain.JudiciaryParticipants;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
 using BookingsApi.Domain.Validations;
@@ -745,6 +746,19 @@ namespace BookingsApi.Domain
             }
             
             Participants.Add(newJudge);
+            
+            UpdatedDate = DateTime.UtcNow;
+        }
+
+        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge)
+        {
+            var existingJudge = JudiciaryParticipants.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            if (existingJudge != null)
+            {
+                JudiciaryParticipants.Remove(existingJudge);
+            }
+
+            JudiciaryParticipants.Add(newJudge);
             
             UpdatedDate = DateTime.UtcNow;
         }
