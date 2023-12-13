@@ -59,7 +59,7 @@ namespace BookingsApi.DAL.Commands
                 if (participant.HearingRole.IsJudge() && command.NewParticipants.Exists(x => x.HearingRole.IsJudge()))
                 {
                     var newJudgeParticipant = command.NewParticipants.Single(x => x.HearingRole.IsJudge());
-                    _hearingService.ReassignJudge(hearing, newJudgeParticipant);
+                    await _hearingService.ReassignJudge(hearing, newJudgeParticipant);
 
                     command.NewParticipants.Remove(newJudgeParticipant);
                     continue;

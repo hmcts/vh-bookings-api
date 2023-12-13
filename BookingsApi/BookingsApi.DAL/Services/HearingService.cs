@@ -42,7 +42,7 @@ namespace BookingsApi.DAL.Services
 
         Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
 
-        void ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
+        Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
     }
     public class HearingService : IHearingService
     {
@@ -124,9 +124,10 @@ namespace BookingsApi.DAL.Services
             return participantList;
         }
 
-        public void ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
+        public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
         {
-            var judge = new Judge(newJudgeParticipant.Person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole);
+            var person = await _context.Persons.FirstAsync(x => x.ContactEmail == newJudgeParticipant.Person.ContactEmail);
+            var judge = new Judge(person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole);
             hearing.ReassignJudge(judge);
         }
 

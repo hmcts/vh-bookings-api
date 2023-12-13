@@ -272,6 +272,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var oldJudgeId = oldJudge.Id;
 
             var newJudge = new PersonBuilder(true).Build();
+            await _context.Persons.AddAsync(newJudge);
+            await _context.SaveChangesAsync();
+            _personsToRemove.Add(newJudge.ContactEmail);
 
             var newParticipant = new NewParticipant()
             {
@@ -311,6 +314,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var oldJudgeId = oldJudge.Id;
 
             var newJudge = new PersonBuilder(true).Build();
+            await _context.Persons.AddAsync(newJudge);
+            await _context.SaveChangesAsync();
+            _personsToRemove.Add(newJudge.ContactEmail);
 
             var newParticipant = new NewParticipant()
             {
