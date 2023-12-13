@@ -16,12 +16,20 @@ public class EventDtoMappersTests
             var mappedParticipant =
                 EventDtoMappers.MapToHearingConfirmationDto(hearing.Id, hearing.ScheduledDateTime, participant,
                     @case);
-            mappedParticipant.Username.Should().Be(participant.JudiciaryPerson.Email);
             var role = (participant.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge)
                 ? "Judge"
                 : "Judicial Office Holder";
             mappedParticipant.UserRole.Should().Be(role);
+            mappedParticipant.Username.Should().Be(participant.JudiciaryPerson.Email);
         }
-        
+
+        foreach (var participant in hearing.Participants)
+        {
+            var mappedParticipant =
+                EventDtoMappers.MapToHearingConfirmationDto(hearing.Id, hearing.ScheduledDateTime, participant,
+                    @case);
+            mappedParticipant.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
+            mappedParticipant.Username.Should().Be(participant.Person.Username);
+        }
     }
 }
