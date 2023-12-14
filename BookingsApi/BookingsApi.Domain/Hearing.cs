@@ -243,7 +243,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
