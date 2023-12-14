@@ -338,6 +338,36 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
+        public async Task Should_change_hearing_status_to_confirmed_without_judge_when_request_is_created_and_hearing_status_is_booked_without_judge()
+        {
+            var request = new UpdateBookingStatusRequest
+            {
+                UpdatedBy = "email@hmcts.net",
+                Status = UpdateBookingStatus.Created,
+                CancelReason = ""
+            };
+            
+            var hearing = GetHearing("123");
+            hearing.SetProtected(nameof(hearing.Status), BookingStatus.BookedWithoutJudge);
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(hearing);
+
+            CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
+
+            var result = await Controller.UpdateBookingStatus(hearing.Id, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+
+            CommandHandlerMock.Verify(c => c.Handle(
+                It.Is<UpdateHearingStatusCommand>(x => 
+                    x.Status == BookingStatus.ConfirmedWithoutJudge)),
+                Times.Once);
+        }
+
+        [Test]
         public async Task AnonymiseParticipantAndCaseByHearingId_Returns_Ok()
         {
             var hearingIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
