@@ -337,18 +337,21 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
-        [Test]
-        public async Task Should_change_hearing_status_to_confirmed_without_judge_when_request_is_created_and_hearing_status_is_booked_without_judge()
+        [TestCase(UpdateBookingStatus.Created, BookingStatus.BookedWithoutJudge, BookingStatus.ConfirmedWithoutJudge)]
+        public async Task Should_change_hearing_status_to_correct_value(
+            UpdateBookingStatus updateStatus, 
+            BookingStatus currentBookingStatus, 
+            BookingStatus expectedNewBookingStatus)
         {
             var request = new UpdateBookingStatusRequest
             {
                 UpdatedBy = "email@hmcts.net",
-                Status = UpdateBookingStatus.Created,
+                Status = updateStatus,
                 CancelReason = ""
             };
             
             var hearing = GetHearing("123");
-            hearing.SetProtected(nameof(hearing.Status), BookingStatus.BookedWithoutJudge);
+            hearing.SetProtected(nameof(hearing.Status), currentBookingStatus);
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
                 .ReturnsAsync(hearing);
@@ -363,7 +366,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             CommandHandlerMock.Verify(c => c.Handle(
                 It.Is<UpdateHearingStatusCommand>(x => 
-                    x.Status == BookingStatus.ConfirmedWithoutJudge)),
+                    x.Status == expectedNewBookingStatus)),
                 Times.Once);
         }
 
