@@ -360,9 +360,9 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson)
+        private void ValidateAddJudiciaryParticipant(JudiciaryPerson judiciaryPerson, string roleToIgnore = null)
         {
-            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
+            if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode, roleToIgnore: roleToIgnore))
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.JudiciaryPersonAlreadyExists(judiciaryPerson.PersonalCode));
             }
@@ -602,9 +602,15 @@ namespace BookingsApi.Domain
             return Endpoints.Any(x => x.Sip.Equals(sip, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private bool DoesJudiciaryParticipantExistByPersonalCode(string personalCode)
+        private bool DoesJudiciaryParticipantExistByPersonalCode(string personalCode, string roleToIgnore = null)
         {
-            return JudiciaryParticipants.Any(x => x.JudiciaryPerson.PersonalCode == personalCode);
+            var judiciaryParticipants = JudiciaryParticipants.Where(x => x.JudiciaryPerson.PersonalCode == personalCode);
+            if (!string.IsNullOrEmpty(roleToIgnore))
+            {
+                judiciaryParticipants = judiciaryParticipants.Where(x => x.HearingRoleCode.ToString() != roleToIgnore);
+            }
+            
+            return judiciaryParticipants.Any();
         }
 
         private bool DoesJudgeExist(string personalCodeToIgnore = null)
@@ -711,10 +717,24 @@ namespace BookingsApi.Domain
 
         public ParticipantBase GetJudge()
         {
+            var judge = GetNonJudiciaryJudge();
+            var judiciaryJudge = GetJudiciaryJudge();
+
+            return judge ?? judiciaryJudge;
+        }
+
+        private ParticipantBase GetNonJudiciaryJudge()
+        {
             var judge = Participants.FirstOrDefault(p => p is Judge);
+
+            return judge;
+        }
+        
+        private ParticipantBase GetJudiciaryJudge()
+        {
             var judiciaryJudge = JudiciaryParticipants?.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
-            return (ParticipantBase)judge ?? judiciaryJudge;
+            return judiciaryJudge;
         }
 
         public void UpdateBookingStatusJudgeRequirement()
@@ -737,7 +757,18 @@ namespace BookingsApi.Domain
 
         public void ReassignJudge(Judge newJudge)
         {
+            if (newJudge == null)
+            {
+                throw new ArgumentNullException(nameof(newJudge));
+            }
+            
             ValidateReassignJudgeAllowed();
+
+            var judiciaryJudge = GetJudiciaryJudge();
+            if (judiciaryJudge != null)
+            {
+                throw new DomainRuleException(nameof(newJudge), DomainRuleErrorMessages.CannotAddJudgeWhenJudiciaryJudgeAlreadyExists);
+            }
             
             var existingJudge = Participants.FirstOrDefault(p => p is Judge);
             if (existingJudge != null)
@@ -752,7 +783,20 @@ namespace BookingsApi.Domain
 
         public void ReassignJudiciaryJudge(JudiciaryJudge newJudge)
         {
+            if (newJudge == null)
+            {
+                throw new ArgumentNullException(nameof(newJudge));
+            }
+            
             ValidateReassignJudgeAllowed();
+            
+            var nonJudiciaryJudge = GetNonJudiciaryJudge();
+            if (nonJudiciaryJudge != null)
+            {
+                throw new DomainRuleException(nameof(newJudge), DomainRuleErrorMessages.CannotAddJudiciaryJudgeWhenJudgeAlreadyExists);
+            }
+            
+            ValidateAddJudiciaryParticipant(newJudge.JudiciaryPerson, roleToIgnore: newJudge.HearingRoleCode.ToString());
             
             var existingJudge = JudiciaryParticipants.FirstOrDefault(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             if (existingJudge != null)
