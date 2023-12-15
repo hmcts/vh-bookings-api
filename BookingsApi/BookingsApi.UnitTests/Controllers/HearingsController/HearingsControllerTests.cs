@@ -337,6 +337,39 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
         }
 
+        [TestCase(UpdateBookingStatus.Created, BookingStatus.BookedWithoutJudge, BookingStatus.ConfirmedWithoutJudge)]
+        public async Task Should_change_hearing_status_to_correct_value(
+            UpdateBookingStatus updateStatus, 
+            BookingStatus currentBookingStatus, 
+            BookingStatus expectedNewBookingStatus)
+        {
+            var request = new UpdateBookingStatusRequest
+            {
+                UpdatedBy = "email@hmcts.net",
+                Status = updateStatus,
+                CancelReason = ""
+            };
+            
+            var hearing = GetHearing("123");
+            hearing.SetProtected(nameof(hearing.Status), currentBookingStatus);
+            QueryHandlerMock
+                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
+                .ReturnsAsync(hearing);
+
+            CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
+
+            var result = await Controller.UpdateBookingStatus(hearing.Id, request);
+
+            result.Should().NotBeNull();
+            var objectResult = (NoContentResult)result;
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+
+            CommandHandlerMock.Verify(c => c.Handle(
+                It.Is<UpdateHearingStatusCommand>(x => 
+                    x.Status == expectedNewBookingStatus)),
+                Times.Once);
+        }
+
         [Test]
         public async Task AnonymiseParticipantAndCaseByHearingId_Returns_Ok()
         {
