@@ -43,8 +43,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
-            
-            // TODO assert on events published
         }
 
         [Test]
@@ -81,8 +79,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
-            
-            // TODO assert on events published
         }
 
         [Test]
@@ -119,8 +115,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
-            
-            // TODO assert on events published
         }
 
         [Test]
