@@ -51,9 +51,22 @@ namespace BookingsApi.DAL.Commands
             }
 
             _context.Update(hearing);
-            
+
             foreach (var removedParticipantId in command.RemovedParticipantIds)
+            {
+                var participant = hearing.GetParticipants().Single(x => x.Id == removedParticipantId);
+                
+                if (participant.HearingRole.IsJudge() && command.NewParticipants.Exists(x => x.HearingRole.IsJudge()))
+                {
+                    var newJudgeParticipant = command.NewParticipants.Single(x => x.HearingRole.IsJudge());
+                    await _hearingService.ReassignJudge(hearing, newJudgeParticipant);
+
+                    command.NewParticipants.Remove(newJudgeParticipant);
+                    continue;
+                }
+                
                 hearing.RemoveParticipantById(removedParticipantId, false);
+            }
             
             await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
             
