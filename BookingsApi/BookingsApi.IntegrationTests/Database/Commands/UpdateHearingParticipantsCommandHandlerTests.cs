@@ -6,6 +6,7 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Domain.RefData;
+using BookingsApi.Domain.Validations;
 using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Database.Commands
@@ -40,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
 
             var hearingService = new HearingService(_context);
 
-            _hearing = await Hooks.SeedVideoHearing();
+            _hearing = await Hooks.SeedVideoHearing(status: BookingStatus.Created);
             TestContext.WriteLine($"New seeded video hearing id: {_hearing.Id}");
 
             _existingParticipants = new List<ExistingParticipantDetails>();
@@ -271,6 +272,9 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var oldJudgeId = oldJudge.Id;
 
             var newJudge = new PersonBuilder(true).Build();
+            await _context.Persons.AddAsync(newJudge);
+            await _context.SaveChangesAsync();
+            _personsToRemove.Add(newJudge.ContactEmail);
 
             var newParticipant = new NewParticipant()
             {
@@ -295,9 +299,104 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             addedJudge.Person.LastName.Should().Be(newJudge.LastName);
         }
 
+        [Test]
+        public async Task Should_change_judge_within_30_minutes_of_hearing_starting()
+        {
+            // Arrange
+            await UpdateHearingScheduledDateTime(DateTime.UtcNow.AddMinutes(15));
+
+            var judgeCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Judge");
+            var judgeHearingRole =
+                judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+
+            var oldJudge = _hearing.GetParticipants().Single(x => x.HearingRole.Id == judgeHearingRole.Id);
+            _personsToRemove.Add(oldJudge.Person.ContactEmail);
+            var oldJudgeId = oldJudge.Id;
+
+            var newJudge = new PersonBuilder(true).Build();
+            await _context.Persons.AddAsync(newJudge);
+            await _context.SaveChangesAsync();
+            _personsToRemove.Add(newJudge.ContactEmail);
+
+            var newParticipant = new NewParticipant()
+            {
+                Person = newJudge,
+                CaseRole = judgeCaseRole,
+                HearingRole = judgeHearingRole,
+                DisplayName = $"{newJudge.FirstName} {newJudge.LastName}"
+            };
+
+            _removedParticipantIds.Add(oldJudgeId);
+            _newParticipants.Add(newParticipant);
+            _command = BuildCommand();
+            
+            // Act
+            await _handler.Handle(_command);
+            var updatedVideoHearing =
+                await _getHearingByIdQueryHandler.Handle(new GetHearingByIdQuery(_hearing.Id));
+            var addedJudge = updatedVideoHearing.GetParticipants().SingleOrDefault(x => x.HearingRole.Id == judgeHearingRole.Id);
+            
+            // Assert
+            addedJudge.Person.FirstName.Should().Be(newJudge.FirstName);
+            addedJudge.Person.LastName.Should().Be(newJudge.LastName);
+        }
+
+        [Test]
+        public async Task Should_not_be_able_to_remove_judge_within_30_minutes_of_hearing_starting()
+        {
+            // Arrange
+            await UpdateHearingScheduledDateTime(DateTime.UtcNow.AddMinutes(15));
+
+            var judgeCaseRole = _genericCaseType.CaseRoles.First(x => x.Name == "Judge");
+            var judgeHearingRole =
+                judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
+
+            var oldJudge = _hearing.GetParticipants().Single(x => x.HearingRole.Id == judgeHearingRole.Id);
+            _personsToRemove.Add(oldJudge.Person.ContactEmail);
+            var oldJudgeId = oldJudge.Id;
+
+            _removedParticipantIds.Add(oldJudgeId);
+            _newParticipants.Clear();
+            _command = BuildCommand();
+            
+            // Act & Assert
+            Assert.ThrowsAsync<DomainRuleException>(async () =>
+            {
+                await _handler.Handle(_command);
+            })!.Message.Should().Be(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
+        }
+        
+        [Test]
+        public async Task Should_not_be_able_to_remove_non_host_participant_within_30_minutes_of_hearing_starting()
+        {
+            // Arrange
+            await UpdateHearingScheduledDateTime(DateTime.UtcNow.AddMinutes(15));
+
+            var participantToRemove = _hearing.GetParticipants().First(x => x.Discriminator == "Individual");
+            _personsToRemove.Add(participantToRemove.Person.ContactEmail);
+            var participantToRemoveId = participantToRemove.Id;
+
+            _removedParticipantIds.Add(participantToRemoveId);
+            _newParticipants.Clear();
+            _command = BuildCommand();
+            
+            // Act & Assert
+            Assert.ThrowsAsync<DomainRuleException>(async () =>
+            {
+                await _handler.Handle(_command);
+            })!.Message.Should().Be(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
+        }
+
         private UpdateHearingParticipantsCommand BuildCommand()
         {
             return new UpdateHearingParticipantsCommand(_hearing.Id, _existingParticipants, _newParticipants, _removedParticipantIds, _linkedParticipants);
+        }
+
+        private async Task UpdateHearingScheduledDateTime(DateTime newScheduledDateTime)
+        {
+            var hearing = await _context.VideoHearings.FirstAsync(x => x.Id == _hearing.Id);
+            hearing.SetProtected(nameof(_hearing.ScheduledDateTime), newScheduledDateTime);
+            await _context.SaveChangesAsync();
         }
 
         [TearDown]

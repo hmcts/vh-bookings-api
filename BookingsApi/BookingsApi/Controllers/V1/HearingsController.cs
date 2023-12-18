@@ -529,7 +529,7 @@ namespace BookingsApi.Controllers.V1
             
             try
             {
-                var bookingStatus = Enum.Parse<BookingStatus>(request.Status.ToString());
+                var bookingStatus = UpdateBookingStatusToBookingStatusMapper.Map(request.Status, videoHearing);
                 if (videoHearing.Status != bookingStatus)
                 {
                     await UpdateStatus(videoHearing, request.UpdatedBy, request.CancelReason, bookingStatus);
