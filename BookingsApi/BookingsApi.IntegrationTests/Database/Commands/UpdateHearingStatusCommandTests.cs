@@ -36,7 +36,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         {
             var seededHearing = await Hooks.SeedVideoHearing();
             TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
-            var expectedFinalStatus = BookingStatus.ConfirmedWithoutJudge;
+            var expectedFinalStatus = BookingStatus.Created;
 
             await _commandHandler.Handle(new UpdateHearingStatusCommand(seededHearing.Id, BookingStatus.Failed, "test",
                 null));
