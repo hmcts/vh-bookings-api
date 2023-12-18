@@ -166,7 +166,7 @@ namespace BookingsApi.Controllers.V1
 
                 var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
 
-                if (endpoint != null && hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge)
+                if (endpoint != null && (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge))
                 {
 
                     await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip,
