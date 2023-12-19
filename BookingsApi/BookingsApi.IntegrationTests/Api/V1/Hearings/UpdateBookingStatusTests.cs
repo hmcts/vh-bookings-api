@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Requests;
+using BookingsApi.Contract.V1.Responses;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 {
@@ -42,6 +43,61 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors.SelectMany(x => x.Value).Should()
                 .Contain("The booking status is not recognised");
+        }
+
+        [Test]
+        public async Task should_be_Created_when_requested_to_Created_with_judge_in_hearing()
+        {
+            // arrange
+            var seededHearing = await Hooks.SeedVideoHearing(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
+            {
+                options.ScheduledDate = DateTime.UtcNow;
+            });
+
+            var hearingId = seededHearing.Id;
+            var request = new UpdateBookingStatusRequest { Status = Contract.V1.Requests.Enums.UpdateBookingStatus.Created, UpdatedBy = "test" };
+
+            // act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateBookingStatus(hearingId), RequestBody.Set(request));
+
+            var getHearing = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId.ToString()));
+
+            // assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
+
+            hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.Created);
+        }
+
+        [Test]
+        public async Task should_be_ConfirmedWithoutJudge_when_requested_to_Created_with_no_judge_in_hearing()
+        {
+            // arrange
+            var seededHearing = await Hooks.SeedVideoHearing(status: Domain.Enumerations.BookingStatus.Booked, configureOptions: options =>
+            {
+                options.ScheduledDate = DateTime.UtcNow;
+                options.AddJudge = false;
+            });
+
+            var hearingId = seededHearing.Id;
+            var request = new UpdateBookingStatusRequest { Status = Contract.V1.Requests.Enums.UpdateBookingStatus.Created, UpdatedBy = "test" };
+
+            // act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.UpdateBookingStatus(hearingId), RequestBody.Set(request));
+
+            var getHearing = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearingId.ToString()));
+
+            // assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
+
+            hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.ConfirmedWithoutJudge);
         }
     }
 }
