@@ -111,7 +111,7 @@ public class BookingService : IBookingService
     {
         await _commandHandler.Handle(updateHearingCommand);
         var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(originalHearing.Id));
-        if (updatedHearing.Status != BookingStatus.Created) return updatedHearing;
+        if (updatedHearing.Status is not BookingStatus.Created and not BookingStatus.ConfirmedWithoutJudge) return updatedHearing;
 
         await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
 

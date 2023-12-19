@@ -56,6 +56,8 @@ public class CancelBookingTests : ApiTest
 
     [TestCase(BookingStatus.Booked)]
     [TestCase(BookingStatus.Created)]
+    [TestCase(BookingStatus.BookedWithoutJudge)]
+    [TestCase(BookingStatus.ConfirmedWithoutJudge)]
     public async Task should_cancel_a_hearing(BookingStatus status)
     {
         var seededHearing = await Hooks.SeedVideoHearing(status: status, configureOptions: options =>
