@@ -36,6 +36,18 @@ namespace BookingsApi.Infrastructure.Services
                 };
         }
 
+        public static ParticipantDto MapToDto(Participant participant, string otherInformation)
+        {
+            var participantDto = MapToDto(participant);
+
+            if (participant is Judge)
+            {
+                participantDto.SetOtherFieldsForNonEJudJudgeUser(otherInformation);
+            }
+
+            return participantDto;
+        }
+
         public static ParticipantDto MapToDto(JudiciaryParticipant judiciaryParticipant) =>
             new()
             {

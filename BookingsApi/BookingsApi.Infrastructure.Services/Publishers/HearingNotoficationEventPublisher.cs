@@ -1,8 +1,6 @@
-﻿using BookingsApi.Common;
-using BookingsApi.Domain;
+﻿using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
@@ -22,8 +20,10 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             var @case = videoHearing.GetCases()[0];
             foreach (var participant in videoHearing.Participants)
             {
+                var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
+                
                 await _eventPublisher.PublishAsync(new HearingNotificationIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
-                    videoHearing.Id, videoHearing.ScheduledDateTime, participant, @case)));
+                    videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case)));
             }
         }
     }
