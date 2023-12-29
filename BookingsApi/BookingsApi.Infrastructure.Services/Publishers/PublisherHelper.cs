@@ -10,7 +10,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
     {
         public static IEnumerable<Participant> GetExistingParticipantsSinceLastUpdate(VideoHearing videoHearing)
         {
-            var existingParticipants = videoHearing.Participants.Where(x => x is Judge || (x.DoesPersonAlreadyExist() && x.Person.ContactEmail != x.Person.Username));
+            var existingParticipants = videoHearing.Participants.Where(x => x is Judge || (x.DoesPersonAlreadyExist() && x.Person?.ContactEmail != x.Person?.Username));
             var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
@@ -22,7 +22,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing)
         {
-            var newParticipants = videoHearing.Participants.Where(x => x is not Judge && (!x.DoesPersonAlreadyExist() || x.Person.ContactEmail == x.Person.Username));
+            var newParticipants = videoHearing.Participants.Where(x => x is not Judge && (!x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username));
             var areParticipantsAddedToExistingBooking = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
