@@ -678,6 +678,10 @@ namespace BookingsApi.Domain
             }
         }
 
+        /// <summary>
+        /// Update Booking status ### important! Ensure this hearings, participant and judiciaryParticipant
+        /// entities are loaded before calling this method, l assume there is no judge and change the status accordingly
+        /// </summary>
         public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
             if (string.IsNullOrEmpty(updatedBy))
@@ -689,8 +693,9 @@ namespace BookingsApi.Domain
             {
                 throw new ArgumentNullException(nameof(cancelReason));
             }
-
-            newStatus = newStatus == BookingStatus.Created && GetJudge() == null ? BookingStatus.ConfirmedWithoutJudge : newStatus;
+            
+            UpdateBookingStatusJudgeRequirement();
+            
             var bookingStatusTransition = new BookingStatusTransition();
             var statusChangedEvent = new StatusChangedEvent(Status, newStatus);
 
