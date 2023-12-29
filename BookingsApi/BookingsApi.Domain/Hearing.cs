@@ -679,8 +679,8 @@ namespace BookingsApi.Domain
         }
 
         /// <summary>
-        /// Update Booking status ### important! Ensure this hearings, participant and judiciaryParticipant
-        /// entities are loaded before calling this method, l assume there is no judge and change the status accordingly
+        /// ### important! Ensure that this hearings, participant and judiciaryParticipant entities are eagerly loaded before invoking this method.
+        /// Will assume there is no judge and change the status accordingly if the properties are null
         /// </summary>
         public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
