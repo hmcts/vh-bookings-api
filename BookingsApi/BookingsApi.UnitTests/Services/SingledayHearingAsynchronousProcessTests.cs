@@ -35,9 +35,10 @@ namespace BookingsApi.UnitTests.Services
                 hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
 
             var createConfereceMessageCount = 1;
+            var judgeAsExistingParticipant = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge) - 1;
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count - 2;
-            var hearingConfirmationForExistingParticipantsMessageCount = 1;
+            var hearingConfirmationForExistingParticipantsMessageCount = 1 + judgeAsExistingParticipant;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount
                                 + hearingConfirmationForExistingParticipantsMessageCount;
 
