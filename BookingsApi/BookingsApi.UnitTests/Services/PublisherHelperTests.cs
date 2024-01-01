@@ -6,7 +6,7 @@ namespace BookingsApi.UnitTests.Services
 {
     /// <summary>
     /// When a booking is created with the builder class, the created date of the persons and participants set to the time when the hearing is created.
-    /// So the persons are new and do not exist, the dates are manipulated in the below tests to meet each of the test criteria.
+    /// So as persons are new and do not exist, the created datetimes are manipulated in the below tests to meet each of the test criteria.
     /// </summary>
     public class PublisherHelperTests
     {
@@ -54,6 +54,13 @@ namespace BookingsApi.UnitTests.Services
         }
 
         [Test]
+        public void Should_not_return_judge_as_new_participant()
+        {
+            var hearing = new VideoHearingBuilder().WithCase().Build();
+            PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Should().NotContain(x => x is Judge);
+        }
+
+        [Test]
         public void Should_return_All_existing_participants_including_Judge()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
@@ -96,6 +103,13 @@ namespace BookingsApi.UnitTests.Services
             participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, DateTime.UtcNow, null));
 
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(existingParticipants + judgeCount);
+        }
+
+        [Test]
+        public void Should_return_judge_as_existing_participant()
+        {
+            var hearing = new VideoHearingBuilder().WithCase().Build();
+            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Should().Contain(x => x is Judge);
         }
 
     }
