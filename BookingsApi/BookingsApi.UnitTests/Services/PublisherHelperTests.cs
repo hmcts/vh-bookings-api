@@ -1,8 +1,13 @@
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.Publishers;
+using System.Collections.Generic;
 
 namespace BookingsApi.UnitTests.Services
 {
+    /// <summary>
+    /// When a booking is created with the builder class, the created date of the persons and participants set to the time when the hearing is created.
+    /// So the persons are new and do not exist, the dates are manipulated in the below tests to meet each of the test criteria.
+    /// </summary>
     public class PublisherHelperTests
     {
         [Test]
@@ -42,7 +47,8 @@ namespace BookingsApi.UnitTests.Services
             hearing.GetType().GetProperty("CreatedDate").SetValue(hearing, dateWhenHearingCreated, null);
 
             var participants = hearing.Participants.Where(x => x is not Judge).ToList();
-            participants.Skip(1).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, dateWhenHearingCreated, null));
+            participants.Skip(1).ToList().ForEach(x => x.Person.GetType().GetProperty("CreatedDate").SetValue(x.Person, dateWhenHearingCreated, null));
+            participants.Skip(1).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, dateWhenHearingCreated.AddDays(1), null));
 
             PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count().Should().Be(1);
         }
@@ -53,7 +59,9 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var newParticipants = 2;
             var participants = hearing.Participants.Where(x => x is not Judge).ToList();
-            participants.Skip(newParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, x.CreatedDate.AddDays(-10), null));
+
+            participants.SkipLast(newParticipants).ToList().ForEach(x => x.Person.GetType().GetProperty("CreatedDate").SetValue(x.Person, x.CreatedDate.AddDays(-10)));
+            participants.SkipLast(newParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, hearing.CreatedDate));
 
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(hearing.Participants.Count - newParticipants);
         }
@@ -67,7 +75,8 @@ namespace BookingsApi.UnitTests.Services
             var participants = hearing.Participants.Where(x => x is not Judge).ToList();
             var firstParticipant = participants[0];
 
-            participants.SkipLast(newParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, x.CreatedDate.AddDays(-10), null));
+            participants.SkipLast(newParticipants).ToList().ForEach(x => x.Person.GetType().GetProperty("CreatedDate").SetValue(x.Person, x.CreatedDate.AddDays(-10)));
+            participants.SkipLast(newParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, hearing.CreatedDate));
             firstParticipant.Person.GetType().GetProperty("Username").SetValue(firstParticipant.Person, firstParticipant.Person.ContactEmail, null);
 
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(hearing.Participants.Count - newParticipants - participantWithAccountNotSet);
@@ -83,9 +92,10 @@ namespace BookingsApi.UnitTests.Services
             hearing.GetType().GetProperty("CreatedDate").SetValue(hearing, dateWhenHearingCreated, null);
 
             var participants = hearing.Participants.Where(x => x is not Judge).ToList();
-            participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, dateWhenHearingCreated, null));
+            participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.Person.GetType().GetProperty("CreatedDate").SetValue(x.Person, x.CreatedDate.AddDays(-10)));
+            participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, DateTime.UtcNow, null));
 
-            PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count().Should().Be(existingParticipants + judgeCount);
+            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(existingParticipants + judgeCount);
         }
 
     }
