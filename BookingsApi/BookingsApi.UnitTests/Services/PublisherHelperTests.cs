@@ -55,7 +55,7 @@ namespace BookingsApi.UnitTests.Services
             var participants = hearing.Participants.Where(x => x is not Judge).ToList();
             participants.Skip(newParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, x.CreatedDate.AddDays(-10), null));
 
-            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(hearing.Participants.Count() - newParticipants);
+            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(hearing.Participants.Count - newParticipants);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Services
             participants.SkipLast(newParticipants).ToList().ForEach(x => x.GetType().GetProperty("CreatedDate").SetValue(x, x.CreatedDate.AddDays(-10), null));
             firstParticipant.Person.GetType().GetProperty("Username").SetValue(firstParticipant.Person, firstParticipant.Person.ContactEmail, null);
 
-            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(hearing.Participants.Count() - newParticipants - participantWithAccountNotSet);
+            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Count().Should().Be(hearing.Participants.Count - newParticipants - participantWithAccountNotSet);
         }
 
         [Test]

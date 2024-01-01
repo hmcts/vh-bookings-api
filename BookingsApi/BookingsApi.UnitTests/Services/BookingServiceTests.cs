@@ -73,7 +73,7 @@ namespace BookingsApi.UnitTests.Services
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var createConfereceMessageCount = 1;
             var newParticipantMessageCount = hearing.Participants.Count(x => x is not Judge);
-            var hearingNotificationMessageCount = hearing.Participants.Count();
+            var hearingNotificationMessageCount = hearing.Participants.Count;
 
             var totalMessages = newParticipantMessageCount + createConfereceMessageCount + hearingNotificationMessageCount;
             await _bookingService.PublishNewHearing(hearing, false);
@@ -154,7 +154,7 @@ namespace BookingsApi.UnitTests.Services
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
-            var hearingParticipantsMessageCount = hearing.Participants.Count();
+            var hearingParticipantsMessageCount = hearing.Participants.Count;
 
             await _bookingService.PublishMultiDayHearing(hearing, 2);
 
