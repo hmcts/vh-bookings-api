@@ -61,6 +61,17 @@ namespace BookingsApi.UnitTests.Services
         }
 
         [Test]
+        public void Should_return_participant_as_new_participants_when_person_null_as_could_be_judiciary_participant_and_email_username_doesnt_match()
+        {
+            var hearing = new VideoHearingBuilder().WithCase().Build();
+            var existingParticipants = 2;
+            var participants = hearing.Participants.Where(x => x is not Judge).ToList();
+            participants.Skip(existingParticipants).ToList().ForEach(x => x.GetType().GetProperty("Person").SetValue(x, null));
+
+            PublisherHelper.GetNewParticipantsSinceLastUpdate(hearing).Count().Should().Be(participants.Count);
+        }
+
+        [Test]
         public void Should_return_All_existing_participants_including_Judge()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
@@ -109,6 +120,17 @@ namespace BookingsApi.UnitTests.Services
         public void Should_return_judge_as_existing_participant()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
+            PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Should().Contain(x => x is Judge);
+        }
+
+        [Test]
+        public void Should_return_participant_as_existing_participant_when_person_null_as_could_be_judiciary_participant()
+        {
+            var hearing = new VideoHearingBuilder().WithCase().Build();
+            var existingParticipants = 2;
+            var participants = hearing.Participants.Where(x => x is not Judge).ToList();
+            participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.GetType().GetProperty("Person").SetValue(x, null));
+
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Should().Contain(x => x is Judge);
         }
 
