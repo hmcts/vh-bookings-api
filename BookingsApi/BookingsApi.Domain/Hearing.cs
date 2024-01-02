@@ -684,7 +684,7 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
-
+        
         public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
             if (string.IsNullOrEmpty(updatedBy))
@@ -696,8 +696,9 @@ namespace BookingsApi.Domain
             {
                 throw new ArgumentNullException(nameof(cancelReason));
             }
-
+            
             newStatus = newStatus == BookingStatus.Created && GetJudge() == null ? BookingStatus.ConfirmedWithoutJudge : newStatus;
+            
             var bookingStatusTransition = new BookingStatusTransition();
             var statusChangedEvent = new StatusChangedEvent(Status, newStatus);
 
@@ -723,6 +724,9 @@ namespace BookingsApi.Domain
             }
         }
 
+        /// <summary>
+        /// ### important! Ensure that this hearings, participant and judiciaryParticipant entities are eagerly loaded before invoking this method. Will assume there is no judge  the properties are null
+        /// </summary>
         public ParticipantBase GetJudge()
         {
             var judge = GetNonJudiciaryJudge();

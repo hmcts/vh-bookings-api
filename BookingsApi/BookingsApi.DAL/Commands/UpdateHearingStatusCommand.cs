@@ -29,6 +29,7 @@ namespace BookingsApi.DAL.Commands
             var hearing = await _context.VideoHearings
                 .Include(x => x.Allocations)
                 .Include(x => x.Participants)
+                .Include(x => x.JudiciaryParticipants)
                 .SingleOrDefaultAsync(x => x.Id == command.HearingId);
 
             if (hearing == null)
