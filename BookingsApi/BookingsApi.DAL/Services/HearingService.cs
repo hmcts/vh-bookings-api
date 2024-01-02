@@ -196,8 +196,7 @@ namespace BookingsApi.DAL.Services
             return Task.CompletedTask;
         }
 
-        public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing,
-            NewJudiciaryParticipant participant)
+        public async Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant)
         {
             var judiciaryPerson = await _context.JudiciaryPersons
                 .SingleOrDefaultAsync(x => x.PersonalCode == participant.PersonalCode);
@@ -210,7 +209,7 @@ namespace BookingsApi.DAL.Services
             switch (participant.HearingRoleCode)
             {
                 case JudiciaryParticipantHearingRoleCode.Judge:
-                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName);
+                    videoHearing.AddJudiciaryJudge(judiciaryPerson, participant.DisplayName, participant.OptionalContactEmail, participant.OptionalContactTelephone);
                     break;
                 case JudiciaryParticipantHearingRoleCode.PanelMember:
                     videoHearing.AddJudiciaryPanelMember(judiciaryPerson, participant.DisplayName);

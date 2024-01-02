@@ -196,7 +196,9 @@ namespace BookingsApi.Controllers.V1
             var newJudiciaryJudge = new NewJudiciaryJudge
             {
                 DisplayName = request.DisplayName,
-                PersonalCode = request.PersonalCode
+                PersonalCode = request.PersonalCode,
+                OptionalContactEmail = request.OptionalContactEmail,
+                OptionalContactTelephone = request.OptionalContactTelephone
             };
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));

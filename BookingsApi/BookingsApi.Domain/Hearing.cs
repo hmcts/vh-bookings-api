@@ -302,7 +302,7 @@ namespace BookingsApi.Domain
             GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
-        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
+        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
             if (DoesJudgeExist())
@@ -310,21 +310,28 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
             }
 
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
+            var participant = new JudiciaryParticipant(displayName, 
+                judiciaryPerson, 
+                JudiciaryParticipantHearingRoleCode.Judge, 
+                email, phone);
+            
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
-        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
+        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), $"Judiciary Person {judiciaryPerson.PersonalCode} already exists in the hearing");
             }
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
+            var participant = new JudiciaryParticipant(displayName, 
+                judiciaryPerson, 
+                JudiciaryParticipantHearingRoleCode.PanelMember,
+                email, phone);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             
