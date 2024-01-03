@@ -134,5 +134,15 @@ namespace BookingsApi.UnitTests.Services
             PublisherHelper.GetExistingParticipantsSinceLastUpdate(hearing).Should().Contain(x => x is Judge);
         }
 
+        [Test]
+        public void Should_return_participant_as_added_when_participants_Added_to_existing_booking()
+        {
+            var hearing = new VideoHearingBuilder().WithCase().Build();
+            var existingParticipants = 2;
+            var participants = hearing.Participants.Where(x => x is not Judge).ToList();
+            participants.Skip(participants.Count - existingParticipants).ToList().ForEach(x => x.GetType().GetProperty("Person").SetValue(x, null));
+
+            PublisherHelper.GetAddedParticipantsSinceLastUpdate(hearing).Should().Contain(x => x is Judge);
+        }
     }
 }

@@ -1,10 +1,13 @@
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
+using System.Threading;
 using Testing.Common.Builders.Api.V1.Request;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
 
@@ -239,7 +242,153 @@ public class BookNewHearingTests : ApiTest
         _hearingIds.Add(hearingResponse.Id);
         
     }
-    
+
+    [Test]
+    public async Task should_have_sent_relevant_judge_message_to_the_queue_when_a_hearing_booked_with_judge()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(response.Id);
+        var judgeMessage = messages.SingleOrDefault(x => x.IntegrationEvent is ExistingParticipantHearingConfirmationEvent &&
+            ((ExistingParticipantHearingConfirmationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Judge");
+
+        judgeMessage.Should().NotBeNull();
+        _hearingIds.Add(response.Id);
+    }
+
+    [Test]
+    public async Task should_not_send_judge_message_to_the_queue_when_a_new_participant_added_to_existing_hearing()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = false;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        serviceBusStub.ReadAllMessagesFromQueue(response.Id);
+
+        var participantContactEmail = "lit.one@lit.com";
+        var updateRequest = new UpdateHearingParticipantsRequest
+        {
+            NewParticipants = new List<ParticipantRequest> {
+            new ParticipantRequest
+            {
+                CaseRoleName = "Applicant",
+                HearingRoleName = "Litigant in person",
+                Representee = null,
+                FirstName = "Lit",
+                LastName = "One",
+                TelephoneNumber = "12222222222",
+                ContactEmail = participantContactEmail,
+                DisplayName = "Lit One"
+            } }
+        };
+
+        var currentTimeStamp = DateTime.UtcNow;
+        var updatedResult = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpoints.UpdateHearingParticipants(response.Id), RequestBody.Set(updateRequest));
+
+        // assert
+        updatedResult.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var messages = serviceBusStub.ReadAllMessagesFromQueue(response.Id);
+
+        messages.Should().Contain(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent);
+        messages.Should().Contain(x => x.IntegrationEvent is HearingNotificationIntegrationEvent);
+        var participantMessage = messages.SingleOrDefault(x => x.IntegrationEvent is HearingNotificationIntegrationEvent &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Individual" &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.ContactEmail == participantContactEmail);
+
+        participantMessage.Should().NotBeNull();
+
+        var judgeMessage = messages.SingleOrDefault(x => x.IntegrationEvent is HearingNotificationIntegrationEvent &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Judge" && x.Timestamp <= response.CreatedDate &&
+            x.Timestamp >= currentTimeStamp);
+
+        judgeMessage.Should().BeNull();
+        _hearingIds.Add(response.Id);
+    }
+
+
+    [Test]
+    public async Task should_have_sent_relevant_judge_message_to_the_queue_when_a_judge_updated_to_the_existing_booking()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = false;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+
+        var judge = response.Participants.First(e => e.UserRoleName == "Judge");
+        var otherParticipant = response.Participants.Last(p => p.Username != "Judge");
+        var newJudgeUsername = "automation_judge_judge_1@hearings.reform.hmcts.net";
+        var updateRequest = new UpdateHearingParticipantsRequest
+        {
+            RemovedParticipantIds = new List<Guid> { judge.Id },
+            NewParticipants = new List<ParticipantRequest> {
+            new ParticipantRequest
+            {
+                CaseRoleName = "Judge",
+                HearingRoleName = "Judge",
+                Representee = null,
+                FirstName = "Automation_Judge",
+                LastName = "Judge_1",
+                ContactEmail = "automation_judge_judge_1@hmcts.net",
+                Username = newJudgeUsername,
+                DisplayName = "Auto Judge_01"
+            } }, 
+            ExistingParticipants = new List<UpdateParticipantRequest>
+            {
+                new UpdateParticipantRequest
+                {
+                    ParticipantId = otherParticipant.Id,
+                    Title = otherParticipant.Title,
+                    TelephoneNumber = otherParticipant.TelephoneNumber,
+                    ContactEmail = otherParticipant.ContactEmail,
+                    DisplayName = otherParticipant.DisplayName,
+                }
+            }
+        };
+
+        var currentTimeStamp = DateTime.UtcNow;
+        var updatedResult = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpoints.UpdateHearingParticipants(response.Id), RequestBody.Set(updateRequest));
+
+        // assert
+        updatedResult.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(response.Id);
+
+        messages.Should().Contain(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent);
+        messages.Should().Contain(x => x.IntegrationEvent is HearingNotificationIntegrationEvent);
+
+        var judgeMessage = messages.SingleOrDefault(x => x.IntegrationEvent is HearingNotificationIntegrationEvent &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Judge" &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.Username == newJudgeUsername &&
+            x.Timestamp >= currentTimeStamp);
+
+        judgeMessage.Should().NotBeNull();
+        _hearingIds.Add(response.Id);
+    }
+
     private BookNewHearingRequest CreateBookingRequest()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
