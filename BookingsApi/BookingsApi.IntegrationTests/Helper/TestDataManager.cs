@@ -99,6 +99,18 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser;
         }
 
+        public async Task<Person> SeedJudgePerson(string title,string userName, string firstName, string lastName, string contactEmail, string telpehoneNumber)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var person = new Person(title, firstName, lastName, contactEmail, userName);
+
+            await db.Persons.AddAsync(person);
+            await db.SaveChangesAsync();
+
+            return person;
+        }
+
         public async Task<JusticeUser> SeedAllocatedJusticeUser(string userName, string firstName, string lastName)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);

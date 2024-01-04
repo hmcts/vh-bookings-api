@@ -325,13 +325,14 @@ public class BookNewHearingTests : ApiTest
 
 
     [Test]
-    [Ignore("Run this locally as the update participants seem to be failing with the below setup intermittently")]
     public async Task should_have_sent_relevant_judge_message_to_the_queue_when_a_judge_updated_to_the_existing_booking()
     {
         // arrange
         var request = CreateBookingRequest();
         var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
         featureToggles.NewTemplates = false;
+
+        await Hooks.SeedJudgePerson("Judge", "auto_aw.judge_update@hearings.reform.hmcts.net", "auto_aw", "judge_update", "auto_aw.judge_update@hmcts.net", "1233333333");
 
         // act
         using var client = Application.CreateClient();
@@ -340,7 +341,7 @@ public class BookNewHearingTests : ApiTest
 
         var judge = response.Participants.First(e => e.UserRoleName == "Judge");
         var otherParticipant = response.Participants.Last(p => p.Username != "Judge");
-        var newJudgeUsername = "automation_judge_judge_1@hearings.reform.hmcts.net";
+        var newJudgeUsername = "auto_aw.judge_update@hearings.reform.hmcts.net";
         var updateRequest = new UpdateHearingParticipantsRequest
         {
             RemovedParticipantIds = new List<Guid> { judge.Id },
@@ -352,7 +353,7 @@ public class BookNewHearingTests : ApiTest
                 Representee = null,
                 FirstName = "Automation_Judge",
                 LastName = "Judge_1",
-                ContactEmail = "automation_judge_judge_1@hmcts.net",
+                ContactEmail = "auto_aw.judge_update@hmcts.net",
                 Username = newJudgeUsername,
                 DisplayName = "Auto Judge_01"
             } }, 
