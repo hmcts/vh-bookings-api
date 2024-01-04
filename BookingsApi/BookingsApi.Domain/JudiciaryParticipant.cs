@@ -34,11 +34,11 @@ namespace BookingsApi.Domain
         public virtual Hearing Hearing { get; private set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public string ContactEmail { get; set; }
-        public string ContactTelephone { get; set; }
+        private string ContactEmail { get; set; }
+        private string ContactTelephone { get; set; }
         
-        public string GetEmail() => JudiciaryPerson.IsGeneric ? JudiciaryPerson.Email : ContactEmail;
-        public string GetTelephone() => JudiciaryPerson.IsGeneric ? JudiciaryPerson.WorkPhone : ContactTelephone;
+        public string GetEmail() => JudiciaryPerson.IsGeneric ? ContactEmail : JudiciaryPerson.Email;
+        public string GetTelephone() => JudiciaryPerson.IsGeneric ? ContactTelephone : JudiciaryPerson.WorkPhone;
         
         
         public void UpdateDisplayName(string displayName)
