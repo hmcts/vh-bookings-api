@@ -350,9 +350,8 @@ public class BookNewHearingTests : ApiTest
             {
                 CaseRoleName = "Judge",
                 HearingRoleName = "Judge",
-                Representee = null,
-                FirstName = "Automation_Judge",
-                LastName = "Judge_1",
+                FirstName = "auto_aw",
+                LastName = "judge_update",
                 ContactEmail = "auto_aw.judge_update@hmcts.net",
                 Username = newJudgeUsername,
                 DisplayName = "Auto Judge_01"
@@ -373,7 +372,10 @@ public class BookNewHearingTests : ApiTest
         var currentTimeStamp = DateTime.UtcNow;
         var updatedResult = await client
             .PostAsync(ApiUriFactory.HearingParticipantsEndpoints.UpdateHearingParticipants(response.Id), RequestBody.Set(updateRequest));
-
+        if (!updatedResult.IsSuccessStatusCode)
+        {
+            Console.Write(await updatedResult.Content.ReadAsStringAsync());
+        }
         // assert
         updatedResult.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;

@@ -102,11 +102,12 @@ namespace BookingsApi.IntegrationTests.Helper
         public async Task<Person> SeedJudgePerson(string title,string userName, string firstName, string lastName, string contactEmail, string telpehoneNumber)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
-
-            var person = new Person(title, firstName, lastName, contactEmail, userName);
-
-            await db.Persons.AddAsync(person);
-            await db.SaveChangesAsync();
+            var person = db.Persons.SingleOrDefault(x => x.ContactEmail == contactEmail);
+            if(person == null)
+            {
+                await db.Persons.AddAsync(new Person(title, firstName, lastName, contactEmail, userName));
+                await db.SaveChangesAsync();
+            }
 
             return person;
         }
