@@ -9,6 +9,7 @@ namespace BookingsApi.Domain.Participants
         public Judge(Person person, HearingRole hearingRole, CaseRole caseRole)
             : base(person, hearingRole, caseRole)
         {
+            DisplayName = $"{person.FirstName} {person.LastName}";
         }
     }
 }
