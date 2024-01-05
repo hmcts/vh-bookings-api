@@ -323,6 +323,65 @@ public class BookNewHearingTests : ApiTest
         _hearingIds.Add(response.Id);
     }
 
+    [Test]
+    public async Task should_send_createuser_and_hearingnotification_message_to_the_queue_when_a_new_participant_added_to_existing_hearing()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = false;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        serviceBusStub.ReadAllMessagesFromQueue(response.Id);
+
+        var participantContactEmail = "test.participant@hearing.com";
+        var updateRequest = new UpdateHearingParticipantsRequest
+        {
+            NewParticipants = new List<ParticipantRequest> {
+            new ParticipantRequest
+            {
+                CaseRoleName = "Applicant",
+                HearingRoleName = "Litigant in person",
+                Representee = null,
+                FirstName = "test",
+                LastName = "participant",
+                TelephoneNumber = "12222222222",
+                ContactEmail = participantContactEmail,
+                DisplayName = "Lit One"
+            } }
+        };
+
+        var currentTimeStamp = DateTime.UtcNow;
+        var updatedResult = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpoints.UpdateHearingParticipants(response.Id), RequestBody.Set(updateRequest));
+
+        // assert
+        updatedResult.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var messages = serviceBusStub.ReadAllMessagesFromQueue(response.Id);
+
+        messages.Should().Contain(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent);
+        messages.Should().Contain(x => x.IntegrationEvent is HearingNotificationIntegrationEvent);
+        messages.Should().Contain(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent);
+
+        var participantMessage = messages.SingleOrDefault(x => x.IntegrationEvent is HearingNotificationIntegrationEvent &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Individual" &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.ContactEmail == participantContactEmail &&
+            x.Timestamp >= currentTimeStamp);
+        participantMessage.Should().NotBeNull();
+
+        var newUserMessage = messages.SingleOrDefault(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent &&
+            ((CreateAndNotifyUserIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Individual" &&
+            ((CreateAndNotifyUserIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.ContactEmail == participantContactEmail &&
+            x.Timestamp >= currentTimeStamp);
+        newUserMessage.Should().NotBeNull();
+
+        _hearingIds.Add(response.Id);
+    }
+
 
     [Test]
     public async Task should_have_sent_relevant_judge_message_to_the_queue_when_a_judge_updated_to_the_existing_booking()
@@ -340,7 +399,7 @@ public class BookNewHearingTests : ApiTest
         var response = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
 
         var judge = response.Participants.First(e => e.UserRoleName == "Judge");
-        var otherParticipant = response.Participants.Last(p => p.Username != "Judge");
+        var otherParticipant = response.Participants.Last(p => p.UserRoleName == "Individual");
         var newJudgeUsername = "auto_aw.judge_update@hearings.reform.hmcts.net";
         var updateRequest = new UpdateHearingParticipantsRequest
         {
