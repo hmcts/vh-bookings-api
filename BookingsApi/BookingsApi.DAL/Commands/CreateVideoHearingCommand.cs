@@ -81,8 +81,6 @@ namespace BookingsApi.DAL.Commands
             if (command.SourceId.HasValue)
                 videoHearing.SourceId = command.SourceId;
 
-            await _context.VideoHearings.AddAsync(videoHearing);
-
             var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);
@@ -104,6 +102,7 @@ namespace BookingsApi.DAL.Commands
             }
             
             videoHearing.UpdateBookingStatusJudgeRequirement();
+            await _context.VideoHearings.AddAsync(videoHearing);
             await _context.SaveChangesAsync();
             command.NewHearingId = videoHearing.Id;
         }
