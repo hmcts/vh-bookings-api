@@ -17,8 +17,10 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
+            var addedParticipants = PublisherHelper.GetAddedParticipantsSinceLastUpdate(videoHearing);
+
             var @case = videoHearing.GetCases()[0];
-            foreach (var participant in videoHearing.Participants)
+            foreach (var participant in addedParticipants)
             {
                 var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
                 
