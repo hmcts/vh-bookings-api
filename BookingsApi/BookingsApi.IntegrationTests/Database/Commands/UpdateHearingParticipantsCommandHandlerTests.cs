@@ -275,13 +275,13 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _context.Persons.AddAsync(newJudge);
             await _context.SaveChangesAsync();
             _personsToRemove.Add(newJudge.ContactEmail);
-
+            var displayName = $"{newJudge.FirstName} {newJudge.LastName}";
             var newParticipant = new NewParticipant()
             {
                 Person = newJudge,
                 CaseRole = judgeCaseRole,
                 HearingRole = judgeHearingRole,
-                DisplayName = $"{newJudge.FirstName} {newJudge.LastName}"
+                DisplayName = displayName
             };
 
             _removedParticipantIds.Add(oldJudgeId);
@@ -297,6 +297,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             //Assert
             addedJudge.Person.FirstName.Should().Be(newJudge.FirstName);
             addedJudge.Person.LastName.Should().Be(newJudge.LastName);
+            addedJudge.DisplayName.Should().Be(displayName);
         }
 
         [Test]

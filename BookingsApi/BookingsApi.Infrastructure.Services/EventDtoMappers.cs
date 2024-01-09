@@ -31,7 +31,7 @@ namespace BookingsApi.Infrastructure.Services
                 ScheduledDateTime = scheduledDateTime,
                 CaseName = @case.Name,
                 CaseNumber = @case.Number,
-                DisplayName = participant.DisplayName,
+                DisplayName = string.IsNullOrEmpty(participant.DisplayName) ? $"{participant.FirstName} {participant.LastName}": participant.DisplayName,
                 Representee = participant.Representee,
                 Username = participant.Username,
                 ContactEmail = participant.GetContactEmail(),
@@ -51,7 +51,7 @@ namespace BookingsApi.Infrastructure.Services
                 ScheduledDateTime = scheduledDateTime,
                 CaseName = @case.Name,
                 CaseNumber = @case.Number,
-                DisplayName = participant.DisplayName,
+                DisplayName = string.IsNullOrEmpty(participant.DisplayName) ? $"{participant.JudiciaryPerson.KnownAs} {participant.JudiciaryPerson.Surname}" : participant.DisplayName,
                 Representee = "",
                 Username = participant.JudiciaryPerson.Email, // we need to pass a username otherwise the notification is failing 
                 ContactEmail = participant.JudiciaryPerson.Email,
