@@ -812,6 +812,7 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Add(newJudge);
             
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
         }
         
         private void ValidateReassignJudgeAllowed()
