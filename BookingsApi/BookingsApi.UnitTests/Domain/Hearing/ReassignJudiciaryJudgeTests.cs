@@ -1,7 +1,7 @@
-using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Domain;
 using BookingsApi.Domain.JudiciaryParticipants;
 using BookingsApi.Domain.Validations;
+using BookingStatus = BookingsApi.Domain.Enumerations.BookingStatus;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
@@ -14,6 +14,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
                 .Build();
+            hearing.SetProtected(nameof(hearing.Status), BookingStatus.Created);
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
             var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
 
@@ -22,6 +23,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             // Assert
             hearing.GetJudge().Should().Be(newJudiciaryJudge);
+            hearing.Status.Should().Be(BookingStatus.Created);
         }
 
         [Test]
@@ -29,6 +31,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         {
             // Arrange
             var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            hearing.SetProtected(nameof(hearing.Status), BookingStatus.ConfirmedWithoutJudge);
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
             var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
             
@@ -37,6 +40,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             // Assert
             hearing.GetJudge().Should().Be(newJudiciaryJudge);
+            hearing.Status.Should().Be(BookingStatus.Created);
         }
         
         [Test]
