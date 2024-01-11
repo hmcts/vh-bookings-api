@@ -43,6 +43,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
+            
+            hearing.Status.Should().Be(BookingStatus.Created);
         }
 
         [Test]
@@ -52,7 +54,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
-            }, status: BookingStatus.Created);
+            }, status: BookingStatus.ConfirmedWithoutJudge);
             var personalCodeNewJudge = Guid.NewGuid().ToString();
             await Hooks.AddJudiciaryPerson(personalCode: personalCodeNewJudge);
 
@@ -79,6 +81,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
+
+            hearing.Status.Should().Be(BookingStatus.Created);
         }
 
         [Test]
