@@ -13,6 +13,9 @@ namespace BookingsApi.Mappings.V2
             var hearingRole = hearingRoles.Find(x => string.Compare(x.Code, requestV2Participant.HearingRoleCode,
                 StringComparison.InvariantCultureIgnoreCase) == 0);
 
+            // For new user we don't have the username yet.
+            // We need to set the username to contact email temporarily.
+            // This will be changed and updated after creating the user.
             var person = new Person(requestV2Participant.Title, requestV2Participant.FirstName,
                 requestV2Participant.LastName, requestV2Participant.ContactEmail, requestV2Participant.ContactEmail)
             {
