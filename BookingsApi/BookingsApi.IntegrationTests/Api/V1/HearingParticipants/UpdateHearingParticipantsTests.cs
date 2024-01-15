@@ -2,6 +2,7 @@ using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Validations.V1;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Api.V1.HearingParticipants;
 
@@ -11,7 +12,6 @@ public class UpdateHearingParticipantsTests : ApiTest
     public async Task should_change_a_judge_on_a_confirmed_hearing()
     {
         // arrange
-        var newJudge = "auto_aw.judge_02@hearings.reform.hmcts.net";
         var hearing = await Hooks.SeedVideoHearing(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
         var judge = hearing.Participants.First(e => e.HearingRole.IsJudge());
@@ -22,13 +22,13 @@ public class UpdateHearingParticipantsTests : ApiTest
             {
                 new()
                 {
-                    ContactEmail = newJudge,
+                    ContactEmail = GenericJudge.ContactEmail,
                     DisplayName = "Judge",  
-                    Username = newJudge,
+                    Username = GenericJudge.Username,
                     HearingRoleName = "Judge",
                     CaseRoleName = "Judge",
-                    FirstName = "Auto",
-                    LastName = "Aw"
+                    FirstName = GenericJudge.FirstName,
+                    LastName = GenericJudge.LastName,
                 }
             }
         };
@@ -42,7 +42,7 @@ public class UpdateHearingParticipantsTests : ApiTest
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
-        hearingResponse.Participants.Should().Contain(p => p.Username == newJudge);
+        hearingResponse.Participants.Should().Contain(p => p.Username == GenericJudge.Username);
         hearingResponse.Status.Should().Be(BookingStatus.Created);
     }
     
