@@ -118,10 +118,8 @@ public class HearingParticipantService : IHearingParticipantService
                 eventExistingParticipants, 
                 eventNewParticipants);
 
-        if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge"))
-        {
+        if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge") && hearing.Status != BookingStatus.Created)
             await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
-        }
 
         await _participantAddedToHearingAsynchronousProcess.Start(hearing);
     }
