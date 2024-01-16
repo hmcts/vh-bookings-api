@@ -8,14 +8,14 @@ namespace BookingsApi.Domain
     {
         private readonly DateTime _currentUTC = DateTime.UtcNow;
 
-        public JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, JudiciaryParticipantHearingRoleCode hearingRoleCode, string contactEmail = null, string contactTelephone = null)
+        public JudiciaryParticipant(string displayName, JudiciaryPerson judiciaryPerson, JudiciaryParticipantHearingRoleCode hearingRoleCode, string optionalContactEmail = null, string optionalContactTelephone = null)
         {
             Id = Guid.NewGuid();
             UpdateDisplayName(displayName);
             JudiciaryPerson = judiciaryPerson;
             UpdateHearingRoleCode(hearingRoleCode);
-            ContactEmail = contactEmail;
-            ContactTelephone = contactTelephone;
+            ContactEmail = String.IsNullOrWhiteSpace(optionalContactEmail) ? null : optionalContactEmail;
+            ContactTelephone =  String.IsNullOrWhiteSpace(optionalContactTelephone) ? null : optionalContactTelephone;
             CreatedDate = _currentUTC;
             UpdatedDate = _currentUTC;
         }

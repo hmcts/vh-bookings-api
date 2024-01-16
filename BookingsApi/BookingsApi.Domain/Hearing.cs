@@ -305,15 +305,11 @@ namespace BookingsApi.Domain
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
+            
             if (DoesJudgeExist())
-            {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
-            }
 
-            var participant = new JudiciaryParticipant(displayName, 
-                judiciaryPerson, 
-                JudiciaryParticipantHearingRoleCode.Judge, 
-                email, phone);
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge, email, phone);
             
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;

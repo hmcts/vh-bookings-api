@@ -202,9 +202,7 @@ namespace BookingsApi.DAL.Services
                 .SingleOrDefaultAsync(x => x.PersonalCode == participant.PersonalCode);
 
             if (judiciaryPerson == null)
-            {
                 throw new JudiciaryPersonNotFoundException(participant.PersonalCode);
-            }
 
             switch (participant.HearingRoleCode)
             {
