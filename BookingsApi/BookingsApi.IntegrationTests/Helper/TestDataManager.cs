@@ -329,9 +329,7 @@ namespace BookingsApi.IntegrationTests.Helper
             }
         }
 
-        private async Task AddJudgeToVideoHearing(VideoHearing videoHearing, CaseType caseType,
-            bool useFlatHearingRoles,
-            BookingsDbContext db)
+        private async Task AddJudgeToVideoHearing(VideoHearing videoHearing, CaseType caseType, bool useFlatHearingRoles, BookingsDbContext db)
         {
             if (useFlatHearingRoles)
             {
@@ -723,6 +721,15 @@ namespace BookingsApi.IntegrationTests.Helper
 
             seededForRemoval.ForEach(vh => vh.Deallocate());
             await db.SaveChangesAsync();
+        }
+
+        public async Task<Person> SeedGenericJudgePerson()
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var newJudge = new PersonBuilder().Build();
+            var genericJudge = await db.Persons.AddAsync(newJudge);
+            await db.SaveChangesAsync();
+            return genericJudge.Entity;
         }
     }
 }
