@@ -121,7 +121,7 @@ public class GetHearingDetailsByIdTests : ApiTest
 
         // act
         using var client = Application.CreateClient();
-        var result = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(firstDayHearing.Id.ToString()));
+        var result = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(firstDayHearing.Id.ToString()));
         
         // assert
         result.IsSuccessStatusCode.Should().BeTrue();
