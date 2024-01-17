@@ -127,4 +127,9 @@ public class HearingDetailsResponseV2
         /// </summary>
         [JsonProperty("judicial_office_holders")]
         public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
+
+        /// <summary>
+        /// End datetime of the last day of the multi day hearing, null if not a multi day hearing
+        /// </summary>
+        public DateTime MultiDayHearingEndTime { get; set; }
 }

@@ -731,5 +731,37 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
             return genericJudge.Entity;
         }
+
+        public async Task<IList<Hearing>> SeedMultiDayHearing(List<DateTime> dates, int scheduledDuration = 45)
+        {
+            var hearings = new List<Hearing>();
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            
+            // Seed the first day
+            var startDate = dates.Min();
+            var firstDayHearing = await SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
+            {
+                options.ScheduledDate = startDate;
+                options.ScheduledDuration = scheduledDuration;
+            });
+            hearings.Add(firstDayHearing);
+            var groupId = firstDayHearing.SourceId;
+            
+            // Seed the rest of the days
+            foreach (var date in dates.Skip(1))
+            {
+                var hearing = await SeedVideoHearing(configureOptions: options =>
+                {
+                    options.ScheduledDate = date;
+                    options.ScheduledDuration = scheduledDuration;
+                });
+                var hearingToUpdate = await db.VideoHearings.FirstAsync(x => x.Id == hearing.Id);
+                hearingToUpdate.SourceId = groupId;
+                await db.SaveChangesAsync();
+                hearings.Add(hearingToUpdate);
+            }
+
+            return hearings;
+        }
     }
 }

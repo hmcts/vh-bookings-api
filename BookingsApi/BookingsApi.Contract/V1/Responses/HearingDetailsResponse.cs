@@ -123,5 +123,10 @@ namespace BookingsApi.Contract.V1.Responses
         /// The group id for a hearing
         /// </summary>
         public Guid? GroupId { get; set; }
+        
+        /// <summary>
+        /// End datetime of the last day of the multi day hearing, null if not a multi day hearing
+        /// </summary>
+        public DateTime MultiDayHearingEndTime { get; set; }
     }
 }

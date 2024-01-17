@@ -88,7 +88,14 @@ namespace BookingsApi.Controllers.V2
             if (videoHearing == null)
                 return NotFound();
 
-            var response = HearingToDetailsResponseV2Mapper.Map(videoHearing);
+            var hearingsInGroup = new List<VideoHearing>();
+            if (videoHearing.SourceId != null)
+            {
+                var hearingsByGroupQuery = new GetHearingsByGroupIdQuery(videoHearing.SourceId.Value);
+                hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsByGroupQuery);
+            }
+            
+            var response = HearingToDetailsResponseV2Mapper.Map(videoHearing, hearingsInGroup);
             return Ok(response);
         }
         

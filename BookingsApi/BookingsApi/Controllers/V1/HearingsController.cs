@@ -59,7 +59,14 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             }
 
-            var response = HearingToDetailsResponseMapper.Map(videoHearing);
+            var hearingsInGroup = new List<VideoHearing>();
+            if (videoHearing.SourceId != null)
+            {
+                var hearingsByGroupQuery = new GetHearingsByGroupIdQuery(videoHearing.SourceId.Value);
+                hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(hearingsByGroupQuery);
+            }
+
+            var response = HearingToDetailsResponseMapper.Map(videoHearing, hearingsInGroup);
             return Ok(response);
         }
 

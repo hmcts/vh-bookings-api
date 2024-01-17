@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Domain.Extensions;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Mappings.V1.Extensions;
 
@@ -54,6 +55,17 @@ namespace BookingsApi.Mappings.V1
                 JudiciaryParticipants = judiciaryParticipants
             };
             response.TrimAllStringsRecursively();
+            return response;
+        }
+
+        public static HearingDetailsResponse Map(Hearing videoHearing, List<VideoHearing> hearingsInGroup)
+        {
+            var response = Map(videoHearing);
+
+            if (hearingsInGroup == null || !hearingsInGroup.Any()) return response;
+
+            response.MultiDayHearingEndTime = hearingsInGroup.ScheduledEndTimeOfLastHearing();
+
             return response;
         }
     }

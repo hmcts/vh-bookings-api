@@ -111,4 +111,33 @@ public class GetHearingDetailsByIdV2Tests : ApiTest
                 .ContainEquivalentOf(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
         }
     }
+
+    [Test]
+    public async Task should_return_a_multi_day_hearing()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(1).AddHours(10).AddMinutes(0),
+            DateTime.Today.AddDays(2).AddHours(10).AddMinutes(0),
+            DateTime.Today.AddDays(3).AddHours(10).AddMinutes(0)
+        };
+        const int scheduledDuration = 45;
+        var expectedMultiDayHearingEndTime = dates.Max().AddMinutes(scheduledDuration);
+
+        var multiDayHearings = await Hooks.SeedMultiDayHearing(dates, scheduledDuration: scheduledDuration);
+        var firstDayHearing = multiDayHearings[0];
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(firstDayHearing.Id.ToString()));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        hearingResponse.Should().NotBeNull();
+        hearingResponse.Id.Should().Be(firstDayHearing.Id);
+        hearingResponse.MultiDayHearingEndTime.Should().Be(expectedMultiDayHearingEndTime);
+    }
 }
