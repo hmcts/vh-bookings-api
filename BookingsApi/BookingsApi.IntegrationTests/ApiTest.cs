@@ -10,15 +10,18 @@ public class ApiTest
     protected TestDataManager Hooks { get; private set; }
     private IConfigurationRoot _configRoot;
     private string _databaseConnectionString;
+    protected Person GenericJudge { get; private set; }
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         RegisterSettings();
         RunMigrations();
+        GenericJudge = Hooks.SeedGenericJudgePerson().Result;
         Application = new VhApiWebApplicationFactory();
     }
-    
+
+
     [TearDown]
     public async Task TearDown()
     {
