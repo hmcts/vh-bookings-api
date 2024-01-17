@@ -71,6 +71,7 @@ public class GetHearingDetailsByIdTests : ApiTest
         hearingResponse.OtherInformation.Should().NotBeNullOrEmpty();
         hearingResponse.CreatedBy.Should().NotBeNullOrEmpty();
         hearingResponse.AudioRecordingRequired.Should().BeTrue();
+        hearingResponse.MultiDayHearingEndTime.Should().BeNull();
 
         foreach (var @case in hearing.GetCases())
         {
