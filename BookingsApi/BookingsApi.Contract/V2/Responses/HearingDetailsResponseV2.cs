@@ -129,7 +129,7 @@ public class HearingDetailsResponseV2
         public List<JudiciaryParticipantResponse> JudiciaryParticipants { get; set; }
 
         /// <summary>
-        /// End datetime of the last day of the multi day hearing, null if not a multi day hearing
+        /// End datetime of the last day of the multi day hearing, if applicable
         /// </summary>
         public DateTime? MultiDayHearingEndTime { get; set; }
 }
