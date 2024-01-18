@@ -164,7 +164,7 @@ namespace BookingsApi.Controllers.V1
             
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             await _hearingParticipantService.PublishEventForUpdateJudiciaryParticipantAsync(hearing, participant);
-
+            
             var updatedParticipant = hearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.JudiciaryPerson.PersonalCode == personalCode);
 

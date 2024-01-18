@@ -380,6 +380,62 @@ public class BookNewHearingTests : ApiTest
         _hearingIds.Add(response.Id);
     }
 
+    [Test]
+    public async Task should_send_relevant_message_to_the_queue_when_a_new_judge_added_to_existing_hearing_for_new_templates()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = true;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        serviceBusStub.ReadAllMessagesFromQueue(response.Id);
+
+        var participantContactEmail = "lit.one@testlit.com";
+        var updateRequest = new UpdateHearingParticipantsRequest
+        {
+            NewParticipants = new List<ParticipantRequest> {
+            new ParticipantRequest
+            {
+                CaseRoleName = "Applicant",
+                HearingRoleName = "Litigant in person",
+                Representee = null,
+                FirstName = "Lit",
+                LastName = "One",
+                TelephoneNumber = "12222222222",
+                ContactEmail = participantContactEmail,
+                DisplayName = "Lit One"
+            } }
+        };
+
+        var currentTimeStamp = DateTime.UtcNow;
+        var updatedResult = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpoints.UpdateHearingParticipants(response.Id), RequestBody.Set(updateRequest));
+
+        // assert
+        updatedResult.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var messages = serviceBusStub.ReadAllMessagesFromQueue(response.Id);
+
+        messages.Should().Contain(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent);
+        messages.Should().Contain(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent);
+        messages.Should().Contain(x => x.IntegrationEvent is NewParticipantHearingConfirmationEvent);
+        var participantMessage = messages.SingleOrDefault(x => x.IntegrationEvent is NewParticipantHearingConfirmationEvent &&
+            ((NewParticipantHearingConfirmationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Individual" &&
+            ((NewParticipantHearingConfirmationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.ContactEmail == participantContactEmail);
+
+        participantMessage.Should().NotBeNull();
+
+        var judgeMessage = messages.SingleOrDefault(x => x.IntegrationEvent is HearingNotificationIntegrationEvent &&
+            ((HearingNotificationIntegrationEvent)x.IntegrationEvent).HearingConfirmationForParticipant.UserRole == "Judge" && x.Timestamp <= response.CreatedDate &&
+            x.Timestamp >= currentTimeStamp);
+
+        judgeMessage.Should().BeNull();
+        _hearingIds.Add(response.Id);
+    }
 
     [Test]
     public async Task should_send_createuser_and_hearingnotification_message_to_the_queue_when_a_new_participant_added_to_existing_hearing()

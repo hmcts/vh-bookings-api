@@ -26,12 +26,14 @@ public class HearingParticipantService : IHearingParticipantService
     private readonly IEventPublisher _eventPublisher;
     private readonly ICommandHandler _commandHandler;
     private readonly IParticipantAddedToHearingAsynchronousProcess _participantAddedToHearingAsynchronousProcess;
+    private readonly IParticipantUpdateToHearingAsynchronousProcess _participantUpdateToHearingAsynchronousProcess;
     public HearingParticipantService(ICommandHandler commandHandler, IEventPublisher eventPublisher, 
-        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess)
+        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, IParticipantUpdateToHearingAsynchronousProcess participantUpdateToHearingAsynchronousProcess)
     {
         _commandHandler = commandHandler;
         _eventPublisher = eventPublisher;
         _participantAddedToHearingAsynchronousProcess = participantAddedToHearingAsynchronousProcess;
+        _participantUpdateToHearingAsynchronousProcess = participantUpdateToHearingAsynchronousProcess;
     }
 
     public async Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants)
@@ -70,20 +72,7 @@ public class HearingParticipantService : IHearingParticipantService
     
     public async Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants)
     {
-        var participants = hearing.GetJudiciaryParticipants()
-            .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
-            .ToList();
-        
-
-        switch (hearing.Status)
-        {
-            case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
-                break;
-            case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
-                await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
-                break;
-        }
+        _participantUpdateToHearingAsynchronousProcess.Start((VideoHearing) hearing);
     }
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {

@@ -12,6 +12,7 @@
         CreateAndNotifyUserEvent,
         HearingNotificationEvent,
         MultiDayHearingIntegrationEvent,
-        HearingNotificationForJudiciaryParticipantEvent
+        HearingNotificationForJudiciaryParticipantEvent,
+        ParticipantUpdateEvent
     }
 }
