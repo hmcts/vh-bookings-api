@@ -16,29 +16,25 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
     public class ParticipantUpdateToHearingAsynchronousProcess : IParticipantUpdateToHearingAsynchronousProcess
     {
         private readonly IEventPublisherFactory _publisherFactory;
-        private readonly IFeatureToggles _featureToggles;
 
-        public ParticipantUpdateToHearingAsynchronousProcess(IEventPublisherFactory publisherFactory, IFeatureToggles featureToggles)
+        public ParticipantUpdateToHearingAsynchronousProcess(IEventPublisherFactory publisherFactory)
         {
             _publisherFactory = publisherFactory;
-            _featureToggles = featureToggles;
         }
 
-        public async Task Start(VideoHearing hearing)
+        public async Task Start(VideoHearing videoHearing)
         {
-            var participants = hearing.GetJudiciaryParticipants()
-                .Where(x=> x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge)
-                .ToList();
+            var participants = videoHearing.GetJudiciaryParticipants().ToList();
         
 
-            switch (hearing.Status)
+            switch (videoHearing.Status)
             {
                 case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                    await _publisherFactory.Get(EventType.ParticipantAddedEvent).PublishAsync(hearing);
-                    await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent).PublishAsync(hearing);
+                    await _publisherFactory.Get(EventType.ParticipantAddedEvent).PublishAsync(videoHearing);
+                    await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent).PublishAsync(videoHearing);
                     break;
                 case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
-                    await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(hearing);
+                    await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(videoHearing);
                     break;
             }
             
