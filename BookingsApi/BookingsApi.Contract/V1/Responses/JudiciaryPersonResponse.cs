@@ -1,8 +1,6 @@
 namespace BookingsApi.Contract.V1.Responses
 {
-    /// <summary>
-    /// 
-    /// </summary>
+
     public class JudiciaryPersonResponse
     {
         /// <summary>
@@ -39,5 +37,10 @@ namespace BookingsApi.Contract.V1.Responses
         /// The Judiciary person's unique personal code
         /// </summary>
         public string PersonalCode { get; set; }
+
+        /// <summary>
+        /// Is a generic account, with custom contact details
+        /// </summary>
+        public bool IsGeneric { get; set; }
     }
 }

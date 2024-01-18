@@ -56,7 +56,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants[1].HearingRoleCode.Should().Be(Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             
             var response = await ApiClientResponse.GetResponses<List<JudiciaryParticipantResponse>>(result.Content);
-            response.Should().BeEquivalentTo(request);
+            response.Should().BeEquivalentTo(request, options => options.ExcludingMissingMembers());
 
             var judgeResponse = response.Find(x => x.PersonalCode == _personalCodeJudge);
             judgeResponse.DisplayName.Should().Be(request[0].DisplayName);
