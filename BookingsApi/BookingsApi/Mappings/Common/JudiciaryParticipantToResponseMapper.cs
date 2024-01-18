@@ -17,7 +17,10 @@ namespace BookingsApi.Mappings.Common
                 FirstName = judiciaryParticipant.JudiciaryPerson.KnownAs,
                 LastName = judiciaryParticipant.JudiciaryPerson.Surname,
                 FullName = judiciaryParticipant.JudiciaryPerson.Fullname,
-                WorkPhone = judiciaryParticipant.JudiciaryPerson.WorkPhone
+                WorkPhone = judiciaryParticipant.JudiciaryPerson.WorkPhone,
+                IsGeneric = judiciaryParticipant.JudiciaryPerson.IsGeneric,
+                OptionalContactEmail = judiciaryParticipant.GetEmail(),
+                OptionalContactTelephone = judiciaryParticipant.GetTelephone()
             };
 
             return response;

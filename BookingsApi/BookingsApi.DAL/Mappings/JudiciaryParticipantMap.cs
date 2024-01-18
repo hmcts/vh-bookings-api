@@ -8,7 +8,6 @@ namespace BookingsApi.DAL.Mappings
             builder.Property(x => x.Id).ValueGeneratedNever();
             builder.HasOne(x => x.Hearing);
             builder.HasOne(x => x.JudiciaryPerson);
-            
             builder.Property(x => x.CreatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
             builder.Property(x => x.UpdatedDate).HasConversion(v => v, v => DateTime.SpecifyKind(v.Value, DateTimeKind.Utc));
         }
