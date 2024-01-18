@@ -704,7 +704,7 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
             CancelReason = cancelReason;
-            if(newStatus == BookingStatus.Created)
+            if(newStatus == BookingStatus.Created || newStatus == BookingStatus.ConfirmedWithoutJudge)
             {
                 // Booking confirmed
                 ConfirmedBy = updatedBy;
