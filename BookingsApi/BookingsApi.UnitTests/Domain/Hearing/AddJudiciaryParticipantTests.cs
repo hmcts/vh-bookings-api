@@ -21,6 +21,24 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             judiciaryParticipants.Should().Contain(x => x.DisplayName == "Display Name");
         }
         
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Should_add_new_generic_judiciary_judge_to_hearing(bool optionalContactDetailsAdded)
+        {
+            var hearing = new VideoHearingBuilder(addJudge: false).Build();
+            var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
+            newJudiciaryPerson.IsGeneric = true;
+
+            if (optionalContactDetailsAdded)
+                hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name", "contact@email.com", "12345");
+            else
+                hearing.AddJudiciaryJudge(newJudiciaryPerson, "Display Name","", "");
+
+            var judiciary = hearing.GetJudiciaryParticipants().First();
+            judiciary.GetTelephone().Should().Be(optionalContactDetailsAdded ? "12345" : newJudiciaryPerson.WorkPhone);
+            judiciary.GetEmail().Should().Be(optionalContactDetailsAdded ? "contact@email.com" : newJudiciaryPerson.Email);
+        }
+        
         [Test]
         public void Should_raise_exception_when_adding_a_judge_and_a_judiciary_person_already_exists()
         {
