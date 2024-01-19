@@ -123,7 +123,7 @@ namespace BookingsApi
             services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
             services.AddScoped<IHearingParticipantService, HearingParticipantService>();
             services.AddScoped<IParticipantAddedToHearingAsynchronousProcess, ParticipantAddedToHearingAsynchronousProcess>();
-            services.AddScoped<IParticipantUpdateToHearingAsynchronousProcess, ParticipantUpdateToHearingAsynchronousProcess>();
+            services.AddScoped<IParticipantUpdateToHearingAsynchronousProcess, NewJudiciaryAdddedAsynchronousProcesses>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

@@ -13,11 +13,11 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
         Task Start(VideoHearing videoHearing);
     }
 
-    public class ParticipantUpdateToHearingAsynchronousProcess : IParticipantUpdateToHearingAsynchronousProcess
+    public class NewJudiciaryAdddedAsynchronousProcesses : IParticipantUpdateToHearingAsynchronousProcess
     {
         private readonly IEventPublisherFactory _publisherFactory;
 
-        public ParticipantUpdateToHearingAsynchronousProcess(IEventPublisherFactory publisherFactory)
+        public NewJudiciaryAdddedAsynchronousProcesses(IEventPublisherFactory publisherFactory)
         {
             _publisherFactory = publisherFactory;
         }
