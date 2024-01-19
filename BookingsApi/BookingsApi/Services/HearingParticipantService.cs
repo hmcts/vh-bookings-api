@@ -80,7 +80,7 @@ public class HearingParticipantService : IHearingParticipantService
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                _newJudiciaryAddedAsynchronousProcesses.Start((VideoHearing) hearing);
+                await _newJudiciaryAddedAsynchronousProcesses.Start((VideoHearing) hearing);
                 break;
             case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
