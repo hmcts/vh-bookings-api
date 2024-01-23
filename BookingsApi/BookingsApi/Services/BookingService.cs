@@ -115,18 +115,28 @@ public class BookingService : IBookingService
 
         await _eventPublisher.PublishAsync(new HearingDetailsUpdatedIntegrationEvent(updatedHearing));
 
+        await PublishHearingUpdateNotificationToParticipants(originalHearing, updatedHearing);
+
+        return updatedHearing;
+    }
+
+    private async Task PublishHearingUpdateNotificationToParticipants(VideoHearing originalHearing, VideoHearing updatedHearing)
+    {
         if (updatedHearing.ScheduledDateTime.Ticks != originalHearing.ScheduledDateTime.Ticks)
         {
             var @case = originalHearing.GetCases()[0];
             foreach (var participant in originalHearing.Participants)
             {
                 var participantDto = ParticipantDtoMapper.MapToDto(participant, originalHearing.OtherInformation);
-                
                 await _eventPublisher.PublishAsync(new HearingAmendmentNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
-                        originalHearing.ScheduledDateTime, participantDto, @case),  updatedHearing.ScheduledDateTime));
+                    originalHearing.ScheduledDateTime, participantDto, @case),  updatedHearing.ScheduledDateTime));
+            }
+            foreach (var judiciaryParticipant in originalHearing.JudiciaryParticipants)
+            {
+                var participantDto = ParticipantDtoMapper.MapToDto(judiciaryParticipant);
+                await _eventPublisher.PublishAsync(new HearingAmendmentNotificationEvent(EventDtoMappers.MapToHearingConfirmationDto(originalHearing.Id, 
+                    originalHearing.ScheduledDateTime, participantDto, @case),  updatedHearing.ScheduledDateTime));
             }
         }
-
-        return updatedHearing;
     }
 }
