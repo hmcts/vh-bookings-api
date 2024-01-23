@@ -26,12 +26,14 @@ public class HearingParticipantService : IHearingParticipantService
     private readonly IEventPublisher _eventPublisher;
     private readonly ICommandHandler _commandHandler;
     private readonly IParticipantAddedToHearingAsynchronousProcess _participantAddedToHearingAsynchronousProcess;
+    private readonly INewJudiciaryAddedAsynchronousProcesses _newJudiciaryAddedAsynchronousProcesses;
     public HearingParticipantService(ICommandHandler commandHandler, IEventPublisher eventPublisher, 
-        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess)
+        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses)
     {
         _commandHandler = commandHandler;
         _eventPublisher = eventPublisher;
         _participantAddedToHearingAsynchronousProcess = participantAddedToHearingAsynchronousProcess;
+        _newJudiciaryAddedAsynchronousProcesses = newJudiciaryAddedAsynchronousProcesses;
     }
 
     public async Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants)
@@ -73,17 +75,18 @@ public class HearingParticipantService : IHearingParticipantService
         var participants = hearing.GetJudiciaryParticipants()
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
             .ToList();
-        
+
 
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+                await _newJudiciaryAddedAsynchronousProcesses.Start((VideoHearing) hearing);
                 break;
             case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
                 break;
         }
+        
     }
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {

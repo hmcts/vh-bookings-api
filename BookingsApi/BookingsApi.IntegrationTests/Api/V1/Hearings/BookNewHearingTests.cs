@@ -379,7 +379,7 @@ public class BookNewHearingTests : ApiTest
         judgeMessage.Should().BeNull();
         _hearingIds.Add(response.Id);
     }
-
+    
 
     [Test]
     public async Task should_send_createuser_and_hearingnotification_message_to_the_queue_when_a_new_participant_added_to_existing_hearing()
