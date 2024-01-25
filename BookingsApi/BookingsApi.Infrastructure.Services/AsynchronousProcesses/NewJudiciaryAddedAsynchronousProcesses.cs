@@ -1,16 +1,13 @@
-﻿using System.Linq;
-using BookingsApi.Common.Services;
+﻿using System.Collections.Generic;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Publishers;
 using System.Threading.Tasks;
-using BookingsApi.Domain.Enumerations;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 
 namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
     public interface INewJudiciaryAddedAsynchronousProcesses
     {
-        Task Start(VideoHearing videoHearing);
+        Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants);
     }
 
     public class NewJudiciaryAddedAsynchronousProcesses : INewJudiciaryAddedAsynchronousProcesses
@@ -22,9 +19,9 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             _publisherFactory = publisherFactory;
         }
 
-        public async Task Start(VideoHearing videoHearing)
+        public async Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants)
         {
-            await _publisherFactory.Get(EventType.ParticipantAddedEvent).PublishAsync(videoHearing);
+            await ((IPublishJudiciaryParticipantsEvent)_publisherFactory.Get(EventType.JudiciaryParticipantAddedEvent)).PublishAsync(videoHearing, videoHearing.GetJudiciaryParticipants());
             await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent)
                 .PublishAsync(videoHearing);
         }
