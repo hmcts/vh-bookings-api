@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BookingsApi.Domain;
@@ -22,9 +23,13 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(videoHearing, judiciaryParticipants));
         }
 
-        public async Task PublishAsync(VideoHearing videoHearing)
+        /// <remarks>
+        /// This overload is purely to comply with the base interface. Do not use
+        /// </remarks>
+        /// <deprecated>Use the overload with judiciaryParticipants instead</deprecated>
+        public Task PublishAsync(VideoHearing videoHearing)
         {
-            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(videoHearing, videoHearing.GetJudiciaryParticipants()));
+            throw new InvalidOperationException();
         }
     }
 }
