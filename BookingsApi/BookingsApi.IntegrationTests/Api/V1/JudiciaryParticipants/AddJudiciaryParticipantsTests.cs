@@ -73,7 +73,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             panelMemberResponse.DisplayName.Should().Be(request[1].DisplayName);
             panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
             
-            AssertEventsPublished(hearing, judiciaryParticipants);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipants);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var judiciaryParticipants = hearing.GetJudiciaryParticipants();
             var newJudiciaryParticipants = judiciaryParticipants.First(x => x.JudiciaryPerson.PersonalCode == _personalCodePanelMember);
             
-            AssertEventsPublished(hearing, newJudiciaryParticipants);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, newJudiciaryParticipants);
         }
 
         [Test]

@@ -45,7 +45,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
             
             hearing.Status.Should().Be(BookingStatus.Created);
-            AssertEventsPublished(hearing, judiciaryParticipant);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipant);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
 
             hearing.Status.Should().Be(BookingStatus.Created);
-            AssertEventsPublished(hearing, judiciaryParticipant);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipant);
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
             
             hearing.Status.Should().Be(BookingStatus.Created);
-            AssertEventsPublished(hearing, judiciaryParticipant);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipant);
         }
 
         [Test]

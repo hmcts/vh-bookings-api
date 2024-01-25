@@ -5,12 +5,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
     public abstract class JudiciaryParticipantApiTest : ApiTest
     {
-        protected void AssertEventsPublished(Hearing hearing, JudiciaryParticipant judiciaryParticipant)
+        protected void AssertEventsPublishedForNewJudiciaryParticipants(Hearing hearing, JudiciaryParticipant judiciaryParticipant)
         {
-            AssertEventsPublished(hearing, new List<JudiciaryParticipant>{ judiciaryParticipant });
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, new List<JudiciaryParticipant>{ judiciaryParticipant });
         }
         
-        protected void AssertEventsPublished(Hearing hearing, IEnumerable<JudiciaryParticipant> judiciaryParticipants)
+        protected void AssertEventsPublishedForNewJudiciaryParticipants(Hearing hearing, IEnumerable<JudiciaryParticipant> judiciaryParticipants)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
