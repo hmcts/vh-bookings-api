@@ -21,7 +21,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 
         public async Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants)
         {
-            await ((IPublishJudiciaryParticipantsEvent)_publisherFactory.Get(EventType.JudiciaryParticipantAddedEvent)).PublishAsync(videoHearing, videoHearing.GetJudiciaryParticipants());
+            await ((IPublishJudiciaryParticipantsEvent)_publisherFactory.Get(EventType.JudiciaryParticipantAddedEvent)).PublishAsync(videoHearing, newJudiciaryParticipants);
             await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent)
                 .PublishAsync(videoHearing);
         }

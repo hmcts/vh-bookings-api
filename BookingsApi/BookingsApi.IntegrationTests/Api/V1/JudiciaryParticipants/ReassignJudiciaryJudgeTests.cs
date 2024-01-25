@@ -2,14 +2,12 @@ using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
-    public class ReassignJudiciaryJudgeTests : ApiTest
+    public class ReassignJudiciaryJudgeTests : JudiciaryParticipantApiTest
     {
         [Test]
         public async Task Should_reassign_judiciary_judge_when_hearing_has_a_judge()
@@ -203,20 +201,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors[nameof(request.DisplayName)][0].Should().Be(ReassignJudiciaryJudgeRequestValidation.NoDisplayNameErrorMessage);
             validationProblemDetails.Errors[nameof(request.PersonalCode)][0].Should().Be(ReassignJudiciaryJudgeRequestValidation.NoPersonalCodeErrorMessage);
-        }
-        
-        private void AssertEventsPublished(Hearing hearing, JudiciaryParticipant judiciaryParticipant)
-        {
-            var serviceBusStub = Application.Services
-                .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-            var messages = serviceBusStub!
-                .ReadAllMessagesFromQueue(hearing.Id);
-            
-            var participantAddedMessage = messages.ToList().Find(x => x.IntegrationEvent is ParticipantsAddedIntegrationEvent);
-            participantAddedMessage.Should().NotBeNull();
-            participantAddedMessage.IntegrationEvent
-                .Should()
-                .BeEquivalentTo(new ParticipantsAddedIntegrationEvent(hearing, new List<JudiciaryParticipant>{ judiciaryParticipant }));
         }
     }
 }
