@@ -19,7 +19,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         
         public async Task PublishAsync(VideoHearing videoHearing, IList<JudiciaryParticipant> judiciaryParticipants)
         {
-            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(videoHearing, videoHearing.GetJudiciaryParticipants()));
+            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(videoHearing, judiciaryParticipants));
         }
 
         public async Task PublishAsync(VideoHearing videoHearing)
