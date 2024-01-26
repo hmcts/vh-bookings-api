@@ -3,15 +3,12 @@ using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Validations;
-using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
-using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
-using Microsoft.AspNetCore.Identity;
 using JudiciaryParticipantHearingRoleCode = BookingsApi.Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
-    public class AddJudiciaryParticipantsTests : ApiTest
+    public class AddJudiciaryParticipantsTests : JudiciaryParticipantApiTest
     {
         private string _personalCodeJudge;
         private string _personalCodePanelMember;
@@ -31,7 +28,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             {
                 options.AddJudge = false;
                 options.AddPanelMember = false;
-            });
+            }, status: BookingStatus.Created);
             var judiciaryPersonJudge = await Hooks.AddJudiciaryPerson(personalCode: _personalCodeJudge);
             var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
             var judiciaryParticipantsCountBefore = seededHearing.JudiciaryParticipants.Count;
@@ -75,6 +72,40 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var panelMemberResponse = response.Find(x => x.PersonalCode == _personalCodePanelMember);
             panelMemberResponse.DisplayName.Should().Be(request[1].DisplayName);
             panelMemberResponse.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.PanelMember);
+            
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipants);
+        }
+
+        [Test]
+        public async Task Should_add_judiciary_participants_to_hearing_with_existing_judiciary_participants()
+        {
+            // Arrange
+            var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
+            {
+                options.AddJudge = true;
+                options.AddPanelMember = true;
+            }, status: BookingStatus.Created);
+            await Hooks.AddJudiciaryPerson(personalCode: _personalCodePanelMember);
+
+            var request = BuildValidAddJudiciaryParticipantsRequest();
+            request.Remove(request.Find(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge));
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client.PostAsync(
+                ApiUriFactory.JudiciaryParticipantEndpoints.AddJudiciaryParticipantsToHearing(seededHearing.Id), 
+                RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            var hearing = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(seededHearing.Id));
+            var judiciaryParticipants = hearing.GetJudiciaryParticipants();
+            var newJudiciaryParticipants = judiciaryParticipants.First(x => x.JudiciaryPerson.PersonalCode == _personalCodePanelMember);
+            
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, newJudiciaryParticipants);
         }
 
         [Test]
@@ -267,6 +298,5 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
         {
             return new List<JudiciaryParticipantRequest>();
         }
-
     }
 }

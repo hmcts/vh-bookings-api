@@ -7,7 +7,7 @@ using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
-    public class ReassignJudiciaryJudgeTests : ApiTest
+    public class ReassignJudiciaryJudgeTests : JudiciaryParticipantApiTest
     {
         [Test]
         public async Task Should_reassign_judiciary_judge_when_hearing_has_a_judge()
@@ -45,6 +45,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
             
             hearing.Status.Should().Be(BookingStatus.Created);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipant);
         }
 
         [Test]
@@ -83,6 +84,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
 
             hearing.Status.Should().Be(BookingStatus.Created);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipant);
         }
 
         [Test]
@@ -119,6 +121,9 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(new JudiciaryParticipantToResponseMapper().MapJudiciaryParticipantToResponse(judiciaryParticipant));
+            
+            hearing.Status.Should().Be(BookingStatus.Created);
+            AssertEventsPublishedForNewJudiciaryParticipants(hearing, judiciaryParticipant);
         }
 
         [Test]
