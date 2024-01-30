@@ -731,5 +731,33 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
             return genericJudge.Entity;
         }
+
+        public async Task<List<VideoHearing>> SeedMultiDayHearing(IEnumerable<DateTime> dates, int scheduledDuration = 45)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            
+            var orderedDates = dates.OrderBy(x => x.Date).ToList();
+            
+            // Create the first day
+            var firstDayHearing = await SeedVideoHearing(configureOptions: options =>
+            {
+                options.AddJudge = true;
+                options.ScheduledDate = orderedDates[0];
+                options.ScheduledDuration = scheduledDuration;
+            }, status: BookingStatus.Created, isMultiDayFirstHearing: true);
+            
+            // Create the subsequent days
+            var datesOfSubsequentDays = orderedDates.Skip(1).ToList();
+            await CloneVideoHearing(firstDayHearing.Id, datesOfSubsequentDays, status: BookingStatus.Created, duration: scheduledDuration);
+
+            var hearings = new List<VideoHearing>();
+            var multiDayHearings = await db.VideoHearings.Where(x => x.SourceId == firstDayHearing.Id).ToListAsync();
+            foreach (var multiDayHearing in multiDayHearings)
+            {
+                hearings.Add(await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(multiDayHearing.Id)));
+            }
+
+            return hearings;
+        }
     }
 }

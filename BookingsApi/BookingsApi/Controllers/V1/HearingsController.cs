@@ -21,13 +21,19 @@ namespace BookingsApi.Controllers.V1
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
         private readonly IVhLogger _ivhLogger;
+        private readonly IUpdateHearingService _updateHearingService;
+        private readonly IHearingParticipantService _hearingParticipantService;
+        private IFeatureToggles _featureToggles;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IBookingService bookingService,
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
-            IVhLogger ivhLogger)
+            IVhLogger ivhLogger,
+            IUpdateHearingService updateHearingService,
+            IHearingParticipantService hearingParticipantService,
+            IFeatureToggles featureToggles)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -35,6 +41,9 @@ namespace BookingsApi.Controllers.V1
             _randomGenerator = randomGenerator;
             _hearingService = hearingService;
             _ivhLogger = ivhLogger;
+            _updateHearingService = updateHearingService;
+            _hearingParticipantService = hearingParticipantService;
+            _featureToggles = featureToggles;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
@@ -459,6 +468,53 @@ namespace BookingsApi.Controllers.V1
             return Ok(response);
         }
 
+        [HttpPut("{hearingId}/multi-day")]
+        [OpenApiOperation("UpdateMultiDayHearing")]
+        [ProducesResponseType(typeof(HearingDetailsResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> UpdateMultiDayHearing(Guid hearingId, [FromBody] UpdateMultiDayHearingRequest request)
+        {
+            var getHearingQuery = new GetHearingByIdQuery(hearingId);
+            var thisHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingQuery);
+            // TODO handle null/not found
+
+            var clonedRequest = JsonConvert.DeserializeObject<UpdateMultiDayHearingRequest>(JsonConvert.SerializeObject(request));
+            var hearingsToUpdate = new List<VideoHearing> { thisHearing };
+            if (request.UpdateFutureDays)
+            {
+                var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(thisHearing.SourceId.Value); // TODO return 400 if this is null, ie not a multi day hearing
+                var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+                hearingsToUpdate.AddRange(hearingsInGroup.Where(x => x.Id != hearingId));
+            }
+
+            foreach (var hearing in hearingsToUpdate)
+            {
+                var updatedParticipants = request.Participants.ToList();
+                if (hearing.Id != hearingId)
+                {
+                    updatedParticipants = clonedRequest.Participants.ToList(); // Use a clone to avoid mutating the original list in the request
+                    _updateHearingService.AssignParticipantIdsForEditMultiDayHearingFutureDay(hearing, updatedParticipants);
+                }
+                var existingParticipants = _updateHearingService.ExtractExistingParticipants(hearing, updatedParticipants);
+                var newParticipants = _updateHearingService.ExtractNewParticipants(hearing, updatedParticipants, _featureToggles.EJudFeature());
+                var removedParticipantIds = _updateHearingService.ExtractRemovedParticipantIds(hearing, updatedParticipants);
+                var linkedParticipants = _updateHearingService.ExtractLinkedParticipants(hearing, updatedParticipants, existingParticipants, newParticipants);
+                
+                var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipants, newParticipants, removedParticipantIds, linkedParticipants);
+                await _commandHandler.Handle(command);
+                
+                var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingQuery);
+                await _hearingParticipantService
+                    .PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipants, newParticipants, removedParticipantIds, linkedParticipants);
+                
+                // TODO update endpoints
+            }
+            
+            return Ok();
+        }
+   
         /// <summary>
         /// Remove an existing hearing
         /// </summary>

@@ -124,6 +124,7 @@ namespace BookingsApi
             services.AddScoped<IHearingParticipantService, HearingParticipantService>();
             services.AddScoped<IParticipantAddedToHearingAsynchronousProcess, ParticipantAddedToHearingAsynchronousProcess>();
             services.AddScoped<INewJudiciaryAddedAsynchronousProcesses, NewJudiciaryAddedAsynchronousProcesses>();
+            services.AddScoped<IUpdateHearingService, UpdateHearingService>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

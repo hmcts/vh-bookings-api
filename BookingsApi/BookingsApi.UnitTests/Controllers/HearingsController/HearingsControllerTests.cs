@@ -74,10 +74,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess);
+            var updateHearingService = new UpdateHearingService();
+            var hearingParticipantService = new Mock<IHearingParticipantService>();
+            
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object);
+                HearingServiceMock.Object, Logger.Object, updateHearingService, hearingParticipantService.Object,
+                FeatureToggles);
         }
 
         [Test]
