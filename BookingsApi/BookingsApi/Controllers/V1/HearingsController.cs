@@ -488,6 +488,7 @@ namespace BookingsApi.Controllers.V1
                 var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
                 hearingsToUpdate.AddRange(hearingsInGroup.Where(x => x.Id != hearingId));
             }
+            hearingsToUpdate = hearingsToUpdate.OrderBy(x => x.ScheduledDateTime).ToList();
 
             foreach (var hearing in hearingsToUpdate)
             {

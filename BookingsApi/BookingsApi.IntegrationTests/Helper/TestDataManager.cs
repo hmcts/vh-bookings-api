@@ -757,6 +757,8 @@ namespace BookingsApi.IntegrationTests.Helper
                 hearings.Add(await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(multiDayHearing.Id)));
             }
 
+            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ToList();
+
             return hearings;
         }
     }
