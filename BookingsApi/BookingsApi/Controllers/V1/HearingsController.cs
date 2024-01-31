@@ -22,6 +22,7 @@ namespace BookingsApi.Controllers.V1
         private readonly IHearingService _hearingService;
         private readonly IVhLogger _ivhLogger;
         private readonly IUpdateHearingService _updateHearingService;
+        private readonly IFeatureToggles _featureToggles;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IBookingService bookingService,
@@ -29,7 +30,8 @@ namespace BookingsApi.Controllers.V1
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IVhLogger ivhLogger,
-            IUpdateHearingService updateHearingService)
+            IUpdateHearingService updateHearingService,
+            IFeatureToggles featureToggles)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -38,6 +40,7 @@ namespace BookingsApi.Controllers.V1
             _hearingService = hearingService;
             _ivhLogger = ivhLogger;
             _updateHearingService = updateHearingService;
+            _featureToggles = featureToggles;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
@@ -484,6 +487,8 @@ namespace BookingsApi.Controllers.V1
             }
             hearingsToUpdate = hearingsToUpdate.OrderBy(x => x.ScheduledDateTime).ToList();
 
+            var ejudFeatureEnabled = _featureToggles.EJudFeature();
+            
             foreach (var hearing in hearingsToUpdate)
             {
                 var updatedParticipants = request.Participants.ToList();
@@ -497,7 +502,7 @@ namespace BookingsApi.Controllers.V1
                     _updateHearingService.AssignParticipantIdsForEditMultiDayHearingFutureDay(hearing, updatedParticipants, updatedEndpoints);
                 }
 
-                await _updateHearingService.UpdateHearing(hearing, updatedParticipants, updatedEndpoints);
+                await _updateHearingService.UpdateHearing(hearing, updatedParticipants, updatedEndpoints, ejudFeatureEnabled);
             }
             
             return Ok();

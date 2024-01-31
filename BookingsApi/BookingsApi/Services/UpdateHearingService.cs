@@ -5,14 +5,13 @@ namespace BookingsApi.Services
 {
     public interface IUpdateHearingService
     {
-        Task UpdateHearing(VideoHearing hearing, List<EditableParticipantRequest> updatedParticipants, List<EditableEndpointRequest> updatedEndpoints);
+        Task UpdateHearing(VideoHearing hearing, List<EditableParticipantRequest> updatedParticipants, List<EditableEndpointRequest> updatedEndpoints, bool ejudFeatureEnabled);
         void AssignParticipantIdsForEditMultiDayHearingFutureDay(VideoHearing multiDayHearingFutureDay,
             List<EditableParticipantRequest> participants, List<EditableEndpointRequest> endpoints);
     }
     
     public class UpdateHearingService : IUpdateHearingService
     {
-        private readonly IFeatureToggles _featureToggles;
         private readonly ICommandHandler _commandHandler;
         private readonly IQueryHandler _queryHandler;
         private readonly IHearingParticipantService _hearingParticipantService;
@@ -20,15 +19,13 @@ namespace BookingsApi.Services
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public UpdateHearingService(IFeatureToggles featureToggles,
-            ICommandHandler commandHandler,
+        public UpdateHearingService(ICommandHandler commandHandler,
             IQueryHandler queryHandler,
             IHearingParticipantService hearingParticipantService,
             IHearingEndpointService hearingEndpointService,
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration)
         {
-            _featureToggles = featureToggles;
             _commandHandler = commandHandler;
             _queryHandler = queryHandler;
             _hearingParticipantService = hearingParticipantService;
@@ -39,12 +36,13 @@ namespace BookingsApi.Services
         
         public async Task UpdateHearing(VideoHearing hearing,
             List<EditableParticipantRequest> updatedParticipants,
-            List<EditableEndpointRequest> updatedEndpoints)
+            List<EditableEndpointRequest> updatedEndpoints,
+            bool ejudFeatureEnabled)
         {
             // Update participants
                 
             var existingParticipants = ExtractExistingParticipants(hearing, updatedParticipants);
-            var newParticipants = ExtractNewParticipants(hearing, updatedParticipants, _featureToggles.EJudFeature());
+            var newParticipants = ExtractNewParticipants(hearing, updatedParticipants, ejudFeatureEnabled);
             var removedParticipantIds = ExtractRemovedParticipantIds(hearing, updatedParticipants);
             var linkedParticipants = ExtractLinkedParticipants(hearing, updatedParticipants, existingParticipants, newParticipants);
             
