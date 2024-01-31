@@ -22,9 +22,6 @@ namespace BookingsApi.Controllers.V1
         private readonly IHearingService _hearingService;
         private readonly IVhLogger _ivhLogger;
         private readonly IUpdateHearingService _updateHearingService;
-        private readonly IHearingParticipantService _hearingParticipantService;
-        private readonly IHearingEndpointService _hearingEndpointService;
-        private IFeatureToggles _featureToggles;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IBookingService bookingService,
@@ -32,10 +29,7 @@ namespace BookingsApi.Controllers.V1
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
             IVhLogger ivhLogger,
-            IUpdateHearingService updateHearingService,
-            IHearingParticipantService hearingParticipantService,
-            IFeatureToggles featureToggles,
-            IHearingEndpointService hearingEndpointService)
+            IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -44,9 +38,6 @@ namespace BookingsApi.Controllers.V1
             _hearingService = hearingService;
             _ivhLogger = ivhLogger;
             _updateHearingService = updateHearingService;
-            _hearingParticipantService = hearingParticipantService;
-            _featureToggles = featureToggles;
-            _hearingEndpointService = hearingEndpointService;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
         }
@@ -505,41 +496,8 @@ namespace BookingsApi.Controllers.V1
                     
                     _updateHearingService.AssignParticipantIdsForEditMultiDayHearingFutureDay(hearing, updatedParticipants, updatedEndpoints);
                 }
-                
-                // Update participants
-                
-                var existingParticipants = _updateHearingService.ExtractExistingParticipants(hearing, updatedParticipants);
-                var newParticipants = _updateHearingService.ExtractNewParticipants(hearing, updatedParticipants, _featureToggles.EJudFeature());
-                var removedParticipantIds = _updateHearingService.ExtractRemovedParticipantIds(hearing, updatedParticipants);
-                var linkedParticipants = _updateHearingService.ExtractLinkedParticipants(hearing, updatedParticipants, existingParticipants, newParticipants);
-                
-                var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipants, newParticipants, removedParticipantIds, linkedParticipants);
-                await _commandHandler.Handle(command);
-           
-                var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingQuery);
-                await _hearingParticipantService
-                    .PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipants, newParticipants, removedParticipantIds, linkedParticipants);
-                
-                // Update endpoints
 
-                var newEndpoints = _updateHearingService.ExtractNewEndpoints(hearing, updatedEndpoints, _randomGenerator, _kinlyConfiguration.SipAddressStem);
-                var existingEndpoints = _updateHearingService.ExtractExistingEndpoints(hearing, updatedEndpoints);
-                var removedEndpointIds = _updateHearingService.ExtractRemovedEndpointIds(hearing, updatedEndpoints);
-                
-                foreach (var endpoint in newEndpoints)
-                {
-                    await _hearingEndpointService.AddEndpointToHearing(hearing.Id, endpoint);
-                }
-
-                foreach (var endpoint in existingEndpoints)
-                {
-                    await _hearingEndpointService.UpdateEndpointOfHearing(hearing, endpoint.endpointId, endpoint.displayName, endpoint.defenceAdvocateEmail);
-                }
-
-                foreach (var endpointId in removedEndpointIds)
-                {
-                    await _hearingEndpointService.RemoveEndpointFromHearing(hearing, endpointId);
-                }
+                await _updateHearingService.UpdateHearing(hearing, updatedParticipants, updatedEndpoints);
             }
             
             return Ok();

@@ -5,23 +5,107 @@ namespace BookingsApi.Services
 {
     public interface IUpdateHearingService
     {
-        List<ExistingParticipantDetails> ExtractExistingParticipants(VideoHearing hearing, List<EditableParticipantRequest> participants);
-        List<NewParticipant> ExtractNewParticipants(VideoHearing hearing, List<EditableParticipantRequest> participants, bool ejudFeatureEnabled);
-        List<Guid> ExtractRemovedParticipantIds(VideoHearing hearing, List<EditableParticipantRequest> participants);
-        List<LinkedParticipantDto> ExtractLinkedParticipants(VideoHearing hearing, 
-            List<EditableParticipantRequest> participants, 
-            List<ExistingParticipantDetails> existingParticipants,
-            List<NewParticipant> newParticipants);
+        Task UpdateHearing(VideoHearing hearing, List<EditableParticipantRequest> updatedParticipants, List<EditableEndpointRequest> updatedEndpoints);
         void AssignParticipantIdsForEditMultiDayHearingFutureDay(VideoHearing multiDayHearingFutureDay,
             List<EditableParticipantRequest> participants, List<EditableEndpointRequest> endpoints);
-        List<NewEndpoint> ExtractNewEndpoints(VideoHearing hearing, List<EditableEndpointRequest> endpoints, IRandomGenerator randomGenerator, string sipAddressStem);
-        List<(Guid endpointId, string displayName, string defenceAdvocateEmail)> ExtractExistingEndpoints(VideoHearing hearing, List<EditableEndpointRequest> endpoints);
-        List<Guid> ExtractRemovedEndpointIds(VideoHearing hearing, List<EditableEndpointRequest> endpoints);
     }
     
     public class UpdateHearingService : IUpdateHearingService
     {
-        public List<ExistingParticipantDetails> ExtractExistingParticipants(VideoHearing hearing, List<EditableParticipantRequest> participants)
+        private readonly IFeatureToggles _featureToggles;
+        private readonly ICommandHandler _commandHandler;
+        private readonly IQueryHandler _queryHandler;
+        private readonly IHearingParticipantService _hearingParticipantService;
+        private readonly IHearingEndpointService _hearingEndpointService;
+        private readonly IRandomGenerator _randomGenerator;
+        private readonly KinlyConfiguration _kinlyConfiguration;
+
+        public UpdateHearingService(IFeatureToggles featureToggles,
+            ICommandHandler commandHandler,
+            IQueryHandler queryHandler,
+            IHearingParticipantService hearingParticipantService,
+            IHearingEndpointService hearingEndpointService,
+            IRandomGenerator randomGenerator,
+            IOptions<KinlyConfiguration> kinlyConfiguration)
+        {
+            _featureToggles = featureToggles;
+            _commandHandler = commandHandler;
+            _queryHandler = queryHandler;
+            _hearingParticipantService = hearingParticipantService;
+            _hearingEndpointService = hearingEndpointService;
+            _randomGenerator = randomGenerator;
+            _kinlyConfiguration = kinlyConfiguration.Value;
+        }
+        
+        public async Task UpdateHearing(VideoHearing hearing,
+            List<EditableParticipantRequest> updatedParticipants,
+            List<EditableEndpointRequest> updatedEndpoints)
+        {
+            // Update participants
+                
+            var existingParticipants = ExtractExistingParticipants(hearing, updatedParticipants);
+            var newParticipants = ExtractNewParticipants(hearing, updatedParticipants, _featureToggles.EJudFeature());
+            var removedParticipantIds = ExtractRemovedParticipantIds(hearing, updatedParticipants);
+            var linkedParticipants = ExtractLinkedParticipants(hearing, updatedParticipants, existingParticipants, newParticipants);
+            
+            var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipants, newParticipants, removedParticipantIds, linkedParticipants);
+            await _commandHandler.Handle(command);
+
+            var getHearingQuery = new GetHearingByIdQuery(hearing.Id);
+            var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingQuery);
+            await _hearingParticipantService
+                .PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipants, newParticipants, removedParticipantIds, linkedParticipants);
+            
+            // Update endpoints
+
+            var newEndpoints = ExtractNewEndpoints(updatedEndpoints, _randomGenerator, _kinlyConfiguration.SipAddressStem);
+            var existingEndpoints = ExtractExistingEndpoints(updatedEndpoints);
+            var removedEndpointIds = ExtractRemovedEndpointIds(hearing, updatedEndpoints);
+            
+            foreach (var endpoint in newEndpoints)
+            {
+                await _hearingEndpointService.AddEndpointToHearing(hearing.Id, endpoint);
+            }
+
+            foreach (var endpoint in existingEndpoints)
+            {
+                await _hearingEndpointService.UpdateEndpointOfHearing(hearing, endpoint.endpointId, endpoint.displayName, endpoint.defenceAdvocateEmail);
+            }
+
+            foreach (var endpointId in removedEndpointIds)
+            {
+                await _hearingEndpointService.RemoveEndpointFromHearing(hearing, endpointId);
+            }
+        }
+        
+        public void AssignParticipantIdsForEditMultiDayHearingFutureDay(VideoHearing multiDayHearingFutureDay, 
+            List<EditableParticipantRequest> participants, List<EditableEndpointRequest> endpoints)
+        {
+            // For the future day hearings, the participant ids will be different
+            // So we need to set their ids to null if they are new participants, or use their existing ids if they already exist
+                    
+            foreach (var participant in participants)
+            {
+                var existingParticipant = multiDayHearingFutureDay.Participants.SingleOrDefault(x => x.Person.ContactEmail == participant.ContactEmail);
+                if (existingParticipant == null)
+                {
+                    participant.Id = null;
+                            
+                }
+                else
+                {
+                    participant.Id = existingParticipant.Id;
+                }
+            }
+
+            foreach (var endpoint in endpoints)
+            {
+                // Unlike participants we don't have a common identifier, so need to remove the existing endpoints and replace them
+                endpoint.Id = null;
+            }
+        }
+
+        private static List<ExistingParticipantDetails> ExtractExistingParticipants(Hearing hearing, List<EditableParticipantRequest> participants)
         {
             var existingParticipants = new List<ExistingParticipantDetails>();
             
@@ -53,7 +137,7 @@ namespace BookingsApi.Services
             return existingParticipants;
         }
 
-        public List<NewParticipant> ExtractNewParticipants(VideoHearing hearing, List<EditableParticipantRequest> participants, bool ejudFeatureEnabled)
+        private List<NewParticipant> ExtractNewParticipants(VideoHearing hearing, List<EditableParticipantRequest> participants, bool ejudFeatureEnabled)
         {
             var newParticipants = new List<NewParticipant>();
 
@@ -73,9 +157,9 @@ namespace BookingsApi.Services
             return newParticipants;
         }
         
-        private EditableParticipantRequest ProcessNewParticipant(
+        private static EditableParticipantRequest ProcessNewParticipant(
             EditableParticipantRequest participant,
-            VideoHearing hearing,
+            Hearing hearing,
             bool ejudFeatureEnabled)
         {
             // Add a new participant
@@ -94,21 +178,19 @@ namespace BookingsApi.Services
                 participant.Username = participant.ContactEmail;
             }
 
-            // _logger.LogDebug("Adding participant {Participant} to hearing {Hearing}",
-            //     newParticipant.DisplayName, hearingId);
             return participant;
         }
-        
-        public List<Guid> ExtractRemovedParticipantIds(VideoHearing hearing, List<EditableParticipantRequest> participants)
+
+        private static List<Guid> ExtractRemovedParticipantIds(Hearing hearing, List<EditableParticipantRequest> participants)
         {
             return hearing.Participants.Where(p => participants.TrueForAll(rp => rp.Id != p.Id))
                 .Select(x => x.Id).ToList();
         }
-        
-        public List<LinkedParticipantDto> ExtractLinkedParticipants(VideoHearing hearing, 
-            List<EditableParticipantRequest> participants,
-            List<ExistingParticipantDetails> existingParticipants,
-            List<NewParticipant> newParticipants)
+
+        private static List<LinkedParticipantDto> ExtractLinkedParticipants(Hearing hearing, 
+            IEnumerable<EditableParticipantRequest> participants,
+            IReadOnlyCollection<ExistingParticipantDetails> existingParticipants,
+            IReadOnlyCollection<NewParticipant> newParticipants)
         {
             var linkedParticipantRequests = new List<LinkedParticipantRequest>();
             var participantsWithLinks = participants
@@ -154,36 +236,8 @@ namespace BookingsApi.Services
             var linkedParticipants = LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(linkedParticipantRequests);
             return linkedParticipants;
         }
-        
-        public void AssignParticipantIdsForEditMultiDayHearingFutureDay(VideoHearing multiDayHearingFutureDay, 
-            List<EditableParticipantRequest> participants, List<EditableEndpointRequest> endpoints)
-        {
-            // For the future day hearings, the participant ids will be different
-            // So we need to set their ids to null if they are new participants, or use their existing ids if they already exist
-                    
-            foreach (var participant in participants)
-            {
-                var existingParticipant = multiDayHearingFutureDay.Participants.SingleOrDefault(x => x.Person.ContactEmail == participant.ContactEmail);
-                if (existingParticipant == null)
-                {
-                    participant.Id = null;
-                            
-                }
-                else
-                {
-                    participant.Id = existingParticipant.Id;
-                }
-            }
 
-            foreach (var endpoint in endpoints)
-            {
-                // Unlike participants we don't have a common identifier, so need to remove the existing endpoints and replace them
-                endpoint.Id = null;
-            }
-        }
-        
-        public List<NewEndpoint> ExtractNewEndpoints(VideoHearing hearing, 
-            List<EditableEndpointRequest> endpoints, 
+        private static List<NewEndpoint> ExtractNewEndpoints(IEnumerable<EditableEndpointRequest> endpoints, 
             IRandomGenerator randomGenerator, 
             string sipAddressStem)
         {
@@ -194,8 +248,8 @@ namespace BookingsApi.Services
 
             return endpointsToAdd;
         }
-        
-        public List<(Guid endpointId, string displayName, string defenceAdvocateEmail)> ExtractExistingEndpoints(VideoHearing hearing, List<EditableEndpointRequest> endpoints)
+
+        private static List<(Guid endpointId, string displayName, string defenceAdvocateEmail)> ExtractExistingEndpoints(List<EditableEndpointRequest> endpoints)
         {
             var existingEndpoints = new List<(Guid endpointId, string displayName, string defenceAdvocateEmail)>();
             
@@ -208,8 +262,8 @@ namespace BookingsApi.Services
 
             return existingEndpoints;
         }
-        
-        public List<Guid> ExtractRemovedEndpointIds(VideoHearing hearing, List<EditableEndpointRequest> endpoints)
+
+        private static List<Guid> ExtractRemovedEndpointIds(Hearing hearing, List<EditableEndpointRequest> endpoints)
         {
             var endpointIdsToRemove = hearing.Endpoints
                 .Where(e => endpoints.TrueForAll(re => re.Id != e.Id))

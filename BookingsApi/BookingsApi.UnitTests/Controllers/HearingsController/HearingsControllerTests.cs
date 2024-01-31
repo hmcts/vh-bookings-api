@@ -45,7 +45,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected IFirstdayOfMultidayBookingAsynchronousProcess FirstdayOfMultidayBookingAsyncProcess;
         protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
         protected IEventPublisherFactory PublisherFactory;
-        protected Mock<IEventPublisherFactory> PublisherFactoryMock;
         protected IFeatureToggles FeatureToggles;
 
         [SetUp]
@@ -60,7 +59,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             _eventPublisher = new EventPublisher(SbQueueClient);
             EventPublisherMock = new Mock<IEventPublisher>();
             Logger = new Mock<IVhLogger>();
-            PublisherFactoryMock = new Mock<IEventPublisherFactory>();
+            new Mock<IEventPublisherFactory>();
             PublisherFactory = EventPublisherFactoryInstance.Get(EventPublisherMock.Object);
             FeatureToggles = new FeatureTogglesStub();
             BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
@@ -74,14 +73,14 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess);
-            var updateHearingService = new UpdateHearingService();
             var hearingParticipantService = new Mock<IHearingParticipantService>();
             var hearingEndpointService = new Mock<IHearingEndpointService>();
+            var updateHearingService = new UpdateHearingService(FeatureToggles, CommandHandlerMock.Object, QueryHandlerMock.Object,
+                hearingParticipantService.Object, hearingEndpointService.Object, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration));
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object, updateHearingService, hearingParticipantService.Object,
-                FeatureToggles, hearingEndpointService.Object);
+                HearingServiceMock.Object, Logger.Object, updateHearingService);
         }
 
         [Test]
