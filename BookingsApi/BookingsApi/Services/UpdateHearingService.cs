@@ -13,7 +13,10 @@ namespace BookingsApi.Services
             List<ExistingParticipantDetails> existingParticipants,
             List<NewParticipant> newParticipants);
         void AssignParticipantIdsForEditMultiDayHearingFutureDay(VideoHearing multiDayHearingFutureDay,
-            List<EditableParticipantRequest> participants);
+            List<EditableParticipantRequest> participants, List<EditableEndpointRequest> endpoints);
+        List<NewEndpoint> ExtractNewEndpoints(VideoHearing hearing, List<EditableEndpointRequest> endpoints, IRandomGenerator randomGenerator, string sipAddressStem);
+        List<(Guid endpointId, string displayName, string defenceAdvocateEmail)> ExtractExistingEndpoints(VideoHearing hearing, List<EditableEndpointRequest> endpoints);
+        List<Guid> ExtractRemovedEndpointIds(VideoHearing hearing, List<EditableEndpointRequest> endpoints);
     }
     
     public class UpdateHearingService : IUpdateHearingService
@@ -153,7 +156,7 @@ namespace BookingsApi.Services
         }
         
         public void AssignParticipantIdsForEditMultiDayHearingFutureDay(VideoHearing multiDayHearingFutureDay, 
-            List<EditableParticipantRequest> participants)
+            List<EditableParticipantRequest> participants, List<EditableEndpointRequest> endpoints)
         {
             // For the future day hearings, the participant ids will be different
             // So we need to set their ids to null if they are new participants, or use their existing ids if they already exist
@@ -172,11 +175,48 @@ namespace BookingsApi.Services
                 }
             }
 
-            // foreach (var endpoint in endpoints)
-            // {
-            //     // Unlike participants we don't have a common identifier, so need to remove the existing endpoints and replace them
-            //     endpoint.Id = null;
-            // }
+            foreach (var endpoint in endpoints)
+            {
+                // Unlike participants we don't have a common identifier, so need to remove the existing endpoints and replace them
+                endpoint.Id = null;
+            }
+        }
+        
+        public List<NewEndpoint> ExtractNewEndpoints(VideoHearing hearing, 
+            List<EditableEndpointRequest> endpoints, 
+            IRandomGenerator randomGenerator, 
+            string sipAddressStem)
+        {
+            var endpointsToAdd = endpoints
+                .Where(e => e.Id == null)
+                .Select(e => EndpointToResponseMapper.MapRequestToNewEndpointDto(e, randomGenerator, sipAddressStem))
+                .ToList();
+
+            return endpointsToAdd;
+        }
+        
+        public List<(Guid endpointId, string displayName, string defenceAdvocateEmail)> ExtractExistingEndpoints(VideoHearing hearing, List<EditableEndpointRequest> endpoints)
+        {
+            var existingEndpoints = new List<(Guid endpointId, string displayName, string defenceAdvocateEmail)>();
+            
+            foreach (var endpoint in endpoints)
+            {
+                if (endpoint.Id == null) continue;
+                
+                existingEndpoints.Add((endpoint.Id.Value, endpoint.DisplayName, endpoint.DefenceAdvocateContactEmail));
+            }
+
+            return existingEndpoints;
+        }
+        
+        public List<Guid> ExtractRemovedEndpointIds(VideoHearing hearing, List<EditableEndpointRequest> endpoints)
+        {
+            var endpointIdsToRemove = hearing.Endpoints
+                .Where(e => endpoints.TrueForAll(re => re.Id != e.Id))
+                .Select(e => e.Id)
+                .ToList();
+            
+            return endpointIdsToRemove;
         }
     }
 }

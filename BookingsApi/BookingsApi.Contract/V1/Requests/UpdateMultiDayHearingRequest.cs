@@ -9,7 +9,10 @@ namespace BookingsApi.Contract.V1.Requests
         /// </summary>
         public List<EditableParticipantRequest> Participants { get; set; } = new();
         
-        // TODO endpoints
+        /// <summary>
+        ///     Updated list of endpoints to be in the hearing(s)
+        /// </summary>
+        public List<EditableEndpointRequest> Endpoints { get; set; } = new();
         
         /// <summary>
         ///     When true, applies updates to future days of the multi day hearing as well

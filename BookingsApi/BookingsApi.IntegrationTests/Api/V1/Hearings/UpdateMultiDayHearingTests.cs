@@ -39,6 +39,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                     Representee = x is Representative representative ? representative.Representee : null,
                     OrganisationName = x.Person.Organisation?.Name
                 }).ToList(),
+                Endpoints = hearingToUpdate.Endpoints.Select(x => new EditableEndpointRequest
+                {
+                    Id = x.Id,
+                    DisplayName = x.DisplayName,
+                    DefenceAdvocateContactEmail = x.DefenceAdvocate?.Person.ContactEmail
+                }).ToList(),
                 UpdateFutureDays = updateFutureDays
             };
             
