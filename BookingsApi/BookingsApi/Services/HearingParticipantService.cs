@@ -134,15 +134,14 @@ public class HearingParticipantService : IHearingParticipantService
         if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge") && hearing.Status != BookingStatus.Created)
             await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
 
+        List<VideoHearing> hearingsInGroup = null;
         if (hearing.SourceId != null && isMultiDayUpdate)
         {
             var getHearingsInGroupQuery = new GetHearingsByGroupIdQuery(hearing.SourceId.Value);
-            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsInGroupQuery);
-
-            await _participantAddedToHearingAsynchronousProcess.Start(hearing, hearingsInGroup);
+            hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsInGroupQuery);
         }
         
-        await _participantAddedToHearingAsynchronousProcess.Start(hearing);
+        await _participantAddedToHearingAsynchronousProcess.Start(hearing, hearingsInGroup);
     }
 
     private async Task PublishHearingParticipantListUpdatedEvent(Hearing hearing, List<Guid> removedParticipantIds,
