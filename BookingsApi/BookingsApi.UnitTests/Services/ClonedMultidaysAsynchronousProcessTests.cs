@@ -35,12 +35,13 @@ namespace BookingsApi.UnitTests.Services
             hearing.Participants[1].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[1].Person,
                 hearing.Participants[1].Person.CreatedDate.AddDays(-10), null);
 
+            var judgeAsExistingParticipant = 1;
             var createConfereceMessageCount = 0;
             var newParticipantWelcomeMessageCount = 0;
             var multidayHearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge) - 2;
             var mulitdayHearingConfirmationForExistingParticipantsMessageCount = 2;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + multidayHearingConfirmationForNewParticipantsMessageCount
-                + mulitdayHearingConfirmationForExistingParticipantsMessageCount;
+                + mulitdayHearingConfirmationForExistingParticipantsMessageCount + judgeAsExistingParticipant;
 
             await _clonedMultidaysAsynchronousProcess.Start(hearing, 2);
             
@@ -52,7 +53,7 @@ namespace BookingsApi.UnitTests.Services
                 Should().Be(multidayHearingConfirmationForNewParticipantsMessageCount);
             messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
             messages.Count(x => x.IntegrationEvent is ExistingParticipantMultidayHearingConfirmationEvent).
-                Should().Be(mulitdayHearingConfirmationForExistingParticipantsMessageCount);
+                Should().Be(mulitdayHearingConfirmationForExistingParticipantsMessageCount + judgeAsExistingParticipant);
         }
     }
 }

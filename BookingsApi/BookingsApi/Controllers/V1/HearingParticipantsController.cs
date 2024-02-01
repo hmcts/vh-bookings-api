@@ -336,7 +336,7 @@ namespace BookingsApi.Controllers.V1
             await _commandHandler.Handle(command);
 
             // ONLY publish this event when Hearing is set for ready for video
-            if (videoHearing.Status == BookingStatus.Created)
+            if (videoHearing.Status == BookingStatus.Created || videoHearing.Status == BookingStatus.ConfirmedWithoutJudge)
             {
                 await _eventPublisher.PublishAsync(new ParticipantRemovedIntegrationEvent(hearingId, participantId));
             }

@@ -11,7 +11,7 @@ namespace BookingsApi.DAL.Commands
         {
             HearingId = hearingId;
             ExistingParticipants = existingParticipants;
-            NewParticipants = newParticipants;
+            NewParticipants = new List<NewParticipant>(newParticipants);
             RemovedParticipantIds = removedParticipantIds;
             LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
         }

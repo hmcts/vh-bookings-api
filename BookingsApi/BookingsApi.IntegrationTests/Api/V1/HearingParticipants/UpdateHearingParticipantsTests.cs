@@ -2,12 +2,50 @@ using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Validations.V1;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Api.V1.HearingParticipants;
 
 public class UpdateHearingParticipantsTests : ApiTest
 {
-        
+    [Test]
+    public async Task should_change_a_judge_on_a_confirmed_hearing()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
+        var judge = hearing.Participants.First(e => e.HearingRole.IsJudge());
+        var request = new UpdateHearingParticipantsRequest
+        {
+            RemovedParticipantIds = new List<Guid>{ judge.Id },
+            NewParticipants = new List<ParticipantRequest>
+            {
+                new()
+                {
+                    ContactEmail = GenericJudge.ContactEmail,
+                    DisplayName = "Judge",  
+                    Username = GenericJudge.Username,
+                    HearingRoleName = "Judge",
+                    CaseRoleName = "Judge",
+                    FirstName = GenericJudge.FirstName,
+                    LastName = GenericJudge.LastName,
+                }
+            }
+        };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpoints.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpoints.GetHearingDetailsById(hearing.Id.ToString()));
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(updatedHearing.Content);
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
+        hearingResponse.Participants.Should().Contain(p => p.Username == GenericJudge.Username);
+        hearingResponse.Status.Should().Be(BookingStatus.Created);
+    }
+    
     [Test]
     public async Task should_remove_a_judge_from_the_confirmed_hearing()
     {

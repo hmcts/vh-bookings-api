@@ -36,6 +36,18 @@ namespace BookingsApi.Infrastructure.Services
                 };
         }
 
+        public static ParticipantDto MapToDto(Participant participant, string otherInformation)
+        {
+            var participantDto = MapToDto(participant);
+
+            if (participant is Judge)
+            {
+                participantDto.SetOtherFieldsForNonEJudJudgeUser(otherInformation);
+            }
+
+            return participantDto;
+        }
+
         public static ParticipantDto MapToDto(JudiciaryParticipant judiciaryParticipant) =>
             new()
             {
@@ -44,7 +56,8 @@ namespace BookingsApi.Infrastructure.Services
                 Username = judiciaryParticipant.JudiciaryPerson.Email,
                 FirstName = judiciaryParticipant.JudiciaryPerson.KnownAs,
                 LastName = judiciaryParticipant.JudiciaryPerson.Surname,
-                ContactEmail = judiciaryParticipant.JudiciaryPerson.Email,
+                ContactEmail = judiciaryParticipant.GetEmail(),
+                ContactTelephone = judiciaryParticipant.GetTelephone(),
                 DisplayName = judiciaryParticipant.DisplayName,
                 HearingRole = MapHearingRoleForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode),
                 UserRole = MapUserRoleForJudiciaryParticipant(judiciaryParticipant.HearingRoleCode),

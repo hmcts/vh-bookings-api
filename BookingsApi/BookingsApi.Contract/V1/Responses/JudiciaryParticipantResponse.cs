@@ -20,27 +20,27 @@ namespace BookingsApi.Contract.V1.Responses
         public string Title { get; set; }
         
         /// <summary>
-        ///     Judiciary person's first name.
+        /// Judiciary person's first name.
         /// </summary>
         public string FirstName { get; set; }
 
         /// <summary>
-        ///     Judiciary person's last name.
+        /// Judiciary person's last name.
         /// </summary>
         public string LastName { get; set; }
         
         /// <summary>
-        ///     Judiciary person's full name.
+        /// Judiciary person's full name.
         /// </summary>
         public string FullName { get; set; }
         
         /// <summary>
-        ///     Judiciary person's contact email
+        /// Judiciary person's contact email
         /// </summary>
         public string Email { get; set; }
         
         /// <summary>
-        ///     Judiciary person's work phone
+        /// Judiciary person's work phone
         /// </summary>
         public string WorkPhone { get; set; }
         
@@ -48,7 +48,21 @@ namespace BookingsApi.Contract.V1.Responses
         /// The participant's hearing role code
         /// </summary>
         public JudiciaryParticipantHearingRoleCode HearingRoleCode { get; set; }
-
         
+        /// <summary>
+        /// Is a generic account, with be assigned with custom contact details
+        /// </summary>
+        public bool IsGeneric { get; set; }
+        
+        /// <summary>
+        /// Is an optional contact number for generic accounts
+        /// </summary>
+        public string OptionalContactEmail { get; set; }
+    
+        /// <summary>
+        /// Is an optional contact number for generic accounts
+        /// </summary>
+        public string OptionalContactTelephone { get; set; }
+
     }
 }

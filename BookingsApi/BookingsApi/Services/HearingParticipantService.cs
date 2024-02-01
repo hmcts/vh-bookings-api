@@ -26,12 +26,14 @@ public class HearingParticipantService : IHearingParticipantService
     private readonly IEventPublisher _eventPublisher;
     private readonly ICommandHandler _commandHandler;
     private readonly IParticipantAddedToHearingAsynchronousProcess _participantAddedToHearingAsynchronousProcess;
+    private readonly INewJudiciaryAddedAsynchronousProcesses _newJudiciaryAddedAsynchronousProcesses;
     public HearingParticipantService(ICommandHandler commandHandler, IEventPublisher eventPublisher, 
-        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess)
+        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses)
     {
         _commandHandler = commandHandler;
         _eventPublisher = eventPublisher;
         _participantAddedToHearingAsynchronousProcess = participantAddedToHearingAsynchronousProcess;
+        _newJudiciaryAddedAsynchronousProcesses = newJudiciaryAddedAsynchronousProcesses;
     }
 
     public async Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants)
@@ -40,6 +42,9 @@ public class HearingParticipantService : IHearingParticipantService
                     .Where(x => newParticipants.Any(y => y.Person.ContactEmail == x.Person.ContactEmail)).ToList();
         if (participants.Any())
         {
+            // Raising the below event here instead of in the async process to avoid the async process adding a duplicate participant to the conference
+            // as the UpdateHearingParticipants (also inlcudes new participants) has a separate process to add participants
+            await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
             await _participantAddedToHearingAsynchronousProcess.Start(hearing);
         }
     }
@@ -70,17 +75,18 @@ public class HearingParticipantService : IHearingParticipantService
         var participants = hearing.GetJudiciaryParticipants()
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
             .ToList();
-        
+
 
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
-                await _eventPublisher.PublishAsync(new ParticipantsAddedIntegrationEvent(hearing, participants));
+                await _newJudiciaryAddedAsynchronousProcesses.Start((VideoHearing) hearing, participants);
                 break;
             case BookingStatus.Booked or BookingStatus.BookedWithoutJudge when participants.Exists(p => p.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge):
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
                 break;
         }
+        
     }
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {
@@ -115,10 +121,8 @@ public class HearingParticipantService : IHearingParticipantService
                 eventExistingParticipants, 
                 eventNewParticipants);
 
-        if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge"))
-        {
+        if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge") && hearing.Status != BookingStatus.Created)
             await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
-        }
 
         await _participantAddedToHearingAsynchronousProcess.Start(hearing);
     }

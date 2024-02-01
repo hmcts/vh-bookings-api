@@ -24,14 +24,6 @@ namespace BookingsApi.Domain
             CreatedDate = UpdatedDate = DateTime.UtcNow;
         }
 
-        /// <summary>
-        /// Instantiate a person when the username is not known, typically used for new persons
-        /// </summary>
-        public Person(string title, string firstName, string lastName, string contactEmail) : this(title, firstName,
-            lastName, contactEmail, null)
-        {
-        }
-
         public string Title { get; set; }
         public string FirstName { get; protected set; }
         public string LastName { get; protected set; }

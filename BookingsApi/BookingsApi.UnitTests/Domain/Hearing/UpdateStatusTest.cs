@@ -133,10 +133,10 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.UpdateBookingStatusJudgeRequirement();
             hearing.Status.Should().Be(expectedStatus);
         }
-        
+
         [TestCase (BookingStatus.ConfirmedWithoutJudge, BookingStatus.Created)]
-        [TestCase (BookingStatus.Created, BookingStatus.ConfirmedWithoutJudge)]
-        public void Should_update_hearing_status_when_judge_added_or_removed_ConfirmedHearing(BookingStatus currentStatus, BookingStatus expectedStatus)
+        [TestCase (BookingStatus.Created, BookingStatus.ConfirmedWithoutJudge)] 
+        public void Should_update_hearing_status_when_judge_added_or_removed_ConfirmedHearing(BookingStatus currentStatus, BookingStatus expectedStatus) 
         {
             var hearing = new VideoHearingBuilder().Build();
             var judge = hearing.Participants.First(e => e is Judge);
@@ -151,10 +151,10 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 hearing.UpdateStatus(BookingStatus.Created, "testuser", "");
                 hearing.UpdateStatus(BookingStatus.ConfirmedWithoutJudge, "testuser", "");
             }
+
             hearing.UpdateBookingStatusJudgeRequirement();
             hearing.Status.Should().Be(expectedStatus);
+            hearing.ConfirmedDate.Should().NotBeNull();
         }
-
-        
     }
 }

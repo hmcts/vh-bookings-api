@@ -34,5 +34,19 @@ namespace BookingsApi.Infrastructure.Services
                 ? properties[Array.IndexOf(properties, "JudgeEmail") + 1]
                 : string.Empty;
         }
+
+        public static string GetContactEmail(this ParticipantDto participant)
+        {
+            return !string.IsNullOrEmpty(participant.ContactEmailForNonEJudJudgeUser) 
+                ? participant.ContactEmailForNonEJudJudgeUser 
+                : participant.ContactEmail;
+        }
+
+        public static string GetContactTelephone(this ParticipantDto participant)
+        {
+            return !string.IsNullOrEmpty(participant.ContactPhoneForNonEJudJudgeUser) 
+                ? participant.ContactPhoneForNonEJudJudgeUser 
+                : participant.ContactTelephone;
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace BookingsApi.Controllers.V1
                 var endpoint = hearing.GetEndpoints().First(x => x.DisplayName.Equals(addEndpointRequest.DisplayName));
 
                 var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
-                if (hearing.Status == BookingStatus.Created)
+                if (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge)
                 {
                     await _eventPublisher.PublishAsync(new EndpointAddedIntegrationEvent(hearingId, endpoint));
                 }
@@ -109,7 +109,7 @@ namespace BookingsApi.Controllers.V1
                 var command = new RemoveEndPointFromHearingCommand(hearingId, endpointId);
                 await _commandHandler.Handle(command);
                 var ep = hearing.GetEndpoints().First(x => x.Id == endpointId);
-                if (hearing.Status == BookingStatus.Created)
+                if (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge)
                 {
                     await _eventPublisher.PublishAsync(new EndpointRemovedIntegrationEvent(hearingId, ep.Sip));
                 }
@@ -166,7 +166,7 @@ namespace BookingsApi.Controllers.V1
 
                 var endpoint = hearing.GetEndpoints().SingleOrDefault(x => x.Id == endpointId);
 
-                if (endpoint != null && hearing.Status == BookingStatus.Created)
+                if (endpoint != null && (hearing.Status == BookingStatus.Created || hearing.Status == BookingStatus.ConfirmedWithoutJudge))
                 {
 
                     await _eventPublisher.PublishAsync(new EndpointUpdatedIntegrationEvent(hearingId, endpoint.Sip,

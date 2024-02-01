@@ -115,6 +115,7 @@ namespace BookingsApi
             services.AddScoped<IList<IPublishEvent>>(p => { 
                 var list = p.GetServices<IPublishEvent>().ToList(); 
                 list.AddRange(p.GetServices<IPublishMultidayEvent>().ToList());
+                list.AddRange(p.GetServices<IPublishJudiciaryParticipantsEvent>().ToList());
                 return list; });
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();
@@ -123,6 +124,7 @@ namespace BookingsApi
             services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
             services.AddScoped<IHearingParticipantService, HearingParticipantService>();
             services.AddScoped<IParticipantAddedToHearingAsynchronousProcess, ParticipantAddedToHearingAsynchronousProcess>();
+            services.AddScoped<INewJudiciaryAddedAsynchronousProcesses, NewJudiciaryAddedAsynchronousProcesses>();
             RegisterCommandHandlers(services);
             RegisterQueryHandlers(services);
 

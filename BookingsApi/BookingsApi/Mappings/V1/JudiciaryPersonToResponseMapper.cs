@@ -14,6 +14,7 @@ namespace BookingsApi.Mappings.V1
                 FullName = person.Fullname,
                 PersonalCode = person.PersonalCode,
                 Email = person.Email.ToLower(),
+                IsGeneric = person.IsGeneric
             };
         }
     }

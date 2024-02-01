@@ -100,10 +100,8 @@ public class UpdateHearingV2Tests : ApiTest
     public async Task should_update_hearing_and_publish_when_hearing_status_is_created()
     {
         // arrange
-        var hearing = await Hooks.SeedVideoHearingV2(options =>
-        {
-            options.Case = new Case("Case1 Num", "Case1 Name");
-        }, BookingStatus.Created);
+        var hearing = await Hooks.SeedVideoHearingV2(options => { options.Case = new Case("Case1 Num", "Case1 Name"); },
+            BookingStatus.Created);
         var hearingId = hearing.Id;
         var request = BuildRequest();
 
@@ -123,14 +121,14 @@ public class UpdateHearingV2Tests : ApiTest
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeOfType<HearingDetailsUpdatedIntegrationEvent>();
-        
+
         hearingFromDb.HearingVenue.VenueCode.Should().Be(request.HearingVenueCode);
         hearingFromDb.ScheduledDuration.Should().Be(request.ScheduledDuration);
         hearingFromDb.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         hearingFromDb.UpdatedBy.Should().Be(request.UpdatedBy);
         hearingFromDb.HearingRoomName.Should().Be(request.HearingRoomName);
         hearingFromDb.OtherInformation.Should().Be(request.OtherInformation);
-        
+
         var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
         createdResponse.HearingVenueCode.Should().Be(request.HearingVenueCode);
         createdResponse.ScheduledDuration.Should().Be(request.ScheduledDuration);
@@ -138,16 +136,30 @@ public class UpdateHearingV2Tests : ApiTest
         createdResponse.UpdatedBy.Should().Be(request.UpdatedBy);
         createdResponse.HearingRoomName.Should().Be(request.HearingRoomName);
         createdResponse.OtherInformation.Should().Be(request.OtherInformation);
-        
+
         var integrationEvent = message.IntegrationEvent as HearingDetailsUpdatedIntegrationEvent;
         integrationEvent!.Hearing.HearingVenueName.Should().Be("Manchester County and Family Court");
         integrationEvent.Hearing.ScheduledDuration.Should().Be(request.ScheduledDuration);
         integrationEvent.Hearing.ScheduledDateTime.Should().Be(request.ScheduledDateTime!.Value.ToUniversalTime());
         integrationEvent.Hearing.CaseName.Should().Be(request.Cases[0].Name);
         integrationEvent.Hearing.CaseNumber.Should().Be(request.Cases[0].Number);
+
+        //validate all participants are notified
+        var notifications = serviceBusStub
+            .ReadAllMessagesFromQueue(hearingId)
+            .Where(x => x.IntegrationEvent is HearingAmendmentNotificationEvent)
+            .Select(x => x.IntegrationEvent as HearingAmendmentNotificationEvent)
+            .ToList();
+        
+        foreach (var participants in hearing.Participants)
+            notifications.Should().Contain(x
+                => x.HearingConfirmationForParticipant.ContactEmail == participants.Person.ContactEmail);
+        foreach (var judiciaryParticipants in hearing.JudiciaryParticipants)
+            notifications.Should().Contain(x
+                => x.HearingConfirmationForParticipant.ContactEmail == judiciaryParticipants.GetEmail());
     }
 
-    
+
     [Test]
     public async Task should_update_hearing_with_no_hearing_type_and_publish_when_hearing_status_is_created()
     {

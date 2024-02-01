@@ -82,7 +82,7 @@ namespace BookingsApi.DAL.Commands
                 videoHearing.SourceId = command.SourceId;
 
             await _context.VideoHearings.AddAsync(videoHearing);
-
+            
             var participants = await _hearingService.AddParticipantToService(videoHearing, command.Participants);
 
             await _hearingService.CreateParticipantLinks(participants, command.LinkedParticipants);

@@ -11,5 +11,7 @@ namespace BookingsApi.Contract.V1.Requests
         /// The participant's display name
         /// </summary>
         public string DisplayName { get; set; }
+        public string OptionalContactEmail { get; set; }
+        public string OptionalContactTelephone { get; set; }
     }
 }

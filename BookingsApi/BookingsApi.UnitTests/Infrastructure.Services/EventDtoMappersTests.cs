@@ -85,8 +85,9 @@ public class EventDtoMappersTests
                 };
                 break;
         }
-        
-        var mappedParticipant = EventDtoMappers.MapToHearingConfirmationDto(hearingId, scheduledTime, participant, @case);
+
+        var participantDto = ParticipantDtoMapper.MapToDto(participant, "");
+        var mappedParticipant = EventDtoMappers.MapToHearingConfirmationDto(hearingId, scheduledTime, participantDto, @case);
 
         mappedParticipant.HearingId.Should().Be(hearingId);
 
@@ -99,6 +100,93 @@ public class EventDtoMappersTests
                     
         mappedParticipant.ContactEmail.Should().Be(participant.Person.ContactEmail);
         mappedParticipant.ContactTelephone.Should().Be(participant.Person.TelephoneNumber);
+        mappedParticipant.FirstName.Should().Be(participant.Person.FirstName);
+        mappedParticipant.LastName.Should().Be(participant.Person.LastName);
+        mappedParticipant.ParticipnatId.Should().Be(participant.Id);
+        mappedParticipant.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
+    }
+
+    [Test]
+    public void should_map_hearing_confirmation_dto_with_other_judge_email_and_telephone()
+    {
+        // Arrange
+        var @case = new Case("case number", "case name")
+        {
+            IsLeadCase = true
+        };
+        
+        var hearingId = Guid.NewGuid();
+        var scheduledTime = DateTime.Now.AddDays(2);
+
+        var caseRole = new CaseRole(1,"CaseRoleName");
+        var hearingRole = new HearingRole(1, "RoleName");
+        var person = new PersonBuilder(true).Build();
+
+        var participant = new Judge(person, hearingRole, caseRole)
+        {
+            DisplayName = "Display Name",
+            CreatedBy = "Created By",
+            HearingRole = new HearingRole(1, "Judge") {UserRole = new UserRole(1, "Judge")}
+        };
+
+        const string otherInformation = "|JudgeEmail|otherjudgeemail@email.com|JudgePhone|0123456";
+        
+        var participantDto = ParticipantDtoMapper.MapToDto(participant, otherInformation);
+        
+        // Act
+        var mappedParticipant = EventDtoMappers.MapToHearingConfirmationDto(hearingId, scheduledTime, participantDto, @case);
+        
+        // Assert
+        mappedParticipant.HearingId.Should().Be(hearingId);
+        mappedParticipant.ScheduledDateTime.Should().Be(scheduledTime);
+        mappedParticipant.CaseName.Should().Be(@case.Name);
+        mappedParticipant.CaseNumber.Should().Be(@case.Number);
+        mappedParticipant.DisplayName.Should().Be(participant.DisplayName);
+        mappedParticipant.Representee.Should().Be("");
+        mappedParticipant.Username.Should().Be(participant.Person.Username);
+        mappedParticipant.ContactEmail.Should().Be("otherjudgeemail@email.com");
+        mappedParticipant.ContactTelephone.Should().Be("0123456");
+        mappedParticipant.FirstName.Should().Be(participant.Person.FirstName);
+        mappedParticipant.LastName.Should().Be(participant.Person.LastName);
+        mappedParticipant.ParticipnatId.Should().Be(participant.Id);
+        mappedParticipant.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
+    }
+
+    [Test]
+    public void should_map_welcome_email_dto_with_other_judge_email_and_telephone()
+    {
+        // Arrange
+        var @case = new Case("case number", "case name")
+        {
+            IsLeadCase = true
+        };
+        
+        var hearingId = Guid.NewGuid();
+
+        var caseRole = new CaseRole(1,"CaseRoleName");
+        var hearingRole = new HearingRole(1, "RoleName");
+        var person = new PersonBuilder(true).Build();
+
+        var participant = new Judge(person, hearingRole, caseRole)
+        {
+            DisplayName = "Display Name",
+            CreatedBy = "Created By",
+            HearingRole = new HearingRole(1, "Judge") {UserRole = new UserRole(1, "Judge")}
+        };
+
+        const string otherInformation = "|JudgeEmail|otherjudgeemail@email.com|JudgePhone|0123456";
+        
+        var participantDto = ParticipantDtoMapper.MapToDto(participant, otherInformation);
+        
+        // Act
+        var mappedParticipant = EventDtoMappers.MapToWelcomeEmailDto(hearingId, participantDto, @case);
+        
+        // Assert
+        mappedParticipant.HearingId.Should().Be(hearingId);
+        mappedParticipant.CaseName.Should().Be(@case.Name);
+        mappedParticipant.CaseNumber.Should().Be(@case.Number);
+        mappedParticipant.ContactEmail.Should().Be("otherjudgeemail@email.com");
+        mappedParticipant.ContactTelephone.Should().Be("0123456");
         mappedParticipant.FirstName.Should().Be(participant.Person.FirstName);
         mappedParticipant.LastName.Should().Be(participant.Person.LastName);
         mappedParticipant.ParticipnatId.Should().Be(participant.Id);

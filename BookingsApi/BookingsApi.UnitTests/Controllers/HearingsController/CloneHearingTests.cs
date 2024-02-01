@@ -50,7 +50,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var hearingId = Guid.NewGuid();
             var request = new CloneHearingRequest { Dates = new List<DateTime> { DateTime.Now.AddDays(2), DateTime.Now.AddDays(3) } };
             var hearing = GetHearing("123");
-            
+            var judgeAsExistingParticipantCount = 1;
             var caseName = $"{hearing.GetCases().First().Name} Day {1} of 3";
             QueryHandlerMock
                 .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
@@ -67,7 +67,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count(x => x is not JudicialOfficeHolder)));
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<ExistingParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(0));
+            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<ExistingParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(judgeAsExistingParticipantCount));
         }
 
         [Test]

@@ -10,20 +10,19 @@ namespace BookingsApi.Infrastructure.Services
             var @case = hearing.GetCases()[0];
             var judge = hearing.GetJudge();
 
-            return new HearingAllocationDto
-            {
-                HearingId = hearing.Id,
-                GroupId = hearing.SourceId,
-                ScheduledDateTime = hearing.ScheduledDateTime,
-                ScheduledDuration = hearing.ScheduledDuration,
-                CaseType = hearing.CaseType.Name,
-                CaseNumber = @case.Number,
-                CaseName= @case.Name,
-                HearingVenueName = hearing.HearingVenue.Name,
-                RecordAudio = hearing.AudioRecordingRequired,
-                HearingType = hearing.HearingType.Name,
-                JudgeDisplayName = judge?.DisplayName
-            };
+            var dto = new HearingAllocationDto();
+            dto.HearingId = hearing.Id;
+            dto.GroupId = hearing.SourceId;
+            dto.ScheduledDateTime = hearing.ScheduledDateTime;
+            dto.ScheduledDuration = hearing.ScheduledDuration;
+            dto.CaseType = hearing.CaseType.Name;
+            dto.CaseNumber = @case.Number;
+            dto.CaseName = @case.Name;
+            dto.HearingVenueName = hearing.HearingVenue.Name;
+            dto.RecordAudio = hearing.AudioRecordingRequired;
+            dto.JudgeDisplayName = judge?.DisplayName;
+            
+            return dto;
         }
     }
 }

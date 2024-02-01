@@ -244,7 +244,7 @@ namespace BookingsApi.Domain
             };
             Participants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
-            
+            UpdateBookingStatusJudgeRequirement();
             return participant;
         }
 
@@ -302,29 +302,32 @@ namespace BookingsApi.Domain
             GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
-        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName)
+        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
+            
             if (DoesJudgeExist())
-            {
                 throw new DomainRuleException(nameof(judiciaryPerson), DomainRuleErrorMessages.ParticipantWithJudgeRoleAlreadyExists);
-            }
 
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge);
+            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge, email, phone);
+            
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
-        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName)
+        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
             {
                 throw new DomainRuleException(nameof(judiciaryPerson), $"Judiciary Person {judiciaryPerson.PersonalCode} already exists in the hearing");
             }
-            var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.PanelMember);
+            var participant = new JudiciaryParticipant(displayName, 
+                judiciaryPerson, 
+                JudiciaryParticipantHearingRoleCode.PanelMember,
+                email, phone);
             JudiciaryParticipants.Add(participant);
             UpdatedDate = DateTime.UtcNow;
             
@@ -672,12 +675,12 @@ namespace BookingsApi.Domain
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.CannotEditACancelledHearing);
             }
             
-            if (Status == BookingStatus.Created && IsHearingConfirmedAndCloseToStartTime())
+            if (Status is BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge  && IsHearingConfirmedAndCloseToStartTime())
             {
                 throw new DomainRuleException("Hearing", errorMessage ?? DomainRuleErrorMessages.DefaultCannotEditAHearingCloseToStartTime);
             }
         }
-
+        
         public void UpdateStatus(BookingStatus newStatus, string updatedBy, string cancelReason)
         {
             if (string.IsNullOrEmpty(updatedBy))
@@ -689,7 +692,9 @@ namespace BookingsApi.Domain
             {
                 throw new ArgumentNullException(nameof(cancelReason));
             }
-
+            
+            newStatus = newStatus == BookingStatus.Created && GetJudge() == null ? BookingStatus.ConfirmedWithoutJudge : newStatus;
+            
             var bookingStatusTransition = new BookingStatusTransition();
             var statusChangedEvent = new StatusChangedEvent(Status, newStatus);
 
@@ -702,7 +707,7 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
             CancelReason = cancelReason;
-            if(newStatus == BookingStatus.Created)
+            if(newStatus == BookingStatus.Created || newStatus == BookingStatus.ConfirmedWithoutJudge)
             {
                 // Booking confirmed
                 ConfirmedBy = updatedBy;
@@ -715,6 +720,9 @@ namespace BookingsApi.Domain
             }
         }
 
+        /// <summary>
+        /// ### important! Ensure that this hearings, participant and judiciaryParticipant entities are eagerly loaded before invoking this method. Will assume there is no judge  the properties are null
+        /// </summary>
         public ParticipantBase GetJudge()
         {
             var judge = GetNonJudiciaryJudge();
@@ -807,6 +815,7 @@ namespace BookingsApi.Domain
             JudiciaryParticipants.Add(newJudge);
             
             UpdatedDate = DateTime.UtcNow;
+            UpdateBookingStatusJudgeRequirement();
         }
         
         private void ValidateReassignJudgeAllowed()

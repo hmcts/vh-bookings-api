@@ -99,6 +99,19 @@ namespace BookingsApi.IntegrationTests.Helper
             return justiceUser;
         }
 
+        public async Task<Person> SeedJudgePerson(string title,string userName, string firstName, string lastName, string contactEmail, string telpehoneNumber)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var person = db.Persons.SingleOrDefault(x => x.ContactEmail == contactEmail);
+            if(person == null)
+            {
+                await db.Persons.AddAsync(new Person(title, firstName, lastName, contactEmail, userName));
+                await db.SaveChangesAsync();
+            }
+
+            return person;
+        }
+
         public async Task<JusticeUser> SeedAllocatedJusticeUser(string userName, string firstName, string lastName)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
@@ -316,9 +329,7 @@ namespace BookingsApi.IntegrationTests.Helper
             }
         }
 
-        private async Task AddJudgeToVideoHearing(VideoHearing videoHearing, CaseType caseType,
-            bool useFlatHearingRoles,
-            BookingsDbContext db)
+        private async Task AddJudgeToVideoHearing(VideoHearing videoHearing, CaseType caseType, bool useFlatHearingRoles, BookingsDbContext db)
         {
             if (useFlatHearingRoles)
             {
@@ -710,6 +721,15 @@ namespace BookingsApi.IntegrationTests.Helper
 
             seededForRemoval.ForEach(vh => vh.Deallocate());
             await db.SaveChangesAsync();
+        }
+
+        public async Task<Person> SeedGenericJudgePerson()
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var newJudge = new PersonBuilder().Build();
+            var genericJudge = await db.Persons.AddAsync(newJudge);
+            await db.SaveChangesAsync();
+            return genericJudge.Entity;
         }
     }
 }
