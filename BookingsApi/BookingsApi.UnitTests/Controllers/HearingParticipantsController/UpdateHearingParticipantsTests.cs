@@ -190,7 +190,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
             response.Should().BeOfType<OkObjectResult>();
 
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
 
         }
 
@@ -222,7 +222,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             //Assert
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [TestCase("Email@email.com", "email@email.com")]
@@ -259,7 +259,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             // Assert
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(), 
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [Test]
@@ -291,7 +291,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             //Assert
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [Test]
@@ -325,7 +325,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             //Assert
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
 
@@ -343,7 +343,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [Test]
@@ -360,7 +360,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [Test]
@@ -376,7 +376,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [Test]
@@ -412,7 +412,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             //Assert
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             //Assert
             HearingParticipantService.Verify(x => x.PublishEventForUpdateParticipantsAsync(It.IsAny<VideoHearing>(), It.IsAny<List<ExistingParticipantDetails>>(),
-                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>()), Times.Once);
+                It.IsAny<List<NewParticipant>>(), It.IsAny<List<Guid>>(), It.IsAny<List<BookingsApi.DAL.Dtos.LinkedParticipantDto>>(), default), Times.Once);
         }
 
         private UpdateHearingParticipantsRequest BuildRequest(bool withLinkedParticipants = true)

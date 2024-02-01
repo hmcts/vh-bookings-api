@@ -1,4 +1,5 @@
-﻿using BookingsApi.Common.Services;
+﻿using System.Collections.Generic;
+using BookingsApi.Common.Services;
 using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.Publishers;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
     public interface IParticipantAddedToHearingAsynchronousProcess
     {
-        Task Start(VideoHearing videoHearing);
+        Task Start(VideoHearing videoHearing, List<VideoHearing> multiDayHearings = null);
     }
 
     public class ParticipantAddedToHearingAsynchronousProcess : IParticipantAddedToHearingAsynchronousProcess
@@ -21,7 +22,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             _featureToggles = featureToggles;
         }
 
-        public async Task Start(VideoHearing videoHearing)
+        public async Task Start(VideoHearing videoHearing, List<VideoHearing> multiDayHearings = null)
         {
             if (!_featureToggles.UsePostMay2023Template())
             {
@@ -31,7 +32,14 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             }
 
             await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
-            await _publisherFactory.Get(EventType.NewParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
+            if (multiDayHearings != null)
+            {
+                await ((IPublishMultidayUpdateEvent)_publisherFactory.Get(EventType.NewParticipantMultidayHearingUpdateConfirmationEvent)).PublishAsync(videoHearing, multiDayHearings);
+            }
+            else
+            {
+                await _publisherFactory.Get(EventType.NewParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
+            }
             await _publisherFactory.Get(EventType.ExistingParticipantHearingConfirmationEvent).PublishAsync(videoHearing);
         }
     }

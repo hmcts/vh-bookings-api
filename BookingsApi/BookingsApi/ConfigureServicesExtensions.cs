@@ -116,6 +116,7 @@ namespace BookingsApi
                 var list = p.GetServices<IPublishEvent>().ToList(); 
                 list.AddRange(p.GetServices<IPublishMultidayEvent>().ToList());
                 list.AddRange(p.GetServices<IPublishJudiciaryParticipantsEvent>().ToList());
+                list.AddRange(p.GetServices<IPublishMultidayUpdateEvent>().ToList());
                 return list; });
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();

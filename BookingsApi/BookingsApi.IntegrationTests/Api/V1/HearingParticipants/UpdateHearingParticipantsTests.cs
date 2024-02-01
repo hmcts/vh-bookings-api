@@ -66,7 +66,7 @@ public class UpdateHearingParticipantsTests : ApiTest
         hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
         hearingResponse.Status.Should().Be(BookingStatus.ConfirmedWithoutJudge);
     }
-
+   
     [Test]
     public async Task should_return_bad_request_when_hearing_id_is_invalid()
     {

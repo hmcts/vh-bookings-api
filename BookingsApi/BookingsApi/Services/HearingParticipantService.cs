@@ -13,7 +13,8 @@ public interface IHearingParticipantService
         List<ExistingParticipantDetails> existingParticipants,
         List<NewParticipant> newParticipants,
         List<Guid> removedParticipantIds,
-        List<LinkedParticipantDto> linkedParticipants);
+        List<LinkedParticipantDto> linkedParticipants,
+        bool isMultiDayUpdate = false);
     public Task PublishEventForNewJudiciaryParticipantsAsync(Hearing hearing, IEnumerable<NewJudiciaryParticipant> newJudiciaryParticipants);
     public Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant);
     
@@ -25,15 +26,19 @@ public class HearingParticipantService : IHearingParticipantService
 {
     private readonly IEventPublisher _eventPublisher;
     private readonly ICommandHandler _commandHandler;
+    private readonly IQueryHandler _queryHandler;
     private readonly IParticipantAddedToHearingAsynchronousProcess _participantAddedToHearingAsynchronousProcess;
     private readonly INewJudiciaryAddedAsynchronousProcesses _newJudiciaryAddedAsynchronousProcesses;
+    
     public HearingParticipantService(ICommandHandler commandHandler, IEventPublisher eventPublisher, 
-        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses)
+        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses,
+        IQueryHandler queryHandler)
     {
         _commandHandler = commandHandler;
         _eventPublisher = eventPublisher;
         _participantAddedToHearingAsynchronousProcess = participantAddedToHearingAsynchronousProcess;
         _newJudiciaryAddedAsynchronousProcesses = newJudiciaryAddedAsynchronousProcesses;
+        _queryHandler = queryHandler;
     }
 
     public async Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants)
@@ -49,7 +54,12 @@ public class HearingParticipantService : IHearingParticipantService
         }
     }
     
-    public async Task PublishEventForUpdateParticipantsAsync(VideoHearing hearing, List<ExistingParticipantDetails> existingParticipants, List<NewParticipant> newParticipants, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
+    public async Task PublishEventForUpdateParticipantsAsync(VideoHearing hearing, 
+        List<ExistingParticipantDetails> existingParticipants, 
+        List<NewParticipant> newParticipants, 
+        List<Guid> removedParticipantIds, 
+        List<LinkedParticipantDto> linkedParticipants,
+        bool isMultiDayUpdate = false)
     {
         var eventNewParticipants = hearing
             .GetParticipants()
@@ -62,7 +72,7 @@ public class HearingParticipantService : IHearingParticipantService
         
         if (eventNewParticipants.Any() || removedParticipantIds.Any())
         {
-            await ProcessParticipantListChange(hearing, removedParticipantIds, linkedParticipants, eventExistingParticipants, eventNewParticipants);
+            await ProcessParticipantListChange(hearing, removedParticipantIds, linkedParticipants, eventExistingParticipants, eventNewParticipants, isMultiDayUpdate: isMultiDayUpdate);
         }
         else
         {
@@ -113,7 +123,7 @@ public class HearingParticipantService : IHearingParticipantService
     }
 
     private async Task ProcessParticipantListChange(VideoHearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
-        List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants)
+        List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants, bool isMultiDayUpdate = false)
     {
             await PublishHearingParticipantListUpdatedEvent(hearing, 
                 removedParticipantIds, 
@@ -124,6 +134,14 @@ public class HearingParticipantService : IHearingParticipantService
         if (eventNewParticipants.Exists(x => x.HearingRole.UserRole.Name == "Judge") && hearing.Status != BookingStatus.Created)
             await UpdateHearingStatusAsync(hearing.Id, BookingStatus.Created, "System", string.Empty);
 
+        if (hearing.SourceId != null && isMultiDayUpdate)
+        {
+            var getHearingsInGroupQuery = new GetHearingsByGroupIdQuery(hearing.SourceId.Value);
+            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsInGroupQuery);
+
+            await _participantAddedToHearingAsynchronousProcess.Start(hearing, hearingsInGroup);
+        }
+        
         await _participantAddedToHearingAsynchronousProcess.Start(hearing);
     }
 

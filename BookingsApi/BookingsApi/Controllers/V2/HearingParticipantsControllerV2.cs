@@ -184,6 +184,8 @@ namespace BookingsApi.Controllers.V2
                 return NotFound();
             }
             
+            // TODO validate that IsMultiDayUpdate is only true if hearing is multi day
+            
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
@@ -208,7 +210,7 @@ namespace BookingsApi.Controllers.V2
             await _commandHandler.Handle(command);
 
             var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-            await _hearingParticipantService.PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+            await _hearingParticipantService.PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants, isMultiDayUpdate: request.IsMultiDayUpdate);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));

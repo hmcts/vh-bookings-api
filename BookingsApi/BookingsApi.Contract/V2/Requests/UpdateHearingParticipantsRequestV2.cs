@@ -24,5 +24,10 @@ namespace BookingsApi.Contract.V2.Requests
         ///     List of linked participants
         /// </summary>
         public List<LinkedParticipantRequestV2> LinkedParticipants { get; set; } = new List<LinkedParticipantRequestV2>();
+        
+        /// <summary>
+        ///     Set to true if updating all days in the multi day booking
+        /// </summary>
+        public bool IsMultiDayUpdate { get; set; }
     }
 }

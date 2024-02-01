@@ -41,5 +41,32 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             }
             return newParticipants;
         }
+
+        public static IEnumerable<(Participant participant, int totalDays)> GetNewParticipantsForMultiDaysSinceLastUpdate(VideoHearing videoHearing, IList<VideoHearing> multiDayHearings)
+        {
+            var participants = videoHearing.Participants;
+            var areParticipantsAddedToExistingBooking = participants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+            if (areParticipantsAddedToExistingBooking)
+            {
+                participants = participants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds()).ToList();
+            }
+
+            var newParticipants = new List<(Participant participant, int totalDays)>();
+            foreach (var participant in participants)
+            {
+                // Only send the notification once
+                var previousHearings = multiDayHearings.Where(x => x.ScheduledDateTime < videoHearing.ScheduledDateTime).ToList();
+                var isPreviouslyNotified = previousHearings.Exists(x => x.Participants.Any(y => y.Id == participant.Id));
+                if (isPreviouslyNotified)
+                {
+                    continue;
+                }
+
+                var totalDays = multiDayHearings.Count(x => x.ScheduledDateTime >= videoHearing.ScheduledDateTime);
+                newParticipants.Add((participant, totalDays));
+            }
+
+            return newParticipants;
+        }
     }
 }

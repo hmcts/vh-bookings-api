@@ -4,6 +4,7 @@ using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Validations.V2;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
@@ -294,5 +295,57 @@ public class UpdateHearingParticipantsV2Tests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
         hearingResponse.Status.Should().Be(BookingStatusV2.ConfirmedWithoutJudge);
+    }
+    
+    [Test]
+    public async Task should_add_an_individual_to_a_confirmed_multi_day_hearing()
+    {
+        // arrange
+        var dates = new List<DateTime>
+        {
+            DateTime.Today.AddDays(1).AddHours(10),
+            DateTime.Today.AddDays(2).AddHours(10),
+            DateTime.Today.AddDays(3).AddHours(10)
+        };
+        var hearings = await Hooks.SeedMultiDayHearing(dates);
+        var hearingToUpdate = hearings[1];
+        var existingParticipant = hearingToUpdate.Participants.First(e => e.HearingRole.UserRole.IsIndividual);
+        var newParticipantPerson = new PersonBuilder().Build();
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants = new List<UpdateParticipantRequestV2>
+            {
+                new ()
+                {
+                    ParticipantId = existingParticipant.Id,
+                    DisplayName = existingParticipant.DisplayName,
+                    Title = existingParticipant.Person.Title,
+                    FirstName = existingParticipant.Person.FirstName,
+                    LastName = existingParticipant.Person.LastName
+                }
+            },
+            NewParticipants = new List<ParticipantRequestV2>
+            {
+                new ()
+                {
+                    Title = newParticipantPerson.Title,
+                    FirstName = newParticipantPerson.FirstName,
+                    MiddleNames = newParticipantPerson.MiddleNames,
+                    LastName = newParticipantPerson.LastName,
+                    ContactEmail = newParticipantPerson.ContactEmail,
+                    TelephoneNumber = newParticipantPerson.TelephoneNumber,
+                    DisplayName = "DisplayName",
+                    HearingRoleCode = "APPL"
+                }
+            },
+            IsMultiDayUpdate = true
+        };
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearingToUpdate.Id),RequestBody.Set(request));
+    
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
     }
 }
