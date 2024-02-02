@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BookingsApi.Contract.V2.Enums;
+using BookingsApi.Contract.V2.Requests.Enums;
 
 namespace BookingsApi.Contract.V2.Requests
 {
@@ -45,7 +46,7 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         ///     List of existing judiciary participants
         /// </summary>
-        public List<JudiciaryParticipantRequestV2> ExistingJudiciaryParticipants { get; set; } = new();
+        public List<EditableUpdateJudiciaryParticipantRequestV2> ExistingJudiciaryParticipants { get; set; } = new();
 
         /// <summary>
         ///     List of removed judiciary participant personal codes
@@ -84,5 +85,26 @@ namespace BookingsApi.Contract.V2.Requests
         /// Optional Contact Telephone
         /// </summary>
         public string ContactTelephone { get; set; }
+    }
+    
+    public class UpdateJudiciaryParticipantRequestV2
+    {
+        /// <summary>
+        /// The participant's display name
+        /// </summary>
+        public string DisplayName { get; set; }
+        
+        /// <summary>
+        /// The participant's hearing role code
+        /// </summary>
+        public JudiciaryParticipantHearingRoleCodeV2 HearingRoleCode { get; set; }
+    }
+
+    public class EditableUpdateJudiciaryParticipantRequestV2 : UpdateJudiciaryParticipantRequestV2
+    {
+        /// <summary>
+        /// The participant's judicial personal code
+        /// </summary>
+        public string PersonalCode { get; set; }
     }
 }

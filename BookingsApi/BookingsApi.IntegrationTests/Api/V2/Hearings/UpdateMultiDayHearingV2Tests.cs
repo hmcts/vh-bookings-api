@@ -1,5 +1,6 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Contract.V2.Requests.Enums;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 
@@ -55,12 +56,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 },
                 JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
                 {
-                    ExistingJudiciaryParticipants = h.JudiciaryParticipants.Select(jp => new JudiciaryParticipantRequestV2
+                    ExistingJudiciaryParticipants = h.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequestV2
                     {
-                        ContactEmail = jp.ContactEmail,
                         DisplayName = jp.DisplayName,
                         PersonalCode = jp.JudiciaryPerson.PersonalCode,
-                        ContactTelephone = jp.ContactTelephone,
                         HearingRoleCode = jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge ?
                             JudiciaryParticipantHearingRoleCodeV2.Judge
                             : JudiciaryParticipantHearingRoleCodeV2.PanelMember
