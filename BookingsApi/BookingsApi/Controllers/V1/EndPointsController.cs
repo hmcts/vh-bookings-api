@@ -15,16 +15,16 @@ namespace BookingsApi.Controllers.V1
         private readonly IRandomGenerator _randomGenerator;
         private readonly IQueryHandler _queryHandler;
         private readonly KinlyConfiguration _kinlyConfiguration;
-        private readonly IUpdateHearingService _updateHearingService;
+        private readonly IEndpointService _endpointService;
 
         public EndPointsController(IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration, IQueryHandler queryHandler,
-            IUpdateHearingService updateHearingService)
+            IEndpointService endpointService)
         {
             _randomGenerator = randomGenerator;
             _queryHandler = queryHandler;
             _kinlyConfiguration = kinlyConfiguration.Value;
-            _updateHearingService = updateHearingService;
+            _endpointService = endpointService;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace BookingsApi.Controllers.V1
             {
                 var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator,
                     _kinlyConfiguration.SipAddressStem);
-                var endpoint = await _updateHearingService.AddEndpoint(hearingId, newEp);
+                var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
                 var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
 
                 return Ok(endpointResponse);
@@ -95,7 +95,7 @@ namespace BookingsApi.Controllers.V1
             {   
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
-                await _updateHearingService.RemoveEndpoint(hearing, endpointId);
+                await _endpointService.RemoveEndpoint(hearing, endpointId);
             }
             catch (HearingNotFoundException exception)
             {
@@ -141,7 +141,7 @@ namespace BookingsApi.Controllers.V1
             {
                 var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
                 if(hearing == null) throw new HearingNotFoundException(hearingId);
-                await _updateHearingService.UpdateEndpoint(hearing, endpointId, updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName);
+                await _endpointService.UpdateEndpoint(hearing, endpointId, updateEndpointRequest.DefenceAdvocateContactEmail, updateEndpointRequest.DisplayName);
             }
             catch (HearingNotFoundException exception)
             {

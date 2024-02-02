@@ -13,14 +13,14 @@ namespace BookingsApi.Controllers.V1
     public class JudiciaryParticipantsController : Controller
     {
         private readonly IQueryHandler _queryHandler;
-        private readonly IUpdateHearingService _updateHearingService;
+        private readonly IJudiciaryParticipantService _judiciaryParticipantService;
         
         public JudiciaryParticipantsController(
             IQueryHandler queryHandler,
-            IUpdateHearingService updateHearingService)
+            IJudiciaryParticipantService judiciaryParticipantService)
         {
             _queryHandler = queryHandler;
-            _updateHearingService = updateHearingService;
+            _judiciaryParticipantService = judiciaryParticipantService;
         }
         
         /// <summary>
@@ -51,7 +51,7 @@ namespace BookingsApi.Controllers.V1
             
             try
             {
-                addedParticipants = await _updateHearingService.AddJudiciaryParticipants(participants, hearingId);
+                addedParticipants = await _judiciaryParticipantService.AddJudiciaryParticipants(participants, hearingId);
             }
             catch (HearingNotFoundException exception)
             {
@@ -79,7 +79,7 @@ namespace BookingsApi.Controllers.V1
         {
             try
             {
-                await _updateHearingService.RemoveJudiciaryParticipant(personalCode, hearingId);
+                await _judiciaryParticipantService.RemoveJudiciaryParticipant(personalCode, hearingId);
             }
             catch (HearingNotFoundException exception)
             {
@@ -126,7 +126,7 @@ namespace BookingsApi.Controllers.V1
 
             try
             {
-                updatedParticipant = await _updateHearingService.UpdateJudiciaryParticipant(participant, hearingId);
+                updatedParticipant = await _judiciaryParticipantService.UpdateJudiciaryParticipant(participant, hearingId);
             }
             catch (HearingNotFoundException exception)
             {
@@ -186,7 +186,7 @@ namespace BookingsApi.Controllers.V1
             
             try
             {
-                newJudge = await _updateHearingService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge);
+                newJudge = await _judiciaryParticipantService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge);
             }
             catch (HearingNotFoundException exception)
             {

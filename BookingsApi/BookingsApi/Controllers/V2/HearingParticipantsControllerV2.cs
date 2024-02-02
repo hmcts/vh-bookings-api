@@ -14,18 +14,14 @@ namespace BookingsApi.Controllers.V2
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IHearingParticipantService _hearingParticipantService;
-        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingParticipantsControllerV2(IQueryHandler queryHandler,
             ICommandHandler commandHandler,
-            IEventPublisher eventPublisher,
-            IHearingParticipantService hearingParticipantService,
-            IUpdateHearingService updateHearingService)
+            IHearingParticipantService hearingParticipantService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _hearingParticipantService = hearingParticipantService;
-            _updateHearingService = updateHearingService;
         }
         
         /// <summary>
@@ -195,7 +191,7 @@ namespace BookingsApi.Controllers.V2
                 return ValidationProblem(ModelState);
             }
 
-            var hearing = await _updateHearingService.UpdateParticipantsV2(request, videoHearing, hearingRoles);
+            var hearing = await _hearingParticipantService.UpdateParticipantsV2(request, videoHearing, hearingRoles);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
@@ -203,38 +199,6 @@ namespace BookingsApi.Controllers.V2
             var response = CreateParticipantResponseV2List(upsertedParticipants.ToList());
 
             return Ok(response);
-        }
-
-        private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request,
-            List<Participant> existingParticipants)
-        {
-            var existingParticipantDetails = new List<ExistingParticipantDetails>();
-
-            foreach (var existingParticipantRequest in request.ExistingParticipants)
-            {
-                var existingParticipant =
-                    existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-                if (existingParticipant == null)
-                {
-                    continue;
-                }
-
-                var existingParticipantDetail = new ExistingParticipantDetails
-                {
-                    DisplayName = existingParticipantRequest.DisplayName,
-                    OrganisationName = existingParticipantRequest.OrganisationName,
-                    ParticipantId = existingParticipantRequest.ParticipantId,
-                    Person = existingParticipant.Person,
-                    RepresentativeInformation = new RepresentativeInformation {Representee = existingParticipantRequest.Representee},
-                    TelephoneNumber = existingParticipantRequest.TelephoneNumber,
-                    Title = existingParticipantRequest.Title
-                };
-                existingParticipantDetail.Person.ContactEmail = existingParticipant.Person.ContactEmail;
-                existingParticipantDetails.Add(existingParticipantDetail);
-            }
-
-            return existingParticipantDetails;
         }
 
         private static List<ParticipantResponseV2> CreateParticipantResponseV2List(List<Participant> participants)

@@ -1,5 +1,7 @@
 using BookingsApi.Contract.Interfaces.Requests;
+using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.Common;
 using FluentValidation.Results;
 
@@ -19,21 +21,25 @@ public interface IHearingParticipantService
     
     public Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request);
     public Task<Participant> UpdateParticipantAndPublishEventAsync(Hearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
+    Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
 }
 
 public class HearingParticipantService : IHearingParticipantService
 {
     private readonly IEventPublisher _eventPublisher;
+    private readonly IQueryHandler _queryHandler;
     private readonly ICommandHandler _commandHandler;
     private readonly IParticipantAddedToHearingAsynchronousProcess _participantAddedToHearingAsynchronousProcess;
     private readonly INewJudiciaryAddedAsynchronousProcesses _newJudiciaryAddedAsynchronousProcesses;
     public HearingParticipantService(ICommandHandler commandHandler, IEventPublisher eventPublisher, 
-        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses)
+        IParticipantAddedToHearingAsynchronousProcess participantAddedToHearingAsynchronousProcess, INewJudiciaryAddedAsynchronousProcesses newJudiciaryAddedAsynchronousProcesses,
+        IQueryHandler queryHandler)
     {
         _commandHandler = commandHandler;
         _eventPublisher = eventPublisher;
         _participantAddedToHearingAsynchronousProcess = participantAddedToHearingAsynchronousProcess;
         _newJudiciaryAddedAsynchronousProcesses = newJudiciaryAddedAsynchronousProcesses;
+        _queryHandler = queryHandler;
     }
 
     public async Task PublishEventForNewParticipantsAsync(VideoHearing hearing, IEnumerable<NewParticipant> newParticipants)
@@ -110,6 +116,63 @@ public class HearingParticipantService : IHearingParticipantService
         var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
         return updatedParticipant;
+    }
+    
+    public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
+        VideoHearing hearing, List<HearingRole> hearingRoles)
+    {
+        var newParticipants = request.NewParticipants
+            .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
+
+        var existingParticipants = hearing.Participants
+            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
+
+        var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequest(request, existingParticipants);
+
+        var linkedParticipants =
+            LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+
+        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        await _commandHandler.Handle(command);
+
+        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
+        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        return updatedHearing;
+    }
+    
+    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request,
+        List<Participant> existingParticipants)
+    {
+        var existingParticipantDetails = new List<ExistingParticipantDetails>();
+
+        foreach (var existingParticipantRequest in request.ExistingParticipants)
+        {
+            var existingParticipant =
+                existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+
+            if (existingParticipant == null)
+            {
+                continue;
+            }
+
+            var existingParticipantDetail = new ExistingParticipantDetails
+            {
+                DisplayName = existingParticipantRequest.DisplayName,
+                OrganisationName = existingParticipantRequest.OrganisationName,
+                ParticipantId = existingParticipantRequest.ParticipantId,
+                Person = existingParticipant.Person,
+                RepresentativeInformation = new RepresentativeInformation {Representee = existingParticipantRequest.Representee},
+                TelephoneNumber = existingParticipantRequest.TelephoneNumber,
+                Title = existingParticipantRequest.Title
+            };
+            existingParticipantDetail.Person.ContactEmail = existingParticipant.Person.ContactEmail;
+            existingParticipantDetails.Add(existingParticipantDetail);
+        }
+
+        return existingParticipantDetails;
     }
 
     private async Task ProcessParticipantListChange(VideoHearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
