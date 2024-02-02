@@ -164,7 +164,7 @@ public class HearingParticipantService : IHearingParticipantService
 
         var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
         var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        await PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
         return updatedHearing;
     }
