@@ -16,18 +16,16 @@ namespace BookingsApi.Controllers.V2
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
-        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
+            IOptions<KinlyConfiguration> kinlyConfigurationOption)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
             _kinlyConfiguration = kinlyConfigurationOption.Value;
-            _updateHearingService = updateHearingService;
         }
 
         /// <summary>
@@ -148,7 +146,7 @@ namespace BookingsApi.Controllers.V2
             var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);
             return Ok(response);
         }
-        
+
         /// <summary>
         /// Get list of all hearings in a group
         /// </summary>
