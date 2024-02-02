@@ -1,7 +1,6 @@
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace BookingsApi.Services
@@ -10,16 +9,12 @@ namespace BookingsApi.Services
     {
         Task<ValidationResult> ValidateUpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, List<HearingRole> hearingRoles);
         Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
-        Task<ValidationResult> ValidateUpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request);
-        Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
         Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
         Task<IList<JudiciaryParticipant>> AddJudiciaryParticipants(List<NewJudiciaryParticipant> newJudiciaryParticipants, Guid hearingId);
         Task<JudiciaryParticipant> UpdateJudiciaryParticipant(UpdatedJudiciaryParticipant judiciaryParticipant, Guid hearingId);
         Task RemoveJudiciaryParticipant(string personalCode, Guid hearingId);
-        Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, Guid hearingId);
-        Task<ValidationResult> ValidateUpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request);
         Task<JudiciaryParticipant> ReassignJudiciaryJudge(Guid hearingId, NewJudiciaryJudge newJudiciaryJudge);
     }
     
@@ -60,52 +55,6 @@ namespace BookingsApi.Services
             
             return result;
         }
-
-        public async Task<ValidationResult> ValidateUpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request)
-        {
-            foreach (var newEndpoint in request.NewEndpoints)
-            {
-                var result = await new EndpointRequestValidationV2().ValidateAsync(newEndpoint);
-                if (!result.IsValid)
-                {
-                    return result;
-                }
-            }
-            
-            foreach (var existingEndpoint in request.ExistingEndpoints)
-            {
-                var result = await new EndpointRequestValidationV2().ValidateAsync(existingEndpoint);
-                if (!result.IsValid)
-                {
-                    return result;
-                }
-            }
-
-            return new ValidationResult();
-        }
-
-        public async Task<ValidationResult> ValidateUpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request)
-        {
-            foreach (var newJudiciaryParticipant in request.NewJudiciaryParticipants)
-            {
-                var result = await new JudiciaryParticipantRequestValidationV2().ValidateAsync(newJudiciaryParticipant);
-                if (!result.IsValid)
-                {
-                    return result;
-                }
-            }
-
-            foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
-            {
-                var existingJudiciaryParticipantValidationResult = await new UpdateJudiciaryParticipantRequestValidationV2().ValidateAsync(existingJudiciaryParticipant);
-                if (!existingJudiciaryParticipantValidationResult.IsValid)
-                {
-                    return existingJudiciaryParticipantValidationResult;
-                }
-            }
-
-            return new ValidationResult();
-        }
         
         public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
             VideoHearing hearing, List<HearingRole> hearingRoles)
@@ -130,30 +79,6 @@ namespace BookingsApi.Services
             await _hearingParticipantService.PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
 
             return updatedHearing;
-        }
-
-        public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, Guid hearingId)
-        {
-            // TODO if the request contains a different judge, remove them from the request and reassign them instead
-            
-            var judiciaryParticipantsToAdd = request.NewJudiciaryParticipants
-                .Select(JudiciaryParticipantRequestV2ToNewJudiciaryParticipantMapper.Map)
-                .ToList();
-            
-            await AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearingId);
-
-            foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
-            {
-                var judiciaryParticipantToUpdate = UpdateJudiciaryParticipantRequestV2ToUpdatedJudiciaryParticipantMapper.Map(
-                    existingJudiciaryParticipant.PersonalCode, existingJudiciaryParticipant);
-
-                await UpdateJudiciaryParticipant(judiciaryParticipantToUpdate, hearingId);
-            }
-            
-            foreach (var removedJudiciaryParticipant in request.RemovedJudiciaryParticipantPersonalCodes)
-            {
-                await RemoveJudiciaryParticipant(removedJudiciaryParticipant, hearingId);
-            }
         }
 
         public async Task<IList<JudiciaryParticipant>> AddJudiciaryParticipants(List<NewJudiciaryParticipant> newJudiciaryParticipants, Guid hearingId)
@@ -212,27 +137,6 @@ namespace BookingsApi.Services
             await PublishEventsForJudiciaryJudgeReassigned(hearing, oldJudge?.Id, newJudge);
 
             return newJudge;
-        }
-
-        public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
-        {
-            foreach (var endpointToAdd in request.NewEndpoints)
-            {
-                var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
-                    _kinlyConfiguration.SipAddressStem);
-
-                await AddEndpoint(hearing.Id, newEp);
-            }
-
-            foreach (var endpointToUpdate in request.ExistingEndpoints)
-            {
-                await UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
-            }
-
-            foreach (var endpointIdToRemove in request.RemovedEndpointIds)
-            {
-                await RemoveEndpoint(hearing, endpointIdToRemove);
-            }
         }
 
         public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint)

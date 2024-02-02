@@ -148,65 +148,7 @@ namespace BookingsApi.Controllers.V2
             var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);
             return Ok(response);
         }
-
-        /// <summary>
-        /// Update hearings in a multi day group
-        /// </summary>
-        /// <param name="groupId">The group id of the multi day hearing</param>
-        /// <param name="request">List of hearings to update</param>
-        /// <returns>No content</returns>
-        [HttpPatch("{groupId}/hearings")]
-        [OpenApiOperation("UpdateMultiDayHearingV2")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [MapToApiVersion("2.0")]
-        public async Task<IActionResult> UpdateMultiDayHearing(Guid groupId, [FromBody] UpdateMultiDayHearingRequestV2 request)
-        {
-            var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
-            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-            
-            // Validate
-            // TODO validate that the group id is correct
-            // TODO validate that the hearings in the request belong to the group
-            foreach (var requestHearing in request.Hearings)
-            {
-                var participantsValidationResult = await _updateHearingService.ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
-                if (!participantsValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(participantsValidationResult.Errors);
-                    return ValidationProblem(ModelState);
-                }
-      
-                var endpointsValidationResult = await _updateHearingService.ValidateUpdateEndpointsV2(requestHearing.Endpoints);
-                if (!endpointsValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(endpointsValidationResult.Errors);
-                    return ValidationProblem(ModelState);
-                }
-                
-                var judiciaryParticipantsValidationResult = await _updateHearingService.ValidateUpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants);
-                if (!judiciaryParticipantsValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(judiciaryParticipantsValidationResult.Errors);
-                    return ValidationProblem(ModelState);
-                }
-            }
-            
-            foreach (var requestHearing in request.Hearings)
-            {
-                var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
-
-                // TODO make sure we're passing in an updated hearing object here
-                await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
-                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
-                await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing.Id);
-            }
-            
-            return NoContent();
-        }
-
+        
         /// <summary>
         /// Get list of all hearings in a group
         /// </summary>
