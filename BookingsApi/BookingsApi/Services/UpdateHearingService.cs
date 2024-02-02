@@ -7,7 +7,6 @@ namespace BookingsApi.Services
 {
     public interface IUpdateHearingService
     {
-        Task<ValidationResult> ValidateUpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, List<HearingRole> hearingRoles);
         Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
         Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName);
@@ -20,42 +19,23 @@ namespace BookingsApi.Services
     
     public class UpdateHearingService : IUpdateHearingService
     {
+        public IOptions<KinlyConfiguration> KinlyConfiguration { get; }
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IHearingParticipantService _hearingParticipantService;
-        private readonly IRandomGenerator _randomGenerator;
-        private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IEventPublisher _eventPublisher;
 
         public UpdateHearingService(IQueryHandler queryHandler, ICommandHandler commandHandler,
-            IHearingParticipantService hearingParticipantService, IRandomGenerator randomGenerator, 
+            IHearingParticipantService hearingParticipantService, 
             IOptions<KinlyConfiguration> kinlyConfiguration, IEventPublisher eventPublisher)
         {
+            KinlyConfiguration = kinlyConfiguration;
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _hearingParticipantService = hearingParticipantService;
-            _randomGenerator = randomGenerator;
-            _kinlyConfiguration = kinlyConfiguration.Value;
             _eventPublisher = eventPublisher;
         }
-        
-        public async Task<ValidationResult> ValidateUpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, List<HearingRole> hearingRoles)
-        {
-            var result = await new UpdateHearingParticipantsRequestInputValidationV2().ValidateAsync(request);
-            if (!result.IsValid)
-            {
-                return result;
-            }
-            
-            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
-            if (!dataValidationResult.IsValid)
-            {
-                return dataValidationResult;
-            }
-            
-            return result;
-        }
-        
+
         public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
             VideoHearing hearing, List<HearingRole> hearingRoles)
         {

@@ -172,20 +172,27 @@ namespace BookingsApi.Controllers.V2
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId, [FromBody] UpdateHearingParticipantsRequestV2 request)
         {
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-            var validationResult = await _updateHearingService.ValidateUpdateParticipantsV2(request, hearingRoles);
-            if (!validationResult.IsValid)
+            var result = await new UpdateHearingParticipantsRequestInputValidationV2().ValidateAsync(request);
+            if (!result.IsValid)
             {
-                ModelState.AddFluentValidationErrors(validationResult.Errors);
+                ModelState.AddFluentValidationErrors(result.Errors);
                 return ValidationProblem(ModelState);
             }
-            
+
             var query = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
             if (videoHearing == null)
             {
                 return NotFound();
+            }
+            
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
             }
 
             var hearing = await _updateHearingService.UpdateParticipantsV2(request, videoHearing, hearingRoles);
