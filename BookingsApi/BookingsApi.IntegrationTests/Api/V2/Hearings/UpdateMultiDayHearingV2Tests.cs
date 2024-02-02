@@ -46,8 +46,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 },
                 Endpoints = new UpdateHearingEndpointsRequestV2
                 {
-                    ExistingEndpoints = h.Endpoints.Select(e => new EndpointRequestV2
+                    ExistingEndpoints = h.Endpoints.Select(e => new UpdateEndpointRequestV2
                     {
+                        Id = e.Id,
                         DisplayName = e.DisplayName,
                         DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
                     }).ToList()

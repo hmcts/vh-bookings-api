@@ -27,7 +27,7 @@ namespace BookingsApi.Contract.V2.Requests
         /// <summary>
         ///     List of existing endpoints
         /// </summary>
-        public List<EndpointRequestV2> ExistingEndpoints { get; set; } = new();
+        public List<UpdateEndpointRequestV2> ExistingEndpoints { get; set; } = new();
 
         /// <summary>
         ///     List of removed endpoint Ids
@@ -51,6 +51,11 @@ namespace BookingsApi.Contract.V2.Requests
         ///     List of removed judiciary participant personal codes
         /// </summary>
         public List<string> RemovedJudiciaryParticipantPersonalCodes { get; set; } = new();
+    }
+
+    public class UpdateEndpointRequestV2 : EndpointRequestV2
+    {
+        public Guid Id { get; set; }
     }
     
     public class JudiciaryParticipantRequestV2

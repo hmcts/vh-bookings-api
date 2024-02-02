@@ -184,7 +184,9 @@ namespace BookingsApi.Controllers.V2
             {
                 var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
 
+                // TODO make sure we're passing in an updated hearing object here
                 await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
+                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
             }
             
             return NoContent();
