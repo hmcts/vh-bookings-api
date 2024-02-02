@@ -104,11 +104,8 @@ namespace BookingsApi.Services
 
         public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
         {
-            // Copied from EndpointsController (TODO refactor)
-            
             foreach (var endpointToAdd in request.NewEndpoints)
             {
-                // Add endpoint
                 var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
                     _kinlyConfiguration.SipAddressStem);
 

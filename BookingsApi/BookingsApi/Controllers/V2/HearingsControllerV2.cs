@@ -170,7 +170,6 @@ namespace BookingsApi.Controllers.V2
             // Validate
             // TODO validate that the group id is correct
             // TODO validate that the hearings in the request belong to the group
-            // TODO validate that each item in the request is valid
             foreach (var requestHearing in request.Hearings)
             {
                 var participantsValidationResult = await _updateHearingService.ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
