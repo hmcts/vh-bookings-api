@@ -9,6 +9,7 @@ namespace BookingsApi.Services
     {
         Task<ValidationResult> ValidateUpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, List<HearingRole> hearingRoles);
         Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
+        Task<ValidationResult> ValidateUpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request);
         Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
         Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEp);
         Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName);
@@ -51,6 +52,29 @@ namespace BookingsApi.Services
             }
             
             return result;
+        }
+
+        public async Task<ValidationResult> ValidateUpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request)
+        {
+            foreach (var newEndpoint in request.NewEndpoints)
+            {
+                var result = await new EndpointRequestValidationV2().ValidateAsync(newEndpoint);
+                if (!result.IsValid)
+                {
+                    return result;
+                }
+            }
+            
+            foreach (var existingEndpoint in request.ExistingEndpoints)
+            {
+                var result = await new EndpointRequestValidationV2().ValidateAsync(existingEndpoint);
+                if (!result.IsValid)
+                {
+                    return result;
+                }
+            }
+
+            return new ValidationResult();
         }
         
         public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 

@@ -174,10 +174,18 @@ namespace BookingsApi.Controllers.V2
             foreach (var requestHearing in request.Hearings)
             {
                 var participantsValidationResult = await _updateHearingService.ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
-                if (participantsValidationResult.IsValid) continue;
-                
-                ModelState.AddFluentValidationErrors(participantsValidationResult.Errors);
-                return ValidationProblem(ModelState);
+                if (!participantsValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(participantsValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
+      
+                var endpointsValidationResult = await _updateHearingService.ValidateUpdateEndpointsV2(requestHearing.Endpoints);
+                if (!endpointsValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(endpointsValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
             }
             
             foreach (var requestHearing in request.Hearings)
