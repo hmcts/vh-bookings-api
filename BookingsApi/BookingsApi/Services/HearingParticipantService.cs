@@ -1,6 +1,8 @@
 using BookingsApi.Contract.Interfaces.Requests;
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Infrastructure.Services.AsynchronousProcesses;
+using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.Common;
 using FluentValidation.Results;
@@ -21,6 +23,7 @@ public interface IHearingParticipantService
     
     public Task<ValidationResult> ValidateRepresentativeInformationAsync(IRepresentativeInfoRequest request);
     public Task<Participant> UpdateParticipantAndPublishEventAsync(Hearing videoHearing, UpdateParticipantCommand updateParticipantCommand);
+    Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing);
     Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
 }
 
@@ -116,6 +119,54 @@ public class HearingParticipantService : IHearingParticipantService
         var updatedParticipant = updateParticipantCommand.UpdatedParticipant;
         await _eventPublisher.PublishAsync(new ParticipantUpdatedIntegrationEvent(updateParticipantCommand.HearingId, updatedParticipant));
         return updatedParticipant;
+    }
+
+    public async Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request,
+        VideoHearing hearing)
+    {
+        var newParticipants = request.NewParticipants
+                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, hearing.CaseType)).ToList();
+
+        var existingParticipants = hearing.Participants.Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
+
+        var existingParticipantDetails = new List<ExistingParticipantDetails>();
+
+        foreach (var existingParticipantRequest in request.ExistingParticipants)
+        {
+            var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+
+            if (existingParticipant == null)
+            {
+                continue;
+            }
+
+            var existingParticipantDetail = new ExistingParticipantDetails
+            {
+                DisplayName = existingParticipantRequest.DisplayName,
+                OrganisationName = existingParticipantRequest.OrganisationName,
+                ParticipantId = existingParticipantRequest.ParticipantId,
+                Person = existingParticipant.Person,
+                RepresentativeInformation = new RepresentativeInformation { Representee = existingParticipantRequest.Representee },
+                TelephoneNumber = existingParticipantRequest.TelephoneNumber,
+                Title = existingParticipantRequest.Title
+            };
+            existingParticipantDetail.Person.ContactEmail = existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
+            existingParticipantDetails.Add(existingParticipantDetail);
+        }
+         
+
+        var linkedParticipants =
+            LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+
+        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        await _commandHandler.Handle(command);
+
+        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
+        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+        await PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        return updatedHearing;
     }
     
     public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 

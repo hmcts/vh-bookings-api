@@ -231,47 +231,7 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            var newParticipants = request.NewParticipants
-                .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, videoHearing.CaseType)).ToList();
-
-            var existingParticipants = videoHearing.Participants.Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
-
-            var existingParticipantDetails = new List<ExistingParticipantDetails>();
-
-            foreach (var existingParticipantRequest in request.ExistingParticipants)
-            {
-                var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-                if (existingParticipant == null)
-                {
-                    continue;
-                }
-
-                var existingParticipantDetail = new ExistingParticipantDetails
-                {
-                    DisplayName = existingParticipantRequest.DisplayName,
-                    OrganisationName = existingParticipantRequest.OrganisationName,
-                    ParticipantId = existingParticipantRequest.ParticipantId,
-                    Person = existingParticipant.Person,
-                    RepresentativeInformation = new RepresentativeInformation { Representee = existingParticipantRequest.Representee },
-                    TelephoneNumber = existingParticipantRequest.TelephoneNumber,
-                    Title = existingParticipantRequest.Title
-                };
-                existingParticipantDetail.Person.ContactEmail = existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
-                existingParticipantDetails.Add(existingParticipantDetail);
-            }
-             
-
-            var linkedParticipants =
-                LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
-
-            var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-            await _commandHandler.Handle(command);
-
-            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-            await _hearingParticipantService
-                .PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+            var hearing = await _hearingParticipantService.UpdateParticipants(request, videoHearing);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
