@@ -16,16 +16,18 @@ namespace BookingsApi.Controllers.V2
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
+        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption)
+            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
             _kinlyConfiguration = kinlyConfigurationOption.Value;
+            _updateHearingService = updateHearingService;
         }
 
         /// <summary>
@@ -145,6 +147,47 @@ namespace BookingsApi.Controllers.V2
             var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
             var response = HearingToDetailsResponseV2Mapper.Map(updatedHearing);
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Update hearings in a multi day group
+        /// </summary>
+        /// <param name="groupId">The group id of the multi day hearing</param>
+        /// <param name="request">List of hearings to update</param>
+        /// <returns>No content</returns>
+        [HttpPatch("{groupId}/hearings")]
+        [OpenApiOperation("UpdateMultiDayHearingV2")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> UpdateMultiDayHearing(Guid groupId, [FromBody] UpdateMultiDayHearingRequestV2 request)
+        {
+            var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
+            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            
+            // Validate
+            // TODO validate that the group id is correct
+            // TODO validate that the hearings in the request belong to the group
+            // TODO validate that each item in the request is valid
+            foreach (var requestHearing in request.Hearings)
+            {
+                var participantsValidationResult = await _updateHearingService.ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
+                if (participantsValidationResult.IsValid) continue;
+                
+                ModelState.AddFluentValidationErrors(participantsValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            foreach (var requestHearing in request.Hearings)
+            {
+                var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
+
+                await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
+            }
+            
+            return NoContent();
         }
 
         /// <summary>

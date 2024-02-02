@@ -14,15 +14,18 @@ namespace BookingsApi.Controllers.V2
         private readonly IQueryHandler _queryHandler;
         private readonly ICommandHandler _commandHandler;
         private readonly IHearingParticipantService _hearingParticipantService;
+        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingParticipantsControllerV2(IQueryHandler queryHandler,
             ICommandHandler commandHandler,
             IEventPublisher eventPublisher,
-            IHearingParticipantService hearingParticipantService)
+            IHearingParticipantService hearingParticipantService,
+            IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
             _hearingParticipantService = hearingParticipantService;
+            _updateHearingService = updateHearingService;
         }
         
         /// <summary>
@@ -169,13 +172,14 @@ namespace BookingsApi.Controllers.V2
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> UpdateHearingParticipants(Guid hearingId, [FromBody] UpdateHearingParticipantsRequestV2 request)
         {
-            var result = await new UpdateHearingParticipantsRequestInputValidationV2().ValidateAsync(request);
-            if (!result.IsValid)
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var validationResult = await _updateHearingService.ValidateUpdateParticipantsV2(request, hearingRoles);
+            if (!validationResult.IsValid)
             {
-                ModelState.AddFluentValidationErrors(result.Errors);
+                ModelState.AddFluentValidationErrors(validationResult.Errors);
                 return ValidationProblem(ModelState);
             }
-
+            
             var query = new GetHearingByIdQuery(hearingId);
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
 
@@ -183,32 +187,8 @@ namespace BookingsApi.Controllers.V2
             {
                 return NotFound();
             }
-            
-            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
-            if (!dataValidationResult.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
-                return ValidationProblem(ModelState);
-            }
-            
-            var newParticipants = request.NewParticipants
-                .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
 
-            var existingParticipants = videoHearing.Participants
-                .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
-
-            var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequest(request, existingParticipants);
-
-            var linkedParticipants =
-                LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
-
-            var command = new UpdateHearingParticipantsCommand(hearingId, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-            await _commandHandler.Handle(command);
-
-            var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
-            await _hearingParticipantService.PublishEventForUpdateParticipantsAsync(hearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+            var hearing = await _updateHearingService.UpdateParticipantsV2(request, videoHearing, hearingRoles);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
