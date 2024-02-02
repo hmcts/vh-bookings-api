@@ -84,11 +84,6 @@ namespace BookingsApi.Services
 
         private async Task PublishEventsForJudiciaryJudgeReassigned(Hearing hearing, Guid? oldJudgeId, JudiciaryParticipant newJudge)
         {
-            if (oldJudgeId == newJudge.Id)
-            {
-                return;
-            }
-            
             if (oldJudgeId != null)
             {
                 await PublishEventForJudiciaryParticipantRemoved(hearing, oldJudgeId.Value);
