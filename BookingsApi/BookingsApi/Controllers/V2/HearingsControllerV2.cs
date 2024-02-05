@@ -2,6 +2,7 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
+using FluentValidation.Results;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -16,16 +17,18 @@ namespace BookingsApi.Controllers.V2
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
+        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption)
+            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
             _kinlyConfiguration = kinlyConfigurationOption.Value;
+            _updateHearingService = updateHearingService;
         }
 
         /// <summary>
@@ -164,6 +167,127 @@ namespace BookingsApi.Controllers.V2
             var response = hearings.Select(HearingToDetailsResponseV2Mapper.Map).ToList();
 
             return Ok(response);
+        }
+        
+        /// <summary>
+        /// Update hearings in a multi day group
+        /// </summary>
+        /// <param name="groupId">The group id of the multi day hearing</param>
+        /// <param name="request">List of hearings to update</param>
+        /// <returns>No content</returns>
+        [HttpPatch("{groupId}/hearings")]
+        [OpenApiOperation("UpdateHearingsInGroupV2")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId, [FromBody] UpdateHearingsInGroupRequestV2 request)
+        {
+            var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
+            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+
+            // Validate
+            // TODO validate that the group id is correct
+            // TODO validate that the hearings in the request belong to the group
+            foreach (var requestHearing in request.Hearings)
+            {
+                var participantsValidationResult = await ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
+                if (!participantsValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(participantsValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
+
+                var endpointsValidationResult = await ValidateUpdateEndpointsV2(requestHearing.Endpoints);
+                if (!endpointsValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(endpointsValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
+
+                var judiciaryParticipantsValidationResult = await ValidateUpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants);
+                if (!judiciaryParticipantsValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(judiciaryParticipantsValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
+            }
+
+            foreach (var requestHearing in request.Hearings)
+            {
+                var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
+
+                // TODO make sure we're passing in an updated hearing object here
+                await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
+                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
+                await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing.Id);
+            }
+
+            return NoContent();
+        }
+        
+        private static async Task<ValidationResult> ValidateUpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, List<HearingRole> hearingRoles)
+        {
+            var result = await new UpdateHearingParticipantsRequestInputValidationV2().ValidateAsync(request);
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                return dataValidationResult;
+            }
+
+            return result;
+        }
+
+        private static async Task<ValidationResult> ValidateUpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request)
+        {
+            foreach (var newEndpoint in request.NewEndpoints)
+            {
+                var result = await new EndpointRequestValidationV2().ValidateAsync(newEndpoint);
+                if (!result.IsValid)
+                {
+                    return result;
+                }
+            }
+
+            foreach (var existingEndpoint in request.ExistingEndpoints)
+            {
+                var result = await new EndpointRequestValidationV2().ValidateAsync(existingEndpoint);
+                if (!result.IsValid)
+                {
+                    return result;
+                }
+            }
+
+            return new ValidationResult();
+        }
+
+        private static async Task<ValidationResult> ValidateUpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request)
+        {
+            foreach (var newJudiciaryParticipant in request.NewJudiciaryParticipants)
+            {
+                var result = await new JudiciaryParticipantRequestValidationV2().ValidateAsync(newJudiciaryParticipant);
+                if (!result.IsValid)
+                {
+                    return result;
+                }
+            }
+
+            foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
+            {
+                var existingJudiciaryParticipantValidationResult = await new UpdateJudiciaryParticipantRequestValidationV2().ValidateAsync(existingJudiciaryParticipant);
+                if (!existingJudiciaryParticipantValidationResult.IsValid)
+                {
+                    return existingJudiciaryParticipantValidationResult;
+                }
+            }
+
+            return new ValidationResult();
         }
         
         private async Task<HearingVenue> GetHearingVenue(string venueCode)

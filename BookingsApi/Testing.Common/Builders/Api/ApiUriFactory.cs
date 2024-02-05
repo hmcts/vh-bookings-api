@@ -53,6 +53,7 @@ namespace Testing.Common.Builders.Api
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
 
             public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
+            public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingParticipantsEndpoints

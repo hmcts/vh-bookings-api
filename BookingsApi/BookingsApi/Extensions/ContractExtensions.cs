@@ -57,4 +57,9 @@ public static class ContractExtensions
     {
         return Enum.Parse<JudiciaryParticipantHearingRoleCode>(hearingRoleCode.ToString());
     }
+    
+    public static JudiciaryParticipantHearingRoleCode MapToDomainEnum(this JudiciaryParticipantHearingRoleCodeV2 hearingRoleCode)
+    {
+        return Enum.Parse<JudiciaryParticipantHearingRoleCode>(hearingRoleCode.ToString());
+    }
 }
