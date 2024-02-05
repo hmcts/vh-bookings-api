@@ -183,13 +183,56 @@ namespace BookingsApi.Controllers.V2
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId, [FromBody] UpdateHearingsInGroupRequestV2 request)
         {
+            if (request.Hearings == null || !request.Hearings.Any())
+            {
+                ModelState.AddModelError("hearings", "Please provide at least one hearing");
+                return ValidationProblem(ModelState);
+            }
+            
+            var duplicateHearingIds = request.Hearings.GroupBy(x => x.HearingId)
+                .Where(g => g.Count() > 1)
+                .Select(y => y.Key)
+                .ToList();
+            foreach (var duplicateHearingId in duplicateHearingIds)
+            {
+                var index = request.Hearings.FindIndex(h => h.HearingId == duplicateHearingId);
+                
+                ModelState.AddModelError($"hearings[{index}].HearingId", 
+                    $"Duplicate hearing id {duplicateHearingId}");
+            }
+
+            if (duplicateHearingIds.Any())
+            {
+                return ValidationProblem(ModelState);
+            }
+            
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
             var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+
+            if (!hearings.Any())
+            {
+                return NotFound();
+            }
+            
+            var hearingsNotInGroup = request.Hearings.
+                Where(requestHearing => !hearings.Exists(h => h.Id == requestHearing.HearingId))
+                .ToList();
+
+            foreach (var hearing in hearingsNotInGroup)
+            {
+                var index = request.Hearings.FindIndex(h => h.HearingId == hearing.HearingId);
+                
+                ModelState.AddModelError($"hearings[{index}].HearingId",
+                    $"Hearing {hearing.HearingId} does not belong to group {groupId}");
+            }
+
+            if (hearingsNotInGroup.Any())
+            {
+                return ValidationProblem(ModelState);
+            }
+            
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
 
-            // Validate
-            // TODO validate that the group id is correct
-            // TODO validate that the hearings in the request belong to the group
             foreach (var requestHearing in request.Hearings)
             {
                 var participantsValidationResult = await ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
