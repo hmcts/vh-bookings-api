@@ -232,7 +232,7 @@ namespace BookingsApi.Controllers.V2
             }
             
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
-
+            
             foreach (var requestHearing in request.Hearings)
             {
                 var participantsValidationResult = await ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
@@ -264,7 +264,7 @@ namespace BookingsApi.Controllers.V2
                 // TODO make sure we're passing in an updated hearing object here
                 await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
                 await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
-                await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing.Id);
+                await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
             }
 
             return NoContent();

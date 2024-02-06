@@ -7,7 +7,7 @@ namespace BookingsApi.Services
     {
         Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
         Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
-        Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, Guid hearingId);
+        Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing);
     }
     
     public class UpdateHearingService : IUpdateHearingService
@@ -59,27 +59,51 @@ namespace BookingsApi.Services
             }
         }
 
-        public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, Guid hearingId)
+        public async Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing)
         {
-            // TODO if the request contains a different judge, remove them from the request and reassign them instead
+            var oldJudge = hearing.GetJudiciaryParticipants().FirstOrDefault(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
+            
+            var newJudge = request.NewJudiciaryParticipants.Find(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.Judge);
+            if (newJudge != null)
+            {
+                var newJudiciaryJudge = new NewJudiciaryJudge
+                {
+                    DisplayName = newJudge.DisplayName,
+                    PersonalCode = newJudge.PersonalCode,
+                    OptionalContactEmail = newJudge.ContactEmail,
+                    OptionalContactTelephone = newJudge.ContactTelephone
+                };
+                await _judiciaryParticipantService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge);
+            }
 
             var judiciaryParticipantsToAdd = request.NewJudiciaryParticipants
+                // Filter out judges, as we reassign them above instead
+                .Where(jp => jp.HearingRoleCode != JudiciaryParticipantHearingRoleCodeV2.Judge)
                 .Select(JudiciaryParticipantRequestV2ToNewJudiciaryParticipantMapper.Map)
                 .ToList();
 
-            await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearingId);
+            await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearing.Id);
 
             foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
             {
                 var judiciaryParticipantToUpdate = UpdateJudiciaryParticipantRequestV2ToUpdatedJudiciaryParticipantMapper.Map(
                     existingJudiciaryParticipant.PersonalCode, existingJudiciaryParticipant);
 
-                await _judiciaryParticipantService.UpdateJudiciaryParticipant(judiciaryParticipantToUpdate, hearingId);
+                await _judiciaryParticipantService.UpdateJudiciaryParticipant(judiciaryParticipantToUpdate, hearing.Id);
             }
 
-            foreach (var removedJudiciaryParticipant in request.RemovedJudiciaryParticipantPersonalCodes)
+            var judiciaryParticipantPersonalCodesToRemove = request.RemovedJudiciaryParticipantPersonalCodes;
+            if (newJudge != null)
             {
-                await _judiciaryParticipantService.RemoveJudiciaryParticipant(removedJudiciaryParticipant, hearingId);
+                // Filter out judges, as we reassign them above instead
+                judiciaryParticipantPersonalCodesToRemove = judiciaryParticipantPersonalCodesToRemove
+                    .Where(c => c != oldJudge?.JudiciaryPerson.PersonalCode)
+                    .ToList();
+            }
+            
+            foreach (var removedJudiciaryParticipant in judiciaryParticipantPersonalCodesToRemove)
+            {
+                await _judiciaryParticipantService.RemoveJudiciaryParticipant(removedJudiciaryParticipant, hearing.Id);
             }
         }
     }

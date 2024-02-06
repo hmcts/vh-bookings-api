@@ -732,7 +732,8 @@ namespace BookingsApi.IntegrationTests.Helper
             return genericJudge.Entity;
         }
         
-        public async Task<List<VideoHearing>> SeedMultiDayHearingV2(IEnumerable<DateTime> dates, int scheduledDuration = 45)
+        public async Task<List<VideoHearing>> SeedMultiDayHearingV2(IEnumerable<DateTime> dates, 
+            int scheduledDuration = 45, bool addPanelMember = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
@@ -742,6 +743,7 @@ namespace BookingsApi.IntegrationTests.Helper
             var firstDayHearing = await SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = true;
+                options.AddPanelMember = addPanelMember;
                 options.ScheduledDate = orderedDates[0];
                 options.ScheduledDuration = scheduledDuration;
             }, status: BookingStatus.Created, isMultiDayFirstHearing: true);
