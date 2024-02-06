@@ -3,6 +3,8 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using FizzWare.NBuilder;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
@@ -55,20 +57,26 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     .First(e => e.DefenceAdvocateContactEmail != null).DefenceAdvocateContactEmail;
                 var defenceAdvocateParticipant = hearing.Participants.First(p => p.Person.ContactEmail == defenceAdvocateEmail);
                 
-                // Add and remove a participant
+                // Add a participant
                 requestHearing.Participants.NewParticipants.Add(newParticipant);
+                
+                // Remove a participant
                 var participantToRemove = requestHearing.Participants.ExistingParticipants.First(p => p.ParticipantId != defenceAdvocateParticipant.Id);
                 requestHearing.Participants.RemovedParticipantIds.Add(participantToRemove.ParticipantId);
                 requestHearing.Participants.ExistingParticipants.Remove(participantToRemove);
             
-                // Add and remove an endpoint
+                // Add an endpoint
                 requestHearing.Endpoints.NewEndpoints.Add(newEndpoint);
+                
+                // Remove an endpoint
                 var endpointToRemove = requestHearing.Endpoints.ExistingEndpoints.First(e => e.DefenceAdvocateContactEmail != defenceAdvocateEmail);
                 requestHearing.Endpoints.RemovedEndpointIds.Add(endpointToRemove.Id);
                 requestHearing.Endpoints.ExistingEndpoints.Remove(endpointToRemove);
 
-                // Add and remove a judiciary participant
+                // Add a judiciary participant
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryPanelMember);
+                
+                // Remove a judiciary participant
                 var judiciaryPanelMemberToRemove = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryPanelMemberToRemove.PersonalCode);
                 requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.Remove(judiciaryPanelMemberToRemove);
@@ -100,6 +108,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertJudiciaryParticipantsUpdated(updatedHearing, requestHearing);
+                AssertEventsPublished(updatedHearing, requestHearing);
             }
         }
 
@@ -344,6 +353,97 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             if (newJudge != null)
             {
                 ((JudiciaryParticipant)hearing.GetJudge()).JudiciaryPerson.PersonalCode.Should().Be(newJudge.PersonalCode);
+            }
+        }
+
+        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing)
+        {
+            var serviceBusStub = Application.Services
+                .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+            var messages = serviceBusStub!
+                .ReadAllMessagesFromQueue(hearing.Id);
+            
+            AssertParticipantEvents();
+            AssertJudiciaryParticipantEvents();
+            AssertEndpointEvents();
+            return;
+            
+            void AssertParticipantEvents()
+            {
+                var participantMessages = messages
+                    .Where(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as HearingParticipantsUpdatedIntegrationEvent)
+                    .Where(x => x.Hearing.HearingId == hearing.Id)
+                    .ToList();
+
+                participantMessages.Count.Should().Be(1);
+                var participantMessage = participantMessages.Single();
+
+                var expectedAddedCount = requestHearing.Participants.NewParticipants.Count;
+                var expectedUpdatedCount = requestHearing.Participants.ExistingParticipants.Count;
+                var expectedRemovedCount = requestHearing.Participants.RemovedParticipantIds.Count;
+                var expectedLinkedCount = requestHearing.Participants.LinkedParticipants.Count;
+
+                participantMessage.NewParticipants.Count.Should().Be(expectedAddedCount);
+                participantMessage.ExistingParticipants.Count.Should().Be(expectedUpdatedCount);
+                participantMessage.RemovedParticipants.Count.Should().Be(expectedRemovedCount);
+                participantMessage.LinkedParticipants.Count.Should().Be(expectedLinkedCount);
+            }
+            
+            void AssertJudiciaryParticipantEvents()
+            {
+                var expectedAddedCount = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Count;
+            
+                var participantAddedMessages = messages
+                    .Where(x => x.IntegrationEvent is ParticipantsAddedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as ParticipantsAddedIntegrationEvent)
+                    .Where(x => x.Hearing.HearingId == hearing.Id)
+                    .ToList();
+
+                participantAddedMessages.Count.Should().Be(expectedAddedCount);
+
+                var expectedRemovedCount = requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Count;
+            
+                var participantRemovedMessages = messages
+                    .Where(x => x.IntegrationEvent is ParticipantRemovedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as ParticipantRemovedIntegrationEvent)
+                    .Where(x => x.HearingId == hearing.Id)
+                    .ToList();
+
+                participantRemovedMessages.Count.Should().Be(expectedRemovedCount);
+            }
+
+            void AssertEndpointEvents()
+            {
+                var expectedAddedCount = requestHearing.Endpoints.NewEndpoints.Count;
+
+                var endpointAddedMessages = messages
+                    .Where(x => x.IntegrationEvent is EndpointAddedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as EndpointAddedIntegrationEvent)
+                    .Where(x => x.HearingId == hearing.Id)
+                    .ToList();
+
+                endpointAddedMessages.Count.Should().Be(expectedAddedCount);
+                
+                var expectedUpdatedCount = requestHearing.Endpoints.ExistingEndpoints.Count;
+
+                var endpointUpdatedMessages = messages
+                    .Where(x => x.IntegrationEvent is EndpointUpdatedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as EndpointUpdatedIntegrationEvent)
+                    .Where(x => x.HearingId == hearing.Id)
+                    .ToList();
+
+                endpointUpdatedMessages.Count.Should().Be(expectedUpdatedCount);
+                
+                var expectedRemovedCount = requestHearing.Endpoints.RemovedEndpointIds.Count;
+                
+                var endpointRemovedMessages = messages
+                    .Where(x => x.IntegrationEvent is EndpointRemovedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as EndpointRemovedIntegrationEvent)
+                    .Where(x => x.HearingId == hearing.Id)
+                    .ToList();
+
+                endpointRemovedMessages.Count.Should().Be(expectedRemovedCount);
             }
         }
     }
