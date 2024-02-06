@@ -101,19 +101,19 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     .First(e => e.DefenceAdvocateContactEmail != null).DefenceAdvocateContactEmail;
                 var defenceAdvocateParticipant = hearing.Participants.First(p => p.Person.ContactEmail == defenceAdvocateEmail);
                 
-                // Add, update and remove a participant
+                // Add and remove a participant
                 requestHearing.Participants.NewParticipants.Add(newParticipant);
                 var participantToRemove = requestHearing.Participants.ExistingParticipants.First(p => p.ParticipantId != defenceAdvocateParticipant.Id);
                 requestHearing.Participants.RemovedParticipantIds.Add(participantToRemove.ParticipantId);
                 requestHearing.Participants.ExistingParticipants.Remove(participantToRemove);
             
-                // Add, update and remove an endpoint
+                // Add and remove an endpoint
                 requestHearing.Endpoints.NewEndpoints.Add(newEndpoint);
                 var endpointToRemove = requestHearing.Endpoints.ExistingEndpoints.First(e => e.DefenceAdvocateContactEmail != defenceAdvocateEmail);
                 requestHearing.Endpoints.RemovedEndpointIds.Add(endpointToRemove.Id);
                 requestHearing.Endpoints.ExistingEndpoints.Remove(endpointToRemove);
 
-                // Add, update and remove a judiciary participant
+                // Add and remove a judiciary participant
                 requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryPanelMember);
                 var judiciaryPanelMemberToRemove = requestHearing.JudiciaryParticipants.ExistingJudiciaryParticipants.First(jp => jp.HearingRoleCode == JudiciaryParticipantHearingRoleCodeV2.PanelMember);
                 requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Add(judiciaryPanelMemberToRemove.PersonalCode);
