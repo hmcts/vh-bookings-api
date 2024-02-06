@@ -21,56 +21,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             };
 
             var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
-            
-            var hearingRequests = hearings.Select(h => new HearingRequestV2
-            {
-                HearingId = h.Id,
-                Participants = new UpdateHearingParticipantsRequestV2
-                {
-                    ExistingParticipants = h.Participants.Select(p => new UpdateParticipantRequestV2
-                    {
-                        ParticipantId = p.Id,
-                        Title = p.Person.Title,
-                        TelephoneNumber = p.Person.TelephoneNumber,
-                        DisplayName = p.DisplayName,
-                        OrganisationName = p.Person.Organisation?.Name,
-                        Representee = p is Representative ? (p as Representative).Representee : null,
-                        FirstName = p.Person.FirstName,
-                        MiddleNames = p.Person.MiddleNames,
-                        LastName = p.Person.LastName,
-                        LinkedParticipants = p.LinkedParticipants.Select(lp => new LinkedParticipantRequestV2
-                        {
-                            ParticipantContactEmail = lp.Participant.Person.ContactEmail,
-                            LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail,
-                            Type = LinkedParticipantTypeV2.Interpreter
-                        }).ToList()
-                    }).ToList()
-                },
-                Endpoints = new UpdateHearingEndpointsRequestV2
-                {
-                    ExistingEndpoints = h.Endpoints.Select(e => new UpdateEndpointRequestV2
-                    {
-                        Id = e.Id,
-                        DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
-                    }).ToList()
-                },
-                JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
-                {
-                    ExistingJudiciaryParticipants = h.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequestV2
-                    {
-                        DisplayName = jp.DisplayName,
-                        PersonalCode = jp.JudiciaryPerson.PersonalCode,
-                        HearingRoleCode = jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge ?
-                            JudiciaryParticipantHearingRoleCodeV2.Judge
-                            : JudiciaryParticipantHearingRoleCodeV2.PanelMember
-                    }).ToList()
-                }
-            }).ToList();
-
+ 
             var request = new UpdateHearingsInGroupRequestV2
             {
-                Hearings = hearingRequests
+                Hearings = hearings.Select(MapHearingRequest).ToList()
             };
 
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequestV2>()
@@ -189,51 +143,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             var hearings = await Hooks.SeedMultiDayHearingV2(dates);
 
-            var hearingRequests = hearings.Select(h => new HearingRequestV2
+            var request = new UpdateHearingsInGroupRequestV2
             {
-                HearingId = h.Id,
-                Participants = new UpdateHearingParticipantsRequestV2
-                {
-                    ExistingParticipants = h.Participants.Select(p => new UpdateParticipantRequestV2
-                    {
-                        ParticipantId = p.Id,
-                        Title = p.Person.Title,
-                        TelephoneNumber = p.Person.TelephoneNumber,
-                        DisplayName = p.DisplayName,
-                        OrganisationName = p.Person.Organisation?.Name,
-                        Representee = p is Representative ? (p as Representative).Representee : null,
-                        FirstName = p.Person.FirstName,
-                        MiddleNames = p.Person.MiddleNames,
-                        LastName = p.Person.LastName,
-                        LinkedParticipants = p.LinkedParticipants.Select(lp => new LinkedParticipantRequestV2
-                        {
-                            ParticipantContactEmail = lp.Participant.Person.ContactEmail,
-                            LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail,
-                            Type = LinkedParticipantTypeV2.Interpreter
-                        }).ToList()
-                    }).ToList()
-                },
-                Endpoints = new UpdateHearingEndpointsRequestV2
-                {
-                    ExistingEndpoints = h.Endpoints.Select(e => new UpdateEndpointRequestV2
-                    {
-                        Id = e.Id,
-                        DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
-                    }).ToList()
-                },
-                JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
-                {
-                    ExistingJudiciaryParticipants = h.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequestV2
-                    {
-                        DisplayName = jp.DisplayName,
-                        PersonalCode = jp.JudiciaryPerson.PersonalCode,
-                        HearingRoleCode = jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge ?
-                            JudiciaryParticipantHearingRoleCodeV2.Judge
-                            : JudiciaryParticipantHearingRoleCodeV2.PanelMember
-                    }).ToList()
-                }
-            }).ToList();
+                Hearings = hearings.Select(MapHearingRequest).ToList()
+            };
 
             var hearingsNotInGroup = new List<HearingRequestV2>
             {
@@ -247,12 +160,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 }
             };
             
-            hearingRequests.AddRange(hearingsNotInGroup);
-
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearingRequests
-            };
+            request.Hearings.AddRange(hearingsNotInGroup);
 
             var groupId = hearings[0].SourceId.Value;
 
@@ -284,58 +192,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             var hearings = await Hooks.SeedMultiDayHearingV2(dates);
 
-            var hearingRequests = hearings.Select(h => new HearingRequestV2
-            {
-                HearingId = h.Id,
-                Participants = new UpdateHearingParticipantsRequestV2
-                {
-                    ExistingParticipants = h.Participants.Select(p => new UpdateParticipantRequestV2
-                    {
-                        ParticipantId = p.Id,
-                        Title = p.Person.Title,
-                        TelephoneNumber = p.Person.TelephoneNumber,
-                        DisplayName = p.DisplayName,
-                        OrganisationName = p.Person.Organisation?.Name,
-                        Representee = p is Representative ? (p as Representative).Representee : null,
-                        FirstName = p.Person.FirstName,
-                        MiddleNames = p.Person.MiddleNames,
-                        LastName = p.Person.LastName,
-                        LinkedParticipants = p.LinkedParticipants.Select(lp => new LinkedParticipantRequestV2
-                        {
-                            ParticipantContactEmail = lp.Participant.Person.ContactEmail,
-                            LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail,
-                            Type = LinkedParticipantTypeV2.Interpreter
-                        }).ToList()
-                    }).ToList()
-                },
-                Endpoints = new UpdateHearingEndpointsRequestV2
-                {
-                    ExistingEndpoints = h.Endpoints.Select(e => new UpdateEndpointRequestV2
-                    {
-                        Id = e.Id,
-                        DisplayName = e.DisplayName,
-                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
-                    }).ToList()
-                },
-                JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
-                {
-                    ExistingJudiciaryParticipants = h.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequestV2
-                    {
-                        DisplayName = jp.DisplayName,
-                        PersonalCode = jp.JudiciaryPerson.PersonalCode,
-                        HearingRoleCode = jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge ?
-                            JudiciaryParticipantHearingRoleCodeV2.Judge
-                            : JudiciaryParticipantHearingRoleCodeV2.PanelMember
-                    }).ToList()
-                }
-            }).ToList();
-
-            hearingRequests[1].HearingId = hearingRequests[0].HearingId;
-
             var request = new UpdateHearingsInGroupRequestV2
             {
-                Hearings = hearingRequests
+                Hearings = hearings.Select(MapHearingRequest).ToList()
             };
+
+            request.Hearings[1].HearingId = request.Hearings[0].HearingId;
 
             var groupId = hearings[0].SourceId.Value;
 
@@ -349,7 +211,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["hearings[0].HearingId"][0].Should()
-                .Be($"Duplicate hearing id {hearingRequests[0].HearingId}");
+                .Be($"Duplicate hearing id {request.Hearings[0].HearingId}");
         }
 
         [Test]
@@ -393,7 +255,54 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["hearings"][0].Should().Be("Please provide at least one hearing");
         }
-        
+
+        private static HearingRequestV2 MapHearingRequest(Hearing hearing) =>
+            new()
+            {
+                HearingId = hearing.Id,
+                Participants = new UpdateHearingParticipantsRequestV2
+                {
+                    ExistingParticipants = hearing.Participants.Select(p => new UpdateParticipantRequestV2
+                    {
+                        ParticipantId = p.Id,
+                        Title = p.Person.Title,
+                        TelephoneNumber = p.Person.TelephoneNumber,
+                        DisplayName = p.DisplayName,
+                        OrganisationName = p.Person.Organisation?.Name,
+                        Representee = p is Representative ? (p as Representative).Representee : null,
+                        FirstName = p.Person.FirstName,
+                        MiddleNames = p.Person.MiddleNames,
+                        LastName = p.Person.LastName,
+                        LinkedParticipants = p.LinkedParticipants.Select(lp => new LinkedParticipantRequestV2
+                        {
+                            ParticipantContactEmail = lp.Participant.Person.ContactEmail,
+                            LinkedParticipantContactEmail = lp.Linked.Person.ContactEmail,
+                            Type = LinkedParticipantTypeV2.Interpreter
+                        }).ToList()
+                    }).ToList()
+                },
+                Endpoints = new UpdateHearingEndpointsRequestV2
+                {
+                    ExistingEndpoints = hearing.Endpoints.Select(e => new UpdateEndpointRequestV2
+                    {
+                        Id = e.Id,
+                        DisplayName = e.DisplayName,
+                        DefenceAdvocateContactEmail = e.DefenceAdvocate?.Person.ContactEmail
+                    }).ToList()
+                },
+                JudiciaryParticipants = new UpdateJudiciaryParticipantsRequestV2
+                {
+                    ExistingJudiciaryParticipants = hearing.JudiciaryParticipants.Select(jp => new EditableUpdateJudiciaryParticipantRequestV2
+                    {
+                        DisplayName = jp.DisplayName,
+                        PersonalCode = jp.JudiciaryPerson.PersonalCode,
+                        HearingRoleCode = jp.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge ?
+                            JudiciaryParticipantHearingRoleCodeV2.Judge
+                            : JudiciaryParticipantHearingRoleCodeV2.PanelMember
+                    }).ToList()
+                }
+            };
+
         private static void AssertParticipantsUpdated(Hearing hearing, HearingRequestV2 requestHearing)
         {
             var expectedParticipantCount = requestHearing.Participants.NewParticipants.Count + 
