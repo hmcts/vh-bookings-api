@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Contract.V2.Requests.Enums;
 using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.Services
