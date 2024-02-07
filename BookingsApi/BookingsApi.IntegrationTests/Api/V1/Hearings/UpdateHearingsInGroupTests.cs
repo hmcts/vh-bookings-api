@@ -292,7 +292,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["Representee"][0].Should().Be(
+            validationProblemDetails.Errors["NewParticipants[0].Representee"][0].Should().Be(
                 RepresentativeValidation.NoRepresentee);
         }
 

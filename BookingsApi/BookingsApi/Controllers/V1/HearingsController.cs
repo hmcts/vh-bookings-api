@@ -5,6 +5,7 @@ using BookingsApi.DAL.Services;
 using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
+using FluentValidation;
 using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Controllers.V1
@@ -180,27 +181,22 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            foreach (var hearing in hearingsInGroup)
+            foreach (var requestHearing in request.Hearings)
             {
-                var requestHearing = request.Hearings.Find(x => x.HearingId == hearing.Id);
-                if (requestHearing == null) continue;
+                var hearing = hearingsInGroup.Single(x => x.Id == requestHearing.HearingId);
                 
-                var representativeRoles = hearing.CaseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-                var representatives = requestHearing.Participants.NewParticipants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
-
-                var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
-
-                if (!representativeValidationResult.IsValid)
+                var participantDataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidation(hearing.CaseType).ValidateAsync(requestHearing.Participants);
+                if (!participantDataValidationResult.IsValid)
                 {
-                    ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
+                    ModelState.AddFluentValidationErrors(participantDataValidationResult.Errors);
                     return ValidationProblem(ModelState);
                 }
             }
-
+            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
-                
+
                 await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
                 
                 hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));

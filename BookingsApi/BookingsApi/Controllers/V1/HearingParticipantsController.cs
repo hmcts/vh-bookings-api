@@ -219,15 +219,12 @@ namespace BookingsApi.Controllers.V1
 
             var caseTypeQuery = new GetCaseRolesForCaseTypeQuery(videoHearing.CaseType.Name);
             var caseType = await _queryHandler.Handle<GetCaseRolesForCaseTypeQuery, CaseType>(caseTypeQuery);
+            
+            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidation(caseType).ValidateAsync(request);
 
-            var representativeRoles = caseType.CaseRoles.SelectMany(x => x.HearingRoles).Where(x => x.UserRole.IsRepresentative).Select(x => x.Name).ToList();
-            var representatives = request.NewParticipants.Where(x => representativeRoles.Contains(x.HearingRoleName)).ToList();
-
-            var representativeValidationResult = RepresentativeValidationHelper.ValidateRepresentativeInfo(representatives);
-
-            if (!representativeValidationResult.IsValid)
+            if (!dataValidationResult.IsValid)
             {
-                ModelState.AddFluentValidationErrors(representativeValidationResult.Errors);
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
 
