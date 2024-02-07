@@ -183,56 +183,30 @@ namespace BookingsApi.Controllers.V2
         [MapToApiVersion("2.0")]
         public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId, [FromBody] UpdateHearingsInGroupRequestV2 request)
         {
-            if (request.Hearings == null || !request.Hearings.Any())
+            var inputValidationResult = await new UpdateHearingsInGroupRequestInputValidationV2().ValidateAsync(request);
+            if (!inputValidationResult.IsValid)
             {
-                ModelState.AddModelError("hearings", "Please provide at least one hearing");
-                return ValidationProblem(ModelState);
-            }
-            
-            var duplicateHearingIds = request.Hearings.GroupBy(x => x.HearingId)
-                .Where(g => g.Count() > 1)
-                .Select(y => y.Key)
-                .ToList();
-            foreach (var duplicateHearingId in duplicateHearingIds)
-            {
-                var index = request.Hearings.FindIndex(h => h.HearingId == duplicateHearingId);
-                
-                ModelState.AddModelError($"hearings[{index}].HearingId", 
-                    $"Duplicate hearing id {duplicateHearingId}");
-            }
-
-            if (duplicateHearingIds.Any())
-            {
+                ModelState.AddFluentValidationErrors(inputValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
             
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
-            var hearings = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
 
-            if (!hearings.Any())
+            if (!hearingsInGroup.Any())
             {
                 return NotFound();
             }
-            
-            var hearingsNotInGroup = request.Hearings.
-                Where(requestHearing => !hearings.Exists(h => h.Id == requestHearing.HearingId))
-                .ToList();
 
-            foreach (var hearing in hearingsNotInGroup)
-            {
-                var index = request.Hearings.FindIndex(h => h.HearingId == hearing.HearingId);
-                
-                ModelState.AddModelError($"hearings[{index}].HearingId",
-                    $"Hearing {hearing.HearingId} does not belong to group {groupId}");
-            }
-
-            if (hearingsNotInGroup.Any())
-            {
-                return ValidationProblem(ModelState);
-            }
-            
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+
             foreach (var requestHearing in request.Hearings)
             {
                 var participantsValidationResult = await ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
@@ -259,7 +233,7 @@ namespace BookingsApi.Controllers.V2
 
             foreach (var requestHearing in request.Hearings)
             {
-                var hearing = hearings.First(h => h.Id == requestHearing.HearingId);
+                var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
                 
                 await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
                 

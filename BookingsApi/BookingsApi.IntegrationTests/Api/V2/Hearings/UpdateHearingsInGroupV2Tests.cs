@@ -5,6 +5,7 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
@@ -182,9 +183,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["hearings[3].HearingId"][0].Should()
+            validationProblemDetails.Errors["Hearings[3]"][0].Should()
                 .Be($"Hearing {hearingsNotInGroup[0].HearingId} does not belong to group {groupId}");
-            validationProblemDetails.Errors["hearings[4].HearingId"][0].Should()
+            validationProblemDetails.Errors["Hearings[4]"][0].Should()
                 .Be($"Hearing {hearingsNotInGroup[1].HearingId} does not belong to group {groupId}");
         }
 
@@ -219,8 +220,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["hearings[0].HearingId"][0].Should()
-                .Be($"Duplicate hearing id {request.Hearings[0].HearingId}");
+            validationProblemDetails.Errors[nameof(request.Hearings)][0].Should()
+                .Be(UpdateHearingsInGroupRequestInputValidationV2.DuplicateHearingIdsMessage);
         }
 
         [Test]
@@ -241,7 +242,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["hearings"][0].Should().Be("Please provide at least one hearing");
+            validationProblemDetails.Errors[nameof(request.Hearings)][0].Should().Be(
+                UpdateHearingsInGroupRequestInputValidationV2.NoHearingsErrorMessage);
         }
         
         [Test]
@@ -262,7 +264,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["hearings"][0].Should().Be("Please provide at least one hearing");
+            validationProblemDetails.Errors[nameof(request.Hearings)][0].Should().Be(
+                UpdateHearingsInGroupRequestInputValidationV2.NoHearingsErrorMessage);
         }
 
         private static HearingRequestV2 MapHearingRequest(Hearing hearing) =>
