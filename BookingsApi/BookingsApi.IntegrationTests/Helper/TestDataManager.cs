@@ -731,48 +731,17 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
             return genericJudge.Entity;
         }
-        
-        public async Task<List<VideoHearing>> SeedMultiDayHearingV1(IEnumerable<DateTime> dates, 
-            int scheduledDuration = 45, bool addPanelMember = false)
+
+        public async Task<List<VideoHearing>> SeedMultiDayHearing(bool useV2, 
+            IEnumerable<DateTime> dates, int scheduledDuration = 45, 
+            bool addPanelMember = false)
         {
             await using var db = new BookingsDbContext(_dbContextOptions);
 
             var orderedDates = dates.OrderBy(x => x.Date).ToList();
 
             // Create the first day
-            var firstDayHearing = await SeedVideoHearing(configureOptions: options =>
-            {
-                options.AddJudge = true;
-                options.AddPanelMember = addPanelMember;
-                options.ScheduledDate = orderedDates[0];
-                options.ScheduledDuration = scheduledDuration;
-            }, status: BookingStatus.Created, isMultiDayFirstHearing: true);
-
-            // Create the subsequent days
-            var datesOfSubsequentDays = orderedDates.Skip(1).ToList();
-            await CloneVideoHearing(firstDayHearing.Id, datesOfSubsequentDays, status: BookingStatus.Created, duration: scheduledDuration);
-
-            var hearings = new List<VideoHearing>();
-            var multiDayHearings = await db.VideoHearings.Where(x => x.SourceId == firstDayHearing.Id).ToListAsync();
-            foreach (var multiDayHearing in multiDayHearings)
-            {
-                hearings.Add(await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(multiDayHearing.Id)));
-            }
-
-            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ToList();
-
-            return hearings;
-        }
-        
-        public async Task<List<VideoHearing>> SeedMultiDayHearingV2(IEnumerable<DateTime> dates, 
-            int scheduledDuration = 45, bool addPanelMember = false)
-        {
-            await using var db = new BookingsDbContext(_dbContextOptions);
-
-            var orderedDates = dates.OrderBy(x => x.Date).ToList();
-
-            // Create the first day
-            var firstDayHearing = await SeedVideoHearingV2(configureOptions: options =>
+            var firstDayHearing = await SeedVideoHearing(useFlatHearingRoles: useV2, configureOptions: options =>
             {
                 options.AddJudge = true;
                 options.AddPanelMember = addPanelMember;

@@ -341,7 +341,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 DateTime.Today.AddDays(3).AddHours(10)
             };
 
-            var multiDayHearings = await Hooks.SeedMultiDayHearingV1(dates, addPanelMember: true);
+            var multiDayHearings = await Hooks.SeedMultiDayHearing(useV2: false, dates, addPanelMember: true);
 
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
             

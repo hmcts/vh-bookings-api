@@ -403,7 +403,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 DateTime.Today.AddDays(3).AddHours(10)
             };
 
-            var multiDayHearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+            var multiDayHearings = await Hooks.SeedMultiDayHearing(useV2: true, dates, addPanelMember: true);
 
             var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
             
