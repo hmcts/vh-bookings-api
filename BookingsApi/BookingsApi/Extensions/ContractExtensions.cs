@@ -1,6 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Requests.Enums;
+
 namespace BookingsApi.Extensions;
 
 public static class ContractExtensions

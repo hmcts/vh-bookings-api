@@ -1,4 +1,5 @@
 using BookingsApi.Contract.V2.Requests.Enums;
+
 namespace BookingsApi.Contract.V2.Requests
 {
     public class UpdateJudiciaryParticipantRequestV2
