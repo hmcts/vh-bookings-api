@@ -763,5 +763,16 @@ namespace BookingsApi.IntegrationTests.Helper
 
             return hearings;
         }
+
+        public async Task AddJudiciaryPanelMember(VideoHearing videoHearing, 
+            JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var dbHearing = await db.VideoHearings.Include(x => x.JudiciaryParticipants).ThenInclude(a => a.JudiciaryPerson)
+                .FirstAsync(x => x.Id == videoHearing.Id);
+            var person = await db.JudiciaryPersons.FirstAsync(p => p.PersonalCode == judiciaryPerson.PersonalCode);
+            dbHearing.AddJudiciaryPanelMember(person, displayName);
+            await db.SaveChangesAsync();
+        }
     }
 }

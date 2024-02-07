@@ -1,5 +1,7 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.DAL.Commands;
+using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -17,15 +19,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_update_hearings_in_group()
         {
             // Arrange
-            var dates = new List<DateTime>
-            {
-                DateTime.Today.AddDays(1).AddHours(10),
-                DateTime.Today.AddDays(2).AddHours(10),
-                DateTime.Today.AddDays(3).AddHours(10)
-            };
-
-            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
- 
+            var hearings = await SeedHearingsInGroup();
+            
             var request = new UpdateHearingsInGroupRequestV2
             {
                 Hearings = hearings.Select(MapHearingRequest).ToList()
@@ -145,14 +140,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_hearings_in_request_do_not_belong_to_group()
         {
             // Arrange
-            var dates = new List<DateTime>
-            {
-                DateTime.Today.AddDays(1).AddHours(10),
-                DateTime.Today.AddDays(2).AddHours(10),
-                DateTime.Today.AddDays(3).AddHours(10)
-            };
-
-            var hearings = await Hooks.SeedMultiDayHearingV2(dates);
+            var hearings = await SeedHearingsInGroup();
 
             var request = new UpdateHearingsInGroupRequestV2
             {
@@ -194,14 +182,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_duplicate_hearing_ids_in_request()
         {
             // Arrange
-            var dates = new List<DateTime>
-            {
-                DateTime.Today.AddDays(1).AddHours(10),
-                DateTime.Today.AddDays(2).AddHours(10),
-                DateTime.Today.AddDays(3).AddHours(10)
-            };
-
-            var hearings = await Hooks.SeedMultiDayHearingV2(dates);
+            var hearings = await SeedHearingsInGroup();
 
             var request = new UpdateHearingsInGroupRequestV2
             {
@@ -273,14 +254,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_invalid_participants_in_request()
         {
             // Arrange
-            var dates = new List<DateTime>
-            {
-                DateTime.Today.AddDays(1).AddHours(10),
-                DateTime.Today.AddDays(2).AddHours(10),
-                DateTime.Today.AddDays(3).AddHours(10)
-            };
-
-            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+            var hearings = await SeedHearingsInGroup();
  
             var request = new UpdateHearingsInGroupRequestV2
             {
@@ -314,14 +288,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_invalid_endpoints_in_request()
         {
             // Arrange
-            var dates = new List<DateTime>
-            {
-                DateTime.Today.AddDays(1).AddHours(10),
-                DateTime.Today.AddDays(2).AddHours(10),
-                DateTime.Today.AddDays(3).AddHours(10)
-            };
-
-            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+            var hearings = await SeedHearingsInGroup();
  
             var request = new UpdateHearingsInGroupRequestV2
             {
@@ -357,14 +324,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_invalid_judiciary_participants_in_request()
         {
             // Arrange
-            var dates = new List<DateTime>
-            {
-                DateTime.Today.AddDays(1).AddHours(10),
-                DateTime.Today.AddDays(2).AddHours(10),
-                DateTime.Today.AddDays(3).AddHours(10)
-            };
-
-            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+            var hearings = await SeedHearingsInGroup();
  
             var request = new UpdateHearingsInGroupRequestV2
             {
@@ -396,6 +356,33 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["PersonalCode"][0].Should().Be(
                 JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
+        }
+
+        private async Task<List<VideoHearing>> SeedHearingsInGroup()
+        {
+            var dates = new List<DateTime>
+            {
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(2).AddHours(10),
+                DateTime.Today.AddDays(3).AddHours(10)
+            };
+
+            var multiDayHearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+
+            var judiciaryPersonPanelMember = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
+            
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+            
+            // Add a second panel member for test coverage
+            var hearings = new List<VideoHearing>();
+            foreach (var hearing in multiDayHearings)
+            {
+                await Hooks.AddJudiciaryPanelMember(hearing, judiciaryPersonPanelMember, "Additional Panel Member");
+                var hearingFromDb = await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(hearing.Id));
+                hearings.Add(hearingFromDb);
+            }
+
+            return hearings;
         }
 
         private static HearingRequestV2 MapHearingRequest(Hearing hearing) =>
