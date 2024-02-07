@@ -6,7 +6,4 @@ namespace BookingsApi.Contract.V2.Requests
     {
         public List<HearingRequestV2> Hearings { get; set; } = new();
     }
-    
-    // TODO move the below into separate files
-
 }
