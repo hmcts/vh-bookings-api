@@ -43,6 +43,7 @@ namespace Testing.Common.Builders.Api
             public static string RebookHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/conferences";
             public static string UpdateBookingStatus(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetBookingStatusById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
+            public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingsEndpointsV2

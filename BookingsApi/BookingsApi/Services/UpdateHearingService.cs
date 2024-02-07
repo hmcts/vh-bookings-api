@@ -1,12 +1,16 @@
+using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Requests.Enums;
+using BookingsApi.Mappings.V1;
 using BookingsApi.Mappings.V2;
 
 namespace BookingsApi.Services
 {
     public interface IUpdateHearingService
     {
+        Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing);
         Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
+        Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing);
         Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
         Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing);
     }
@@ -31,6 +35,11 @@ namespace BookingsApi.Services
             _kinlyConfiguration = kinlyConfiguration.Value;
             _judiciaryParticipantService = judiciaryParticipantService;
         }
+
+        public async Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing)
+        {
+            await _hearingParticipantService.UpdateParticipants(request, hearing);
+        }
         
         public async Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
             VideoHearing hearing, List<HearingRole> hearingRoles)
@@ -38,8 +47,28 @@ namespace BookingsApi.Services
             await _hearingParticipantService.UpdateParticipantsV2(request, hearing, hearingRoles);
         }
         
-        public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, 
-            VideoHearing hearing)
+        public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing)
+        {
+            foreach (var endpointToAdd in request.NewEndpoints)
+            {
+                var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
+                    _kinlyConfiguration.SipAddressStem);
+
+                await _endpointService.AddEndpoint(hearing.Id, newEp);
+            }
+
+            foreach (var endpointToUpdate in request.ExistingEndpoints)
+            {
+                await _endpointService.UpdateEndpoint(hearing, endpointToUpdate.Id, endpointToUpdate.DefenceAdvocateContactEmail, endpointToUpdate.DisplayName);
+            }
+
+            foreach (var endpointIdToRemove in request.RemovedEndpointIds)
+            {
+                await _endpointService.RemoveEndpoint(hearing, endpointIdToRemove);
+            }
+        }
+        
+        public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
         {
             foreach (var endpointToAdd in request.NewEndpoints)
             {
