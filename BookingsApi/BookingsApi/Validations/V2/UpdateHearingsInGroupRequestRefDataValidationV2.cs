@@ -21,7 +21,7 @@ namespace BookingsApi.Validations.V2
             List<VideoHearing> hearingsInGroup, 
             ValidationContext<UpdateHearingsInGroupRequestV2> context)
         {
-            var groupId = hearingsInGroup.First().SourceId.Value;
+            var groupId = hearingsInGroup[0].SourceId.Value;
             
             if (!hearingsInGroup.Exists(h => h.Id == requestHearing.HearingId))
             {
