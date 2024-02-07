@@ -7,6 +7,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
+using NuGet.Packaging;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 {
@@ -190,7 +191,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         }
 
         [Test]
-        public async Task should_return_bad_request_when_duplicate_hearing_id_specified()
+        public async Task should_return_bad_request_when_duplicate_hearing_ids_in_request()
         {
             // Arrange
             var dates = new List<DateTime>
@@ -225,7 +226,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         }
 
         [Test]
-        public async Task should_return_bad_request_when_empty_hearings_list_specified()
+        public async Task should_return_bad_request_when_empty_hearings_list_in_request()
         {
             // Arrange
             var request = new UpdateHearingsInGroupRequestV2
@@ -247,7 +248,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         }
         
         [Test]
-        public async Task should_return_bad_request_when_null_hearings_list_specified()
+        public async Task should_return_bad_request_when_null_hearings_list_in_request()
         {
             // Arrange
             var request = new UpdateHearingsInGroupRequestV2
@@ -266,6 +267,135 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors[nameof(request.Hearings)][0].Should().Be(
                 UpdateHearingsInGroupRequestInputValidationV2.NoHearingsErrorMessage);
+        }
+
+        [Test]
+        public async Task should_return_bad_request_when_invalid_participants_in_request()
+        {
+            // Arrange
+            var dates = new List<DateTime>
+            {
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(2).AddHours(10),
+                DateTime.Today.AddDays(3).AddHours(10)
+            };
+
+            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+ 
+            var request = new UpdateHearingsInGroupRequestV2
+            {
+                Hearings = hearings.Select(MapHearingRequest).ToList()
+            };
+
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.Participants.ExistingParticipants = new List<UpdateParticipantRequestV2>();
+                requestHearing.Participants.NewParticipants = new List<ParticipantRequestV2>();
+                requestHearing.Participants.LinkedParticipants = new List<LinkedParticipantRequestV2>();
+                requestHearing.Participants.RemovedParticipantIds = new List<Guid>();
+            }
+            
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[""][0].Should().Be(
+                UpdateHearingParticipantsRequestInputValidationV2.NoParticipantsErrorMessage);
+        }
+
+        [Test]
+        public async Task should_return_bad_request_when_invalid_endpoints_in_request()
+        {
+            // Arrange
+            var dates = new List<DateTime>
+            {
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(2).AddHours(10),
+                DateTime.Today.AddDays(3).AddHours(10)
+            };
+
+            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+ 
+            var request = new UpdateHearingsInGroupRequestV2
+            {
+                Hearings = hearings.Select(MapHearingRequest).ToList()
+            };
+
+            var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
+                .With(e => e.DefenceAdvocateContactEmail, null)
+                .With(e => e.DisplayName, "**") // Invalid display name
+                .Build();
+            
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.Endpoints.NewEndpoints.Add(newEndpoint);
+            }
+            
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["DisplayName"][0].Should().Be(
+                EndpointRequestValidationV2.InvalidDisplayNameErrorMessage);
+        }
+
+        [Test]
+        public async Task should_return_bad_request_when_invalid_judiciary_participants_in_request()
+        {
+            // Arrange
+            var dates = new List<DateTime>
+            {
+                DateTime.Today.AddDays(1).AddHours(10),
+                DateTime.Today.AddDays(2).AddHours(10),
+                DateTime.Today.AddDays(3).AddHours(10)
+            };
+
+            var hearings = await Hooks.SeedMultiDayHearingV2(dates, addPanelMember: true);
+ 
+            var request = new UpdateHearingsInGroupRequestV2
+            {
+                Hearings = hearings.Select(MapHearingRequest).ToList()
+            };
+
+            var newJudiciaryPanelMemberPerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
+            var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
+                .With(x => x.HearingRoleCode, JudiciaryParticipantHearingRoleCodeV2.PanelMember)
+                .With(x => x.ContactEmail, newJudiciaryPanelMemberPerson.Email)
+                .With(x => x.PersonalCode, "") // Invalid personal code
+                .Build();
+            
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Add(newJudiciaryPanelMember);
+            }
+            
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["PersonalCode"][0].Should().Be(
+                JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
         }
 
         private static HearingRequestV2 MapHearingRequest(Hearing hearing) =>
