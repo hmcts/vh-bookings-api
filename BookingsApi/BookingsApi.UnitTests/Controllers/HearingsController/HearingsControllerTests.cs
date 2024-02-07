@@ -7,7 +7,6 @@ using BookingsApi.Common;
 using BookingsApi.Common.Configuration;
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Commands;
 using BookingsApi.DAL.Commands.Core;
@@ -213,42 +212,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         }
 
         [Test]
-        public async Task Should_change_hearing_status_to_cancelled()
-        {
-            var controller = GetControllerObject(true);
-            var request = new UpdateBookingStatusRequest
-            {
-                UpdatedBy = "email@hmcts.net",
-                Status = UpdateBookingStatus.Cancelled,
-                CancelReason = "Adjournment"
-            };
-            var hearing = GetHearing("123");
-            var hearingId = hearing.Id;
-            hearing.UpdateStatus(BookingStatus.Created, "autoTest", null);
-
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(hearing);
-
-            var result = await controller.UpdateBookingStatus(hearingId, request);
-
-            result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-
-            var message = SbQueueClient.ReadMessageFromQueue();
-            var typedMessage = (HearingCancelledIntegrationEvent)message.IntegrationEvent;
-            typedMessage.Should().NotBeNull();
-            typedMessage.HearingId.Should().Be(hearingId);
-        }
-
-        [Test]
         public async Task Should_not_update_booking_and_return_badrequest_with_an_invalid_hearingid()
         {
-            var request = new UpdateBookingStatusRequest();
             var hearingId = Guid.Empty;
 
-            var result = await Controller.UpdateBookingStatus(hearingId, request);
+            var result = await Controller.UpdateBookingStatus(hearingId);
 
             result.Should().NotBeNull();
             var objectResult = (ObjectResult)result;
@@ -314,13 +282,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_change_hearing_status_to_failed()
         {
-            var request = new UpdateBookingStatusRequest
-            {
-                UpdatedBy = "email@hmcts.net",
-                Status = UpdateBookingStatus.Failed,
-                CancelReason = ""
-            };
-            
             var hearing = GetHearing("123");
             QueryHandlerMock
                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
@@ -328,46 +289,13 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
 
             CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
 
-            var result = await Controller.UpdateBookingStatus(hearing.Id, request);
+            var result = await Controller.FailBooking(hearing.Id);
 
             result.Should().NotBeNull();
             var objectResult = (NoContentResult)result;
             objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
 
             CommandHandlerMock.Verify(c => c.Handle(It.IsAny<UpdateHearingStatusCommand>()), Times.Once);
-        }
-
-        [TestCase(UpdateBookingStatus.Created, BookingStatus.BookedWithoutJudge, BookingStatus.ConfirmedWithoutJudge)]
-        public async Task Should_change_hearing_status_to_correct_value(
-            UpdateBookingStatus updateStatus, 
-            BookingStatus currentBookingStatus, 
-            BookingStatus expectedNewBookingStatus)
-        {
-            var request = new UpdateBookingStatusRequest
-            {
-                UpdatedBy = "email@hmcts.net",
-                Status = updateStatus,
-                CancelReason = ""
-            };
-            
-            var hearing = GetHearing("123");
-            hearing.SetProtected(nameof(hearing.Status), currentBookingStatus);
-            QueryHandlerMock
-                .Setup(x => x.Handle<GetHearingByIdQuery, VideoHearing>(It.IsAny<GetHearingByIdQuery>()))
-                .ReturnsAsync(hearing);
-
-            CommandHandlerMock.Setup(x => x.Handle(It.IsAny<UpdateHearingStatusCommand>()));
-
-            var result = await Controller.UpdateBookingStatus(hearing.Id, request);
-
-            result.Should().NotBeNull();
-            var objectResult = (NoContentResult)result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
-
-            CommandHandlerMock.Verify(c => c.Handle(
-                It.Is<UpdateHearingStatusCommand>(x => 
-                    x.Status == expectedNewBookingStatus)),
-                Times.Once);
         }
 
         [Test]

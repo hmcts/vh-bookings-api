@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using AcceptanceTests.Common.Api.Helpers;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -230,7 +229,18 @@ namespace BookingsApi.IntegrationTests.Steps
         [When(@"set the booking status to (.*)")]
         public void SetTheBookingStatus(UpdateBookingStatus bookingStatus)
         {
-            UpdateTheHearingStatus(bookingStatus);
+            switch (bookingStatus)
+            {
+                case UpdateBookingStatus.Created:
+                    UpdateTheHearingStatus();
+                    break;
+                case UpdateBookingStatus.Cancelled:
+                    CancelBooking();
+                    break;
+                case UpdateBookingStatus.Failed:
+                    FailBooking();
+                    break;
+            }
         }
 
         [Given(@"I have an empty status in a hearing status request")]
@@ -238,7 +248,7 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
-            UpdateTheHearingStatus(null);
+            UpdateTheHearingStatus();
         }
 
         [Given(@"I have an empty username in a hearing status request")]
@@ -247,7 +257,7 @@ namespace BookingsApi.IntegrationTests.Steps
             var seededHearing = await Context.TestDataManager.SeedVideoHearing();
             Context.TestData.NewHearingId = seededHearing.Id;
             _hearingId = seededHearing.Id;
-            UpdateTheHearingStatus(UpdateBookingStatus.Cancelled, null);
+            CancelBooking();
         }
 
         [Given(@"I have a request to the second page of booked hearings")]
@@ -323,7 +333,7 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             await SeedHearingForScenarioAsync(scenario);
 
-            UpdateTheHearingStatus(UpdateBookingStatus.Failed);
+            FailBooking();
         }
 
         [Then(@"hearing details should be retrieved")]
@@ -644,19 +654,20 @@ namespace BookingsApi.IntegrationTests.Steps
             Context.HttpMethod = HttpMethod.Put;
         }
 
-        private void UpdateTheHearingStatus(UpdateBookingStatus? status, string updatedBy = "testuser")
+        private void UpdateTheHearingStatus()
         {
-            var jsonBody = RequestHelper.Serialise(new UpdateBookingStatusRequest
-            {
-                Status = status.GetValueOrDefault(),
-                UpdatedBy = updatedBy,
-                CancelReason = "cancelled due to covid-19"
-            });
-            Context.HttpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(null, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);
             Context.HttpMethod = HttpMethod.Patch;
         }
-
+        
+        private void FailBooking()
+        {
+            Context.HttpContent = new StringContent(null, Encoding.UTF8, "application/json");
+            Context.Uri = FailBookingUri(_hearingId);
+            Context.HttpMethod = HttpMethod.Patch;
+        }
+        
         private void CancelBooking(string updatedBy = "testuser")
         {
             var jsonBody = RequestHelper.Serialise(new CancelBookingRequest
