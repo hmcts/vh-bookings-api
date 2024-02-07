@@ -1,7 +1,5 @@
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Requests;
-using BookingsApi.DAL.Commands;
-using BookingsApi.DAL.Dtos;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Domain.Participants;
@@ -9,7 +7,6 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using FizzWare.NBuilder;
-using NuGet.Packaging;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 {
@@ -255,7 +252,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
- 
+
             var request = new UpdateHearingsInGroupRequestV2
             {
                 Hearings = hearings.Select(MapHearingRequest).ToList()
@@ -280,8 +277,46 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors[""][0].Should().Be(
+            validationProblemDetails.Errors["Hearings[0].Participants"][0].Should().Be(
                 UpdateHearingParticipantsRequestInputValidationV2.NoParticipantsErrorMessage);
+        }
+
+        [Test]
+        public async Task should_return_bad_request_when_invalid_participant_ref_data_in_request()
+        {
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = new UpdateHearingsInGroupRequestV2
+            {
+                Hearings = hearings.Select(MapHearingRequest).ToList()
+            };
+
+            const string invalidHearingRoleCode = "INVALID_CODE";
+
+            var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequestV2>()
+                .With(p => p.ContactEmail, Faker.Internet.Email())
+                .With(p => p.HearingRoleCode, invalidHearingRoleCode)
+                .Build();
+            
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.Participants.NewParticipants.Add(newParticipant);
+            }
+            
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearings[0].Participants.NewParticipants[0]"][0].Should().Be(
+                $"Invalid hearing role [{invalidHearingRoleCode}]");
         }
 
         [Test]
@@ -316,7 +351,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["DisplayName"][0].Should().Be(
+            validationProblemDetails.Errors["Hearings[0].Endpoints.NewEndpoints[0].DisplayName"][0].Should().Be(
                 EndpointRequestValidationV2.InvalidDisplayNameErrorMessage);
         }
 
@@ -354,7 +389,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.IsSuccessStatusCode.Should().BeFalse();
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
-            validationProblemDetails.Errors["PersonalCode"][0].Should().Be(
+            validationProblemDetails.Errors["Hearings[0].JudiciaryParticipants.NewJudiciaryParticipants[0].PersonalCode"][0].Should().Be(
                 JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
         }
 

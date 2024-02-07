@@ -6,12 +6,15 @@ namespace BookingsApi.Validations.V2
 {
     public class UpdateHearingsInGroupRequestRefDataValidationV2 : RefDataInputValidatorValidator<UpdateHearingsInGroupRequestV2>
     {
-        public UpdateHearingsInGroupRequestRefDataValidationV2(List<VideoHearing> hearingsInGroup)
+        public UpdateHearingsInGroupRequestRefDataValidationV2(List<VideoHearing> hearingsInGroup, List<HearingRole> hearingRoles)
         {
             RuleForEach(x=> x.Hearings).Custom((requestHearing, context) =>
             {
                 ValidateHearing(requestHearing, hearingsInGroup, context);
             });
+
+            RuleForEach(x => x.Hearings)
+                .SetValidator(new HearingRequestRefDataValidationV2(hearingRoles));
         }
 
         private static void ValidateHearing(HearingRequestV2 requestHearing, 

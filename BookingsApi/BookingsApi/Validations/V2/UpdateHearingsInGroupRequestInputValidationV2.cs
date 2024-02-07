@@ -18,6 +18,9 @@ namespace BookingsApi.Validations.V2
                 .Must(h => !HasDuplicateHearingIds(h))
                 .WithMessage(DuplicateHearingIdsMessage)
                 .When(x => x.Hearings != null && x.Hearings.Any());
+
+            RuleForEach(x => x.Hearings)
+                .SetValidator(new HearingRequestInputValidationV2());
         }
         
         private static bool HasDuplicateHearingIds(IEnumerable<HearingRequestV2> hearings)
@@ -27,13 +30,6 @@ namespace BookingsApi.Validations.V2
                 .Where(g => g.Count() > 1)
                 .Select(y => y.Key)
                 .ToList();
-
-            // foreach (var duplicateHearingId in duplicateHearingIds)
-            // {
-            //     var index = hearings.FindIndex(h => h.HearingId == duplicateHearingId);
-            //     ModelState.AddModelError($"hearings[{index}].HearingId",
-            //         string.Format(DuplicateHearingIdErrorMessage, duplicateHearingId));
-            // }
 
             return duplicateHearingIds.Any();
         }

@@ -2,7 +2,6 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Mappings.V2;
 using BookingsApi.Validations.V2;
-using FluentValidation.Results;
 
 namespace BookingsApi.Controllers.V2
 {
@@ -200,35 +199,11 @@ namespace BookingsApi.Controllers.V2
 
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
             
-            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup).ValidateAsync(request);
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
                 return ValidationProblem(ModelState);
-            }
-
-            foreach (var requestHearing in request.Hearings)
-            {
-                var participantsValidationResult = await ValidateUpdateParticipantsV2(requestHearing.Participants, hearingRoles);
-                if (!participantsValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(participantsValidationResult.Errors);
-                    return ValidationProblem(ModelState);
-                }
-
-                var endpointsValidationResult = await ValidateUpdateEndpointsV2(requestHearing.Endpoints);
-                if (!endpointsValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(endpointsValidationResult.Errors);
-                    return ValidationProblem(ModelState);
-                }
-
-                var judiciaryParticipantsValidationResult = await ValidateUpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants);
-                if (!judiciaryParticipantsValidationResult.IsValid)
-                {
-                    ModelState.AddFluentValidationErrors(judiciaryParticipantsValidationResult.Errors);
-                    return ValidationProblem(ModelState);
-                }
             }
 
             foreach (var requestHearing in request.Hearings)
@@ -245,70 +220,7 @@ namespace BookingsApi.Controllers.V2
 
             return NoContent();
         }
-        
-        private static async Task<ValidationResult> ValidateUpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, List<HearingRole> hearingRoles)
-        {
-            var result = await new UpdateHearingParticipantsRequestInputValidationV2().ValidateAsync(request);
-            if (!result.IsValid)
-            {
-                return result;
-            }
 
-            var dataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidationV2(hearingRoles).ValidateAsync(request);
-            if (!dataValidationResult.IsValid)
-            {
-                return dataValidationResult;
-            }
-
-            return result;
-        }
-
-        private static async Task<ValidationResult> ValidateUpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request)
-        {
-            foreach (var newEndpoint in request.NewEndpoints)
-            {
-                var result = await new EndpointRequestValidationV2().ValidateAsync(newEndpoint);
-                if (!result.IsValid)
-                {
-                    return result;
-                }
-            }
-
-            foreach (var existingEndpoint in request.ExistingEndpoints)
-            {
-                var result = await new EndpointRequestValidationV2().ValidateAsync(existingEndpoint);
-                if (!result.IsValid)
-                {
-                    return result;
-                }
-            }
-
-            return new ValidationResult();
-        }
-
-        private static async Task<ValidationResult> ValidateUpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request)
-        {
-            foreach (var newJudiciaryParticipant in request.NewJudiciaryParticipants)
-            {
-                var result = await new JudiciaryParticipantRequestValidationV2().ValidateAsync(newJudiciaryParticipant);
-                if (!result.IsValid)
-                {
-                    return result;
-                }
-            }
-
-            foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
-            {
-                var existingJudiciaryParticipantValidationResult = await new UpdateJudiciaryParticipantRequestValidationV2().ValidateAsync(existingJudiciaryParticipant);
-                if (!existingJudiciaryParticipantValidationResult.IsValid)
-                {
-                    return existingJudiciaryParticipantValidationResult;
-                }
-            }
-
-            return new ValidationResult();
-        }
-        
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
         {
             var hearingVenues =
