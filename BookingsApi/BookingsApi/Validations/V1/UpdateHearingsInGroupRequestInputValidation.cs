@@ -20,7 +20,7 @@ namespace BookingsApi.Validations.V1
                 .When(x => x.Hearings != null && x.Hearings.Any());
             
             RuleForEach(x => x.Hearings)
-                .SetValidator(new HearingRequestInputValidation());
+                .SetValidator(new HearingRequestValidation());
         }
         
         private static bool HasDuplicateHearingIds(IEnumerable<HearingRequest> hearings)

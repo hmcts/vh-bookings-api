@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace BookingsApi.Validations.V1
 {
-    public class HearingRequestInputValidation : AbstractValidator<HearingRequest>
+    public class HearingRequestValidation : AbstractValidator<HearingRequest>
     {
-        public HearingRequestInputValidation()
+        public HearingRequestValidation()
         {
             RuleFor(x => x.Participants)
                 .SetValidator(new UpdateHearingParticipantsRequestValidation());
