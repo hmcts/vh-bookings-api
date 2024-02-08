@@ -266,8 +266,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 Hearings = hearings.Select(MapHearingRequest).ToList()
             };
 
-            const string invalidHearingRoleCode = "INVALID_CODE";
-
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequest>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
                 .With(p => p.CaseRoleName, "Applicant")
