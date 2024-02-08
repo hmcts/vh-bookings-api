@@ -656,14 +656,14 @@ namespace BookingsApi.IntegrationTests.Steps
 
         private void UpdateTheHearingStatus()
         {
-            Context.HttpContent = new StringContent(null, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(String.Empty, Encoding.UTF8, "application/json");
             Context.Uri = UpdateHearingDetails(_hearingId);
             Context.HttpMethod = HttpMethod.Patch;
         }
         
         private void FailBooking()
         {
-            Context.HttpContent = new StringContent(null, Encoding.UTF8, "application/json");
+            Context.HttpContent = new StringContent(String.Empty, Encoding.UTF8, "application/json");
             Context.Uri = FailBookingUri(_hearingId);
             Context.HttpMethod = HttpMethod.Patch;
         }
