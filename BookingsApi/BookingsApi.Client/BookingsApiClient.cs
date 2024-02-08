@@ -474,6 +474,23 @@ namespace BookingsApi.Client
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<HearingDetailsResponse>> CloneHearingAsync(System.Guid hearingId, CloneHearingRequest request, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
+        /// Mark the booking as failed, for internal system use only
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <returns>Success status</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId);
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Mark the booking as failed, for internal system use only
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <returns>Success status</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+
+        /// <summary>
         /// Cancels the booking
         /// </summary>
         /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
@@ -491,23 +508,6 @@ namespace BookingsApi.Client
         /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CancelBookingAsync(System.Guid hearingId, CancelBookingRequest request, System.Threading.CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Mark the booking as failed, for internal system use only
-        /// </summary>
-        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
-        /// <returns>Success status</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId);
-
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>
-        /// Mark the booking as failed, for internal system use only
-        /// </summary>
-        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
-        /// <returns>Success status</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
 
         /// <summary>
         /// Get all hearings by a given case type
@@ -4301,35 +4301,30 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Cancels the booking
+        /// Mark the booking as failed, for internal system use only
         /// </summary>
         /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
-        /// <param name="request">Cancel reason</param>
         /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CancelBookingAsync(System.Guid hearingId, CancelBookingRequest request)
+        public virtual System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId)
         {
-            return CancelBookingAsync(hearingId, request, System.Threading.CancellationToken.None);
+            return FailBookingAsync(hearingId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Cancels the booking
+        /// Mark the booking as failed, for internal system use only
         /// </summary>
         /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
-        /// <param name="request">Cancel reason</param>
         /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CancelBookingAsync(System.Guid hearingId, CancelBookingRequest request, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
 
-            if (request == null)
-                throw new System.ArgumentNullException("request");
-
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/cancel");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/fail");
             urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -4338,10 +4333,7 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -4430,30 +4422,35 @@ namespace BookingsApi.Client
         }
 
         /// <summary>
-        /// Mark the booking as failed, for internal system use only
+        /// Cancels the booking
         /// </summary>
         /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <param name="request">Cancel reason</param>
         /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId)
+        public virtual System.Threading.Tasks.Task CancelBookingAsync(System.Guid hearingId, CancelBookingRequest request)
         {
-            return FailBookingAsync(hearingId, System.Threading.CancellationToken.None);
+            return CancelBookingAsync(hearingId, request, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Mark the booking as failed, for internal system use only
+        /// Cancels the booking
         /// </summary>
         /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <param name="request">Cancel reason</param>
         /// <returns>Success status</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task FailBookingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task CancelBookingAsync(System.Guid hearingId, CancelBookingRequest request, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
 
+            if (request == null)
+                throw new System.ArgumentNullException("request");
+
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/fail");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/cancel");
             urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -4462,7 +4459,10 @@ namespace BookingsApi.Client
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
 
                     PrepareRequest(client_, request_, urlBuilder_);
