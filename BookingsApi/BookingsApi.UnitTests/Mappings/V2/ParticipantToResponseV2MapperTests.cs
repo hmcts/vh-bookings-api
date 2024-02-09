@@ -33,7 +33,6 @@ namespace BookingsApi.UnitTests.Mappings.V2
             var response = _mapper.MapParticipantToResponse(judge);
             
             AssertParticipantCommonDetails(response, judge, caseRole, hearingRole);
-            response.Organisation.Should().BeNullOrWhiteSpace();
         }
 
         
@@ -57,6 +56,8 @@ namespace BookingsApi.UnitTests.Mappings.V2
             response.ContactEmail.Should().Be(person.ContactEmail);
             response.TelephoneNumber.Should().Be(person.TelephoneNumber);
             response.Username.Should().Be(person.Username);
+            response.Organisation.Should().BeNullOrWhiteSpace();
+            response.LinkedParticipants.Should().BeEquivalentTo(participant.LinkedParticipants);
         }
     }
 }
