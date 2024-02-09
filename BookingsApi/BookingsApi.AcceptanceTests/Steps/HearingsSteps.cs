@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
@@ -11,14 +10,11 @@ using BookingsApi.AcceptanceTests.Models;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using static Testing.Common.Builders.Api.ApiUriFactory.HearingsEndpoints;
-using UpdateBookingStatusRequest = BookingsApi.AcceptanceTests.Models.UpdateBookingStatusRequest;
 using UpdateHearingRequest = BookingsApi.AcceptanceTests.Models.UpdateHearingRequest;
 using System.Net.Http;
 using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
-using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V1.Responses;
-using UpdateBookingStatus = BookingsApi.Contract.V1.Requests.Enums.UpdateBookingStatus;
 
 namespace BookingsApi.AcceptanceTests.Steps
 {
@@ -213,22 +209,24 @@ namespace BookingsApi.AcceptanceTests.Steps
         [Given(@"I have a cancel hearing request with a valid hearing id")]
         public void GivenIHaveACancelHearingRequestWithAValidHearingId()
         {
-            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest(UpdateBookingStatus.Cancelled);
-            _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingStatusRequest);
+            var cancelRequest = new CancelBookingRequest()
+            {
+                UpdatedBy = $"{Faker.RandomNumber.Next()}@hmcts.net",
+                CancelReason = "Judge decision"
+            };
+            _context.Request = _context.Patch(CancelBookingUri(_context.TestData.Hearing.Id), cancelRequest);
         }
 
         [When(@"I have a failed confirmation hearing request with a valid hearing id")]
         public void GivenIHaveAFailedConfirmationHearingRequestWithAValidHearingId()
         {
-            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest(UpdateBookingStatus.Failed);
-            _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingStatusRequest);
+            _context.Request = _context.Patch(FailBookingUri(_context.TestData.Hearing.Id));
         }
 
         [Given(@"I have a created hearing request with a valid hearing id")]
         public void GivenIHaveACreatedHearingRequestWithAValidHearingId()
         {
-            var updateHearingStatusRequest = UpdateBookingStatusRequest.BuildRequest(UpdateBookingStatus.Created);
-            _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id), updateHearingStatusRequest);
+            _context.Request = _context.Patch(UpdateHearingDetails(_context.TestData.Hearing.Id));
         }
 
         [Then(@"hearing should be (.*)")]

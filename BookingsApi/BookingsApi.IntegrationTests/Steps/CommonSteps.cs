@@ -41,7 +41,7 @@ namespace BookingsApi.IntegrationTests.Steps
         {
             Context.Response.StatusCode.Should().Be(statusCode, Context.Response.Content.ReadAsStringAsync().Result);
             Context.Response.IsSuccessStatusCode.Should().Be(isSuccess);
-            NUnit.Framework.TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
+            TestContext.WriteLine($"Status Code: {Context.Response.StatusCode}");
         }
 
         [Then(@"the response message should read '(.*)'")]
