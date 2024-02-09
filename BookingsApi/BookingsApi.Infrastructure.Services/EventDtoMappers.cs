@@ -62,6 +62,19 @@ namespace BookingsApi.Infrastructure.Services
                 UserRole =  GetUserRole(participant.HearingRoleCode)
             };
         }
+        
+        public static ParticipantUserDto MapToParticipantUserDto(Guid hearingId, ParticipantDto participant)
+        {
+            return new ParticipantUserDto
+            {
+                HearingId = hearingId,
+                FirstName = participant.FirstName,
+                LastName = participant.LastName,
+                ContactEmail = participant.GetContactEmail(),
+                Username = participant.Username,
+                UserRole = participant.UserRole
+            };
+        }
 
         private static string GetUserRole(JudiciaryParticipantHearingRoleCode participantHearingRoleCode)
         {

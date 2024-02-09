@@ -36,6 +36,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             }
             await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
             await _publisherFactory.Get(EventType.CreateConferenceEvent).PublishAsync(videoHearing);
+            await _publisherFactory.Get(EventType.CreateUserEvent).PublishAsync(videoHearing);
         }
     }
 }

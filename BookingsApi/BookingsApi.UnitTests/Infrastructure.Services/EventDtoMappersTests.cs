@@ -192,4 +192,30 @@ public class EventDtoMappersTests
         mappedParticipant.ParticipnatId.Should().Be(participant.Id);
         mappedParticipant.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
     }
+
+    [Test]
+    public void should_map_participant_user_dto()
+    {
+        // Arrange
+        var hearingId = Guid.NewGuid();
+        var person = new PersonBuilder(true).Build();
+        var caseRole = new CaseRole(1,"CaseRoleName");
+        var hearingRole = new HearingRole(1, "RoleName");
+        var participant = new Individual(person, hearingRole, caseRole)
+        {
+            HearingRole = new HearingRole(1, "Applicant") {UserRole = new UserRole(1, "Individual")}
+        };
+        var participantDto = ParticipantDtoMapper.MapToDto(participant, "");
+        
+        // Act
+        var mappedParticipant = EventDtoMappers.MapToParticipantUserDto(hearingId, participantDto);
+
+        // Assert
+        mappedParticipant.HearingId.Should().Be(hearingId);
+        mappedParticipant.FirstName.Should().Be(participant.Person.FirstName);
+        mappedParticipant.LastName.Should().Be(participant.Person.LastName);
+        mappedParticipant.ContactEmail.Should().Be(participant.Person.ContactEmail);
+        mappedParticipant.Username.Should().Be(participant.Person.Username);
+        mappedParticipant.UserRole.Should().Be(participantDto.UserRole);
+    }
 }

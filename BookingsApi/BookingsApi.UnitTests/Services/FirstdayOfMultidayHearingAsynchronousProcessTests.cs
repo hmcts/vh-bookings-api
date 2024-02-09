@@ -39,8 +39,9 @@ namespace BookingsApi.UnitTests.Services
             var newParticipantWelcomeMessageCount = 2;
             var hearingConfirmationForNewParticipantsMessageCount = 0;
             var hearingConfirmationForExistingParticipantsMessageCount = 0;
+            var createUserMessageCount = 3;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount
-                + hearingConfirmationForExistingParticipantsMessageCount;
+                + hearingConfirmationForExistingParticipantsMessageCount + createUserMessageCount;
 
             await _firstdayOfMultidayHearingAsynchronousProcess.Start(hearing);
 
@@ -51,6 +52,7 @@ namespace BookingsApi.UnitTests.Services
             messages.Count(x => x.IntegrationEvent is NewParticipantHearingConfirmationEvent).Should().Be(hearingConfirmationForNewParticipantsMessageCount);
             messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
             messages.Count(x => x.IntegrationEvent is ExistingParticipantHearingConfirmationEvent).Should().Be(hearingConfirmationForExistingParticipantsMessageCount);
+            messages.Count(x => x.IntegrationEvent is CreateUserIntegrationEvent).Should().Be(createUserMessageCount);
         }
     }
 }

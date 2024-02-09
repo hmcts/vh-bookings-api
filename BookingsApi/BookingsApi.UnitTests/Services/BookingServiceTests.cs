@@ -94,8 +94,9 @@ namespace BookingsApi.UnitTests.Services
             var createConfereceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not Judge && x is not JudicialOfficeHolder);
             var hearingConfirmationForNewParticipantsMessageCount = 0;
+            var createUserMessageCount = hearing.Participants.Count(x => x is not Judge);
 
-            var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
+            var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount + createUserMessageCount;
             await _bookingService.PublishNewHearing(hearing, true);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
