@@ -53,6 +53,53 @@ public class BookNewHearingTests : ApiTest
     }
     
     [Test]
+    public async Task should_book_a_multi_day_hearing_with_notify_feature_enabled()
+    {
+        // arrange
+        var request = CreateBookingRequest();
+        request.IsMultiDayHearing = true;
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = true;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
+
+        var expectedMessageCounts = new
+        {
+            newParticipantWelcomeEmail = 4,
+            createConference = 1,
+            createUser = 6
+        };
+        var expectedTotalMessageCount = expectedMessageCounts.newParticipantWelcomeEmail + 
+                                        expectedMessageCounts.createConference + 
+                                        expectedMessageCounts.createUser;
+        messages.Where(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent).Should()
+            .HaveCount(expectedMessageCounts.newParticipantWelcomeEmail);
+        messages.Where(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should()
+            .HaveCount(expectedMessageCounts.createConference);
+        messages.Where(x => x.IntegrationEvent is CreateUserIntegrationEvent).Should()
+            .HaveCount(expectedMessageCounts.createUser);
+        messages.Length.Should().Be(expectedTotalMessageCount);
+    }
+    
+    [Test]
     public async Task should_book_a_hearing_with_a_judge_only()
     {
         // arrange

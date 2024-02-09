@@ -1,3 +1,4 @@
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests.Enums;
 using BookingsApi.Contract.V2.Enums;
 using BookingsApi.Contract.V2.Responses;
@@ -6,6 +7,7 @@ using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 using Testing.Common.Builders.Api.V2;
+using Testing.Common.Stubs;
 
 namespace BookingsApi.IntegrationTests.Api.V2.Hearings;
 
@@ -60,6 +62,53 @@ public class BookNewHearingV2Tests : ApiTest
             Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
         messages.Any(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().BeTrue();
+    }
+
+    [Test]
+    public async Task should_book_a_multi_day_hearing_with_notify_feature_enabled()
+    {
+        // arrange
+        var request = await CreateBookingRequestWithServiceIdsAndCodes();
+        request.IsMultiDayHearing = true;
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = true;
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpointsV2.BookNewHearing, RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue(result.Content.ReadAsStringAsync().Result);
+        result.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        var getHearingUri = result.Headers.Location;
+        var getResponse = await client.GetAsync(getHearingUri);
+        var createdResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(getResponse.Content);
+        _hearingIds.Add(hearingResponse.Id);
+
+        createdResponse.Should().BeEquivalentTo(hearingResponse);
+        
+        var serviceBusStub =
+            Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearingResponse.Id);
+
+        var expectedMessageCounts = new
+        {
+            newParticipantWelcomeEmail = 4,
+            createConference = 1,
+            createUser = 4
+        };
+        var expectedTotalMessageCount = expectedMessageCounts.newParticipantWelcomeEmail + 
+                                        expectedMessageCounts.createConference + 
+                                        expectedMessageCounts.createUser;
+        messages.Where(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent).Should()
+            .HaveCount(expectedMessageCounts.newParticipantWelcomeEmail);
+        messages.Where(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should()
+            .HaveCount(expectedMessageCounts.createConference);
+        messages.Where(x => x.IntegrationEvent is CreateUserIntegrationEvent).Should()
+            .HaveCount(expectedMessageCounts.createUser);
+        messages.Length.Should().Be(expectedTotalMessageCount);
     }
 
     [Test]
