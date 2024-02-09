@@ -557,7 +557,7 @@ public class BookNewHearingTests : ApiTest
         _hearingIds.Add(response.Id);
     }
 
-    private BookNewHearingRequest CreateBookingRequest()
+    private static BookNewHearingRequest CreateBookingRequest()
     {
         var hearingSchedule = DateTime.UtcNow.AddMinutes(5);
         var caseName = "Bookings Api Integration Automated";
