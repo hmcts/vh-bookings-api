@@ -47,7 +47,11 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         [Test]
         public async Task Should_not_cancel_booking_and_return_badrequest_with_an_invalid_hearingid()
         {
-            var request = new CancelBookingRequest();
+            var request = new CancelBookingRequest
+            {
+                CancelReason = "Adjournment",
+                UpdatedBy = "someone"
+            };
             var hearingId = Guid.Empty;
 
             var result = await Controller.CancelBooking(hearingId, request);
