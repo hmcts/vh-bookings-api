@@ -44,6 +44,7 @@ namespace BookingsApi.UnitTests.Mappings.V2
             response.Id.Should().Be(participant.Id);
             response.DisplayName.Should().Be(participant.DisplayName);
             response.HearingRoleName.Should().Be(hearingRole.Name);
+            response.HearingRoleCode.Should().Be(hearingRole.Code);
             response.UserRoleName.Should().Be(hearingRole.UserRole.Name);
 
             var person = participant.Person;
