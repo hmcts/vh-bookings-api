@@ -73,10 +73,20 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
                 BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess);
+            var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
+            var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
+            var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,
+                participantAddedToHearingAsynchronousProcess, newJudiciaryAddedAsynchronousProcess, QueryHandlerMock.Object);
+            var endpointService = new EndpointService(QueryHandlerMock.Object, CommandHandlerMock.Object,
+                EventPublisherMock.Object);
+            var judiciaryParticipantService = new JudiciaryParticipantService(QueryHandlerMock.Object, CommandHandlerMock.Object,
+                hearingParticipantService, EventPublisherMock.Object);
+            var updateHearingService = new UpdateHearingService(hearingParticipantService, endpointService, RandomGenerator.Object,
+                new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration), judiciaryParticipantService);
 
             return new BookingsApi.Controllers.V1.HearingsController(QueryHandlerMock.Object, CommandHandlerMock.Object,
                 bookingService, RandomGenerator.Object, new OptionsWrapper<KinlyConfiguration>(KinlyConfiguration),
-                HearingServiceMock.Object, Logger.Object);
+                HearingServiceMock.Object, Logger.Object, updateHearingService);
         }
 
         [Test]

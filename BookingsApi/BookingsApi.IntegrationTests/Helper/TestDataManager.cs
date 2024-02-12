@@ -731,5 +731,55 @@ namespace BookingsApi.IntegrationTests.Helper
             await db.SaveChangesAsync();
             return genericJudge.Entity;
         }
+
+        public async Task<List<VideoHearing>> SeedMultiDayHearing(bool useV2, 
+            IEnumerable<DateTime> dates, int scheduledDuration = 45, 
+            bool addPanelMember = false)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+
+            var orderedDates = dates.OrderBy(x => x.Date).ToList();
+
+            // Create the first day
+            var firstDayHearing = await SeedVideoHearing(useFlatHearingRoles: useV2, configureOptions: options =>
+            {
+                options.AddJudge = true;
+                options.AddPanelMember = addPanelMember;
+                options.ScheduledDate = orderedDates[0];
+                options.ScheduledDuration = scheduledDuration;
+            }, status: BookingStatus.Created, isMultiDayFirstHearing: true);
+
+            // Create the subsequent days
+            var datesOfSubsequentDays = orderedDates.Skip(1).ToList();
+            await CloneVideoHearing(firstDayHearing.Id, datesOfSubsequentDays, status: BookingStatus.Created, duration: scheduledDuration);
+
+            var hearings = new List<VideoHearing>();
+            var multiDayHearings = await db.VideoHearings.Where(x => x.SourceId == firstDayHearing.Id).ToListAsync();
+            foreach (var multiDayHearing in multiDayHearings)
+            {
+                hearings.Add(await new GetHearingByIdQueryHandler(db).Handle(new GetHearingByIdQuery(multiDayHearing.Id)));
+            }
+
+            hearings = hearings.OrderBy(x => x.ScheduledDateTime).ToList();
+
+            return hearings;
+        }
+
+        public async Task AddJudiciaryPanelMember(VideoHearing videoHearing, 
+            JudiciaryPerson judiciaryPerson, string displayName)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            var dbHearing = await db.VideoHearings.Include(x => x.JudiciaryParticipants).ThenInclude(a => a.JudiciaryPerson)
+                .FirstAsync(x => x.Id == videoHearing.Id);
+            var person = await db.JudiciaryPersons.FirstAsync(p => p.PersonalCode == judiciaryPerson.PersonalCode);
+            dbHearing.AddJudiciaryPanelMember(person, displayName);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task AddPanelMember(VideoHearing videoHearing, CaseType caseType)
+        {
+            await using var db = new BookingsDbContext(_dbContextOptions);
+            await AddPanelMemberToVideoHearing(videoHearing, caseType, false, db);
+        }
     }
 }

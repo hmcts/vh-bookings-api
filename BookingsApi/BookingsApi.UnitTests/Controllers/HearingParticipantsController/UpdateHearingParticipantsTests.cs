@@ -108,7 +108,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingParticipantsController
 
             response.Should().NotBeNull();
             var objectResult = (ObjectResult)response;
-            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("Representee", "Representee is required");
+            ((ValidationProblemDetails)objectResult.Value).ContainsKeyAndErrorMessage("NewParticipants[0].Representee", "Representee is required");
         }
 
         [Test]
