@@ -30,6 +30,7 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsByTypes => $"{ApiRoot}/types";
             public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+            public static string FailBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/fail";
             public static string CancelBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/cancel";
             public static string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
