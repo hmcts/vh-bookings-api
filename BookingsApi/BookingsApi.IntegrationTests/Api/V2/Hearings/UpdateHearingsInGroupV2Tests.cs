@@ -59,7 +59,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 var participantToRemove = requestHearing.Participants.ExistingParticipants.First(p => p.ParticipantId != defenceAdvocateParticipant.Id);
                 requestHearing.Participants.RemovedParticipantIds.Add(participantToRemove.ParticipantId);
                 requestHearing.Participants.ExistingParticipants.Remove(participantToRemove);
-            
+                           
+                // Update a participant
+                requestHearing.Participants.ExistingParticipants[0].DisplayName = "UpdatedDisplayName";
+
                 // Add an endpoint
                 requestHearing.Endpoints.NewEndpoints.Add(newEndpoint);
                 
@@ -103,7 +106,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertJudiciaryParticipantsUpdated(updatedHearing, requestHearing);
-                AssertEventsPublished(updatedHearing, requestHearing);
+                AssertEventsPublished(updatedHearing, requestHearing, existingParticipantsUpdated: 1);
             }
         }
 
@@ -512,7 +515,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             }
         }
 
-        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing)
+        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -536,12 +539,11 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 var participantMessage = participantMessages.Single();
 
                 var expectedAddedCount = requestHearing.Participants.NewParticipants.Count;
-                var expectedUpdatedCount = requestHearing.Participants.ExistingParticipants.Count;
                 var expectedRemovedCount = requestHearing.Participants.RemovedParticipantIds.Count;
                 var expectedLinkedCount = requestHearing.Participants.LinkedParticipants.Count;
 
                 participantMessage.NewParticipants.Count.Should().Be(expectedAddedCount);
-                participantMessage.ExistingParticipants.Count.Should().Be(expectedUpdatedCount);
+                participantMessage.ExistingParticipants.Count.Should().Be(existingParticipantsUpdated);
                 participantMessage.RemovedParticipants.Count.Should().Be(expectedRemovedCount);
                 participantMessage.LinkedParticipants.Count.Should().Be(expectedLinkedCount);
             }

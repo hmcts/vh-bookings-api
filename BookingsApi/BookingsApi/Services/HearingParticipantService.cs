@@ -134,12 +134,11 @@ public class HearingParticipantService : IHearingParticipantService
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
             var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-            if (existingParticipant == null)
-            {
+            var isNotBeingUpdated = !CheckParticipantIsBeingUpdated(existingParticipant, existingParticipantRequest);
+            
+            if (existingParticipant == null || isNotBeingUpdated)
                 continue;
-            }
-
+            
             var existingParticipantDetail = new ExistingParticipantDetails
             {
                 DisplayName = existingParticipantRequest.DisplayName,
@@ -201,13 +200,11 @@ public class HearingParticipantService : IHearingParticipantService
 
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
-            var existingParticipant =
-                existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-            if (existingParticipant == null)
-            {
+            var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+            var isNotBeingUpdated = !CheckParticipantIsBeingUpdated(existingParticipant, existingParticipantRequest);
+            
+            if (existingParticipant == null || isNotBeingUpdated)
                 continue;
-            }
 
             var existingParticipantDetail = new ExistingParticipantDetails
             {
@@ -291,4 +288,11 @@ public class HearingParticipantService : IHearingParticipantService
         var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
         await _commandHandler.Handle(command);
     }
+    
+    //Only properties that can be updated on an existing Participant, otherwise should be excluded from updates to the video-api
+    private static bool CheckParticipantIsBeingUpdated(Participant existingParticipant, IUpdateParticipantRequest requestChanges) => 
+        existingParticipant?.Person?.Title != requestChanges.Title ||
+        existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
+        existingParticipant?.Person?.TelephoneNumber != requestChanges.TelephoneNumber ||
+        existingParticipant?.DisplayName != requestChanges.DisplayName;
 }
