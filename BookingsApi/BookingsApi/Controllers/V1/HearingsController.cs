@@ -2,8 +2,10 @@ using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Services;
+using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
+using FluentValidation;
 using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Controllers.V1
@@ -21,13 +23,15 @@ namespace BookingsApi.Controllers.V1
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly IHearingService _hearingService;
         private readonly IVhLogger _ivhLogger;
+        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingsController(IQueryHandler queryHandler, ICommandHandler commandHandler,
             IBookingService bookingService,
             IRandomGenerator randomGenerator,
             IOptions<KinlyConfiguration> kinlyConfiguration,
             IHearingService hearingService,
-            IVhLogger ivhLogger)
+            IVhLogger ivhLogger,
+            IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _commandHandler = commandHandler;
@@ -37,6 +41,7 @@ namespace BookingsApi.Controllers.V1
             _ivhLogger = ivhLogger;
 
             _kinlyConfiguration = kinlyConfiguration.Value;
+            _updateHearingService = updateHearingService;
         }
 
         /// <summary>
@@ -138,6 +143,68 @@ namespace BookingsApi.Controllers.V1
             var response = hearings.Select(HearingToDetailsResponseMapper.Map).ToList();
 
             return Ok(response);
+        }
+        
+        /// <summary>
+        /// Update hearings in a multi day group
+        /// </summary>
+        /// <param name="groupId">The group id of the multi day hearing</param>
+        /// <param name="request">List of hearings to update</param>
+        /// <returns>No content</returns>
+        [HttpPatch("{groupId}/hearings")]
+        [OpenApiOperation("UpdateHearingsInGroup")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId, [FromBody] UpdateHearingsInGroupRequest request)
+        {
+            var inputValidationResult = await new UpdateHearingsInGroupRequestInputValidation().ValidateAsync(request);
+            if (!inputValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(inputValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
+            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            
+            if (!hearingsInGroup.Any())
+            {
+                return NotFound();
+            }
+            
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidation(hearingsInGroup).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            foreach (var requestHearing in request.Hearings)
+            {
+                var hearing = hearingsInGroup.Single(x => x.Id == requestHearing.HearingId);
+                
+                var participantDataValidationResult = await new UpdateHearingParticipantsRequestRefDataValidation(hearing.CaseType).ValidateAsync(requestHearing.Participants);
+                if (!participantDataValidationResult.IsValid)
+                {
+                    ModelState.AddFluentValidationErrors(participantDataValidationResult.Errors);
+                    return ValidationProblem(ModelState);
+                }
+            }
+            
+            foreach (var requestHearing in request.Hearings)
+            {
+                var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
+
+                await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
+                
+                hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
+                
+                await _updateHearingService.UpdateEndpointsV1(requestHearing.Endpoints, hearing);
+            }
+
+            return NoContent();
         }
 
         /// <summary>
@@ -495,58 +562,39 @@ namespace BookingsApi.Controllers.V1
         }
 
         /// <summary>
-        /// Update booking status
+        /// Updates the status of a hearing once conference created, to Created or ConfirmedWithoutJudge if Judge not yet assigned
+        /// For internal use only
         /// </summary>
         /// <param name="hearingId">Id of the hearing to update the status for</param>
-        /// <param name="request">Status of the hearing to change to</param>
         /// <returns>Success status</returns>
         [HttpPatch("{hearingId}")]
         [OpenApiOperation("UpdateBookingStatus")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.Conflict)]
         [MapToApiVersion("1.0")]
-        public async Task<IActionResult> UpdateBookingStatus(Guid hearingId, UpdateBookingStatusRequest request)
+        public Task<IActionResult> UpdateBookingStatus(Guid hearingId)
         {
-            if (hearingId == Guid.Empty)
-            {
-                ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
-                return ValidationProblem(ModelState);
-            }
-
-            var result = new UpdateBookingStatusRequestValidation().Validate(request);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return ValidationProblem(ModelState);
-            }
-            var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
-            if (videoHearing == null)
-            {
-                return NotFound($"{hearingId} does not exist");
-            }
-            
-            try
-            {
-                var bookingStatus = UpdateBookingStatusToBookingStatusMapper.Map(request.Status, videoHearing);
-                if (videoHearing.Status != bookingStatus)
-                {
-                    await UpdateStatus(videoHearing, request.UpdatedBy, request.CancelReason, bookingStatus);
-                }
-                return NoContent();
-            }
-            catch (HearingNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (DomainRuleException exception)
-            {
-                exception.ValidationFailures.ForEach(x => ModelState.AddModelError(x.Name, x.Message));
-                return Conflict(ModelState);
-            }
+            return UpdateStatus(hearingId, BookingStatus.Created, "UpdateBookingStatusEndpoint");
         }
-
+        
+        /// <summary>
+        /// Mark the booking as failed, for internal system use only
+        /// </summary>
+        /// <param name="hearingId">Id of the hearing to cancel the booking for</param>
+        /// <returns>Success status</returns>
+        [HttpPatch("{hearingId}/fail")]
+        [OpenApiOperation("FailBooking")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(SerializableError),(int)HttpStatusCode.Conflict)]
+        [MapToApiVersion("1.0")]
+        public Task<IActionResult> FailBooking(Guid hearingId)
+        {
+            return UpdateStatus(hearingId, BookingStatus.Failed, "FailBookingEndpoint");
+        }
+        
         /// <summary>
         /// Cancels the booking
         /// </summary>
@@ -562,27 +610,32 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> CancelBooking(Guid hearingId, CancelBookingRequest request)
         {
+            var result = new CancelBookingRequestValidation().Validate(request);
+            if (result.IsValid)
+                return await UpdateStatus(hearingId, BookingStatus.Cancelled, request.UpdatedBy, request.CancelReason);
+            
+            ModelState.AddFluentValidationErrors(result.Errors);
+            return ValidationProblem(ModelState);
+        }
+
+        private async Task<IActionResult> UpdateStatus(Guid hearingId, BookingStatus status, string updatedBy, string reason = null)
+        {
             if (hearingId == Guid.Empty)
             {
                 ModelState.AddModelError(nameof(hearingId), $"Please provide a valid {nameof(hearingId)}");
                 return ValidationProblem(ModelState);
             }
-
-            var result = new CancelBookingRequestValidation().Validate(request);
-            if (!result.IsValid)
-            {
-                ModelState.AddFluentValidationErrors(result.Errors);
-                return ValidationProblem(ModelState);
-            }
             var videoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(hearingId));
             if (videoHearing == null)
-            {
                 return NotFound();
-            }
-
             try
             {
-                await UpdateStatus(videoHearing, request.UpdatedBy, request.CancelReason, BookingStatus.Cancelled);
+                var command = new UpdateHearingStatusCommand(videoHearing.Id, status, updatedBy, reason);
+                await _commandHandler.Handle(command);
+
+                if (status == BookingStatus.Cancelled) 
+                    await _bookingService.PublishHearingCancelled(videoHearing);
+
                 return NoContent();
             }
             catch (DomainRuleException exception)
@@ -591,27 +644,7 @@ namespace BookingsApi.Controllers.V1
                 return Conflict(ModelState);
             }
         }
-
-        private async Task UpdateStatus(VideoHearing videoHearing, string updatedBy, string cancelReason,
-            BookingStatus bookingStatus)
-        {
-            await UpdateHearingStatusAsync(videoHearing.Id, bookingStatus, updatedBy, cancelReason);
-
-            switch (bookingStatus)
-            {
-                case BookingStatus.Cancelled:
-                    await _bookingService.PublishHearingCancelled(videoHearing);
-                    break;
-            }
-        }
-
-        private async Task UpdateHearingStatusAsync(Guid hearingId, BookingStatus bookingStatus, string updatedBy, string cancelReason)
-        {
-            var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
-
-            await _commandHandler.Handle(command);
-        }
-
+        
         /// <summary>
         /// Get all hearings by a given case type
         /// </summary>

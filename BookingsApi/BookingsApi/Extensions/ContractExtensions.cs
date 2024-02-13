@@ -1,5 +1,7 @@
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V2.Requests;
+using BookingsApi.Contract.V2.Requests.Enums;
+
 namespace BookingsApi.Extensions;
 
 public static class ContractExtensions
@@ -54,6 +56,11 @@ public static class ContractExtensions
     }
     
     public static JudiciaryParticipantHearingRoleCode MapToDomainEnum(this Contract.V1.Requests.Enums.JudiciaryParticipantHearingRoleCode hearingRoleCode)
+    {
+        return Enum.Parse<JudiciaryParticipantHearingRoleCode>(hearingRoleCode.ToString());
+    }
+    
+    public static JudiciaryParticipantHearingRoleCode MapToDomainEnum(this JudiciaryParticipantHearingRoleCodeV2 hearingRoleCode)
     {
         return Enum.Parse<JudiciaryParticipantHearingRoleCode>(hearingRoleCode.ToString());
     }

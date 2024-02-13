@@ -30,6 +30,7 @@ namespace Testing.Common.Builders.Api
             public static string GetHearingsByTypes => $"{ApiRoot}/types";
             public static string CloneHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/clone";
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
+            public static string FailBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/fail";
             public static string CancelBookingUri(Guid hearingId) => $"{ApiRoot}/{hearingId}/cancel";
             public static string RemoveHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
@@ -43,6 +44,7 @@ namespace Testing.Common.Builders.Api
             public static string RebookHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/conferences";
             public static string UpdateBookingStatus(Guid hearingId) => $"{ApiRoot}/{hearingId}";
             public static string GetBookingStatusById(Guid hearingId) => $"{ApiRoot}/{hearingId}/status";
+            public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingsEndpointsV2
@@ -53,6 +55,7 @@ namespace Testing.Common.Builders.Api
             public static string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
 
             public static string GetHearingsByGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
+            public static string UpdateHearingsInGroupId(Guid groupId) => $"{ApiRoot}/{groupId}/hearings";
         }
         
         public static class HearingParticipantsEndpoints

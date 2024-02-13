@@ -16,16 +16,18 @@ namespace BookingsApi.Controllers.V2
         private readonly IRandomGenerator _randomGenerator;
         private readonly KinlyConfiguration _kinlyConfiguration;
         private readonly ILogger<HearingsControllerV2> _logger;
+        private readonly IUpdateHearingService _updateHearingService;
 
         public HearingsControllerV2(IQueryHandler queryHandler, IBookingService bookingService,
             ILogger<HearingsControllerV2> logger, IRandomGenerator randomGenerator,
-            IOptions<KinlyConfiguration> kinlyConfigurationOption)
+            IOptions<KinlyConfiguration> kinlyConfigurationOption, IUpdateHearingService updateHearingService)
         {
             _queryHandler = queryHandler;
             _bookingService = bookingService;
             _logger = logger;
             _randomGenerator = randomGenerator;
             _kinlyConfiguration = kinlyConfigurationOption.Value;
+            _updateHearingService = updateHearingService;
         }
 
         /// <summary>
@@ -166,6 +168,59 @@ namespace BookingsApi.Controllers.V2
             return Ok(response);
         }
         
+        /// <summary>
+        /// Update hearings in a multi day group
+        /// </summary>
+        /// <param name="groupId">The group id of the multi day hearing</param>
+        /// <param name="request">List of hearings to update</param>
+        /// <returns>No content</returns>
+        [HttpPatch("{groupId}/hearings")]
+        [OpenApiOperation("UpdateHearingsInGroupV2")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("2.0")]
+        public async Task<IActionResult> UpdateHearingsInGroup(Guid groupId, [FromBody] UpdateHearingsInGroupRequestV2 request)
+        {
+            var inputValidationResult = await new UpdateHearingsInGroupRequestInputValidationV2().ValidateAsync(request);
+            if (!inputValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(inputValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
+            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+
+            if (!hearingsInGroup.Any())
+            {
+                return NotFound();
+            }
+
+            var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+
+            foreach (var requestHearing in request.Hearings)
+            {
+                var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
+                
+                await _updateHearingService.UpdateParticipantsV2(requestHearing.Participants, hearing, hearingRoles);
+                
+                hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
+                
+                await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
+                await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
+            }
+
+            return NoContent();
+        }
+
         private async Task<HearingVenue> GetHearingVenue(string venueCode)
         {
             var hearingVenues =
