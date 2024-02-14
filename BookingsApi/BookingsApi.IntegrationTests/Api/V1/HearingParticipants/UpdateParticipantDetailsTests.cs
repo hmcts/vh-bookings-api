@@ -140,7 +140,7 @@ public class UpdateParticipantDetailsTests : ApiTest
     }
 
     [Test]
-    public async Task should_update_a_participant_and_publish_event_when_hearing_is_confirmed()
+    public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed()
     {
         var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created);
         var hearingId = hearing.Id;
@@ -150,7 +150,7 @@ public class UpdateParticipantDetailsTests : ApiTest
         var request = new UpdateParticipantRequest()
         {
             ParticipantId = participantId,
-            ContactEmail = participant.Person.ContactEmail,
+            ContactEmail = "contactEmailUpdated@email.com",
             DisplayName = "New Display Name",
             OrganisationName = null,
             Representee = null,
@@ -191,7 +191,68 @@ public class UpdateParticipantDetailsTests : ApiTest
         participantResponse.LastName.Should().Be(participantPersonalDetails.LastName);
         participantResponse.MiddleNames.Should().Be(participantPersonalDetails.MiddleNames);
     }
-    
+
+    [Test]
+    public async Task should_update_a_participant_contact_email_and_publish_event_when_hearing_is_confirmed_and_contact_email_already_exists_for_different_person()
+    {
+        // TODO
+        Assert.Fail();
+    }
+
+    [Test]
+    public async Task should_update_a_participant_and_publish_event_when_hearing_is_confirmed_and_optional_fields_are_null()
+    {
+        var hearing = await Hooks.SeedVideoHearing(status:BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var participant = hearing.GetParticipants().First(x=> x is Individual);
+        var participantPersonalDetails = participant.Person;
+        var participantId = participant.Id;
+        var request = new UpdateParticipantRequest()
+        {
+            ParticipantId = participantId,
+            DisplayName = "New Display Name",
+            OrganisationName = null,
+            Representee = null,
+            TelephoneNumber = "01526791027",
+            Title = participant.Person.Title,
+            LinkedParticipants = new List<LinkedParticipantRequest>()
+        };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PutAsync(ApiUriFactory.ParticipantsEndpoints.UpdateParticipantDetails(hearingId, participantId),
+                RequestBody.Set(request));
+
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var participantResponse = await ApiClientResponse.GetResponses<ParticipantResponse>(result.Content);
+        participantResponse.Id.Should().Be(participantId);
+        participantResponse.DisplayName.Should().Be(request.DisplayName);
+        participantResponse.FirstName.Should().Be(participant.Person.FirstName);
+        participantResponse.LastName.Should().Be(participant.Person.LastName);
+        participantResponse.MiddleNames.Should().Be(participant.Person.MiddleNames);
+        participantResponse.ContactEmail.Should().Be(participant.Person.ContactEmail);
+        participantResponse.TelephoneNumber.Should().Be(request.TelephoneNumber);
+        participantResponse.Title.Should().Be(request.Title);
+        participantResponse.Representee.Should().BeNull();
+        participantResponse.Organisation.Should().Be(participant.Person.Organisation?.Name);
+        participantResponse.LinkedParticipants.Should().BeEmpty();
+        
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var message = serviceBusStub!.ReadMessageFromQueue();
+        message.IntegrationEvent.Should().BeOfType<ParticipantUpdatedIntegrationEvent>();
+        var integrationEvent = message.IntegrationEvent as ParticipantUpdatedIntegrationEvent;
+        integrationEvent!.Participant.ParticipantId.Should().Be(participantId);
+        integrationEvent!.Participant.DisplayName.Should().Be(request.DisplayName);
+        integrationEvent!.Participant.ContactEmail.Should().Be(participant.Person.ContactEmail);
+        integrationEvent!.Participant.ContactTelephone.Should().Be(request.TelephoneNumber);
+        integrationEvent!.Participant.Representee.Should().BeEmpty();
+        participantResponse.FirstName.Should().Be(participantPersonalDetails.FirstName);
+        participantResponse.LastName.Should().Be(participantPersonalDetails.LastName);
+        participantResponse.MiddleNames.Should().Be(participantPersonalDetails.MiddleNames);
+    }
     
     [Test]
     public async Task should_update_a_participants_personal_info_and_publish_event_when_hearing_is_confirmed()
