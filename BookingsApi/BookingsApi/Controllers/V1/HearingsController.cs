@@ -575,7 +575,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public Task<IActionResult> UpdateBookingStatus(Guid hearingId)
         {
-            return UpdateStatus(hearingId, BookingStatus.Created, "UpdateBookingStatusEndpoint");
+            return UpdateStatus(hearingId, BookingStatus.Created);
         }
         
         /// <summary>
@@ -592,7 +592,7 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public Task<IActionResult> FailBooking(Guid hearingId)
         {
-            return UpdateStatus(hearingId, BookingStatus.Failed, "FailBookingEndpoint");
+            return UpdateStatus(hearingId, BookingStatus.Failed);
         }
         
         /// <summary>
@@ -618,7 +618,7 @@ namespace BookingsApi.Controllers.V1
             return ValidationProblem(ModelState);
         }
 
-        private async Task<IActionResult> UpdateStatus(Guid hearingId, BookingStatus status, string updatedBy, string reason = null)
+        private async Task<IActionResult> UpdateStatus(Guid hearingId, BookingStatus status, string updatedBy = "System", string reason = null)
         {
             if (hearingId == Guid.Empty)
             {

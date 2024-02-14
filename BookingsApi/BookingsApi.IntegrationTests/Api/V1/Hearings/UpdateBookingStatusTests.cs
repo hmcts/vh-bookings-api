@@ -46,6 +46,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
 
             hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.Created);
+            AssertCommon(hearingResponse);
         }
 
         [Test]
@@ -72,6 +73,13 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponse>(getHearing.Content);
 
             hearingResponse.Status.Should().Be(Contract.V1.Enums.BookingStatus.ConfirmedWithoutJudge);
+            AssertCommon(hearingResponse);
+        }
+
+        private static void AssertCommon(HearingDetailsResponse hearingResponse)
+        {
+            hearingResponse.UpdatedBy.Should().Be("System");
+            hearingResponse.ConfirmedBy.Should().Be("System");
         }
     }
 }
