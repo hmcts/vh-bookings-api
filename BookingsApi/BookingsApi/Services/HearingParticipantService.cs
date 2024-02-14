@@ -201,9 +201,8 @@ public class HearingParticipantService : IHearingParticipantService
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
             var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-            var isNotBeingUpdated = !CheckParticipantIsBeingUpdated(existingParticipant, existingParticipantRequest);
             
-            if (existingParticipant == null || isNotBeingUpdated)
+            if (existingParticipant == null)
                 continue;
 
             var existingParticipantDetail = new ExistingParticipantDetails
@@ -290,9 +289,12 @@ public class HearingParticipantService : IHearingParticipantService
     }
     
     //Check the only properties that can be updated on an existing Participant have been edited, otherwise should be excluded from updates to the video-api
-    private static bool CheckParticipantIsBeingUpdated(Participant existingParticipant, IUpdateParticipantRequest requestChanges) => 
-        existingParticipant?.Person?.Title != requestChanges.Title ||
-        existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
-        existingParticipant?.Person?.TelephoneNumber != requestChanges.TelephoneNumber ||
-        existingParticipant?.DisplayName != requestChanges.DisplayName;
+    private static bool CheckParticipantIsBeingUpdated(Participant existingParticipant, IUpdateParticipantRequest requestChanges)
+    {
+        return existingParticipant?.Person?.Title != requestChanges.Title ||
+               existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
+               existingParticipant?.Person?.TelephoneNumber != requestChanges.TelephoneNumber ||
+               existingParticipant?.DisplayName != requestChanges.DisplayName;
+    }
+        
 }
