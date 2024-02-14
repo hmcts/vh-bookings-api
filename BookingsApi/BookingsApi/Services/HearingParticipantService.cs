@@ -85,7 +85,6 @@ public class HearingParticipantService : IHearingParticipantService
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
             .ToList();
 
-
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
@@ -95,8 +94,8 @@ public class HearingParticipantService : IHearingParticipantService
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
                 break;
         }
-        
     }
+    
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {
         var participant = hearing.GetJudiciaryParticipants()
@@ -127,7 +126,9 @@ public class HearingParticipantService : IHearingParticipantService
         var newParticipants = request.NewParticipants
                 .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, hearing.CaseType)).ToList();
 
-        var existingParticipants = hearing.Participants.Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
+        var existingParticipants = hearing.Participants
+            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id))
+            .ToArray();
 
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
 
@@ -193,8 +194,7 @@ public class HearingParticipantService : IHearingParticipantService
         return updatedHearing;
     }
     
-    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request,
-        List<Participant> existingParticipants)
+    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request, List<Participant> existingParticipants)
     {
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
 
@@ -289,7 +289,7 @@ public class HearingParticipantService : IHearingParticipantService
         await _commandHandler.Handle(command);
     }
     
-    //Only properties that can be updated on an existing Participant, otherwise should be excluded from updates to the video-api
+    //Check the only properties that can be updated on an existing Participant have been edited, otherwise should be excluded from updates to the video-api
     private static bool CheckParticipantIsBeingUpdated(Participant existingParticipant, IUpdateParticipantRequest requestChanges) => 
         existingParticipant?.Person?.Title != requestChanges.Title ||
         existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
