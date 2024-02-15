@@ -201,8 +201,9 @@ public class HearingParticipantService : IHearingParticipantService
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
             var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+            var isNotBeingUpdated = !CheckParticipantIsBeingUpdated(existingParticipant, existingParticipantRequest);
             
-            if (existingParticipant == null)
+            if (existingParticipant == null || isNotBeingUpdated)
                 continue;
 
             var existingParticipantDetail = new ExistingParticipantDetails
