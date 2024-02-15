@@ -120,16 +120,57 @@ public class HearingParticipantService : IHearingParticipantService
         return updatedParticipant;
     }
 
-    public async Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request,
-        VideoHearing hearing)
+    public async Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing)
     {
         var newParticipants = request.NewParticipants
                 .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, hearing.CaseType)).ToList();
-
+        
         var existingParticipants = hearing.Participants
             .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id))
-            .ToArray();
+            .ToList();
+        
+        var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequest(request, existingParticipants);
+        
+        var linkedParticipants =
+            LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
+        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        await _commandHandler.Handle(command);
+
+        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
+        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        return updatedHearing;
+    }
+    
+    public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles)
+    {
+        var newParticipants = request.NewParticipants
+            .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
+
+        var existingParticipants = hearing.Participants
+            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
+
+        var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequestV2(request, existingParticipants);
+
+        var linkedParticipants =
+            LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
+
+        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        await _commandHandler.Handle(command);
+
+        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
+        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+
+        return updatedHearing;
+    }
+    
+    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequest request, List<Participant> existingParticipants)
+    {
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
 
         foreach (var existingParticipantRequest in request.ExistingParticipants)
@@ -153,48 +194,11 @@ public class HearingParticipantService : IHearingParticipantService
             existingParticipantDetail.Person.ContactEmail = existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
             existingParticipantDetails.Add(existingParticipantDetail);
         }
-         
 
-        var linkedParticipants =
-            LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
-
-        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-        await _commandHandler.Handle(command);
-
-        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
-        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-        return updatedHearing;
+        return existingParticipantDetails;
     }
     
-    public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
-        VideoHearing hearing, List<HearingRole> hearingRoles)
-    {
-        var newParticipants = request.NewParticipants
-            .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
-
-        var existingParticipants = hearing.Participants
-            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
-
-        var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequest(request, existingParticipants);
-
-        var linkedParticipants =
-            LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
-
-        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-        await _commandHandler.Handle(command);
-
-        var getHearingByIdQuery = new GetHearingByIdQuery(hearing.Id);
-        var updatedHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        await PublishEventForUpdateParticipantsAsync(updatedHearing, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
-
-        return updatedHearing;
-    }
-    
-    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request, List<Participant> existingParticipants)
+    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequestV2(UpdateHearingParticipantsRequestV2 request, List<Participant> existingParticipants)
     {
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
 
