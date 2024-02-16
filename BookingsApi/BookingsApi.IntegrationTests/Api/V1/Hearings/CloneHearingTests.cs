@@ -193,7 +193,7 @@ public class CloneHearingTests : ApiTest
         var messages = serviceBusStub!
             .ReadAllMessagesFromQueue(hearing.Id);
             
-        const int expectedTotalMessageCount = 5;
+        var expectedTotalMessageCount = hearing.Participants.Count;
         var totalDays = request.Dates.Count + 1;
         
         messages.Count(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent).Should().Be(expectedTotalMessageCount);
