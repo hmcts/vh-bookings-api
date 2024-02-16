@@ -116,7 +116,7 @@ public class CloneHearingTests : ApiTest
     }
 
     [Test]
-    public async Task should_clone_hearing_for_v1_and_new_notify_templates_feature_toggled_off()
+    public async Task should_clone_hearing_for_v1_with_new_notify_templates_feature_off()
     {
         // arrange
         var startingDate = DateTime.UtcNow.AddMinutes(5);
@@ -137,7 +137,32 @@ public class CloneHearingTests : ApiTest
         
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
-        AssertEventsPublishedForV1AndNotifyFeatureOff(request, hearing1);
+        AssertEventsPublishedForNotifyFeatureOff(request, hearing1, useV2: false);
+    }
+    
+    [Test]
+    public async Task should_clone_hearing_for_v2_with_new_notify_templates_feature_off()
+    {
+        // arrange
+        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
+        {
+            options.ScheduledDate = startingDate;
+        });
+
+        var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
+        
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = false;
+
+        // act
+        using var client = Application.CreateClient();
+        var request = new CloneHearingRequest { Dates = dates }; // No duration specified - should use the default
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.CloneHearing(hearing1.Id), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        AssertEventsPublishedForNotifyFeatureOff(request, hearing1, useV2: true);
     }
 
     [Test]
@@ -186,18 +211,22 @@ public class CloneHearingTests : ApiTest
         }
     }
 
-    private void AssertEventsPublishedForV1AndNotifyFeatureOff(CloneHearingRequest request, Hearing hearing)
+    private void AssertEventsPublishedForNotifyFeatureOff(CloneHearingRequest request, Hearing hearing, bool useV2)
     {
         var serviceBusStub = Application.Services
             .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var messages = serviceBusStub!
             .ReadAllMessagesFromQueue(hearing.Id);
-            
+        
         var expectedTotalMessageCount = hearing.Participants.Count;
+        if (useV2)
+        {
+            expectedTotalMessageCount += hearing.JudiciaryParticipants.Count;
+        }
         var totalDays = request.Dates.Count + 1;
         
         messages.Count(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent).Should().Be(expectedTotalMessageCount);
-        var hearingConfirmationDtos = GetHearingConfirmationDtos(hearing);
+        var hearingConfirmationDtos = HearingConfirmationForParticipantDtoMapper.MapToDtos(hearing);
         var multiDayIntegrationEvents = messages
             .Where(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent)
             .Select(x => x.IntegrationEvent as MultiDayHearingIntegrationEvent)
@@ -205,19 +234,5 @@ public class CloneHearingTests : ApiTest
         multiDayIntegrationEvents.TrueForAll(x => x.TotalDays == totalDays).Should().BeTrue();
         multiDayIntegrationEvents.Select(x => x.HearingConfirmationForParticipant)
             .Should().BeEquivalentTo(hearingConfirmationDtos);
-    }
-    
-    private static IEnumerable<HearingConfirmationForParticipantDto> GetHearingConfirmationDtos(Hearing hearing)
-    {
-        var participantDtos = hearing.Participants
-            .Select(p => ParticipantDtoMapper.MapToDto(p, hearing.OtherInformation))
-            .ToList();
-        var @case = hearing.GetCases()[0];
-        var hearingConfirmationDtos = participantDtos
-            .Select(p => EventDtoMappers.MapToHearingConfirmationDto(
-                hearing.Id, hearing.ScheduledDateTime, p, @case))
-            .ToList();
-
-        return hearingConfirmationDtos;
     }
 }

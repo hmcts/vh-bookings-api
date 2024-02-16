@@ -31,7 +31,7 @@ namespace BookingsApi.UnitTests.Services
         }
         
         [Test]
-        public async Task Should_publish_messages_with_new_notify_templates_feature_toggled_on()
+        public async Task Should_publish_messages_with_new_notify_templates_feature_on()
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person, 
@@ -63,50 +63,62 @@ namespace BookingsApi.UnitTests.Services
         }
 
         [Test]
-        public async Task Should_publish_messages_with_new_notify_templates_feature_toggled_off()
+        public async Task Should_publish_messages_for_v1_with_new_notify_templates_feature_off()
         {
             // Arrange
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            hearing.Participants[0].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[0].Person, 
-                hearing.Participants[0].Person.CreatedDate.AddDays(-10), null);
-            hearing.Participants[1].Person.GetType().GetProperty("CreatedDate").SetValue(hearing.Participants[1].Person,
-                hearing.Participants[1].Person.CreatedDate.AddDays(-10), null);
 
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 
-            var expectedTotalMessageCount = 6;
-            var totalDays = 2;
+            const int expectedTotalMessageCount = 6;
+            const int totalDays = 2;
             
             // Act
             await _clonedMultidaysAsynchronousProcess.Start(hearing, totalDays);
             
             // Assert
-            var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
-            messages.Length.Should().Be(expectedTotalMessageCount);
+            AssertEventsPublishedForNotifyFeatureOff(hearing, totalDays, expectedTotalMessageCount);
+        }
+        
+        [Test]
+        public async Task Should_publish_messages_with_v2_with_new_notify_templates_feature_off()
+        {
+            // Arrange
+            var hearing = new VideoHearingBuilder(addJudge: false).WithCase().Build();
+            var judiciaryJudgePerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
+            hearing.AddJudiciaryJudge(judiciaryJudgePerson, "Judiciary Judge");
+            var panelMemberParticipants = hearing.Participants.Where(p => p is JudicialOfficeHolder).ToList();
+            foreach (var participant in panelMemberParticipants)
+            {
+                // Remove these since they are V1 johs and not applicable to V2
+                hearing.Participants.Remove(participant);
+            }
+
+            ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
+
+            const int expectedTotalMessageCount = 5;
+            const int totalDays = 2;
             
+            // Act
+            await _clonedMultidaysAsynchronousProcess.Start(hearing, totalDays);
+            
+            // Assert
+            AssertEventsPublishedForNotifyFeatureOff(hearing, totalDays, expectedTotalMessageCount);
+        }
+        
+        private void AssertEventsPublishedForNotifyFeatureOff(Hearing hearing, int totalDayCount, int expectedTotalMessageCount)
+        {
+            var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
+
             messages.Count(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent).Should().Be(expectedTotalMessageCount);
-            var hearingConfirmationDtos = GetHearingConfirmationDtos(hearing);
+            var hearingConfirmationDtos = HearingConfirmationForParticipantDtoMapper.MapToDtos(hearing);
             var multiDayIntegrationEvents = messages
                 .Where(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent)
                 .Select(x => x.IntegrationEvent as MultiDayHearingIntegrationEvent)
                 .ToList();
-            multiDayIntegrationEvents.TrueForAll(x => x.TotalDays == totalDays).Should().BeTrue();
+            multiDayIntegrationEvents.TrueForAll(x => x.TotalDays == totalDayCount).Should().BeTrue();
             multiDayIntegrationEvents.Select(x => x.HearingConfirmationForParticipant)
                 .Should().BeEquivalentTo(hearingConfirmationDtos);
-        }
-
-        private static IEnumerable<HearingConfirmationForParticipantDto> GetHearingConfirmationDtos(Hearing hearing)
-        {
-            var participantDtos = hearing.Participants
-                .Select(p => ParticipantDtoMapper.MapToDto(p, hearing.OtherInformation))
-                .ToList();
-            var @case = hearing.GetCases()[0];
-            var hearingConfirmationDtos = participantDtos
-                .Select(p => EventDtoMappers.MapToHearingConfirmationDto(
-                    hearing.Id, hearing.ScheduledDateTime, p, @case))
-                .ToList();
-
-            return hearingConfirmationDtos;
         }
     }
 }
