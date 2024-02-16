@@ -5,7 +5,7 @@ using BookingsApi.Infrastructure.Services.Dtos;
 
 namespace BookingsApi.Infrastructure.Services
 {
-    public class HearingConfirmationForParticipantDtoMapper
+    public abstract class HearingConfirmationForParticipantDtoMapper
     {
         public static IEnumerable<HearingConfirmationForParticipantDto> MapToDtos(Hearing hearing)
         {
