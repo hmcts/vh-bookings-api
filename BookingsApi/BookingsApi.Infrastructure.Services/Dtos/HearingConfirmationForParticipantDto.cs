@@ -8,7 +8,7 @@ namespace BookingsApi.Infrastructure.Services.Dtos
         public DateTime ScheduledDateTime { get; set; }
         public string CaseName { get; set; }
         public string CaseNumber { get; set; }
-        public Guid ParticipnatId { get; set; }
+        public Guid ParticipantId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string DisplayName { get; set; }

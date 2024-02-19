@@ -38,7 +38,7 @@ namespace BookingsApi.Infrastructure.Services
                 ContactTelephone = participant.GetContactTelephone(),
                 FirstName = participant.FirstName,
                 LastName = participant.LastName,
-                ParticipnatId = participant.ParticipantId,
+                ParticipantId = participant.ParticipantId,
                 UserRole = participant.UserRole
             };
         }
@@ -58,7 +58,7 @@ namespace BookingsApi.Infrastructure.Services
                 ContactTelephone = participant.JudiciaryPerson.WorkPhone,
                 FirstName = participant.JudiciaryPerson.KnownAs,
                 LastName = participant.JudiciaryPerson.Surname,
-                ParticipnatId = participant.Id,
+                ParticipantId = participant.Id,
                 UserRole =  GetUserRole(participant.HearingRoleCode)
             };
         }

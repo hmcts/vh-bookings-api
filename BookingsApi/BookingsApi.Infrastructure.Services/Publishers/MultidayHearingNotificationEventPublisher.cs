@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.Publishers
 {
-    public class MultidayHearingNotoficationEventPublisher : IPublishEvent
+    public class MultidayHearingNotificationEventPublisher : IPublishMultidayEvent
     {
         private readonly IEventPublisher _eventPublisher;
-        public MultidayHearingNotoficationEventPublisher(IEventPublisher eventPublisher)
+        public MultidayHearingNotificationEventPublisher(IEventPublisher eventPublisher)
         {
             _eventPublisher = eventPublisher;
         }
 
         public EventType EventType => EventType.MultiDayHearingIntegrationEvent;
+        public int TotalDays { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
@@ -23,7 +24,15 @@ namespace BookingsApi.Infrastructure.Services.Publishers
                 var participantDto = ParticipantDtoMapper.MapToDto(participant, videoHearing.OtherInformation);
                 
                 await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
-                    videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case)));
+                    videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case), TotalDays));
+            }
+
+            foreach (var judiciaryParticipant in videoHearing.JudiciaryParticipants)
+            {
+                var participantDto = ParticipantDtoMapper.MapToDto(judiciaryParticipant);
+                
+                await _eventPublisher.PublishAsync(new MultiDayHearingIntegrationEvent(EventDtoMappers.MapToHearingConfirmationDto(
+                    videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case), TotalDays));
             }
         }
     }

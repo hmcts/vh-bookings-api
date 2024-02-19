@@ -33,7 +33,9 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             }
             if (!_featureToggles.UsePostMay2023Template())
             {
-                await _publisherFactory.Get(EventType.MultiDayHearingIntegrationEvent).PublishAsync(videoHearing);
+                var publisherForMultiDayEvent = (IPublishMultidayEvent)_publisherFactory.Get(EventType.MultiDayHearingIntegrationEvent);
+                publisherForMultiDayEvent.TotalDays = totalDays;
+                await publisherForMultiDayEvent.PublishAsync(videoHearing);
 
                 return;
             }
