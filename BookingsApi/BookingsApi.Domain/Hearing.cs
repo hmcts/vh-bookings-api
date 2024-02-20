@@ -281,7 +281,7 @@ namespace BookingsApi.Domain
         }
 
         public bool HasHost =>
-            GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
+            GetParticipants().Any(x => x.HearingRole.Name == "Judge") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)

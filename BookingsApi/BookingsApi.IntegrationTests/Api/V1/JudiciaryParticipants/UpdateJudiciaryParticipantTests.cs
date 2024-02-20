@@ -13,9 +13,8 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
 {
     public class UpdateJudiciaryParticipantTests : ApiTest
     {
-        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
-        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
-        public async Task Should_update_judiciary_judge(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+        [Test]
+        public async Task Should_update_judiciary_judge()
         {
             // Arrange
             var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
@@ -31,7 +30,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var request = new UpdateJudiciaryParticipantRequest
             {
                 DisplayName = newDisplayName,
-                HearingRoleCode = newHearingRoleCode
+                HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge
             };
             
             // Act
@@ -50,7 +49,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants.Count.Should().Be(1);
             judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryJudge.JudiciaryPersonId);
             judiciaryParticipants[0].DisplayName.Should().Be(newDisplayName);
-            judiciaryParticipants[0].HearingRoleCode.Should().Be(newHearingRoleCode.MapToDomainEnum());
+            judiciaryParticipants[0].HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge.MapToDomainEnum());
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(request);

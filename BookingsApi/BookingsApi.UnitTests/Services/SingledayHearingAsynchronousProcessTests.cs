@@ -64,7 +64,7 @@ namespace BookingsApi.UnitTests.Services
 
             var createConferenceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge);
-            var totalMessages = 12;
+            var totalMessages = 10;
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
             
@@ -115,7 +115,7 @@ namespace BookingsApi.UnitTests.Services
 
             var createConferenceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not JudicialOfficeHolder && x is not Judge);
-            var totalMessages = 12;
+            var totalMessages = 10;
 
             await _singledayHearingAsynchronousProcess.Start(hearing);
 
