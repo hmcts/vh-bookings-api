@@ -85,7 +85,6 @@ public class HearingParticipantService : IHearingParticipantService
             .Where(x => newJudiciaryParticipants.Any(y => y.PersonalCode == x.JudiciaryPerson.PersonalCode))
             .ToList();
 
-
         switch (hearing.Status)
         {
             case BookingStatus.Created or BookingStatus.ConfirmedWithoutJudge:
@@ -95,8 +94,8 @@ public class HearingParticipantService : IHearingParticipantService
                 await _eventPublisher.PublishAsync(new HearingIsReadyForVideoIntegrationEvent(hearing, hearing.GetParticipants()));
                 break;
         }
-        
     }
+    
     public async Task PublishEventForUpdateJudiciaryParticipantAsync(Hearing hearing, UpdatedJudiciaryParticipant updatedJudiciaryParticipant)
     {
         var participant = hearing.GetJudiciaryParticipants()
@@ -121,39 +120,26 @@ public class HearingParticipantService : IHearingParticipantService
         return updatedParticipant;
     }
 
-    public async Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request,
-        VideoHearing hearing)
+    public async Task<VideoHearing> UpdateParticipants(UpdateHearingParticipantsRequest request, VideoHearing hearing)
     {
         var newParticipants = request.NewParticipants
                 .Select(x => ParticipantRequestToNewParticipantMapper.Map(x, hearing.CaseType)).ToList();
-
-        var existingParticipants = hearing.Participants.Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
-
+        
+        var existingParticipants = hearing.Participants
+            .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id))
+            .ToList();
+        
         var existingParticipantDetails = new List<ExistingParticipantDetails>();
 
         foreach (var existingParticipantRequest in request.ExistingParticipants)
         {
-            var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-            if (existingParticipant == null)
+            var updatedParticipantRequest = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequest);
+            if (updatedParticipantRequest != null)
             {
-                continue;
+                updatedParticipantRequest.Person.ContactEmail = existingParticipantRequest.ContactEmail ??  existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId).Person.ContactEmail;
+                existingParticipantDetails.Add(updatedParticipantRequest);
             }
-
-            var existingParticipantDetail = new ExistingParticipantDetails
-            {
-                DisplayName = existingParticipantRequest.DisplayName,
-                OrganisationName = existingParticipantRequest.OrganisationName,
-                ParticipantId = existingParticipantRequest.ParticipantId,
-                Person = existingParticipant.Person,
-                RepresentativeInformation = new RepresentativeInformation { Representee = existingParticipantRequest.Representee },
-                TelephoneNumber = existingParticipantRequest.TelephoneNumber,
-                Title = existingParticipantRequest.Title
-            };
-            existingParticipantDetail.Person.ContactEmail = existingParticipantRequest.ContactEmail ?? existingParticipant.Person.ContactEmail;
-            existingParticipantDetails.Add(existingParticipantDetail);
         }
-         
 
         var linkedParticipants =
             LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
@@ -168,18 +154,27 @@ public class HearingParticipantService : IHearingParticipantService
 
         return updatedHearing;
     }
-    
-    public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
-        VideoHearing hearing, List<HearingRole> hearingRoles)
+
+    public async Task<VideoHearing> UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles)
     {
         var newParticipants = request.NewParticipants
             .Select(x => ParticipantRequestV2ToNewParticipantMapper.Map(x, hearingRoles)).ToList();
 
         var existingParticipants = hearing.Participants
             .Where(x => request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id)).ToList();
+        
+        var existingParticipantDetails = new List<ExistingParticipantDetails>();
 
-        var existingParticipantDetails = UpdateExistingParticipantDetailsFromRequest(request, existingParticipants);
-
+        foreach (var existingParticipantRequest in request.ExistingParticipants)
+        {
+            var updatedParticipantRequest = UpdateExistingParticipantDetailsFromRequest(existingParticipants, existingParticipantRequest);
+            if (updatedParticipantRequest != null)
+            {
+                updatedParticipantRequest.Person.ContactEmail = existingParticipants.First(ep => ep.Id == existingParticipantRequest.ParticipantId).Person.ContactEmail;
+                existingParticipantDetails.Add(updatedParticipantRequest);
+            }
+        }
+        
         var linkedParticipants =
             LinkedParticipantRequestV2ToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
@@ -194,38 +189,6 @@ public class HearingParticipantService : IHearingParticipantService
         return updatedHearing;
     }
     
-    private static List<ExistingParticipantDetails> UpdateExistingParticipantDetailsFromRequest(UpdateHearingParticipantsRequestV2 request,
-        List<Participant> existingParticipants)
-    {
-        var existingParticipantDetails = new List<ExistingParticipantDetails>();
-
-        foreach (var existingParticipantRequest in request.ExistingParticipants)
-        {
-            var existingParticipant =
-                existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
-
-            if (existingParticipant == null)
-            {
-                continue;
-            }
-
-            var existingParticipantDetail = new ExistingParticipantDetails
-            {
-                DisplayName = existingParticipantRequest.DisplayName,
-                OrganisationName = existingParticipantRequest.OrganisationName,
-                ParticipantId = existingParticipantRequest.ParticipantId,
-                Person = existingParticipant.Person,
-                RepresentativeInformation = new RepresentativeInformation {Representee = existingParticipantRequest.Representee},
-                TelephoneNumber = existingParticipantRequest.TelephoneNumber,
-                Title = existingParticipantRequest.Title
-            };
-            existingParticipantDetail.Person.ContactEmail = existingParticipant.Person.ContactEmail;
-            existingParticipantDetails.Add(existingParticipantDetail);
-        }
-
-        return existingParticipantDetails;
-    }
-
     private async Task ProcessParticipantListChange(VideoHearing hearing, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
         List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants)
     {
@@ -291,4 +254,34 @@ public class HearingParticipantService : IHearingParticipantService
         var command = new UpdateHearingStatusCommand(hearingId, bookingStatus, updatedBy, cancelReason);
         await _commandHandler.Handle(command);
     }
+    
+    private static ExistingParticipantDetails UpdateExistingParticipantDetailsFromRequest<T>(List<Participant> existingParticipants, T existingParticipantRequest) where T : IUpdateParticipantRequest
+    {
+        var existingParticipant = existingParticipants.SingleOrDefault(ep => ep.Id == existingParticipantRequest.ParticipantId);
+        var isNotBeingUpdated = !CheckParticipantIsBeingUpdated(existingParticipant, existingParticipantRequest);
+            
+        if (existingParticipant == null || isNotBeingUpdated)
+            return null;
+            
+        return new ExistingParticipantDetails
+        {
+            DisplayName = existingParticipantRequest.DisplayName,
+            OrganisationName = existingParticipantRequest.OrganisationName,
+            ParticipantId = existingParticipantRequest.ParticipantId,
+            Person = existingParticipant.Person,
+            RepresentativeInformation = new RepresentativeInformation { Representee = existingParticipantRequest.Representee },
+            TelephoneNumber = existingParticipantRequest.TelephoneNumber,
+            Title = existingParticipantRequest.Title
+        };
+    }
+    
+    //Check the only properties that can be updated on an existing Participant have been edited, otherwise should be excluded from updates to the video-api
+    private static bool CheckParticipantIsBeingUpdated(Participant existingParticipant, IUpdateParticipantRequest requestChanges)
+    {
+        return existingParticipant?.Person?.Title != requestChanges.Title ||
+               existingParticipant?.Person?.Organisation?.Name != requestChanges.OrganisationName ||
+               existingParticipant?.Person?.TelephoneNumber != requestChanges.TelephoneNumber ||
+               existingParticipant?.DisplayName != requestChanges.DisplayName;
+    }
+        
 }

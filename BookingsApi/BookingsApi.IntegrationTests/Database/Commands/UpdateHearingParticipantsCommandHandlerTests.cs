@@ -275,7 +275,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             await _context.Persons.AddAsync(newJudge);
             await _context.SaveChangesAsync();
             _personsToRemove.Add(newJudge.ContactEmail);
-            var displayName = $"{newJudge.FirstName} {newJudge.LastName}";
+            const string displayName = "New Display Name";
             var newParticipant = new NewParticipant()
             {
                 Person = newJudge,
