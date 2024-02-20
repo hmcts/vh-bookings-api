@@ -3,12 +3,57 @@ using BookingsApi.Contract.V2.Requests;
 using BookingsApi.Contract.V2.Responses;
 using BookingsApi.Domain.Constants;
 using BookingsApi.Domain.Enumerations;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V2;
 
 namespace BookingsApi.IntegrationTests.Api.V2.HearingParticipants;
 
 public class UpdateHearingParticipantsV2Tests : ApiTest
 {
+        
+    [Test]
+    public async Task should_update_an_existing_participant()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options
+            => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
+        var participant = hearing.Participants.First(e => e.HearingRole.Name == "Litigant in person");
+        var request = new UpdateHearingParticipantsRequestV2
+        {
+            ExistingParticipants = new List<UpdateParticipantRequestV2> { new()
+            {
+                ParticipantId = participant.Id, 
+                DisplayName = "NewDisplayName",
+                FirstName = participant.Person?.FirstName,
+                LastName = participant.Person?.LastName,
+                OrganisationName = participant.Person?.Organisation?.Name,
+                TelephoneNumber = participant.Person?.TelephoneNumber,
+                Title = participant.Person?.Title
+            } }
+        };
+
+        // act
+        using var client = Application.CreateClient();
+        var result = await client
+            .PostAsync(ApiUriFactory.HearingParticipantsEndpointsV2.UpdateHearingParticipants(hearing.Id),RequestBody.Set(request));
+        var updatedHearing = await client.GetAsync(ApiUriFactory.HearingsEndpointsV2.GetHearingDetailsById(hearing.Id.ToString()));
+        var hearingResponse = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(updatedHearing.Content);
+        
+        // assert
+        hearingResponse.Participants.Should().Contain(p => p.DisplayName == "NewDisplayName");
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!.ReadAllMessagesFromQueue(hearing.Id);
+        var participantMessages = messages
+            .Where(x => x.IntegrationEvent is ParticipantUpdatedIntegrationEvent)
+            .Select(x => x.IntegrationEvent as ParticipantUpdatedIntegrationEvent)
+            .Where(x => x.HearingId == hearing.Id)
+            .ToList();
+
+        participantMessages.Count.Should().Be(1);
+    }
+    
     [Test]
     public async Task should_update_individual_participant_in_a_hearing_and_return_200()
     {
