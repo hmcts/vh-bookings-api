@@ -59,6 +59,7 @@ public class UpdateHearingParticipantsTests : ApiTest
         var hearing = await Hooks.SeedVideoHearing(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
         var judge = hearing.Participants.First(e => e.HearingRole.IsJudge());
+        const string newDisplayName = "Judge";
         var request = new UpdateHearingParticipantsRequest
         {
             RemovedParticipantIds = new List<Guid>{ judge.Id },
@@ -67,7 +68,7 @@ public class UpdateHearingParticipantsTests : ApiTest
                 new()
                 {
                     ContactEmail = GenericJudge.ContactEmail,
-                    DisplayName = "Judge",  
+                    DisplayName = newDisplayName,  
                     Username = GenericJudge.Username,
                     HearingRoleName = "Judge",
                     CaseRoleName = "Judge",
@@ -87,6 +88,7 @@ public class UpdateHearingParticipantsTests : ApiTest
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
         hearingResponse.Participants.Should().Contain(p => p.Username == GenericJudge.Username);
+        hearingResponse.Participants.Should().Contain(p => p.DisplayName == newDisplayName);
         hearingResponse.Status.Should().Be(BookingStatus.Created);
     }
     
