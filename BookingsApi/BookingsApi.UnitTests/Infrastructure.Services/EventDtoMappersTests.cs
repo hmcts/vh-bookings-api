@@ -76,14 +76,6 @@ public class EventDtoMappersTests
                     HearingRole = new HearingRole(1, "Judge") {UserRole = new UserRole(1, "Judge")}
                 };
                 break;
-            case CaseRoleGroup.StaffMember:
-                participant = new StaffMember(person, hearingRole, caseRole)
-                {
-                    DisplayName = "Display Name",
-                    CreatedBy = "Created By",
-                    HearingRole = new HearingRole(1, "StaffMember") {UserRole = new UserRole(1, "StaffMember")}
-                };
-                break;
         }
 
         var participantDto = ParticipantDtoMapper.MapToDto(participant, "");

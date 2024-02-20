@@ -126,9 +126,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
 
             var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
             joh.CaseRole = new CaseRole(4, "test5");
-            var staffMember = hearing.GetParticipants().Single(x => x is StaffMember);
-            staffMember.CaseRole = new CaseRole(5, "test5");
-
+            
             hearing.AddEndpoints(new List<Endpoint>
             {
                 new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),
@@ -173,9 +171,7 @@ namespace BookingsApi.UnitTests.Infrastructure.Services
             
             var joh = hearing.GetParticipants().Single(x => x is JudicialOfficeHolder);
             joh.CaseRole = new CaseRole(4, "test5");
-            var staffMember = hearing.GetParticipants().Single(x => x is StaffMember);
-            staffMember.CaseRole = new CaseRole(5, "test5");
-
+            
             hearing.AddEndpoints(new List<Endpoint>
             {
                 new Endpoint("one", Guid.NewGuid().ToString(), "1234", null),

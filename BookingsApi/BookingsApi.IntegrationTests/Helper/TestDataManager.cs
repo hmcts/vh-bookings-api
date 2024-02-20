@@ -295,18 +295,6 @@ namespace BookingsApi.IntegrationTests.Helper
 
             videoHearing.AddIndividual(person4, respondentLipHearingRole, respondentCaseRole,
                 $"{person4.FirstName} {person4.LastName}");
-
-            if (options.AddStaffMember)
-            {
-                var staffMemberPerson = new PersonBuilder(true).Build();
-                var staffMemberCaseRole = caseType.CaseRoles.First(x => x.Name == "Staff Member");
-
-                var staffMemberHearingRole = useFlatHearingRoles
-                    ? flatHearingRoles.First(x => x.Code == HearingRoleCodes.StaffMember)
-                    : staffMemberCaseRole.HearingRoles.First(x => x.Name == HearingRoles.StaffMember);
-                videoHearing.AddStaffMember(staffMemberPerson, staffMemberHearingRole, staffMemberCaseRole,
-                    "Staff Member 1");
-            }
         }
 
         private async Task AddPanelMemberToVideoHearing(VideoHearing videoHearing, CaseType caseType,
