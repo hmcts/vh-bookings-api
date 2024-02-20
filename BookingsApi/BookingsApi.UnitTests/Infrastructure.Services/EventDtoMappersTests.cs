@@ -44,7 +44,7 @@ public class EventDtoMappersTests
         mappedParticipant.ContactTelephone.Should().Be(judiciaryParticipant.JudiciaryPerson.WorkPhone);
         mappedParticipant.FirstName.Should().Be(judiciaryParticipant.JudiciaryPerson.KnownAs);
         mappedParticipant.LastName.Should().Be(judiciaryParticipant.JudiciaryPerson.Surname);
-        mappedParticipant.ParticipnatId.Should().Be(judiciaryParticipant.Id);
+        mappedParticipant.ParticipantId.Should().Be(judiciaryParticipant.Id);
         mappedParticipant.UserRole.Should().Be(role);
     }
     
@@ -94,7 +94,7 @@ public class EventDtoMappersTests
         mappedParticipant.ContactTelephone.Should().Be(participant.Person.TelephoneNumber);
         mappedParticipant.FirstName.Should().Be(participant.Person.FirstName);
         mappedParticipant.LastName.Should().Be(participant.Person.LastName);
-        mappedParticipant.ParticipnatId.Should().Be(participant.Id);
+        mappedParticipant.ParticipantId.Should().Be(participant.Id);
         mappedParticipant.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
     }
 
@@ -140,7 +140,7 @@ public class EventDtoMappersTests
         mappedParticipant.ContactTelephone.Should().Be("0123456");
         mappedParticipant.FirstName.Should().Be(participant.Person.FirstName);
         mappedParticipant.LastName.Should().Be(participant.Person.LastName);
-        mappedParticipant.ParticipnatId.Should().Be(participant.Id);
+        mappedParticipant.ParticipantId.Should().Be(participant.Id);
         mappedParticipant.UserRole.Should().Be(participant.HearingRole.UserRole.Name);
     }
 
