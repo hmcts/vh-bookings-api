@@ -92,7 +92,8 @@ namespace BookingsApi.DAL.Services
                     case "Judicial Office Holder":
                         {
                             var joh = hearing.AddJudicialOfficeHolder(existingPerson ?? participantToAdd.Person,
-                                participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName);
+                                participantToAdd.HearingRole, participantToAdd.CaseRole, participantToAdd.DisplayName,
+                                createdBy: createdBy);
 
                             participantList.Add(joh);
                             break;
@@ -102,7 +103,8 @@ namespace BookingsApi.DAL.Services
                             var judge = hearing.AddJudge(existingPerson ?? participantToAdd.Person, 
                                     participantToAdd.HearingRole, 
                                     participantToAdd.CaseRole, 
-                                    participantToAdd.DisplayName);
+                                    participantToAdd.DisplayName,
+                                    createdBy: createdBy);
 
                             participantList.Add(judge);
                             break;
