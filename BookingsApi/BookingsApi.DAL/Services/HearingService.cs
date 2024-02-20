@@ -127,7 +127,10 @@ namespace BookingsApi.DAL.Services
         public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
         {
             var person = await _context.Persons.FirstAsync(x => x.ContactEmail == newJudgeParticipant.Person.ContactEmail);
-            var judge = new Judge(person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole);
+            var judge = new Judge(person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole)
+            {
+                DisplayName = newJudgeParticipant.DisplayName
+            };
             hearing.ReassignJudge(judge);
         }
 
