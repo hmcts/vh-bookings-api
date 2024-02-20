@@ -12,6 +12,8 @@ namespace BookingsApi.UnitTests.Services.HearingService
     public class AddParticipantToServiceTests
     {
         private IHearingService _hearingService;
+        private DateTime _beforeUpdatedDate;
+        private int _beforeParticipantCount;
 
         [SetUp]
         public void SetUp()
@@ -31,14 +33,13 @@ namespace BookingsApi.UnitTests.Services.HearingService
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var individual = BuildParticipant(UserRoles.Individual);
             var newParticipants = new List<NewParticipant> { individual };
-            var beforeUpdatedDate = hearing.UpdatedDate;
-            var beforeParticipantCount = hearing.Participants.Count;
+            CacheHearing(hearing);
 
             // Act
             await _hearingService.AddParticipantToService(hearing, newParticipants, createdBy: createdBy);
 
             // Assert
-            AssertParticipantAdded(hearing, beforeParticipantCount, individual, beforeUpdatedDate, createdBy);
+            AssertParticipantAdded(hearing, individual, createdBy);
         }
 
         [TestCase("UserName")]
@@ -50,14 +51,13 @@ namespace BookingsApi.UnitTests.Services.HearingService
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var representative = BuildParticipant(UserRoles.Representative);
             var newParticipants = new List<NewParticipant> { representative };
-            var beforeUpdatedDate = hearing.UpdatedDate;
-            var beforeParticipantCount = hearing.Participants.Count;
+            CacheHearing(hearing);
 
             // Act
             await _hearingService.AddParticipantToService(hearing, newParticipants, createdBy: createdBy);
 
             // Assert
-            AssertParticipantAdded(hearing, beforeParticipantCount, representative, beforeUpdatedDate, createdBy);
+            AssertParticipantAdded(hearing, representative, createdBy);
         }
 
         [TestCase("UserName")]
@@ -69,14 +69,13 @@ namespace BookingsApi.UnitTests.Services.HearingService
             var hearing = new VideoHearingBuilder().WithCase().Build();
             var joh = BuildParticipant(UserRoles.JudicialOfficeHolder);
             var newParticipants = new List<NewParticipant> { joh };
-            var beforeUpdatedDate = hearing.UpdatedDate;
-            var beforeParticipantCount = hearing.Participants.Count;
+            CacheHearing(hearing);
 
             // Act
             await _hearingService.AddParticipantToService(hearing, newParticipants, createdBy: createdBy);
 
             // Assert
-            AssertParticipantAdded(hearing, beforeParticipantCount, joh, beforeUpdatedDate, createdBy);
+            AssertParticipantAdded(hearing, joh, createdBy);
         }
 
         [TestCase("UserName")]
@@ -88,14 +87,13 @@ namespace BookingsApi.UnitTests.Services.HearingService
             var hearing = new VideoHearingBuilder(addJudge: false).WithCase().Build();
             var judge = BuildParticipant(UserRoles.Judge);
             var newParticipants = new List<NewParticipant> { judge };
-            var beforeUpdatedDate = hearing.UpdatedDate;
-            var beforeParticipantCount = hearing.Participants.Count;
+            CacheHearing(hearing);
 
             // Act
             await _hearingService.AddParticipantToService(hearing, newParticipants, createdBy: createdBy);
 
             // Assert
-            AssertParticipantAdded(hearing, beforeParticipantCount, judge, beforeUpdatedDate, createdBy);
+            AssertParticipantAdded(hearing, judge, createdBy);
         }
 
         private static NewParticipant BuildParticipant(string userRole)
@@ -115,16 +113,18 @@ namespace BookingsApi.UnitTests.Services.HearingService
             };
         }
 
-        private static void AssertParticipantAdded(Hearing hearing,
-            int beforeParticipantCount,
-            NewParticipant participant,
-            DateTime beforeUpdatedDate,
-            string createdBy)
+        private void CacheHearing(Hearing hearing)
         {
-            hearing.Participants.Count.Should().Be(beforeParticipantCount + 1);
+            _beforeUpdatedDate = hearing.UpdatedDate;
+            _beforeParticipantCount = hearing.Participants.Count;
+        }
+
+        private void AssertParticipantAdded(Hearing hearing, NewParticipant participant, string createdBy)
+        {
+            hearing.Participants.Count.Should().Be(_beforeParticipantCount + 1);
             hearing.Participants.Should().Contain(p => p.Person.ContactEmail == participant.Person.ContactEmail);
             
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedDate.Should().BeAfter(_beforeUpdatedDate);
             hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
     }
