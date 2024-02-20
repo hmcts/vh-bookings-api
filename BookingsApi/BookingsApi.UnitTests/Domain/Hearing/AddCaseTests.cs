@@ -5,14 +5,18 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class AddCaseTests
     {
-        [Test]
-        public void Should_add_new_case()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_new_case(string createdBy)
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeAddCount = hearing.GetCases().Count;
-            hearing.AddCase("0875", "Test Case Add",false);
+            var beforeUpdatedDate = hearing.UpdatedDate;
+            hearing.AddCase("0875", "Test Case Add",false, createdBy: createdBy);
             var afterAddCount = hearing.GetCases().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
         
         [Test]

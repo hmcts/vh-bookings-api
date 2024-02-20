@@ -6,26 +6,30 @@ namespace BookingsApi.UnitTests.Domain.Hearing;
 
 public class RemoveJudiciaryParticipantByPersonalCodeTests
 {
-    [Test]
-    public void Should_remove_judiciary_judge_from_hearing()
+    [TestCase("")]
+    [TestCase("UserName")]
+    public void Should_remove_judiciary_judge_from_hearing(string removedBy)
     {
         // arrange
         var hearing = new VideoHearingBuilder(addJudge: false).Build();
         var newJudiciaryPerson = new JudiciaryPersonBuilder(Guid.NewGuid().ToString()).Build();
         const string displayName = "Judiciary To Remove";
-        hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName);
+        hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName, createdBy: removedBy);
 
         var judiciaryParticipants = hearing.GetJudiciaryParticipants();
         var beforeRemoveCount = judiciaryParticipants.Count;
+        var beforeUpdatedDate = hearing.UpdatedDate;
         var judgeToRemove = judiciaryParticipants[0];
         
         // act
-        hearing.RemoveJudiciaryParticipantByPersonalCode(judgeToRemove.JudiciaryPerson.PersonalCode);
+        hearing.RemoveJudiciaryParticipantByPersonalCode(judgeToRemove.JudiciaryPerson.PersonalCode, removedBy: removedBy);
 
         // assert
         var afterRemoveCount = hearing.GetJudiciaryParticipants().Count;
         afterRemoveCount.Should().BeLessThan(beforeRemoveCount);
         hearing.GetJudiciaryParticipants().Should().NotContain(x => x.Id == judgeToRemove.Id);
+        hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+        hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(removedBy) ? "System" : removedBy);
     }
     
     [Test]

@@ -5,18 +5,22 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class ReassignJudgeTests
     {
-        [Test]
-        public void should_reassign_judge()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void should_reassign_judge(string reassignedBy)
         {
             // Arrange
             var hearing = new VideoHearingBuilder().Build();
             var newJudge = new JudgeBuilder().Build();
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
             // Act
-            hearing.ReassignJudge(newJudge);
+            hearing.ReassignJudge(newJudge, reassignedBy: reassignedBy);
             
             // Assert
             hearing.GetJudge().Should().Be(newJudge);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(reassignedBy) ? "System" : reassignedBy);
         }
 
         [Test]

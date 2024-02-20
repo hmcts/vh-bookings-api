@@ -128,7 +128,7 @@ namespace BookingsApi.Domain
             Status = BookingStatus.Cancelled;
         }
 
-        public virtual void AddCase(string number, string name, bool isLeadCase)
+        public virtual void AddCase(string number, string name, bool isLeadCase, string createdBy = "System")
         {
             var caseExists = Cases.SingleOrDefault(x => x.Number == number && x.Name == name);
             if (caseExists != null)
@@ -142,7 +142,7 @@ namespace BookingsApi.Domain
             HearingCases.Add(new HearingCase { Case = newCase, Hearing = this });
             Cases.Add(newCase);
 
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
         }
 
         public void AddCases(IList<Case> cases)
@@ -153,7 +153,7 @@ namespace BookingsApi.Domain
             }
         }
 
-        public void AddEndpoint(Endpoint endpoint)
+        public void AddEndpoint(Endpoint endpoint, string createdBy = "System")
         {
             if (DoesEndpointExist(endpoint.Sip))
             {
@@ -169,15 +169,15 @@ namespace BookingsApi.Domain
             }
 
             Endpoints.Add(new Endpoint(endpoint.DisplayName, endpoint.Sip, endpoint.Pin, defenceAdvocate));
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
         }
 
-        public void AddEndpoints(List<Endpoint> endpoints)
+        public void AddEndpoints(List<Endpoint> endpoints, string createdBy = "System")
         {
-            endpoints.ForEach(AddEndpoint); 
+            endpoints.ForEach(e => AddEndpoint(e, createdBy: createdBy)); 
         }
 
-        public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        public Participant AddIndividual(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName, string createdBy = "System")
         {
             if (hearingRole.IsInterpreter() && IsHearingConfirmedAndCloseToStartTime())
             {
@@ -194,13 +194,13 @@ namespace BookingsApi.Domain
                 CreatedBy = CreatedBy
             };
             Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
             
             return participant;
         }
 
         public Participant AddRepresentative(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName,
-            string representee)
+            string representee, string createdBy = "System")
         {
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
@@ -215,12 +215,12 @@ namespace BookingsApi.Domain
             participant.DisplayName = displayName;
             participant.CreatedBy = CreatedBy;
             Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
             
             return participant;
         }
 
-        public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        public Participant AddJudge(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName, string createdBy = "System")
         {
             if(!hearingRole.IsJudge())
             {
@@ -243,7 +243,7 @@ namespace BookingsApi.Domain
                 CreatedBy = CreatedBy
             };
             Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
             UpdateBookingStatusJudgeRequirement();
             return participant;
         }
@@ -266,7 +266,7 @@ namespace BookingsApi.Domain
             return participant;
         }
         
-        public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
+        public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName, string createdBy = "System")
         {
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
             {
@@ -278,11 +278,11 @@ namespace BookingsApi.Domain
                 DisplayName = displayName
             };
             Participants.Add(participant);
-            UpdatedDate = DateTime.Now;
+            UpdateHearingUpdatedAuditDetails(createdBy);
             return participant;
         }
 
-        public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode)
+        public void RemoveJudiciaryParticipantByPersonalCode(string judiciaryParticipantPersonalCode, string removedBy = "System")
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(judiciaryParticipantPersonalCode))
@@ -302,7 +302,7 @@ namespace BookingsApi.Domain
             GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
-        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
+        public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null, string createdBy = "System")
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
             
@@ -312,12 +312,12 @@ namespace BookingsApi.Domain
             var participant = new JudiciaryParticipant(displayName, judiciaryPerson, JudiciaryParticipantHearingRoleCode.Judge, email, phone);
             
             JudiciaryParticipants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
             UpdateBookingStatusJudgeRequirement();
             return participant;
         }
         
-        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
+        public JudiciaryParticipant AddJudiciaryPanelMember(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null, string createdBy = "System")
         {
             ValidateAddJudiciaryParticipant(judiciaryPerson);
             if (DoesJudiciaryParticipantExistByPersonalCode(judiciaryPerson.PersonalCode))
@@ -329,13 +329,13 @@ namespace BookingsApi.Domain
                 JudiciaryParticipantHearingRoleCode.PanelMember,
                 email, phone);
             JudiciaryParticipants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(createdBy);
             
             return participant;
         }
 
         public JudiciaryParticipant UpdateJudiciaryParticipantByPersonalCode(string personalCode, string newDisplayName, 
-            JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+            JudiciaryParticipantHearingRoleCode newHearingRoleCode, string updatedBy = "System")
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotUpdateJudiciaryParticipantCloseToStartTime);
             if (!DoesJudiciaryParticipantExistByPersonalCode(personalCode))
@@ -357,7 +357,7 @@ namespace BookingsApi.Domain
             participant.UpdateDisplayName(newDisplayName);
             participant.UpdateHearingRoleCode(newHearingRoleCode);
             ValidateHostCount();
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(updatedBy);
             
             
             return participant;
@@ -384,7 +384,7 @@ namespace BookingsApi.Domain
             }
         }
 
-        public void RemoveParticipant(Participant participant, bool validateParticipantCount=true)
+        public void RemoveParticipant(Participant participant, bool validateParticipantCount=true, string removedBy = "System")
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             if (!DoesParticipantExistByContactEmail(participant.Person.ContactEmail))
@@ -401,14 +401,14 @@ namespace BookingsApi.Domain
             participant.LinkedParticipants.Clear();
 
             Participants.Remove(existingParticipant);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(removedBy);
         }
 
-        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true)
+        public void RemoveParticipantById(Guid participantId, bool validateParticipantCount=true, string removedBy = "System")
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveParticipantCloseToStartTime);
             var participant = GetParticipants().Single(x => x.Id == participantId);
-            RemoveParticipant(participant, validateParticipantCount);
+            RemoveParticipant(participant, validateParticipantCount, removedBy: removedBy);
         }
         
         public virtual IList<Person> GetPersons()
@@ -436,12 +436,12 @@ namespace BookingsApi.Domain
             return JudiciaryParticipants;
         }
 
-        public void RemoveEndpoint(Endpoint endpoint)
+        public void RemoveEndpoint(Endpoint endpoint, string removedBy = "System")
         {
             ValidateChangeAllowed(DomainRuleErrorMessages.CannotRemoveAnEndpointCloseToStartTime);
             endpoint.AssignDefenceAdvocate(null);
             Endpoints.Remove(endpoint);
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(removedBy);
         }
 
         public virtual void UpdateCase(Case @case)
@@ -498,8 +498,7 @@ namespace BookingsApi.Domain
 
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
-            UpdatedBy = updatedBy;
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(updatedBy);
             AudioRecordingRequired = audioRecordingRequired;
         }
 
@@ -763,7 +762,7 @@ namespace BookingsApi.Domain
                 };
         }
 
-        public void ReassignJudge(Judge newJudge)
+        public void ReassignJudge(Judge newJudge, string reassignedBy = "System")
         {
             if (newJudge == null)
             {
@@ -786,10 +785,10 @@ namespace BookingsApi.Domain
             
             Participants.Add(newJudge);
             
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(reassignedBy);
         }
 
-        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge)
+        public void ReassignJudiciaryJudge(JudiciaryJudge newJudge, string reassignedBy = "System")
         {
             if (newJudge == null)
             {
@@ -814,7 +813,7 @@ namespace BookingsApi.Domain
 
             JudiciaryParticipants.Add(newJudge);
             
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(reassignedBy);
             UpdateBookingStatusJudgeRequirement();
         }
         
@@ -830,5 +829,10 @@ namespace BookingsApi.Domain
                                                                 (Status == BookingStatus.Created ||
                                                                  Status == BookingStatus.ConfirmedWithoutJudge);
 
+        private void UpdateHearingUpdatedAuditDetails(string updatedBy)
+        {
+            UpdatedDate = DateTime.UtcNow;
+            UpdatedBy = string.IsNullOrEmpty(updatedBy) ? "System" : updatedBy;
+        }
     }
 }

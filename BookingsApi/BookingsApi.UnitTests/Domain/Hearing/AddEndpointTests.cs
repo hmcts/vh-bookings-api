@@ -4,14 +4,18 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class AddEndpointTests
     {
-        [Test]
-        public void Should_add_new_endpoint()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_new_endpoint(string createdBy)
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeAddCount = hearing.GetEndpoints().Count;
-            hearing.AddEndpoint(new BookingsApi.Domain.Endpoint("DisplayName", "sip@address.com", "1111", null));
+            var beforeUpdatedDate = hearing.UpdatedDate;
+            hearing.AddEndpoint(new BookingsApi.Domain.Endpoint("DisplayName", "sip@address.com", "1111", null), createdBy: createdBy);
             var afterAddCount = hearing.GetEndpoints().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
 
         [Test]

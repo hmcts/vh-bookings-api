@@ -7,16 +7,20 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class RemoveParticipantTests
     {
-        [Test]
-        public void Should_remove_existing_participant_from_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_remove_existing_participant_from_hearing(string removedBy)
         {
             var hearing = new VideoHearingBuilder().Build();
             var beforeCount = hearing.GetParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
             var participant = hearing.GetParticipants().First();
 
-            hearing.RemoveParticipant(participant);
+            hearing.RemoveParticipant(participant, removedBy: removedBy);
             var afterCount =hearing.GetParticipants().Count;
             afterCount.Should().BeLessThan(beforeCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(removedBy) ? "System" : removedBy);
         }
         
         [Test]

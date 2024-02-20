@@ -5,9 +5,11 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class UpdateJudiciaryParticipantTests
     {
-        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
-        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
-        public void Should_update_judiciary_judge_in_hearing(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge, "")]
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge, "UserName")]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember, "")]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember, "UserName")]
+        public void Should_update_judiciary_judge_in_hearing(JudiciaryParticipantHearingRoleCode newHearingRoleCode, string updatedBy)
         {
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
@@ -16,13 +18,16 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
-            hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+            hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode, updatedBy: updatedBy);
 
             var updatedJudiciaryJudge = hearing.GetJudiciaryParticipants()
                 .First(x => x.JudiciaryPerson.PersonalCode == judiciaryJudge.JudiciaryPerson.PersonalCode);
             updatedJudiciaryJudge.DisplayName.Should().Be(newDisplayName);
             updatedJudiciaryJudge.HearingRoleCode.Should().Be(newHearingRoleCode);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(updatedBy) ? "System" : updatedBy);
         }
 
         [Test]

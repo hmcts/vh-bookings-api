@@ -5,8 +5,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class RemoveEndpointsTests
     {
-        [Test]
-        public void Should_remove_endpoint_from_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_remove_endpoint_from_hearing(string removedBy)
         {
             var hearing = new VideoHearingBuilder().Build();
             hearing.AddEndpoints(new List<Endpoint>
@@ -17,9 +18,12 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             });
             
             var beforeRemoveCount = hearing.GetEndpoints().Count;
-            hearing.RemoveEndpoint(hearing.GetEndpoints().First());
+            var beforeUpdatedDate = hearing.UpdatedDate;
+            hearing.RemoveEndpoint(hearing.GetEndpoints().First(), removedBy: removedBy);
             var afterRemoveCount = hearing.GetEndpoints().Count;
             afterRemoveCount.Should().BeLessThan(beforeRemoveCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(removedBy) ? "System" : removedBy);
         }
     }
 }

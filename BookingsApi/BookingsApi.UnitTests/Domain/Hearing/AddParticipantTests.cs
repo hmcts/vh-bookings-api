@@ -9,8 +9,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class AddParticipantTests : TestBase
     {
-        [Test]
-        public void Should_add_new_participant_to_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_new_participant_to_hearing(string createdBy)
         {
             var hearing = new VideoHearingBuilder().Build();
             var applicantCaseRole = new CaseRole(1, "Applicant");
@@ -18,12 +19,15 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
             hearing.AddRepresentative(newPerson, applicantRepresentativeHearingRole, applicantCaseRole, "Display Name",
-                string.Empty);
+                string.Empty, createdBy: createdBy);
 
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
 
         [Test]
@@ -43,8 +47,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             afterAddCount.Should().Be(beforeAddCount);
         }
 
-        [Test]
-        public void Should_add_judge_to_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_judge_to_hearing(string createdBy)
         {
             var hearing = new VideoHearingBuilder(addJudge: false).Build();
             var judgeCaseRole = new CaseRole(5, "Judge");
@@ -52,15 +57,19 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
-            hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Display Name");
+            hearing.AddJudge(newPerson, judgeHearingRole, judgeCaseRole, "Judge Display Name", createdBy: createdBy);
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
         
-        [Test]
-        public void Should_add_interpreter_to_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_interpreter_to_hearing(string createdBy)
         {
             var dateTime = DateTime.UtcNow.AddMinutes(25);
             var hearing = new VideoHearingBuilder(scheduledDateTime:dateTime).Build();
@@ -69,11 +78,14 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
-            hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name");
+            hearing.AddIndividual(newPerson, interpreterHearingRole, interpreterCaseRole, "Interpreter Display Name", createdBy: createdBy);
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
         
         [Test]
@@ -95,8 +107,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             afterAddCount.Should().Be(beforeAddCount);
         }
         
-        [Test]
-        public void Should_add_judicial_office_holder_to_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_judicial_office_holder_to_hearing(string createdBy)
         {
             var hearing = new VideoHearingBuilder().Build();
             var johCaseRole = new CaseRole(7, "Judicial Office Holder");
@@ -104,11 +117,14 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
             var newPerson = new PersonBuilder(true).Build();
             var beforeAddCount = hearing.GetParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
-            hearing.AddJudicialOfficeHolder(newPerson, johHearingRole, johCaseRole, "Joh Display Name");
+            hearing.AddJudicialOfficeHolder(newPerson, johHearingRole, johCaseRole, "Joh Display Name", createdBy: createdBy);
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
 
         [Test]

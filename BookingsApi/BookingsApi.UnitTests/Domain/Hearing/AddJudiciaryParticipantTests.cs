@@ -5,20 +5,24 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class AddJudiciaryParticipantTests
     {
-        [Test]
-        public void Should_add_new_judiciary_judge_to_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_new_judiciary_judge_to_hearing(string createdBy)
         {
             var hearing = new VideoHearingBuilder(addJudge: false).Build();
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
             var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
             const string displayName = "Display Name";
 
-            hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName);
+            hearing.AddJudiciaryJudge(newJudiciaryPerson, displayName, createdBy: createdBy);
 
             var judiciaryParticipants = hearing.GetJudiciaryParticipants();
             var afterAddCount = judiciaryParticipants.Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
             judiciaryParticipants.Should().Contain(x => x.DisplayName == "Display Name");
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
         
         [TestCase(true)]
@@ -129,17 +133,21 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             afterAddCount.Should().Be(beforeAddCount);
         }
 
-        [Test]
-        public void Should_add_new_judiciary_panel_member_to_hearing()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void Should_add_new_judiciary_panel_member_to_hearing(string createdBy)
         {
             var hearing = new VideoHearingBuilder(addJudge: false).Build();
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
             var beforeAddCount = hearing.GetJudiciaryParticipants().Count;
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
-            hearing.AddJudiciaryPanelMember(newJudiciaryPerson, "Display Name");
+            hearing.AddJudiciaryPanelMember(newJudiciaryPerson, "Display Name", createdBy: createdBy);
             
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
         }
         
         [TestCase(true, true)]

@@ -7,8 +7,9 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class ReassignJudiciaryJudgeTests
     {
-        [Test]
-        public void should_reassign_judiciary_judge()
+        [TestCase("")]
+        [TestCase("UserName")]
+        public void should_reassign_judiciary_judge(string reassignedBy)
         {
             // Arrange
             var hearing = new VideoHearingBuilder(addJudge: false)
@@ -17,13 +18,16 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.SetProtected(nameof(hearing.Status), BookingStatus.Created);
             var newJudiciaryPerson = new JudiciaryPersonBuilder().Build();
             var newJudiciaryJudge = new JudiciaryJudge("DisplayName", newJudiciaryPerson);
+            var beforeUpdatedDate = hearing.UpdatedDate;
 
             // Act
-            hearing.ReassignJudiciaryJudge(newJudiciaryJudge);
+            hearing.ReassignJudiciaryJudge(newJudiciaryJudge, reassignedBy: reassignedBy);
             
             // Assert
             hearing.GetJudge().Should().Be(newJudiciaryJudge);
             hearing.Status.Should().Be(BookingStatus.Created);
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(reassignedBy) ? "System" : reassignedBy);
         }
 
         [Test]
