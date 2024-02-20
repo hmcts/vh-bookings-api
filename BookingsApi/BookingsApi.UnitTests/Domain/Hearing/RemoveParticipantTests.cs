@@ -5,7 +5,7 @@ using FizzWare.NBuilder;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class RemoveParticipantTests
+    public class RemoveParticipantTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -19,8 +19,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.RemoveParticipant(participant, removedBy: removedBy);
             var afterCount =hearing.GetParticipants().Count;
             afterCount.Should().BeLessThan(beforeCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(removedBy) ? "System" : removedBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, removedBy);
         }
         
         [Test]

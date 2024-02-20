@@ -4,7 +4,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing;
 
-public class RemoveJudiciaryParticipantByPersonalCodeTests
+public class RemoveJudiciaryParticipantByPersonalCodeTests : HearingTests
 {
     [TestCase("")]
     [TestCase("UserName")]
@@ -28,8 +28,7 @@ public class RemoveJudiciaryParticipantByPersonalCodeTests
         var afterRemoveCount = hearing.GetJudiciaryParticipants().Count;
         afterRemoveCount.Should().BeLessThan(beforeRemoveCount);
         hearing.GetJudiciaryParticipants().Should().NotContain(x => x.Id == judgeToRemove.Id);
-        hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-        hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(removedBy) ? "System" : removedBy);
+        AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, removedBy);
     }
     
     [Test]

@@ -2,7 +2,7 @@
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class AddEndpointTests
+    public class AddEndpointTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -14,8 +14,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.AddEndpoint(new BookingsApi.Domain.Endpoint("DisplayName", "sip@address.com", "1111", null), createdBy: createdBy);
             var afterAddCount = hearing.GetEndpoints().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
 
         [Test]

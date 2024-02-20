@@ -3,7 +3,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class UpdateJudiciaryParticipantTests
+    public class UpdateJudiciaryParticipantTests : HearingTests
     {
         [TestCase(JudiciaryParticipantHearingRoleCode.Judge, "")]
         [TestCase(JudiciaryParticipantHearingRoleCode.Judge, "UserName")]
@@ -26,8 +26,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
                 .First(x => x.JudiciaryPerson.PersonalCode == judiciaryJudge.JudiciaryPerson.PersonalCode);
             updatedJudiciaryJudge.DisplayName.Should().Be(newDisplayName);
             updatedJudiciaryJudge.HearingRoleCode.Should().Be(newHearingRoleCode);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(updatedBy) ? "System" : updatedBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, updatedBy);
         }
 
         [Test]

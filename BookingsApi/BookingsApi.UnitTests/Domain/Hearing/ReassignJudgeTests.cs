@@ -3,7 +3,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class ReassignJudgeTests
+    public class ReassignJudgeTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -19,8 +19,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             // Assert
             hearing.GetJudge().Should().Be(newJudge);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(reassignedBy) ? "System" : reassignedBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, reassignedBy);
         }
 
         [Test]

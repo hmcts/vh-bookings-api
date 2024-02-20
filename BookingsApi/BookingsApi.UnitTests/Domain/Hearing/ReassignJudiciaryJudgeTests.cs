@@ -5,7 +5,7 @@ using BookingStatus = BookingsApi.Domain.Enumerations.BookingStatus;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class ReassignJudiciaryJudgeTests
+    public class ReassignJudiciaryJudgeTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -26,8 +26,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             // Assert
             hearing.GetJudge().Should().Be(newJudiciaryJudge);
             hearing.Status.Should().Be(BookingStatus.Created);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(reassignedBy) ? "System" : reassignedBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, reassignedBy);
         }
 
         [Test]

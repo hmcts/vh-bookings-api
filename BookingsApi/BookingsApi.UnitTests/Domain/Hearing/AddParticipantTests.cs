@@ -7,7 +7,7 @@ using BookingsApi.UnitTests.Utilities;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class AddParticipantTests : TestBase
+    public class AddParticipantTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -26,8 +26,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
 
         [Test]
@@ -63,8 +62,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
         
         [TestCase("")]
@@ -84,8 +82,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
         
         [Test]
@@ -123,8 +120,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = hearing.GetParticipants().Count;
 
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
 
         [Test]

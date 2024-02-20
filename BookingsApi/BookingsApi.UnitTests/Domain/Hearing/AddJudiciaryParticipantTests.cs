@@ -1,9 +1,8 @@
-using System;
 using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class AddJudiciaryParticipantTests
+    public class AddJudiciaryParticipantTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -21,8 +20,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var afterAddCount = judiciaryParticipants.Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
             judiciaryParticipants.Should().Contain(x => x.DisplayName == "Display Name");
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
         
         [TestCase(true)]
@@ -146,8 +144,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             
             var afterAddCount = hearing.GetJudiciaryParticipants().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
         
         [TestCase(true, true)]

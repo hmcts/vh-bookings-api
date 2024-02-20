@@ -3,7 +3,7 @@ using BookingsApi.Domain.Validations;
 
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
-    public class AddCaseTests
+    public class AddCaseTests : HearingTests
     {
         [TestCase("")]
         [TestCase("UserName")]
@@ -15,8 +15,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.AddCase("0875", "Test Case Add",false, createdBy: createdBy);
             var afterAddCount = hearing.GetCases().Count;
             afterAddCount.Should().BeGreaterThan(beforeAddCount);
-            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
-            hearing.UpdatedBy.Should().Be(string.IsNullOrEmpty(createdBy) ? "System" : createdBy);
+            AssertHearingUpdatedAuditDetailsAreUpdated(hearing, beforeUpdatedDate, createdBy);
         }
         
         [Test]
