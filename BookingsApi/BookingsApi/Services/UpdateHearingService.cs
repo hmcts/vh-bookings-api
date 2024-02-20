@@ -10,8 +10,8 @@ namespace BookingsApi.Services
     {
         Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing);
         Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, VideoHearing hearing, List<HearingRole> hearingRoles);
-        Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing);
-        Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing);
+        Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing, string updatedBy = "System");
+        Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing, string updatedBy = "System");
         Task UpdateJudiciaryParticipantsV2(UpdateJudiciaryParticipantsRequestV2 request, VideoHearing hearing);
     }
     
@@ -47,14 +47,14 @@ namespace BookingsApi.Services
             await _hearingParticipantService.UpdateParticipantsV2(request, hearing, hearingRoles);
         }
         
-        public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing)
+        public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing, string updatedBy = "System")
         {
             foreach (var endpointToAdd in request.NewEndpoints)
             {
                 var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
                     _kinlyConfiguration.SipAddressStem);
 
-                await _endpointService.AddEndpoint(hearing.Id, newEp);
+                await _endpointService.AddEndpoint(hearing.Id, newEp, createdBy: updatedBy);
             }
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)
@@ -68,14 +68,14 @@ namespace BookingsApi.Services
             }
         }
         
-        public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing)
+        public async Task UpdateEndpointsV2(UpdateHearingEndpointsRequestV2 request, VideoHearing hearing, string updatedBy = "System")
         {
             foreach (var endpointToAdd in request.NewEndpoints)
             {
                 var newEp = EndpointToResponseV2Mapper.MapRequestToNewEndpointDto(endpointToAdd, _randomGenerator,
                     _kinlyConfiguration.SipAddressStem);
 
-                await _endpointService.AddEndpoint(hearing.Id, newEp);
+                await _endpointService.AddEndpoint(hearing.Id, newEp, createdBy: updatedBy);
             }
 
             foreach (var endpointToUpdate in request.ExistingEndpoints)

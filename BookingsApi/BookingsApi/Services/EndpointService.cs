@@ -2,7 +2,7 @@ namespace BookingsApi.Services
 {
     public interface IEndpointService
     {
-        Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint);
+        Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint, string createdBy = "System");
         Task UpdateEndpoint(VideoHearing hearing, Guid id, string defenceAdvocateContactEmail, string displayName);
         Task RemoveEndpoint(VideoHearing hearing, Guid id);
     }
@@ -21,9 +21,9 @@ namespace BookingsApi.Services
             _eventPublisher = eventPublisher;
         }
         
-        public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint)
+        public async Task<Endpoint> AddEndpoint(Guid hearingId, NewEndpoint newEndpoint, string createdBy = "System")
         {
-            var command = new AddEndPointToHearingCommand(hearingId, newEndpoint);
+            var command = new AddEndPointToHearingCommand(hearingId, newEndpoint, createdBy: createdBy);
             await _commandHandler.Handle(command);
 
             var updatedHearing =

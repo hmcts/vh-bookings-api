@@ -13,8 +13,9 @@ namespace BookingsApi.DAL.Services
         /// </summary>
         /// <param name="hearing">Hearing to amend</param>
         /// <param name="participants">List of participants to add</param>
+        /// <param name="createdBy">Name of the user who made the change</param>
         /// <returns></returns>
-        Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants);
+        Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants, string createdBy = "System");
 
         /// <summary>
         /// Update the case name of a hearing directly
@@ -42,7 +43,7 @@ namespace BookingsApi.DAL.Services
 
         Task AddJudiciaryParticipantToVideoHearing(VideoHearing videoHearing, NewJudiciaryParticipant participant);
 
-        Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant);
+        Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant, string reassignedBy = "System");
     }
     public class HearingService : IHearingService
     {
@@ -53,7 +54,7 @@ namespace BookingsApi.DAL.Services
             _context = context;
         }
 
-        public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants)
+        public async Task<List<Participant>> AddParticipantToService(VideoHearing hearing, List<NewParticipant> participants, string createdBy = "System")
         {
             var participantList = new List<Participant>();
             foreach (var participantToAdd in participants)
@@ -72,7 +73,7 @@ namespace BookingsApi.DAL.Services
                 {
                     case "Individual":
                         var individual = hearing.AddIndividual(existingPerson ?? participantToAdd.Person, participantToAdd.HearingRole,
-                            participantToAdd.CaseRole, participantToAdd.DisplayName);
+                            participantToAdd.CaseRole, participantToAdd.DisplayName, createdBy: createdBy);
 
                         UpdateOrganisationDetails(participantToAdd.Person, individual);
                         participantList.Add(individual);
@@ -82,7 +83,7 @@ namespace BookingsApi.DAL.Services
                             var representative = hearing.AddRepresentative(existingPerson ?? participantToAdd.Person,
                                 participantToAdd.HearingRole,
                                 participantToAdd.CaseRole, participantToAdd.DisplayName,
-                                participantToAdd.Representee);
+                                participantToAdd.Representee, createdBy: createdBy);
 
                             UpdateOrganisationDetails(participantToAdd.Person, representative);
                             participantList.Add(representative);
@@ -124,11 +125,11 @@ namespace BookingsApi.DAL.Services
             return participantList;
         }
 
-        public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant)
+        public async Task ReassignJudge(VideoHearing hearing, NewParticipant newJudgeParticipant, string reassignedBy = "System")
         {
             var person = await _context.Persons.FirstAsync(x => x.ContactEmail == newJudgeParticipant.Person.ContactEmail);
             var judge = new Judge(person, newJudgeParticipant.HearingRole, newJudgeParticipant.CaseRole);
-            hearing.ReassignJudge(judge);
+            hearing.ReassignJudge(judge, reassignedBy: reassignedBy);
         }
 
         private async Task LoadHearingRoles(List<Participant> participantList)

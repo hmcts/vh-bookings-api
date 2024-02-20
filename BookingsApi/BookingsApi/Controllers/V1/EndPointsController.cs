@@ -59,7 +59,7 @@ namespace BookingsApi.Controllers.V1
             {
                 var newEp = EndpointToResponseMapper.MapRequestToNewEndpointDto(addEndpointRequest, _randomGenerator,
                     _kinlyConfiguration.SipAddressStem);
-                var endpoint = await _endpointService.AddEndpoint(hearingId, newEp);
+                var endpoint = await _endpointService.AddEndpoint(hearingId, newEp, createdBy: addEndpointRequest.CreatedBy);
                 var endpointResponse = EndpointToResponseMapper.MapEndpointToResponse(endpoint);
 
                 return Ok(endpointResponse);

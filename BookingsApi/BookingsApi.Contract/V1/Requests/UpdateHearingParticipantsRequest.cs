@@ -24,5 +24,10 @@ namespace BookingsApi.Contract.V1.Requests
         ///     List of linked participants
         /// </summary>
         public List<LinkedParticipantRequest> LinkedParticipants { get; set; } = new List<LinkedParticipantRequest>();
+        
+        /// <summary>
+        ///     Optional name of the user who made the change, uses a default if not provided
+        /// </summary>
+        public string UpdatedBy { get; set; }
     }
 }

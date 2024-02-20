@@ -12,14 +12,16 @@ namespace BookingsApi.DAL.Commands
     
     public class AddEndPointToHearingCommand : ICommand
     {
-        public AddEndPointToHearingCommand(Guid hearingId, NewEndpoint endpoint)
+        public AddEndPointToHearingCommand(Guid hearingId, NewEndpoint endpoint, string createdBy = "")
         {
             HearingId = hearingId;
             Endpoint = endpoint;
+            CreatedBy = createdBy;
         }
 
         public Guid HearingId { get; }
         public NewEndpoint Endpoint { get; }
+        public string CreatedBy { get; set; }
     }
 
     public class AddEndPointToHearingCommandHandler : ICommandHandler<AddEndPointToHearingCommand>
@@ -46,7 +48,7 @@ namespace BookingsApi.DAL.Commands
             var dto = command.Endpoint;
             var defenceAdvocate = DefenceAdvocateHelper.CheckAndReturnDefenceAdvocate(dto.ContactEmail, hearing.GetParticipants());
             var endpoint = new Endpoint(dto.DisplayName, dto.Sip, dto.Pin, defenceAdvocate);
-            hearing.AddEndpoint(endpoint);
+            hearing.AddEndpoint(endpoint, createdBy: command.CreatedBy);
             await _context.SaveChangesAsync();
         }
     }

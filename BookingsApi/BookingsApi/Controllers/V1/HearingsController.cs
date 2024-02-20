@@ -201,7 +201,7 @@ namespace BookingsApi.Controllers.V1
                 
                 hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
                 
-                await _updateHearingService.UpdateEndpointsV1(requestHearing.Endpoints, hearing);
+                await _updateHearingService.UpdateEndpointsV1(requestHearing.Endpoints, hearing, updatedBy: request.UpdatedBy);
             }
 
             return NoContent();

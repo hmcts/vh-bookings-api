@@ -8,10 +8,13 @@ namespace BookingsApi.IntegrationTests.Api.V1.HearingParticipants;
 
 public class UpdateHearingParticipantsTests : ApiTest
 {
-    [Test]
-    public async Task should_change_a_judge_on_a_confirmed_hearing()
+    [TestCase("UserName")]
+    [TestCase("")]
+    [TestCase(null)]
+    public async Task should_change_a_judge_on_a_confirmed_hearing(string updatedBy)
     {
         // arrange
+        var genericJudge = await Hooks.SeedGenericJudgePerson();
         var hearing = await Hooks.SeedVideoHearing(options
             => { options.Case = new Case("UpdateParticipantJudge", "UpdateParticipantJudge"); }, Domain.Enumerations.BookingStatus.Created);
         var judge = hearing.Participants.First(e => e.HearingRole.IsJudge());
@@ -22,15 +25,16 @@ public class UpdateHearingParticipantsTests : ApiTest
             {
                 new()
                 {
-                    ContactEmail = GenericJudge.ContactEmail,
+                    ContactEmail = genericJudge.ContactEmail,
                     DisplayName = "Judge",  
-                    Username = GenericJudge.Username,
+                    Username = genericJudge.Username,
                     HearingRoleName = "Judge",
                     CaseRoleName = "Judge",
-                    FirstName = GenericJudge.FirstName,
-                    LastName = GenericJudge.LastName,
+                    FirstName = genericJudge.FirstName,
+                    LastName = genericJudge.LastName,
                 }
-            }
+            },
+            UpdatedBy = updatedBy
         };
 
         // act
@@ -42,8 +46,9 @@ public class UpdateHearingParticipantsTests : ApiTest
         // assert
         result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
         hearingResponse.Participants.Should().NotContain(p => p.Id == judge.Id);
-        hearingResponse.Participants.Should().Contain(p => p.Username == GenericJudge.Username);
+        hearingResponse.Participants.Should().Contain(p => p.Username == genericJudge.Username);
         hearingResponse.Status.Should().Be(BookingStatus.Created);
+        hearingResponse.UpdatedBy.Should().Be(string.IsNullOrEmpty(request.UpdatedBy) ? "System" : request.UpdatedBy);
     }
     
     [Test]

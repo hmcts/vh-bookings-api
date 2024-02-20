@@ -73,9 +73,11 @@ public class AddEndPointToHearingTests : ApiTest
         var response = await ApiClientResponse.GetResponses<string>(result.Content);
         response.Should().Be($"Hearing {hearingId} does not exist");
     }
-
-    [Test]
-    public async Task should_add_endpoint_with_a_defence_advocate_and_publish_message_when_hearing_is_created()
+    
+    [TestCase("UserName")]
+    [TestCase("")]
+    [TestCase(null)]
+    public async Task should_add_endpoint_with_a_defence_advocate_and_publish_message_when_hearing_is_created(string createdBy)
     {
         // arrange
         var seededHearing = await Hooks.SeedVideoHearing(null, BookingStatus.Created);
@@ -84,7 +86,8 @@ public class AddEndPointToHearingTests : ApiTest
         var request = new AddEndpointRequest()
         {
             DisplayName = "Auto Add Endpoint",
-            DefenceAdvocateContactEmail = rep.Person.ContactEmail
+            DefenceAdvocateContactEmail = rep.Person.ContactEmail,
+            CreatedBy = createdBy
         };
 
         // act
@@ -100,7 +103,7 @@ public class AddEndPointToHearingTests : ApiTest
         var hearingFromDb = db.VideoHearings.Include(x => x.Endpoints).ThenInclude(x => x.DefenceAdvocate)
             .ThenInclude(x => x.Person).Include(x => x.Participants).AsNoTracking().First(x => x.Id == hearingId);
         var endpoint = hearingFromDb.Endpoints.First(x=>x.DisplayName == request.DisplayName);
-
+        
         var createdResponse = await ApiClientResponse.GetResponses<EndpointResponse>(result.Content);
         createdResponse.Should().BeEquivalentTo(new EndpointResponse
         {
@@ -113,6 +116,8 @@ public class AddEndPointToHearingTests : ApiTest
         var serviceBusStub = Application.Services.GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
         var message = serviceBusStub!.ReadMessageFromQueue();
         message.IntegrationEvent.Should().BeEquivalentTo(new EndpointAddedIntegrationEvent(hearingId,endpoint));
+        
+        hearingFromDb.UpdatedBy.Should().Be(string.IsNullOrEmpty(request.CreatedBy) ? "System" : request.CreatedBy);
     }
 
     [Test]

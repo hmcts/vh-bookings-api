@@ -7,13 +7,15 @@ namespace BookingsApi.DAL.Commands
     public class UpdateHearingParticipantsCommand : ICommand
     {
         public UpdateHearingParticipantsCommand(Guid hearingId, List<ExistingParticipantDetails> existingParticipants,
-            List<NewParticipant> newParticipants, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants)
+            List<NewParticipant> newParticipants, List<Guid> removedParticipantIds, List<LinkedParticipantDto> linkedParticipants,
+            string updatedBy = "System")
         {
             HearingId = hearingId;
             ExistingParticipants = existingParticipants;
             NewParticipants = new List<NewParticipant>(newParticipants);
             RemovedParticipantIds = removedParticipantIds;
             LinkedParticipants = linkedParticipants ?? new List<LinkedParticipantDto>();
+            UpdatedBy = updatedBy;
         }
 
         public List<ExistingParticipantDetails> ExistingParticipants { get; set; }
@@ -21,6 +23,7 @@ namespace BookingsApi.DAL.Commands
         public List<Guid> RemovedParticipantIds { get; set; }
         public Guid HearingId { get; set; }
         public List<LinkedParticipantDto> LinkedParticipants { get; set; }
+        public string UpdatedBy { get; set; }
     }
     
     public class UpdateHearingParticipantsCommandHandler : ICommandHandler<UpdateHearingParticipantsCommand>
@@ -59,7 +62,7 @@ namespace BookingsApi.DAL.Commands
                 if (participant.HearingRole.IsJudge() && command.NewParticipants.Exists(x => x.HearingRole.IsJudge()))
                 {
                     var newJudgeParticipant = command.NewParticipants.Single(x => x.HearingRole.IsJudge());
-                    await _hearingService.ReassignJudge(hearing, newJudgeParticipant);
+                    await _hearingService.ReassignJudge(hearing, newJudgeParticipant, reassignedBy: command.UpdatedBy);
 
                     command.NewParticipants.Remove(newJudgeParticipant);
                     continue;
@@ -68,7 +71,7 @@ namespace BookingsApi.DAL.Commands
                 hearing.RemoveParticipantById(removedParticipantId, false);
             }
             
-            await _hearingService.AddParticipantToService(hearing, command.NewParticipants);
+            await _hearingService.AddParticipantToService(hearing, command.NewParticipants, createdBy: command.UpdatedBy);
             
             var participants = hearing.GetParticipants().ToList();
             foreach (var newExistingParticipantDetails in command.ExistingParticipants)

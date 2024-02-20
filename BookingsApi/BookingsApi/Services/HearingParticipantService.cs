@@ -158,7 +158,8 @@ public class HearingParticipantService : IHearingParticipantService
         var linkedParticipants =
             LinkedParticipantRequestToLinkedParticipantDtoMapper.MapToDto(request.LinkedParticipants);
 
-        var command = new UpdateHearingParticipantsCommand(hearing.Id, existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants);
+        var command = new UpdateHearingParticipantsCommand(hearing.Id, 
+            existingParticipantDetails, newParticipants, request.RemovedParticipantIds, linkedParticipants, updatedBy: request.UpdatedBy);
 
         await _commandHandler.Handle(command);
 
