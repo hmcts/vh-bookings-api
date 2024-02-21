@@ -263,7 +263,7 @@ namespace BookingsApi.IntegrationTests.Database.Commands
         }
 
         [Test]
-        public async Task Should_add_participant_to_video_hearing()
+        public async Task Should_add_judge_participant_to_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
             {

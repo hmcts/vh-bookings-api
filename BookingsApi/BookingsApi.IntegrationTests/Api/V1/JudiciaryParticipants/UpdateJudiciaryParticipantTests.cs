@@ -60,15 +60,16 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 .BeEquivalentTo(new ParticipantUpdatedIntegrationEvent(seededHearing.Id, judiciaryParticipants[0]));
         }
         
-        [Test]
-        public async Task Should_update_judiciary_panel_member()
+        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
+        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
+        public async Task Should_update_judiciary_panel_member(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
         {
             // Arrange
             var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = false;
                 options.AddPanelMember = true;
-            });
+            }, status: BookingStatus.ConfirmedWithoutJudge);
             var judiciaryPanelMember = seededHearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
@@ -77,7 +78,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var request = new UpdateJudiciaryParticipantRequest
             {
                 DisplayName = newDisplayName,
-                HearingRoleCode = JudiciaryParticipantHearingRoleCode.Judge
+                HearingRoleCode = newHearingRoleCode
             };
             
             // Act
@@ -96,7 +97,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             judiciaryParticipants.Count.Should().Be(1);
             judiciaryParticipants[0].JudiciaryPersonId.Should().Be(judiciaryPanelMember.JudiciaryPersonId);
             judiciaryParticipants[0].DisplayName.Should().Be(newDisplayName);
-            judiciaryParticipants[0].HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge.MapToDomainEnum());
+            judiciaryParticipants[0].HearingRoleCode.Should().Be(newHearingRoleCode.MapToDomainEnum());
 
             var response = await ApiClientResponse.GetResponses<JudiciaryParticipantResponse>(result.Content);
             response.Should().BeEquivalentTo(request);

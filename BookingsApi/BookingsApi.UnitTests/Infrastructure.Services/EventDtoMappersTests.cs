@@ -49,7 +49,7 @@ public class EventDtoMappersTests
     }
     
     [Test]
-    public void should_map_hearing_confirmation_dto_with_participant()
+    public void should_map_hearing_confirmation_dto_with_judge_participant()
     {
         var @case = new Case("case number", "case name")
         {
