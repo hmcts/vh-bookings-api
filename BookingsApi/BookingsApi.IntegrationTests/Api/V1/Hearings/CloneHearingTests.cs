@@ -1,7 +1,13 @@
+using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Infrastructure.Services;
+using BookingsApi.Infrastructure.Services.Dtos;
+using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Mappings.Common;
 using BookingsApi.Validations.V1;
+using Testing.Common.Stubs;
 using Constants = BookingsApi.Contract.V1.Constants;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings;
@@ -110,6 +116,56 @@ public class CloneHearingTests : ApiTest
     }
 
     [Test]
+    public async Task should_clone_hearing_for_v1_with_new_notify_templates_feature_off()
+    {
+        // arrange
+        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
+        {
+            options.ScheduledDate = startingDate;
+        });
+
+        var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
+        
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = false;
+
+        // act
+        using var client = Application.CreateClient();
+        var request = new CloneHearingRequest { Dates = dates }; // No duration specified - should use the default
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.CloneHearing(hearing1.Id), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        AssertEventsPublishedForNotifyFeatureOff(request, hearing1, useV2: false);
+    }
+    
+    [Test]
+    public async Task should_clone_hearing_for_v2_with_new_notify_templates_feature_off()
+    {
+        // arrange
+        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
+        {
+            options.ScheduledDate = startingDate;
+        });
+
+        var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
+        
+        var featureToggles = (FeatureTogglesStub)Application.Services.GetService(typeof(IFeatureToggles));
+        featureToggles.NewTemplates = false;
+
+        // act
+        using var client = Application.CreateClient();
+        var request = new CloneHearingRequest { Dates = dates }; // No duration specified - should use the default
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.CloneHearing(hearing1.Id), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        AssertEventsPublishedForNotifyFeatureOff(request, hearing1, useV2: true);
+    }
+
+    [Test]
     public async Task should_return_validation_error_when_validation_fails()
     {
         // arrange
@@ -153,5 +209,30 @@ public class CloneHearingTests : ApiTest
             judiciaryParticipant.Should().NotBeNull();
             clonedJudiciaryParticipant.Should().BeEquivalentTo(mapper.MapJudiciaryParticipantToResponse(judiciaryParticipant));
         }
+    }
+
+    private void AssertEventsPublishedForNotifyFeatureOff(CloneHearingRequest request, Hearing hearing, bool useV2)
+    {
+        var serviceBusStub = Application.Services
+            .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+        var messages = serviceBusStub!
+            .ReadAllMessagesFromQueue(hearing.Id);
+        
+        var expectedTotalMessageCount = hearing.Participants.Count;
+        if (useV2)
+        {
+            expectedTotalMessageCount += hearing.JudiciaryParticipants.Count;
+        }
+        var totalDays = request.Dates.Count + 1;
+        
+        messages.Count(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent).Should().Be(expectedTotalMessageCount);
+        var hearingConfirmationDtos = HearingConfirmationForParticipantDtoMapper.MapToDtos(hearing);
+        var multiDayIntegrationEvents = messages
+            .Where(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent)
+            .Select(x => x.IntegrationEvent as MultiDayHearingIntegrationEvent)
+            .ToList();
+        multiDayIntegrationEvents.TrueForAll(x => x.TotalDays == totalDays).Should().BeTrue();
+        multiDayIntegrationEvents.Select(x => x.HearingConfirmationForParticipant)
+            .Should().BeEquivalentTo(hearingConfirmationDtos);
     }
 }
