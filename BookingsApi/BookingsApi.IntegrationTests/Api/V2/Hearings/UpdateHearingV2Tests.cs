@@ -221,6 +221,41 @@ public class UpdateHearingV2Tests : ApiTest
         message.Should().BeNull();
     }
     
+    [Test]
+    public async Task should_update_hearing_when_details_are_the_same()
+    {
+        // arrange
+        var hearing = await Hooks.SeedVideoHearing(options =>
+        {
+            options.Case = new Case("Case1 Num", "Case1 Name");
+        }, BookingStatus.Created);
+        var hearingId = hearing.Id;
+        var request = BuildRequest();
+        
+        request.HearingVenueCode = hearing.HearingVenue.VenueCode;
+        request.ScheduledDateTime = hearing.ScheduledDateTime;
+        request.ScheduledDuration = hearing.ScheduledDuration;
+        request.HearingRoomName = hearing.HearingRoomName;
+        request.OtherInformation = hearing.OtherInformation;
+        request.AudioRecordingRequired = hearing.AudioRecordingRequired;
+        request.UpdatedBy = "UpdatedByUserName";
+
+        var beforeUpdatedDate = hearing.UpdatedDate;
+        
+        // act
+        using var client = Application.CreateClient();
+        var result = await client.PutAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingDetails(hearingId),
+            RequestBody.Set(request));
+        
+        // assert
+        result.IsSuccessStatusCode.Should().BeTrue();
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var response = await ApiClientResponse.GetResponses<HearingDetailsResponseV2>(result.Content);
+        response.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+        response.UpdatedBy.Should().Be(request.UpdatedBy);
+    }
+    
     private static UpdateHearingRequestV2 BuildRequest()
     {
         var cases = Builder<CaseRequestV2>.CreateListOfSize(1).Build().ToList();

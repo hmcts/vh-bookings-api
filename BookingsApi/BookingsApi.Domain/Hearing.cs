@@ -480,6 +480,9 @@ namespace BookingsApi.Domain
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
                 otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
             {
+                // Need to update these details for Admin Web
+                UpdateHearingUpdatedAuditDetails(updatedBy);
+                
                 return;
             }
 
@@ -498,8 +501,7 @@ namespace BookingsApi.Domain
 
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
-            UpdatedBy = updatedBy;
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(updatedBy);
             AudioRecordingRequired = audioRecordingRequired;
         }
 
@@ -830,5 +832,10 @@ namespace BookingsApi.Domain
                                                                 (Status == BookingStatus.Created ||
                                                                  Status == BookingStatus.ConfirmedWithoutJudge);
 
+        private void UpdateHearingUpdatedAuditDetails(string updatedBy)
+        {
+            UpdatedBy = updatedBy;
+            UpdatedDate = DateTime.UtcNow;
+        }
     }
 }
