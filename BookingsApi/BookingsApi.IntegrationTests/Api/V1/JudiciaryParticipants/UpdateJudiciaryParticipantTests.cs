@@ -20,7 +20,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             var seededHearing = await Hooks.SeedVideoHearingV2(configureOptions: options =>
             {
                 options.AddJudge = true;
-                options.AddStaffMember = true;
             });
             var judiciaryJudge = seededHearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.Judge);
@@ -69,7 +68,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
             {
                 options.AddJudge = false;
                 options.AddPanelMember = true;
-                options.AddStaffMember = true;
             });
             var judiciaryPanelMember = seededHearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
@@ -203,7 +201,6 @@ namespace BookingsApi.IntegrationTests.Api.V1.JudiciaryParticipants
                 options.ScheduledDate = DateTime.UtcNow.AddMinutes(5);
                 options.AddJudge = false;
                 options.AddPanelMember = true;
-                options.AddStaffMember = true;
             }, BookingStatus.Created);
             var judiciaryPanelMember = seededHearing.JudiciaryParticipants
                 .FirstOrDefault(x => x.HearingRoleCode == Domain.Enumerations.JudiciaryParticipantHearingRoleCode.PanelMember);
