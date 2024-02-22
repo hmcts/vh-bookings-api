@@ -356,10 +356,11 @@ namespace BookingsApi.Controllers.V1
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [HttpDelete("{username}")]
+        [HttpDelete("test-persons/{username}")]
         [OpenApiOperation("DeleteTestPersonByUsername")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> DeleteTestPersonByUsername(string username)
         {
