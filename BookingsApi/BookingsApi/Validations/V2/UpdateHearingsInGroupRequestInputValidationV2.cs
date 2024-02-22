@@ -7,6 +7,7 @@ namespace BookingsApi.Validations.V2
     {
         public const string NoHearingsErrorMessage = "Please provide at least one hearing";
         public const string DuplicateHearingIdsMessage = "Hearing ids must be unique";
+        public const string NoUpdatedByErrorMessage = "UpdatedBy is missing";
 
         public UpdateHearingsInGroupRequestInputValidationV2()
         {
@@ -21,6 +22,9 @@ namespace BookingsApi.Validations.V2
 
             RuleForEach(x => x.Hearings)
                 .SetValidator(new HearingRequestInputValidationV2());
+            
+            RuleFor(x => x.UpdatedBy)
+                .NotEmpty().WithMessage(NoUpdatedByErrorMessage);
         }
         
         private static bool HasDuplicateHearingIds(IEnumerable<HearingRequestV2> hearings)

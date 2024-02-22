@@ -2,10 +2,8 @@ using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Services;
-using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
-using FluentValidation;
 using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Controllers.V1
@@ -192,11 +190,17 @@ namespace BookingsApi.Controllers.V1
                     return ValidationProblem(ModelState);
                 }
             }
+
+            var venues = await GetVenues();
             
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
+                var venue = venues.First(v => v.Id == hearing.HearingVenueId);
+                var cases = hearing.GetCases().ToList();
 
+                await UpdateHearingDetails(hearing, venue, cases, request.UpdatedBy);
+                
                 await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
                 
                 hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
@@ -717,6 +721,15 @@ namespace BookingsApi.Controllers.V1
             return hearingVenues.SingleOrDefault(x => x.Name.Equals(venueId, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        private async Task<List<HearingVenue>> GetVenues()
+        {
+            var getHearingVenuesQuery = new GetHearingVenuesQuery();
+            var hearingVenues =
+                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
+
+            return hearingVenues;
+        }
+
         /// <summary>
         /// Search for hearings by case number. Search will apply fuzzy matching
         /// </summary>
@@ -881,6 +894,16 @@ namespace BookingsApi.Controllers.V1
         {
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
+        }
+
+        private async Task UpdateHearingDetails(VideoHearing hearing,
+            HearingVenue venue, List<Case> cases, string updatedBy)
+        {
+            var command = new UpdateHearingCommand(hearing.Id, hearing.ScheduledDateTime,
+                hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation,
+                updatedBy, cases, hearing.AudioRecordingRequired);
+            
+            await _bookingService.UpdateHearingAndPublish(command, hearing);
         }
     }
 }
