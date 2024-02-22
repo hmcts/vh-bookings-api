@@ -199,7 +199,9 @@ namespace BookingsApi.Controllers.V1
                 var venue = venues.First(v => v.Id == hearing.HearingVenueId);
                 var cases = hearing.GetCases().ToList();
 
-                await UpdateHearingDetails(hearing, venue, cases, request.UpdatedBy);
+                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
+                    hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation, 
+                    request.UpdatedBy, cases, hearing.AudioRecordingRequired, hearing);
                 
                 await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
                 
@@ -521,11 +523,9 @@ namespace BookingsApi.Controllers.V1
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
-            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
+            var updatedHearing = await UpdateHearingDetails(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, request.AudioRecordingRequired.Value);
-        
-            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
+                request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);
             var response = HearingToDetailsResponseMapper.Map(updatedHearing);
             return Ok(response);
         }
@@ -896,14 +896,16 @@ namespace BookingsApi.Controllers.V1
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
         }
 
-        private async Task UpdateHearingDetails(VideoHearing hearing,
-            HearingVenue venue, List<Case> cases, string updatedBy)
+        private async Task<Hearing> UpdateHearingDetails(Guid hearingId, DateTime scheduledDateTime,
+            int scheduledDuration, HearingVenue venue, string hearingRoomName, string otherInformation,
+            string updatedBy, List<Case> cases, bool audioRecordingRequired, VideoHearing originalHearing)
         {
-            var command = new UpdateHearingCommand(hearing.Id, hearing.ScheduledDateTime,
-                hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation,
-                updatedBy, cases, hearing.AudioRecordingRequired);
+            var command = new UpdateHearingCommand(hearingId, scheduledDateTime,
+                scheduledDuration, venue, hearingRoomName, otherInformation,
+                updatedBy, cases, audioRecordingRequired);
             
-            await _bookingService.UpdateHearingAndPublish(command, hearing);
+            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, originalHearing);
+            return updatedHearing;
         }
     }
 }
