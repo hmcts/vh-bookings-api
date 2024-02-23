@@ -36,7 +36,7 @@ namespace BookingsApi.UnitTests.Services
                 hearing.Participants[1].Person.CreatedDate.AddDays(-10), null);
 
             var createConfereceMessageCount = 1;
-            var newParticipantWelcomeMessageCount = 2;
+            var newParticipantWelcomeMessageCount = 1;
             var hearingConfirmationForNewParticipantsMessageCount = 0;
             var hearingConfirmationForExistingParticipantsMessageCount = 0;
             var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount

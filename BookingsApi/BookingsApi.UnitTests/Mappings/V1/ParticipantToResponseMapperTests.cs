@@ -37,31 +37,6 @@ namespace BookingsApi.UnitTests.Mappings.V1
         }
 
         [Test]
-        public void Should_map_staffMember()
-        {
-            const string staffMemberName = "Staff Member";
-            var caseRole = new CaseRole(222, staffMemberName);
-            var staffMemberUserId = UserRoleForHearingRole.UserRoleId["Staff Member"];
-
-            var hearingRole = new HearingRole(727, staffMemberName) { UserRole = new UserRole(staffMemberUserId, staffMemberName)};
-
-            var person = new PersonBuilder().Build();
-            var staffMember = new StaffMember(person, hearingRole, caseRole)
-            {
-                DisplayName = "Staff Member",
-                CreatedBy = "unit@hmcts.net"
-            };
-            staffMember.SetProtected(nameof(staffMember.CaseRole), caseRole);
-            staffMember.SetProtected(nameof(staffMember.HearingRole), hearingRole);
-
-            var response = _mapper.MapParticipantToResponse(staffMember);
-            
-            AssertParticipantCommonDetails(response, staffMember, caseRole, hearingRole);
-            AssertRepresentativeResponse(response, null);
-            response.Organisation.Should().BeNullOrWhiteSpace();
-        }
-
-        [Test]
         public void Should_map_individual()
         {
             var caseRole = new CaseRole(1, "Applicant");

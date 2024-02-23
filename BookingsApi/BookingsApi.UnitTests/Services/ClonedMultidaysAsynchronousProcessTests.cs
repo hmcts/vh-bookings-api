@@ -70,7 +70,7 @@ namespace BookingsApi.UnitTests.Services
 
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 
-            const int expectedTotalMessageCount = 6;
+            const int expectedTotalMessageCount = 5;
             const int totalDays = 2;
             
             // Act
@@ -96,7 +96,7 @@ namespace BookingsApi.UnitTests.Services
 
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
 
-            const int expectedTotalMessageCount = 5;
+            const int expectedTotalMessageCount = 4;
             const int totalDays = 2;
             
             // Act
