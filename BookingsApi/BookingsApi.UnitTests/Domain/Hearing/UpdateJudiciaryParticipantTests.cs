@@ -106,6 +106,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryPanelMember()
                 .Build();
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember) 
+                hearing.UpdateStatus(BookingStatus.BookedWithoutJudge, "System", "reason");
             var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
                 .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
