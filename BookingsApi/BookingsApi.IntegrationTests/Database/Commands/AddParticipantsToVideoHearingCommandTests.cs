@@ -262,9 +262,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             returnedVideoHearing.Participants.Where(x => x.LinkedParticipants.Any()).Should().NotBeNull();
         }
 
-        [TestCase("Judge", "Judge")]
-        [TestCase("Staff Member", "Staff Member")]
-        public async Task Should_add_participant_to_video_hearing(string caseRole, string hearingRole)
+        [Test]
+        public async Task Should_add_judge_participant_to_video_hearing()
         {
             var seededHearing = await Hooks.SeedVideoHearing(configureOptions: options =>
             {
@@ -278,8 +277,8 @@ namespace BookingsApi.IntegrationTests.Database.Commands
             var caseTypeName = "Generic";
             var caseType = GetCaseTypeFromDb(caseTypeName);
 
-            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == caseRole);
-            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == hearingRole);
+            var judgeCaseRole = caseType.CaseRoles.First(x => x.Name == "Judge");
+            var judgeHearingRole = judgeCaseRole.HearingRoles.First(x => x.Name == "Judge");
 
             var newPerson = new PersonBuilder(true).Build();
             var newParticipant = new NewParticipant()

@@ -248,24 +248,6 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public Participant AddStaffMember(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
-        {
-            if (DoesParticipantExistByUsername(person.Username))
-            {
-                throw new DomainRuleException(nameof(person), "Staff Member with given username already exists in the hearing");
-            }
-
-            Participant participant = new StaffMember(person, hearingRole, caseRole)
-            {
-                DisplayName = displayName,
-                CreatedBy = CreatedBy
-            };
-            Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
-            
-            return participant;
-        }
-        
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
@@ -299,7 +281,7 @@ namespace BookingsApi.Domain
         }
 
         public bool HasHost =>
-            GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
+            GetParticipants().Any(x => x.HearingRole.Name == "Judge") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)

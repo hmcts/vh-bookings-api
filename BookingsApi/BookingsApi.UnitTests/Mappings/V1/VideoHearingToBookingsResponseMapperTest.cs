@@ -78,7 +78,7 @@ namespace BookingsApi.UnitTests.Mappings.V1
         [Test]
         public void Should_map_properties_without_judge()
         {
-            var hearing = new VideoHearingBuilder(addJudge:false, addStaffMember:false).Build();
+            var hearing = new VideoHearingBuilder(addJudge:false).Build();
             hearing.AddCase("234", "X vs Y", true);
             hearing.CaseType = new CaseType(1, "Generic");
             hearing.GetParticipants()[3].HearingRole = new HearingRole(5, "Winger") { UserRole = new UserRole(5, "Winger") };

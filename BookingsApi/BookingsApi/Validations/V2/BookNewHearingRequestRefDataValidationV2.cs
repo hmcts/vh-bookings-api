@@ -26,7 +26,7 @@ public class BookNewHearingRequestRefDataValidationV2 : RefDataInputValidatorVal
         
         RuleForEach(x=> x.Participants).Custom((participant, context) =>
         {
-            ValidateHearingRole(participant, hearingRoles, context);
+                ValidateHearingRole(participant, hearingRoles, context);
         });
         
     }

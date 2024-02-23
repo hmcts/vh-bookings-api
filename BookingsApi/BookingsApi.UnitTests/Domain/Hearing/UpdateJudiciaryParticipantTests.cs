@@ -5,9 +5,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class UpdateJudiciaryParticipantTests
     {
-        [TestCase(JudiciaryParticipantHearingRoleCode.Judge)]
-        [TestCase(JudiciaryParticipantHearingRoleCode.PanelMember)]
-        public void Should_update_judiciary_judge_in_hearing(JudiciaryParticipantHearingRoleCode newHearingRoleCode)
+        [Test]
+        public void Should_update_judiciary_judge_in_hearing()
         {
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
@@ -17,18 +16,18 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var personalCode = judiciaryJudge.JudiciaryPerson.PersonalCode;
             var newDisplayName = "New Display Name";
 
-            hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, newHearingRoleCode);
+            hearing.UpdateJudiciaryParticipantByPersonalCode(personalCode, newDisplayName, JudiciaryParticipantHearingRoleCode.Judge);
 
             var updatedJudiciaryJudge = hearing.GetJudiciaryParticipants()
                 .First(x => x.JudiciaryPerson.PersonalCode == judiciaryJudge.JudiciaryPerson.PersonalCode);
             updatedJudiciaryJudge.DisplayName.Should().Be(newDisplayName);
-            updatedJudiciaryJudge.HearingRoleCode.Should().Be(newHearingRoleCode);
+            updatedJudiciaryJudge.HearingRoleCode.Should().Be(JudiciaryParticipantHearingRoleCode.Judge);
         }
 
         [Test]
         public void should_update_panel_member_when_no_host_is_set()
         {
-            var hearing = new VideoHearingBuilder(addJudge: false, addStaffMember: false)
+            var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryPanelMember()
                 .Build();
             hearing.UpdateBookingStatusJudgeRequirement(); // need to find a better home for this. shouldn't have to be after instantiating
@@ -47,7 +46,7 @@ namespace BookingsApi.UnitTests.Domain.Hearing
         [Test]
         public void Should_raise_exception_when_updating_judiciary_judge_to_panel_member_if_no_other_host_exists()
         {
-            var hearing = new VideoHearingBuilder(addJudge: false, addStaffMember: false)
+            var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryJudge()
                 .Build();
             var judiciaryJudge = hearing.GetJudiciaryParticipants()
@@ -107,6 +106,8 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             var hearing = new VideoHearingBuilder(addJudge: false)
                 .WithJudiciaryPanelMember()
                 .Build();
+            if (newHearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember) 
+                hearing.UpdateStatus(BookingStatus.BookedWithoutJudge, "System", "reason");
             var judiciaryPanelMember = hearing.GetJudiciaryParticipants()
                 .FirstOrDefault(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.PanelMember);
             var personalCode = judiciaryPanelMember.JudiciaryPerson.PersonalCode;
