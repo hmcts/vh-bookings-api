@@ -219,8 +219,27 @@ namespace BookingsApi.Controllers.V1
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> CancelHearingsInGroup(Guid groupId, [FromBody] CancelHearingsInGroupRequest request)
         {
+            var inputValidationResult = await new CancelHearingsInGroupRequestInputValidation().ValidateAsync(request);
+            if (!inputValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(inputValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
             var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
             var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            
+            if (!hearingsInGroup.Any())
+            {
+                return NotFound();
+            }
+            
+            var dataValidationResult = await new CancelHearingsInGroupRequestRefDataValidation(hearingsInGroup).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
             
             foreach (var hearingId in request.HearingIds)
             {

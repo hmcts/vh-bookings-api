@@ -3,6 +3,7 @@ using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
+using BookingsApi.Validations.V1;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 {
@@ -61,58 +62,123 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
         }
         
         [Test]
-        public async Task should_return_not_found_when_hearings_in_group_not_found()
+        public async Task should_return_not_found_when_no_hearings_found_for_group()
         {
             // Arrange
-            // Act
-            // Assert
+            var groupId = Guid.NewGuid();
             
-            // TODO
-            Assert.Fail();
+            var request = BuildRequest();
+            request.HearingIds = new List<Guid> {Guid.NewGuid()};
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.CancelHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.NotFound, result.Content.ReadAsStringAsync().Result);
         }
 
         [Test]
         public async Task should_return_bad_request_when_hearings_in_request_do_not_belong_to_group()
         {
             // Arrange
-            // Act
-            // Assert
+            var seededHearingsInGroup = await SeedHearingsInGroup();
+            var groupId = seededHearingsInGroup[0].SourceId.Value;
             
-            // TODO
-            Assert.Fail();
+            var request = BuildRequest();
+            request.HearingIds = seededHearingsInGroup.Select(h => h.Id).ToList();
+            
+            var hearingsNotInGroup = new List<Guid>
+            {
+                Guid.NewGuid(), 
+                Guid.NewGuid() 
+            };
+            
+            request.HearingIds.AddRange(hearingsNotInGroup);
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.CancelHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["HearingIds[3]"][0].Should()
+                .Be($"Hearing {hearingsNotInGroup[0]} does not belong to group {groupId}");
+            validationProblemDetails.Errors["HearingIds[4]"][0].Should()
+                .Be($"Hearing {hearingsNotInGroup[1]} does not belong to group {groupId}");
         }
 
         [Test]
         public async Task should_return_bad_request_when_duplicate_hearing_ids_in_request()
         {
             // Arrange
-            // Act
-            // Assert
+            var seededHearingsInGroup = await SeedHearingsInGroup();
+            var groupId = seededHearingsInGroup[0].SourceId.Value;
             
-            // TODO
-            Assert.Fail();
+            var request = BuildRequest();
+            request.HearingIds = seededHearingsInGroup.Select(h => h.Id).ToList();
+            request.HearingIds[1] = request.HearingIds[0];
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.CancelHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.HearingIds)][0].Should()
+                .Be(CancelHearingsInGroupRequestInputValidation.DuplicateHearingIdsMessage);
         }
 
         [Test]
         public async Task should_return_bad_request_when_empty_hearings_list_in_request()
         {
             // Arrange
-            // Act
-            // Assert
+            var groupId = Guid.NewGuid();
             
-            // TODO
-            Assert.Fail();
+            var request = BuildRequest();
+            request.HearingIds = new List<Guid>();
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.CancelHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.HearingIds)][0].Should()
+                .Be(CancelHearingsInGroupRequestInputValidation.NoHearingsErrorMessage);
         }
 
         [Test]
         public async Task should_return_bad_request_when_null_hearings_list_in_request()
         {
             // Arrange
-            // Act
-            // Assert
+            var groupId = Guid.NewGuid();
             
-            // TODO
-            Assert.Fail();
+            var request = BuildRequest();
+            request.HearingIds = null;
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.CancelHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.HearingIds)][0].Should()
+                .Be(CancelHearingsInGroupRequestInputValidation.NoHearingsErrorMessage);
         }
         
         private static CancelHearingsInGroupRequest BuildRequest() =>
