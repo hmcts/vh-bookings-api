@@ -350,5 +350,35 @@ namespace BookingsApi.Controllers.V1
 
             return NoContent();
         }
+        
+        /// <summary>
+        /// For usage by automation tests, to delete test users
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        [HttpDelete("test-persons/{username}")]
+        [OpenApiOperation("DeleteTestPersonByUsername")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> DeleteTestPersonByUsername(string username)
+        {
+            try
+            {
+                await _commandHandler.Handle(new DeleteTestPersonCommand(username));
+                return NoContent();
+            }
+            catch (PersonNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (ArgumentException)
+            {
+                _logger.LogError("Failed to delete a person because the person {Username} is not a valid test user", username);
+                return Forbid();
+            }
+        }
     }
+    
 }
