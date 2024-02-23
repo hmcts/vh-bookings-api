@@ -8,12 +8,12 @@ namespace BookingsApi.Validations.V1
     {
         public CancelHearingsInGroupRequestRefDataValidation(List<VideoHearing> hearingsInGroup)
         {
-            RuleForEach(x=> x.HearingIds).Custom((requestHearing, context) =>
+            RuleForEach(x=> x.HearingIds).Custom((requestHearingId, context) =>
             {
-                ValidateHearing(requestHearing, hearingsInGroup, context);
+                ValidateHearing(requestHearingId, hearingsInGroup, context);
             });
         }
-        
+
         private static void ValidateHearing(Guid requestHearingId, 
             List<VideoHearing> hearingsInGroup, 
             ValidationContext<CancelHearingsInGroupRequest> context)

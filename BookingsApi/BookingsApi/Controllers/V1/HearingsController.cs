@@ -241,6 +241,14 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
             
+            var requestHearings = hearingsInGroup.Where(h => request.HearingIds.Contains(h.Id)).ToList();
+            var hearingDataValidationResult = await new CancelHearingsInGroupRequestHearingRefDataValidation(requestHearings).ValidateAsync(request);
+            if (!hearingDataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(hearingDataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
             foreach (var hearingId in request.HearingIds)
             {
                 var hearing = hearingsInGroup.Find(h => h.Id == hearingId);

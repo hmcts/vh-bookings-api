@@ -4,6 +4,7 @@ using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.V1;
+using Testing.Common.Builders.Domain;
 
 namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 {
@@ -33,16 +34,16 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
             
             await using var db = new BookingsDbContext(BookingsDbContextOptions);
-            var hearingsInGroup = await new GetHearingsByGroupIdQueryHandler(db).Handle(new GetHearingsByGroupIdQuery(groupId));
+            var hearingsInDb = await new GetHearingsByGroupIdQueryHandler(db).Handle(new GetHearingsByGroupIdQuery(groupId));
             
-            var skippedHearingAfterUpdate = hearingsInGroup.Find(h => h.Id == hearingToSkip.Id);
+            var skippedHearingAfterUpdate = hearingsInDb.Find(h => h.Id == hearingToSkip.Id);
             skippedHearingAfterUpdate.Status.Should().Be(hearingToSkip.Status);
             skippedHearingAfterUpdate.UpdatedDate.Should().Be(hearingToSkip.UpdatedDate);
             skippedHearingAfterUpdate.UpdatedBy.Should().Be(hearingToSkip.UpdatedBy);
             skippedHearingAfterUpdate.CancelReason.Should().Be(hearingToSkip.CancelReason);
             skippedHearingAfterUpdate.Allocations.Count.Should().Be(hearingToSkip.Allocations.Count);
             
-            foreach (var hearing in hearingsInGroup.Where(h => h.Id != hearingToSkip.Id))
+            foreach (var hearing in hearingsInDb.Where(h => h.Id != hearingToSkip.Id))
             {
                 var hearingBeforeUpdate = hearingsToCancel.Find(h => h.Id == hearing.Id);
                 
@@ -179,6 +180,56 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors[nameof(request.HearingIds)][0].Should()
                 .Be(CancelHearingsInGroupRequestInputValidation.NoHearingsErrorMessage);
+        }
+
+        [Test]
+        public async Task should_return_bad_request_for_invalid_status_transition()
+        {
+            // Arrange
+            var seededHearingsInGroup = await SeedHearingsInGroup();
+            var groupId = seededHearingsInGroup[0].SourceId.Value;
+
+            await using var db = new BookingsDbContext(BookingsDbContextOptions);
+
+            var day1Hearing = seededHearingsInGroup[0];
+            var day2Hearing = await db.VideoHearings.FirstAsync(h => h.Id == seededHearingsInGroup[1].Id);
+            var day3Hearing = await db.VideoHearings.FirstAsync(h => h.Id == seededHearingsInGroup[2].Id);
+
+            // Prompt an invalid status transition - can't cancel a hearing that is already cancelled or failed
+            day2Hearing.SetProtected(nameof(day2Hearing.Status), BookingStatus.Cancelled);
+            day3Hearing.SetProtected(nameof(day3Hearing.Status), BookingStatus.Failed);
+
+            await db.SaveChangesAsync();
+            
+            var request = BuildRequest();
+            var hearingsToCancel = new List<VideoHearing> {  day1Hearing, day2Hearing, day3Hearing};
+            request.HearingIds = hearingsToCancel.Select(h => h.Id).ToList();
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpoints.CancelHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["requestHearings[1]"][0].Should()
+                .Be($"Cannot change the booking status from {day2Hearing.Status} to {BookingStatus.Cancelled} for hearing {day2Hearing.Id}");
+            validationProblemDetails.Errors["requestHearings[2]"][0].Should()
+                .Be($"Cannot change the booking status from {day3Hearing.Status} to {BookingStatus.Cancelled} for hearing {day3Hearing.Id}");
+            
+            var hearingsInGroup = await new GetHearingsByGroupIdQueryHandler(db).Handle(new GetHearingsByGroupIdQuery(groupId));
+            var hearingsInDb = hearingsInGroup.Where(h => request.HearingIds.Contains(h.Id)).ToList();
+
+            // Verify that no updates were made
+            foreach (var hearing in hearingsInDb)
+            {
+                var hearingBeforeUpdate = hearingsToCancel.Find(h => h.Id == hearing.Id);
+                
+                hearing.Status.Should().Be(hearingBeforeUpdate.Status);
+                hearing.UpdatedDate.Should().Be(hearingBeforeUpdate.UpdatedDate);
+            }
         }
         
         private static CancelHearingsInGroupRequest BuildRequest() =>
