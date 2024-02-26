@@ -18,11 +18,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
-            
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequestV2>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
@@ -102,6 +100,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var updatedHearing in updatedHearings)
             {
                 var requestHearing = request.Hearings.First(x => x.HearingId == updatedHearing.Id);
+                var originalHearing = hearings.First(x => x.Id == updatedHearing.Id);
+                
+                updatedHearing.UpdatedDate.Should().BeAfter(originalHearing.UpdatedDate);
+                updatedHearing.UpdatedBy.Should().Be(request.UpdatedBy);
 
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
@@ -114,14 +116,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_not_found_when_no_hearings_found_for_group()
         {
             // Arrange
-            var request = new UpdateHearingsInGroupRequestV2
+            var request = BuildRequest();
+            request.Hearings = new List<HearingRequestV2>
             {
-                Hearings = new List<HearingRequestV2>
+                new()
                 {
-                    new()
-                    {
-                        HearingId = Guid.NewGuid()
-                    }
+                    HearingId = Guid.NewGuid()
                 }
             };
             
@@ -143,10 +143,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var hearingsNotInGroup = new List<HearingRequestV2>
             {
@@ -185,10 +183,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             request.Hearings[1].HearingId = request.Hearings[0].HearingId;
 
@@ -211,10 +207,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_empty_hearings_list_in_request()
         {
             // Arrange
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = new List<HearingRequestV2>()
-            };
+            var request = BuildRequest();
+            request.Hearings = new List<HearingRequestV2>();
             
             // Act
             using var client = Application.CreateClient();
@@ -233,10 +227,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         public async Task should_return_bad_request_when_null_hearings_list_in_request()
         {
             // Arrange
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = null
-            };
+            var request = BuildRequest();
+            request.Hearings = null;
             
             // Act
             using var client = Application.CreateClient();
@@ -257,10 +249,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             foreach (var requestHearing in request.Hearings)
             {
@@ -291,10 +281,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             const string invalidHearingRoleCode = "INVALID_CODE";
 
@@ -328,11 +316,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
- 
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newEndpoint = new Builder(new BuilderSettings()).CreateNew<EndpointRequestV2>()
                 .With(e => e.DefenceAdvocateContactEmail, null)
@@ -364,11 +350,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
- 
-            var request = new UpdateHearingsInGroupRequestV2
-            {
-                Hearings = hearings.Select(MapHearingRequest).ToList()
-            };
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
 
             var newJudiciaryPanelMemberPerson = await Hooks.AddJudiciaryPerson(personalCode: Guid.NewGuid().ToString());
             var newJudiciaryPanelMember = new Builder(new BuilderSettings()).CreateNew<JudiciaryParticipantRequestV2>()
@@ -396,6 +380,32 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors["Hearings[0].JudiciaryParticipants.NewJudiciaryParticipants[0].PersonalCode"][0].Should().Be(
                 JudiciaryParticipantRequestValidationV2.NoPersonalCodeErrorMessage);
         }
+        
+        [Test]
+        public async Task should_return_bad_request_when_invalid_details_in_request()
+        {
+            // Arrange
+            var request = new UpdateHearingsInGroupRequestV2();
+            var groupId = Guid.NewGuid();
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.UpdatedBy)][0].Should().Be(
+                UpdateHearingsInGroupRequestInputValidationV2.NoUpdatedByErrorMessage);
+        }
+        
+        private static UpdateHearingsInGroupRequestV2 BuildRequest() =>
+            new()
+            {
+                UpdatedBy = "updatedBy@email.com"
+            };
 
         private async Task<List<VideoHearing>> SeedHearingsInGroup()
         {
