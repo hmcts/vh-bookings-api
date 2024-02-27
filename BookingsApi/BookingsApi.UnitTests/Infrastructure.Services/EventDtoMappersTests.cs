@@ -48,9 +48,8 @@ public class EventDtoMappersTests
         mappedParticipant.UserRole.Should().Be(role);
     }
     
-    [TestCase(CaseRoleGroup.Judge)]
-    [TestCase(CaseRoleGroup.StaffMember)]
-    public void should_map_hearing_confirmation_dto_with_participant(CaseRoleGroup hearingRoleCode)
+    [Test]
+    public void should_map_hearing_confirmation_dto_with_judge_participant()
     {
         var @case = new Case("case number", "case name")
         {
@@ -65,26 +64,12 @@ public class EventDtoMappersTests
         var hearingRole = new HearingRole(1, "RoleName");
         var person = new PersonBuilder(true).Build();
 
-        Participant participant = null;
-        switch (hearingRoleCode)
+        Participant participant = new Judge(person, hearingRole, caseRole)
         {
-            case CaseRoleGroup.Judge:
-                participant = new Judge(person, hearingRole, caseRole)
-                {
-                    DisplayName = "Display Name",
-                    CreatedBy = "Created By",
-                    HearingRole = new HearingRole(1, "Judge") {UserRole = new UserRole(1, "Judge")}
-                };
-                break;
-            case CaseRoleGroup.StaffMember:
-                participant = new StaffMember(person, hearingRole, caseRole)
-                {
-                    DisplayName = "Display Name",
-                    CreatedBy = "Created By",
-                    HearingRole = new HearingRole(1, "StaffMember") {UserRole = new UserRole(1, "StaffMember")}
-                };
-                break;
-        }
+            DisplayName = "Display Name",
+            CreatedBy = "Created By",
+            HearingRole = new HearingRole(1, "Judge") {UserRole = new UserRole(1, "Judge")}
+        };
 
         var participantDto = ParticipantDtoMapper.MapToDto(participant, "");
         var mappedParticipant = EventDtoMappers.MapToHearingConfirmationDto(hearingId, scheduledTime, participantDto, @case);

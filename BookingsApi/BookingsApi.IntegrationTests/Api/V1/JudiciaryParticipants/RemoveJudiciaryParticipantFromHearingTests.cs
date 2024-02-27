@@ -79,7 +79,6 @@ public class RemoveJudiciaryParticipantFromHearingTests : ApiTest
         var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.AddJudge = true;
-            options.AddStaffMember = true;
         }, status:BookingStatus.Created);
         var hearingId = seededHearing.Id;
         var judiciaryParticipant = seededHearing.JudiciaryParticipants[0];

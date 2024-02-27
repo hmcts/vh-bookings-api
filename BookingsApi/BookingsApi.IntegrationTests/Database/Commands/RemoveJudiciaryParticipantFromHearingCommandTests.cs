@@ -53,7 +53,6 @@ public class RemoveJudiciaryParticipantFromHearingCommandTests : DatabaseTestsBa
         var seededHearing = await Hooks.SeedVideoHearingV2(options =>
         {
             options.AddJudge = true;
-            options.AddStaffMember = true;
         });
         TestContext.WriteLine($"New seeded video hearing id: {seededHearing.Id}");
 

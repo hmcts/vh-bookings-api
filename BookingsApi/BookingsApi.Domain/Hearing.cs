@@ -248,24 +248,6 @@ namespace BookingsApi.Domain
             return participant;
         }
 
-        public Participant AddStaffMember(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
-        {
-            if (DoesParticipantExistByUsername(person.Username))
-            {
-                throw new DomainRuleException(nameof(person), "Staff Member with given username already exists in the hearing");
-            }
-
-            Participant participant = new StaffMember(person, hearingRole, caseRole)
-            {
-                DisplayName = displayName,
-                CreatedBy = CreatedBy
-            };
-            Participants.Add(participant);
-            UpdatedDate = DateTime.UtcNow;
-            
-            return participant;
-        }
-        
         public Participant AddJudicialOfficeHolder(Person person, HearingRole hearingRole, CaseRole caseRole, string displayName)
         {
             if (DoesParticipantExistByContactEmail(person.ContactEmail))
@@ -299,7 +281,7 @@ namespace BookingsApi.Domain
         }
 
         public bool HasHost =>
-            GetParticipants().Any(x => x.HearingRole.Name == "Judge" || x.HearingRole.Name == "Staff Member") ||
+            GetParticipants().Any(x => x.HearingRole.Name == "Judge") ||
             JudiciaryParticipants.Any(x => x.HearingRoleCode == JudiciaryParticipantHearingRoleCode.Judge);
 
         public JudiciaryParticipant AddJudiciaryJudge(JudiciaryPerson judiciaryPerson, string displayName, string email = null, string phone = null)
@@ -480,6 +462,9 @@ namespace BookingsApi.Domain
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
                 otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
             {
+                // Need to update these details for Admin Web
+                UpdateHearingUpdatedAuditDetails(updatedBy);
+                
                 return;
             }
 
@@ -498,8 +483,7 @@ namespace BookingsApi.Domain
 
             HearingRoomName = hearingRoomName;
             OtherInformation = otherInformation;
-            UpdatedBy = updatedBy;
-            UpdatedDate = DateTime.UtcNow;
+            UpdateHearingUpdatedAuditDetails(updatedBy);
             AudioRecordingRequired = audioRecordingRequired;
         }
 
@@ -830,5 +814,10 @@ namespace BookingsApi.Domain
                                                                 (Status == BookingStatus.Created ||
                                                                  Status == BookingStatus.ConfirmedWithoutJudge);
 
+        private void UpdateHearingUpdatedAuditDetails(string updatedBy)
+        {
+            UpdatedBy = updatedBy;
+            UpdatedDate = DateTime.UtcNow;
+        }
     }
 }

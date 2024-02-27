@@ -2,10 +2,8 @@ using BookingsApi.Contract.V1.Queries;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
 using BookingsApi.DAL.Services;
-using BookingsApi.Helpers;
 using BookingsApi.Mappings.V1;
 using BookingsApi.Validations.V1;
-using FluentValidation;
 using Microsoft.ApplicationInsights.DataContracts;
 
 namespace BookingsApi.Controllers.V1
@@ -192,11 +190,19 @@ namespace BookingsApi.Controllers.V1
                     return ValidationProblem(ModelState);
                 }
             }
+
+            var venues = await GetVenues();
             
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
+                var venue = venues.First(v => v.Id == hearing.HearingVenueId);
+                var cases = hearing.GetCases().ToList();
 
+                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
+                    hearing.ScheduledDuration, venue, hearing.HearingRoomName, hearing.OtherInformation, 
+                    request.UpdatedBy, cases, hearing.AudioRecordingRequired, hearing);
+                
                 await _updateHearingService.UpdateParticipantsV1(requestHearing.Participants, hearing);
                 
                 hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(new GetHearingByIdQuery(requestHearing.HearingId));
@@ -517,11 +523,9 @@ namespace BookingsApi.Controllers.V1
             request.HearingRoomName ??= videoHearing.HearingRoomName;
             request.OtherInformation ??= videoHearing.OtherInformation;
 
-            var command = new UpdateHearingCommand(hearingId, request.ScheduledDateTime,
+            var updatedHearing = await UpdateHearingDetails(hearingId, request.ScheduledDateTime,
                 request.ScheduledDuration, venue, request.HearingRoomName, request.OtherInformation,
-                request.UpdatedBy, cases, request.AudioRecordingRequired.Value);
-        
-            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, videoHearing);
+                request.UpdatedBy, cases, request.AudioRecordingRequired.Value, videoHearing);
             var response = HearingToDetailsResponseMapper.Map(updatedHearing);
             return Ok(response);
         }
@@ -717,6 +721,15 @@ namespace BookingsApi.Controllers.V1
             return hearingVenues.SingleOrDefault(x => x.Name.Equals(venueId, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        private async Task<List<HearingVenue>> GetVenues()
+        {
+            var getHearingVenuesQuery = new GetHearingVenuesQuery();
+            var hearingVenues =
+                await _queryHandler.Handle<GetHearingVenuesQuery, List<HearingVenue>>(getHearingVenuesQuery);
+
+            return hearingVenues;
+        }
+
         /// <summary>
         /// Search for hearings by case number. Search will apply fuzzy matching
         /// </summary>
@@ -881,6 +894,18 @@ namespace BookingsApi.Controllers.V1
         {
             var cases = caseRequestList ?? new List<CaseRequest>();
             return cases.Select(caseRequest => new Case(caseRequest.Number, caseRequest.Name)).ToList();
+        }
+
+        private async Task<Hearing> UpdateHearingDetails(Guid hearingId, DateTime scheduledDateTime,
+            int scheduledDuration, HearingVenue venue, string hearingRoomName, string otherInformation,
+            string updatedBy, List<Case> cases, bool audioRecordingRequired, VideoHearing originalHearing)
+        {
+            var command = new UpdateHearingCommand(hearingId, scheduledDateTime,
+                scheduledDuration, venue, hearingRoomName, otherInformation,
+                updatedBy, cases, audioRecordingRequired);
+            
+            var updatedHearing = await _bookingService.UpdateHearingAndPublish(command, originalHearing);
+            return updatedHearing;
         }
     }
 }
