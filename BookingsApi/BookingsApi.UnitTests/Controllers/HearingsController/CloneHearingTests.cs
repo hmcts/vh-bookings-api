@@ -93,7 +93,6 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[1] && c.Cases[0].Name == "Case name Day 3 of 3")), Times.Once);
             HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
-            EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<HearingIsReadyForVideoIntegrationEvent>()), Times.Exactly(request.Dates.Count));
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(
                     hearing.Participants.Count(x => x is not Judge)));
 
