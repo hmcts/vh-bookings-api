@@ -84,7 +84,6 @@ public class BookingService : IBookingService
         
         var getHearingByIdQuery = new GetHearingByIdQuery(command.NewHearingId);
         var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
-        //await PublishNewHearing(queriedVideoHearing, isMultiDay);
 
         return queriedVideoHearing;
     }
