@@ -15,6 +15,14 @@ public interface IBookingService
     /// <param name="command"></param>
     /// <param name="isMultiDay"></param>
     /// <returns></returns>
+    Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command, bool isMultiDay);
+    
+    /// <summary>
+    /// Save a new hearing, publish a message to the event bus, and return the saved hearing.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="isMultiDay"></param>
+    /// <returns></returns>
     Task<VideoHearing> SaveNewHearingAndPublish(CreateVideoHearingCommand command, bool isMultiDay);
     
     /// <summary>
@@ -70,6 +78,17 @@ public class BookingService : IBookingService
         _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
     }
 
+    public async Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command, bool isMultiDay)
+    {
+        await _commandHandler.Handle(command);
+        
+        var getHearingByIdQuery = new GetHearingByIdQuery(command.NewHearingId);
+        var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+        //await PublishNewHearing(queriedVideoHearing, isMultiDay);
+
+        return queriedVideoHearing;
+    }
+    
     public async Task<VideoHearing> SaveNewHearingAndPublish(CreateVideoHearingCommand command, bool isMultiDay)
     {
         await _commandHandler.Handle(command);
