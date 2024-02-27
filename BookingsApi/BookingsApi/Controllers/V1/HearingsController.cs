@@ -209,6 +209,19 @@ namespace BookingsApi.Controllers.V1
                 
                 await _updateHearingService.UpdateEndpointsV1(requestHearing.Endpoints, hearing);
             }
+            
+            var hearings = request.Hearings.ToList();
+            var totalDays = hearings.Count;
+            var nextFirstHearingId = hearings[0].HearingId;
+            
+            var query = new GetHearingByIdQuery(nextFirstHearingId);
+            var nextFirstHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+            if (nextFirstHearing == null)
+                return NotFound();
+            
+            // publish multi day hearing notification event
+            await _bookingService.PublishMultiDayHearing(nextFirstHearing, totalDays);
 
             return NoContent();
         }

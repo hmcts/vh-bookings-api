@@ -223,6 +223,19 @@ namespace BookingsApi.Controllers.V2
                 await _updateHearingService.UpdateEndpointsV2(requestHearing.Endpoints, hearing);
                 await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
             }
+            
+            var hearings = request.Hearings.ToList();
+            var totalDays = hearings.Count;
+            var nextFirstHearingId = hearings[0].HearingId;
+            
+            var query = new GetHearingByIdQuery(nextFirstHearingId);
+            var nextFirstHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+            if (nextFirstHearing == null)
+                return NotFound();
+            
+            // publish multi day hearing notification event
+            await _bookingService.PublishMultiDayHearing(nextFirstHearing, totalDays);
 
             return NoContent();
         }
