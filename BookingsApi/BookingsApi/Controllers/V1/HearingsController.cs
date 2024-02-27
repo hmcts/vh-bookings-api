@@ -213,9 +213,9 @@ namespace BookingsApi.Controllers.V1
             var hearings = request.Hearings.ToList();
             var totalDays = hearings.Count;
             var nextFirstHearingId = hearings[0].HearingId;
-            
-            var query = new GetHearingByIdQuery(nextFirstHearingId);
-            var nextFirstHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+
+            var nextFirstHearing = await _bookingService.GetHearingById(nextFirstHearingId);
 
             if (nextFirstHearing == null)
                 return NotFound();

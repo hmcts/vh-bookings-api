@@ -47,6 +47,13 @@ public interface IBookingService
     /// <param name="videoHearing"></param>
     /// <returns></returns>
     Task PublishHearingCancelled(VideoHearing videoHearing);
+    
+    /// <summary>
+    /// Get a Hearing by Id
+    /// </summary>
+    /// <param name="hearingId"></param>
+    /// <returns>Hearing</returns>
+    Task<VideoHearing> GetHearingById(Guid hearingId);
 }
 
 public class BookingService : IBookingService
@@ -105,6 +112,14 @@ public class BookingService : IBookingService
             // publish the event only for confirmed(created) hearing  
             await _eventPublisher.PublishAsync(new HearingCancelledIntegrationEvent(videoHearing.Id));
         }
+    }
+
+    public async Task<VideoHearing> GetHearingById(Guid hearingId)
+    {
+        var query = new GetHearingByIdQuery(hearingId);
+        var hearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(query);
+
+        return hearing;
     }
 
     public async Task<VideoHearing> UpdateHearingAndPublish(UpdateHearingCommand updateHearingCommand, VideoHearing originalHearing)
