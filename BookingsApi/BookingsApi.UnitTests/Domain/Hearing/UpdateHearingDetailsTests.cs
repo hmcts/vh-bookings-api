@@ -76,5 +76,23 @@ namespace BookingsApi.UnitTests.Domain.Hearing
 
            action.Should().NotThrow<DomainRuleException>();
         }
+
+        [Test]
+        public void Should_update_hearing_updated_audit_details_when_hearing_details_are_the_same()
+        {
+            // arrange
+            var hearing = new VideoHearingBuilder().WithCase().Build();
+            var beforeUpdatedDate = hearing.UpdatedDate;
+            const string updatedBy = "UpdatedByUserName";
+            
+            // act
+            hearing.UpdateHearingDetails(hearing.HearingVenue, hearing.ScheduledDateTime, hearing.ScheduledDuration,
+                hearing.HearingRoomName, hearing.OtherInformation, updatedBy, 
+                hearing.GetCases().ToList(), hearing.AudioRecordingRequired);
+            
+            // assert
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(updatedBy);
+        }
     }
 }
