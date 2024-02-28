@@ -54,6 +54,16 @@ public interface IBookingService
     /// <param name="videoHearing"></param>
     /// <returns></returns>
     Task PublishHearingCancelled(VideoHearing videoHearing);
+
+    /// <summary>
+    /// Update status of a hearing and publish a message to the service bus
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="status"></param>
+    /// <param name="updatedBy"></param>
+    /// <param name="reason"></param>
+    /// <returns></returns>
+    Task UpdateHearingStatus(VideoHearing videoHearing, BookingStatus status, string updatedBy, string reason);
 }
 
 public class BookingService : IBookingService
@@ -140,6 +150,15 @@ public class BookingService : IBookingService
         await PublishHearingUpdateNotificationToParticipants(originalHearing, updatedHearing);
 
         return updatedHearing;
+    }
+
+    public async Task UpdateHearingStatus(VideoHearing videoHearing, BookingStatus status, string updatedBy, string reason)
+    {
+        var command = new UpdateHearingStatusCommand(videoHearing.Id, status, updatedBy, reason);
+        await _commandHandler.Handle(command);
+
+        if (status == BookingStatus.Cancelled) 
+            await PublishHearingCancelled(videoHearing);
     }
 
     private async Task PublishHearingUpdateNotificationToParticipants(VideoHearing originalHearing, VideoHearing updatedHearing)

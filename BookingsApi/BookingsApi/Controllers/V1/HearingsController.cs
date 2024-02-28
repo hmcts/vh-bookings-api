@@ -214,6 +214,58 @@ namespace BookingsApi.Controllers.V1
         }
 
         /// <summary>
+        /// Cancel hearings in a multi day group
+        /// </summary>
+        /// <returns>No content</returns>
+        [HttpPatch("{groupId}/hearings/cancel")]
+        [OpenApiOperation("CancelHearingsInGroup")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> CancelHearingsInGroup(Guid groupId, [FromBody] CancelHearingsInGroupRequest request)
+        {
+            var inputValidationResult = await new CancelHearingsInGroupRequestInputValidation().ValidateAsync(request);
+            if (!inputValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(inputValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            var getHearingsByGroupIdQuery = new GetHearingsByGroupIdQuery(groupId);
+            var hearingsInGroup = await _queryHandler.Handle<GetHearingsByGroupIdQuery, List<VideoHearing>>(getHearingsByGroupIdQuery);
+            
+            if (!hearingsInGroup.Any())
+            {
+                return NotFound();
+            }
+            
+            var dataValidationResult = await new CancelHearingsInGroupRequestRefDataValidation(hearingsInGroup).ValidateAsync(request);
+            if (!dataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            var requestHearings = hearingsInGroup.Where(h => request.HearingIds.Contains(h.Id)).ToList();
+            var hearingDataValidationResult = await new CancelHearingsInGroupRequestHearingRefDataValidation(requestHearings).ValidateAsync(request);
+            if (!hearingDataValidationResult.IsValid)
+            {
+                ModelState.AddFluentValidationErrors(hearingDataValidationResult.Errors);
+                return ValidationProblem(ModelState);
+            }
+            
+            foreach (var hearingId in request.HearingIds)
+            {
+                var hearing = hearingsInGroup.Find(h => h.Id == hearingId);
+
+                await _bookingService.UpdateHearingStatus(hearing, BookingStatus.Cancelled, request.UpdatedBy, request.CancelReason);
+            }
+            
+            return NoContent();
+        }
+
+        /// <summary>
         /// Get list of all hearings for notification between next 48 to 72 hrs. 
         /// </summary>
         /// <returns>Hearing details</returns>
@@ -634,11 +686,7 @@ namespace BookingsApi.Controllers.V1
                 return NotFound();
             try
             {
-                var command = new UpdateHearingStatusCommand(videoHearing.Id, status, updatedBy, reason);
-                await _commandHandler.Handle(command);
-
-                if (status == BookingStatus.Cancelled) 
-                    await _bookingService.PublishHearingCancelled(videoHearing);
+                await _bookingService.UpdateHearingStatus(videoHearing, status, updatedBy, reason);
 
                 return NoContent();
             }
