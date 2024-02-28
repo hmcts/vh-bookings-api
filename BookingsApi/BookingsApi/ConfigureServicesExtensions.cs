@@ -119,6 +119,7 @@ namespace BookingsApi
                 return list; });
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IFirstdayOfMultidayBookingAsynchronousProcess, FirstdayOfMultidayHearingAsynchronousProcess>();
+            services.AddScoped<ICreateConferenceAsynchronousProcess, CreateConferenceAsynchronousProcess>();
             services.AddScoped<IBookingAsynchronousProcess, SingledayHearingAsynchronousProcess>();
             services.AddScoped<IClonedBookingAsynchronousProcess, ClonedMultidaysAsynchronousProcess>();
             services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
