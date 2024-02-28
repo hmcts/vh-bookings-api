@@ -10,6 +10,13 @@ namespace BookingsApi.Services;
 public interface IBookingService
 {
     /// <summary>
+    /// Save a new hearing, and return the saved hearing.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command);
+    
+    /// <summary>
     /// Save a new hearing, publish a message to the event bus, and return the saved hearing.
     /// </summary>
     /// <param name="command"></param>
@@ -67,10 +74,12 @@ public class BookingService : IBookingService
     private readonly IBookingAsynchronousProcess _bookingAsynchronousProcess;
     private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
     private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
+    private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
+        
     public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler,
         IBookingAsynchronousProcess bookingAsynchronousProcess,
         IFirstdayOfMultidayBookingAsynchronousProcess firstdayOfMultidayBookingAsyncProcess,
-        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess)
+        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess)
     {
         _eventPublisher = eventPublisher;
         _commandHandler = commandHandler;
@@ -78,8 +87,21 @@ public class BookingService : IBookingService
         _bookingAsynchronousProcess = bookingAsynchronousProcess;
         _firstdayOfMultidayBookingAsyncProcess = firstdayOfMultidayBookingAsyncProcess;
         _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
+        _createConferenceAsynchronousProcess = createConferenceAsynchronousProcess;
     }
 
+    public async Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command)
+    {
+        await _commandHandler.Handle(command);
+        
+        var getHearingByIdQuery = new GetHearingByIdQuery(command.NewHearingId);
+        var queriedVideoHearing = await _queryHandler.Handle<GetHearingByIdQuery, VideoHearing>(getHearingByIdQuery);
+
+        await _createConferenceAsynchronousProcess.Start(queriedVideoHearing);
+        
+        return queriedVideoHearing;
+    }
+    
     public async Task<VideoHearing> SaveNewHearingAndPublish(CreateVideoHearingCommand command, bool isMultiDay)
     {
         await _commandHandler.Handle(command);

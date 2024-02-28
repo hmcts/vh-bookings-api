@@ -26,6 +26,8 @@ namespace BookingsApi.UnitTests.Services
         private readonly ServiceBusQueueClientFake _serviceBusQueueClient;
         private readonly IEventPublisherFactory _eventPublisherFactory;
         private readonly IFeatureToggles _featureToggles;
+        private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
+
 
         public BookingServiceTests()
         {
@@ -39,9 +41,9 @@ namespace BookingsApi.UnitTests.Services
             _bookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
-
+            _createConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(_eventPublisherFactory);
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
-                _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess);
+                _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess, _createConferenceAsynchronousProcess);
         }
 
         [Test]

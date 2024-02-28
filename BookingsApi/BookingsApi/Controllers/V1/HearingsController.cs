@@ -519,7 +519,7 @@ namespace BookingsApi.Controllers.V1
             foreach (var command in commands)
             {
                 // dbcontext is not thread safe. loop one at a time
-                var hearing = await _bookingService.SaveNewHearingAndPublish(command, true);
+                var hearing = await _bookingService.SaveNewHearing(command);
                 hearingsList.Add(hearing);
             }
             
