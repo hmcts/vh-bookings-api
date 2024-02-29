@@ -514,7 +514,7 @@ namespace BookingsApi.Controllers.V1
             }).ToList();
 
             var existingCase = videoHearing.GetCases()[0];
-            await _hearingService.UpdateHearingCaseName(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
+            await _hearingService.RenameHearingForMultiDayBooking(hearingId, $"{existingCase.Name} Day {1} of {totalDays}");
             var hearingsList = new List<VideoHearing>();
             foreach (var command in commands)
             {

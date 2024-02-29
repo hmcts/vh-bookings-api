@@ -25,6 +25,14 @@ namespace BookingsApi.DAL.Services
         Task UpdateHearingCaseName(Guid hearingId, string caseName);
 
         /// <summary>
+        /// Update the case name of a multi-day hearing, used purely as part of the clone process
+        /// </summary>
+        /// <param name="hearingId"></param>
+        /// <param name="caseName"></param>
+        /// <returns></returns>
+        Task RenameHearingForMultiDayBooking(Guid hearingId, string caseName);
+
+        /// <summary>
         /// Create links between participants if any exist
         /// </summary>
         /// <param name="participants">List of participants in the hearing</param>
@@ -144,6 +152,14 @@ namespace BookingsApi.DAL.Services
             {
                 IsLeadCase = existingCase.IsLeadCase
             });
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RenameHearingForMultiDayBooking(Guid hearingId, string caseName)
+        {
+            var hearing = await _context.VideoHearings.Include(x => x.HearingCases).ThenInclude(h => h.Case)
+                .FirstAsync(x => x.Id == hearingId);
+            hearing.RenameHearingForMultiDayBooking(caseName);
             await _context.SaveChangesAsync();
         }
 
