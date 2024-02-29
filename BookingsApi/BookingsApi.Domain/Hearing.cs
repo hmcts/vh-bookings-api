@@ -435,13 +435,8 @@ namespace BookingsApi.Domain
             existingCase.Number = @case.Number;
             existingCase.Name = @case.Name;
         }
-
-        /// <summary>
-        /// Used exclusively for the clone process, other updates to case name should be done via UpdateCase
-        /// </summary>
-        /// <param name="newName"></param>
-        /// <exception cref="DomainRuleException"></exception>
-        public void RenameHearingForMultiDayBooking(string newName)
+        
+        public void RenameHearingForMultiDayBooking(string newCaseName)
         {
             if (SourceId == null)
             {
@@ -450,7 +445,7 @@ namespace BookingsApi.Domain
 
             var existingCase = GetCases().FirstOrDefault();
             if (existingCase == null) return;
-            existingCase.Name = newName;
+            existingCase.Name = newCaseName;
         }
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
