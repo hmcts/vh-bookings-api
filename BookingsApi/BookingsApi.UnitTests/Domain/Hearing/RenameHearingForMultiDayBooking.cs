@@ -1,4 +1,5 @@
 using BookingsApi.Domain.Validations;
+
 namespace BookingsApi.UnitTests.Domain.Hearing
 {
     public class RenameHearingForMultiDayBooking
