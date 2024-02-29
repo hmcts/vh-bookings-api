@@ -89,7 +89,7 @@ public class CloneHearingTests : ApiTest
     {
         // arrange
         var startingDate = DateTime.UtcNow.AddMinutes(20);
-        var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
+        var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
         }, status: BookingStatus.Created);
