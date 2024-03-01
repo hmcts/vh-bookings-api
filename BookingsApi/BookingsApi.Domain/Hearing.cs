@@ -470,11 +470,10 @@ namespace BookingsApi.Domain
             }
             
             // all the properties are the same, so no need to update
-            var existingCase = GetCases().FirstOrDefault();
             if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
                 otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired &&
-                !CaseHasChanged(cases, existingCase))
+                !CasesHaveChanged(cases))
             {
                 // Need to update these details for Admin Web
                 UpdateHearingUpdatedAuditDetails(updatedBy);
@@ -834,8 +833,10 @@ namespace BookingsApi.Domain
             UpdatedDate = DateTime.UtcNow;
         }
         
-        private static bool CaseHasChanged(IReadOnlyList<Case> cases, Case existingCase)
+        private bool CasesHaveChanged(IReadOnlyList<Case> cases)
         {
+            var existingCase = GetCases().FirstOrDefault();
+            
             if (!cases.Any() || existingCase == null)
             {
                 return false;
