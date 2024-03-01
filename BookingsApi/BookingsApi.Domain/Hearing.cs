@@ -474,7 +474,7 @@ namespace BookingsApi.Domain
             if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
                 otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired &&
-                cases.Any() && cases[0].Number == existingCase?.Number && cases[0].Name == existingCase?.Name)
+                !CaseHasChanged(cases, existingCase))
             {
                 // Need to update these details for Admin Web
                 UpdateHearingUpdatedAuditDetails(updatedBy);
@@ -832,6 +832,16 @@ namespace BookingsApi.Domain
         {
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
+        }
+        
+        private static bool CaseHasChanged(IReadOnlyList<Case> cases, Case existingCase)
+        {
+            if (!cases.Any() || existingCase == null)
+            {
+                return false;
+            }
+
+            return cases[0].Number != existingCase.Number || cases[0].Name != existingCase.Name;
         }
     }
 }
