@@ -94,5 +94,23 @@ namespace BookingsApi.UnitTests.Domain.Hearing
             hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
             hearing.UpdatedBy.Should().Be(updatedBy);
         }
+
+        [Test]
+        public void Should_update_hearing_without_case()
+        {
+            // arrange
+            var hearing = new VideoHearingBuilder().Build();
+            var beforeUpdatedDate = hearing.UpdatedDate;
+            const string updatedBy = "UpdatedByUserName";
+
+            // act
+            hearing.UpdateHearingDetails(hearing.HearingVenue, hearing.ScheduledDateTime, hearing.ScheduledDuration,
+                hearing.HearingRoomName, hearing.OtherInformation, updatedBy, 
+                hearing.GetCases().ToList(), hearing.AudioRecordingRequired);
+            
+            // assert
+            hearing.UpdatedDate.Should().BeAfter(beforeUpdatedDate);
+            hearing.UpdatedBy.Should().Be(updatedBy);
+        }
     }
 }

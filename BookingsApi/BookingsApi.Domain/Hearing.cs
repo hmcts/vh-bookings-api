@@ -470,9 +470,11 @@ namespace BookingsApi.Domain
             }
             
             // all the properties are the same, so no need to update
+            var existingCase = GetCases().FirstOrDefault();
             if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
-                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
+                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired &&
+                cases.Any() && cases[0].Number == existingCase?.Number && cases[0].Name == existingCase?.Name)
             {
                 // Need to update these details for Admin Web
                 UpdateHearingUpdatedAuditDetails(updatedBy);
