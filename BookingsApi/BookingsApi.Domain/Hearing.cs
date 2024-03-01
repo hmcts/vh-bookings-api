@@ -435,6 +435,18 @@ namespace BookingsApi.Domain
             existingCase.Number = @case.Number;
             existingCase.Name = @case.Name;
         }
+        
+        public void RenameHearingForMultiDayBooking(string newCaseName)
+        {
+            if (SourceId == null)
+            {
+                throw new DomainRuleException("CaseName", DomainRuleErrorMessages.HearingNotMultiDay);
+            }
+
+            var existingCase = GetCases().FirstOrDefault();
+            if (existingCase == null) return;
+            existingCase.Name = newCaseName;
+        }
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,

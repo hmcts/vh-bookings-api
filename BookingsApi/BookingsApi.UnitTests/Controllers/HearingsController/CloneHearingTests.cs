@@ -64,7 +64,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             objectResult.Value.Should().BeOfType<List<HearingDetailsResponse>>();
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[0] && c.Cases[0].Name == "Case name Day 2 of 3")), Times.Once);
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[1] && c.Cases[0].Name == "Case name Day 3 of 3")), Times.Once);
-            HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
+            HearingServiceMock.Verify(h => h.RenameHearingForMultiDayBooking(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(hearing.Participants.Count(x => x is not JudicialOfficeHolder)));
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<ExistingParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(judgeAsExistingParticipantCount));
@@ -91,7 +91,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             objectResult.Value.Should().BeOfType<List<HearingDetailsResponse>>();
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[0] && c.Cases[0].Name == "Case name Day 2 of 3")), Times.Once);
             CommandHandlerMock.Verify(c => c.Handle(It.Is<CreateVideoHearingCommand>(c => c.ScheduledDateTime == request.Dates[1] && c.Cases[0].Name == "Case name Day 3 of 3")), Times.Once);
-            HearingServiceMock.Verify(h => h.UpdateHearingCaseName(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
+            HearingServiceMock.Verify(h => h.RenameHearingForMultiDayBooking(It.Is<Guid>(g => g == hearingId), It.Is<string>(x => x == caseName)), Times.Once);
 
             EventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<NewParticipantMultidayHearingConfirmationEvent>()), Times.Exactly(
                     hearing.Participants.Count(x => x is not Judge)));
