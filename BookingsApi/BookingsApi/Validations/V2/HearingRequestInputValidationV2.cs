@@ -8,6 +8,7 @@ namespace BookingsApi.Validations.V2
         public const string NoHearingVenueCodeErrorMessage = "Hearing code cannot not be blank";
         public const string ScheduleDateTimeInPastErrorMessage = "ScheduledDateTime cannot be in the past";
         public const string NoScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
+        public const string CaseNumberErrorMessage = "Case number is required";
 
         public HearingRequestInputValidationV2()
         {
@@ -24,6 +25,9 @@ namespace BookingsApi.Validations.V2
             
             RuleFor(x => x.ScheduledDuration)
                 .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
+            
+            RuleFor(x => x.CaseNumber)
+                .NotEmpty().WithMessage(CaseNumberErrorMessage);
             
             RuleFor(x => x.Participants)
                 .SetValidator(new UpdateHearingParticipantsRequestInputValidationV2());

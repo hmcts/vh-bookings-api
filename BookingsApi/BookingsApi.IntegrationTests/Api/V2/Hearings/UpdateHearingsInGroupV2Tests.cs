@@ -444,6 +444,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 HearingRequestInputValidationV2.ScheduleDateTimeInPastErrorMessage);
             validationProblemDetails.Errors["Hearings[0].ScheduledDuration"][0].Should().Be(
                 HearingRequestInputValidationV2.NoScheduleDurationErrorMessage);
+            validationProblemDetails.Errors["Hearings[0].CaseNumber"][0].Should().Be(
+                HearingRequestInputValidationV2.CaseNumberErrorMessage);
         }
         
         private static UpdateHearingsInGroupRequestV2 BuildRequest() =>
@@ -458,7 +460,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 HearingId = Guid.NewGuid(),
                 HearingVenueCode = "VenueCode",
                 ScheduledDateTime = DateTime.UtcNow.AddHours(2),
-                ScheduledDuration = 45
+                ScheduledDuration = 45,
+                CaseNumber = "CaseNumber"
             };
 
         private async Task<List<VideoHearing>> SeedHearingsInGroup()
