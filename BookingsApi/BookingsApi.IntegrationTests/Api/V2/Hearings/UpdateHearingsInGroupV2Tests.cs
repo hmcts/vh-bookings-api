@@ -130,7 +130,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertEventsPublished(updatedHearing, requestHearing, existingParticipantsUpdated: 1);
             }
         }
-
+        
         [Test]
         public async Task should_return_not_found_when_no_hearings_found_for_group()
         {

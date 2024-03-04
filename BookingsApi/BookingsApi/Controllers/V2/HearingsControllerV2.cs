@@ -209,11 +209,9 @@ namespace BookingsApi.Controllers.V2
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
                 var venue = venues.Find(v => v.VenueCode == requestHearing.HearingVenueCode);
-                var originalCase = hearing.GetCases().FirstOrDefault();
-                var cases = new List<Case>
-                {
-                    new(requestHearing.CaseNumber, originalCase.Name)
-                };
+                var cases = hearing.GetCases()
+                    .Select(x => new Case(requestHearing.CaseNumber, x.Name))
+                    .ToList();
 
                 await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
                     requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
