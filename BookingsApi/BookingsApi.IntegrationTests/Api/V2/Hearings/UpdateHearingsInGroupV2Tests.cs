@@ -437,11 +437,11 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["Hearings[0].HearingVenueCode"][0].Should().Be(
-                HearingRequestInputValidationV2.NoHearingVenueCodeErrorMessage);
+                UpdateHearingRequestValidationV2.NoHearingVenueCodeErrorMessage);
             validationProblemDetails.Errors["Hearings[0].ScheduledDuration"][0].Should().Be(
-                HearingRequestInputValidationV2.NoScheduleDurationErrorMessage);
+                UpdateHearingRequestValidationV2.NoScheduleDurationErrorMessage);
             validationProblemDetails.Errors["Hearings[0].CaseNumber"][0].Should().Be(
-                HearingRequestInputValidationV2.CaseNumberErrorMessage);
+                CaseRequestValidationV2.CaseNumberMessage);
         }
 
         [Test]

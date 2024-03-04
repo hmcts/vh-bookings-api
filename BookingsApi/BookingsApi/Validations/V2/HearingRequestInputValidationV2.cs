@@ -5,20 +5,16 @@ namespace BookingsApi.Validations.V2
 {
     public class HearingRequestInputValidationV2 : AbstractValidator<HearingRequestV2>
     {
-        public const string NoHearingVenueCodeErrorMessage = "Hearing code cannot not be blank";
-        public const string NoScheduleDurationErrorMessage = "Schedule duration must be greater than 0";
-        public const string CaseNumberErrorMessage = "Case number is required";
-
         public HearingRequestInputValidationV2()
         {
             RuleFor(x => x.HearingVenueCode)
-                .NotEmpty().WithMessage(NoHearingVenueCodeErrorMessage);
+                .NotEmpty().WithMessage(UpdateHearingRequestValidationV2.NoHearingVenueCodeErrorMessage);
 
             RuleFor(x => x.ScheduledDuration)
-                .GreaterThan(0).WithMessage(NoScheduleDurationErrorMessage);
+                .GreaterThan(0).WithMessage(UpdateHearingRequestValidationV2.NoScheduleDurationErrorMessage);
             
             RuleFor(x => x.CaseNumber)
-                .NotEmpty().WithMessage(CaseNumberErrorMessage);
+                .NotEmpty().WithMessage(CaseRequestValidationV2.CaseNumberMessage);
             
             RuleFor(x => x.Participants)
                 .SetValidator(new UpdateHearingParticipantsRequestInputValidationV2());

@@ -37,7 +37,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == HearingRequestInputValidationV2.NoHearingVenueCodeErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoHearingVenueCodeErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -50,7 +50,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == HearingRequestInputValidationV2.NoScheduleDurationErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidationV2.NoScheduleDurationErrorMessage)
                 .Should().BeTrue();
         }
 
@@ -63,7 +63,7 @@ namespace BookingsApi.UnitTests.Validation.V2
 
             result.IsValid.Should().BeFalse();
             result.Errors.Count.Should().Be(1);
-            result.Errors.Exists(x => x.ErrorMessage == HearingRequestInputValidationV2.CaseNumberErrorMessage)
+            result.Errors.Exists(x => x.ErrorMessage == CaseRequestValidationV2.CaseNumberMessage)
                 .Should().BeTrue();
         }
         
