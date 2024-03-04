@@ -21,6 +21,16 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             var request = BuildRequest();
             request.Hearings = hearings.Select(MapHearingRequest).ToList();
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.CaseNumber = "UpdatedCaseNumber";
+                requestHearing.ScheduledDateTime = DateTime.UtcNow.AddHours(1);
+                requestHearing.ScheduledDuration = 90;
+                requestHearing.HearingVenueCode = "701411"; // Manchester County and Family Court
+                requestHearing.HearingRoomName = "UpdatedRoomName";
+                requestHearing.OtherInformation = "UpdatedOtherInformation";
+                requestHearing.AudioRecordingRequired = true;
+            }
 
             var newParticipant = new Builder(new BuilderSettings()).CreateNew<ParticipantRequestV2>()
                 .With(p => p.ContactEmail, Faker.Internet.Email())
@@ -104,6 +114,16 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 
                 updatedHearing.UpdatedDate.Should().BeAfter(originalHearing.UpdatedDate);
                 updatedHearing.UpdatedBy.Should().Be(request.UpdatedBy);
+                var updatedCase = updatedHearing.GetCases().FirstOrDefault();
+                updatedCase.Number.Should().Be(requestHearing.CaseNumber);
+                var originalCase = originalHearing.GetCases().FirstOrDefault();
+                updatedCase.Name.Should().Be(originalCase.Name);
+                updatedHearing.ScheduledDateTime.Should().Be(requestHearing.ScheduledDateTime);
+                updatedHearing.ScheduledDuration.Should().Be(requestHearing.ScheduledDuration);
+                updatedHearing.HearingVenue.VenueCode.Should().Be(requestHearing.HearingVenueCode);
+                updatedHearing.HearingRoomName.Should().Be(requestHearing.HearingRoomName);
+                updatedHearing.OtherInformation.Should().Be(requestHearing.OtherInformation);
+                updatedHearing.AudioRecordingRequired.Should().Be(requestHearing.AudioRecordingRequired);
 
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
@@ -119,10 +139,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var request = BuildRequest();
             request.Hearings = new List<HearingRequestV2>
             {
-                new()
-                {
-                    HearingId = Guid.NewGuid()
-                }
+                BuildHearingRequest()
             };
             
             var groupId = Guid.NewGuid();
@@ -148,16 +165,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             var hearingsNotInGroup = new List<HearingRequestV2>
             {
-                new()
-                {
-                    HearingId = Guid.NewGuid()
-                },
-                new()
-                {
-                    HearingId = Guid.NewGuid()
-                }
+                BuildHearingRequest(),
+                BuildHearingRequest()
             };
-            
+
             request.Hearings.AddRange(hearingsNotInGroup);
 
             var groupId = hearings[0].SourceId.Value;
@@ -400,11 +411,54 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors[nameof(request.UpdatedBy)][0].Should().Be(
                 UpdateHearingsInGroupRequestInputValidationV2.NoUpdatedByErrorMessage);
         }
+
+        [Test]
+        public async Task should_return_bad_request_when_invalid_hearing_details_in_request()
+        {
+            // Arrange
+            var request = new UpdateHearingsInGroupRequestV2
+            {
+                Hearings = new List<HearingRequestV2>
+                {
+                    new()
+                    {
+                        HearingId = Guid.NewGuid(),
+                        ScheduledDateTime = DateTime.UtcNow.AddHours(-1)
+                    }
+                }
+            };
+            var groupId = Guid.NewGuid();
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearings[0].HearingVenueCode"][0].Should().Be(
+                HearingRequestInputValidationV2.NoHearingVenueCodeErrorMessage);
+            validationProblemDetails.Errors["Hearings[0].ScheduledDateTime"][0].Should().Be(
+                HearingRequestInputValidationV2.ScheduleDateTimeInPastErrorMessage);
+            validationProblemDetails.Errors["Hearings[0].ScheduledDuration"][0].Should().Be(
+                HearingRequestInputValidationV2.NoScheduleDurationErrorMessage);
+        }
         
         private static UpdateHearingsInGroupRequestV2 BuildRequest() =>
             new()
             {
                 UpdatedBy = "updatedBy@email.com"
+            };
+
+        private static HearingRequestV2 BuildHearingRequest() =>
+            new()
+            {
+                HearingId = Guid.NewGuid(),
+                HearingVenueCode = "VenueCode",
+                ScheduledDateTime = DateTime.UtcNow.AddHours(2),
+                ScheduledDuration = 45
             };
 
         private async Task<List<VideoHearing>> SeedHearingsInGroup()
@@ -438,6 +492,13 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             new()
             {
                 HearingId = hearing.Id,
+                CaseNumber = hearing.GetCases().FirstOrDefault().Number,
+                ScheduledDateTime = hearing.ScheduledDateTime,
+                ScheduledDuration = hearing.ScheduledDuration,
+                HearingVenueCode = hearing.HearingVenue.VenueCode,
+                HearingRoomName = hearing.HearingRoomName,
+                OtherInformation = hearing.OtherInformation,
+                AudioRecordingRequired = hearing.AudioRecordingRequired,
                 Participants = new UpdateHearingParticipantsRequestV2
                 {
                     ExistingParticipants = hearing.Participants.Select(p => new UpdateParticipantRequestV2
