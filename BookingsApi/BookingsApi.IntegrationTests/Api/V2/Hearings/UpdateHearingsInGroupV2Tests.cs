@@ -24,7 +24,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             foreach (var requestHearing in request.Hearings)
             {
                 requestHearing.CaseNumber = "UpdatedCaseNumber";
-                requestHearing.ScheduledDateTime = DateTime.UtcNow.AddHours(1);
                 requestHearing.ScheduledDuration = 90;
                 requestHearing.HearingVenueCode = "701411"; // Manchester County and Family Court
                 requestHearing.HearingRoomName = "UpdatedRoomName";
@@ -118,7 +117,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 updatedCase.Number.Should().Be(requestHearing.CaseNumber);
                 var originalCase = originalHearing.GetCases().FirstOrDefault();
                 updatedCase.Name.Should().Be(originalCase.Name);
-                updatedHearing.ScheduledDateTime.Should().Be(requestHearing.ScheduledDateTime);
+                updatedHearing.ScheduledDateTime.Should().Be(originalHearing.ScheduledDateTime);
                 updatedHearing.ScheduledDuration.Should().Be(requestHearing.ScheduledDuration);
                 updatedHearing.HearingVenue.VenueCode.Should().Be(requestHearing.HearingVenueCode);
                 updatedHearing.HearingRoomName.Should().Be(requestHearing.HearingRoomName);
@@ -422,8 +421,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 {
                     new()
                     {
-                        HearingId = Guid.NewGuid(),
-                        ScheduledDateTime = DateTime.UtcNow.AddHours(-1)
+                        HearingId = Guid.NewGuid()
                     }
                 }
             };
@@ -440,8 +438,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors["Hearings[0].HearingVenueCode"][0].Should().Be(
                 HearingRequestInputValidationV2.NoHearingVenueCodeErrorMessage);
-            validationProblemDetails.Errors["Hearings[0].ScheduledDateTime"][0].Should().Be(
-                HearingRequestInputValidationV2.ScheduleDateTimeInPastErrorMessage);
             validationProblemDetails.Errors["Hearings[0].ScheduledDuration"][0].Should().Be(
                 HearingRequestInputValidationV2.NoScheduleDurationErrorMessage);
             validationProblemDetails.Errors["Hearings[0].CaseNumber"][0].Should().Be(
@@ -459,7 +455,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             {
                 HearingId = Guid.NewGuid(),
                 HearingVenueCode = "VenueCode",
-                ScheduledDateTime = DateTime.UtcNow.AddHours(2),
                 ScheduledDuration = 45,
                 CaseNumber = "CaseNumber"
             };
@@ -496,7 +491,6 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             {
                 HearingId = hearing.Id,
                 CaseNumber = hearing.GetCases().FirstOrDefault().Number,
-                ScheduledDateTime = hearing.ScheduledDateTime,
                 ScheduledDuration = hearing.ScheduledDuration,
                 HearingVenueCode = hearing.HearingVenue.VenueCode,
                 HearingRoomName = hearing.HearingRoomName,

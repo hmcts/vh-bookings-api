@@ -216,7 +216,7 @@ namespace BookingsApi.Controllers.V2
                     new(requestHearing.CaseNumber, originalCase.Name)
                 };
 
-                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime, 
+                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
                     requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
                     request.UpdatedBy, cases, requestHearing.AudioRecordingRequired, hearing);
                 
