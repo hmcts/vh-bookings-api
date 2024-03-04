@@ -443,6 +443,31 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             validationProblemDetails.Errors["Hearings[0].CaseNumber"][0].Should().Be(
                 HearingRequestInputValidationV2.CaseNumberErrorMessage);
         }
+
+        [Test]
+        public async Task should_return_bad_request_when_hearing_venue_code_does_not_exist()
+        {
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+            
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+            request.Hearings[0].HearingVenueCode = "NonExistingVenueCode";
+            
+            var groupId = hearings[0].SourceId.Value;
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors["Hearings[0]"][0].Should()
+                .Be($"Hearing venue code {request.Hearings[0].HearingVenueCode} does not exist");
+        }
         
         private static UpdateHearingsInGroupRequestV2 BuildRequest() =>
             new()

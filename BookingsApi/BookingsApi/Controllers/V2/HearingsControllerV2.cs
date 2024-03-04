@@ -196,20 +196,19 @@ namespace BookingsApi.Controllers.V2
             }
 
             var hearingRoles = await _queryHandler.Handle<GetHearingRolesQuery, List<HearingRole>>(new GetHearingRolesQuery());
+            var venues = await GetHearingVenues();
             
-            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles).ValidateAsync(request);
+            var dataValidationResult = await new UpdateHearingsInGroupRequestRefDataValidationV2(hearingsInGroup, hearingRoles, venues).ValidateAsync(request);
             if (!dataValidationResult.IsValid)
             {
                 ModelState.AddFluentValidationErrors(dataValidationResult.Errors);
                 return ValidationProblem(ModelState);
             }
 
-            var venues = await GetHearingVenues();
-            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
-                var venue = venues.Find(v => v.VenueCode == requestHearing.HearingVenueCode); // TODO return error if venue not found, as per the UpdateHearingDetails endpoint
+                var venue = venues.Find(v => v.VenueCode == requestHearing.HearingVenueCode);
                 var originalCase = hearing.GetCases().FirstOrDefault();
                 var cases = new List<Case>
                 {
