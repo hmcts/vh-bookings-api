@@ -94,7 +94,7 @@ stages:
 
 #####################################################
 # Build Docker Image & Push. ########################
-- stage: Docker_Build_Push
+- stage: Docker_Build_Push_Demo
   displayName: Docker Build & Push Image
   dependsOn: 
     - Run_Entity_Framework_Demo
@@ -132,7 +132,7 @@ stages:
 - stage: Helm_Demo
   displayName: Push Helm Charts
   dependsOn: 
-    - Docker_Build_Push
+    - Docker_Build_Push_Demo
   variables:
   - template: variables/demo.yaml
   - template: variables/shared.yaml
