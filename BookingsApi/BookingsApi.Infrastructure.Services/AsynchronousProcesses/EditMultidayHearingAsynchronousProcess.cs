@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
-    public interface IClonedBookingAsynchronousProcess
+    public interface IEditMultidayHearingAsynchronousProcess
     {
         Task Start(VideoHearing videoHearing, int totalDays);
     }
 
-    public class ClonedMultidaysAsynchronousProcess: IClonedBookingAsynchronousProcess
+    public class EditMultidayHearingAsynchronousProcess: IEditMultidayHearingAsynchronousProcess
     {
         private readonly IEventPublisherFactory _publisherFactory;
         private readonly IFeatureToggles _featureToggles;
-        public ClonedMultidaysAsynchronousProcess(IEventPublisherFactory publisherFactory, IFeatureToggles featureToggles)
+        public EditMultidayHearingAsynchronousProcess(IEventPublisherFactory publisherFactory, IFeatureToggles featureToggles)
         {
             _publisherFactory = publisherFactory;
             _featureToggles = featureToggles;
@@ -38,6 +38,8 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
                 return;
             }
             
+            await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
+
             var publisherForNewParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent);
             publisherForNewParticipant.TotalDays = totalDays;
             await publisherForNewParticipant.PublishAsync(videoHearing);

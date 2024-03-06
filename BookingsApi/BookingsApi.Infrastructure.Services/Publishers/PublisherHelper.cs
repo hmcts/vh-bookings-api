@@ -30,6 +30,17 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             }
             return newParticipants;
         }
+        
+        public static IEnumerable<JudiciaryParticipant> GetNewJudiciaryParticipantsSinceLastUpdate(VideoHearing videoHearing)
+        {
+            var newJudiciaryParticipant = videoHearing.JudiciaryParticipants.Where(x => (x.ContactEmail == x.JudiciaryPerson?.Email));
+            var areParticipantsAddedToExistingBooking = newJudiciaryParticipant.Any(x => x.CreatedDate?.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+            if (areParticipantsAddedToExistingBooking)
+            {
+                newJudiciaryParticipant = newJudiciaryParticipant.Where(x => x.CreatedDate?.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
+            }
+            return newJudiciaryParticipant;
+        }
 
         public static IEnumerable<Participant> GetAddedParticipantsSinceLastUpdate(VideoHearing videoHearing)
         {
@@ -40,6 +51,18 @@ namespace BookingsApi.Infrastructure.Services.Publishers
                 newParticipants = videoHearing.Participants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds()).ToList();
             }
             return newParticipants;
+        }
+        
+        public static IEnumerable<JudiciaryParticipant> GetExistingJudiciaryParticipantsSinceLastUpdate(VideoHearing videoHearing)
+        {
+            var existingParticipants = videoHearing.JudiciaryParticipants.Where(x =>  (x.ContactEmail != x.JudiciaryPerson?.Email));
+            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate?.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+            if (areParticipantsAddedToExistingBooking)
+            {
+                existingParticipants = existingParticipants.Where(x => x.CreatedDate?.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
+            }
+
+            return existingParticipants;
         }
     }
 }

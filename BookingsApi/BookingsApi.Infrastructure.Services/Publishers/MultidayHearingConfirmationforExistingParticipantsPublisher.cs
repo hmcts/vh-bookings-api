@@ -28,6 +28,16 @@ namespace BookingsApi.Infrastructure.Services.Publishers
                 await _eventPublisher.PublishAsync(new ExistingParticipantMultidayHearingConfirmationEvent(EventDtoMappers.MapToHearingConfirmationDto(
                     videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case), TotalDays));
             }
+            
+            var existingJudiciaryParticipants = PublisherHelper.GetExistingJudiciaryParticipantsSinceLastUpdate(videoHearing);
+
+            foreach (var participant in existingJudiciaryParticipants)
+            {
+                var participantDto = ParticipantDtoMapper.MapToDto(participant);
+                
+                await _eventPublisher.PublishAsync(new ExistingParticipantMultidayHearingConfirmationEvent(EventDtoMappers.MapToHearingConfirmationDto(
+                    videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case), TotalDays));
+            }
         }
     }
 }

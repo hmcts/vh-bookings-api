@@ -28,6 +28,9 @@ namespace BookingsApi.UnitTests.Services
         private readonly IFeatureToggles _featureToggles;
         private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
 
+        private readonly IEditMultidayHearingAsynchronousProcess
+            _editMultidayHearingAsynchronousProcess;
+
 
         public BookingServiceTests()
         {
@@ -42,8 +45,10 @@ namespace BookingsApi.UnitTests.Services
             _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _createConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(_eventPublisherFactory);
+            _editMultidayHearingAsynchronousProcess = new EditMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
-                _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess, _createConferenceAsynchronousProcess);
+                _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess, 
+                _createConferenceAsynchronousProcess, _editMultidayHearingAsynchronousProcess);
         }
 
         [Test]
@@ -156,12 +161,14 @@ namespace BookingsApi.UnitTests.Services
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
+            var hearingCreateParticipantsMessageCount = hearing.Participants.Where(x=> x is not Judge).ToList().Count;
             var hearingParticipantsMessageCount = hearing.Participants.Count;
-
+            var totalMessage = hearingCreateParticipantsMessageCount + hearingParticipantsMessageCount;
+            
             await _bookingService.PublishMultiDayHearing(hearing, 2);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
-            messages.Length.Should().Be(hearingParticipantsMessageCount);
+            messages.Length.Should().Be(totalMessage);
 
             messages.Count(x => x.IntegrationEvent is MultiDayHearingIntegrationEvent).Should().Be(hearingParticipantsMessageCount);
         }

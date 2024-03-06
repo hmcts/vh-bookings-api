@@ -7,7 +7,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
     public interface INewJudiciaryAddedAsynchronousProcesses
     {
-        Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants);
+        Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true);
     }
 
     public class NewJudiciaryAddedAsynchronousProcesses : INewJudiciaryAddedAsynchronousProcesses
@@ -19,11 +19,14 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             _publisherFactory = publisherFactory;
         }
 
-        public async Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants)
+        public async Task Start(VideoHearing videoHearing, IList<JudiciaryParticipant> newJudiciaryParticipants, bool sendNotification = true)
         {
             await ((IPublishJudiciaryParticipantsEvent)_publisherFactory.Get(EventType.JudiciaryParticipantAddedEvent)).PublishAsync(videoHearing, newJudiciaryParticipants);
-            await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent)
-                .PublishAsync(videoHearing);
+            if (sendNotification)
+            {
+                await _publisherFactory.Get(EventType.HearingNotificationForJudiciaryParticipantEvent)
+                    .PublishAsync(videoHearing);
+            }
         }
     }
 }

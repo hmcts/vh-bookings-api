@@ -44,6 +44,7 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         protected IFirstdayOfMultidayBookingAsynchronousProcess FirstdayOfMultidayBookingAsyncProcess;
         protected IClonedBookingAsynchronousProcess ClonedBookingAsynchronousProcess;
         protected ICreateConferenceAsynchronousProcess CreateConferenceAsynchronousProcess;
+        protected IEditMultidayHearingAsynchronousProcess EditMultidayHearingAsynchronousProcess;
         protected IEventPublisherFactory PublisherFactory;
         protected Mock<IEventPublisherFactory> PublisherFactoryMock;
         protected IFeatureToggles FeatureToggles;
@@ -66,6 +67,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
             BookingAsynchronousProcess = new SingledayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
             FirstdayOfMultidayBookingAsyncProcess = new FirstdayOfMultidayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
             ClonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(PublisherFactory, FeatureToggles);
+            EditMultidayHearingAsynchronousProcess =
+                new EditMultidayHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
             CreateConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(PublisherFactory);
             Controller = GetControllerObject(false);
         }
@@ -74,7 +77,8 @@ namespace BookingsApi.UnitTests.Controllers.HearingsController
         {
             var eventPublisher = withQueueClient ? _eventPublisher : EventPublisherMock.Object;
             var bookingService = new BookingService(eventPublisher, CommandHandlerMock.Object, QueryHandlerMock.Object,
-                BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, CreateConferenceAsynchronousProcess);
+                BookingAsynchronousProcess, FirstdayOfMultidayBookingAsyncProcess, ClonedBookingAsynchronousProcess, 
+                CreateConferenceAsynchronousProcess, EditMultidayHearingAsynchronousProcess);
             var participantAddedToHearingAsynchronousProcess = new ParticipantAddedToHearingAsynchronousProcess(PublisherFactory, FeatureToggles);
             var newJudiciaryAddedAsynchronousProcess = new NewJudiciaryAddedAsynchronousProcesses(PublisherFactory);
             var hearingParticipantService = new HearingParticipantService(CommandHandlerMock.Object, EventPublisherMock.Object,

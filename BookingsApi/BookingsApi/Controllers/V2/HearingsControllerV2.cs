@@ -234,7 +234,7 @@ namespace BookingsApi.Controllers.V2
                 return NotFound();
             
             // publish multi day hearing notification event
-            await _bookingService.PublishMultiDayHearing(nextFirstHearing, totalDays);
+            await _bookingService.PublishEditMultiDayHearing(nextFirstHearing, totalDays);
 
             return NoContent();
         }

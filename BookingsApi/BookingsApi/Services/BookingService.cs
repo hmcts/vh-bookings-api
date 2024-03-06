@@ -39,6 +39,14 @@ public interface IBookingService
     /// <param name="totalDays"></param>
     /// <returns></returns>
     Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays);
+    
+    /// <summary>
+    /// Send a message to the service bus to publish the booking of edit a new multi-day hearing
+    /// </summary>
+    /// <param name="videoHearing"></param>
+    /// <param name="totalDays"></param>
+    /// <returns></returns>
+    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays);
 
     /// <summary>
     /// Send a message to the service bus to publish the update of a hearing
@@ -81,12 +89,14 @@ public class BookingService : IBookingService
     private readonly IBookingAsynchronousProcess _bookingAsynchronousProcess;
     private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
     private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
+    private readonly IEditMultidayHearingAsynchronousProcess _editMultidayHearingAsynchronousProcess;
     private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
         
     public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler,
         IBookingAsynchronousProcess bookingAsynchronousProcess,
         IFirstdayOfMultidayBookingAsynchronousProcess firstdayOfMultidayBookingAsyncProcess,
-        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess)
+        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess, 
+        IEditMultidayHearingAsynchronousProcess editMultidayHearingAsynchronousProcess)
     {
         _eventPublisher = eventPublisher;
         _commandHandler = commandHandler;
@@ -95,6 +105,7 @@ public class BookingService : IBookingService
         _firstdayOfMultidayBookingAsyncProcess = firstdayOfMultidayBookingAsyncProcess;
         _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
         _createConferenceAsynchronousProcess = createConferenceAsynchronousProcess;
+        _editMultidayHearingAsynchronousProcess = editMultidayHearingAsynchronousProcess;
     }
 
     public async Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command)
@@ -135,6 +146,11 @@ public class BookingService : IBookingService
     public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays)
     {
         await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays);
+    }
+    
+    public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays)
+    {
+        await _editMultidayHearingAsynchronousProcess.Start(videoHearing, totalDays);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)
