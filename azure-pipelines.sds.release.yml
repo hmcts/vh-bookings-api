@@ -46,6 +46,169 @@ stages:
         coreProjectPath: $(projectPath)
 
 #####################################################
+# Run Entity Framework Demo. #####################
+- stage: Run_Entity_Framework_Demo
+  displayName: Demo EF Release
+  dependsOn:
+    - Pre_Run_Tasks
+  variables:
+  - template: variables/demo.yaml
+  - template: variables/shared.yaml
+    parameters:
+      env: ${{ variables.env }}
+  jobs:
+  - job: Run_Entity_Framework_Demo
+    pool:
+      vmImage: 'windows-latest'
+    displayName: Run Entity Framework Demo
+    steps:
+    - download: current
+      displayName: Download Sql Artifact
+
+    - template: templates/Azure/Common/unlock-lock.yaml@azTemplates
+      parameters:
+        addOrDelete: delete
+        lockName: "${{ variables.env }}-lock"
+        resourceGroup: ${{ variables.vhResourceGroup }}
+        azureSubscription: ${{ variables.subscriptionName }}
+
+    - template: templates/Database/EntityFramework/run-entity-framework.yaml@azTemplates
+      parameters:
+        sqlServerResourceGroup: ${{ variables.vhResourceGroup }}
+        sqlServerName: ${{ variables.vhSQLServerName }}
+        databaseName: ${{ variables.BookingsApiDbName }}
+        azureSubscription: ${{ variables.subscriptionName }}
+        sqlScriptLocation: "$(Pipeline.Workspace)/${{ variables.efContextName }}-$(Build.BuildId)/${{ variables.efContextName }}.sql"
+        kvfirewallRequired: false
+        kvName: ${{ variables.vhKeyVault }}
+        kvSqlPasswordSecret: ${{ variables.vhSqlPasswordSecret }}
+        kvSqlUsernameSecret: ${{ variables.vhSqlUsernameSecret }}
+
+    - template: templates/Azure/Common/unlock-lock.yaml@azTemplates
+      parameters:
+        addOrDelete: add
+        lockName: "${{ variables.env }}-lock"
+        resourceGroup: ${{ variables.vhResourceGroup }}
+        azureSubscription: ${{ variables.subscriptionName }}
+        lockType: CanNotDelete
+
+#####################################################
+# Build Docker Image & Push. ########################
+- stage: Docker_Build_Push
+  displayName: Docker Build & Push Image
+  dependsOn: 
+    - Run_Entity_Framework_Demo
+  variables:
+  - template: variables/demo.yaml
+  - template: variables/shared.yaml
+  jobs:
+  - job: Docker_Build
+    displayName: "Docker Build and Push"
+    steps:
+    - checkout: self
+
+    - bash: |
+        sed -i "s|</configuration>|<packageSourceCredentials><vh-packages><add key=\"Username\" value=\"PAT\" /><add key=\"ClearTextPassword\" value=\"$(System.AccessToken)\" /></vh-packages></packageSourceCredentials></configuration>|" nuget.config
+      displayName: Add NuGet Feed Authentication
+      workingDirectory: ${{ variables.appName }}
+  
+    - template: templates\Containerisation\docker\docker-compose.yaml@azTemplates
+      parameters:
+        azureSubscription: ${{ variables.acrSubscription }}
+        acrName: ${{ variables.acrName }}
+        repositoryName:  ${{ variables.repositoryName }}
+      
+    - template: templates\Containerisation\docker\docker-push-azure.yaml@azTemplates
+      parameters:
+        azureSubscription: ${{ variables.acrSubscription }}
+        acrName: ${{ variables.acrName }}
+        repositoryName:  ${{ variables.repositoryName }}
+        imageName: "${{ variables.imageName }}"
+        imageTags:
+          - '${{ variables.demoTagName }}'
+
+#########################################
+# Push Helm Charts to Repo. #############
+- stage: Helm_Demo
+  displayName: Push Helm Charts
+  dependsOn: 
+    - Docker_Build_Push
+  variables:
+  - template: variables/demo.yaml
+  - template: variables/shared.yaml
+  - group: vh-github-app-credentials
+  jobs:
+  - job: Helm
+    displayName: "Helm Push"
+    steps:
+    - checkout: self
+
+    - template: templates\Github\get-app-token.yaml@azTemplates
+      parameters:
+        privateKeyFileName: ${{ variables.gh_app_private_key_file_name }}
+        appId: $(gh_app_app_id)
+
+    - template: templates\Github\push-to-helm-chart-repo.yaml@azTemplates
+      parameters:
+        chartName: ${{ variables.chartName }}
+        chartPath: ${{ variables.chartPath }}
+        githubToken: $(githubappinstall.token)
+        githubUsername: $(gh_app_name)
+        githubEmail: "$(gh_app_app_id)+$(gh_app_name)[bot]@users.noreply.github.com"
+        subDirectory: ${{ variables.subDirectory }}
+
+##################################################
+# Run Acceptance Tests. ##########################
+- stage: Acceptance_Tests_Demo
+  dependsOn: 
+    - Helm_Demo
+  displayName: Acceptance Tests Demo
+  variables:
+  - group: vh-bookings-api
+  - template: variables/demo.yaml
+  - template: variables/shared.yaml
+    parameters:
+      env: ${{ variables.env }}
+  - name: dnsRecordName
+    value: vh-${{ variables.git_repo_name }}
+  jobs:
+  - job: AcceptanceTestsDemo
+    pool: VH Self Hosted
+    displayName: Acceptance Tests Demo
+    steps:
+    - template: templates/dotnet/run-acceptance-tests.yml@azTemplates
+      parameters:
+        environment: ${{ variables.env }}
+        azureSubscription: ${{ variables.subscriptionName }}
+        acceptanceTestSettings:
+          - name: Services:BookingsApiUrl
+            value: https://vh-bookings-api.demo.platform.hmcts.net
+          - name: ApplicationInsights:ConnectionString
+            value: connectionstrings--applicationinsights
+            keyVaultName: vh-infra-core-${{ variables.env }}
+            secret: true
+          - name: AzureAd:ClientId
+            value: azuread--clientid
+            keyVaultName: vh-bookings-api-${{ variables.env }}
+            secret: true
+          - name: AzureAd:ClientSecret
+            value: azuread--clientsecret
+            keyVaultName: vh-bookings-api-${{ variables.env }}
+            secret: true
+          - name: Testing:UsernameStem
+            value: $(BookingsApiUsernameStem)
+          - name: UseServiceBusFake
+            value: true
+          - name: AzureAd:TenantId
+            value: azuread--tenantid
+            keyVaultName: vh-infra-core-${{ variables.env }}
+            secret: true
+          - name: Services:BookingsApiResourceId
+            value: azuread--identifieruri
+            keyVaultName: vh-bookings-api-${{ variables.env }}
+            secret: true
+
+#####################################################
 # Run Entity Framework Staging. #####################
 - stage: Run_Entity_Framework_Staging
   displayName: Staging EF Release
