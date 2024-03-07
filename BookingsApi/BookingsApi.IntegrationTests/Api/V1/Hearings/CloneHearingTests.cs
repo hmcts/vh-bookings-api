@@ -1,6 +1,7 @@
 using BookingsApi.Common.Services;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.Contract.V1.Responses;
+using BookingsApi.Domain.Enumerations;
 using BookingsApi.Infrastructure.Services;
 using BookingsApi.Infrastructure.Services.Dtos;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
@@ -18,11 +19,11 @@ public class CloneHearingTests : ApiTest
     public async Task should_return_all_cloned_hearings_for_the_dates_with_unspecified_duration()
     {
         // arrange
-        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var startingDate = DateTime.UtcNow.AddHours(1);
         var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
-        });
+        }, status: BookingStatus.Created);
         var groupId = hearing1.SourceId;
 
         var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
@@ -50,11 +51,11 @@ public class CloneHearingTests : ApiTest
     public async Task should_return_all_cloned_hearings_for_the_dates_with_specified_duration()
     {
         // arrange
-        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var startingDate = DateTime.UtcNow.AddHours(1);
         var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
-        });
+        }, status: BookingStatus.Created);
         var groupId = hearing1.SourceId;
 
         var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
@@ -84,16 +85,39 @@ public class CloneHearingTests : ApiTest
     }
 
     [Test]
+    public async Task should_clone_hearing_scheduled_within_30_minutes_from_now()
+    {
+        // arrange
+        var startingDate = DateTime.UtcNow.AddMinutes(20);
+        var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
+        {
+            options.ScheduledDate = startingDate;
+        }, status: BookingStatus.Created);
+
+        var dates = new List<DateTime> {startingDate.AddDays(1)};
+        
+        // act
+        using var client = Application.CreateClient();
+        var request = new CloneHearingRequest { Dates = dates, ScheduledDuration = 480};
+        var result = await client.PostAsync(ApiUriFactory.HearingsEndpoints.CloneHearing(hearing1.Id), RequestBody.Set(request));
+        
+        // assert
+        result.StatusCode.Should().Be(HttpStatusCode.OK, result.Content.ReadAsStringAsync().Result);
+        var clonedHearingsList = await ApiClientResponse.GetResponses<List<HearingDetailsResponse>>(result.Content);
+        clonedHearingsList.Count.Should().Be(dates.Count);
+    }
+
+    [Test]
     public async Task should_return_all_cloned_hearings_with_judiciary_participants_for_the_dates()
     {
         // arrange
-        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var startingDate = DateTime.UtcNow.AddHours(1);
         var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
             options.AddJudge = true;
             options.AddPanelMember = true;
-        });
+        }, status: BookingStatus.Created);
         var groupId = hearing1.SourceId;
 
         var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
@@ -119,11 +143,11 @@ public class CloneHearingTests : ApiTest
     public async Task should_clone_hearing_for_v1_with_new_notify_templates_feature_off()
     {
         // arrange
-        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var startingDate = DateTime.UtcNow.AddHours(1);
         var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
-        });
+        }, status: BookingStatus.Created);
 
         var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
         
@@ -144,11 +168,11 @@ public class CloneHearingTests : ApiTest
     public async Task should_clone_hearing_for_v2_with_new_notify_templates_feature_off()
     {
         // arrange
-        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var startingDate = DateTime.UtcNow.AddHours(1);
         var hearing1 = await Hooks.SeedVideoHearingV2(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
-        });
+        }, status: BookingStatus.Created);
 
         var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
         
@@ -169,11 +193,11 @@ public class CloneHearingTests : ApiTest
     public async Task should_return_validation_error_when_validation_fails()
     {
         // arrange
-        var startingDate = DateTime.UtcNow.AddMinutes(5);
+        var startingDate = DateTime.UtcNow.AddHours(1);
         var hearing1 = await Hooks.SeedVideoHearing(isMultiDayFirstHearing:true, configureOptions: options =>
         {
             options.ScheduledDate = startingDate;
-        });
+        }, status: BookingStatus.Created);
 
         var dates = new List<DateTime> {startingDate.AddDays(2), startingDate.AddDays(3)};
         const int specifiedDuration = -1; // Invalid value

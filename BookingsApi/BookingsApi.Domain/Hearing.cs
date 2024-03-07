@@ -435,6 +435,18 @@ namespace BookingsApi.Domain
             existingCase.Number = @case.Number;
             existingCase.Name = @case.Name;
         }
+        
+        public void RenameHearingForMultiDayBooking(string newCaseName)
+        {
+            if (SourceId == null)
+            {
+                throw new DomainRuleException("CaseName", DomainRuleErrorMessages.HearingNotMultiDay);
+            }
+
+            var existingCase = GetCases().FirstOrDefault();
+            if (existingCase == null) return;
+            existingCase.Name = newCaseName;
+        }
 
         public void UpdateHearingDetails(HearingVenue hearingVenue, DateTime scheduledDateTime,
             int scheduledDuration, string hearingRoomName, string otherInformation, string updatedBy,
@@ -460,7 +472,8 @@ namespace BookingsApi.Domain
             // all the properties are the same, so no need to update
             if (hearingVenue.VenueCode == HearingVenue.VenueCode && scheduledDateTime == ScheduledDateTime &&
                 scheduledDuration == ScheduledDuration && hearingRoomName == HearingRoomName &&
-                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired)
+                otherInformation == OtherInformation && audioRecordingRequired == AudioRecordingRequired &&
+                !CasesHaveChanged(cases))
             {
                 // Need to update these details for Admin Web
                 UpdateHearingUpdatedAuditDetails(updatedBy);
@@ -818,6 +831,18 @@ namespace BookingsApi.Domain
         {
             UpdatedBy = updatedBy;
             UpdatedDate = DateTime.UtcNow;
+        }
+        
+        private bool CasesHaveChanged(IReadOnlyList<Case> cases)
+        {
+            var existingCase = GetCases().FirstOrDefault();
+            
+            if (!cases.Any() || existingCase == null)
+            {
+                return false;
+            }
+
+            return cases[0].Number != existingCase.Number || cases[0].Name != existingCase.Name;
         }
     }
 }
