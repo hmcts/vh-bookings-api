@@ -10,6 +10,11 @@ namespace BookingsApi.Contract.V2.Requests
         public Guid HearingId { get; set; }
 
         /// <summary>
+        /// Scheduled date time of the hearing
+        /// </summary>
+        public DateTime ScheduledDateTime { get; set; }
+        
+        /// <summary>
         /// Duration of the hearing
         /// </summary>
         public int ScheduledDuration { get; set; }

@@ -213,7 +213,7 @@ namespace BookingsApi.Controllers.V2
                     .Select(x => new Case(requestHearing.CaseNumber, x.Name))
                     .ToList();
 
-                await UpdateHearingDetails(hearing.Id, hearing.ScheduledDateTime, 
+                await UpdateHearingDetails(hearing.Id, requestHearing.ScheduledDateTime, 
                     requestHearing.ScheduledDuration, venue, requestHearing.HearingRoomName, requestHearing.OtherInformation, 
                     request.UpdatedBy, cases, requestHearing.AudioRecordingRequired, hearing);
                 
