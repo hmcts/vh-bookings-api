@@ -20,6 +20,12 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             return existingParticipants;
         }
 
+        /// <summary>
+        /// Retrieve new participant added to the hearing based on the DoesPersonAlreadyExist method
+        /// and the comparison of the Person.ContactEmail and Person.Username to be the same as the BQS will update after notification
+        /// </summary>
+        /// <param name="videoHearing"></param>
+        /// <returns></returns>
         public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing)
         {
             var newParticipants = videoHearing.Participants.Where(x => x is not Judge && (!x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username));
@@ -29,17 +35,6 @@ namespace BookingsApi.Infrastructure.Services.Publishers
                 newParticipants = newParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
             }
             return newParticipants;
-        }
-        
-        public static IEnumerable<JudiciaryParticipant> GetNewJudiciaryParticipantsSinceLastUpdate(VideoHearing videoHearing)
-        {
-            var newJudiciaryParticipant = videoHearing.JudiciaryParticipants.Where(x => (x.ContactEmail == x.JudiciaryPerson?.Email));
-            var areParticipantsAddedToExistingBooking = newJudiciaryParticipant.Any(x => x.CreatedDate?.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
-            if (areParticipantsAddedToExistingBooking)
-            {
-                newJudiciaryParticipant = newJudiciaryParticipant.Where(x => x.CreatedDate?.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
-            }
-            return newJudiciaryParticipant;
         }
 
         public static IEnumerable<Participant> GetAddedParticipantsSinceLastUpdate(VideoHearing videoHearing)
