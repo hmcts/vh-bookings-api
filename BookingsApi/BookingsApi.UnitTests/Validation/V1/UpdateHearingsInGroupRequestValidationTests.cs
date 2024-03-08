@@ -40,6 +40,19 @@ namespace BookingsApi.UnitTests.Validation.V1
             result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidation.NoHearingVenueNameErrorMessage)
                 .Should().BeTrue();
         }
+        
+        [Test]
+        public async Task Should_return_invalid_scheduled_date_time_error()
+        {
+            var request = BuildRequest();
+            request.Hearings[0].ScheduledDateTime = DateTime.Today.AddDays(-1).AddHours(10);
+            var result = await _validator.ValidateAsync(request);
+
+            result.IsValid.Should().BeFalse();
+            result.Errors.Count.Should().Be(1);
+            result.Errors.Exists(x => x.ErrorMessage == UpdateHearingRequestValidation.ScheduleDateTimeInPastErrorMessage)
+                .Should().BeTrue();
+        }
 
         [Test]
         public async Task Should_return_invalid_schedule_duration_error()
@@ -83,6 +96,7 @@ namespace BookingsApi.UnitTests.Validation.V1
                     {
                         HearingId = Guid.NewGuid(),
                         HearingVenueName = "VenueName",
+                        ScheduledDateTime = DateTime.Today.AddDays(1).AddHours(10),
                         ScheduledDuration = 45,
                         CaseNumber = "CaseNumber",
                         Endpoints = new UpdateHearingEndpointsRequest(),

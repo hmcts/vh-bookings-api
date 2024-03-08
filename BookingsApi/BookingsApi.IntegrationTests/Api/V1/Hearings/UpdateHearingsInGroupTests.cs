@@ -387,7 +387,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                     new()
                     {
                         HearingId = Guid.NewGuid(),
-                        ScheduledDateTime = new DateTime(2020, 1, 1, 10, 0, 0, DateTimeKind.Utc)
+                        ScheduledDateTime = DateTime.Today.AddDays(-1).AddHours(10)
                     }
                 }
             };
