@@ -139,7 +139,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var request = BuildRequest();
             request.Hearings = new List<HearingRequestV2>
             {
-                BuildHearingRequest()
+                BuildHearingRequest(DateTime.Today.AddDays(1).AddHours(10))
             };
             
             var groupId = Guid.NewGuid();
@@ -165,8 +165,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 
             var hearingsNotInGroup = new List<HearingRequestV2>
             {
-                BuildHearingRequest(),
-                BuildHearingRequest()
+                BuildHearingRequest(DateTime.Today.AddDays(1).AddHours(10)),
+                BuildHearingRequest(DateTime.Today.AddDays(2).AddHours(10))
             };
 
             request.Hearings.AddRange(hearingsNotInGroup);
@@ -252,6 +252,32 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
             validationProblemDetails.Errors[nameof(request.Hearings)][0].Should().Be(
                 UpdateHearingsInGroupRequestInputValidationV2.NoHearingsErrorMessage);
+        }
+        
+        [Test]
+        public async Task should_return_bad_request_when_duplicate_scheduled_date_times_in_request()
+        {
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+
+            request.Hearings[1].ScheduledDateTime = request.Hearings[0].ScheduledDateTime;
+
+            var groupId = hearings[0].SourceId.Value;
+
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeFalse();
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            var validationProblemDetails = await ApiClientResponse.GetResponses<ValidationProblemDetails>(result.Content);
+            validationProblemDetails.Errors[nameof(request.Hearings)][0].Should()
+                .Be(UpdateHearingsInGroupRequestInputValidationV2.DuplicateScheduledDateTimesMessage);
         }
 
         [Test]
@@ -422,7 +448,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 {
                     new()
                     {
-                        HearingId = Guid.NewGuid()
+                        HearingId = Guid.NewGuid(),
+                        ScheduledDateTime = new DateTime(2020, 1, 1, 10, 0, 0, DateTimeKind.Utc)
                     }
                 }
             };
@@ -443,6 +470,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 UpdateHearingRequestValidationV2.NoScheduleDurationErrorMessage);
             validationProblemDetails.Errors["Hearings[0].CaseNumber"][0].Should().Be(
                 CaseRequestValidationV2.CaseNumberMessage);
+            validationProblemDetails.Errors["Hearings[0].ScheduledDateTime"][0].Should().Be(
+                UpdateHearingRequestValidationV2.ScheduleDateTimeInPastErrorMessage);
         }
 
         [Test]
@@ -476,11 +505,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 UpdatedBy = "updatedBy@email.com"
             };
 
-        private static HearingRequestV2 BuildHearingRequest() =>
+        private static HearingRequestV2 BuildHearingRequest(DateTime scheduledDateTime) =>
             new()
             {
                 HearingId = Guid.NewGuid(),
                 HearingVenueCode = "VenueCode",
+                ScheduledDateTime = scheduledDateTime,
                 ScheduledDuration = 45,
                 CaseNumber = "CaseNumber"
             };
@@ -620,6 +650,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             AssertParticipantEvents();
             AssertJudiciaryParticipantEvents();
             AssertEndpointEvents();
+            AssertHearingEvents();
             return;
             
             void AssertParticipantEvents()
@@ -697,6 +728,32 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                     .ToList();
 
                 endpointRemovedMessages.Count.Should().Be(expectedRemovedCount);
+            }
+
+            void AssertHearingEvents()
+            {
+                const int expectedDetailsUpdatedCount = 1;
+                
+                var hearingDetailsUpdatedMessages = messages
+                    .Where(x => x.IntegrationEvent is HearingDetailsUpdatedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as HearingDetailsUpdatedIntegrationEvent)
+                    .Where(x => x.Hearing.HearingId == hearing.Id)
+                    .ToList();
+
+                hearingDetailsUpdatedMessages.Count.Should().Be(expectedDetailsUpdatedCount);
+
+                if (requestHearing.ScheduledDateTime != hearing.ScheduledDateTime)
+                {
+                    var expectedHearingAmendmentCount = hearing.Participants.Count + hearing.JudiciaryParticipants.Count;
+                    
+                    var hearingAmendmentMessages = messages
+                        .Where(x => x.IntegrationEvent is HearingAmendmentNotificationEvent)
+                        .Select(x => x.IntegrationEvent as HearingAmendmentNotificationEvent)
+                        .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                        .ToList();
+
+                    hearingAmendmentMessages.Count.Should().Be(expectedHearingAmendmentCount);
+                }
             }
         }
     }
