@@ -9,6 +9,7 @@ using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Services;
 using System.Collections.Generic;
+using BookingsApi.Common;
 using Testing.Common.Stubs;
 
 namespace BookingsApi.UnitTests.Services
@@ -56,12 +57,12 @@ namespace BookingsApi.UnitTests.Services
         {
             ((FeatureTogglesStub)_featureToggles).NewTemplates = true;
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            var createConfereceMessageCount = 1;
+            var createConferenceMessageCount = 1;
             var judgeAsExistingParticipant = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not Judge && x is not JudicialOfficeHolder);
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge);
 
-            var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount + judgeAsExistingParticipant;
+            var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount + judgeAsExistingParticipant;
             await _bookingService.PublishNewHearing(hearing, false);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
@@ -69,7 +70,7 @@ namespace BookingsApi.UnitTests.Services
 
             messages.Count(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent).Should().Be(newParticipantWelcomeMessageCount);
             messages.Count(x => x.IntegrationEvent is NewParticipantHearingConfirmationEvent).Should().Be(hearingConfirmationForNewParticipantsMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
             messages.Count(x => x.IntegrationEvent is ExistingParticipantHearingConfirmationEvent).Should().Be(judgeAsExistingParticipant);
         }
 
@@ -78,11 +79,11 @@ namespace BookingsApi.UnitTests.Services
         {
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
             var hearing = new VideoHearingBuilder().WithCase().Build();
-            var createConfereceMessageCount = 1;
+            var createConferenceMessageCount = 1;
             var newParticipantMessageCount = hearing.Participants.Count(x => x is not Judge);
             var hearingNotificationMessageCount = hearing.Participants.Count;
 
-            var totalMessages = newParticipantMessageCount + createConfereceMessageCount + hearingNotificationMessageCount;
+            var totalMessages = newParticipantMessageCount + createConferenceMessageCount + hearingNotificationMessageCount;
             await _bookingService.PublishNewHearing(hearing, false);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
@@ -90,7 +91,7 @@ namespace BookingsApi.UnitTests.Services
 
             messages.Count(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent).Should().Be(newParticipantMessageCount);
             messages.Count(x => x.IntegrationEvent is HearingNotificationIntegrationEvent).Should().Be(hearingNotificationMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
         }
 
         [Test]
@@ -98,18 +99,18 @@ namespace BookingsApi.UnitTests.Services
         {
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
-            var createConfereceMessageCount = 1;
+            var createConferenceMessageCount = 1;
             var newParticipantWelcomeMessageCount = hearing.Participants.Count(x => x is not Judge && x is not JudicialOfficeHolder);
             var hearingConfirmationForNewParticipantsMessageCount = 0;
 
-            var totalMessages = newParticipantWelcomeMessageCount + createConfereceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
+            var totalMessages = newParticipantWelcomeMessageCount + createConferenceMessageCount + hearingConfirmationForNewParticipantsMessageCount;
             await _bookingService.PublishNewHearing(hearing, true);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent).Should().Be(newParticipantWelcomeMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
             messages.Count(x => x.IntegrationEvent is NewParticipantHearingConfirmationEvent).Should().Be(0);
             messages.Count(x => x.IntegrationEvent is ExistingParticipantHearingConfirmationEvent).Should().Be(0);
         }
@@ -120,18 +121,18 @@ namespace BookingsApi.UnitTests.Services
             ((FeatureTogglesStub)_featureToggles).NewTemplates = false;
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
-            var createConfereceMessageCount = 1;
+            var createConferenceMessageCount = 1;
             var newParticipantMessageCount = hearing.Participants.Count(x => x is not Judge);
             var hearingNotificationMessageCount = 0;
 
-            var totalMessages = newParticipantMessageCount + createConfereceMessageCount + hearingNotificationMessageCount;
+            var totalMessages = newParticipantMessageCount + createConferenceMessageCount + hearingNotificationMessageCount;
             await _bookingService.PublishNewHearing(hearing, true);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
 
             messages.Count(x => x.IntegrationEvent is CreateAndNotifyUserIntegrationEvent).Should().Be(newParticipantMessageCount);
-            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConfereceMessageCount);
+            messages.Count(x => x.IntegrationEvent is HearingIsReadyForVideoIntegrationEvent).Should().Be(createConferenceMessageCount);
         }
 
         [Test]
@@ -140,13 +141,14 @@ namespace BookingsApi.UnitTests.Services
             ((FeatureTogglesStub)_featureToggles).NewTemplates = true;
             var hearing = new VideoHearingBuilder().WithCase().Build();
             hearing.IsFirstDayOfMultiDayHearing = true;
+            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
             var existingParticipantMessageCount = 1;
             var judge = hearing.Participants.Single(x => x is Judge);
             judge.Person.GetType().GetProperty("CreatedDate").SetValue(judge.Person, judge.Person.CreatedDate.AddDays(-10), null);
             var hearingConfirmationForNewParticipantsMessageCount = hearing.Participants.Count(x => x is not Judge);
             var totalMessages = existingParticipantMessageCount + hearingConfirmationForNewParticipantsMessageCount;
 
-            await _bookingService.PublishMultiDayHearing(hearing, 2);
+            await _bookingService.PublishMultiDayHearing(hearing, 2, videoHearingUpdateDate);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessages);
@@ -164,8 +166,9 @@ namespace BookingsApi.UnitTests.Services
             var hearingCreateParticipantsMessageCount = hearing.Participants.Where(x=> x is not Judge).ToList().Count;
             var hearingParticipantsMessageCount = hearing.Participants.Count;
             var totalMessage = hearingCreateParticipantsMessageCount + hearingParticipantsMessageCount;
+            var videoHearingUpdateDate = hearing.UpdatedDate.TrimSeconds();
             
-            await _bookingService.PublishMultiDayHearing(hearing, 2);
+            await _bookingService.PublishMultiDayHearing(hearing, 2, videoHearingUpdateDate);
 
             var messages = _serviceBusQueueClient.ReadAllMessagesFromQueue(hearing.Id);
             messages.Length.Should().Be(totalMessage);

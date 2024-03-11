@@ -228,7 +228,7 @@ namespace BookingsApi.Controllers.V1
                 return ValidationProblem(ModelState);
             }
 
-            var hearing = await _hearingParticipantService.UpdateParticipants(request, videoHearing);
+            var hearing = await _hearingParticipantService.UpdateParticipants(request, videoHearing, true);
 
             var upsertedParticipants = hearing.Participants.Where(x => request.NewParticipants.Select(p => p.ContactEmail).Contains(x.Person.ContactEmail)
                 || request.ExistingParticipants.Select(ep => ep.ParticipantId).Contains(x.Id));
