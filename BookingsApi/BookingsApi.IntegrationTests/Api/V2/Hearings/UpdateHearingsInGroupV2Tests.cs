@@ -13,6 +13,12 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
 {
     public class UpdateHearingsInGroupV2Tests : ApiTest
     {
+        public enum ObjectContents
+        {
+            Empty,
+            Null
+        }
+        
         [Test]
         public async Task should_update_hearings_in_group()
         {
@@ -132,6 +138,31 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             }
         }
         
+        [Test]
+        public async Task should_update_hearings_in_group_with_judiciary_participants_but_no_participants()
+        {
+            // Arrange
+            var hearings = await SeedHearingsInGroup();
+
+            var request = BuildRequest();
+            request.Hearings = hearings.Select(MapHearingRequest).ToList();
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.Participants = new UpdateHearingParticipantsRequestV2();
+            }
+            
+            var groupId = hearings[0].SourceId.Value;
+            
+            // Act
+            using var client = Application.CreateClient();
+            var result = await client
+                .PatchAsync(ApiUriFactory.HearingsEndpointsV2.UpdateHearingsInGroupId(groupId),RequestBody.Set(request));
+            
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent, result.Content.ReadAsStringAsync().Result);
+        }
+
         [Test]
         public async Task should_return_not_found_when_no_hearings_found_for_group()
         {
@@ -280,14 +311,21 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 .Be(UpdateHearingsInGroupRequestInputValidationV2.DuplicateScheduledDateTimesMessage);
         }
 
-        [Test]
-        public async Task should_return_bad_request_when_invalid_participants_in_request()
+        [TestCase(ObjectContents.Empty)]
+        [TestCase(ObjectContents.Null)]
+        public async Task should_return_bad_request_when_invalid_participants_in_request(ObjectContents judiciaryParticipantsContents)
         {
             // Arrange
             var hearings = await SeedHearingsInGroup();
 
             var request = BuildRequest();
             request.Hearings = hearings.Select(MapHearingRequest).ToList();
+            foreach (var requestHearing in request.Hearings)
+            {
+                requestHearing.JudiciaryParticipants = judiciaryParticipantsContents == ObjectContents.Empty ? 
+                    new UpdateJudiciaryParticipantsRequestV2() 
+                    : null;
+            }
 
             foreach (var requestHearing in request.Hearings)
             {
