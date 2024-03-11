@@ -8,7 +8,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
     public interface IEditMultidayHearingAsynchronousProcess
     {
-        Task Start(VideoHearing videoHearing, int totalDays);
+        Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
     }
 
     public class EditMultidayHearingAsynchronousProcess: IEditMultidayHearingAsynchronousProcess
@@ -21,7 +21,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             _featureToggles = featureToggles;
         }
 
-        public async Task Start(VideoHearing videoHearing, int totalDays)
+        public async Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
         {
             if(totalDays <= 0)
             {
@@ -40,12 +40,14 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             
             await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
 
-            var publisherForNewParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent);
+            var publisherForNewParticipant = (MultidayHearingConfirmationforNewParticipantsPublisher)_publisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent);
             publisherForNewParticipant.TotalDays = totalDays;
+            publisherForNewParticipant.VideoHearingUpdateDate = videoHearingUpdateDate;
             await publisherForNewParticipant.PublishAsync(videoHearing);
 
-            var publisherForExistingParticipant = (IPublishMultidayEvent)_publisherFactory.Get(EventType.ExistingParticipantMultidayHearingConfirmationEvent);
+            var publisherForExistingParticipant = (MultidayHearingConfirmationforExistingParticipantsPublisher)_publisherFactory.Get(EventType.ExistingParticipantMultidayHearingConfirmationEvent);
             publisherForExistingParticipant.TotalDays = totalDays;
+            publisherForExistingParticipant.VideoHearingUpdateDate = videoHearingUpdateDate;
             await publisherForExistingParticipant.PublishAsync(videoHearing);
         }
     }

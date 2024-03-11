@@ -12,10 +12,10 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public static IEnumerable<Participant> GetExistingParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
         {
             var existingParticipants = videoHearing.Participants.Where(x => x is Judge || (x.DoesPersonAlreadyExist() && x.Person?.ContactEmail != x.Person?.Username));
-            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
+            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
-                existingParticipants = existingParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearingUpdateDate);
+                existingParticipants = existingParticipants.Where(x => x.CreatedDate.TrimSeconds() == videoHearingUpdateDate);
             }
 
             return existingParticipants;
@@ -27,13 +27,13 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         /// </summary>
         /// <param name="videoHearing"></param>
         /// <returns></returns>
-        public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing)
+        public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
         {
             var newParticipants = videoHearing.Participants.Where(x => x is not Judge && (!x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username));
             var areParticipantsAddedToExistingBooking = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
-                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds());
+                newParticipants = newParticipants.Where(x => x.CreatedDate.TrimSeconds() == videoHearingUpdateDate);
             }
             return newParticipants;
         }
@@ -55,7 +55,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
             var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate?.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
-                existingParticipants = existingParticipants.Where(x => x.CreatedDate?.TrimMilliseconds() == videoHearingUpdateDate).ToList();
+                existingParticipants = existingParticipants.Where(x => x.CreatedDate?.TrimSeconds() == videoHearingUpdateDate).ToList();
             }
 
             return existingParticipants;

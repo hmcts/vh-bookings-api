@@ -1,4 +1,5 @@
-﻿using BookingsApi.Domain;
+﻿using System;
+using BookingsApi.Domain;
 using BookingsApi.Infrastructure.Services.IntegrationEvents;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
 using System.Threading.Tasks;
@@ -16,11 +17,11 @@ namespace BookingsApi.Infrastructure.Services.Publishers
 
         public EventType EventType => EventType.ExistingParticipantMultidayHearingConfirmationEvent;
         public int TotalDays { get; set; }
+        public DateTime VideoHearingUpdateDate { get; set; }
 
         public async Task PublishAsync(VideoHearing videoHearing)
         {
-            var videoHearingUpdateDate = videoHearing.UpdatedDate.TrimMilliseconds();
-            var existingParticipants = PublisherHelper.GetExistingParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate);
+            var existingParticipants = PublisherHelper.GetExistingParticipantsSinceLastUpdate(videoHearing, VideoHearingUpdateDate);
 
             var @case = videoHearing.GetCases()[0];
             
@@ -32,8 +33,8 @@ namespace BookingsApi.Infrastructure.Services.Publishers
                     videoHearing.Id, videoHearing.ScheduledDateTime, participantDto, @case), TotalDays));
             }
             
-            var existingJudiciaryParticipants = PublisherHelper.GetAddedJudiciaryParticipantsSinceLastUpdate(videoHearing, videoHearingUpdateDate);
-
+            var existingJudiciaryParticipants = PublisherHelper.GetAddedJudiciaryParticipantsSinceLastUpdate(videoHearing, VideoHearingUpdateDate);
+            
             foreach (var participant in existingJudiciaryParticipants)
             {
                 var participantDto = ParticipantDtoMapper.MapToDto(participant);

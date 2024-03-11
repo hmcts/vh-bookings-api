@@ -38,7 +38,7 @@ public interface IBookingService
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
     /// <returns></returns>
-    Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays);
+    Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
     
     /// <summary>
     /// Send a message to the service bus to publish the booking of edit a new multi-day hearing
@@ -46,7 +46,7 @@ public interface IBookingService
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
     /// <returns></returns>
-    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays);
+    Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
 
     /// <summary>
     /// Send a message to the service bus to publish the update of a hearing
@@ -143,14 +143,14 @@ public class BookingService : IBookingService
         }
     }
 
-    public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays)
+    public async Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays);
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate);
     }
     
-    public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays)
+    public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _editMultidayHearingAsynchronousProcess.Start(videoHearing, totalDays);
+        await _editMultidayHearingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)

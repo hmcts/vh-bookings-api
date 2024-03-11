@@ -206,6 +206,8 @@ namespace BookingsApi.Controllers.V2
 
             var venues = await GetHearingVenues();
             
+            
+            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
@@ -224,6 +226,7 @@ namespace BookingsApi.Controllers.V2
                 await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
             }
             
+            
             var hearings = request.Hearings.ToList();
             var totalDays = hearings.Count;
             var nextFirstHearingId = hearings[0].HearingId;
@@ -232,9 +235,10 @@ namespace BookingsApi.Controllers.V2
             
             if (nextFirstHearing == null)
                 return NotFound();
+            var videoHearingUpdateDate = nextFirstHearing.UpdatedDate.TrimSeconds();
             
             // publish multi day hearing notification event
-            await _bookingService.PublishEditMultiDayHearing(nextFirstHearing, totalDays);
+            await _bookingService.PublishEditMultiDayHearing(nextFirstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
         }
