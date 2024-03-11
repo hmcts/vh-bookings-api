@@ -89,14 +89,12 @@ public class BookingService : IBookingService
     private readonly IBookingAsynchronousProcess _bookingAsynchronousProcess;
     private readonly IFirstdayOfMultidayBookingAsynchronousProcess _firstdayOfMultidayBookingAsyncProcess;
     private readonly IClonedBookingAsynchronousProcess _clonedBookingAsynchronousProcess;
-    private readonly IEditMultidayHearingAsynchronousProcess _editMultidayHearingAsynchronousProcess;
     private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
         
     public BookingService(IEventPublisher eventPublisher, ICommandHandler commandHandler, IQueryHandler queryHandler,
         IBookingAsynchronousProcess bookingAsynchronousProcess,
         IFirstdayOfMultidayBookingAsynchronousProcess firstdayOfMultidayBookingAsyncProcess,
-        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess, 
-        IEditMultidayHearingAsynchronousProcess editMultidayHearingAsynchronousProcess)
+        IClonedBookingAsynchronousProcess clonedBookingAsynchronousProcess, ICreateConferenceAsynchronousProcess createConferenceAsynchronousProcess)
     {
         _eventPublisher = eventPublisher;
         _commandHandler = commandHandler;
@@ -105,7 +103,6 @@ public class BookingService : IBookingService
         _firstdayOfMultidayBookingAsyncProcess = firstdayOfMultidayBookingAsyncProcess;
         _clonedBookingAsynchronousProcess = clonedBookingAsynchronousProcess;
         _createConferenceAsynchronousProcess = createConferenceAsynchronousProcess;
-        _editMultidayHearingAsynchronousProcess = editMultidayHearingAsynchronousProcess;
     }
 
     public async Task<VideoHearing> SaveNewHearing(CreateVideoHearingCommand command)
@@ -150,7 +147,7 @@ public class BookingService : IBookingService
     
     public async Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
     {
-        await _editMultidayHearingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate);
+        await _clonedBookingAsynchronousProcess.Start(videoHearing, totalDays, videoHearingUpdateDate, true);
     }
     
     public async Task PublishHearingCancelled(VideoHearing videoHearing)

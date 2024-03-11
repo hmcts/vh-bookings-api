@@ -122,7 +122,6 @@ namespace BookingsApi
             services.AddScoped<ICreateConferenceAsynchronousProcess, CreateConferenceAsynchronousProcess>();
             services.AddScoped<IBookingAsynchronousProcess, SingledayHearingAsynchronousProcess>();
             services.AddScoped<IClonedBookingAsynchronousProcess, ClonedMultidaysAsynchronousProcess>();
-            services.AddScoped<IEditMultidayHearingAsynchronousProcess, EditMultidayHearingAsynchronousProcess>();
             services.AddScoped<IEventPublisherFactory, EventPublisherFactory>();
             services.AddScoped<IHearingParticipantService, HearingParticipantService>();
             services.AddScoped<IParticipantAddedToHearingAsynchronousProcess, ParticipantAddedToHearingAsynchronousProcess>();

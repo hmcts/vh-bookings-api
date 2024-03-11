@@ -8,7 +8,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
 {
     public interface IClonedBookingAsynchronousProcess
     {
-        Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
+        Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate, bool sendNotificationNewParticipant = false);
     }
 
     public class ClonedMultidaysAsynchronousProcess: IClonedBookingAsynchronousProcess
@@ -21,7 +21,7 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
             _featureToggles = featureToggles;
         }
 
-        public async Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate)
+        public async Task Start(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate, bool sendNotificationNewParticipant = false)
         {
             if(totalDays <= 0)
             {
@@ -36,6 +36,11 @@ namespace BookingsApi.Infrastructure.Services.AsynchronousProcesses
                 await publisherForMultiDayEvent.PublishAsync(videoHearing);
                 
                 return;
+            }
+
+            if (sendNotificationNewParticipant)
+            {
+                await _publisherFactory.Get(EventType.NewParticipantWelcomeEmailEvent).PublishAsync(videoHearing);
             }
             
             var publisherForNewParticipant = (MultidayHearingConfirmationforNewParticipantsPublisher)_publisherFactory.Get(EventType.NewParticipantMultidayHearingConfirmationEvent);

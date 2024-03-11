@@ -29,10 +29,6 @@ namespace BookingsApi.UnitTests.Services
         private readonly IFeatureToggles _featureToggles;
         private readonly ICreateConferenceAsynchronousProcess _createConferenceAsynchronousProcess;
 
-        private readonly IEditMultidayHearingAsynchronousProcess
-            _editMultidayHearingAsynchronousProcess;
-
-
         public BookingServiceTests()
         {
             _serviceBusQueueClient = new ServiceBusQueueClientFake();
@@ -46,10 +42,9 @@ namespace BookingsApi.UnitTests.Services
             _clonedBookingAsynchronousProcess = new ClonedMultidaysAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _firstdayOfMultidayBookingAsynchronousProcess = new FirstdayOfMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _createConferenceAsynchronousProcess = new CreateConferenceAsynchronousProcess(_eventPublisherFactory);
-            _editMultidayHearingAsynchronousProcess = new EditMultidayHearingAsynchronousProcess(_eventPublisherFactory, _featureToggles);
             _bookingService = new BookingService(_eventPublisher, _commandHandlerMock.Object, _queryHandlerMock.Object,
                 _bookingAsynchronousProcess, _firstdayOfMultidayBookingAsynchronousProcess, _clonedBookingAsynchronousProcess, 
-                _createConferenceAsynchronousProcess, _editMultidayHearingAsynchronousProcess);
+                _createConferenceAsynchronousProcess);
         }
 
         [Test]
