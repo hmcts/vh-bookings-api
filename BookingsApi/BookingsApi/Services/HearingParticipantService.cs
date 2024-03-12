@@ -211,7 +211,7 @@ public class HearingParticipantService : IHearingParticipantService
     }
 
     private async Task PublishHearingParticipantListUpdatedEvent(Hearing hearing, List<Guid> removedParticipantIds,
-        List<LinkedParticipantDto> linkedParticipants, List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants, bool sendNotification = true)
+        List<LinkedParticipantDto> linkedParticipants, List<Participant> eventExistingParticipants, List<Participant> eventNewParticipants)
     {
         var eventLinkedParticipants = new List<Infrastructure.Services.Dtos.LinkedParticipantDto>();
 

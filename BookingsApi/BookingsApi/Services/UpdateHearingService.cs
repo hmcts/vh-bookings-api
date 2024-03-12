@@ -44,7 +44,7 @@ namespace BookingsApi.Services
         public async Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
             VideoHearing hearing, List<HearingRole> hearingRoles)
         {
-            await _hearingParticipantService.UpdateParticipantsV2(request, hearing, hearingRoles, false);
+            await _hearingParticipantService.UpdateParticipantsV2(request, hearing, hearingRoles, sendNotification: false);
         }
         
         public async Task UpdateEndpointsV1(UpdateHearingEndpointsRequest request, VideoHearing hearing)
@@ -103,7 +103,7 @@ namespace BookingsApi.Services
                     OptionalContactEmail = newJudge.ContactEmail,
                     OptionalContactTelephone = newJudge.ContactTelephone
                 };
-                await _judiciaryParticipantService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge, false);
+                await _judiciaryParticipantService.ReassignJudiciaryJudge(hearing.Id, newJudiciaryJudge, sendNotification: false);
             }
 
             var judiciaryParticipantsToAdd = request.NewJudiciaryParticipants
@@ -112,7 +112,7 @@ namespace BookingsApi.Services
                 .Select(JudiciaryParticipantRequestV2ToNewJudiciaryParticipantMapper.Map)
                 .ToList();
 
-            await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearing.Id, false);
+            await _judiciaryParticipantService.AddJudiciaryParticipants(judiciaryParticipantsToAdd, hearing.Id, sendNotification: false);
 
             foreach (var existingJudiciaryParticipant in request.ExistingJudiciaryParticipants)
             {
