@@ -37,14 +37,16 @@ public interface IBookingService
     /// </summary>
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
+    /// <param name="videoHearingUpdateDate"></param>
     /// <returns></returns>
     Task PublishMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
-    
+
     /// <summary>
     /// Send a message to the service bus to publish the booking of edit a new multi-day hearing
     /// </summary>
     /// <param name="videoHearing"></param>
     /// <param name="totalDays"></param>
+    /// <param name="videoHearingUpdateDate"></param>
     /// <returns></returns>
     Task PublishEditMultiDayHearing(VideoHearing videoHearing, int totalDays, DateTime videoHearingUpdateDate);
 
