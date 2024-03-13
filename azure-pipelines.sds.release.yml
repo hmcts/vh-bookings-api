@@ -158,6 +158,7 @@ stages:
         subDirectory: ${{ variables.subDirectory }}
 
 ##################################################
+########### Comment out when required ############
 # Run Acceptance Tests. ##########################
 #- stage: Acceptance_Tests_Demo
 #  dependsOn: 
