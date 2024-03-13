@@ -83,6 +83,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertEventsPublished(updatedHearing, requestHearing, existingParticipantsModified: 1);
             }
+            AssertNotificationEvents(updatedHearings[0], expectedExistingParticipantMessages:2, expectedNewParticipantMessages:4, expectedNewParticipantWelcomeMessages:6);
         }
         
         [Test]
@@ -496,6 +497,38 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
 
                 endpointRemovedMessages.Count.Should().Be(expectedRemovedCount);
             }
+        }
+        
+        private void AssertNotificationEvents(Hearing hearing, int expectedExistingParticipantMessages, int expectedNewParticipantMessages, int expectedNewParticipantWelcomeMessages)
+        {
+            var serviceBusStub = Application.Services
+                .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
+            var messages = serviceBusStub!
+                .ReadAllMessagesFromQueue(hearing.Id);
+            
+            
+            var existingParticipantMessages = messages
+                .Where(x => x.IntegrationEvent is ExistingParticipantMultidayHearingConfirmationEvent)
+                .Select(x => x.IntegrationEvent as ExistingParticipantMultidayHearingConfirmationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                .ToList();
+            
+            var newParticipantMessages = messages
+                .Where(x => x.IntegrationEvent is NewParticipantMultidayHearingConfirmationEvent)
+                .Select(x => x.IntegrationEvent as NewParticipantMultidayHearingConfirmationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
+                .ToList();
+            
+            var newParticipantWelcomeMessages = messages
+                .Where(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent)
+                .Select(x => x.IntegrationEvent as NewParticipantWelcomeEmailEvent)
+                .Where(x => x.WelcomeEmail.HearingId == hearing.Id)
+                .ToList();
+            
+            existingParticipantMessages.Count.Should().Be(expectedExistingParticipantMessages);
+            newParticipantMessages.Count.Should().Be(expectedNewParticipantMessages);
+            newParticipantWelcomeMessages.Count.Should().Be(expectedNewParticipantWelcomeMessages);
+            
         }
     }
 }

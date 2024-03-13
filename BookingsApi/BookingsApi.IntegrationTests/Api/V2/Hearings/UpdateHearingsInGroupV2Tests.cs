@@ -116,8 +116,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertJudiciaryParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEventsPublished(updatedHearing, requestHearing, 1);
             }
-            var requestFirstHearing = request.Hearings.First(x => x.HearingId == updatedHearings[0].Id);
-            AssertNotificationEvents(updatedHearings[0], requestFirstHearing, existingParticipantsUpdated: 1);
+            AssertNotificationEvents(updatedHearings[0], expectedExistingParticipantMessages:3, expectedNewParticipantMessages:4, expectedNewParticipantWelcomeMessages:4);
         }
 
         [Test]
@@ -635,7 +634,7 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             }
         }
         
-        private void AssertNotificationEvents(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated)
+        private void AssertNotificationEvents(Hearing hearing, int expectedExistingParticipantMessages, int expectedNewParticipantMessages, int expectedNewParticipantWelcomeMessages)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
@@ -661,9 +660,9 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 .Where(x => x.WelcomeEmail.HearingId == hearing.Id)
                 .ToList();
             
-            existingParticipantMessages.Count.Should().Be(3);
-            newParticipantMessages.Count.Should().Be(4);
-            newParticipantWelcomeMessages.Count.Should().Be(4);
+            existingParticipantMessages.Count.Should().Be(expectedExistingParticipantMessages);
+            newParticipantMessages.Count.Should().Be(expectedNewParticipantMessages);
+            newParticipantWelcomeMessages.Count.Should().Be(expectedNewParticipantWelcomeMessages);
             
         }
     }

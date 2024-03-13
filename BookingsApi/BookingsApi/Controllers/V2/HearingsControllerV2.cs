@@ -206,8 +206,6 @@ namespace BookingsApi.Controllers.V2
 
             var venues = await GetHearingVenues();
             
-            
-            
             foreach (var requestHearing in request.Hearings)
             {
                 var hearing = hearingsInGroup.First(h => h.Id == requestHearing.HearingId);
