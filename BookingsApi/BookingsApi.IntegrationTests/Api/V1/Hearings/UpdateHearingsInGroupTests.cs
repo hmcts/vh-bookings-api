@@ -83,7 +83,7 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertEventsPublished(updatedHearing, requestHearing, existingParticipantsModified: 1);
             }
-            AssertNotificationEvents(updatedHearings[0], expectedExistingUserMessages:1, expectedNewUserMessages:4, expectedNewUserWelcomeMessages:6);
+            AssertNotificationEvents(updatedHearings[0], expectedExistingUserMessages:1, expectedNewUserMessages:5, expectedNewUserWelcomeMessages:6);
         }
         
         [Test]
