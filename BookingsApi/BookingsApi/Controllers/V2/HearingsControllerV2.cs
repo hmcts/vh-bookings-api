@@ -226,19 +226,14 @@ namespace BookingsApi.Controllers.V2
                 await _updateHearingService.UpdateJudiciaryParticipantsV2(requestHearing.JudiciaryParticipants, hearing);
             }
             
-            
             var hearings = request.Hearings.ToList();
             var totalDays = hearings.Count;
-            var nextFirstHearingId = hearings[0].HearingId;
-            
-            var nextFirstHearing = await _bookingService.GetHearingById(nextFirstHearingId);
-            
-            if (nextFirstHearing == null)
-                return NotFound();
-            var videoHearingUpdateDate = nextFirstHearing.UpdatedDate.TrimSeconds();
+            var firstHearingId = hearings[0].HearingId;
+            var firstHearing = await _bookingService.GetHearingById(firstHearingId);
+            var videoHearingUpdateDate = firstHearing.UpdatedDate.TrimSeconds();
             
             // publish multi day hearing notification event
-            await _bookingService.PublishEditMultiDayHearing(nextFirstHearing, totalDays, videoHearingUpdateDate);
+            await _bookingService.PublishEditMultiDayHearing(firstHearing, totalDays, videoHearingUpdateDate);
 
             return NoContent();
         }

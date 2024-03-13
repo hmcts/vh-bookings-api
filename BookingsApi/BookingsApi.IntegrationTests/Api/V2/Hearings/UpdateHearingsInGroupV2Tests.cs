@@ -114,11 +114,10 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
                 AssertParticipantsUpdated(updatedHearing, requestHearing);
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertJudiciaryParticipantsUpdated(updatedHearing, requestHearing);
-                AssertEventsPublished(updatedHearing, requestHearing);
+                AssertEventsPublished(updatedHearing, requestHearing, 1);
             }
             var requestFirstHearing = request.Hearings.First(x => x.HearingId == updatedHearings[0].Id);
-            AssertParticipantEvents(updatedHearings[0], requestFirstHearing, existingParticipantsUpdated: 1);
-            AssertJudiciaryParticipantEvents(updatedHearings[0], requestFirstHearing);
+            AssertNotificationEvents(updatedHearings[0], requestFirstHearing, existingParticipantsUpdated: 1);
         }
 
         [Test]
@@ -566,102 +565,106 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             }
         }
 
-        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing)
+        private void AssertEventsPublished(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
             var messages = serviceBusStub!
                 .ReadAllMessagesFromQueue(hearing.Id);
-            
+            AssertParticipantEvents();
+            AssertJudiciaryParticipantEvents();
             AssertEndpointEvents();
             return;
-
+            void AssertParticipantEvents()
+            {
+                var participantMessages = messages
+                    .Where(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as HearingParticipantsUpdatedIntegrationEvent)
+                    .Where(x => x.Hearing.HearingId == hearing.Id)
+                    .ToList();
+                participantMessages.Count.Should().Be(1);
+                var participantMessage = participantMessages.Single();
+                var expectedAddedCount = requestHearing.Participants.NewParticipants.Count;
+                var expectedRemovedCount = requestHearing.Participants.RemovedParticipantIds.Count;
+                var expectedLinkedCount = requestHearing.Participants.LinkedParticipants.Count;
+                participantMessage.NewParticipants.Count.Should().Be(expectedAddedCount);
+                participantMessage.ExistingParticipants.Count.Should().Be(existingParticipantsUpdated);
+                participantMessage.RemovedParticipants.Count.Should().Be(expectedRemovedCount);
+                participantMessage.LinkedParticipants.Count.Should().Be(expectedLinkedCount);
+            }
+            void AssertJudiciaryParticipantEvents()
+            {
+                var expectedAddedCount = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Count;
+                var participantAddedMessages = messages
+                    .Where(x => x.IntegrationEvent is ParticipantsAddedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as ParticipantsAddedIntegrationEvent)
+                    .Where(x => x.Hearing.HearingId == hearing.Id)
+                    .ToList();
+                participantAddedMessages.Count.Should().Be(expectedAddedCount);
+                var expectedRemovedCount = requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Count;
+                var participantRemovedMessages = messages
+                    .Where(x => x.IntegrationEvent is ParticipantRemovedIntegrationEvent)
+                    .Select(x => x.IntegrationEvent as ParticipantRemovedIntegrationEvent)
+                    .Where(x => x.HearingId == hearing.Id)
+                    .ToList();
+                participantRemovedMessages.Count.Should().Be(expectedRemovedCount);
+            }
             void AssertEndpointEvents()
             {
                 var expectedAddedCount = requestHearing.Endpoints.NewEndpoints.Count;
-
                 var endpointAddedMessages = messages
                     .Where(x => x.IntegrationEvent is EndpointAddedIntegrationEvent)
                     .Select(x => x.IntegrationEvent as EndpointAddedIntegrationEvent)
                     .Where(x => x.HearingId == hearing.Id)
                     .ToList();
-
                 endpointAddedMessages.Count.Should().Be(expectedAddedCount);
-                
                 var expectedUpdatedCount = requestHearing.Endpoints.ExistingEndpoints.Count;
-
                 var endpointUpdatedMessages = messages
                     .Where(x => x.IntegrationEvent is EndpointUpdatedIntegrationEvent)
                     .Select(x => x.IntegrationEvent as EndpointUpdatedIntegrationEvent)
                     .Where(x => x.HearingId == hearing.Id)
                     .ToList();
-
                 endpointUpdatedMessages.Count.Should().Be(expectedUpdatedCount);
-                
                 var expectedRemovedCount = requestHearing.Endpoints.RemovedEndpointIds.Count;
-                
                 var endpointRemovedMessages = messages
                     .Where(x => x.IntegrationEvent is EndpointRemovedIntegrationEvent)
                     .Select(x => x.IntegrationEvent as EndpointRemovedIntegrationEvent)
                     .Where(x => x.HearingId == hearing.Id)
                     .ToList();
-
                 endpointRemovedMessages.Count.Should().Be(expectedRemovedCount);
             }
         }
         
-        private void AssertParticipantEvents(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated)
+        private void AssertNotificationEvents(Hearing hearing, HearingRequestV2 requestHearing, int existingParticipantsUpdated)
         {
             var serviceBusStub = Application.Services
                 .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
             var messages = serviceBusStub!
                 .ReadAllMessagesFromQueue(hearing.Id);
             
-            var participantMessages = messages
-                .Where(x => x.IntegrationEvent is HearingParticipantsUpdatedIntegrationEvent)
-                .Select(x => x.IntegrationEvent as HearingParticipantsUpdatedIntegrationEvent)
-                .Where(x => x.Hearing.HearingId == hearing.Id)
-                .ToList();
-
-            participantMessages.Count.Should().Be(1);
-            var participantMessage = participantMessages.Single();
-
-            var expectedAddedCount = requestHearing.Participants.NewParticipants.Count;
-            var expectedRemovedCount = requestHearing.Participants.RemovedParticipantIds.Count;
-            var expectedLinkedCount = requestHearing.Participants.LinkedParticipants.Count;
-
-            participantMessage.NewParticipants.Count.Should().Be(expectedAddedCount);
-            participantMessage.ExistingParticipants.Count.Should().Be(existingParticipantsUpdated);
-            participantMessage.RemovedParticipants.Count.Should().Be(expectedRemovedCount);
-            participantMessage.LinkedParticipants.Count.Should().Be(expectedLinkedCount);
-        }
-        
-        private void AssertJudiciaryParticipantEvents(Hearing hearing, HearingRequestV2 requestHearing)
-        {
-            var serviceBusStub = Application.Services
-                .GetService(typeof(IServiceBusQueueClient)) as ServiceBusQueueClientFake;
-            var messages = serviceBusStub!
-                .ReadAllMessagesFromQueue(hearing.Id);
-
-            var expectedAddedCount = requestHearing.JudiciaryParticipants.NewJudiciaryParticipants.Count;
             
-            var participantAddedMessages = messages
-                .Where(x => x.IntegrationEvent is ParticipantsAddedIntegrationEvent)
-                .Select(x => x.IntegrationEvent as ParticipantsAddedIntegrationEvent)
-                .Where(x => x.Hearing.HearingId == hearing.Id)
+            var existingParticipantMessages = messages
+                .Where(x => x.IntegrationEvent is ExistingParticipantMultidayHearingConfirmationEvent)
+                .Select(x => x.IntegrationEvent as ExistingParticipantMultidayHearingConfirmationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
                 .ToList();
-
-            participantAddedMessages.Count.Should().Be(expectedAddedCount);
-
-            var expectedRemovedCount = requestHearing.JudiciaryParticipants.RemovedJudiciaryParticipantPersonalCodes.Count;
             
-            var participantRemovedMessages = messages
-                .Where(x => x.IntegrationEvent is ParticipantRemovedIntegrationEvent)
-                .Select(x => x.IntegrationEvent as ParticipantRemovedIntegrationEvent)
-                .Where(x => x.HearingId == hearing.Id)
+            var newParticipantMessages = messages
+                .Where(x => x.IntegrationEvent is NewParticipantMultidayHearingConfirmationEvent)
+                .Select(x => x.IntegrationEvent as NewParticipantMultidayHearingConfirmationEvent)
+                .Where(x => x.HearingConfirmationForParticipant.HearingId == hearing.Id)
                 .ToList();
-
-            participantRemovedMessages.Count.Should().Be(expectedRemovedCount);
+            
+            var newParticipantWelcomeMessages = messages
+                .Where(x => x.IntegrationEvent is NewParticipantWelcomeEmailEvent)
+                .Select(x => x.IntegrationEvent as NewParticipantWelcomeEmailEvent)
+                .Where(x => x.WelcomeEmail.HearingId == hearing.Id)
+                .ToList();
+            
+            existingParticipantMessages.Count.Should().Be(3);
+            newParticipantMessages.Count.Should().Be(4);
+            newParticipantWelcomeMessages.Count.Should().Be(4);
+            
         }
     }
 }

@@ -12,7 +12,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public static IEnumerable<Participant> GetExistingParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
         {
             var existingParticipants = videoHearing.Participants.Where(x => x is Judge || (x.DoesPersonAlreadyExist() && x.Person?.ContactEmail != x.Person?.Username));
-            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
+            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
                 existingParticipants = existingParticipants.Where(x => x.CreatedDate.TrimSeconds() == videoHearingUpdateDate);
@@ -30,7 +30,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public static IEnumerable<Participant> GetNewParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
         {
             var newParticipants = videoHearing.Participants.Where(x => x is not Judge && (!x.DoesPersonAlreadyExist() || x.Person?.ContactEmail == x.Person?.Username));
-            var areParticipantsAddedToExistingBooking = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
+            var areParticipantsAddedToExistingBooking = newParticipants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
                 newParticipants = newParticipants.Where(x => x.CreatedDate.TrimSeconds() == videoHearingUpdateDate);
@@ -41,7 +41,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public static IEnumerable<Participant> GetAddedParticipantsSinceLastUpdate(VideoHearing videoHearing)
         {
             var newParticipants = videoHearing.Participants;
-            var areParticipantsAddedToExistingBooking = videoHearing.Participants.Any(x => x.CreatedDate.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
+            var areParticipantsAddedToExistingBooking = videoHearing.Participants.Any(x => x.CreatedDate.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
                 newParticipants = videoHearing.Participants.Where(x => x.CreatedDate.TrimMilliseconds() == videoHearing.UpdatedDate.TrimMilliseconds()).ToList();
@@ -52,7 +52,7 @@ namespace BookingsApi.Infrastructure.Services.Publishers
         public static IEnumerable<JudiciaryParticipant> GetAddedJudiciaryParticipantsSinceLastUpdate(VideoHearing videoHearing, DateTime videoHearingUpdateDate)
         {
             var existingParticipants = videoHearing.JudiciaryParticipants;
-            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate?.TrimMilliseconds() >= videoHearing.CreatedDate.TrimMilliseconds());
+            var areParticipantsAddedToExistingBooking = existingParticipants.Any(x => x.CreatedDate?.TrimMilliseconds() > videoHearing.CreatedDate.TrimMilliseconds());
             if (areParticipantsAddedToExistingBooking)
             {
                 existingParticipants = existingParticipants.Where(x => x.CreatedDate?.TrimSeconds() == videoHearingUpdateDate).ToList();
