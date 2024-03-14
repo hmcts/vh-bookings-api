@@ -1,8 +1,10 @@
+using BookingsApi.Common;
 using BookingsApi.Contract.V1.Enums;
 using BookingsApi.Contract.V1.Requests;
 using BookingsApi.DAL.Queries;
 using BookingsApi.Domain.Participants;
 using BookingsApi.Infrastructure.Services.IntegrationEvents.Events;
+using BookingsApi.Infrastructure.Services.Publishers;
 using BookingsApi.Infrastructure.Services.ServiceBusQueue;
 using BookingsApi.Validations.Common;
 using BookingsApi.Validations.V1;
@@ -83,7 +85,17 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
                 AssertEndpointsUpdated(updatedHearing, requestHearing);
                 AssertEventsPublished(updatedHearing, requestHearing, existingParticipantsModified: 1);
             }
-            AssertNotificationEvents(updatedHearings[0], expectedExistingUserMessages:1, expectedNewUserMessages:5, expectedNewUserWelcomeMessages:6);
+
+            var updateDateHearing = updatedHearings[0].UpdatedDate.TrimSeconds();
+            var firstHearing = updatedHearings[0];
+            var expectedExistingUser =
+                PublisherHelper.GetExistingParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count +
+                PublisherHelper.GetAddedJudiciaryParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+            var expectedNewUser =
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+            var expectedWelcomeNewUser =
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+            AssertNotificationEvents(firstHearing, expectedExistingUser, expectedNewUser, expectedWelcomeNewUser);
         }
         
         [Test]

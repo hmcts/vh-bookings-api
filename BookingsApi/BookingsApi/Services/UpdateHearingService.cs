@@ -38,7 +38,7 @@ namespace BookingsApi.Services
 
         public async Task UpdateParticipantsV1(UpdateHearingParticipantsRequest request, VideoHearing hearing)
         {
-            await _hearingParticipantService.UpdateParticipants(request, hearing);
+            await _hearingParticipantService.UpdateParticipants(request, hearing, sendNotification: false);
         }
         
         public async Task UpdateParticipantsV2(UpdateHearingParticipantsRequestV2 request, 
