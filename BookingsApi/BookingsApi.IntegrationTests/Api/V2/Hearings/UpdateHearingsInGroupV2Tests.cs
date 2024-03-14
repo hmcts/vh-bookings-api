@@ -126,7 +126,8 @@ namespace BookingsApi.IntegrationTests.Api.V2.Hearings
             var expectedNewUser =
                 PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
             var expectedWelcomeNewUser =
-                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).Where(x => x is not JudicialOfficeHolder)
+                    .ToList().Count;
             AssertNotificationEvents(firstHearing, expectedExistingUser, expectedNewUser, expectedWelcomeNewUser);
         }
 

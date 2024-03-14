@@ -89,12 +89,12 @@ namespace BookingsApi.IntegrationTests.Api.V1.Hearings
             var updateDateHearing = updatedHearings[0].UpdatedDate.TrimSeconds();
             var firstHearing = updatedHearings[0];
             var expectedExistingUser =
-                PublisherHelper.GetExistingParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count +
-                PublisherHelper.GetAddedJudiciaryParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+                PublisherHelper.GetExistingParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
             var expectedNewUser =
                 PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
             var expectedWelcomeNewUser =
-                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).ToList().Count;
+                PublisherHelper.GetNewParticipantsSinceLastUpdate(firstHearing, updateDateHearing).Where(x => x is not JudicialOfficeHolder)
+                    .ToList().Count;
             AssertNotificationEvents(firstHearing, expectedExistingUser, expectedNewUser, expectedWelcomeNewUser);
         }
         
